@@ -36,7 +36,8 @@ class MulticlassExtension(Pluggable):
 
     @classmethod
     def init_params(cls, params):
-        args = {k: v for k, v in params.items() if k != 'name'}
+        multiclass_extension_params = params.get(Pluggable.SECTION_KEY_MULTICLASS_EXTENSION)
+        args = {k: v for k, v in multiclass_extension_params.items() if k != 'name'}
         return cls(**args)
 
     @abstractmethod
