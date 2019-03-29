@@ -45,7 +45,7 @@ class OneAgainstRest(MulticlassExtension):
     def __init__(self, estimator_cls, params=None):
         super().__init__()
         self.estimator_cls = estimator_cls
-        self.params = params or []
+        self.params = params if params is not None else []
 
     def train(self, X, y):
         """

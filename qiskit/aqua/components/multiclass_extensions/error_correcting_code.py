@@ -52,7 +52,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         self.validate(locals())
         super().__init__()
         self.estimator_cls = estimator_cls
-        self.params = params or []
+        self.params = params if params is not None else []
         self.code_size = code_size
         # May we re-use the seed from quantum algorithm?
         self.rand = np.random.RandomState(0)
