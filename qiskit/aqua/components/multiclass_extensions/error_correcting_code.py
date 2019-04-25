@@ -21,6 +21,7 @@ import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.multiclass import _ConstantPredictor
 
+from qiskit.aqua import aqua_globals
 from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
 
 logger = logging.getLogger(__name__)
@@ -54,14 +55,13 @@ class ErrorCorrectingCode(MulticlassExtension):
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []
         self.code_size = code_size
-        # May we re-use the seed from quantum algorithm?
-        self.rand = np.random.RandomState(0)
+        self.rand = aqua_globals.random
 
     def train(self, x, y):
         """
-        training multiple estimators each for distinguishing a pair of classes.
+        Training multiple estimators each for distinguishing a pair of classes.
         Args:
-            X (numpy.ndarray): input points
+            x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
         """
         self.estimators = []
@@ -88,9 +88,9 @@ class ErrorCorrectingCode(MulticlassExtension):
 
     def test(self, x, y):
         """
-        testing multiple estimators each for distinguishing a pair of classes.
+        Testing multiple estimators each for distinguishing a pair of classes.
         Args:
-            X (numpy.ndarray): input points
+            x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
         Returns:
             float: accuracy
@@ -104,7 +104,7 @@ class ErrorCorrectingCode(MulticlassExtension):
 
     def predict(self, x):
         """
-        applying multiple estimators for prediction
+        Applying multiple estimators for prediction
         Args:
             x (numpy.ndarray): NxD array
         Returns:
