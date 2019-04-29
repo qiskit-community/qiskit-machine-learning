@@ -88,7 +88,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Discriminator
     """
     CONFIGURATION = {
-        'name': 'Classical Discriminator',
+        'name': 'ClassicalNetwork',
         'description': 'qGAN Discriminator Network',
         'input_schema': {
             '$schema': 'http://json-schema.org/schema#',
@@ -199,7 +199,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         """
         return self._discriminator
 
-    def get_output(self, x):
+    def get_label(self, x):
         """
         Get data sample labels, i.e. true or fake.
         Args:

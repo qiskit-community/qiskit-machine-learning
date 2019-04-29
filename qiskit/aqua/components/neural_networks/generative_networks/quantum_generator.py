@@ -73,9 +73,7 @@ class QuantumGenerator(GenerativeNetwork):
         ],
     }
 
-
-    def __init__(self, bounds, num_qubits, data_grid, generator_circuit=None, init_params=None,
-                 optimizer=None):
+    def __init__(self, bounds, num_qubits, data_grid, generator_circuit=None, init_params=None, optimizer=None):
         """
         Initialize the generator network.
         Args:
@@ -114,7 +112,8 @@ class QuantumGenerator(GenerativeNetwork):
             else:
                 init_dist = UniformDistribution(np.sum(num_qubits), low=bounds[0], high=bounds[1])
                 self.generator_circuit = UnivariateVariationalDistribution(int(np.sum(num_qubits)), var_form,
-                                            init_params, initial_distribution=init_dist, low=bounds[0], high=bounds[1])
+                                                                           init_params, initial_distribution=init_dist,
+                                                                           low=bounds[0], high=bounds[1])
 
         if len(num_qubits)>1:
             if isinstance(self.generator_circuit, MultivariateVariationalDistribution):
