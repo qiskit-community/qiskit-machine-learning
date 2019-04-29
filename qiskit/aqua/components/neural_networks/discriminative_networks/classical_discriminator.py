@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 from qiskit.aqua import AquaError
 from qiskit.aqua import Pluggable
-from qiskit.aqua.components.neural_networks import NeuralNetwork
+from qiskit.aqua.components.neural_networks import DiscriminativeNetwork
 
 try:
     import torch
@@ -43,7 +43,7 @@ class DiscriminatorNet(torch.nn.Module):
     Discriminator
     """
 
-    def __init__(self, n_features=1):
+    def __init__(self, n_features=1, n_out=1):
         """
         Initialize the discriminator network.
         Args:
@@ -52,7 +52,6 @@ class DiscriminatorNet(torch.nn.Module):
 
         super(DiscriminatorNet, self).__init__()
         self.n_features = n_features
-        n_out = 1
 
         self.hidden0 = nn.Sequential(
             nn.Linear(self.n_features, 512),
@@ -84,41 +83,74 @@ class DiscriminatorNet(torch.nn.Module):
         return x
 
 
-class Discriminator(NeuralNetwork):
+class ClassicalDiscriminator(DiscriminativeNetwork):
+    """
+        Discriminator
+    """
+    CONFIGURATION = {
+        'name': 'Classical Discriminator',
+        'description': 'qGAN Discriminator Network',
+        'input_schema': {
+            '$schema': 'http://json-schema.org/schema#',
+            'id': 'discriminator_schema',
+            'type': 'object',
+            'properties': {
+                'n_features': {
+                    'type': 'int',
+                    'default': 1
+                },
+                'n_out': {
+                    'type': 'int',
+                    'default': 1
+                }
 
-    def __init__(self, n_features=1, discriminator_net=None, optimizer=None):
+            },
+            'additionalProperties': False
+        }
+    }
+
+    def __init__(self, n_features=1, n_out=1):
         """
         Initialize the discriminator.
         Args:
             n_features: int, Dimension of input data vector.
-            discriminator_net: torch.nn.Module or None, Discriminator network.
-            optimizer: torch.optim.Optimizer or None, Optimizer initialized w.r.t discriminator network parameters.
+            n_out: int, Dimension of the discriminator's output vector.
+
         """
 
         if not torch_loaded:
             raise AquaError('Pytorch is not installed. For installation instructions see '
                             'https://pytorch.org/get-started/locally/')
 
-        self.n_features = n_features
-        if isinstance(optimizer, optim.Optimizer):
-            self._optimizer = optimizer
-            if isinstance(discriminator_net, torch.nn.Module):
-                self.discriminator = discriminator_net
-            else:
-                self.discriminator = DiscriminatorNet(self.n_features)
-                self._optimizer = optim.Adam(self.discriminator.parameters(), lr=1e-5, amsgrad=True)
-        else:
-            if isinstance(discriminator_net, torch.nn.Module):
-                self.discriminator = discriminator_net
-            else:
-                self.discriminator = DiscriminatorNet(self.n_features)
-            self._optimizer = optim.Adam(self.discriminator.parameters(), lr=1e-5, amsgrad=True)
+        self._n_features = n_features
+        self._n_out = n_out
+        # discriminator_net: torch.nn.Module or None, Discriminator network.
+        self._discriminator = DiscriminatorNet(self._n_features, self._n_out)
+        # optimizer: torch.optim.Optimizer or None, Optimizer initialized w.r.t discriminator network parameters.
+        self._optimizer = optim.Adam(self._discriminator.parameters(), lr=1e-5, amsgrad=True)
 
         self._ret = {}
 
     @classmethod
+    def init_params(cls, params):
+        """
+            Initialize via parameters dictionary and algorithm input instance.
+
+            Args:
+                params (dict): parameters dictionary
+
+                Returns:
+                    ClassicalDiscriminator
+                """
+        discriminator_params = params.get(Pluggable.SECTION_KEY_ALGORITHM)
+        n_features = discriminator_params.get('n_features')
+        n_out = discriminator_params.get('n_out')
+
+        return cls(n_features, n_out)
+
+    @classmethod
     def get_section_key_name(cls):
-        return Pluggable.SECTION_KEY_NEURAL_NETWORK
+        return Pluggable.SECTION_KEY_DISCRIMINATIVE_NETWORK
 
     @staticmethod
     def check_pluggable_valid():
@@ -156,8 +188,16 @@ class Discriminator(NeuralNetwork):
         Returns:
 
         """
-        torch.save(self.discriminator, os.path.join(snapshot_dir, 'discriminator.pt'))
+        torch.save(self._discriminator, os.path.join(snapshot_dir, 'discriminator.pt'))
         return
+
+    def get_discriminator(self):
+        """
+        Get discriminator
+        Returns: discriminator object
+
+        """
+        return self._discriminator
 
     def get_output(self, x):
         """
@@ -175,7 +215,7 @@ class Discriminator(NeuralNetwork):
             x = torch.tensor(x, dtype=torch.float32)
             x = Variable(x)
 
-        return self.discriminator.forward(x)
+        return self._discriminator.forward(x)
 
     def loss(self, x, y, weights=None):
         """
@@ -248,7 +288,7 @@ class Discriminator(NeuralNetwork):
         error_real.backward()
 
         # Train on Generated Data
-        generated_batch = np.reshape(generated_batch,(len(generated_batch), self.n_features))
+        generated_batch = np.reshape(generated_batch, (len(generated_batch), self._n_features))
         generated_prob = np.reshape(generated_prob, (len(generated_prob), 1))
         generated_prob = torch.tensor(generated_prob, dtype=torch.float32)
         prediction_fake = self.get_output(generated_batch)
@@ -266,7 +306,7 @@ class Discriminator(NeuralNetwork):
         # Return error and predictions for real and fake inputs
         self._ret['loss'] = 0.5*(error_real + error_fake)
         params = []
-        for param in self.discriminator.parameters():
+        for param in self._discriminator.parameters():
             params.append(param.data.detach().numpy())
         self._ret['params'] = params
 

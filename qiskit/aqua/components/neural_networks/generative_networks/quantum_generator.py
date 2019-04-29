@@ -27,15 +27,15 @@ from qiskit.aqua.components.uncertainty_models import UnivariateVariationalDistr
 from qiskit.aqua.components.variational_forms import RY
 from qiskit.aqua import AquaError
 from qiskit.aqua import Pluggable, get_pluggable_class, PluggableType
-from qiskit.aqua.components.neural_networks import NeuralNetwork
+from qiskit.aqua.components.neural_networks import GenerativeNetwork
 
 
-class Generator(NeuralNetwork):
+class QuantumGenerator(GenerativeNetwork):
     """
     Generator
     """
     CONFIGURATION = {
-        'name': 'GENERATOR',
+        'name': 'QuantumGenerator',
         'description': 'qGAN Generator Network',
         'input_schema': {
             '$schema': 'http://json-schema.org/schema#',
@@ -144,7 +144,7 @@ class Generator(NeuralNetwork):
                 params (dict): parameters dictionary
 
                 Returns:
-                    Generator: vqe object
+                    QuantumGenerator: vqe object
                 """
         generator_params = params.get(Pluggable.SECTION_KEY_ALGORITHM)
         bounds = generator_params.get('bounds')
@@ -174,7 +174,7 @@ class Generator(NeuralNetwork):
 
     @classmethod
     def get_section_key_name(cls):
-        return Pluggable.SECTION_KEY_NEURAL_NETWORK
+        return Pluggable.SECTION_KEY_GENERATIVE_NETWORK
 
     def construct_circuit(self, quantum_instance, params=None):
         """

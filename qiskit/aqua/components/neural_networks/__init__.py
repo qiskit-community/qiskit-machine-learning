@@ -15,10 +15,13 @@
 # limitations under the License.
 # =============================================================================
 
-from .neural_network import NeuralNetwork
-from .qgan_discriminator import Discriminator
-from .qgan_generator import Generator
+from qiskit.aqua.components.neural_networks.discriminative_networks.discriminative_network import DiscriminativeNetwork
+from qiskit.aqua.components.neural_networks.generative_networks.generative_network import GenerativeNetwork
+from qiskit.aqua.components.neural_networks.discriminative_networks.classical_discriminator import ClassicalDiscriminator
+from qiskit.aqua.components.neural_networks.generative_networks.quantum_generator import QuantumGenerator
 
-__all__ = ['NeuralNetwork',
-           'Discriminator',
-           'Generator']
+
+__all__ = ['DiscriminativeNetwork',
+           'GenerativeNetwork',
+           'ClassicalDiscriminator',
+           'QuantumGenerator']

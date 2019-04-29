@@ -28,8 +28,8 @@ from abc import abstractmethod
 from qiskit.aqua import Pluggable
 
 
-class NeuralNetwork(Pluggable):
-    """Base class for Quantum and Classical Neural Networks.
+class DiscriminativeNetwork(Pluggable):
+    """Base class for discriminative Quantum or Classical Neural Networks.
 
         This method should initialize the module and its configuration, and
         use an exception if a component of the module is
@@ -60,10 +60,10 @@ class NeuralNetwork(Pluggable):
         pass
 
     @abstractmethod
-    def get_output(self):
-        """ Apply quantum/classical neural network to given input and get the respective output
+    def get_label(self):
+        """ Apply quantum/classical neural network to the given input sample and compute the respective data label
 
-        Returns: Neural network output
+        Returns: Data label
 
         """
         raise NotImplementedError()
