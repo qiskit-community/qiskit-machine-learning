@@ -75,9 +75,13 @@ class GenerativeNetwork(Pluggable):
         raise NotImplementedError()
 
     @abstractmethod
-    def train(self):
-        """Train the network
+    def train(self, quantum_instance=None, shots=None):
+        """
+        Perform one training step w.r.t to the generator's parameters
+        Args:
+            quantum_instance: QuantumInstance, used to run the generator circuit. Depreciated for classical network
+            shots: int, Number of shots for hardware or qasm execution. Depreciated for classical network
 
-         Returns: Final loss & trained parameters
+        Returns: dict, generator loss and updated parameters.
         """
         raise NotImplementedError()

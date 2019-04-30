@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 from qiskit.aqua import AquaError
 from qiskit.aqua import Pluggable
-from qiskit.aqua.components.neural_networks import DiscriminativeNetwork
+from qiskit.aqua.components.neural_networks.discriminative_networks.discriminative_network import DiscriminativeNetwork
 
 try:
     import torch
@@ -88,7 +88,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Discriminator
     """
     CONFIGURATION = {
-        'name': 'ClassicalNetwork',
+        'name': 'ClassicalDiscriminator',
         'description': 'qGAN Discriminator Network',
         'input_schema': {
             '$schema': 'http://json-schema.org/schema#',
@@ -255,7 +255,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
             x = Variable(x)
         delta_ = torch.rand(x.size()) * c
         z = Variable(x+delta_, requires_grad = True)
-        o = self.get_output(z)
+        o = self.get_label(z)
         d = torch.autograd.grad(o, z, grad_outputs=torch.ones(o.size()), create_graph=True)[0].view(z.size(0), -1)
 
         return lambda_ * ((d.norm(p=2,dim=1) - k)**2).mean()
@@ -281,7 +281,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         real_batch = Variable(real_batch)
 
         # Train on Real Data
-        prediction_real = self.get_output(real_batch)
+        prediction_real = self.get_label(real_batch)
 
         # Calculate error and backpropagate
         error_real = self.loss(prediction_real, torch.ones(len(prediction_real), 1))
@@ -291,7 +291,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         generated_batch = np.reshape(generated_batch, (len(generated_batch), self._n_features))
         generated_prob = np.reshape(generated_prob, (len(generated_prob), 1))
         generated_prob = torch.tensor(generated_prob, dtype=torch.float32)
-        prediction_fake = self.get_output(generated_batch)
+        prediction_fake = self.get_label(generated_batch)
 
         # Calculate error and backpropagate
         error_fake = self.loss(prediction_fake, torch.zeros(len(prediction_fake),1), generated_prob)

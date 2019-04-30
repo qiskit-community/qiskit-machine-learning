@@ -27,7 +27,7 @@ from qiskit.aqua.components.uncertainty_models import UnivariateVariationalDistr
 from qiskit.aqua.components.variational_forms import RY
 from qiskit.aqua import AquaError
 from qiskit.aqua import Pluggable, get_pluggable_class, PluggableType
-from qiskit.aqua.components.neural_networks import GenerativeNetwork
+from qiskit.aqua.components.neural_networks.generative_networks.generative_network import GenerativeNetwork
 
 
 class QuantumGenerator(GenerativeNetwork):
@@ -48,11 +48,12 @@ class QuantumGenerator(GenerativeNetwork):
                 'num_qubits': {
                     'type': 'array'
                 },
-                'data_grid': {
-                    'type': ['array']
-                },
                 'init_params': {
                     'type': ['array', 'null'],
+                    'default': None
+                },
+                'snapshot_dir': {
+                    'type': ['string', 'null'],
                     'default': None
                 }
             },
@@ -60,11 +61,6 @@ class QuantumGenerator(GenerativeNetwork):
         },
 
         'depends': [
-            {'pluggable_type': 'optimizer',
-             'default': {
-                     'name': 'ADAM'
-                }
-             },
             {'pluggable_type': 'variational_form',
              'default': {
                      'name': 'RY'
@@ -73,22 +69,21 @@ class QuantumGenerator(GenerativeNetwork):
         ],
     }
 
-    def __init__(self, bounds, num_qubits, data_grid, generator_circuit=None, init_params=None, optimizer=None):
+    def __init__(self, bounds, num_qubits, generator_circuit=None, init_params=None, snapshot_dir = None):
         """
         Initialize the generator network.
         Args:
             bounds: array, k min/max data values [[min_1,max_1],...,[min_k,max_k]], given input data dim k
             num_qubits: array, k numbers of qubits to determine representation resolution,
             i.e. n qubits enable the representation of 2**n values [n_1,..., n_k]
-            data_grid: array, describing the data resolution of the qgan, i.e. the representable values v
             generator_circuit: UnivariateVariationalDistribution for univariate data/
             MultivariateVariationalDistribution for multivariate data, Quantum circuit to implement the generator.
             init_params: 1D numpy array or list, Initialization for the generator's parameters.
-            optimizer: Optimizer, used to train the generator's parameters
+            snapshot_dir: str or None, if not None save the optimizer's parameter after every update step to the given
+            directory
         """
-
+        self._bounds = bounds
         self._num_qubits = num_qubits
-        self._data_grid = data_grid
         self.generator_circuit = generator_circuit
         if self.generator_circuit is None:
             entangler_map = []
@@ -101,6 +96,7 @@ class QuantumGenerator(GenerativeNetwork):
             var_form = RY(int(np.sum(num_qubits)), depth=1, entangler_map=entangler_map, entanglement_gate='cz')
             if init_params is None:
                 init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
+
 
             if len(num_qubits)>1:
                 num_qubits = list(map(int, num_qubits))
@@ -125,13 +121,45 @@ class QuantumGenerator(GenerativeNetwork):
                 pass
             else:
                 raise AquaError('Set univariate variational distribution to represent univariate data')
+        #Set optimizer for updating the generator network
+        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-5, beta_1=0.9, beta_2=0.99, noise_factor=1e-8,
+                 eps=1e-10, amsgrad=True, snapshot_dir=snapshot_dir)
 
-        self._optimizer = optimizer
-        if self._optimizer is None:
-            self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-5, beta_1=0.9, beta_2=0.99, noise_factor=1e-8,
-                 eps=1e-10, amsgrad=True, snapshot_dir=None)
+        if np.ndim(self._bounds) == 1:
+            bounds = np.reshape(self._bounds, (1, len(self._bounds)))
+        else:
+            bounds = self._bounds
+        for j, prec in enumerate(self._num_qubits):
+            grid = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec)) #prepare data grid for dim j
+            if j == 0:
+                if len(self._num_qubits) > 1:
+                    self._data_grid = [grid]
+                else:
+                    self._data_grid = grid
+                self._grid_elements = grid
+            elif j==1:
+                self._data_grid.append(grid)
+                temp = []
+                for g_e in self._grid_elements:
+                    for g in grid:
+                        temp0 = [g_e]
+                        temp0.append(g)
+                        temp.append(temp0)
+                self._grid_elements = temp
+            else:
+                self._data_grid.append(grid)
+                temp = []
+                for g_e in self._grid_elements:
+                    for g in grid:
+                        temp0 = deepcopy(g_e)
+                        temp0.append(g)
+                        temp.append(temp0)
+                self._grid_elements = deepcopy(temp)
+        self._data_grid = np.array(self._data_grid)
+
+
         self._shots = None
-
+        self._discriminator = None
         self._ret = {}
 
     @classmethod
@@ -152,28 +180,31 @@ class QuantumGenerator(GenerativeNetwork):
         num_qubits = generator_params.get('num_qubits')
         if num_qubits is None:
             raise AquaError("Numbers of qubits per dimension required.")
-        data_grid = generator_params.get('data_grid')
-        if data_grid is None:
-            raise AquaError("Data grid is required.")
 
         init_params = generator_params.get('init_params')
+        snapshot_dir = generator_params.get('snapshot_dir')
 
         # Set up variational form
         var_form_params = params.get(Pluggable.SECTION_KEY_VAR_FORM)
         var_form = get_pluggable_class(PluggableType.VARIATIONAL_FORM,
                                        var_form_params['name']).init_params(params)
 
-        # Set up optimizer
-        opt_params = params.get(Pluggable.SECTION_KEY_OPTIMIZER)
-        optimizer = get_pluggable_class(PluggableType.OPTIMIZER,
-                                        opt_params['name']).init_params(params)
-
-        return cls(bounds, num_qubits, data_grid, generator_circuit=var_form, init_params=init_params,
-                 optimizer=optimizer)
+        return cls(bounds, num_qubits, generator_circuit=var_form, init_params=init_params,
+                   snapshot_dir=snapshot_dir)
 
     @classmethod
     def get_section_key_name(cls):
         return Pluggable.SECTION_KEY_GENERATIVE_NETWORK
+
+    def set_discriminator(self, discriminator):
+        """
+        Set discriminator
+        Args:
+            discriminator: Discriminator, Discriminator used to compute the loss function.
+
+        """
+        self._discriminator = discriminator
+        return
 
     def construct_circuit(self, quantum_instance, params=None):
         """
@@ -285,15 +316,14 @@ class QuantumGenerator(GenerativeNetwork):
 
             """
             generated_data, generated_prob = self.get_output(quantum_instance, params=params, shots=self._shots)
-            prediction_generated = discriminator.get_output(generated_data).detach().numpy()
+            prediction_generated = discriminator.get_label(generated_data).detach().numpy()
             return self.loss(prediction_generated, generated_prob)
         return objective_function
 
-    def train(self, discriminator, quantum_instance, shots=None):
+    def train(self, quantum_instance, shots=None):
         """
         Perform one training step w.r.t to the generator's parameters
         Args:
-            discriminator: Discriminator, Discriminator used to compute the loss function.
             quantum_instance: QuantumInstance, used to run the generator circuit.
             shots: int, Number of shots for hardware or qasm execution.
 
@@ -304,7 +334,7 @@ class QuantumGenerator(GenerativeNetwork):
         # Force single optimization iteration
         self._optimizer._maxiter = 1
         self._optimizer._t = 0
-        objective = self._get_objective_function(quantum_instance, discriminator)
+        objective = self._get_objective_function(quantum_instance, self._discriminator)
         self.generator_circuit.params, loss, nfev = self._optimizer.optimize(num_vars=len(self.generator_circuit.params), objective_function=objective,
                                                         initial_point=self.generator_circuit.params)
         self._ret['loss'] = loss[0]

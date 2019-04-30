@@ -60,24 +60,46 @@ class DiscriminativeNetwork(Pluggable):
         pass
 
     @abstractmethod
-    def get_label(self):
+    def get_label(self, x):
         """ Apply quantum/classical neural network to the given input sample and compute the respective data label
+        Args:
+            x: Discriminator input, i.e. data sample.
 
-        Returns: Data label
+        Returns: Computed data label
 
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def loss(self):
+    def loss(self, x, y, weights=None):
         """Loss function used for optimization
+
+        Args:
+            x: Discriminator output.
+            y: Label of the data point
+            weights: Data weights.
+
+        Returns: Loss w.r.t to the generated data points.
+
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def train(self):
-        """Train the network
+    def train(self, real_batch, generated_batch, generated_prob, penalty=False, quantum_instance=None, shots = None):
+        """
+        Perform one training step w.r.t to the discriminator's parameters
+        Args:
+            real_batch: Training data batch.
+            generated_batch: Generated data batch.
+            generated_prob: Weights of the generated data samples, i.e. measurement frequency for
+                            qasm/hardware backends resp. measurement probability for statevector backend.
+            penalty: Boolean, Indicate whether or not penalty function is applied to the loss function.
+                    If no penalty function defined - depreciate
+                        quantum_instance: QuantumInstance, used to run the generator circuit.
+                        Depreciated for classical network
+            shots: int, Number of shots for hardware or qasm execution. Depreciated for classical network
 
-         Returns: Final loss & trained parameters
+        Returns: dict, with Discriminator loss and updated parameters.
+
         """
         raise NotImplementedError()
