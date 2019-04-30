@@ -28,6 +28,7 @@ from qiskit.aqua.components.variational_forms import RY
 from qiskit.aqua import AquaError
 from qiskit.aqua import Pluggable, get_pluggable_class, PluggableType
 from qiskit.aqua.components.neural_networks.generative_networks.generative_network import GenerativeNetwork
+from qiskit.aqua.components.initial_states import Custom
 
 
 class QuantumGenerator(GenerativeNetwork):
@@ -103,12 +104,21 @@ class QuantumGenerator(GenerativeNetwork):
                 low=bounds[:, 0].tolist()
                 high = bounds[:, 1].tolist()
                 init_dist = MultivariateUniformDistribution(num_qubits, low=low, high=high)
+                q = QuantumRegister(sum(num_qubits))
+                qc = QuantumCircuit(q)
+                init_dist.build(qc, q)
+                init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
                 self.generator_circuit = MultivariateVariationalDistribution(num_qubits, var_form, init_params,
-                                initial_distribution=init_dist, low=low, high=high)
+                                initial_distribution=init_distribution, low=low, high=high)
             else:
-                init_dist = UniformDistribution(np.sum(num_qubits), low=bounds[0], high=bounds[1])
+                init_dist = UniformDistribution(sum(num_qubits), low=bounds[0], high=bounds[1])
+                q = QuantumRegister(sum(num_qubits))
+                qc = QuantumCircuit(q)
+                init_dist.build(qc, q)
+                init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
                 self.generator_circuit = UnivariateVariationalDistribution(int(np.sum(num_qubits)), var_form,
-                                                                           init_params, initial_distribution=init_dist,
+                                                                           init_params,
+                                                                           initial_distribution=init_distribution,
                                                                            low=bounds[0], high=bounds[1])
 
         if len(num_qubits)>1:
