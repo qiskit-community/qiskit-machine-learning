@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2018 IBM.
+# This code is part of Qiskit.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# (C) Copyright IBM 2019.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
 # =============================================================================
 
 import numpy as np
@@ -25,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 from abc import abstractmethod
 
-from qiskit.aqua import Pluggable
+from qiskit.aqua import Pluggable, get_pluggable_class, PluggableType
 
 
 class GenerativeNetwork(Pluggable):
@@ -48,9 +46,8 @@ class GenerativeNetwork(Pluggable):
 
     @classmethod
     def init_params(cls, params):
-        # We might to a differentiation between quantum and classical networks after all.
-        # The QNN will take a variational form, (possibly) a quantum input state object and a qiskit optimizer
-        # The CNN will take a torch.nn.Module, a torch.tensor and a torch.optimizer (if given as PyTorch object)
+        generative_params = params.get(Pluggable.SECTION_KEY_GENERATIVE_NETWORK)
+        args = {k: v for k, v in generative_params.items() if k != 'name'}
 
         return cls(**args)
 
@@ -58,6 +55,18 @@ class GenerativeNetwork(Pluggable):
     @abstractmethod
     def get_section_key_name(cls):
         pass
+
+    @abstractmethod
+    def set_seed(self, seed):
+        """
+        Set seed.
+        Args:
+            seed: int, seed
+
+        Returns:
+
+        """
+        raise NotImplementedError()
 
     @abstractmethod
     def get_output(self):

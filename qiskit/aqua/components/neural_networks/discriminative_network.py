@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2018 IBM.
+# This code is part of Qiskit.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# (C) Copyright IBM 2019.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
 # =============================================================================
 
 import numpy as np
@@ -48,9 +46,8 @@ class DiscriminativeNetwork(Pluggable):
 
     @classmethod
     def init_params(cls, params):
-        # We might to a differentiation between quantum and classical networks after all.
-        # The QNN will take a variational form, (possibly) a quantum input state object and a qiskit optimizer
-        # The CNN will take a torch.nn.Module, a torch.tensor and a torch.optimizer (if given as PyTorch object)
+        discriminative_params = params.get(Pluggable.SECTION_KEY_DISCRIMINATIVE_NETWORK)
+        args = {k: v for k, v in discriminative_params.items() if k != 'name'}
 
         return cls(**args)
 
@@ -58,6 +55,18 @@ class DiscriminativeNetwork(Pluggable):
     @abstractmethod
     def get_section_key_name(cls):
         pass
+
+    @abstractmethod
+    def set_seed(self, seed):
+        """
+        Set seed.
+        Args:
+            seed: int, seed
+
+        Returns:
+
+        """
+        raise NotImplementedError()
 
     @abstractmethod
     def get_label(self, x):
@@ -85,14 +94,12 @@ class DiscriminativeNetwork(Pluggable):
         raise NotImplementedError()
 
     @abstractmethod
-    def train(self, real_batch, generated_batch, generated_prob, penalty=False, quantum_instance=None, shots = None):
+    def train(self, data, weights, penalty=False, quantum_instance=None, shots = None):
         """
         Perform one training step w.r.t to the discriminator's parameters
         Args:
-            real_batch: Training data batch.
-            generated_batch: Generated data batch.
-            generated_prob: Weights of the generated data samples, i.e. measurement frequency for
-                            qasm/hardware backends resp. measurement probability for statevector backend.
+            data: array, Data batch.
+            weights: array, Data sample weights.
             penalty: Boolean, Indicate whether or not penalty function is applied to the loss function.
                     If no penalty function defined - depreciate
                         quantum_instance: QuantumInstance, used to run the generator circuit.
