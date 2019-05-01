@@ -60,7 +60,7 @@ class QuantumGenerator(GenerativeNetwork):
         }
     }
 
-    def __init__(self, bounds, num_qubits, generator_circuit=None, init_params=None, snapshot_dir = None):
+    def __init__(self, bounds, num_qubits, generator_circuit=None, init_params=None, snapshot_dir=None):
         """
         Initialize the generator network.
         Args:
@@ -228,7 +228,6 @@ class QuantumGenerator(GenerativeNetwork):
 
         q = QuantumRegister(sum(self._num_qubits), name='q')
         qc = QuantumCircuit(q)
-        # self.generator_circuit.set_probabilities(quantum_instance)
         if params is None:
             self.generator_circuit.build(qc=qc, q=q)
         else:
@@ -243,7 +242,6 @@ class QuantumGenerator(GenerativeNetwork):
         else:
             qc.measure(q, c)
             return qc.copy(name='qc')
-
 
     def get_output(self, quantum_instance, params=None, shots=None):
         """

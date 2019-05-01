@@ -94,7 +94,7 @@ class DiscriminativeNetwork(Pluggable):
         raise NotImplementedError()
 
     @abstractmethod
-    def train(self, data, weights, penalty=False, quantum_instance=None, shots = None):
+    def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the discriminator's parameters
         Args:
@@ -104,6 +104,7 @@ class DiscriminativeNetwork(Pluggable):
                     If no penalty function defined - depreciate
                         quantum_instance: QuantumInstance, used to run the generator circuit.
                         Depreciated for classical network
+            quantum_instance: QuantumInstance
             shots: int, Number of shots for hardware or qasm execution. Depreciated for classical network
 
         Returns: dict, with Discriminator loss and updated parameters.

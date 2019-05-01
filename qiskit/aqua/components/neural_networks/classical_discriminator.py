@@ -252,7 +252,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
         return lambda_ * ((d.norm(p=2,dim=1) - k)**2).mean()
 
-    def train(self, data, weights, penalty=False):
+    def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the discriminator's parameters
         Args:
@@ -260,9 +260,9 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
                 real_batch: torch.Tensor, Training data batch.
                 generated_batch: numpy array, Generated data batch.
             weights: [real_prob, generated_prob]
-            generated_prob: numpy array, Weights of the generated data samples, i.e. measurement frequency for
-        qasm/hardware backends resp. measurement probability for statevector backend.
             penalty: Boolean, Indicate whether or not penalty function is applied to the loss function.
+            quantum_instance: QuantumInstance (depreciated)
+            shots: int, Number of shots for hardware or qasm execution. Depreciated for classical network(depreciated)
 
         Returns: dict, with Discriminator loss (torch.Tensor) and updated parameters (array).
 
@@ -310,6 +310,5 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         for param in self._discriminator.parameters():
             params.append(param.data.detach().numpy())
         self._ret['params'] = params
-
 
         return self._ret
