@@ -11,7 +11,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-# =============================================================================
+
 
 import numpy as np
 from copy import deepcopy
@@ -87,7 +87,7 @@ class QuantumGenerator(GenerativeNetwork):
 
             if len(num_qubits)>1:
                 num_qubits = list(map(int, num_qubits))
-                low=bounds[:, 0].tolist()
+                low = bounds[:, 0].tolist()
                 high = bounds[:, 1].tolist()
                 init_dist = MultivariateUniformDistribution(num_qubits, low=low, high=high)
                 q = QuantumRegister(sum(num_qubits))
@@ -98,7 +98,7 @@ class QuantumGenerator(GenerativeNetwork):
                 var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution, entangler_map=entangler_map,
                               entanglement_gate='cz')
                 if init_params is None:
-                    init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
+                    init_params = aqua_globals.random.rand(var_form.num_parameters) * 2 * 1e-2
                 # Set generator circuit
                 self.generator_circuit = MultivariateVariationalDistribution(num_qubits, var_form, init_params,
                                                                              low=low, high=high)
@@ -116,7 +116,7 @@ class QuantumGenerator(GenerativeNetwork):
                 self.generator_circuit = UnivariateVariationalDistribution(int(np.sum(num_qubits)), var_form,
                                                                            init_params, low=bounds[0], high=bounds[1])
 
-        if len(num_qubits)>1:
+        if len(num_qubits) > 1:
             if isinstance(self.generator_circuit, MultivariateVariationalDistribution):
                 pass
             else:
@@ -142,7 +142,7 @@ class QuantumGenerator(GenerativeNetwork):
                 else:
                     self._data_grid = grid
                 self._grid_elements = grid
-            elif j==1:
+            elif j == 1:
                 self._data_grid.append(grid)
                 temp = []
                 for g_e in self._grid_elements:
@@ -161,7 +161,6 @@ class QuantumGenerator(GenerativeNetwork):
                         temp.append(temp0)
                 self._grid_elements = deepcopy(temp)
         self._data_grid = np.array(self._data_grid)
-
 
         self._shots = None
         self._discriminator = None
@@ -229,7 +228,7 @@ class QuantumGenerator(GenerativeNetwork):
 
         q = QuantumRegister(sum(self._num_qubits), name='q')
         qc = QuantumCircuit(q)
-        self.generator_circuit.set_probabilities(quantum_instance)
+        # self.generator_circuit.set_probabilities(quantum_instance)
         if params is None:
             self.generator_circuit.build(qc=qc, q=q)
         else:
@@ -288,7 +287,7 @@ class QuantumGenerator(GenerativeNetwork):
                     bin_rep += int(keys[i][index]) * 2 ** (int(p) - j - 1)
                     j += 1
                     index += 1
-                if len(self._num_qubits)>1:
+                if len(self._num_qubits) > 1:
                     temp.append(self._data_grid[k][int(bin_rep)])
                 else:
                     temp.append(self._data_grid[int(bin_rep)])
@@ -348,9 +347,9 @@ class QuantumGenerator(GenerativeNetwork):
         self._optimizer._maxiter = 1
         self._optimizer._t = 0
         objective = self._get_objective_function(quantum_instance, self._discriminator, )
-        self.generator_circuit.params, loss, nfev = self._optimizer.optimize(num_vars=len(self.generator_circuit.params),
-                                                                             objective_function=objective,
-                                                        initial_point=self.generator_circuit.params)
+        self.generator_circuit.params, loss, nfev = \
+            self._optimizer.optimize(num_vars=len(self.generator_circuit.params), objective_function=objective,
+                                     initial_point=self.generator_circuit.params)
         self._ret['loss'] = loss[0]
         self._ret['params'] = self.generator_circuit.params
 

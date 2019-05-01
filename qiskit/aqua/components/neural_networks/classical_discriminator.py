@@ -11,7 +11,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-# =============================================================================
+
 
 import numpy as np
 import os
@@ -33,7 +33,6 @@ try:
 except ImportError:
     logger.info('Pytorch is not installed. For installation instructions see https://pytorch.org/get-started/locally/')
     torch_loaded = False
-    # raise Exception('Please install PyTorch')
 
 
 class DiscriminatorNet(torch.nn.Module):
@@ -172,7 +171,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         torch.save(self._discriminator, os.path.join(snapshot_dir, 'discriminator.pt'))
         return
 
-    def load_model(self, dir):
+    def load_model(self, load_dir):
         """
         Save discriminator model
         Args:
@@ -181,7 +180,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Returns:
 
         """
-        torch.load(dir)
+        torch.load(load_dir)
         return
 
     def get_discriminator(self):

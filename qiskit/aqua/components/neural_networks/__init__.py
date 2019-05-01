@@ -11,7 +11,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-# =============================================================================
+
 
 from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
 # from qiskit.aqua.algorithms.adaptive.qgan.quantum_generator import QuantumGenerator
