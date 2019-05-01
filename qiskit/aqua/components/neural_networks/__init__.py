@@ -13,10 +13,14 @@
 # that they have been altered from the originals.
 
 
-from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
-# from qiskit.aqua.algorithms.adaptive.qgan.quantum_generator import QuantumGenerator
-from qiskit.aqua.components.neural_networks.discriminative_network import DiscriminativeNetwork
-# from qiskit.aqua.algorithms.adaptive.qgan.classical_discriminator import ClassicalDiscriminator
+from .generative_network import GenerativeNetwork
+from .quantum_generator import QuantumGenerator
+from .discriminative_network import DiscriminativeNetwork
+from .classical_discriminator import ClassicalDiscriminator
 
-__all__ = ['DiscriminativeNetwork',
-           'GenerativeNetwork']
+__all__ = [
+    'DiscriminativeNetwork',
+    'GenerativeNetwork',
+    'ClassicalDiscriminator',
+    'QuantumGenerator'
+]

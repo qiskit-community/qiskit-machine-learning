@@ -13,17 +13,9 @@
 # that they have been altered from the originals.
 
 
-import numpy as np
-import os
-import importlib
-
-import logging
-logger = logging.getLogger(__name__)
-
-
 from abc import abstractmethod
 
-from qiskit.aqua import Pluggable, get_pluggable_class, PluggableType
+from qiskit.aqua import Pluggable
 
 
 class GenerativeNetwork(Pluggable):

@@ -12,15 +12,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-
-import numpy as np
-import os
-import importlib
-
-import logging
-logger = logging.getLogger(__name__)
-
-
 from abc import abstractmethod
 
 from qiskit.aqua import Pluggable
@@ -32,9 +23,6 @@ class DiscriminativeNetwork(Pluggable):
         This method should initialize the module and its configuration, and
         use an exception if a component of the module is
         available.
-
-        Args:
-            configuration (dict): configuration dictionary
     """
     @abstractmethod
     def __init__(self):

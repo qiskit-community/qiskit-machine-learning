@@ -23,8 +23,7 @@ from qiskit.aqua.components.uncertainty_models import UniformDistribution, Multi
 from qiskit.aqua.components.uncertainty_models import UnivariateVariationalDistribution, \
     MultivariateVariationalDistribution
 from qiskit.aqua.components.variational_forms import RY
-from qiskit.aqua import AquaError
-from qiskit.aqua import Pluggable, get_pluggable_class, PluggableType
+from qiskit.aqua import AquaError, Pluggable
 from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
 from qiskit.aqua.components.initial_states import Custom
 
@@ -104,14 +103,14 @@ class QuantumGenerator(GenerativeNetwork):
                                                                              low=low, high=high)
             else:
                 init_dist = UniformDistribution(sum(num_qubits), low=bounds[0], high=bounds[1])
-                q = QuantumRegister(sum(num_qubits),name='q')
+                q = QuantumRegister(sum(num_qubits), name='q')
                 qc = QuantumCircuit(q)
                 init_dist.build(qc, q)
                 init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
                 var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution, entangler_map=entangler_map,
                               entanglement_gate='cz')
                 if init_params is None:
-                    init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
+                    init_params = aqua_globals.random.rand(var_form.num_parameters) * 2 * 1e-2
                 # Set generator circuit
                 self.generator_circuit = UnivariateVariationalDistribution(int(np.sum(num_qubits)), var_form,
                                                                            init_params, low=bounds[0], high=bounds[1])
@@ -126,16 +125,16 @@ class QuantumGenerator(GenerativeNetwork):
                 pass
             else:
                 raise AquaError('Set univariate variational distribution to represent univariate data')
-        #Set optimizer for updating the generator network
+        # Set optimizer for updating the generator network
         self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-5, beta_1=0.9, beta_2=0.99, noise_factor=1e-8,
-                 eps=1e-10, amsgrad=True, snapshot_dir=snapshot_dir)
+                               eps=1e-10, amsgrad=True, snapshot_dir=snapshot_dir)
 
         if np.ndim(self._bounds) == 1:
             bounds = np.reshape(self._bounds, (1, len(self._bounds)))
         else:
             bounds = self._bounds
         for j, prec in enumerate(self._num_qubits):
-            grid = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec)) #prepare data grid for dim j
+            grid = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec))  # prepare data grid for dim j
             if j == 0:
                 if len(self._num_qubits) > 1:
                     self._data_grid = [grid]
@@ -261,7 +260,7 @@ class QuantumGenerator(GenerativeNetwork):
             quantum_instance.set_config(shots=self._shots)
         result = quantum_instance.execute(qc)
 
-        generated_samples=[]
+        generated_samples = []
         if quantum_instance.is_statevector:
             result = result.get_statevector(qc)
             values = np.multiply(result, np.conj(result))
@@ -344,7 +343,7 @@ class QuantumGenerator(GenerativeNetwork):
         # Force single optimization iteration
         self._optimizer._maxiter = 1
         self._optimizer._t = 0
-        objective = self._get_objective_function(quantum_instance, self._discriminator, )
+        objective = self._get_objective_function(quantum_instance, self._discriminator)
         self.generator_circuit.params, loss, nfev = \
             self._optimizer.optimize(num_vars=len(self.generator_circuit.params), objective_function=objective,
                                      initial_point=self.generator_circuit.params)

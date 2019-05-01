@@ -13,23 +13,22 @@
 # that they have been altered from the originals.
 
 
-import numpy as np
 import os
 import importlib
-
 import logging
-logger = logging.getLogger(__name__)
 
-from qiskit.aqua import AquaError
-from qiskit.aqua import Pluggable
-from qiskit.aqua.components.neural_networks.discriminative_network import DiscriminativeNetwork
+import numpy as np
+
+from qiskit.aqua import AquaError, Pluggable
+from .discriminative_network import DiscriminativeNetwork
+
+logger = logging.getLogger(__name__)
 
 try:
     import torch
     from torch import nn, optim
     from torch.autograd.variable import Variable
     torch_loaded = True
-
 except ImportError:
     logger.info('Pytorch is not installed. For installation instructions see https://pytorch.org/get-started/locally/')
     torch_loaded = False
@@ -250,7 +249,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         o = self.get_label(z)
         d = torch.autograd.grad(o, z, grad_outputs=torch.ones(o.size()), create_graph=True)[0].view(z.size(0), -1)
 
-        return lambda_ * ((d.norm(p=2,dim=1) - k)**2).mean()
+        return lambda_ * ((d.norm(p=2, dim=1) - k)**2).mean()
 
     def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
         """
@@ -294,7 +293,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         prediction_fake = self.get_label(generated_batch)
 
         # Calculate error and backpropagate
-        error_fake = self.loss(prediction_fake, torch.zeros(len(prediction_fake),1), generated_prob)
+        error_fake = self.loss(prediction_fake, torch.zeros(len(prediction_fake), 1), generated_prob)
         error_fake.backward()
 
         if penalty:
