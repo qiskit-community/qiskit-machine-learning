@@ -84,9 +84,6 @@ class QuantumGenerator(GenerativeNetwork):
             else:
                 if np.sum(num_qubits) > 1:
                     entangler_map.append([0, 1])
-            var_form = RY(int(np.sum(num_qubits)), depth=1, entangler_map=entangler_map, entanglement_gate='cz')
-            if init_params is None:
-                init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
 
             if len(num_qubits)>1:
                 num_qubits = list(map(int, num_qubits))
@@ -97,18 +94,27 @@ class QuantumGenerator(GenerativeNetwork):
                 qc = QuantumCircuit(q)
                 init_dist.build(qc, q)
                 init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
+                # Set variational form
+                var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution, entangler_map=entangler_map,
+                              entanglement_gate='cz')
+                if init_params is None:
+                    init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
+                # Set generator circuit
                 self.generator_circuit = MultivariateVariationalDistribution(num_qubits, var_form, init_params,
-                                initial_distribution=init_distribution, low=low, high=high)
+                                                                             low=low, high=high)
             else:
                 init_dist = UniformDistribution(sum(num_qubits), low=bounds[0], high=bounds[1])
                 q = QuantumRegister(sum(num_qubits),name='q')
                 qc = QuantumCircuit(q)
                 init_dist.build(qc, q)
                 init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
+                var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution, entangler_map=entangler_map,
+                              entanglement_gate='cz')
+                if init_params is None:
+                    init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
+                # Set generator circuit
                 self.generator_circuit = UnivariateVariationalDistribution(int(np.sum(num_qubits)), var_form,
-                                                                           init_params,
-                                                                           initial_distribution=init_distribution,
-                                                                           low=bounds[0], high=bounds[1])
+                                                                           init_params, low=bounds[0], high=bounds[1])
 
         if len(num_qubits)>1:
             if isinstance(self.generator_circuit, MultivariateVariationalDistribution):
