@@ -88,7 +88,6 @@ class QuantumGenerator(GenerativeNetwork):
             if init_params is None:
                 init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
 
-
             if len(num_qubits)>1:
                 num_qubits = list(map(int, num_qubits))
                 low=bounds[:, 0].tolist()
