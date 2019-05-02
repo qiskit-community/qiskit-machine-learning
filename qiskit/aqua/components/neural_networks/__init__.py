@@ -16,11 +16,16 @@
 from .generative_network import GenerativeNetwork
 from .quantum_generator import QuantumGenerator
 from .discriminative_network import DiscriminativeNetwork
-from .classical_discriminator import ClassicalDiscriminator
 
 __all__ = [
     'DiscriminativeNetwork',
     'GenerativeNetwork',
-    'ClassicalDiscriminator',
     'QuantumGenerator'
 ]
+
+try:
+    from .classical_discriminator import ClassicalDiscriminator
+    __all__ += ['ClassicalDiscriminator']
+except Exception:
+    pass
+
