@@ -253,11 +253,11 @@ class QuantumGenerator(GenerativeNetwork):
         Returns: array: generated samples, array: sample occurence in percentage
 
         """
+        instance_shots = quantum_instance.run_config.shots
         qc = self.construct_circuit(quantum_instance, params)
         if shots is not None:
             quantum_instance.set_config(shots=shots)
-        else:
-            quantum_instance.set_config(shots=self._shots)
+
         result = quantum_instance.execute(qc)
 
         generated_samples = []
@@ -291,6 +291,9 @@ class QuantumGenerator(GenerativeNetwork):
             generated_samples.append(temp)
 
         self.generator_circuit._probabilities = generated_samples_weights
+        if shots is not None:
+            #Restore the initial quantum_instance configuration
+            quantum_instance.set_config(shots=instance_shots)
         return generated_samples, generated_samples_weights
 
     def loss(self, x, weights):
@@ -303,7 +306,11 @@ class QuantumGenerator(GenerativeNetwork):
         Returns:  float, loss function
 
         """
-        return (-1)*np.dot(weights, np.log(x))
+        try:
+            loss = (-1)*np.dot(np.log(x).transpose(), weights)
+        except:
+            loss = (-1)*np.dot(np.log(x), weights)
+        return loss[0]
 
     def _get_objective_function(self, quantum_instance, discriminator):
         """
@@ -325,7 +332,7 @@ class QuantumGenerator(GenerativeNetwork):
 
             """
             generated_data, generated_prob = self.get_output(quantum_instance, params=params, shots=self._shots)
-            prediction_generated = discriminator.get_label(generated_data).detach().numpy()
+            prediction_generated = discriminator.get_label(generated_data, detach=True)
             return self.loss(prediction_generated, generated_prob)
         return objective_function
 
@@ -347,7 +354,8 @@ class QuantumGenerator(GenerativeNetwork):
         self.generator_circuit.params, loss, nfev = \
             self._optimizer.optimize(num_vars=len(self.generator_circuit.params), objective_function=objective,
                                      initial_point=self.generator_circuit.params)
-        self._ret['loss'] = loss[0]
+
+        self._ret['loss'] = loss
         self._ret['params'] = self.generator_circuit.params
 
         return self._ret
