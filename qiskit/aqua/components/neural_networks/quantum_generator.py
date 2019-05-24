@@ -214,14 +214,13 @@ class QuantumGenerator(GenerativeNetwork):
         self._discriminator = discriminator
         return
 
-    def construct_circuit(self, quantum_instance, params=None):
+    def construct_circuit(self, params=None):
         """
         Construct generator circuit.
         Args:
-            quantum_instance: QuantumInstance, used for running the generator circuit
             params: array or None, parameters which should be used to run the generator, if None use self._params
 
-        Returns: QuantumCircuit, constructed quantum circuit
+        Returns: Quantum Gate, construct the quantum circuit and return as gate
 
         """
 
@@ -234,19 +233,15 @@ class QuantumGenerator(GenerativeNetwork):
             generator_circuit_copy.params = params
             generator_circuit_copy.build(qc=qc, q=q)
 
-        c = ClassicalRegister(q.size, name='c')
-        qc.add_register(c)
-        if quantum_instance.is_statevector:
-            return qc.copy(name='qc')
-        else:
-            qc.measure(q, c)
-            return qc.copy(name='qc')
+        # return qc.copy(name='qc')
+        return qc.to_instruction()
 
-    def get_output(self, quantum_instance, params=None, shots=None):
+    def get_output(self, quantum_instance, qc_state_in=None, params=None, shots=None):
         """
         Get data samples from the generator.
         Args:
             quantum_instance:  QuantumInstance, used to run the generator circuit.
+            qc_state_in: depreciated
             params: array or None, parameters which should be used to run the generator, if None use self._params
             shots: int, if not None use a number of shots that is different from the number set in quantum_instance
 
@@ -254,7 +249,16 @@ class QuantumGenerator(GenerativeNetwork):
 
         """
         instance_shots = quantum_instance.run_config.shots
-        qc = self.construct_circuit(quantum_instance, params)
+        q = QuantumRegister(sum(self._num_qubits), name='q')
+        qc = QuantumCircuit(q)
+        qc.append(self.construct_circuit(params),q)
+        if quantum_instance.is_statevector:
+            pass
+        else:
+            c = ClassicalRegister(sum(self._num_qubits), name='c')
+            qc.add_register(c)
+            qc.measure(q, c)
+
         if shots is not None:
             quantum_instance.set_config(shots=shots)
 
