@@ -244,18 +244,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
 
     @staticmethod
     def check_pluggable_valid():
-        err_msg = 'Pytorch is not installed. For installation instructions see https://pytorch.org/get-started/locally/'
-        try:
-            spec = importlib.util.find_spec('torch.optim')
-            if spec is not None:
-                spec = importlib.util.find_spec('torch.nn')
-                if spec is not None:
-                    return
-        except Exception as e:
-            logger.debug('{} {}'.format(err_msg, str(e)))
-            raise AquaError(err_msg) from e
-
-        raise AquaError(err_msg)
+        return
 
     def set_seed(self, seed):
         """
