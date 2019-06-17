@@ -28,4 +28,3 @@ try:
     __all__ += ['ClassicalDiscriminator']
 except Exception:
     pass
-
