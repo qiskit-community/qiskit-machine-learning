@@ -94,10 +94,10 @@ class ErrorCorrectingCode(MulticlassExtension):
         """
         A = self.predict(x)
         B = y
-        l = len(A)
+        _l = len(A)
         diff = np.sum(A != B)
-        logger.debug("%d out of %d are wrong" % (diff, l))
-        return 1 - (diff * 1.0 / l)
+        logger.debug("%d out of %d are wrong" % (diff, _l))
+        return 1 - (diff * 1.0 / _l)
 
     def predict(self, x):
         """

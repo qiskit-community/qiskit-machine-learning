@@ -84,7 +84,7 @@ class QuantumGenerator(GenerativeNetwork):
                 if np.sum(num_qubits) > 1:
                     entangler_map.append([0, 1])
 
-            if len(num_qubits)>1:
+            if len(num_qubits) > 1:
                 num_qubits = list(map(int, num_qubits))
                 low = bounds[:, 0].tolist()
                 high = bounds[:, 1].tolist()
@@ -251,7 +251,7 @@ class QuantumGenerator(GenerativeNetwork):
         instance_shots = quantum_instance.run_config.shots
         q = QuantumRegister(sum(self._num_qubits), name='q')
         qc = QuantumCircuit(q)
-        qc.append(self.construct_circuit(params),q)
+        qc.append(self.construct_circuit(params), q)
         if quantum_instance.is_statevector:
             pass
         else:
@@ -296,7 +296,7 @@ class QuantumGenerator(GenerativeNetwork):
 
         self.generator_circuit._probabilities = generated_samples_weights
         if shots is not None:
-            #Restore the initial quantum_instance configuration
+            # Restore the initial quantum_instance configuration
             quantum_instance.set_config(shots=instance_shots)
         return generated_samples, generated_samples_weights
 
@@ -312,7 +312,7 @@ class QuantumGenerator(GenerativeNetwork):
         """
         try:
             loss = (-1)*np.dot(np.log(x).transpose(), weights)
-        except:
+        except Exception:
             loss = (-1)*np.dot(np.log(x), weights)
         return loss[0]
 

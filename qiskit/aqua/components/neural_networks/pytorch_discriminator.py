@@ -201,6 +201,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
         """
 
+        # pylint: disable=not-callable, no-member
         if isinstance(x, torch.Tensor):
             pass
         else:
@@ -242,15 +243,17 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Returns: torch.Tensor, Gradient penalty.
 
         """
-
+        # pylint: disable=not-callable, no-member
         if isinstance(x, torch.Tensor):
             pass
         else:
             x = torch.tensor(x, dtype=torch.float32)
             x = Variable(x)
+        # pylint: disable=no-member
         delta_ = torch.rand(x.size()) * c
-        z = Variable(x+delta_, requires_grad = True)
+        z = Variable(x+delta_, requires_grad=True)
         o = self.get_label(z)
+        # pylint: disable=no-member
         d = torch.autograd.grad(o, z, grad_outputs=torch.ones(o.size()), create_graph=True)[0].view(z.size(0), -1)
 
         return lambda_ * ((d.norm(p=2, dim=1) - k)**2).mean()
@@ -278,6 +281,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         generated_batch = data[1]
         generated_prob = weights[1]
 
+        # pylint: disable=not-callable, no-member
         real_batch = torch.tensor(real_batch, dtype=torch.float32)
         real_batch = Variable(real_batch)
         real_prob = np.reshape(real_prob, (len(real_prob), 1))
