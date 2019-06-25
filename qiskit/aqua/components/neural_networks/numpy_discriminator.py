@@ -14,13 +14,9 @@
 
 
 import os
-import importlib
 import logging
-
-
 import numpy as np
-
-from qiskit.aqua import AquaError, Pluggable
+from qiskit.aqua import Pluggable
 from qiskit.aqua.components.optimizers import ADAM
 from .discriminative_network import DiscriminativeNetwork
 
@@ -81,14 +77,14 @@ class DiscriminatorNet():
             return sig
 
         def leaky_relu(z, slope=0.2):
-            return np.maximum(np.zeros(np.shape(z)), z) + slope * np.minimum(np.zeros(np.shape(z)),z)
+            return np.maximum(np.zeros(np.shape(z)), z) + slope * np.minimum(np.zeros(np.shape(z)), z)
 
         def single_layer_forward_propagation(x_old, w_new, activation="leaky_relu"):
             z_curr = np.dot(w_new, x_old)
 
-            if activation is "leaky_relu":
+            if activation == "leaky_relu":
                 activation_func = leaky_relu
-            elif activation is "sigmoid":
+            elif activation == "sigmoid":
                 activation_func = sigmoid
             else:
                 raise Exception('Non-supported activation function')
@@ -103,7 +99,7 @@ class DiscriminatorNet():
             layer_input_size = layer["input_dim"]
             layer_output_size = layer["output_dim"]
             if idx == 0:
-                x_old = np.reshape(x_new,(layer_input_size, len(x_new)))
+                x_old = np.reshape(x_new, (layer_input_size, len(x_new)))
             else:
                 x_old = x_new
             pointer_next = pointer + (layer_output_size * layer_input_size)
@@ -138,14 +134,14 @@ class DiscriminatorNet():
             for i, line in enumerate(z):
                 for j, element in enumerate(line):
                     if element < 0:
-                        dz[i, j] = dz[i,j]*slope
+                        dz[i, j] = dz[i, j] * slope
             return dz
 
         def single_layer_backward_propagation(da_curr, w_curr, z_curr, a_prev, activation="leaky_relu"):
-            m = a_prev.shape[1]
-            if activation is "leaky_relu":
+            # m = a_prev.shape[1]
+            if activation == "leaky_relu":
                 backward_activation_func = leaky_relu_backward
-            elif activation is "sigmoid":
+            elif activation == "sigmoid":
                 backward_activation_func = sigmoid_backward
             else:
                 raise Exception('Non-supported activation function')
@@ -160,10 +156,10 @@ class DiscriminatorNet():
         m = y.shape[1]
         y = y.reshape(np.shape(x))
         if weights is not None:
-            da_prev = - np.multiply(weights, np.divide(y, np.maximum(np.ones(np.shape(x))*1e-4,x)) -
+            da_prev = - np.multiply(weights, np.divide(y, np.maximum(np.ones(np.shape(x))*1e-4, x)) -
                                     np.divide(1 - y, np.maximum(np.ones(np.shape(x))*1e-4, 1 - x)))
         else:
-            da_prev = - (np.divide(y, np.maximum(np.ones(np.shape(x))*1e-4,x)) -
+            da_prev = - (np.divide(y, np.maximum(np.ones(np.shape(x))*1e-4, x)) -
                          np.divide(1 - y, np.maximum(np.ones(np.shape(x))*1e-4, 1 - x))) / m
 
         pointer = 0
@@ -184,13 +180,13 @@ class DiscriminatorNet():
                 w_curr = self.parameters[pointer_prev:]
             else:
                 w_curr = self.parameters[pointer_prev:pointer]
-            w_curr = np.reshape(w_curr, (layer_output_size, layer_input_size ))
+            w_curr = np.reshape(w_curr, (layer_output_size, layer_input_size))
             pointer = pointer_prev
 
             da_prev, dw_curr = single_layer_backward_propagation(da_curr, np.array(w_curr), z_curr, a_prev,
                                                                  activ_function_curr)
 
-            grads_values = np.append([dw_curr],grads_values)
+            grads_values = np.append([dw_curr], grads_values)
 
         return grads_values
 
@@ -234,7 +230,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
         self._n_out = n_out
         self._discriminator = DiscriminatorNet(self._n_features, self._n_out)
         self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-5, beta_1=0.7, beta_2=0.99, noise_factor=1e-4,
-                 eps=1e-6, amsgrad=True)
+                               eps=1e-6, amsgrad=True)
 
         self._ret = {}
 
@@ -323,15 +319,15 @@ class NumpyDiscriminator(DiscriminativeNetwork):
        """
         if weights is not None:
             # Use weights as scaling factors for the samples and compute the sum
-            return (-1) * np.dot(np.multiply(y, np.log(np.maximum(np.ones(np.shape(x))*1e-4, x)))+
+            return (-1) * np.dot(np.multiply(y, np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x))) +
                                  np.multiply(np.ones(np.shape(y))-y,
                                              np.log(np.maximum(np.ones(np.shape(x))*1e-4,
                                                                np.ones(np.shape(x))-x))), weights)
         else:
             # Compute the mean
-            return (-1) * np.mean(np.multiply(y,np.log(np.maximum(np.ones(np.shape(x))*1e-4, x)))+
+            return (-1) * np.mean(np.multiply(y, np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x))) +
                                   np.multiply(np.ones(np.shape(y))-y, np.log(np.maximum(np.ones(np.shape(x))*1e-4,
-                                                               np.ones(np.shape(x))-x))))
+                                              np.ones(np.shape(x))-x))))
 
     def _get_objective_function(self, data, weights):
         """
@@ -356,7 +352,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
             prediction_fake = self.get_label(generated_batch)
             loss_fake = self.loss(prediction_fake, np.zeros(np.shape(prediction_fake)), generated_prob)
             return 0.5*(loss_real[0]+loss_fake[0])
-        
+
         return objective_function
 
     def _get_gradient_function(self, data, weights):
@@ -381,7 +377,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
             prediction_generated = self.get_label(generated_batch)
             grad_generated = self._discriminator.backward(prediction_generated, np.zeros(np.shape(prediction_generated)),
                                                           generated_prob)
-            return np.add(grad_real,grad_generated)
+            return np.add(grad_real, grad_generated)
         return gradient_function
 
     def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
