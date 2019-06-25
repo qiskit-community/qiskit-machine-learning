@@ -277,7 +277,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         real_prob = weights[0]
         generated_batch = data[1]
         generated_prob = weights[1]
-
+        real_batch = np.reshape(real_batch, (len(real_prob), 1))
         real_batch = torch.tensor(real_batch, dtype=torch.float32)
         real_batch = Variable(real_batch)
         real_prob = np.reshape(real_prob, (len(real_prob), 1))

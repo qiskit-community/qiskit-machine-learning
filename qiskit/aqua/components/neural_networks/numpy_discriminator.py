@@ -384,7 +384,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
             return np.add(grad_real,grad_generated)
         return gradient_function
 
-    def train(self, data, weights, penalty = False, quantum_instance=None, shots=None):
+    def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the discriminator's parameters
         Args:
