@@ -22,7 +22,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 
-from test.common import QiskitAquaTestCase
+from test.aqua.common import QiskitAquaTestCase
 from qiskit import BasicAer
 from qiskit.aqua.input import ClassificationInput
 from qiskit.aqua import run_algorithm, QuantumInstance, aqua_globals

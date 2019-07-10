@@ -17,7 +17,7 @@ import os
 import numpy as np
 from qiskit import BasicAer
 
-from test.common import QiskitAquaTestCase
+from test.aqua.common import QiskitAquaTestCase
 from qiskit.aqua import run_algorithm, QuantumInstance, aqua_globals
 from qiskit.aqua.input import ClassificationInput
 from qiskit.aqua.components.feature_maps import SecondOrderExpansion

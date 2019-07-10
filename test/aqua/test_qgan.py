@@ -28,7 +28,7 @@ from qiskit.aqua.components.initial_states import Custom
 
 from qiskit import BasicAer
 
-from test.common import QiskitAquaTestCase
+from test.aqua.common import QiskitAquaTestCase
 
 
 class TestQGAN(QiskitAquaTestCase):
