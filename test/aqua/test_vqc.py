@@ -135,7 +135,8 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
         svm = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
-        quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
+        # TODO: cache only work with optimization_level 0
+        quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed, optimization_level=0)
         result = svm.run(quantum_instance)
         svm_accuracy_threshold = 0.85
         self.log.debug(result['testing_accuracy'])
