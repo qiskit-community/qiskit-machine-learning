@@ -86,8 +86,16 @@ class TestVQC(QiskitAquaTestCase):
         self.assertEqual(1.0, result['testing_accuracy'])
 
     def test_vqc_statevector_via_run_algorithm(self):
+        # TODO: cache only work with optimization_level 0
         params = {
-            'problem': {'name': 'classification', 'random_seed': 10598},
+            'problem': {'name': 'classification',
+                        'random_seed': 10598,
+                        'circuit_optimization_level': 0,
+                        'circuit_caching': True,
+                        'skip_qobj_deepcopy': True,
+                        'skip_qobj_validation': True,
+                        'circuit_cache_file': None,
+                        },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
             'optimizer': {'name': 'COBYLA'},
@@ -249,9 +257,16 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-
+        # TODO: cache only work with optimization_level 0
         params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
+            'problem': {'name': 'classification',
+                        'random_seed': self.random_seed,
+                        'circuit_optimization_level': 0,
+                        'circuit_caching': True,
+                        'skip_qobj_deepcopy': True,
+                        'skip_qobj_validation': True,
+                        'circuit_cache_file': None,
+                        },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
             'optimizer': {'name': 'COBYLA', 'maxiter': 200},
@@ -275,9 +290,16 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-
+        # TODO: cache only work with optimization_level 0
         params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
+            'problem': {'name': 'classification',
+                        'random_seed': self.random_seed,
+                        'circuit_optimization_level': 0,
+                        'circuit_caching': True,
+                        'skip_qobj_deepcopy': True,
+                        'skip_qobj_validation': True,
+                        'circuit_cache_file': None,
+                        },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
             'optimizer': {'name': 'COBYLA', 'maxiter': 200},
