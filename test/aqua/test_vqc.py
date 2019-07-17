@@ -86,8 +86,16 @@ class TestVQC(QiskitAquaTestCase):
         self.assertEqual(1.0, result['testing_accuracy'])
 
     def test_vqc_statevector_via_run_algorithm(self):
+        # TODO: cache only work with optimization_level 0
         params = {
-            'problem': {'name': 'classification', 'random_seed': 10598},
+            'problem': {'name': 'classification',
+                        'random_seed': 10598,
+                        'circuit_optimization_level': 0,
+                        'circuit_caching': True,
+                        'skip_qobj_deepcopy': True,
+                        'skip_qobj_validation': True,
+                        'circuit_cache_file': None,
+                        },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
             'optimizer': {'name': 'COBYLA'},
@@ -135,7 +143,8 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
         svm = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
-        quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
+        # TODO: cache only work with optimization_level 0
+        quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed, optimization_level=0)
         result = svm.run(quantum_instance)
         svm_accuracy_threshold = 0.85
         self.log.debug(result['testing_accuracy'])
@@ -248,9 +257,16 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-
+        # TODO: cache only work with optimization_level 0
         params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
+            'problem': {'name': 'classification',
+                        'random_seed': self.random_seed,
+                        'circuit_optimization_level': 0,
+                        'circuit_caching': True,
+                        'skip_qobj_deepcopy': True,
+                        'skip_qobj_validation': True,
+                        'circuit_cache_file': None,
+                        },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
             'optimizer': {'name': 'COBYLA', 'maxiter': 200},
@@ -274,9 +290,16 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-
+        # TODO: cache only work with optimization_level 0
         params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
+            'problem': {'name': 'classification',
+                        'random_seed': self.random_seed,
+                        'circuit_optimization_level': 0,
+                        'circuit_caching': True,
+                        'skip_qobj_deepcopy': True,
+                        'skip_qobj_validation': True,
+                        'circuit_cache_file': None,
+                        },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
             'optimizer': {'name': 'COBYLA', 'maxiter': 200},
