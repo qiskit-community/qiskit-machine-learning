@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2018 IBM.
+# This code is part of Qiskit.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# (C) Copyright IBM 2018, 2019.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# =============================================================================
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
 
 import logging
 
@@ -21,6 +18,7 @@ import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.multiclass import _ConstantPredictor
 
+from qiskit.aqua import aqua_globals
 from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
 
 logger = logging.getLogger(__name__)
@@ -52,16 +50,15 @@ class ErrorCorrectingCode(MulticlassExtension):
         self.validate(locals())
         super().__init__()
         self.estimator_cls = estimator_cls
-        self.params = params or []
+        self.params = params if params is not None else []
         self.code_size = code_size
-        # May we re-use the seed from quantum algorithm?
-        self.rand = np.random.RandomState(0)
+        self.rand = aqua_globals.random
 
     def train(self, x, y):
         """
-        training multiple estimators each for distinguishing a pair of classes.
+        Training multiple estimators each for distinguishing a pair of classes.
         Args:
-            X (numpy.ndarray): input points
+            x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
         """
         self.estimators = []
@@ -88,23 +85,23 @@ class ErrorCorrectingCode(MulticlassExtension):
 
     def test(self, x, y):
         """
-        testing multiple estimators each for distinguishing a pair of classes.
+        Testing multiple estimators each for distinguishing a pair of classes.
         Args:
-            X (numpy.ndarray): input points
+            x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
         Returns:
             float: accuracy
         """
         A = self.predict(x)
         B = y
-        l = len(A)
+        _l = len(A)
         diff = np.sum(A != B)
-        logger.debug("%d out of %d are wrong" % (diff, l))
-        return 1 - (diff * 1.0 / l)
+        logger.debug("%d out of %d are wrong" % (diff, _l))
+        return 1 - (diff * 1.0 / _l)
 
     def predict(self, x):
         """
-        applying multiple estimators for prediction
+        Applying multiple estimators for prediction
         Args:
             x (numpy.ndarray): NxD array
         Returns:

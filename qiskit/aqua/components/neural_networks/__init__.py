@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2019.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,14 +11,20 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-from abc import ABC, abstractmethod
 
 
-class Estimator(ABC):
-    @abstractmethod
-    def fit(self, x, y):
-        raise NotImplementedError("Should have implemented this")
+from .generative_network import GenerativeNetwork
+from .quantum_generator import QuantumGenerator
+from .discriminative_network import DiscriminativeNetwork
 
-    @abstractmethod
-    def decision_function(self, x):
-        raise NotImplementedError("Should have implemented this")
+__all__ = [
+    'DiscriminativeNetwork',
+    'GenerativeNetwork',
+    'QuantumGenerator'
+]
+
+try:
+    from .pytorch_discriminator import ClassicalDiscriminator
+    __all__ += ['ClassicalDiscriminator']
+except Exception:
+    pass
