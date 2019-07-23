@@ -51,7 +51,7 @@ class TestVQC(QiskitAquaTestCase):
         self.ref_prediction_a_probs = [[0.79882812, 0.20117188]]
         self.ref_prediction_a_label = [0]
 
-        self.svm_input = ClassificationInput(self.training_data, self.testing_data)
+        self.vqc_input = ClassificationInput(self.training_data, self.testing_data)
 
     def test_vqc_via_run_algorithm(self):
         params = {
@@ -62,7 +62,7 @@ class TestVQC(QiskitAquaTestCase):
             'variational_form': {'name': 'RYRZ', 'depth': 3},
             'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2}
         }
-        result = run_algorithm(params, self.svm_input)
+        result = run_algorithm(params, self.vqc_input)
 
         np.testing.assert_array_almost_equal(result['opt_params'], self.ref_opt_params, decimal=8)
         np.testing.assert_array_almost_equal(result['training_loss'], self.ref_train_loss, decimal=8)
@@ -78,7 +78,7 @@ class TestVQC(QiskitAquaTestCase):
             'variational_form': {'name': 'RYRZ', 'depth': 3},
             'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2}
         }
-        result = run_algorithm(params, self.svm_input)
+        result = run_algorithm(params, self.vqc_input)
 
         np.testing.assert_array_almost_equal(result['opt_params'], self.ref_opt_params, decimal=8)
         np.testing.assert_array_almost_equal(result['training_loss'], self.ref_train_loss, decimal=8)
@@ -102,7 +102,7 @@ class TestVQC(QiskitAquaTestCase):
             'variational_form': {'name': 'RYRZ', 'depth': 3},
             'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2}
         }
-        result = run_algorithm(params, self.svm_input)
+        result = run_algorithm(params, self.vqc_input)
         ref_train_loss = 0.1059404
         np.testing.assert_array_almost_equal(result['training_loss'], ref_train_loss, decimal=4)
 
@@ -113,8 +113,8 @@ class TestVQC(QiskitAquaTestCase):
         n_dim = 2  # dimension of each data point
         seed = 1024
         np.random.seed(seed)
-        sample_Total, training_input, test_input, class_labels = ad_hoc_data(training_size=20,
-                                                                             test_size=10,
+        sample_Total, training_input, test_input, class_labels = ad_hoc_data(training_size=8,
+                                                                             test_size=4,
                                                                              n=n_dim, gap=0.3)
         aqua_globals.random_seed = seed
         backend = BasicAer.get_backend('statevector_simulator')
@@ -122,35 +122,35 @@ class TestVQC(QiskitAquaTestCase):
         optimizer = COBYLA()
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
-        svm = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
+        vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
-        result = svm.run(quantum_instance)
-        svm_accuracy_threshold = 0.85
+        result = vqc.run(quantum_instance)
+        vqc_accuracy_threshold = 0.8
         self.log.debug(result['testing_accuracy'])
-        self.assertGreater(result['testing_accuracy'], svm_accuracy_threshold)
+        self.assertGreater(result['testing_accuracy'], vqc_accuracy_threshold)
 
     def test_vqc_minibatching_with_gradient_support(self):
         n_dim = 2  # dimension of each data point
         seed = 1024
         np.random.seed(seed)
-        sample_Total, training_input, test_input, class_labels = ad_hoc_data(training_size=20,
-                                                                             test_size=10,
+        sample_Total, training_input, test_input, class_labels = ad_hoc_data(training_size=8,
+                                                                             test_size=4,
                                                                              n=n_dim, gap=0.3)
         aqua_globals.random_seed = seed
         backend = BasicAer.get_backend('statevector_simulator')
         num_qubits = n_dim
-        optimizer = L_BFGS_B(maxfun=1000)
+        optimizer = L_BFGS_B(maxfun=100)
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
-        var_form = RYRZ(num_qubits=num_qubits, depth=3)
-        svm = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
+        var_form = RYRZ(num_qubits=num_qubits, depth=2)
+        vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
         # TODO: cache only work with optimization_level 0
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed, optimization_level=0)
-        result = svm.run(quantum_instance)
-        svm_accuracy_threshold = 0.85
+        result = vqc.run(quantum_instance)
+        vqc_accuracy_threshold = 0.8
         self.log.debug(result['testing_accuracy'])
-        self.assertGreater(result['testing_accuracy'], svm_accuracy_threshold)
+        self.assertGreater(result['testing_accuracy'], vqc_accuracy_threshold)
 
-    def test_vqc_directly(self):
+    def test_save_and_load_model(self):
         np.random.seed(self.random_seed)
 
         aqua_globals.random_seed = self.random_seed
@@ -161,9 +161,9 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
 
-        svm = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+        vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
         quantum_instance = QuantumInstance(backend, shots=1024, seed_simulator=self.random_seed, seed_transpiler=self.random_seed)
-        result = svm.run(quantum_instance)
+        result = vqc.run(quantum_instance)
 
         np.testing.assert_array_almost_equal(result['opt_params'], self.ref_opt_params, decimal=4)
         np.testing.assert_array_almost_equal(result['training_loss'], self.ref_train_loss, decimal=8)
@@ -171,20 +171,20 @@ class TestVQC(QiskitAquaTestCase):
         self.assertEqual(1.0, result['testing_accuracy'])
 
         file_path = self._get_resource_path('vqc_test.npz')
-        svm.save_model(file_path)
+        vqc.save_model(file_path)
 
         self.assertTrue(os.path.exists(file_path))
 
-        loaded_svm = VQC(optimizer, feature_map, var_form, self.training_data, None)
-        loaded_svm.load_model(file_path)
+        loaded_vqc = VQC(optimizer, feature_map, var_form, self.training_data, None)
+        loaded_vqc.load_model(file_path)
 
         np.testing.assert_array_almost_equal(
-            loaded_svm.ret['opt_params'], self.ref_opt_params, decimal=4)
+            loaded_vqc.ret['opt_params'], self.ref_opt_params, decimal=4)
 
-        loaded_test_acc = loaded_svm.test(svm.test_dataset[0], svm.test_dataset[1], quantum_instance)
+        loaded_test_acc = loaded_vqc.test(vqc.test_dataset[0], vqc.test_dataset[1], quantum_instance)
         self.assertEqual(result['testing_accuracy'], loaded_test_acc)
 
-        predicted_probs, predicted_labels = loaded_svm.predict(self.testing_data['A'], quantum_instance)
+        predicted_probs, predicted_labels = loaded_vqc.predict(self.testing_data['A'], quantum_instance)
         np.testing.assert_array_almost_equal(predicted_probs, self.ref_prediction_a_probs, decimal=8)
         np.testing.assert_array_equal(predicted_labels, self.ref_prediction_a_label)
         if quantum_instance.has_circuit_caching:
@@ -198,7 +198,7 @@ class TestVQC(QiskitAquaTestCase):
 
     def test_vqc_callback(self):
 
-        tmp_filename = 'qsvm_callback_test.csv'
+        tmp_filename = 'qvqc_callback_test.csv'
         is_file_exist = os.path.exists(self._get_resource_path(tmp_filename))
         if is_file_exist:
             os.remove(self._get_resource_path(tmp_filename))
@@ -217,10 +217,10 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RY(num_qubits=num_qubits, depth=1)
 
-        svm = VQC(optimizer, feature_map, var_form, self.training_data,
+        vqc = VQC(optimizer, feature_map, var_form, self.training_data,
                   self.testing_data, callback=store_intermediate_result)
         quantum_instance = QuantumInstance(backend, shots=1024, seed_simulator=self.random_seed, seed_transpiler=self.random_seed)
-        svm.run(quantum_instance)
+        vqc.run(quantum_instance)
 
         is_file_exist = os.path.exists(self._get_resource_path(tmp_filename))
         self.assertTrue(is_file_exist, "Does not store content successfully.")
@@ -247,8 +247,8 @@ class TestVQC(QiskitAquaTestCase):
 
     def test_vqc_on_wine(self):
         feature_dim = 4  # dimension of each data point
-        training_dataset_size = 20
-        testing_dataset_size = 10
+        training_dataset_size = 8
+        testing_dataset_size = 4
         random_seed = 10598
         np.random.seed(random_seed)
 
@@ -280,8 +280,8 @@ class TestVQC(QiskitAquaTestCase):
 
     def test_vqc_with_raw_feature_vector_on_wine(self):
         feature_dim = 4  # dimension of each data point
-        training_dataset_size = 20
-        testing_dataset_size = 10
+        training_dataset_size = 8
+        testing_dataset_size = 4
         random_seed = 10598
         np.random.seed(random_seed)
 
@@ -310,7 +310,7 @@ class TestVQC(QiskitAquaTestCase):
         result = run_algorithm(params, ClassificationInput(training_input, test_input))
         self.log.debug(result['testing_accuracy'])
 
-        self.assertGreater(result['testing_accuracy'], 0.85)
+        self.assertGreater(result['testing_accuracy'], 0.8)
 
 
 def wine_data(training_size, test_size, n):
