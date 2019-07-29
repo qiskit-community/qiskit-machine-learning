@@ -14,6 +14,7 @@
 # =============================================================================
 
 import unittest
+import os
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
@@ -35,7 +36,7 @@ class TestQGAN(QiskitAquaTestCase):
 
     def setUp(self):
         super().setUp()
-
+        os.environ.pop('QISKIT_AQUA_CIRCUIT_CACHE', None)
         # Number training data samples
         N = 5000
         # Load data samples from log-normal distribution with mean=1 and standard deviation=1
