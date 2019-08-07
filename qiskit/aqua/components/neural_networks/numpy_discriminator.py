@@ -285,13 +285,18 @@ class NumpyDiscriminator(DiscriminativeNetwork):
         self._optimizer.load_params(load_dir)
         return
 
-    def get_discriminator(self):
+    @property
+    def discriminator_net(self):
         """
-        Get discriminator
-        Returns: discriminator object
+               Get discriminator
+               Returns: discriminator object
 
-        """
+               """
         return self._discriminator
+
+    @discriminator_net.setter
+    def discriminator_net(self, net):
+        self._discriminator = net
 
     def get_label(self, x, detach=False):
         """
@@ -397,7 +402,6 @@ class NumpyDiscriminator(DiscriminativeNetwork):
         """
 
         # Train on Generated Data
-        self._shots = shots
         # Force single optimization iteration
         self._optimizer._maxiter = 1
         self._optimizer._t = 0

@@ -314,7 +314,7 @@ class QuantumGenerator(GenerativeNetwork):
             loss = (-1)*np.dot(np.log(x).transpose(), weights)
         except Exception:
             loss = (-1)*np.dot(np.log(x), weights)
-        return loss[0]
+        return loss.flatten()
 
     def _get_objective_function(self, quantum_instance, discriminator):
         """
