@@ -39,7 +39,7 @@ class DiscriminatorNet():
             n_out: int, output dimension
         """
         self.architecture = [
-            {"input_dim": n_features, "output_dim":50, "activation": "leaky_relu"},
+            {"input_dim": n_features, "output_dim": 50, "activation": "leaky_relu"},
             {"input_dim": 50, "output_dim": 20, "activation": "leaky_relu"},
             {"input_dim": 20, "output_dim": n_out, "activation": "sigmoid"},
         ]
