@@ -107,7 +107,6 @@ class TestQGAN(QiskitAquaTestCase):
         g_circuit = UnivariateVariationalDistribution(sum(num_qubits), var_form, init_params,
                                                       low=self._bounds[0],
                                                       high=self._bounds[1])
-        # initial_distribution=init_distribution,
         # Set quantum generator
         self.qgan.set_generator(generator_circuit=g_circuit)
 
