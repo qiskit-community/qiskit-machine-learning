@@ -126,8 +126,8 @@ class QuantumGenerator(GenerativeNetwork):
             else:
                 raise AquaError('Set univariate variational distribution to represent univariate data')
         # Set optimizer for updating the generator network
-        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-5, beta_1=0.9, beta_2=0.99, noise_factor=1e-8,
-                               eps=1e-10, amsgrad=True, snapshot_dir=snapshot_dir)
+        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7, beta_2=0.99, noise_factor=1e-6,
+                               eps=1e-6, amsgrad=True, snapshot_dir=snapshot_dir)
 
         if np.ndim(self._bounds) == 1:
             bounds = np.reshape(self._bounds, (1, len(self._bounds)))

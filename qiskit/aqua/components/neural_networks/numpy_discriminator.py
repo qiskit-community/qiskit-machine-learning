@@ -39,10 +39,9 @@ class DiscriminatorNet():
             n_out: int, output dimension
         """
         self.architecture = [
-            {"input_dim": n_features, "output_dim": 4, "activation": "leaky_relu"},
-            {"input_dim": 4, "output_dim": 156, "activation": "leaky_relu"},
-            {"input_dim": 156, "output_dim": 52, "activation": "leaky_relu"},
-            {"input_dim": 52, "output_dim": n_out, "activation": "sigmoid"},
+            {"input_dim": n_features, "output_dim":50, "activation": "leaky_relu"},
+            {"input_dim": 50, "output_dim": 20, "activation": "leaky_relu"},
+            {"input_dim": 20, "output_dim": n_out, "activation": "sigmoid"},
         ]
 
         self.parameters = []
@@ -229,7 +228,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
         self._n_features = n_features
         self._n_out = n_out
         self._discriminator = DiscriminatorNet(self._n_features, self._n_out)
-        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-5, beta_1=0.7, beta_2=0.99, noise_factor=1e-4,
+        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7, beta_2=0.99, noise_factor=1e-4,
                                eps=1e-6, amsgrad=True)
 
         self._ret = {}

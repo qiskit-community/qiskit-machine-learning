@@ -278,7 +278,8 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Returns: dict, with Discriminator loss (torch.Tensor) and updated parameters (array).
 
         """
-
+        # pylint: disable=E1101
+        # pylint: disable=E1102
         # Reset gradients
         self._optimizer.zero_grad()
         real_batch = data[0]
@@ -311,7 +312,8 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
         if penalty:
             self.gradient_penalty(real_batch).backward()
-
+        # pylint: enable=E1101
+        # pylint: enable=E1102
         # Update weights with gradients
         self._optimizer.step()
 
