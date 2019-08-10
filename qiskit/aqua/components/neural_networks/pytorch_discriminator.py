@@ -182,13 +182,18 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         torch.load(load_dir)
         return
 
-    def get_discriminator(self):
+    @property
+    def discriminator_net(self):
         """
-        Get discriminator
-        Returns: discriminator object
+               Get discriminator
+               Returns: discriminator object
 
-        """
+               """
         return self._discriminator
+
+    @discriminator_net.setter
+    def discriminator_net(self, net):
+        self._discriminator = net
 
     def get_label(self, x, detach=False):
         """
@@ -273,7 +278,8 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Returns: dict, with Discriminator loss (torch.Tensor) and updated parameters (array).
 
         """
-
+        # pylint: disable=E1101
+        # pylint: disable=E1102
         # Reset gradients
         self._optimizer.zero_grad()
         real_batch = data[0]
@@ -281,7 +287,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         generated_batch = data[1]
         generated_prob = weights[1]
 
-        # pylint: disable=not-callable, no-member
+        real_batch = np.reshape(real_batch, (len(real_batch), 1))
         real_batch = torch.tensor(real_batch, dtype=torch.float32)
         real_batch = Variable(real_batch)
         real_prob = np.reshape(real_prob, (len(real_prob), 1))
@@ -306,7 +312,8 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
         if penalty:
             self.gradient_penalty(real_batch).backward()
-
+        # pylint: enable=E1101
+        # pylint: enable=E1102
         # Update weights with gradients
         self._optimizer.step()
 
