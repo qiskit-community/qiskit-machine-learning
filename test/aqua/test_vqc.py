@@ -12,17 +12,17 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+""" Test VQC """
+
 import os
 import unittest
-
+from test.aqua.common import QiskitAquaTestCase
 import numpy as np
 import scipy
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
-
-from test.aqua.common import QiskitAquaTestCase
 from qiskit import BasicAer
 from qiskit.aqua.input import ClassificationInput
 from qiskit.aqua import run_algorithm, QuantumInstance, aqua_globals
@@ -34,7 +34,7 @@ from qiskit.aqua.components.optimizers import L_BFGS_B
 
 
 class TestVQC(QiskitAquaTestCase):
-
+    """ Test VQC """
     def setUp(self):
         super().setUp()
         aqua_globals.random_seed = self.random_seed = 1376
@@ -54,6 +54,7 @@ class TestVQC(QiskitAquaTestCase):
         self.vqc_input = ClassificationInput(self.training_data, self.testing_data)
 
     def test_vqc_via_run_algorithm(self):
+        """ vqc via run algorithm test """
         params = {
             'problem': {'name': 'classification', 'random_seed': self.random_seed},
             'algorithm': {'name': 'VQC'},
@@ -64,12 +65,15 @@ class TestVQC(QiskitAquaTestCase):
         }
         result = run_algorithm(params, self.vqc_input)
 
-        np.testing.assert_array_almost_equal(result['opt_params'], self.ref_opt_params, decimal=8)
-        np.testing.assert_array_almost_equal(result['training_loss'], self.ref_train_loss, decimal=8)
+        np.testing.assert_array_almost_equal(result['opt_params'],
+                                             self.ref_opt_params, decimal=8)
+        np.testing.assert_array_almost_equal(result['training_loss'],
+                                             self.ref_train_loss, decimal=8)
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
     def test_vqc_with_max_evals_grouped(self):
+        """ vqc with max evals grouped test """
         params = {
             'problem': {'name': 'classification', 'random_seed': self.random_seed},
             'algorithm': {'name': 'VQC', 'max_evals_grouped': 2},
@@ -80,12 +84,15 @@ class TestVQC(QiskitAquaTestCase):
         }
         result = run_algorithm(params, self.vqc_input)
 
-        np.testing.assert_array_almost_equal(result['opt_params'], self.ref_opt_params, decimal=8)
-        np.testing.assert_array_almost_equal(result['training_loss'], self.ref_train_loss, decimal=8)
+        np.testing.assert_array_almost_equal(result['opt_params'],
+                                             self.ref_opt_params, decimal=8)
+        np.testing.assert_array_almost_equal(result['training_loss'],
+                                             self.ref_train_loss, decimal=8)
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
     def test_vqc_statevector_via_run_algorithm(self):
+        """ vqc statevector via run algorithm test """
         params = {
             'problem': {'name': 'classification',
                         'random_seed': 10598,
@@ -108,12 +115,13 @@ class TestVQC(QiskitAquaTestCase):
 
     # we use the ad_hoc dataset (see the end of this file) to test the accuracy.
     def test_vqc_minibatching_no_gradient_support(self):
+        """ vqc minibatching with no gradient support test """
         n_dim = 2  # dimension of each data point
         seed = 1024
         np.random.seed(seed)
-        sample_Total, training_input, test_input, class_labels = ad_hoc_data(training_size=8,
-                                                                             test_size=4,
-                                                                             n=n_dim, gap=0.3)
+        _, training_input, test_input, _ = _ad_hoc_data(training_size=8,
+                                                        test_size=4,
+                                                        n=n_dim, gap=0.3)
         aqua_globals.random_seed = seed
         backend = BasicAer.get_backend('statevector_simulator')
         num_qubits = n_dim
@@ -128,12 +136,13 @@ class TestVQC(QiskitAquaTestCase):
         self.assertGreater(result['testing_accuracy'], vqc_accuracy_threshold)
 
     def test_vqc_minibatching_with_gradient_support(self):
+        """ vqc minibatching with gradient support test """
         n_dim = 2  # dimension of each data point
         seed = 1024
         np.random.seed(seed)
-        sample_Total, training_input, test_input, class_labels = ad_hoc_data(training_size=8,
-                                                                             test_size=4,
-                                                                             n=n_dim, gap=0.3)
+        _, training_input, test_input, _ = _ad_hoc_data(training_size=8,
+                                                        test_size=4,
+                                                        n=n_dim, gap=0.3)
         aqua_globals.random_seed = seed
         backend = BasicAer.get_backend('statevector_simulator')
         num_qubits = n_dim
@@ -148,6 +157,7 @@ class TestVQC(QiskitAquaTestCase):
         self.assertGreater(result['testing_accuracy'], vqc_accuracy_threshold)
 
     def test_save_and_load_model(self):
+        """ save and load model test """
         np.random.seed(self.random_seed)
 
         aqua_globals.random_seed = self.random_seed
@@ -159,11 +169,16 @@ class TestVQC(QiskitAquaTestCase):
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
 
         vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
-        quantum_instance = QuantumInstance(backend, shots=1024, seed_simulator=self.random_seed, seed_transpiler=self.random_seed)
+        quantum_instance = QuantumInstance(backend,
+                                           shots=1024,
+                                           seed_simulator=self.random_seed,
+                                           seed_transpiler=self.random_seed)
         result = vqc.run(quantum_instance)
 
-        np.testing.assert_array_almost_equal(result['opt_params'], self.ref_opt_params, decimal=4)
-        np.testing.assert_array_almost_equal(result['training_loss'], self.ref_train_loss, decimal=8)
+        np.testing.assert_array_almost_equal(result['opt_params'],
+                                             self.ref_opt_params, decimal=4)
+        np.testing.assert_array_almost_equal(result['training_loss'],
+                                             self.ref_train_loss, decimal=8)
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
@@ -178,11 +193,16 @@ class TestVQC(QiskitAquaTestCase):
         np.testing.assert_array_almost_equal(
             loaded_vqc.ret['opt_params'], self.ref_opt_params, decimal=4)
 
-        loaded_test_acc = loaded_vqc.test(vqc.test_dataset[0], vqc.test_dataset[1], quantum_instance)
+        loaded_test_acc = loaded_vqc.test(vqc.test_dataset[0],
+                                          vqc.test_dataset[1],
+                                          quantum_instance)
         self.assertEqual(result['testing_accuracy'], loaded_test_acc)
 
-        predicted_probs, predicted_labels = loaded_vqc.predict(self.testing_data['A'], quantum_instance)
-        np.testing.assert_array_almost_equal(predicted_probs, self.ref_prediction_a_probs, decimal=8)
+        predicted_probs, predicted_labels = loaded_vqc.predict(self.testing_data['A'],
+                                                               quantum_instance)
+        np.testing.assert_array_almost_equal(predicted_probs,
+                                             self.ref_prediction_a_probs,
+                                             decimal=8)
         np.testing.assert_array_equal(predicted_labels, self.ref_prediction_a_label)
         if quantum_instance.has_circuit_caching:
             self.assertLess(quantum_instance._circuit_cache.misses, 3)
@@ -190,20 +210,20 @@ class TestVQC(QiskitAquaTestCase):
         if os.path.exists(file_path):
             try:
                 os.remove(file_path)
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 pass
 
     def test_vqc_callback(self):
-
+        """ vqc callback test """
         tmp_filename = 'qvqc_callback_test.csv'
         is_file_exist = os.path.exists(self._get_resource_path(tmp_filename))
         if is_file_exist:
             os.remove(self._get_resource_path(tmp_filename))
 
         def store_intermediate_result(eval_count, parameters, cost, batch_index):
-            with open(self._get_resource_path(tmp_filename), 'a') as f:
+            with open(self._get_resource_path(tmp_filename), 'a') as file:
                 content = "{},{},{:.5f},{}".format(eval_count, parameters, cost, batch_index)
-                print(content, file=f, flush=True)
+                print(content, file=file, flush=True)
 
         np.random.seed(self.random_seed)
         aqua_globals.random_seed = self.random_seed
@@ -216,7 +236,10 @@ class TestVQC(QiskitAquaTestCase):
 
         vqc = VQC(optimizer, feature_map, var_form, self.training_data,
                   self.testing_data, callback=store_intermediate_result)
-        quantum_instance = QuantumInstance(backend, shots=1024, seed_simulator=self.random_seed, seed_transpiler=self.random_seed)
+        quantum_instance = QuantumInstance(backend,
+                                           shots=1024,
+                                           seed_simulator=self.random_seed,
+                                           seed_transpiler=self.random_seed)
         vqc.run(quantum_instance)
 
         is_file_exist = os.path.exists(self._get_resource_path(tmp_filename))
@@ -224,14 +247,14 @@ class TestVQC(QiskitAquaTestCase):
 
         # check the content
         ref_content = [
-                ['0', '[-0.58205563 -2.97987177 -0.73153057  1.06577518]', '0.46841', '0'],
-                ['1', '[ 0.41794437 -2.97987177 -0.73153057  1.06577518]', '0.31861', '1'],
-                ['2', '[ 0.41794437 -1.97987177 -0.73153057  1.06577518]', '0.45975', '2'],
+            ['0', '[-0.58205563 -2.97987177 -0.73153057  1.06577518]', '0.46841', '0'],
+            ['1', '[ 0.41794437 -2.97987177 -0.73153057  1.06577518]', '0.31861', '1'],
+            ['2', '[ 0.41794437 -1.97987177 -0.73153057  1.06577518]', '0.45975', '2'],
         ]
         try:
-            with open(self._get_resource_path(tmp_filename)) as f:
+            with open(self._get_resource_path(tmp_filename)) as file:
                 idx = 0
-                for record in f.readlines():
+                for record in file.readlines():
                     eval_count, parameters, cost, batch_index = record.split(",")
                     self.assertEqual(eval_count.strip(), ref_content[idx][0])
                     self.assertEqual(parameters, ref_content[idx][1])
@@ -243,13 +266,14 @@ class TestVQC(QiskitAquaTestCase):
                 os.remove(self._get_resource_path(tmp_filename))
 
     def test_vqc_on_wine(self):
+        """ vqc on wine test """
         feature_dim = 4  # dimension of each data point
         training_dataset_size = 8
         testing_dataset_size = 4
         random_seed = 10598
         np.random.seed(random_seed)
 
-        sample_total, training_input, test_input, class_labels = wine_data(
+        _, training_input, test_input, _ = _wine_data(
             training_size=training_dataset_size,
             test_size=testing_dataset_size,
             n=feature_dim
@@ -274,13 +298,14 @@ class TestVQC(QiskitAquaTestCase):
         self.assertLess(result['testing_accuracy'], 0.6)
 
     def test_vqc_with_raw_feature_vector_on_wine(self):
+        """ vqc with raw features vector on wine test """
         feature_dim = 4  # dimension of each data point
         training_dataset_size = 8
         testing_dataset_size = 4
         random_seed = 10598
         np.random.seed(random_seed)
 
-        sample_total, training_input, test_input, class_labels = wine_data(
+        _, training_input, test_input, _ = _wine_data(
             training_size=training_dataset_size,
             test_size=testing_dataset_size,
             n=feature_dim
@@ -306,11 +331,11 @@ class TestVQC(QiskitAquaTestCase):
         self.assertGreater(result['testing_accuracy'], 0.8)
 
 
-def wine_data(training_size, test_size, n):
+def _wine_data(training_size, test_size, n):
     class_labels = [r'A', r'B', r'C']
 
     data, target = datasets.load_wine(True)
-    sample_train, sample_test, label_train, label_test = train_test_split(
+    sample_train, sample_test, label_train, _ = train_test_split(
         data, target, test_size=test_size, random_state=7
     )
 
@@ -341,47 +366,48 @@ def wine_data(training_size, test_size, n):
     return sample_train, training_input, test_input, class_labels
 
 
-def ad_hoc_data(training_size, test_size, n, gap):
+def _ad_hoc_data(training_size, test_size, n, gap):
     class_labels = [r'A', r'B']
+    n_v = 0
     if n == 2:
-        N = 100
+        n_v = 100
     elif n == 3:
-        N = 20   # courseness of data seperation
+        n_v = 20   # courseness of data separation
 
     label_train = np.zeros(2*(training_size+test_size))
     sample_train = []
-    sampleA = [[0 for x in range(n)] for y in range(training_size+test_size)]
-    sampleB = [[0 for x in range(n)] for y in range(training_size+test_size)]
+    sample_a = [[0 for x in range(n)] for y in range(training_size+test_size)]
+    sample_b = [[0 for x in range(n)] for y in range(training_size+test_size)]
 
-    sample_Total = [[[0 for x in range(N)] for y in range(N)] for z in range(N)]
+    sample_total = [[[0 for x in range(n_v)] for y in range(n_v)] for z in range(n_v)]
 
     # interactions = np.transpose(np.array([[1, 0], [0, 1], [1, 1]]))
 
-    steps = 2 * np.pi / N
+    steps = 2 * np.pi / n_v
 
     # sx = np.array([[0, 1], [1, 0]])
     # X = np.asmatrix(sx)
     # sy = np.array([[0, -1j], [1j, 0]])
     # Y = np.asmatrix(sy)
-    sz = np.array([[1, 0], [0, -1]])
-    Z = np.asmatrix(sz)
-    J = np.array([[1, 0], [0, 1]])
-    J = np.asmatrix(J)
-    H = np.array([[1, 1], [1, -1]])/np.sqrt(2)
-    H2 = np.kron(H, H)
-    H3 = np.kron(H, H2)
-    H = np.asmatrix(H)
-    H2 = np.asmatrix(H2)
-    H3 = np.asmatrix(H3)
+    s_z = np.array([[1, 0], [0, -1]])
+    z_m = np.asmatrix(s_z)
+    j_m = np.array([[1, 0], [0, 1]])
+    j_m = np.asmatrix(j_m)
+    h_v = np.array([[1, 1], [1, -1]])/np.sqrt(2)
+    h_2 = np.kron(h_v, h_v)
+    h_3 = np.kron(h_v, h_2)
+    h_v = np.asmatrix(h_v)
+    h_2 = np.asmatrix(h_2)
+    h_3 = np.asmatrix(h_3)
 
-    f = np.arange(2 ** n)
+    f_r = np.arange(2 ** n)
 
     my_array = [[0 for x in range(n)] for y in range(2 ** n)]
 
-    for arindex in range(len(my_array)):
-        temp_f = bin(f[arindex])[2:].zfill(n)
+    for arindex, my_value in enumerate(my_array):
+        temp_f = bin(f_r[arindex])[2:].zfill(n)
         for findex in range(n):
-            my_array[arindex][findex] = int(temp_f[findex])
+            my_value[findex] = int(temp_f[findex])
 
     my_array = np.asarray(my_array)
     my_array = np.transpose(my_array)
@@ -390,66 +416,68 @@ def ad_hoc_data(training_size, test_size, n, gap):
     maj = (-1) ** (2 * my_array.sum(axis=0) > n)
     parity = (-1) ** (my_array.sum(axis=0))
     # dict1 = (-1) ** (my_array[0])
+    d_v = None
     if n == 2:
-        D = np.diag(parity)
+        d_v = np.diag(parity)
     elif n == 3:
-        D = np.diag(maj)
+        d_v = np.diag(maj)
 
-    Basis = np.random.random((2 ** n, 2 ** n)) + 1j * np.random.random((2 ** n, 2 ** n))
-    Basis = np.asmatrix(Basis).getH() * np.asmatrix(Basis)
+    basis = np.random.random((2 ** n, 2 ** n)) + 1j * np.random.random((2 ** n, 2 ** n))
+    basis = np.asmatrix(basis).getH() * np.asmatrix(basis)
 
-    [S, U] = np.linalg.eig(Basis)
+    [s_v, u_v] = np.linalg.eig(basis)
 
-    idx = S.argsort()[::-1]
-    S = S[idx]
-    U = U[:, idx]
+    idx = s_v.argsort()[::-1]
+    s_v = s_v[idx]
+    u_v = u_v[:, idx]
 
-    M = (np.asmatrix(U)).getH() * np.asmatrix(D) * np.asmatrix(U)
+    m_v = (np.asmatrix(u_v)).getH() * np.asmatrix(d_v) * np.asmatrix(u_v)
 
     psi_plus = np.transpose(np.ones(2)) / np.sqrt(2)
     psi_0 = 1
-    for k in range(n):
+    for _ in range(n):
         psi_0 = np.kron(np.asmatrix(psi_0), np.asmatrix(psi_plus))
 
-    sample_total_A = []
-    sample_total_B = []
+    sample_total_a = []
+    sample_total_b = []
     sample_total_void = []
     if n == 2:
-        for n1 in range(N):
-            for n2 in range(N):
-                x1 = steps * n1
-                x2 = steps * n2
-                phi = x1 * np.kron(Z, J) + x2 * np.kron(J, Z) + (np.pi-x1) * (np.pi-x2) * np.kron(Z, Z)
+        for n_1 in range(n_v):
+            for n_2 in range(n_v):
+                x_1 = steps * n_1
+                x_2 = steps * n_2
+                phi = x_1 * np.kron(z_m, j_m) + x_2 * np.kron(j_m, z_m) + \
+                    (np.pi-x_1) * (np.pi-x_2) * np.kron(z_m, z_m)
                 # pylint: disable=no-member
-                Uu = scipy.linalg.expm(1j * phi)
-                psi = np.asmatrix(Uu) * H2 * np.asmatrix(Uu) * np.transpose(psi_0)
-                temp = np.real(psi.getH() * M * psi)
+                u_u = scipy.linalg.expm(1j * phi)
+                psi = np.asmatrix(u_u) * h_2 * np.asmatrix(u_u) * np.transpose(psi_0)
+                temp = np.real(psi.getH() * m_v * psi)
                 temp = temp.item()
                 if temp > gap:
-                    sample_Total[n1][n2] = +1
+                    sample_total[n_1][n_2] = +1
                 elif temp < -gap:
-                    sample_Total[n1][n2] = -1
+                    sample_total[n_1][n_2] = -1
                 else:
-                    sample_Total[n1][n2] = 0
+                    sample_total[n_1][n_2] = 0
 
-        # Now sample randomly from sample_Total a number of times training_size+testing_size
-        tr = 0
-        while tr < (training_size + test_size):
-            draw1 = np.random.choice(N)
-            draw2 = np.random.choice(N)
-            if sample_Total[draw1][draw2] == +1:
-                sampleA[tr] = [2 * np.pi * draw1 / N, 2 * np.pi * draw2 / N]
-                tr += 1
+        # Now sample randomly from sample_total a number of times training_size+testing_size
+        t_r = 0
+        while t_r < (training_size + test_size):
+            draw1 = np.random.choice(n_v)
+            draw2 = np.random.choice(n_v)
+            if sample_total[draw1][draw2] == +1:
+                sample_a[t_r] = [2 * np.pi * draw1 / n_v, 2 * np.pi * draw2 / n_v]
+                t_r += 1
 
-        tr = 0
-        while tr < (training_size+test_size):
-            draw1 = np.random.choice(N)
-            draw2 = np.random.choice(N)
-            if sample_Total[draw1][draw2] == -1:
-                sampleB[tr] = [2 * np.pi * draw1 / N, 2 * np.pi * draw2 / N]
-                tr += 1
+        t_r = 0
+        while t_r < (training_size+test_size):
+            draw1 = np.random.choice(n_v)
+            draw2 = np.random.choice(n_v)
+            if sample_total[draw1][draw2] == -1:
+                sample_b[t_r] = [2 * np.pi * draw1 / n_v, 2 * np.pi * draw2 / n_v]
+                t_r += 1
 
-        sample_train = [sampleA, sampleB]
+        sample_train = [sample_a, sample_b]
 
         for lindex in range(training_size + test_size):
             label_train[lindex] = 0
@@ -467,53 +495,55 @@ def ad_hoc_data(training_size, test_size, n, gap):
         }
 
     elif n == 3:
-        for n1 in range(N):
-            for n2 in range(N):
-                for n3 in range(N):
-                    x1 = steps * n1
-                    x2 = steps * n2
-                    x3 = steps * n3
-                    phi = x1 * np.kron(np.kron(Z, J), J) + \
-                        x2 * np.kron(np.kron(J, Z), J) + \
-                        x3 * np.kron(np.kron(J, J), Z) + \
-                        (np.pi - x1) * (np.pi - x2) * np.kron(np.kron(Z, Z), J) + \
-                        (np.pi - x2) * (np.pi - x3) * np.kron(np.kron(J, Z), Z) + \
-                        (np.pi - x1) * (np.pi - x3) * np.kron(np.kron(Z, J), Z)
+        for n_1 in range(n_v):
+            for n_2 in range(n_v):
+                for n_3 in range(n_v):
+                    x_1 = steps * n_1
+                    x_2 = steps * n_2
+                    x_3 = steps * n_3
+                    phi = x_1 * np.kron(np.kron(z_m, j_m), j_m) + \
+                        x_2 * np.kron(np.kron(j_m, z_m), j_m) + \
+                        x_3 * np.kron(np.kron(j_m, j_m), z_m) + \
+                        (np.pi - x_1) * (np.pi - x_2) * np.kron(np.kron(z_m, z_m), j_m) + \
+                        (np.pi - x_2) * (np.pi - x_3) * np.kron(np.kron(j_m, z_m), z_m) + \
+                        (np.pi - x_1) * (np.pi - x_3) * np.kron(np.kron(z_m, j_m), z_m)
                     # pylint: disable=no-member
-                    Uu = scipy.linalg.expm(1j * phi)
-                    psi = np.asmatrix(Uu) * H3 * np.asmatrix(Uu) * np.transpose(psi_0)
-                    temp = np.real(psi.getH() * M * psi)
+                    u_u = scipy.linalg.expm(1j * phi)
+                    psi = np.asmatrix(u_u) * h_3 * np.asmatrix(u_u) * np.transpose(psi_0)
+                    temp = np.real(psi.getH() * m_v * psi)
                     temp = temp.item()
                     if temp > gap:
-                        sample_Total[n1][n2][n3] = +1
-                        sample_total_A.append([n1, n2, n3])
+                        sample_total[n_1][n_2][n_3] = +1
+                        sample_total_a.append([n_1, n_2, n_3])
                     elif temp < -gap:
-                        sample_Total[n1][n2][n3] = -1
-                        sample_total_B.append([n1, n2, n3])
+                        sample_total[n_1][n_2][n_3] = -1
+                        sample_total_b.append([n_1, n_2, n_3])
                     else:
-                        sample_Total[n1][n2][n3] = 0
-                        sample_total_void.append([n1, n2, n3])
+                        sample_total[n_1][n_2][n_3] = 0
+                        sample_total_void.append([n_1, n_2, n_3])
 
-        # Now sample randomly from sample_Total a number of times training_size+testing_size
-        tr = 0
-        while tr < (training_size + test_size):
-            draw1 = np.random.choice(N)
-            draw2 = np.random.choice(N)
-            draw3 = np.random.choice(N)
-            if sample_Total[draw1][draw2][draw3] == +1:
-                sampleA[tr] = [2 * np.pi * draw1 / N, 2 * np.pi * draw2 / N, 2 * np.pi * draw3 / N]
-                tr += 1
+        # Now sample randomly from sample_total a number of times training_size+testing_size
+        t_r = 0
+        while t_r < (training_size + test_size):
+            draw1 = np.random.choice(n_v)
+            draw2 = np.random.choice(n_v)
+            draw3 = np.random.choice(n_v)
+            if sample_total[draw1][draw2][draw3] == +1:
+                sample_a[t_r] = \
+                    [2 * np.pi * draw1 / n_v, 2 * np.pi * draw2 / n_v, 2 * np.pi * draw3 / n_v]
+                t_r += 1
 
-        tr = 0
-        while tr < (training_size + test_size):
-            draw1 = np.random.choice(N)
-            draw2 = np.random.choice(N)
-            draw3 = np.random.choice(N)
-            if sample_Total[draw1][draw2][draw3] == -1:
-                sampleB[tr] = [2 * np.pi * draw1 / N, 2 * np.pi * draw2 / N, 2 * np.pi * draw3 / N]
-                tr += 1
+        t_r = 0
+        while t_r < (training_size + test_size):
+            draw1 = np.random.choice(n_v)
+            draw2 = np.random.choice(n_v)
+            draw3 = np.random.choice(n_v)
+            if sample_total[draw1][draw2][draw3] == -1:
+                sample_b[t_r] = \
+                    [2 * np.pi * draw1 / n_v, 2 * np.pi * draw2 / n_v, 2 * np.pi * draw3 / n_v]
+                t_r += 1
 
-        sample_train = [sampleA, sampleB]
+        sample_train = [sample_a, sample_b]
 
         for lindex in range(training_size + test_size):
             label_train[lindex] = 0
@@ -530,7 +560,7 @@ def ad_hoc_data(training_size, test_size, n, gap):
             for k, key in enumerate(class_labels)
         }
 
-    return sample_Total, training_input, test_input, class_labels
+    return sample_total, training_input, test_input, class_labels
 
 
 if __name__ == '__main__':
