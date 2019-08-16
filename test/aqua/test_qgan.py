@@ -13,38 +13,37 @@
 # that they have been altered from the originals.
 # =============================================================================
 
+""" Test QGAN """
+
 import unittest
 import os
-
+from test.aqua.common import QiskitAquaTestCase
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
-
-from qiskit.aqua.components.uncertainty_models import UniformDistribution, UnivariateVariationalDistribution
+from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
+                                                       UnivariateVariationalDistribution)
 from qiskit.aqua.components.variational_forms import RY
-
 from qiskit.aqua.algorithms.adaptive.qgan.qgan import QGAN
 from qiskit.aqua.input import QGANInput
 from qiskit.aqua import aqua_globals, QuantumInstance, run_algorithm
 from qiskit.aqua.components.initial_states import Custom
-
 from qiskit import BasicAer
-
-from test.aqua.common import QiskitAquaTestCase
 
 
 class TestQGAN(QiskitAquaTestCase):
-
+    """ Test QGAN """
     def setUp(self):
         super().setUp()
         os.environ.pop('QISKIT_AQUA_CIRCUIT_CACHE', None)
         # Number training data samples
-        N = 5000
+        n_v = 5000
         # Load data samples from log-normal distribution with mean=1 and standard deviation=1
-        mu = 1
+        m_u = 1
         sigma = 1
-        self._real_data = np.random.lognormal(mean=mu, sigma=sigma, size=N)
+        self._real_data = np.random.lognormal(mean=m_u, sigma=sigma, size=n_v)
         # Set the data resolution
-        # Set upper and lower data values as list of k min/max data values [[min_0,max_0],...,[min_k-1,max_k-1]]
+        # Set upper and lower data values as list of k
+        # min/max data values [[min_0,max_0],...,[min_k-1,max_k-1]]
         self._bounds = [0., 3.]
         # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
         num_qubits = [2]
@@ -56,7 +55,8 @@ class TestQGAN(QiskitAquaTestCase):
                                             'num_qubits': num_qubits,
                                             'batch_size': batch_size,
                                             'num_epochs': num_epochs},
-                              'problem': {'name': 'distribution_learning_loading', 'random_seed': 7},
+                              'problem': {'name': 'distribution_learning_loading',
+                                          'random_seed': 7},
                               'generative_network': {'name': 'QuantumGenerator',
                                                      'bounds': self._bounds,
                                                      'num_qubits': num_qubits,
@@ -70,7 +70,8 @@ class TestQGAN(QiskitAquaTestCase):
                                             'num_qubits': num_qubits,
                                             'batch_size': batch_size,
                                             'num_epochs': num_epochs},
-                              'problem': {'name': 'distribution_learning_loading', 'random_seed': 7},
+                              'problem': {'name': 'distribution_learning_loading',
+                                          'random_seed': 7},
                               'generative_network': {'name': 'QuantumGenerator',
                                                      'bounds': self._bounds,
                                                      'num_qubits': num_qubits,
@@ -82,13 +83,23 @@ class TestQGAN(QiskitAquaTestCase):
                               }
 
         # Initialize qGAN
-        self.qgan = QGAN(self._real_data, self._bounds, num_qubits, batch_size, num_epochs, snapshot_dir=None)
+        self.qgan = QGAN(self._real_data,
+                         self._bounds,
+                         num_qubits,
+                         batch_size,
+                         num_epochs,
+                         snapshot_dir=None)
         self.qgan.seed = 7
         # Set quantum instance to run the quantum generator
-        self.quantum_instance_statevector = QuantumInstance(backend=BasicAer.get_backend('statevector_simulator'),
-                                                            circuit_caching=False, seed_simulator=2, seed_transpiler=2)
-        self.quantum_instance_qasm = QuantumInstance(backend=BasicAer.get_backend('qasm_simulator'), shots=1000,
-                                                     circuit_caching=False, seed_simulator=2, seed_transpiler=2)
+        self.qi_statevector = QuantumInstance(backend=BasicAer.get_backend('statevector_simulator'),
+                                              circuit_caching=False,
+                                              seed_simulator=2,
+                                              seed_transpiler=2)
+        self.qi_qasm = QuantumInstance(backend=BasicAer.get_backend('qasm_simulator'),
+                                       shots=1000,
+                                       circuit_caching=False,
+                                       seed_simulator=2,
+                                       seed_transpiler=2)
         # Set entangler map
         entangler_map = [[0, 1]]
 
@@ -99,7 +110,10 @@ class TestQGAN(QiskitAquaTestCase):
         init_dist.build(qc, q)
         init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
         # Set variational form
-        var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution, entangler_map=entangler_map,
+        var_form = RY(sum(num_qubits),
+                      depth=1,
+                      initial_state=init_distribution,
+                      entangler_map=entangler_map,
                       entanglement_gate='cz')
         # Set generator's initial parameters
         init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
@@ -111,33 +125,43 @@ class TestQGAN(QiskitAquaTestCase):
         self.qgan.set_generator(generator_circuit=g_circuit)
 
     def test_sample_generation(self):
-        samples_statevector, weights_statevector = self.qgan._generator.get_output(self.quantum_instance_statevector,
-                                                                                   shots=100)
-        samples_qasm, weights_qasm = self.qgan._generator.get_output(self.quantum_instance_qasm, shots=100)
+        """ sample generation test """
+        _, weights_statevector = \
+            self.qgan._generator.get_output(self.qi_statevector, shots=100)
+        samples_qasm, weights_qasm = self.qgan._generator.get_output(self.qi_qasm, shots=100)
         samples_qasm, weights_qasm = zip(*sorted(zip(samples_qasm, weights_qasm)))
         for i, weight_q in enumerate(weights_qasm):
             self.assertAlmostEqual(weight_q, weights_statevector[i], delta=0.1)
 
     def test_qgan_training(self):
-        trained_statevector = self.qgan.run(self.quantum_instance_statevector)
-        trained_qasm = self.qgan.run(self.quantum_instance_qasm)
+        """ qgan training test """
+        trained_statevector = self.qgan.run(self.qi_statevector)
+        trained_qasm = self.qgan.run(self.qi_qasm)
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
     def test_qgan_training_run_algo_torch(self):
+        """ qgan training run algo torch test """
         try:
             algo_input = QGANInput(self._real_data, self._bounds)
-            trained_statevector = run_algorithm(params=self._params_torch, algo_input=algo_input,
-                                                backend=BasicAer.get_backend('statevector_simulator'))
-            trained_qasm = run_algorithm(self._params_torch, algo_input, backend=BasicAer.get_backend('qasm_simulator'))
-            self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
-        except Exception as e:
-            self.skipTest("Torch may not be installed: '{}'".format(str(e)))
+            train_statevector = run_algorithm(params=self._params_torch,
+                                              algo_input=algo_input,
+                                              backend=BasicAer.get_backend('statevector_simulator'))
+            trained_qasm = run_algorithm(self._params_torch,
+                                         algo_input,
+                                         backend=BasicAer.get_backend('qasm_simulator'))
+            self.assertAlmostEqual(trained_qasm['rel_entr'],
+                                   train_statevector['rel_entr'], delta=0.1)
+        except Exception as ex:  # pylint: disable=broad-except
+            self.skipTest("Torch may not be installed: '{}'".format(str(ex)))
 
     def test_qgan_training_run_algo_numpy(self):
+        """ qgan training run algo numpy test """
         algo_input = QGANInput(self._real_data, self._bounds)
         trained_statevector = run_algorithm(params=self._params_numpy, algo_input=algo_input,
                                             backend=BasicAer.get_backend('statevector_simulator'))
-        trained_qasm = run_algorithm(self._params_numpy, algo_input, backend=BasicAer.get_backend('qasm_simulator'))
+        trained_qasm = run_algorithm(self._params_numpy,
+                                     algo_input,
+                                     backend=BasicAer.get_backend('qasm_simulator'))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
 

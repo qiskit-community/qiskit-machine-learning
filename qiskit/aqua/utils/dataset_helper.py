@@ -81,9 +81,9 @@ def split_dataset_to_data_and_labels(dataset, class_names=None):
             data.append(value)
             try:
                 labels.append(class_to_label[class_name])
-            except Exception as e:
+            except Exception as ex:  # pylint: disable=broad-except
                 raise KeyError('The dataset has different class names to '
-                               'the training data. error message: {}'.format(e))
+                               'the training data. error message: {}'.format(ex))
     data = np.asarray(data)
     labels = np.asarray(labels)
     if class_names is None:
