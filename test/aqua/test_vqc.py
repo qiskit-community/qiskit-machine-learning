@@ -93,11 +93,9 @@ class TestVQC(QiskitAquaTestCase):
 
     def test_vqc_statevector_via_run_algorithm(self):
         """ vqc statevector via run algorithm test """
-        # TODO: cache only work with optimization_level 0
         params = {
             'problem': {'name': 'classification',
                         'random_seed': 10598,
-                        'circuit_optimization_level': 0,
                         'circuit_caching': True,
                         'skip_qobj_deepcopy': True,
                         'skip_qobj_validation': True,
@@ -152,11 +150,7 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=2)
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
-        # TODO: cache only work with optimization_level 0
-        quantum_instance = QuantumInstance(backend,
-                                           seed_simulator=seed,
-                                           seed_transpiler=seed,
-                                           optimization_level=0)
+        quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
         result = vqc.run(quantum_instance)
         vqc_accuracy_threshold = 0.8
         self.log.debug(result['testing_accuracy'])
@@ -284,11 +278,9 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-        # TODO: cache only work with optimization_level 0
         params = {
             'problem': {'name': 'classification',
                         'random_seed': self.random_seed,
-                        'circuit_optimization_level': 0,
                         'circuit_caching': True,
                         'skip_qobj_deepcopy': True,
                         'skip_qobj_validation': True,
@@ -318,11 +310,9 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-        # TODO: cache only work with optimization_level 0
         params = {
             'problem': {'name': 'classification',
                         'random_seed': self.random_seed,
-                        'circuit_optimization_level': 0,
                         'circuit_caching': True,
                         'skip_qobj_deepcopy': True,
                         'skip_qobj_validation': True,
