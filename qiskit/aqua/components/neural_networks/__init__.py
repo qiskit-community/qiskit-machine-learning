@@ -24,8 +24,7 @@ __all__ = [
 ]
 
 try:
-    from .classical_discriminator import ClassicalDiscriminator
+    from .pytorch_discriminator import ClassicalDiscriminator
     __all__ += ['ClassicalDiscriminator']
 except Exception:
     pass
-

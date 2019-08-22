@@ -61,8 +61,13 @@ class GenerativeNetwork(Pluggable):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_output(self):
+    def get_output(self, quantum_instance, qc_state_in, params, shots):
         """ Apply quantum/classical neural network to given input and get the respective output
+         Args:
+            quantum_instance:  QuantumInstance, used to run the generator circuit.
+            qc_state_in: QuantumCircuit corresponding to the input state
+            params: array or None, parameters which should be used to run the generator, if None use self._params
+            shots: int, if not None use a number of shots that is different from the number set in quantum_instance
 
         Returns: Neural network output
 
