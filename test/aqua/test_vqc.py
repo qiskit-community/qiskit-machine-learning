@@ -268,8 +268,8 @@ class TestVQC(QiskitAquaTestCase):
     def test_vqc_on_wine(self):
         """ vqc on wine test """
         feature_dim = 4  # dimension of each data point
-        training_dataset_size = 8
-        testing_dataset_size = 4
+        training_dataset_size = 6
+        testing_dataset_size = 3
         random_seed = 10598
         np.random.seed(random_seed)
 
@@ -288,7 +288,7 @@ class TestVQC(QiskitAquaTestCase):
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
-            'optimizer': {'name': 'COBYLA', 'maxiter': 200},
+            'optimizer': {'name': 'COBYLA', 'maxiter': 100},
             'variational_form': {'name': 'RYRZ', 'depth': 3},
         }
 
