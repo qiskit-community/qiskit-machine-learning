@@ -119,13 +119,13 @@ class TestVQC(QiskitAquaTestCase):
         n_dim = 2  # dimension of each data point
         seed = 1024
         np.random.seed(seed)
-        _, training_input, test_input, _ = _ad_hoc_data(training_size=8,
-                                                        test_size=4,
+        _, training_input, test_input, _ = _ad_hoc_data(training_size=6,
+                                                        test_size=3,
                                                         n=n_dim, gap=0.3)
         aqua_globals.random_seed = seed
         backend = BasicAer.get_backend('statevector_simulator')
         num_qubits = n_dim
-        optimizer = COBYLA()
+        optimizer = COBYLA(maxiter=100)
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
@@ -140,19 +140,19 @@ class TestVQC(QiskitAquaTestCase):
         n_dim = 2  # dimension of each data point
         seed = 1024
         np.random.seed(seed)
-        _, training_input, test_input, _ = _ad_hoc_data(training_size=8,
-                                                        test_size=4,
+        _, training_input, test_input, _ = _ad_hoc_data(training_size=4,
+                                                        test_size=2,
                                                         n=n_dim, gap=0.3)
         aqua_globals.random_seed = seed
         backend = BasicAer.get_backend('statevector_simulator')
         num_qubits = n_dim
-        optimizer = L_BFGS_B(maxfun=100)
+        optimizer = L_BFGS_B(maxfun=30)
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
-        var_form = RYRZ(num_qubits=num_qubits, depth=2)
+        var_form = RYRZ(num_qubits=num_qubits, depth=1)
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
         result = vqc.run(quantum_instance)
-        vqc_accuracy_threshold = 0.8
+        vqc_accuracy_threshold = 0.7
         self.log.debug(result['testing_accuracy'])
         self.assertGreater(result['testing_accuracy'], vqc_accuracy_threshold)
 
@@ -268,8 +268,8 @@ class TestVQC(QiskitAquaTestCase):
     def test_vqc_on_wine(self):
         """ vqc on wine test """
         feature_dim = 4  # dimension of each data point
-        training_dataset_size = 8
-        testing_dataset_size = 4
+        training_dataset_size = 6
+        testing_dataset_size = 3
         random_seed = 10598
         np.random.seed(random_seed)
 
@@ -288,7 +288,7 @@ class TestVQC(QiskitAquaTestCase):
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
-            'optimizer': {'name': 'COBYLA', 'maxiter': 200},
+            'optimizer': {'name': 'COBYLA', 'maxiter': 100},
             'variational_form': {'name': 'RYRZ', 'depth': 3},
         }
 
