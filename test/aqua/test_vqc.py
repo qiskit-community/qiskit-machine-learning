@@ -416,8 +416,8 @@ def _ad_hoc_data(training_size, test_size, n, gap):
     elif n == 3:
         d_v = np.diag(maj)
 
-    basis = aqua_globals.random.random_sample((2 ** n, 2 ** n)) + \
-            1j * aqua_globals.random.random_sample((2 ** n, 2 ** n))
+    basis = aqua_globals.random.random_sample((2 ** n, 2 ** n))
+    basis += 1j * aqua_globals.random.random_sample((2 ** n, 2 ** n))
     basis = np.asmatrix(basis).getH() * np.asmatrix(basis)
 
     [s_v, u_v] = np.linalg.eig(basis)
