@@ -125,15 +125,16 @@ class TestVQC(QiskitAquaTestCase):
                                                         n=n_dim, gap=0.3)
         backend = BasicAer.get_backend('statevector_simulator')
         num_qubits = n_dim
-        optimizer = COBYLA(maxiter=100)
+        optimizer = COBYLA(maxiter=300)
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
-        quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
+        quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed,
+                                           optimization_level=0)
         result = vqc.run(quantum_instance)
-        vqc_accuracy = 0.66666
+        vqc_accuracy = 0.833333
         self.log.debug(result['testing_accuracy'])
-        self.assertAlmostEqual(result['testing_accuracy'], vqc_accuracy, places=3)
+        self.assertGreaterEqual(result['testing_accuracy'], vqc_accuracy)
 
     def test_vqc_minibatching_with_gradient_support(self):
         """ vqc minibatching with gradient support test """
