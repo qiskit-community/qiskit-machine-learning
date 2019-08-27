@@ -31,7 +31,7 @@ class AllPairs(MulticlassExtension):
         'name': 'AllPairs',
         'description': 'AllPairs extension',
         'input_schema': {
-            '$schema': 'http://json-schema.org/schema#',
+            '$schema': 'http://json-schema.org/draft-07/schema#',
             'id': 'allpairs_schema',
             'type': 'object',
             'properties': {

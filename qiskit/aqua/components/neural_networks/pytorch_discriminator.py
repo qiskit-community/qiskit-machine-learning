@@ -87,7 +87,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         'name': 'PytorchDiscriminator',
         'description': 'qGAN Discriminator Network',
         'input_schema': {
-            '$schema': 'http://json-schema.org/schema#',
+            '$schema': 'http://json-schema.org/draft-07/schema#',
             'id': 'discriminator_schema',
             'type': 'object',
             'properties': {
