@@ -296,7 +296,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         # Train on Real Data
         prediction_real = self.get_label(real_batch)
 
-        # Calculate error and backpropagate
+        # Calculate error and back propagate
         error_real = self.loss(prediction_real, torch.ones(len(prediction_real), 1), real_prob)
         error_real.backward()
 
@@ -306,7 +306,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         generated_prob = torch.tensor(generated_prob, dtype=torch.float32)
         prediction_fake = self.get_label(generated_batch)
 
-        # Calculate error and backpropagate
+        # Calculate error and back propagate
         error_fake = self.loss(prediction_fake, torch.zeros(len(prediction_fake), 1), generated_prob)
         error_fake.backward()
 
