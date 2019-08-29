@@ -30,7 +30,7 @@ class TestQSVM(QiskitAquaTestCase):
         super().setUp()
         self.random_seed = 10598
         self.shots = 12000
-        np.random.seed(self.random_seed)
+        aqua_globals.random_seed = self.random_seed
         self.training_data = {'A': np.asarray([[2.95309709, 2.51327412],
                                                [3.14159265, 4.08407045]]),
                               'B': np.asarray([[4.08407045, 2.26194671],
@@ -90,7 +90,6 @@ class TestQSVM(QiskitAquaTestCase):
         ref_support_vectors = np.array([[2.95309709, 2.51327412], [3.14159265, 4.08407045],
                                         [4.08407045, 2.26194671], [4.46106157, 2.38761042]])
 
-        aqua_globals.random_seed = self.random_seed
         backend = BasicAer.get_backend('qasm_simulator')
         num_qubits = 2
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits,
@@ -131,9 +130,9 @@ class TestQSVM(QiskitAquaTestCase):
                                            depth=2,
                                            entangler_map=[[0, 1]])
         svm = QSVM(feature_map, self.training_data, self.testing_data, None)
-        aqua_globals.random_seed = self.random_seed
 
-        quantum_instance = QuantumInstance(backend, seed_transpiler=self.random_seed)
+        quantum_instance = QuantumInstance(backend, seed_transpiler=self.random_seed,
+                                           seed_simulator=self.random_seed)
         result = svm.run(quantum_instance)
 
         ori_alphas = result['svm']['alphas']
@@ -193,10 +192,8 @@ class TestQSVM(QiskitAquaTestCase):
 
         svm.setup_training_data(self.training_data)
         svm.setup_test_data(self.testing_data)
-
-        aqua_globals.random_seed = self.random_seed
-
-        quantum_instance = QuantumInstance(backend, seed_transpiler=self.random_seed)
+        quantum_instance = QuantumInstance(backend, seed_transpiler=self.random_seed,
+                                           seed_simulator=self.random_seed)
         result = svm.run(quantum_instance)
 
         np.testing.assert_array_almost_equal(
