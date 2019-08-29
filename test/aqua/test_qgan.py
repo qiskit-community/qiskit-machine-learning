@@ -18,7 +18,6 @@
 import unittest
 import os
 from test.aqua.common import QiskitAquaTestCase
-import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
                                                        UnivariateVariationalDistribution)
@@ -35,12 +34,14 @@ class TestQGAN(QiskitAquaTestCase):
     def setUp(self):
         super().setUp()
         os.environ.pop('QISKIT_AQUA_CIRCUIT_CACHE', None)
+        self.seed = 7
+        aqua_globals.random_seed = self.seed
         # Number training data samples
         n_v = 5000
         # Load data samples from log-normal distribution with mean=1 and standard deviation=1
         m_u = 1
         sigma = 1
-        self._real_data = np.random.lognormal(mean=m_u, sigma=sigma, size=n_v)
+        self._real_data = aqua_globals.random.lognormal(mean=m_u, sigma=sigma, size=n_v)
         # Set the data resolution
         # Set upper and lower data values as list of k
         # min/max data values [[min_0,max_0],...,[min_k-1,max_k-1]]
@@ -50,13 +51,14 @@ class TestQGAN(QiskitAquaTestCase):
         # Batch size
         batch_size = 100
         # Set number of training epochs
-        num_epochs = 10
+        # num_epochs = 10
+        num_epochs = 5
         self._params_torch = {'algorithm': {'name': 'QGAN',
                                             'num_qubits': num_qubits,
                                             'batch_size': batch_size,
                                             'num_epochs': num_epochs},
                               'problem': {'name': 'distribution_learning_loading',
-                                          'random_seed': 7},
+                                          'random_seed': self.seed},
                               'generative_network': {'name': 'QuantumGenerator',
                                                      'bounds': self._bounds,
                                                      'num_qubits': num_qubits,
@@ -71,7 +73,7 @@ class TestQGAN(QiskitAquaTestCase):
                                             'batch_size': batch_size,
                                             'num_epochs': num_epochs},
                               'problem': {'name': 'distribution_learning_loading',
-                                          'random_seed': 7},
+                                          'random_seed': self.seed},
                               'generative_network': {'name': 'QuantumGenerator',
                                                      'bounds': self._bounds,
                                                      'num_qubits': num_qubits,
