@@ -32,7 +32,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         'name': 'ErrorCorrectingCode',
         'description': 'ErrorCorrectingCode extension',
         'input_schema': {
-            '$schema': 'http://json-schema.org/schema#',
+            '$schema': 'http://json-schema.org/draft-07/schema#',
             'id': 'error_correcting_code_schema',
             'type': 'object',
             'properties': {

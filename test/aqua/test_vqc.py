@@ -334,7 +334,7 @@ def _wine_data(training_size, test_size, n):
         data, target, test_size=test_size, random_state=7
     )
 
-    # Now we standarize for gaussian around 0 with unit variance
+    # Now we standardize for gaussian around 0 with unit variance
     std_scale = StandardScaler().fit(sample_train)
     sample_train = std_scale.transform(sample_train)
     sample_test = std_scale.transform(sample_test)
@@ -367,7 +367,7 @@ def _ad_hoc_data(training_size, test_size, n, gap):
     if n == 2:
         n_v = 100
     elif n == 3:
-        n_v = 20   # courseness of data separation
+        n_v = 20   # coarseness of data separation
 
     label_train = np.zeros(2*(training_size+test_size))
     sample_train = []

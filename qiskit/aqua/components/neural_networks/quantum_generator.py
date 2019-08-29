@@ -36,7 +36,7 @@ class QuantumGenerator(GenerativeNetwork):
         'name': 'QuantumGenerator',
         'description': 'qGAN Generator Network',
         'input_schema': {
-            '$schema': 'http://json-schema.org/schema#',
+            '$schema': 'http://json-schema.org/draft-07/schema#',
             'id': 'generator_schema',
             'type': 'object',
             'properties': {
@@ -245,7 +245,7 @@ class QuantumGenerator(GenerativeNetwork):
             params: array or None, parameters which should be used to run the generator, if None use self._params
             shots: int, if not None use a number of shots that is different from the number set in quantum_instance
 
-        Returns: array: generated samples, array: sample occurence in percentage
+        Returns: array: generated samples, array: sample occurrence in percentage
 
         """
         instance_shots = quantum_instance.run_config.shots
