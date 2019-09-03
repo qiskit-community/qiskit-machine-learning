@@ -12,8 +12,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from qiskit.aqua import Pluggable
+""" Base class for multiclass extension """
+
 from abc import abstractmethod
+from qiskit.aqua import Pluggable
 
 
 class MulticlassExtension(Pluggable):
@@ -22,9 +24,6 @@ class MulticlassExtension(Pluggable):
 
         This method should initialize the module and its configuration, and
         use an exception if a component of the module is available.
-
-        Args:
-            configuration (dict): configuration dictionary
     """
 
     @abstractmethod
@@ -33,7 +32,8 @@ class MulticlassExtension(Pluggable):
 
     @classmethod
     def init_params(cls, params):
-        multiclass_extension_params = params.get(Pluggable.SECTION_KEY_MULTICLASS_EXTENSION)
+        """ init params """
+        multiclass_extension_params = params.get(Pluggable.SECTION_KEY_MULTICLASS_EXT)
         args = {k: v for k, v in multiclass_extension_params.items() if k != 'name'}
         return cls(**args)
 

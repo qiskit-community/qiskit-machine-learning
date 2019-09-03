@@ -12,6 +12,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""
+The multiclass extension based on the all-pairs algorithm.
+"""
+
 import logging
 
 import numpy as np
@@ -20,6 +24,8 @@ from sklearn.utils.multiclass import _ovr_decision_function
 from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
 
 logger = logging.getLogger(__name__)
+
+# pylint: disable=invalid-name
 
 
 class AllPairs(MulticlassExtension):
@@ -44,6 +50,8 @@ class AllPairs(MulticlassExtension):
         super().__init__()
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []
+        self.classes_ = None
+        self.estimators = None
 
     def train(self, x, y):
         """
@@ -51,13 +59,15 @@ class AllPairs(MulticlassExtension):
         Args:
             x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
+        Raises:
+            ValueError: can not be fit when only one class is present.
         """
         self.classes_ = np.unique(y)
         if len(self.classes_) == 1:
-            raise ValueError(" can not be fit when only one class is present.")
+            raise ValueError("can not be fit when only one class is present.")
         n_classes = self.classes_.shape[0]
         self.estimators = {}
-        logger.info("Require {} estimators.".format(n_classes * (n_classes - 1) / 2))
+        logger.info("Require %s estimators.", n_classes * (n_classes - 1) / 2)
         for i in range(n_classes):
             estimators_from_i = {}
             for j in range(i + 1, n_classes):
@@ -76,7 +86,7 @@ class AllPairs(MulticlassExtension):
         """
         testing multiple estimators each for distinguishing a pair of classes.
         Args:
-            X (numpy.ndarray): input points
+            x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
 
         Returns:
@@ -86,7 +96,7 @@ class AllPairs(MulticlassExtension):
         B = y
         _l = len(A)
         diff = np.sum(A != B)
-        logger.debug("%d out of %d are wrong" % (diff, _l))
+        logger.debug("%d out of %d are wrong", diff, _l)
         return 1. - (diff * 1.0 / _l)
 
     def predict(self, x):
