@@ -12,6 +12,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+""" Data set helper """
+
 import operator
 
 import numpy as np
@@ -38,6 +40,8 @@ def get_feature_dimension(dataset):
 
     Returns:
         int: feature dimension, -1 denotes no data in the dataset.
+    Raises:
+        TypeError: invalid data set
     """
     if not isinstance(dataset, dict):
         raise TypeError("Dataset is not formatted as a dict. Please check it.")
@@ -51,6 +55,7 @@ def get_feature_dimension(dataset):
     return feature_dim
 
 
+# pylint: disable=invalid-name
 def split_dataset_to_data_and_labels(dataset, class_names=None):
     """Split dataset to data and labels numpy array
 
@@ -66,6 +71,8 @@ def split_dataset_to_data_and_labels(dataset, class_names=None):
                     idx 1 is labels, Nx1 array, value is ranged
                     from 0 to K-1, K is the number of classes
         dict: {str: int}, map from class name to label
+    Raises:
+        KeyError: data set invalid
     """
     data = []
     labels = []
@@ -75,7 +82,7 @@ def split_dataset_to_data_and_labels(dataset, class_names=None):
     else:
         class_to_label = class_names
     sorted_label = sorted(class_to_label.items(), key=operator.itemgetter(1))
-    for class_name, label in sorted_label:
+    for class_name, _ in sorted_label:
         values = dataset[class_name]
         for value in values:
             data.append(value)
@@ -99,7 +106,7 @@ def map_label_to_class_name(predicted_labels, label_to_class):
         predicted_labels (numpy.ndarray): Nx1 array
         label_to_class (dict or list): a mapping form label (numeric) to class name (str)
     Returns:
-        [str]: predicted class names of each datum
+        str: predicted class names of each datum
     """
 
     if not isinstance(predicted_labels, np.ndarray):
