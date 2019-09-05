@@ -78,7 +78,7 @@ class QuantumGenerator(GenerativeNetwork):
                 UnivariateVariationalDistribution for univariate data/
                 MultivariateVariationalDistribution for multivariate data, Quantum circuit
                     to implement the generator.
-            init_params (numpy.ndarray): 1D numpy array or list, Initialization for
+            init_params (Union(list, numpy.ndarray)): 1D numpy array or list, Initialization for
                                 the generator's parameters.
             snapshot_dir (str): str or None, if not None save the optimizer's parameter after every
                             update step to the given directory
