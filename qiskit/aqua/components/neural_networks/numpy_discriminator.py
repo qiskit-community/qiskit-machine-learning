@@ -295,7 +295,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
         """
         Get discriminator
         Returns:
-            numpy.ndarray: discriminator object
+            DiscriminatorNet: discriminator object
         """
         return self._discriminator
 
