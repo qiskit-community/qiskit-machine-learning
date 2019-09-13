@@ -12,6 +12,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+""" qp solver """
+
 import logging
 
 import numpy as np
@@ -40,6 +42,7 @@ def optimize_svm(kernel_matrix, y, scaling=None, max_iters=500, show_progress=Fa
         numpy.ndarray: Sx1 array, where S is the number of supports
         numpy.ndarray: Sx1 array, where S is the number of supports
     """
+    # pylint: disable=invalid-name
     if y.ndim == 1:
         y = y[:, np.newaxis]
     H = np.outer(y, y) * kernel_matrix

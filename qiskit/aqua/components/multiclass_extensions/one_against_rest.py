@@ -11,6 +11,11 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
+"""
+the multiclass extension based on the one-against-rest algorithm.
+"""
+
 import logging
 
 import numpy as np
@@ -21,6 +26,8 @@ from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
 
 logger = logging.getLogger(__name__)
 
+# pylint: disable=invalid-name
+
 
 class OneAgainstRest(MulticlassExtension):
     """
@@ -30,7 +37,7 @@ class OneAgainstRest(MulticlassExtension):
         'name': 'OneAgainstRest',
         'description': 'OneAgainstRest extension',
         'input_schema': {
-            '$schema': 'http://json-schema.org/schema#',
+            '$schema': 'http://json-schema.org/draft-07/schema#',
             'id': 'one_against_rest_schema',
             'type': 'object',
             'properties': {
@@ -43,25 +50,32 @@ class OneAgainstRest(MulticlassExtension):
         super().__init__()
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []
+        self.label_binarizer_ = None
+        self.classes = None
+        self.estimators = None
 
-    def train(self, X, y):
+    def train(self, x, y):
         """
         training multiple estimators each for distinguishing a pair of classes.
         Args:
-            X (numpy.ndarray): input points
+            x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
+        Raises:
+            Exception: given all data points are assigned to the same class,
+                        the prediction would be boring
         """
         self.label_binarizer_ = LabelBinarizer(neg_label=0)
         Y = self.label_binarizer_.fit_transform(y)
         self.classes = self.label_binarizer_.classes_
         columns = (np.ravel(col) for col in Y.T)
         self.estimators = []
-        for i, column in enumerate(columns):
+        for _, column in enumerate(columns):
             unique_y = np.unique(column)
             if len(unique_y) == 1:
-                raise Exception("given all data points are assigned to the same class, the prediction would be boring.")
+                raise Exception("given all data points are assigned to the same class, "
+                                "the prediction would be boring.")
             estimator = self.estimator_cls(*self.params)
-            estimator.fit(X, column)
+            estimator.fit(x, column)
             self.estimators.append(estimator)
 
     def test(self, x, y):
@@ -77,7 +91,7 @@ class OneAgainstRest(MulticlassExtension):
         B = y
         _l = len(A)
         diff = np.sum(A != B)
-        logger.debug("%d out of %d are wrong" % (diff, _l))
+        logger.debug("%d out of %d are wrong", diff, _l)
         return 1 - (diff * 1.0 / _l)
 
     def predict(self, x):

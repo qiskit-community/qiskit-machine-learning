@@ -12,6 +12,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""
+the multiclass extension based on the error-correcting-code algorithm.
+"""
+
 import logging
 
 import numpy as np
@@ -23,6 +27,8 @@ from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
 
 logger = logging.getLogger(__name__)
 
+# pylint: disable=invalid-name
+
 
 class ErrorCorrectingCode(MulticlassExtension):
     """
@@ -32,7 +38,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         'name': 'ErrorCorrectingCode',
         'description': 'ErrorCorrectingCode extension',
         'input_schema': {
-            '$schema': 'http://json-schema.org/schema#',
+            '$schema': 'http://json-schema.org/draft-07/schema#',
             'id': 'error_correcting_code_schema',
             'type': 'object',
             'properties': {
@@ -53,6 +59,9 @@ class ErrorCorrectingCode(MulticlassExtension):
         self.params = params if params is not None else []
         self.code_size = code_size
         self.rand = aqua_globals.random
+        self.estimators = None
+        self.classes = None
+        self.codebook = None
 
     def train(self, x, y):
         """
@@ -71,7 +80,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         classes_index = dict((c, i) for i, c in enumerate(self.classes))
         Y = np.array([self.codebook[classes_index[y[i]]]
                       for i in range(x.shape[0])], dtype=np.int)
-        logger.info("Require {} estimators.".format(Y.shape[1]))
+        logger.info("Require %s estimators.", Y.shape[1])
         for i in range(Y.shape[1]):
             y_bit = Y[:, i]
             unique_y = np.unique(y_bit)
@@ -96,7 +105,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         B = y
         _l = len(A)
         diff = np.sum(A != B)
-        logger.debug("%d out of %d are wrong" % (diff, _l))
+        logger.debug("%d out of %d are wrong", diff, _l)
         return 1 - (diff * 1.0 / _l)
 
     def predict(self, x):

@@ -12,20 +12,26 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""
+Generator
+"""
 
-import numpy as np
 from copy import deepcopy
+import numpy as np
 
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.aqua import aqua_globals
 from qiskit.aqua.components.optimizers import ADAM
-from qiskit.aqua.components.uncertainty_models import UniformDistribution, MultivariateUniformDistribution
+from qiskit.aqua.components.uncertainty_models import \
+    UniformDistribution, MultivariateUniformDistribution
 from qiskit.aqua.components.uncertainty_models import UnivariateVariationalDistribution, \
     MultivariateVariationalDistribution
 from qiskit.aqua.components.variational_forms import RY
 from qiskit.aqua import AquaError, Pluggable
 from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
 from qiskit.aqua.components.initial_states import Custom
+
+# pylint: disable=invalid-name
 
 
 class QuantumGenerator(GenerativeNetwork):
@@ -36,7 +42,7 @@ class QuantumGenerator(GenerativeNetwork):
         'name': 'QuantumGenerator',
         'description': 'qGAN Generator Network',
         'input_schema': {
-            '$schema': 'http://json-schema.org/schema#',
+            '$schema': 'http://json-schema.org/draft-07/schema#',
             'id': 'generator_schema',
             'type': 'object',
             'properties': {
@@ -59,19 +65,27 @@ class QuantumGenerator(GenerativeNetwork):
         }
     }
 
-    def __init__(self, bounds, num_qubits, generator_circuit=None, init_params=None, snapshot_dir=None):
+    def __init__(self, bounds, num_qubits, generator_circuit=None,
+                 init_params=None, snapshot_dir=None):
         """
         Initialize the generator network.
         Args:
-            bounds: array, k min/max data values [[min_1,max_1],...,[min_k,max_k]], given input data dim k
-            num_qubits: array, k numbers of qubits to determine representation resolution,
+            bounds (numpy.ndarray): k min/max data values [[min_1,max_1],...,[min_k,max_k]],
+                    given input data dim k
+            num_qubits (list): k numbers of qubits to determine representation resolution,
             i.e. n qubits enable the representation of 2**n values [n_1,..., n_k]
-            generator_circuit: UnivariateVariationalDistribution for univariate data/
-            MultivariateVariationalDistribution for multivariate data, Quantum circuit to implement the generator.
-            init_params: 1D numpy array or list, Initialization for the generator's parameters.
-            snapshot_dir: str or None, if not None save the optimizer's parameter after every update step to the given
-            directory
+            generator_circuit (Union): generator circuit
+                UnivariateVariationalDistribution for univariate data/
+                MultivariateVariationalDistribution for multivariate data, Quantum circuit
+                    to implement the generator.
+            init_params (Union(list, numpy.ndarray)): 1D numpy array or list, Initialization for
+                                the generator's parameters.
+            snapshot_dir (str): str or None, if not None save the optimizer's parameter after every
+                            update step to the given directory
+        Raises:
+            AquaError: Set multivariate variational distribution to represent multivariate data
         """
+        super().__init__()
         self._bounds = bounds
         self._num_qubits = num_qubits
         self.generator_circuit = generator_circuit
@@ -94,12 +108,14 @@ class QuantumGenerator(GenerativeNetwork):
                 init_dist.build(qc, q)
                 init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
                 # Set variational form
-                var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution, entangler_map=entangler_map,
+                var_form = RY(sum(num_qubits), depth=1,
+                              initial_state=init_distribution, entangler_map=entangler_map,
                               entanglement_gate='cz')
                 if init_params is None:
                     init_params = aqua_globals.random.rand(var_form.num_parameters) * 2 * 1e-2
                 # Set generator circuit
-                self.generator_circuit = MultivariateVariationalDistribution(num_qubits, var_form, init_params,
+                self.generator_circuit = MultivariateVariationalDistribution(num_qubits, var_form,
+                                                                             init_params,
                                                                              low=low, high=high)
             else:
                 init_dist = UniformDistribution(sum(num_qubits), low=bounds[0], high=bounds[1])
@@ -107,26 +123,30 @@ class QuantumGenerator(GenerativeNetwork):
                 qc = QuantumCircuit(q)
                 init_dist.build(qc, q)
                 init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
-                var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution, entangler_map=entangler_map,
+                var_form = RY(sum(num_qubits), depth=1, initial_state=init_distribution,
+                              entangler_map=entangler_map,
                               entanglement_gate='cz')
                 if init_params is None:
                     init_params = aqua_globals.random.rand(var_form.num_parameters) * 2 * 1e-2
                 # Set generator circuit
-                self.generator_circuit = UnivariateVariationalDistribution(int(np.sum(num_qubits)), var_form,
-                                                                           init_params, low=bounds[0], high=bounds[1])
+                self.generator_circuit = UnivariateVariationalDistribution(
+                    int(np.sum(num_qubits)), var_form, init_params, low=bounds[0], high=bounds[1])
 
         if len(num_qubits) > 1:
             if isinstance(self.generator_circuit, MultivariateVariationalDistribution):
                 pass
             else:
-                raise AquaError('Set multivariate variational distribution to represent multivariate data')
+                raise AquaError('Set multivariate variational distribution '
+                                'to represent multivariate data')
         else:
             if isinstance(self.generator_circuit, UnivariateVariationalDistribution):
                 pass
             else:
-                raise AquaError('Set univariate variational distribution to represent univariate data')
+                raise AquaError('Set univariate variational distribution '
+                                'to represent univariate data')
         # Set optimizer for updating the generator network
-        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7, beta_2=0.99, noise_factor=1e-6,
+        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7,
+                               beta_2=0.99, noise_factor=1e-6,
                                eps=1e-6, amsgrad=True, snapshot_dir=snapshot_dir)
 
         if np.ndim(self._bounds) == 1:
@@ -134,7 +154,8 @@ class QuantumGenerator(GenerativeNetwork):
         else:
             bounds = self._bounds
         for j, prec in enumerate(self._num_qubits):
-            grid = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec))  # prepare data grid for dim j
+            # prepare data grid for dim j
+            grid = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec))
             if j == 0:
                 if len(self._num_qubits) > 1:
                     self._data_grid = [grid]
@@ -168,14 +189,16 @@ class QuantumGenerator(GenerativeNetwork):
     @classmethod
     def init_params(cls, params):
         """
-            Initialize via parameters dictionary and algorithm input instance.
+        Initialize via parameters dictionary and algorithm input instance.
 
-            Args:
-                params (dict): parameters dictionary
+        Args:
+            params (dict): parameters dictionary
 
-                Returns:
-                    QuantumGenerator: vqe object
-                """
+        Returns:
+            QuantumGenerator: vqe object
+        Raises:
+            AquaError: invalid input
+        """
         generator_params = params.get(Pluggable.SECTION_KEY_GENERATIVE_NETWORK)
         bounds = generator_params.get('bounds')
         if bounds is None:
@@ -187,7 +210,8 @@ class QuantumGenerator(GenerativeNetwork):
         init_params = generator_params.get('init_params')
         snapshot_dir = generator_params.get('snapshot_dir')
 
-        return cls(bounds, num_qubits, generator_circuit=None, init_params=init_params, snapshot_dir=snapshot_dir)
+        return cls(bounds, num_qubits, generator_circuit=None, init_params=init_params,
+                   snapshot_dir=snapshot_dir)
 
     @classmethod
     def get_section_key_name(cls):
@@ -197,10 +221,7 @@ class QuantumGenerator(GenerativeNetwork):
         """
         Set seed.
         Args:
-            seed: int, seed
-
-        Returns:
-
+            seed (int): seed
         """
         aqua_globals.random_seed = seed
 
@@ -208,19 +229,19 @@ class QuantumGenerator(GenerativeNetwork):
         """
         Set discriminator
         Args:
-            discriminator: Discriminator, Discriminator used to compute the loss function.
-
+            discriminator (Discriminator): Discriminator used to compute the loss function.
         """
         self._discriminator = discriminator
-        return
 
     def construct_circuit(self, params=None):
         """
         Construct generator circuit.
         Args:
-            params: array or None, parameters which should be used to run the generator, if None use self._params
+            params (numpy.ndarray): parameters which should be used to run the generator,
+                    if None use self._params
 
-        Returns: Quantum Gate, construct the quantum circuit and return as gate
+        Returns:
+            Instruction: construct the quantum circuit and return as gate
 
         """
 
@@ -240,12 +261,17 @@ class QuantumGenerator(GenerativeNetwork):
         """
         Get data samples from the generator.
         Args:
-            quantum_instance:  QuantumInstance, used to run the generator circuit.
-            qc_state_in: depreciated
-            params: array or None, parameters which should be used to run the generator, if None use self._params
-            shots: int, if not None use a number of shots that is different from the number set in quantum_instance
+            quantum_instance (QuantumInstance):  Quantum Instance, used to run the generator
+                                        circuit.
+            qc_state_in (QuantumCircuit): depreciated
+            params (numpy.ndarray): array or None, parameters which should
+                    be used to run the generator,
+                    if None use self._params
+            shots (int): if not None use a number of shots that is different from the
+                        number set in quantum_instance
 
-        Returns: array: generated samples, array: sample occurence in percentage
+        Returns:
+            list: generated samples, array: sample occurrence in percentage
 
         """
         instance_shots = quantum_instance.run_config.shots
@@ -278,7 +304,7 @@ class QuantumGenerator(GenerativeNetwork):
             values = list(result.values())
             values = [float(v) / np.sum(values) for v in values]
         generated_samples_weights = values
-        for i in range(len(keys)):
+        for i, _ in enumerate(keys):
             index = 0
             temp = []
             for k, p in enumerate(self._num_qubits):
@@ -300,19 +326,20 @@ class QuantumGenerator(GenerativeNetwork):
             quantum_instance.set_config(shots=instance_shots)
         return generated_samples, generated_samples_weights
 
-    def loss(self, x, weights):
+    def loss(self, x, weights):  # pylint: disable=arguments-differ
         """
         Loss function
         Args:
-            x: array, sample label (equivalent to discriminator output)
-            weights: array, probability for measuring the sample
+            x (numpy.ndarray): sample label (equivalent to discriminator output)
+            weights (numpy.ndarray): probability for measuring the sample
 
-        Returns:  float, loss function
+        Returns:
+            float: loss function
 
         """
         try:
             loss = (-1)*np.dot(np.log(x).transpose(), weights)
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             loss = (-1)*np.dot(np.log(x), weights)
         return loss.flatten()
 
@@ -320,34 +347,38 @@ class QuantumGenerator(GenerativeNetwork):
         """
         Get objective function
         Args:
-            quantum_instance: QuantumInstance, used to run the quantum circuit.
-            discriminator: torch.nn.Module, discriminator network to compute the sample labels.
+            quantum_instance (QuantumInstance): used to run the quantum circuit.
+            discriminator (torch.nn.Module): discriminator network to compute the sample labels.
 
-        Returns: objective function for quantum generator optimization
+        Returns:
+            objective_function: objective function for quantum generator optimization
 
         """
         def objective_function(params):
             """
             Objective function
             Args:
-                params: array, generator parameters
+                params (numpy.ndarray): generator parameters
 
-            Returns: loss function
+            Returns:
+                self.loss: loss function
 
             """
-            generated_data, generated_prob = self.get_output(quantum_instance, params=params, shots=self._shots)
+            generated_data, generated_prob = self.get_output(quantum_instance, params=params,
+                                                             shots=self._shots)
             prediction_generated = discriminator.get_label(generated_data, detach=True)
             return self.loss(prediction_generated, generated_prob)
         return objective_function
 
-    def train(self, quantum_instance, shots=None):
+    def train(self, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the generator's parameters
         Args:
-            quantum_instance: QuantumInstance, used to run the generator circuit.
-            shots: int, Number of shots for hardware or qasm execution.
+            quantum_instance (QuantumInstance): used to run the generator circuit.
+            shots (int): Number of shots for hardware or qasm execution.
 
-        Returns: dict, generator loss(float) and updated parameters (array).
+        Returns:
+            dict: generator loss(float) and updated parameters (array).
         """
 
         self._shots = shots
@@ -355,8 +386,9 @@ class QuantumGenerator(GenerativeNetwork):
         self._optimizer._maxiter = 1
         self._optimizer._t = 0
         objective = self._get_objective_function(quantum_instance, self._discriminator)
-        self.generator_circuit.params, loss, nfev = \
-            self._optimizer.optimize(num_vars=len(self.generator_circuit.params), objective_function=objective,
+        self.generator_circuit.params, loss, _ = \
+            self._optimizer.optimize(num_vars=len(self.generator_circuit.params),
+                                     objective_function=objective,
                                      initial_point=self.generator_circuit.params)
 
         self._ret['loss'] = loss

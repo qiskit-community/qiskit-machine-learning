@@ -12,6 +12,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+""" Discriminative Quantum or Classical Neural Networks. """
+
 from abc import abstractmethod
 
 from qiskit.aqua import Pluggable
@@ -34,7 +36,8 @@ class DiscriminativeNetwork(Pluggable):
 
     @classmethod
     def init_params(cls, params):
-        discriminative_params = params.get(Pluggable.SECTION_KEY_DISCRIMINATIVE_NETWORK)
+        """ init params """
+        discriminative_params = params.get(Pluggable.SECTION_KEY_DISCRIMINATIVE_NET)
         args = {k: v for k, v in discriminative_params.items() if k != 'name'}
 
         return cls(**args)
@@ -42,6 +45,7 @@ class DiscriminativeNetwork(Pluggable):
     @classmethod
     @abstractmethod
     def get_section_key_name(cls):
+        """ get section key names """
         pass
 
     @abstractmethod
@@ -49,21 +53,20 @@ class DiscriminativeNetwork(Pluggable):
         """
         Set seed.
         Args:
-            seed: int, seed
-
-        Returns:
-
+            seed (int): seed
+        Raises:
+            NotImplementedError: not implemented
         """
         raise NotImplementedError()
 
     @abstractmethod
     def get_label(self, x):
-        """ Apply quantum/classical neural network to the given input sample and compute the respective data label
+        """ Apply quantum/classical neural network to the given input sample and compute
+            the respective data label
         Args:
-            x: Discriminator input, i.e. data sample.
-
-        Returns: Computed data label
-
+            x (Discriminator): input, i.e. data sample.
+        Raises:
+            NotImplementedError: not implemented
         """
         raise NotImplementedError()
 
@@ -72,12 +75,14 @@ class DiscriminativeNetwork(Pluggable):
         """Loss function used for optimization
 
         Args:
-            x: Discriminator output.
-            y: Label of the data point
-            weights: Data weights.
+            x (Discriminator): output.
+            y (Label): the data point
+            weights (numpy.ndarray): Data weights.
 
-        Returns: Loss w.r.t to the generated data points.
-
+        Returns:
+            Loss w.r.t to the generated data points.
+         Raises:
+            NotImplementedError: not implemented
         """
         raise NotImplementedError()
 
@@ -86,16 +91,19 @@ class DiscriminativeNetwork(Pluggable):
         """
         Perform one training step w.r.t to the discriminator's parameters
         Args:
-            data: array, Data batch.
-            weights: array, Data sample weights.
-            penalty: Boolean, Indicate whether or not penalty function is applied to the loss function.
+            data (numpy.ndarray): Data batch.
+            weights (numpy.ndarray): Data sample weights.
+            penalty (bool): Indicate whether or not penalty function
+                    is applied to the loss function.
                     If no penalty function defined - depreciate
                         quantum_instance: QuantumInstance, used to run the generator circuit.
                         Depreciated for classical network
-            quantum_instance: QuantumInstance
-            shots: int, Number of shots for hardware or qasm execution. Depreciated for classical network
-
-        Returns: dict, with Discriminator loss and updated parameters.
-
+            quantum_instance (QuantumInstance): Quantum Instance
+            shots (int): Number of shots for hardware or qasm execution.
+                        Depreciated for classical network
+        Returns:
+            dict: with Discriminator loss and updated parameters.
+        Raises:
+            NotImplementedError: not implemented
         """
         raise NotImplementedError()
