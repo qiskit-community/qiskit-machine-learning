@@ -97,10 +97,7 @@ class TestVQC(QiskitAquaTestCase):
         params = {
             'problem': {'name': 'classification',
                         'random_seed': 10598,
-                        'circuit_caching': True,
-                        'skip_qobj_deepcopy': True,
-                        'skip_qobj_validation': True,
-                        'circuit_cache_file': None,
+                        'skip_qobj_validation': True
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
@@ -202,8 +199,6 @@ class TestVQC(QiskitAquaTestCase):
                                              self.ref_prediction_a_probs,
                                              decimal=8)
         np.testing.assert_array_equal(predicted_labels, self.ref_prediction_a_label)
-        if quantum_instance.has_circuit_caching:
-            self.assertLess(quantum_instance._circuit_cache.misses, 3)
 
         if os.path.exists(file_path):
             try:
@@ -276,11 +271,7 @@ class TestVQC(QiskitAquaTestCase):
         params = {
             'problem': {'name': 'classification',
                         'random_seed': self.seed,
-                        'circuit_caching': True,
-                        'skip_qobj_deepcopy': True,
-                        'skip_qobj_validation': True,
-                        'circuit_cache_file': None,
-                        'circuit_optimization_level': 0
+                        'skip_qobj_validation': True
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
@@ -307,11 +298,7 @@ class TestVQC(QiskitAquaTestCase):
         params = {
             'problem': {'name': 'classification',
                         'random_seed': self.seed,
-                        'circuit_caching': True,
-                        'skip_qobj_deepcopy': True,
-                        'skip_qobj_validation': True,
-                        'circuit_cache_file': None,
-                        'circuit_optimization_level': 0
+                        'skip_qobj_validation': True
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
