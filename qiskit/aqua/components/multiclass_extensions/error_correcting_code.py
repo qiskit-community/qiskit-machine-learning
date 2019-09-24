@@ -80,6 +80,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         classes_index = dict((c, i) for i, c in enumerate(self.classes))
         Y = np.array([self.codebook[classes_index[y[i]]]
                       for i in range(x.shape[0])], dtype=np.int)
+        # pylint: disable=unsubscriptable-object
         logger.info("Require %s estimators.", Y.shape[1])
         for i in range(Y.shape[1]):
             y_bit = Y[:, i]
