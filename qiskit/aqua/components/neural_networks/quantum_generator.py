@@ -338,6 +338,7 @@ class QuantumGenerator(GenerativeNetwork):
 
         """
         try:
+            # pylint: disable=no-member
             loss = (-1)*np.dot(np.log(x).transpose(), weights)
         except Exception:  # pylint: disable=broad-except
             loss = (-1)*np.dot(np.log(x), weights)
