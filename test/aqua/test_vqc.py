@@ -97,10 +97,7 @@ class TestVQC(QiskitAquaTestCase):
         params = {
             'problem': {'name': 'classification',
                         'random_seed': 10598,
-                        'circuit_caching': True,
-                        'skip_qobj_deepcopy': True,
-                        'skip_qobj_validation': True,
-                        'circuit_cache_file': None,
+                        'skip_qobj_validation': True
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
@@ -125,14 +122,14 @@ class TestVQC(QiskitAquaTestCase):
                                                         n=n_dim, gap=0.3)
         backend = BasicAer.get_backend('statevector_simulator')
         num_qubits = n_dim
-        optimizer = COBYLA(maxiter=300)
+        optimizer = COBYLA(maxiter=40)
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed,
                                            optimization_level=0)
         result = vqc.run(quantum_instance)
-        vqc_accuracy = 0.833333
+        vqc_accuracy = 0.666
         self.log.debug(result['testing_accuracy'])
         self.assertGreaterEqual(result['testing_accuracy'], vqc_accuracy)
 
@@ -202,8 +199,6 @@ class TestVQC(QiskitAquaTestCase):
                                              self.ref_prediction_a_probs,
                                              decimal=8)
         np.testing.assert_array_equal(predicted_labels, self.ref_prediction_a_label)
-        if quantum_instance.has_circuit_caching:
-            self.assertLess(quantum_instance._circuit_cache.misses, 3)
 
         if os.path.exists(file_path):
             try:
@@ -276,11 +271,7 @@ class TestVQC(QiskitAquaTestCase):
         params = {
             'problem': {'name': 'classification',
                         'random_seed': self.seed,
-                        'circuit_caching': True,
-                        'skip_qobj_deepcopy': True,
-                        'skip_qobj_validation': True,
-                        'circuit_cache_file': None,
-                        'circuit_optimization_level': 0
+                        'skip_qobj_validation': True
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
@@ -307,11 +298,7 @@ class TestVQC(QiskitAquaTestCase):
         params = {
             'problem': {'name': 'classification',
                         'random_seed': self.seed,
-                        'circuit_caching': True,
-                        'skip_qobj_deepcopy': True,
-                        'skip_qobj_validation': True,
-                        'circuit_cache_file': None,
-                        'circuit_optimization_level': 0
+                        'skip_qobj_validation': True
                         },
             'algorithm': {'name': 'VQC'},
             'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
