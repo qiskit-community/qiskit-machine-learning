@@ -16,7 +16,6 @@
 """ Test QGAN """
 
 import unittest
-import os
 from test.aqua.common import QiskitAquaTestCase
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
@@ -33,7 +32,6 @@ class TestQGAN(QiskitAquaTestCase):
     """ Test QGAN """
     def setUp(self):
         super().setUp()
-        os.environ.pop('QISKIT_AQUA_CIRCUIT_CACHE', None)
         self.seed = 7
         aqua_globals.random_seed = self.seed
         # Number training data samples
@@ -94,12 +92,10 @@ class TestQGAN(QiskitAquaTestCase):
         self.qgan.seed = 7
         # Set quantum instance to run the quantum generator
         self.qi_statevector = QuantumInstance(backend=BasicAer.get_backend('statevector_simulator'),
-                                              circuit_caching=False,
                                               seed_simulator=2,
                                               seed_transpiler=2)
         self.qi_qasm = QuantumInstance(backend=BasicAer.get_backend('qasm_simulator'),
                                        shots=1000,
-                                       circuit_caching=False,
                                        seed_simulator=2,
                                        seed_transpiler=2)
         # Set entangler map
