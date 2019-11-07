@@ -17,6 +17,7 @@
 import os
 import unittest
 from test.aqua.common import QiskitAquaTestCase
+import warnings
 import numpy as np
 import scipy
 from sklearn import datasets
@@ -28,15 +29,17 @@ from qiskit.aqua.input import ClassificationInput
 from qiskit.aqua import run_algorithm, QuantumInstance, aqua_globals
 from qiskit.aqua.algorithms import VQC
 from qiskit.aqua.components.optimizers import SPSA, COBYLA
-from qiskit.aqua.components.feature_maps import SecondOrderExpansion
+from qiskit.aqua.components.feature_maps import SecondOrderExpansion, RawFeatureVector
 from qiskit.aqua.components.variational_forms import RYRZ, RY
 from qiskit.aqua.components.optimizers import L_BFGS_B
+from qiskit.aqua.utils import get_feature_dimension
 
 
 class TestVQC(QiskitAquaTestCase):
     """ Test VQC """
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", message=aqua_globals.CONFIG_DEPRECATION_MSG, category=DeprecationWarning)
         self.seed = 1376
         aqua_globals.random_seed = self.seed
         self.training_data = {'A': np.asarray([[2.95309709, 2.51327412], [3.14159265, 4.08407045]]),
@@ -52,8 +55,6 @@ class TestVQC(QiskitAquaTestCase):
         self.ref_prediction_a_probs = [[0.79882812, 0.20117188]]
         self.ref_prediction_a_label = [0]
 
-        self.vqc_input = ClassificationInput(self.training_data, self.testing_data)
-
     def test_vqc_via_run_algorithm(self):
         """ vqc via run algorithm test """
         params = {
@@ -64,7 +65,7 @@ class TestVQC(QiskitAquaTestCase):
             'variational_form': {'name': 'RYRZ', 'depth': 3},
             'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2}
         }
-        result = run_algorithm(params, self.vqc_input)
+        result = run_algorithm(params, ClassificationInput(self.training_data, self.testing_data))
 
         np.testing.assert_array_almost_equal(result['opt_params'],
                                              self.ref_opt_params, decimal=8)
@@ -75,15 +76,16 @@ class TestVQC(QiskitAquaTestCase):
 
     def test_vqc_with_max_evals_grouped(self):
         """ vqc with max evals grouped test """
-        params = {
-            'problem': {'name': 'classification', 'random_seed': self.seed},
-            'algorithm': {'name': 'VQC', 'max_evals_grouped': 2},
-            'backend': {'provider': 'qiskit.BasicAer', 'name': 'qasm_simulator', 'shots': 1024},
-            'optimizer': {'name': 'SPSA', 'max_trials': 10, 'save_steps': 1},
-            'variational_form': {'name': 'RYRZ', 'depth': 3},
-            'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2}
-        }
-        result = run_algorithm(params, self.vqc_input)
+        aqua_globals.random_seed = self.seed
+        feature_map = SecondOrderExpansion(get_feature_dimension(self.training_data), depth=2)
+        vqc = VQC(SPSA(max_trials=10, save_steps=1),
+                  feature_map,
+                  RYRZ(feature_map.num_qubits, depth=3),
+                  self.training_data,
+                  self.testing_data,
+                  max_evals_grouped=2)
+        result = vqc.run(QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                         shots=1024))
 
         np.testing.assert_array_almost_equal(result['opt_params'],
                                              self.ref_opt_params, decimal=8)
@@ -92,20 +94,18 @@ class TestVQC(QiskitAquaTestCase):
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
-    def test_vqc_statevector_via_run_algorithm(self):
-        """ vqc statevector via run algorithm test """
-        params = {
-            'problem': {'name': 'classification',
-                        'random_seed': 10598,
-                        'skip_qobj_validation': True
-                        },
-            'algorithm': {'name': 'VQC'},
-            'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
-            'optimizer': {'name': 'COBYLA'},
-            'variational_form': {'name': 'RYRZ', 'depth': 3},
-            'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2}
-        }
-        result = run_algorithm(params, self.vqc_input)
+    def test_vqc_statevector_via_algorithm(self):
+        """ vqc statevector via algorithm test """
+        aqua_globals.random_seed = 10598
+        feature_map = SecondOrderExpansion(get_feature_dimension(self.training_data), depth=2)
+        vqc = VQC(COBYLA(),
+                  feature_map,
+                  RYRZ(feature_map.num_qubits, depth=3),
+                  self.training_data,
+                  self.testing_data,
+                  max_evals_grouped=2)
+        result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                                         shots=1024))
         ref_train_loss = 0.1059404
         np.testing.assert_array_almost_equal(result['training_loss'], ref_train_loss, decimal=4)
 
@@ -268,18 +268,15 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-        params = {
-            'problem': {'name': 'classification',
-                        'random_seed': self.seed,
-                        'skip_qobj_validation': True
-                        },
-            'algorithm': {'name': 'VQC'},
-            'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
-            'optimizer': {'name': 'COBYLA', 'maxiter': 100},
-            'variational_form': {'name': 'RYRZ', 'depth': 1},
-        }
-
-        result = run_algorithm(params, ClassificationInput(training_input, test_input))
+        aqua_globals.random_seed = self.seed
+        feature_map = SecondOrderExpansion(feature_dimension=feature_dim)
+        vqc = VQC(COBYLA(maxiter=100),
+                  feature_map,
+                  RYRZ(feature_map.num_qubits, depth=1),
+                  training_input,
+                  test_input)
+        result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                                         shots=1024))
         self.log.debug(result['testing_accuracy'])
 
         self.assertLess(result['testing_accuracy'], 0.6)
@@ -295,19 +292,15 @@ class TestVQC(QiskitAquaTestCase):
             test_size=testing_dataset_size,
             n=feature_dim
         )
-        params = {
-            'problem': {'name': 'classification',
-                        'random_seed': self.seed,
-                        'skip_qobj_validation': True
-                        },
-            'algorithm': {'name': 'VQC'},
-            'backend': {'provider': 'qiskit.BasicAer', 'name': 'statevector_simulator'},
-            'optimizer': {'name': 'COBYLA', 'maxiter': 100},
-            'variational_form': {'name': 'RYRZ', 'depth': 3},
-            'feature_map': {'name': 'RawFeatureVector', 'feature_dimension': feature_dim}
-        }
-
-        result = run_algorithm(params, ClassificationInput(training_input, test_input))
+        aqua_globals.random_seed = self.seed
+        feature_map = RawFeatureVector(feature_dimension=feature_dim)
+        vqc = VQC(COBYLA(maxiter=100),
+                  feature_map,
+                  RYRZ(feature_map.num_qubits, depth=3),
+                  training_input,
+                  test_input)
+        result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                                         shots=1024))
         self.log.debug(result['testing_accuracy'])
 
         self.assertGreater(result['testing_accuracy'], 0.8)
