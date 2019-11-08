@@ -16,18 +16,26 @@
 
 import os
 from test.aqua.common import QiskitAquaTestCase
+import warnings
 import numpy as np
 from qiskit import BasicAer
 from qiskit.aqua import run_algorithm, QuantumInstance, aqua_globals
 from qiskit.aqua.input import ClassificationInput
 from qiskit.aqua.components.feature_maps import SecondOrderExpansion
+from qiskit.aqua.components.multiclass_extensions import (ErrorCorrectingCode,
+                                                          AllPairs,
+                                                          OneAgainstRest)
 from qiskit.aqua.algorithms import QSVM
+from qiskit.aqua.algorithms.many_sample.qsvm._qsvm_estimator import _QSVM_Estimator
+from qiskit.aqua.utils import get_feature_dimension
 
 
 class TestQSVM(QiskitAquaTestCase):
     """ Test QSVM """
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", message=aqua_globals.CONFIG_DEPRECATION_MSG,
+                                category=DeprecationWarning)
         self.random_seed = 10598
         self.shots = 12000
         aqua_globals.random_seed = self.random_seed
@@ -207,7 +215,6 @@ class TestQSVM(QiskitAquaTestCase):
 
     def test_qsvm_multiclass_one_against_all(self):
         """ QSVM Multiclass One Against All test """
-        backend = BasicAer.get_backend('qasm_simulator')
         training_input = {'A': np.asarray([[0.6560706, 0.17605998], [0.25776033, 0.47628296],
                                            [0.8690704, 0.70847635]]),
                           'B': np.asarray([[0.38857596, -0.33775802], [0.49946978, -0.48727951],
@@ -224,20 +231,14 @@ class TestQSVM(QiskitAquaTestCase):
 
         total_array = np.concatenate((test_input['A'], test_input['B'], test_input['C']))
 
-        params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
-            'algorithm': {
-                'name': 'QSVM',
-            },
-            'backend': {'shots': self.shots},
-            'multiclass_extension': {'name': 'OneAgainstRest'},
-            'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2, 'entangler_map': [[0, 1]]}
-        }
-
-        algo_input = ClassificationInput(training_input, test_input, total_array)
-
-        result = run_algorithm(params, algo_input, backend=backend)
-
+        aqua_globals.random_seed = self.random_seed
+        feature_map = SecondOrderExpansion(feature_dimension=get_feature_dimension(training_input),
+                                           depth=2,
+                                           entangler_map=[[0, 1]])
+        svm = QSVM(feature_map, training_input, test_input, total_array,
+                   multiclass_extension=OneAgainstRest(_QSVM_Estimator, [feature_map]))
+        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots)
+        result = svm.run(quantum_instance)
         expected_accuracy = 0.444444444
         expected_classes = ['A', 'A', 'C', 'A', 'A', 'A', 'A', 'C', 'C']
         self.assertAlmostEqual(result['testing_accuracy'], expected_accuracy, places=4)
@@ -245,7 +246,6 @@ class TestQSVM(QiskitAquaTestCase):
 
     def test_qsvm_multiclass_all_pairs(self):
         """ QSVM Multiclass All Pairs test """
-        backend = BasicAer.get_backend('qasm_simulator')
         training_input = {'A': np.asarray([[0.6560706, 0.17605998], [0.25776033, 0.47628296],
                                            [0.8690704, 0.70847635]]),
                           'B': np.asarray([[0.38857596, -0.33775802], [0.49946978, -0.48727951],
@@ -262,25 +262,21 @@ class TestQSVM(QiskitAquaTestCase):
 
         total_array = np.concatenate((test_input['A'], test_input['B'], test_input['C']))
 
-        params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
-            'algorithm': {
-                'name': 'QSVM',
-            },
-            'backend': {'shots': self.shots},
-            'multiclass_extension': {'name': 'AllPairs'},
-            'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2, 'entangler_map': [[0, 1]]}
-        }
+        aqua_globals.random_seed = self.random_seed
+        feature_map = SecondOrderExpansion(feature_dimension=get_feature_dimension(training_input),
+                                           depth=2,
+                                           entangler_map=[[0, 1]])
+        svm = QSVM(feature_map, training_input, test_input, total_array,
+                   multiclass_extension=AllPairs(_QSVM_Estimator, [feature_map]))
 
-        algo_input = ClassificationInput(training_input, test_input, total_array)
-        result = run_algorithm(params, algo_input, backend=backend)
+        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots)
+        result = svm.run(quantum_instance)
         self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
         self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
                                                        'A', 'A', 'A', 'C', 'C'])
 
     def test_qsvm_multiclass_error_correcting_code(self):
         """ QSVM Multiclass error Correcting Code test """
-        backend = BasicAer.get_backend('qasm_simulator')
         training_input = {'A': np.asarray([[0.6560706, 0.17605998], [0.25776033, 0.47628296],
                                            [0.8690704, 0.70847635]]),
                           'B': np.asarray([[0.38857596, -0.33775802], [0.49946978, -0.48727951],
@@ -297,19 +293,16 @@ class TestQSVM(QiskitAquaTestCase):
 
         total_array = np.concatenate((test_input['A'], test_input['B'], test_input['C']))
 
-        params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
-            'algorithm': {
-                'name': 'QSVM',
-            },
-            'backend': {'shots': self.shots},
-            'multiclass_extension': {'name': 'ErrorCorrectingCode', 'code_size': 5},
-            'feature_map': {'name': 'SecondOrderExpansion', 'depth': 2, 'entangler_map': [[0, 1]]}
-        }
+        aqua_globals.random_seed = self.random_seed
+        feature_map = SecondOrderExpansion(feature_dimension=get_feature_dimension(training_input),
+                                           depth=2,
+                                           entangler_map=[[0, 1]])
+        svm = QSVM(feature_map, training_input, test_input, total_array,
+                   multiclass_extension=ErrorCorrectingCode(_QSVM_Estimator,
+                                                            [feature_map], code_size=5))
 
-        algo_input = ClassificationInput(training_input, test_input, total_array)
-
-        result = run_algorithm(params, algo_input, backend=backend)
+        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots)
+        result = svm.run(quantum_instance)
         self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
         self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
                                                        'A', 'A', 'A', 'C', 'C'])
