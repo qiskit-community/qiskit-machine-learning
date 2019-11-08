@@ -277,7 +277,9 @@ class TestVQC(QiskitAquaTestCase):
                   training_input,
                   test_input)
         result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
-                                         shots=1024))
+                                         shots=1024,
+                                         seed_simulator=aqua_globals.random_seed,
+                                         seed_transpiler=aqua_globals.random_seed))
         self.log.debug(result['testing_accuracy'])
 
         self.assertLess(result['testing_accuracy'], 0.6)
@@ -301,7 +303,9 @@ class TestVQC(QiskitAquaTestCase):
                   training_input,
                   test_input)
         result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
-                                         shots=1024))
+                                         shots=1024,
+                                         seed_simulator=aqua_globals.random_seed,
+                                         seed_transpiler=aqua_globals.random_seed))
         self.log.debug(result['testing_accuracy'])
 
         self.assertGreater(result['testing_accuracy'], 0.8)

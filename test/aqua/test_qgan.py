@@ -128,8 +128,12 @@ class TestQGAN(QiskitAquaTestCase):
             _qgan.seed = self.seed
             _qgan.set_generator()
             trained_statevector = _qgan.run(QuantumInstance(
-                BasicAer.get_backend('statevector_simulator')))
-            trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator')))
+                BasicAer.get_backend('statevector_simulator'),
+                seed_simulator=aqua_globals.random_seed,
+                seed_transpiler=aqua_globals.random_seed))
+            trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                                     seed_simulator=aqua_globals.random_seed,
+                                                     seed_transpiler=aqua_globals.random_seed))
             self.assertAlmostEqual(trained_qasm['rel_entr'],
                                    trained_statevector['rel_entr'], delta=0.1)
         except Exception as ex:  # pylint: disable=broad-except
@@ -153,8 +157,12 @@ class TestQGAN(QiskitAquaTestCase):
         _qgan.seed = self.seed
         _qgan.set_generator()
         trained_statevector = _qgan.run(
-            QuantumInstance(BasicAer.get_backend('statevector_simulator')))
-        trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator')))
+            QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                            seed_simulator=aqua_globals.random_seed,
+                            seed_transpiler=aqua_globals.random_seed))
+        trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                                 seed_simulator=aqua_globals.random_seed,
+                                                 seed_transpiler=aqua_globals.random_seed))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
 

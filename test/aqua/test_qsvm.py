@@ -237,7 +237,9 @@ class TestQSVM(QiskitAquaTestCase):
                                            entangler_map=[[0, 1]])
         svm = QSVM(feature_map, training_input, test_input, total_array,
                    multiclass_extension=OneAgainstRest(_QSVM_Estimator, [feature_map]))
-        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots)
+        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots,
+                                           seed_simulator=aqua_globals.random_seed,
+                                           seed_transpiler=aqua_globals.random_seed)
         result = svm.run(quantum_instance)
         expected_accuracy = 0.444444444
         expected_classes = ['A', 'A', 'C', 'A', 'A', 'A', 'A', 'C', 'C']
@@ -269,7 +271,9 @@ class TestQSVM(QiskitAquaTestCase):
         svm = QSVM(feature_map, training_input, test_input, total_array,
                    multiclass_extension=AllPairs(_QSVM_Estimator, [feature_map]))
 
-        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots)
+        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots,
+                                           seed_simulator=aqua_globals.random_seed,
+                                           seed_transpiler=aqua_globals.random_seed)
         result = svm.run(quantum_instance)
         self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
         self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
@@ -301,7 +305,9 @@ class TestQSVM(QiskitAquaTestCase):
                    multiclass_extension=ErrorCorrectingCode(_QSVM_Estimator,
                                                             [feature_map], code_size=5))
 
-        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots)
+        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots,
+                                           seed_simulator=aqua_globals.random_seed,
+                                           seed_transpiler=aqua_globals.random_seed)
         result = svm.run(quantum_instance)
         self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
         self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
