@@ -22,9 +22,9 @@ from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
                                                        UnivariateVariationalDistribution)
 from qiskit.aqua.components.variational_forms import RY
 from qiskit.aqua.algorithms.adaptive.qgan.qgan import QGAN
-from qiskit.aqua.input import QGANInput
-from qiskit.aqua import aqua_globals, QuantumInstance, run_algorithm
+from qiskit.aqua import aqua_globals, QuantumInstance
 from qiskit.aqua.components.initial_states import Custom
+from qiskit.aqua.components.neural_networks import NumpyDiscriminator
 from qiskit import BasicAer
 
 
@@ -51,36 +51,6 @@ class TestQGAN(QiskitAquaTestCase):
         # Set number of training epochs
         # num_epochs = 10
         num_epochs = 5
-        self._params_torch = {'algorithm': {'name': 'QGAN',
-                                            'num_qubits': num_qubits,
-                                            'batch_size': batch_size,
-                                            'num_epochs': num_epochs},
-                              'problem': {'name': 'distribution_learning_loading',
-                                          'random_seed': self.seed},
-                              'generative_network': {'name': 'QuantumGenerator',
-                                                     'bounds': self._bounds,
-                                                     'num_qubits': num_qubits,
-                                                     'init_params': None,
-                                                     'snapshot_dir': None
-                                                     },
-                              'discriminative_network': {'name': 'PytorchDiscriminator',
-                                                         'n_features': len(num_qubits)}
-                              }
-        self._params_numpy = {'algorithm': {'name': 'QGAN',
-                                            'num_qubits': num_qubits,
-                                            'batch_size': batch_size,
-                                            'num_epochs': num_epochs},
-                              'problem': {'name': 'distribution_learning_loading',
-                                          'random_seed': self.seed},
-                              'generative_network': {'name': 'QuantumGenerator',
-                                                     'bounds': self._bounds,
-                                                     'num_qubits': num_qubits,
-                                                     'init_params': None,
-                                                     'snapshot_dir': None
-                                                     },
-                              'discriminative_network': {'name': 'NumpyDiscriminator',
-                                                         'n_features': len(num_qubits)}
-                              }
 
         # Initialize qGAN
         self.qgan = QGAN(self._real_data,
@@ -140,26 +110,59 @@ class TestQGAN(QiskitAquaTestCase):
     def test_qgan_training_run_algo_torch(self):
         """ qgan training run algo torch test """
         try:
-            algo_input = QGANInput(self._real_data, self._bounds)
-            train_statevector = run_algorithm(params=self._params_torch,
-                                              algo_input=algo_input,
-                                              backend=BasicAer.get_backend('statevector_simulator'))
-            trained_qasm = run_algorithm(self._params_torch,
-                                         algo_input,
-                                         backend=BasicAer.get_backend('qasm_simulator'))
+            # pylint: disable=import-outside-toplevel
+            from qiskit.aqua.components.neural_networks import ClassicalDiscriminator
+            # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
+            num_qubits = [2]
+            # Batch size
+            batch_size = 100
+            # Set number of training epochs
+            num_epochs = 5
+            _qgan = QGAN(self._real_data,
+                         self._bounds,
+                         num_qubits,
+                         batch_size,
+                         num_epochs,
+                         discriminator=ClassicalDiscriminator(n_features=len(num_qubits)),
+                         snapshot_dir=None)
+            _qgan.seed = self.seed
+            _qgan.set_generator()
+            trained_statevector = _qgan.run(QuantumInstance(
+                BasicAer.get_backend('statevector_simulator'),
+                seed_simulator=aqua_globals.random_seed,
+                seed_transpiler=aqua_globals.random_seed))
+            trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                                     seed_simulator=aqua_globals.random_seed,
+                                                     seed_transpiler=aqua_globals.random_seed))
             self.assertAlmostEqual(trained_qasm['rel_entr'],
-                                   train_statevector['rel_entr'], delta=0.1)
+                                   trained_statevector['rel_entr'], delta=0.1)
         except Exception as ex:  # pylint: disable=broad-except
             self.skipTest("Torch may not be installed: '{}'".format(str(ex)))
 
     def test_qgan_training_run_algo_numpy(self):
         """ qgan training run algo numpy test """
-        algo_input = QGANInput(self._real_data, self._bounds)
-        trained_statevector = run_algorithm(params=self._params_numpy, algo_input=algo_input,
-                                            backend=BasicAer.get_backend('statevector_simulator'))
-        trained_qasm = run_algorithm(self._params_numpy,
-                                     algo_input,
-                                     backend=BasicAer.get_backend('qasm_simulator'))
+        # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
+        num_qubits = [2]
+        # Batch size
+        batch_size = 100
+        # Set number of training epochs
+        num_epochs = 5
+        _qgan = QGAN(self._real_data,
+                     self._bounds,
+                     num_qubits,
+                     batch_size,
+                     num_epochs,
+                     discriminator=NumpyDiscriminator(n_features=len(num_qubits)),
+                     snapshot_dir=None)
+        _qgan.seed = self.seed
+        _qgan.set_generator()
+        trained_statevector = _qgan.run(
+            QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                            seed_simulator=aqua_globals.random_seed,
+                            seed_transpiler=aqua_globals.random_seed))
+        trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                                 seed_simulator=aqua_globals.random_seed,
+                                                 seed_transpiler=aqua_globals.random_seed))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
 
