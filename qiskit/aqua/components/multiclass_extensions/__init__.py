@@ -16,6 +16,12 @@
 
 from .estimator import Estimator
 from .multiclass_extension import MulticlassExtension
+from .all_pairs import AllPairs
+from .one_against_rest import OneAgainstRest
+from .error_correcting_code import ErrorCorrectingCode
 
-__all__ = ['MulticlassExtension',
-           'Estimator']
+__all__ = ['Estimator',
+           'MulticlassExtension',
+           'AllPairs',
+           'OneAgainstRest',
+           'ErrorCorrectingCode']
