@@ -12,7 +12,29 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Datasets package """
+"""
+Datasets (:mod:`qiskit.ml.datasets`)
+===================================================
+Sample datasets suitable for machine learning problems
+
+.. currentmodule:: qiskit.ml.datasets
+
+Datasets
+========
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   ad_hoc_data
+   sample_ad_hoc_data
+   breast_cancer
+   digits
+   gaussian
+   iris
+   wine
+
+"""
 
 from .ad_hoc import ad_hoc_data, sample_ad_hoc_data
 from .breast_cancer import breast_cancer

@@ -12,7 +12,36 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" multiclass extensions packages """
+"""
+Multi-class Extensions (:mod:`qiskit.aqua.components.multiclass_extensions`)
+============================================================================
+A multiclass extension allows Aqua's binary classifier algorithms to handle
+more than two classes to do
+`multiclass classification <https://en.wikipedia.org/wiki/Multiclass_classification>`_.
+
+.. currentmodule:: qiskit.aqua.components.multiclass_extensions
+
+Multiclass Extension Base Class
+===============================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   MulticlassExtension
+
+Multiclass Extensions
+=====================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   AllPairs
+   OneAgainstRest
+   ErrorCorrectingCode
+
+"""
 
 from .estimator import Estimator
 from .multiclass_extension import MulticlassExtension

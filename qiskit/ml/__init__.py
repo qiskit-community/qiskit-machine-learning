@@ -11,3 +11,21 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
+"""
+==============================================================
+Machine Learning application stack for Aqua (:mod:`qiskit.ml`)
+==============================================================
+This is the machine learning domain logic....
+
+.. currentmodule:: qiskit.ml
+
+Submodules
+==========
+
+.. autosummary::
+   :toctree:
+
+   datasets
+
+"""

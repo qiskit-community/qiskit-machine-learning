@@ -12,7 +12,36 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" neural networks packages """
+"""
+Neural Networks (:mod:`qiskit.aqua.components.neural_networks`)
+===============================================================
+Neural Networks, for example for use with :class:`QGAN` algorithm.
+Neural networks are either a discriminator network or generator network.
+
+.. currentmodule:: qiskit.aqua.components.neural_networks
+
+Neural Network Base Classes
+===========================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   DiscriminativeNetwork
+   GenerativeNetwork
+
+Neural Networks
+===============
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   NumpyDiscriminator
+   ClassicalDiscriminator
+   QuantumGenerator
+
+"""
 
 from .generative_network import GenerativeNetwork
 from .quantum_generator import QuantumGenerator
