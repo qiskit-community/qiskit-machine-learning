@@ -42,6 +42,7 @@ class DiscriminatorNet():
     def __init__(self, n_features=1, n_out=1):
         """
         Initialize the discriminator network.
+
         Args:
             n_features (int): Dimension of input data samples.
             n_out (int): output dimension
@@ -72,6 +73,7 @@ class DiscriminatorNet():
     def forward(self, x):
         """
         Forward propagation.
+
         Args:
             x (numpy.ndarray): , Discriminator input, i.e. data sample.
 
@@ -124,6 +126,7 @@ class DiscriminatorNet():
     def backward(self, x, y, weights=None):
         """
         Backward propagation.
+
         Args:
            x (numpy.ndarray): sample label (equivalent to discriminator output)
            y (numpy.ndarray): array, target label
@@ -204,7 +207,7 @@ class DiscriminatorNet():
 
 class NumpyDiscriminator(DiscriminativeNetwork):
     """
-        Discriminator
+    Discriminator based on numpy
     """
     CONFIGURATION = {
         'name': 'NumpyDiscriminator',
@@ -230,7 +233,6 @@ class NumpyDiscriminator(DiscriminativeNetwork):
 
     def __init__(self, n_features=1, n_out=1):
         """
-        Initialize the discriminator.
         Args:
             n_features (int): Dimension of input data vector.
             n_out (int): Dimension of the discriminator's output vector.
@@ -264,6 +266,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
     def save_model(self, snapshot_dir):
         """
         Save discriminator model
+
         Args:
             snapshot_dir (str): directory path for saving the model
         """
@@ -278,7 +281,8 @@ class NumpyDiscriminator(DiscriminativeNetwork):
 
     def load_model(self, load_dir):
         """
-        Save discriminator model
+        Load discriminator model
+
         Args:
             load_dir (str): file with stored pytorch discriminator model to be loaded
         """
@@ -294,6 +298,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
     def discriminator_net(self):
         """
         Get discriminator
+
         Returns:
             DiscriminatorNet: discriminator object
         """
@@ -306,28 +311,27 @@ class NumpyDiscriminator(DiscriminativeNetwork):
     def get_label(self, x, detach=False):  # pylint: disable=arguments-differ,unused-argument
         """
         Get data sample labels, i.e. true or fake.
+
         Args:
             x (numpy.ndarray): Discriminator input, i.e. data sample.
             detach (bool): depreciated for numpy network
 
         Returns:
             numpy.ndarray: Discriminator output, i.e. data label
-
         """
 
         return self._discriminator.forward(x)
 
     def loss(self, x, y, weights=None):
         """
-       Loss function
-       Args:
-           x (numpy.ndarray): sample label (equivalent to discriminator output)
-           y (numpy.ndarray): target label
-           weights(numpy.ndarray): customized scaling for each sample (optional)
+        Loss function
+        Args:
+            x (numpy.ndarray): sample label (equivalent to discriminator output)
+            y (numpy.ndarray): target label
+            weights(numpy.ndarray): customized scaling for each sample (optional)
 
-       Returns:
-           float:
-               loss function
+        Returns:
+            float: loss function
        """
         if weights is not None:
             # Use weights as scaling factors for the samples and compute the sum
@@ -347,13 +351,13 @@ class NumpyDiscriminator(DiscriminativeNetwork):
     def _get_objective_function(self, data, weights):
         """
         Get the objective function
+
         Args:
             data (tuple): training and generated data
             weights (numpy.ndarray): weights corresponding to training resp. generated data
 
         Returns:
             objective_function: objective function for the optimization
-
         """
         real_batch = data[0]
         real_prob = weights[0]
@@ -375,13 +379,13 @@ class NumpyDiscriminator(DiscriminativeNetwork):
     def _get_gradient_function(self, data, weights):
         """
         Get the gradient function
+
         Args:
             data (tuple): training and generated data
             weights (numpy.ndarray): weights corresponding to training resp. generated data
 
         Returns:
             gradient_function: Gradient function for the optimization
-
         """
         real_batch = data[0]
         real_prob = weights[0]
@@ -402,6 +406,7 @@ class NumpyDiscriminator(DiscriminativeNetwork):
     def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the discriminator's parameters
+
         Args:
             data (tuple(numpy.ndarray, numpy.ndarray)):
                 real_batch: array, Training data batch.
@@ -410,11 +415,10 @@ class NumpyDiscriminator(DiscriminativeNetwork):
             penalty (bool): Depreciated for classical networks.
             quantum_instance (QuantumInstance): Depreciated for classical networks.
             shots (int): Number of shots for hardware or qasm execution.
-                    Depreciated for classical networks.
+                Ignored for classical networks.
 
         Returns:
             dict: with Discriminator loss and updated parameters.
-
         """
 
         # Train on Generated Data
