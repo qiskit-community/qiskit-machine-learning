@@ -15,7 +15,7 @@
 """ Data set helper """
 
 import operator
-
+from copy import deepcopy
 import numpy as np
 from sklearn.decomposition import PCA
 
@@ -141,3 +141,107 @@ def reduce_dim_to_via_pca(x, dim):
     """
     x_reduced = PCA(n_components=dim).fit_transform(x)
     return x_reduced
+
+
+def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=False,
+                            return_prob=False, prob_non_zero=True):
+    """
+    Discretize & truncate classical data to enable digital encoding in qubit registers
+    whereby the data grid is [[grid elements dim 0],..., [grid elements dim k]]
+
+    Args:
+        data (list or array or np.array): training data (int or float) of dimension k
+        bounds (list or array or np.array):  k min/max data values
+            [[min_0,max_0],...,[min_k-1,max_k-1]] if univariate data: [min_0,max_0]
+        num_qubits (list or array or np.array): k numbers of qubits to determine
+            representation resolution, i.e. n qubits enable the representation of 2**n
+            values [num_qubits_0,..., num_qubits_k-1]
+        return_data_grid_elements (Bool): if True - return an array with the data grid
+            elements
+        return_prob (Bool): if True - return a normalized frequency count of the discretized and
+            truncated data samples
+        prob_non_zero (Bool): if True - set 0 values in the prob_data to 10^-1 to avoid potential
+            problems when using the probabilities in loss functions - division by 0
+
+    Returns:
+        array: discretized and truncated data
+        array: data grid [[grid elements dim 0],..., [grid elements dim k]]
+        array: grid elements, Product_j=0^k-1 2**num_qubits_j element vectors
+        array: data probability, normalized frequency count sorted from smallest to biggest element
+
+    """
+    # Truncate the data
+    if np.ndim(bounds) == 1:
+        bounds = np.reshape(bounds, (1, len(bounds)))
+
+    data = data.reshape((len(data), len(num_qubits)))
+    temp = []
+    for i, data_sample in enumerate(data):
+        append = True
+        for j, entry in enumerate(data_sample):
+            if entry < bounds[j, 0]:
+                append = False
+            if entry > bounds[j, 1]:
+                append = False
+        if append:
+            temp.append(list(data_sample))
+    data = np.array(temp)
+
+    # Fit the data to the data element grid
+    for j, prec in enumerate(num_qubits):
+        data_row = data[:, j]  # dim j of all data samples
+        # prepare element grid for dim j
+        elements_current_dim = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec))
+        # find index for data sample in grid
+        index_grid = np.searchsorted(elements_current_dim,
+                                     data_row-(elements_current_dim[1]-elements_current_dim[0])*0.5)
+        for k, index in enumerate(index_grid):
+            data[k, j] = elements_current_dim[index]
+        if j == 0:
+            if len(num_qubits) > 1:
+                data_grid = [elements_current_dim]
+            else:
+                data_grid = elements_current_dim
+            grid_elements = elements_current_dim
+        elif j == 1:
+            temp = []
+            for grid_element in grid_elements:
+                for element_current in elements_current_dim:
+                    temp.append([grid_element, element_current])
+            grid_elements = temp
+            data_grid.append(elements_current_dim)
+        else:
+            temp = []
+            for grid_element in grid_elements:
+                for element_current in elements_current_dim:
+                    temp.append(deepcopy(grid_element).append(element_current))
+            grid_elements = deepcopy(temp)
+            data_grid.append(elements_current_dim)
+    data_grid = np.array(data_grid)
+
+    data = np.reshape(data, (len(data), len(data[0])))
+
+    if return_prob:
+        if np.ndim(data) > 1:
+            prob_data = np.zeros(int(np.prod(np.power(np.ones(len(data[0])) * 2, num_qubits))))
+        else:
+            prob_data = np.zeros(int(np.prod(np.power(np.array([2]), num_qubits))))
+        for data_element in data:
+            for i, element in enumerate(grid_elements):
+                if all(data_element == element):
+                    prob_data[i] += 1 / len(data)
+        if prob_non_zero:
+            # add epsilon to avoid 0 entries which can be problematic in loss functions (division)
+            prob_data = [1e-10 if x == 0 else x for x in prob_data]
+
+        if return_data_grid_elements:
+            return data, data_grid, grid_elements, prob_data
+        else:
+            return data, data_grid, prob_data
+
+    else:
+        if return_data_grid_elements:
+            return data, data_grid, grid_elements
+
+        else:
+            return data, data_grid
