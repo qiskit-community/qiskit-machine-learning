@@ -135,11 +135,12 @@ def reduce_dim_to_via_pca(x, dim):
     return x_reduced
 
 
-def discretize_and_truncate(data, bounds, num_qubits, return_data_grid=False,
-                            return_data_grid_elements=False,
+def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=False,
                             return_prob=False, prob_non_zero=True):
     """
     Discretize & truncate classical data to enable digital encoding in qubit registers
+    whereby the data grid is [[grid elements dim 0],..., [grid elements dim k]]
+
     Args:
         data (list or array or np.array): training data (int or float) of dimension k
         bounds (list or array or np.array):  k min/max data values
@@ -147,17 +148,19 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid=False,
         num_qubits (list or array or np.array): k numbers of qubits to determine
             representation resolution, i.e. n qubits enable the representation of 2**n
             values [num_qubits_0,..., num_qubits_k-1]
-        return_data_grid (Bool): if True - return an array with the data grid to which the
-            given data samples are mapped [[grid elements dim 0],..., [grid elements dim k]]
-        return_data_grid_elements (Bool): if True - return an array with the data grid elements
-            to which the given data samples are mapped - i.e. (Product_j=0^k-1 2**num_qubits_j)
-            element vectors
+        return_data_grid_elements (Bool): if True - return an array with the data grid
+            elements
         return_prob (Bool): if True - return a normalized frequency count of the discretized and
-            truncated data samples sorted from smallest to biggest element
+            truncated data samples
+        prob_non_zero (Bool): if True - set 0 values in the prob_data to 10^-1 to avoid potential
+            problems when using the probabilities in loss functions - division by 0
 
+    Returns:
+        array: discretized and truncated data
+        array: data grid [[grid elements dim 0],..., [grid elements dim k]]
+        array: grid elements, Product_j=0^k-1 2**num_qubits_j element vectors
+        array: data probability, normalized frequency count sorted from smallest to biggest element
 
-    Returns: discretized and truncated data (array)[, data_grid (array), grid_elements (array),
-        prob_data (array)]
     """
     # Truncate the data
     if np.ndim(bounds) == 1:
@@ -224,24 +227,13 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid=False,
             prob_data = [1e-10 if x == 0 else x for x in prob_data]
 
         if return_data_grid_elements:
-            if return_data_grid:
-                return data, data_grid, grid_elements, prob_data
-            else:
-                return data, grid_elements, prob_data
+            return data, data_grid, grid_elements, prob_data
         else:
-            if return_data_grid:
-                return data, data_grid, prob_data
-            else:
-                return data, prob_data
+            return data, data_grid, prob_data
 
     else:
         if return_data_grid_elements:
-            if return_data_grid:
-                return data, data_grid, grid_elements
-            else:
-                return data, grid_elements
+            return data, data_grid, grid_elements
+
         else:
-            if return_data_grid:
-                return data, data_grid
-            else:
-                return data
+            return data, data_grid
