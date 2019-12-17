@@ -48,6 +48,7 @@ class DiscriminatorNet(torch.nn.Module):
     def __init__(self, n_features=1, n_out=1):
         """
         Initialize the discriminator network.
+
         Args:
             n_features (int): Dimension of input data samples.
             n_out (int): n out
@@ -78,7 +79,6 @@ class DiscriminatorNet(torch.nn.Module):
 
         Returns:
             torch.Tensor: Discriminator output, i.e. data label.
-
         """
         x = self.hidden0(x)
         x = self.hidden1(x)
@@ -89,7 +89,7 @@ class DiscriminatorNet(torch.nn.Module):
 
 class ClassicalDiscriminator(DiscriminativeNetwork):
     """
-        Discriminator
+    ClassicalDiscriminator based on PyTorch
     """
     CONFIGURATION = {
         'name': 'PytorchDiscriminator',
@@ -115,13 +115,12 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
     def __init__(self, n_features=1, n_out=1):
         """
-        Initialize the discriminator.
         Args:
             n_features (int): Dimension of input data vector.
             n_out (int):, Dimension of the discriminator's output vector.
+
         Raises:
             AquaError: Pytorch not installed
-
         """
         super().__init__()
         if not torch_loaded:
@@ -162,6 +161,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def set_seed(self, seed):
         """
         Set seed.
+
         Args:
             seed (int): seed
         """
@@ -170,6 +170,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def save_model(self, snapshot_dir):
         """
         Save discriminator model
+
         Args:
             snapshot_dir (str):  directory path for saving the model
         """
@@ -178,6 +179,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def load_model(self, load_dir):
         """
         Save discriminator model
+
         Args:
             load_dir (str): file with stored pytorch discriminator model to be loaded
         """
@@ -187,6 +189,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def discriminator_net(self):
         """
         Get discriminator
+
         Returns:
             object: discriminator object
         """
@@ -199,13 +202,13 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def get_label(self, x, detach=False):  # pylint: disable=arguments-differ
         """
         Get data sample labels, i.e. true or fake.
+
         Args:
             x (Union(numpy.ndarray, torch.Tensor)): Discriminator input, i.e. data sample.
             detach (bool): if None detach from torch tensor variable (optional)
 
         Returns:
             torch.Tensor: Discriminator output, i.e. data label
-
         """
 
         # pylint: disable=not-callable, no-member
@@ -223,6 +226,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def loss(self, x, y, weights=None):
         """
         Loss function
+
         Args:
             x (torch.Tensor): Discriminator output.
             y (torch.Tensor): Label of the data point
@@ -230,7 +234,6 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
         Returns:
             torch.Tensor: Loss w.r.t to the generated data points.
-
         """
         if weights is not None:
             loss_funct = nn.BCELoss(weight=weights, reduction='sum')
@@ -242,6 +245,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def gradient_penalty(self, x, lambda_=5., k=0.01, c=1.):
         """
         Compute gradient penalty for discriminator optimization
+
         Args:
             x (numpy.ndarray): Generated data sample.
             lambda_ (float): Gradient penalty coefficient 1.
@@ -250,7 +254,6 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
         Returns:
             torch.Tensor: Gradient penalty.
-
         """
         # pylint: disable=not-callable, no-member
         if isinstance(x, torch.Tensor):
@@ -271,20 +274,20 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     def train(self, data, weights, penalty=True, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the discriminator's parameters
+
         Args:
             data (tuple):
                 real_batch: torch.Tensor, Training data batch.
                 generated_batch: numpy array, Generated data batch.
             weights (tuple): real problem, generated problem
             penalty (bool): Indicate whether or not penalty function is
-                    applied to the loss function.
+                applied to the loss function.
             quantum_instance (QuantumInstance): Quantum Instance (depreciated)
             shots (int): Number of shots for hardware or qasm execution.
-                        Depreciated for classical network(depreciated)
+                Not used for classical network (only quantum ones)
 
         Returns:
             dict: with Discriminator loss (torch.Tensor) and updated parameters (array).
-
         """
         # pylint: disable=E1101
         # pylint: disable=E1102

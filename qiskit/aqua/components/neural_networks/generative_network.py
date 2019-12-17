@@ -20,11 +20,11 @@ from qiskit.aqua import Pluggable
 
 
 class GenerativeNetwork(Pluggable):
-    """Base class for generative Quantum and Classical Neural Networks.
+    """
+    Base class for generative Quantum and Classical Neural Networks.
 
-        This method should initialize the module and its configuration, and
-        use an exception if a component of the module is
-        available.
+    This method should initialize the module and its configuration, but
+    raise an exception if a required component of the module is not available.
     """
     @abstractmethod
     def __init__(self):
@@ -52,8 +52,10 @@ class GenerativeNetwork(Pluggable):
     def set_seed(self, seed):
         """
         Set seed.
+
         Args:
             seed (int): seed
+
         Raises:
             NotImplementedError: not implemented
         """
@@ -61,17 +63,20 @@ class GenerativeNetwork(Pluggable):
 
     @abstractmethod
     def get_output(self, quantum_instance, qc_state_in, params, shots):
-        """ Apply quantum/classical neural network to given input and get the respective output
-         Args:
+        """
+        Apply quantum/classical neural network to given input and get the respective output
+
+        Args:
             quantum_instance (QuantumInstance): Quantum Instance, used to run the generator circuit.
             qc_state_in (QuantumCircuit): corresponding to the input state
             params (numpy.ndarray): parameters which should be used to run the generator,
-                    if None use self._params
+                if None use self._params
             shots (int): if not None use a number of shots that is different from the number
-                    set in quantum_instance
+                set in quantum_instance
 
         Returns:
             Neural network output
+
         Raises:
             NotImplementedError: not implemented
         """
@@ -79,7 +84,8 @@ class GenerativeNetwork(Pluggable):
 
     @abstractmethod
     def loss(self):
-        """Loss function used for optimization
+        """
+        Loss function used for optimization
         """
         raise NotImplementedError()
 
@@ -87,15 +93,16 @@ class GenerativeNetwork(Pluggable):
     def train(self, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the generator's parameters
+
         Args:
-            quantum_instance (QuantumInstance): Quantum Instance, used to run
-                                the generator circuit.
-                                Depreciated for classical network
+            quantum_instance (QuantumInstance): used to run generator network.
+               Ignored for a classical network.
             shots (int): Number of shots for hardware or qasm execution.
-                                Depreciated for classical network
+                Ignored for classical network
 
         Returns:
             dict: generator loss and updated parameters.
+
         Raises:
             NotImplementedError: not implemented
         """

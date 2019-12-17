@@ -21,7 +21,8 @@ from sklearn.decomposition import PCA
 
 
 def get_num_classes(dataset):
-    """Check number of classes in a given dataset
+    """
+    Check number of classes in a given dataset
 
     Args:
         dataset(dict): key is the class name and value is the data.
@@ -33,7 +34,8 @@ def get_num_classes(dataset):
 
 
 def get_feature_dimension(dataset):
-    """Check feature dimension of a given dataset
+    """
+    Check feature dimension of a given dataset
 
     Args:
         dataset(dict): key is the class name and value is the data.
@@ -57,20 +59,25 @@ def get_feature_dimension(dataset):
 
 # pylint: disable=invalid-name
 def split_dataset_to_data_and_labels(dataset, class_names=None):
-    """Split dataset to data and labels numpy array
+    """
+    Split dataset to data and labels numpy array
 
-        If `class_names` is given, use the desired label to class name mapping,
-        or create the mapping based on the keys in the dataset.
+    If `class_names` is given, use the desired label to class name mapping,
+    or create the mapping based on the keys in the dataset.
 
     Args:
         dataset (dict): {'A': numpy.ndarray, 'B': numpy.ndarray, ...}
         class_names (dict): class name of dataset, {class_name: label}
 
     Returns:
-        [numpy.ndarray, numpy.ndarray]: idx 0 is data, NxD array,
-                    idx 1 is labels, Nx1 array, value is ranged
-                    from 0 to K-1, K is the number of classes
-        dict: {str: int}, map from class name to label
+        Union(tuple(list, dict), list):
+            List contains two arrays of numpy.ndarray type
+            where the array at index 0 is data, an NxD array, and at
+            index 1 it is labels, an Nx1 array, containing values in range
+            0 to K-1, where K is the number of classes. The dict is a map
+            {str: int}, mapping class name to label. The tuple of list, dict is returned
+            when `class_names` is not None, otherwise just the list is returned.
+
     Raises:
         KeyError: data set invalid
     """
@@ -100,11 +107,13 @@ def split_dataset_to_data_and_labels(dataset, class_names=None):
 
 
 def map_label_to_class_name(predicted_labels, label_to_class):
-    """Helper converts labels (numeric) to class name (string)
+    """
+    Helper converts labels (numeric) to class name (string)
 
     Args:
         predicted_labels (numpy.ndarray): Nx1 array
         label_to_class (dict or list): a mapping form label (numeric) to class name (str)
+
     Returns:
         str: predicted class names of each datum
     """
@@ -129,7 +138,6 @@ def reduce_dim_to_via_pca(x, dim):
 
     Returns:
         numpy.ndarray: NxD' array
-
     """
     x_reduced = PCA(n_components=dim).fit_transform(x)
     return x_reduced

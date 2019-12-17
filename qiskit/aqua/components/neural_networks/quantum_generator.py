@@ -36,7 +36,7 @@ from qiskit.aqua.components.initial_states import Custom
 
 class QuantumGenerator(GenerativeNetwork):
     """
-    Generator
+    Quantum Generator
     """
     CONFIGURATION = {
         'name': 'QuantumGenerator',
@@ -68,20 +68,20 @@ class QuantumGenerator(GenerativeNetwork):
     def __init__(self, bounds, num_qubits, generator_circuit=None,
                  init_params=None, snapshot_dir=None):
         """
-        Initialize the generator network.
         Args:
             bounds (numpy.ndarray): k min/max data values [[min_1,max_1],...,[min_k,max_k]],
-                    given input data dim k
+                given input data dim k
             num_qubits (list): k numbers of qubits to determine representation resolution,
             i.e. n qubits enable the representation of 2**n values [n_1,..., n_k]
-            generator_circuit (Union): generator circuit
-                UnivariateVariationalDistribution for univariate data/
-                MultivariateVariationalDistribution for multivariate data, Quantum circuit
-                    to implement the generator.
+            generator_circuit (Union): a
+                :class:`UnivariateVariationalDistribution` for univariate data,
+                a :class:`MultivariateVariationalDistribution` for multivariate data,
+                or a QuantumCircuit implementing the generator.
             init_params (Union(list, numpy.ndarray)): 1D numpy array or list, Initialization for
-                                the generator's parameters.
+                the generator's parameters.
             snapshot_dir (str): str or None, if not None save the optimizer's parameter after every
-                            update step to the given directory
+                update step to the given directory
+
         Raises:
             AquaError: Set multivariate variational distribution to represent multivariate data
         """
@@ -196,6 +196,7 @@ class QuantumGenerator(GenerativeNetwork):
 
         Returns:
             QuantumGenerator: vqe object
+
         Raises:
             AquaError: invalid input
         """
@@ -220,6 +221,7 @@ class QuantumGenerator(GenerativeNetwork):
     def set_seed(self, seed):
         """
         Set seed.
+
         Args:
             seed (int): seed
         """
@@ -228,6 +230,7 @@ class QuantumGenerator(GenerativeNetwork):
     def set_discriminator(self, discriminator):
         """
         Set discriminator
+
         Args:
             discriminator (Discriminator): Discriminator used to compute the loss function.
         """
@@ -236,13 +239,13 @@ class QuantumGenerator(GenerativeNetwork):
     def construct_circuit(self, params=None):
         """
         Construct generator circuit.
+
         Args:
             params (numpy.ndarray): parameters which should be used to run the generator,
                     if None use self._params
 
         Returns:
             Instruction: construct the quantum circuit and return as gate
-
         """
 
         q = QuantumRegister(sum(self._num_qubits), name='q')
@@ -260,19 +263,18 @@ class QuantumGenerator(GenerativeNetwork):
     def get_output(self, quantum_instance, qc_state_in=None, params=None, shots=None):
         """
         Get data samples from the generator.
+
         Args:
-            quantum_instance (QuantumInstance):  Quantum Instance, used to run the generator
-                                        circuit.
-            qc_state_in (QuantumCircuit): depreciated
+            quantum_instance (QuantumInstance): Quantum Instance, used to run the generator
+                circuit.
+            qc_state_in (QuantumCircuit): deprecated
             params (numpy.ndarray): array or None, parameters which should
-                    be used to run the generator,
-                    if None use self._params
+                be used to run the generator, if None use self._params
             shots (int): if not None use a number of shots that is different from the
-                        number set in quantum_instance
+                number set in quantum_instance
 
         Returns:
             list: generated samples, array: sample occurrence in percentage
-
         """
         instance_shots = quantum_instance.run_config.shots
         q = QuantumRegister(sum(self._num_qubits), name='q')
@@ -329,13 +331,13 @@ class QuantumGenerator(GenerativeNetwork):
     def loss(self, x, weights):  # pylint: disable=arguments-differ
         """
         Loss function
+
         Args:
             x (numpy.ndarray): sample label (equivalent to discriminator output)
             weights (numpy.ndarray): probability for measuring the sample
 
         Returns:
             float: loss function
-
         """
         try:
             # pylint: disable=no-member
@@ -347,33 +349,36 @@ class QuantumGenerator(GenerativeNetwork):
     def _get_objective_function(self, quantum_instance, discriminator):
         """
         Get objective function
+
         Args:
             quantum_instance (QuantumInstance): used to run the quantum circuit.
             discriminator (torch.nn.Module): discriminator network to compute the sample labels.
 
         Returns:
             objective_function: objective function for quantum generator optimization
-
         """
+
         def objective_function(params):
             """
             Objective function
+
             Args:
                 params (numpy.ndarray): generator parameters
 
             Returns:
                 self.loss: loss function
-
             """
             generated_data, generated_prob = self.get_output(quantum_instance, params=params,
                                                              shots=self._shots)
             prediction_generated = discriminator.get_label(generated_data, detach=True)
             return self.loss(prediction_generated, generated_prob)
+
         return objective_function
 
     def train(self, quantum_instance=None, shots=None):
         """
         Perform one training step w.r.t to the generator's parameters
+
         Args:
             quantum_instance (QuantumInstance): used to run the generator circuit.
             shots (int): Number of shots for hardware or qasm execution.
