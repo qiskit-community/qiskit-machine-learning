@@ -22,7 +22,7 @@ import logging
 
 import numpy as np
 
-from qiskit.aqua import AquaError, Pluggable
+from qiskit.aqua import AquaError
 from .discriminative_network import DiscriminativeNetwork
 
 logger = logging.getLogger(__name__)
@@ -136,10 +136,6 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         self._optimizer = optim.Adam(self._discriminator.parameters(), lr=1e-5, amsgrad=True)
 
         self._ret = {}
-
-    @classmethod
-    def get_section_key_name(cls):
-        return Pluggable.SECTION_KEY_DISCRIMINATIVE_NET
 
     @staticmethod
     def check_pluggable_valid():

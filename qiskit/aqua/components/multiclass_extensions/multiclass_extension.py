@@ -30,13 +30,6 @@ class MulticlassExtension(Pluggable):
     def __init__(self):
         super().__init__()
 
-    @classmethod
-    def init_params(cls, params):
-        """ init params """
-        multiclass_extension_params = params.get(Pluggable.SECTION_KEY_MULTICLASS_EXT)
-        args = {k: v for k, v in multiclass_extension_params.items() if k != 'name'}
-        return cls(**args)
-
     @abstractmethod
     def train(self, x, y):
         """

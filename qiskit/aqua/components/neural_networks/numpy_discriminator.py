@@ -22,7 +22,6 @@ https://towardsdatascience.com/lets-code-a-neural-network-in-plain-numpy-ae7e744
 import os
 import logging
 import numpy as np
-from qiskit.aqua import Pluggable
 from qiskit.aqua.components.optimizers import ADAM
 from .discriminative_network import DiscriminativeNetwork
 
@@ -246,10 +245,6 @@ class NumpyDiscriminator(DiscriminativeNetwork):
                                eps=1e-6, amsgrad=True)
 
         self._ret = {}
-
-    @classmethod
-    def get_section_key_name(cls):
-        return Pluggable.SECTION_KEY_DISCRIMINATIVE_NET
 
     @staticmethod
     def check_pluggable_valid():

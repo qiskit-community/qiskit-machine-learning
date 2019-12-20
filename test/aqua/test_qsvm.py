@@ -16,11 +16,9 @@
 
 import os
 from test.aqua.common import QiskitAquaTestCase
-import warnings
 import numpy as np
 from qiskit import BasicAer
-from qiskit.aqua import run_algorithm, QuantumInstance, aqua_globals
-from qiskit.aqua.input import ClassificationInput
+from qiskit.aqua import QuantumInstance, aqua_globals
 from qiskit.aqua.components.feature_maps import SecondOrderExpansion
 from qiskit.aqua.components.multiclass_extensions import (ErrorCorrectingCode,
                                                           AllPairs,
@@ -34,8 +32,6 @@ class TestQSVM(QiskitAquaTestCase):
     """ Test QSVM """
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", message=aqua_globals.CONFIG_DEPRECATION_MSG,
-                                category=DeprecationWarning)
         self.random_seed = 10598
         self.shots = 12000
         aqua_globals.random_seed = self.random_seed
@@ -46,42 +42,8 @@ class TestQSVM(QiskitAquaTestCase):
         self.testing_data = {'A': np.asarray([[3.83274304, 2.45044227]]),
                              'B': np.asarray([[3.89557489, 0.31415927]])}
 
-        self.svm_input = ClassificationInput(self.training_data, self.testing_data)
-
-    def test_qsvm_binary_via_run_algorithm(self):
-        """ QSVM Binary Via Run Algorithm test """
-        training_input = {'A': np.asarray([[0.6560706, 0.17605998], [0.14154948, 0.06201424],
-                                           [0.80202323, 0.40582692], [0.46779595, 0.39946754],
-                                           [0.57660199, 0.21821317]]),
-                          'B': np.asarray([[0.38857596, -0.33775802], [0.49946978, -0.48727951],
-                                           [-0.30119743, -0.11221681], [-0.16479252, -0.08640519],
-                                           [0.49156185, -0.3660534]])}
-
-        test_input = {'A': np.asarray([[0.57483139, 0.47120732], [0.48372348, 0.25438544],
-                                       [0.08791134, 0.11515506], [0.45988094, 0.32854319],
-                                       [0.53015085, 0.41539212]]),
-                      'B': np.asarray([[-0.06048935, -0.48345293], [-0.01065613, -0.33910828],
-                                       [-0.17323832, -0.49535592], [0.14043268, -0.87869109],
-                                       [-0.15046837, -0.47340207]])}
-
-        total_array = np.concatenate((test_input['A'], test_input['B']))
-
-        params = {
-            'problem': {'name': 'classification', 'random_seed': self.random_seed},
-            'backend': {'shots': self.shots},
-            'algorithm': {
-                'name': 'QSVM'
-            }
-        }
-        backend = BasicAer.get_backend('qasm_simulator')
-        algo_input = ClassificationInput(training_input, test_input, total_array)
-        result = run_algorithm(params, algo_input, backend=backend)
-        self.assertEqual(result['testing_accuracy'], 0.6)
-        self.assertEqual(result['predicted_classes'], ['A', 'A', 'A', 'A', 'A',
-                                                       'A', 'B', 'A', 'A', 'A'])
-
-    def test_qsvm_binary_directly(self):
-        """ QSVM Binary Directly test """
+    def test_qsvm_binary(self):
+        """ QSVM Binary test """
         ref_kernel_training = np.array([[1., 0.85366667, 0.12341667, 0.36408333],
                                         [0.85366667, 1., 0.11141667, 0.45491667],
                                         [0.12341667, 0.11141667, 1., 0.667],
