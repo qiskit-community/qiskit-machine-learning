@@ -32,21 +32,6 @@ class DiscriminativeNetwork(Pluggable):
         self._num_parameters = 0
         self._num_qubits = 0
         self._bounds = list()
-        pass
-
-    @classmethod
-    def init_params(cls, params):
-        """ init params """
-        discriminative_params = params.get(Pluggable.SECTION_KEY_DISCRIMINATIVE_NET)
-        args = {k: v for k, v in discriminative_params.items() if k != 'name'}
-
-        return cls(**args)
-
-    @classmethod
-    @abstractmethod
-    def get_section_key_name(cls):
-        """ get section key names """
-        pass
 
     @abstractmethod
     def set_seed(self, seed):

@@ -32,21 +32,6 @@ class GenerativeNetwork(Pluggable):
         self._num_parameters = 0
         self._num_qubits = 0
         self._bounds = list()
-        pass
-
-    @classmethod
-    def init_params(cls, params):
-        """ init params """
-        generative_params = params.get(Pluggable.SECTION_KEY_GENERATIVE_NETWORK)
-        args = {k: v for k, v in generative_params.items() if k != 'name'}
-
-        return cls(**args)
-
-    @classmethod
-    @abstractmethod
-    def get_section_key_name(cls):
-        """ get section key name """
-        pass
 
     @abstractmethod
     def set_seed(self, seed):

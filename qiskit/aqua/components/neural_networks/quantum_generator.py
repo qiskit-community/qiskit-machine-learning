@@ -27,7 +27,7 @@ from qiskit.aqua.components.uncertainty_models import \
 from qiskit.aqua.components.uncertainty_models import UnivariateVariationalDistribution, \
     MultivariateVariationalDistribution
 from qiskit.aqua.components.variational_forms import RY
-from qiskit.aqua import AquaError, Pluggable
+from qiskit.aqua import AquaError
 from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
 from qiskit.aqua.components.initial_states import Custom
 
@@ -185,38 +185,6 @@ class QuantumGenerator(GenerativeNetwork):
         self._shots = None
         self._discriminator = None
         self._ret = {}
-
-    @classmethod
-    def init_params(cls, params):
-        """
-        Initialize via parameters dictionary and algorithm input instance.
-
-        Args:
-            params (dict): parameters dictionary
-
-        Returns:
-            QuantumGenerator: vqe object
-
-        Raises:
-            AquaError: invalid input
-        """
-        generator_params = params.get(Pluggable.SECTION_KEY_GENERATIVE_NETWORK)
-        bounds = generator_params.get('bounds')
-        if bounds is None:
-            raise AquaError("Data value bounds are required.")
-        num_qubits = generator_params.get('num_qubits')
-        if num_qubits is None:
-            raise AquaError("Numbers of qubits per dimension required.")
-
-        init_params = generator_params.get('init_params')
-        snapshot_dir = generator_params.get('snapshot_dir')
-
-        return cls(bounds, num_qubits, generator_circuit=None, init_params=init_params,
-                   snapshot_dir=snapshot_dir)
-
-    @classmethod
-    def get_section_key_name(cls):
-        return Pluggable.SECTION_KEY_GENERATIVE_NETWORK
 
     def set_seed(self, seed):
         """
