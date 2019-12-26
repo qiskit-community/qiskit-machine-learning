@@ -14,12 +14,10 @@
 
 """ Discriminative Quantum or Classical Neural Networks. """
 
-from abc import abstractmethod
-
-from qiskit.aqua import Pluggable
+from abc import ABC, abstractmethod
 
 
-class DiscriminativeNetwork(Pluggable):
+class DiscriminativeNetwork(ABC):
     """
     Base class for discriminative Quantum or Classical Neural Networks.
 

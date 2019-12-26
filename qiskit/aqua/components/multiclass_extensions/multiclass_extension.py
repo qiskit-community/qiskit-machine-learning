@@ -14,11 +14,10 @@
 
 """ Base class for multiclass extension """
 
-from abc import abstractmethod
-from qiskit.aqua import Pluggable
+from abc import ABC, abstractmethod
 
 
-class MulticlassExtension(Pluggable):
+class MulticlassExtension(ABC):
     """
         Base class for multiclass extension.
 

@@ -122,6 +122,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Raises:
             AquaError: Pytorch not installed
         """
+        self._check_valid()
         super().__init__()
         if not torch_loaded:
             raise AquaError('Pytorch is not installed. For installation instructions see '
@@ -138,7 +139,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         self._ret = {}
 
     @staticmethod
-    def check_pluggable_valid():
+    def _check_valid():
         err_msg = \
             'Pytorch is not installed. For installation instructions ' \
             'see https://pytorch.org/get-started/locally/'

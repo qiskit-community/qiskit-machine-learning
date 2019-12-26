@@ -246,10 +246,6 @@ class NumpyDiscriminator(DiscriminativeNetwork):
 
         self._ret = {}
 
-    @staticmethod
-    def check_pluggable_valid():
-        return
-
     def set_seed(self, seed):
         """
         Set seed.

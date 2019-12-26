@@ -14,12 +14,10 @@
 
 """ Generative Quantum and Classical Neural Networks. """
 
-from abc import abstractmethod
-
-from qiskit.aqua import Pluggable
+from abc import ABC, abstractmethod
 
 
-class GenerativeNetwork(Pluggable):
+class GenerativeNetwork(ABC):
     """
     Base class for generative Quantum and Classical Neural Networks.
 
