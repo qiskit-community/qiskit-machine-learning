@@ -91,26 +91,22 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     """
     ClassicalDiscriminator based on PyTorch
     """
-    CONFIGURATION = {
-        'name': 'PytorchDiscriminator',
-        'description': 'qGAN Discriminator Network',
-        'input_schema': {
-            '$schema': 'http://json-schema.org/draft-07/schema#',
-            'id': 'discriminator_schema',
-            'type': 'object',
-            'properties': {
-                'n_features': {
-                    'type': 'integer',
-                    'default': 1
-                },
-                'n_out': {
-                    'type': 'integer',
-                    'default': 1
-                }
-
+    _INPUT_SCHEMA = {
+        '$schema': 'http://json-schema.org/draft-07/schema#',
+        'id': 'discriminator_schema',
+        'type': 'object',
+        'properties': {
+            'n_features': {
+                'type': 'integer',
+                'default': 1
             },
-            'additionalProperties': False
-        }
+            'n_out': {
+                'type': 'integer',
+                'default': 1
+            }
+
+        },
+        'additionalProperties': False
     }
 
     def __init__(self, n_features=1, n_out=1):

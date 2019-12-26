@@ -38,31 +38,27 @@ class QuantumGenerator(GenerativeNetwork):
     """
     Quantum Generator
     """
-    CONFIGURATION = {
-        'name': 'QuantumGenerator',
-        'description': 'qGAN Generator Network',
-        'input_schema': {
-            '$schema': 'http://json-schema.org/draft-07/schema#',
-            'id': 'generator_schema',
-            'type': 'object',
-            'properties': {
-                'bounds': {
-                    'type': 'array'
-                },
-                'num_qubits': {
-                    'type': 'array'
-                },
-                'init_params': {
-                    'type': ['array', 'null'],
-                    'default': None
-                },
-                'snapshot_dir': {
-                    'type': ['string', 'null'],
-                    'default': None
-                }
+    _INPUT_SCHEMA = {
+        '$schema': 'http://json-schema.org/draft-07/schema#',
+        'id': 'generator_schema',
+        'type': 'object',
+        'properties': {
+            'bounds': {
+                'type': 'array'
             },
-            'additionalProperties': False
-        }
+            'num_qubits': {
+                'type': 'array'
+            },
+            'init_params': {
+                'type': ['array', 'null'],
+                'default': None
+            },
+            'snapshot_dir': {
+                'type': ['string', 'null'],
+                'default': None
+            }
+        },
+        'additionalProperties': False
     }
 
     def __init__(self, bounds, num_qubits, generator_circuit=None,

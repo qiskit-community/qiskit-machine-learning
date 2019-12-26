@@ -21,7 +21,7 @@ class GenerativeNetwork(ABC):
     """
     Base class for generative Quantum and Classical Neural Networks.
 
-    This method should initialize the module and its configuration, but
+    This method should initialize the module, but
     raise an exception if a required component of the module is not available.
     """
     @abstractmethod

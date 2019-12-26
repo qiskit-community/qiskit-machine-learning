@@ -33,17 +33,13 @@ class OneAgainstRest(MulticlassExtension):
     """
       the multiclass extension based on the one-against-rest algorithm.
     """
-    CONFIGURATION = {
-        'name': 'OneAgainstRest',
-        'description': 'OneAgainstRest extension',
-        'input_schema': {
-            '$schema': 'http://json-schema.org/draft-07/schema#',
-            'id': 'one_against_rest_schema',
-            'type': 'object',
-            'properties': {
-            },
-            'additionalProperties': False
-        }
+    _INPUT_SCHEMA = {
+        '$schema': 'http://json-schema.org/draft-07/schema#',
+        'id': 'one_against_rest_schema',
+        'type': 'object',
+        'properties': {
+        },
+        'additionalProperties': False
     }
 
     def __init__(self, estimator_cls, params=None):

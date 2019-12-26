@@ -21,8 +21,8 @@ class MulticlassExtension(ABC):
     """
         Base class for multiclass extension.
 
-        This method should initialize the module and its configuration, and
-        use an exception if a component of the module is available.
+        This method should initialize the module and
+        use an exception if a component of the module is not available.
     """
 
     @abstractmethod

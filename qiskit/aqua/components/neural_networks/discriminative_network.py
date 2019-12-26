@@ -21,7 +21,7 @@ class DiscriminativeNetwork(ABC):
     """
     Base class for discriminative Quantum or Classical Neural Networks.
 
-    This method should initialize the module and its configuration, but
+    This method should initialize the module but
     raise an exception if a required component of the module is not available.
     """
     @abstractmethod
