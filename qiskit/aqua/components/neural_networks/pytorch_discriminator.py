@@ -91,26 +91,22 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     """
     ClassicalDiscriminator based on PyTorch
     """
-    CONFIGURATION = {
-        'name': 'PytorchDiscriminator',
-        'description': 'qGAN Discriminator Network',
-        'input_schema': {
-            '$schema': 'http://json-schema.org/draft-07/schema#',
-            'id': 'discriminator_schema',
-            'type': 'object',
-            'properties': {
-                'n_features': {
-                    'type': 'integer',
-                    'default': 1
-                },
-                'n_out': {
-                    'type': 'integer',
-                    'default': 1
-                }
-
+    _INPUT_SCHEMA = {
+        '$schema': 'http://json-schema.org/draft-07/schema#',
+        'id': 'discriminator_schema',
+        'type': 'object',
+        'properties': {
+            'n_features': {
+                'type': 'integer',
+                'default': 1
             },
-            'additionalProperties': False
-        }
+            'n_out': {
+                'type': 'integer',
+                'default': 1
+            }
+
+        },
+        'additionalProperties': False
     }
 
     def __init__(self, n_features=1, n_out=1):
@@ -122,6 +118,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         Raises:
             AquaError: Pytorch not installed
         """
+        self._check_valid()
         super().__init__()
         if not torch_loaded:
             raise AquaError('Pytorch is not installed. For installation instructions see '
@@ -138,7 +135,7 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         self._ret = {}
 
     @staticmethod
-    def check_pluggable_valid():
+    def _check_valid():
         err_msg = \
             'Pytorch is not installed. For installation instructions ' \
             'see https://pytorch.org/get-started/locally/'

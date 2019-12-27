@@ -33,17 +33,13 @@ class AllPairs(MulticlassExtension):
     The multiclass extension based on the all-pairs algorithm.
     """
 
-    CONFIGURATION = {
-        'name': 'AllPairs',
-        'description': 'AllPairs extension',
-        'input_schema': {
-            '$schema': 'http://json-schema.org/draft-07/schema#',
-            'id': 'allpairs_schema',
-            'type': 'object',
-            'properties': {
-            },
-            'additionalProperties': False
-        }
+    _INPUT_SCHEMA = {
+        '$schema': 'http://json-schema.org/draft-07/schema#',
+        'id': 'allpairs_schema',
+        'type': 'object',
+        'properties': {
+        },
+        'additionalProperties': False
     }
 
     def __init__(self, estimator_cls, params=None):
