@@ -16,12 +16,14 @@
 The multiclass extension based on the all-pairs algorithm.
 """
 
+from typing import Optional, List
 import logging
 
 import numpy as np
 from sklearn.utils.multiclass import _ovr_decision_function
 
-from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
+from .estimator import Estimator
+from .multiclass_extension import MulticlassExtension
 
 logger = logging.getLogger(__name__)
 
@@ -33,16 +35,9 @@ class AllPairs(MulticlassExtension):
     The multiclass extension based on the all-pairs algorithm.
     """
 
-    _INPUT_SCHEMA = {
-        '$schema': 'http://json-schema.org/draft-07/schema#',
-        'id': 'allpairs_schema',
-        'type': 'object',
-        'properties': {
-        },
-        'additionalProperties': False
-    }
-
-    def __init__(self, estimator_cls, params=None):
+    def __init__(self,
+                 estimator_cls: Estimator,
+                 params: Optional[List] = None) -> None:
         super().__init__()
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []

@@ -25,7 +25,7 @@ class DiscriminativeNetwork(ABC):
     raise an exception if a required component of the module is not available.
     """
     @abstractmethod
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._num_parameters = 0
         self._num_qubits = 0

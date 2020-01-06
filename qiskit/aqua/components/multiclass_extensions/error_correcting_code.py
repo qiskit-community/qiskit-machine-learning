@@ -16,6 +16,7 @@
 the multiclass extension based on the error-correcting-code algorithm.
 """
 
+from typing import Optional, List
 import logging
 
 import numpy as np
@@ -23,8 +24,9 @@ from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.multiclass import _ConstantPredictor
 
 from qiskit.aqua import aqua_globals
-from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
-from qiskit.aqua.utils.validation import validate
+from qiskit.aqua.utils.validation import validate_min
+from .estimator import Estimator
+from .multiclass_extension import MulticlassExtension
 
 logger = logging.getLogger(__name__)
 
@@ -35,22 +37,12 @@ class ErrorCorrectingCode(MulticlassExtension):
     """
       the multiclass extension based on the error-correcting-code algorithm.
     """
-    _INPUT_SCHEMA = {
-        '$schema': 'http://json-schema.org/draft-07/schema#',
-        'id': 'error_correcting_code_schema',
-        'type': 'object',
-        'properties': {
-            'code_size': {
-                'type': 'integer',
-                'default': 4,
-                'minimum': 1
-            },
-        },
-        'additionalProperties': False
-    }
 
-    def __init__(self, estimator_cls, params=None, code_size=4):
-        validate(locals(), self._INPUT_SCHEMA)
+    def __init__(self,
+                 estimator_cls: Estimator,
+                 params: Optional[List] = None,
+                 code_size: int = 4):
+        validate_min('code_size', code_size, 1)
         super().__init__()
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []
