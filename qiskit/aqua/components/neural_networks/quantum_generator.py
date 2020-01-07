@@ -16,6 +16,7 @@
 Generator
 """
 
+from typing import Optional, List, Union
 from copy import deepcopy
 import numpy as np
 
@@ -38,44 +39,28 @@ class QuantumGenerator(GenerativeNetwork):
     """
     Quantum Generator
     """
-    _INPUT_SCHEMA = {
-        '$schema': 'http://json-schema.org/draft-07/schema#',
-        'id': 'generator_schema',
-        'type': 'object',
-        'properties': {
-            'bounds': {
-                'type': 'array'
-            },
-            'num_qubits': {
-                'type': 'array'
-            },
-            'init_params': {
-                'type': ['array', 'null'],
-                'default': None
-            },
-            'snapshot_dir': {
-                'type': ['string', 'null'],
-                'default': None
-            }
-        },
-        'additionalProperties': False
-    }
 
-    def __init__(self, bounds, num_qubits, generator_circuit=None,
-                 init_params=None, snapshot_dir=None):
+    def __init__(self,
+                 bounds: np.ndarray,
+                 num_qubits: List[int],
+                 generator_circuit: Optional[Union[UnivariateVariationalDistribution,
+                                                   MultivariateVariationalDistribution,
+                                                   QuantumCircuit]] = None,
+                 init_params: Optional[Union[List[float], np.ndarray]] = None,
+                 snapshot_dir: Optional[str] = None) -> None:
         """
         Args:
-            bounds (numpy.ndarray): k min/max data values [[min_1,max_1],...,[min_k,max_k]],
+            bounds: k min/max data values [[min_1,max_1],...,[min_k,max_k]],
                 given input data dim k
-            num_qubits (list): k numbers of qubits to determine representation resolution,
+            num_qubits: k numbers of qubits to determine representation resolution,
             i.e. n qubits enable the representation of 2**n values [n_1,..., n_k]
-            generator_circuit (Union): a
+            generator_circuit: a
                 :class:`UnivariateVariationalDistribution` for univariate data,
                 a :class:`MultivariateVariationalDistribution` for multivariate data,
                 or a QuantumCircuit implementing the generator.
-            init_params (Union(list, numpy.ndarray)): 1D numpy array or list, Initialization for
+            init_params: 1D numpy array or list, Initialization for
                 the generator's parameters.
-            snapshot_dir (str): str or None, if not None save the optimizer's parameter after every
+            snapshot_dir: str or None, if not None save the optimizer's parameter after every
                 update step to the given directory
 
         Raises:

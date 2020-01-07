@@ -16,7 +16,7 @@
 the multiclass extension based on the error-correcting-code algorithm.
 """
 
-from typing import Optional, List
+from typing import Optional, List, Callable
 import logging
 
 import numpy as np
@@ -39,7 +39,7 @@ class ErrorCorrectingCode(MulticlassExtension):
     """
 
     def __init__(self,
-                 estimator_cls: Estimator,
+                 estimator_cls: Callable[[List], Estimator],
                  params: Optional[List] = None,
                  code_size: int = 4):
         validate_min('code_size', code_size, 1)

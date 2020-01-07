@@ -16,7 +16,7 @@
 the multiclass extension based on the one-against-rest algorithm.
 """
 
-from typing import Optional, List
+from typing import Optional, List, Callable
 import logging
 
 import numpy as np
@@ -36,7 +36,7 @@ class OneAgainstRest(MulticlassExtension):
     """
 
     def __init__(self,
-                 estimator_cls: Estimator,
+                 estimator_cls: Callable[[List], Estimator],
                  params: Optional[List] = None) -> None:
         super().__init__()
         self.estimator_cls = estimator_cls
