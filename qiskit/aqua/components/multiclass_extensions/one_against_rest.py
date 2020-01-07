@@ -16,13 +16,14 @@
 the multiclass extension based on the one-against-rest algorithm.
 """
 
+from typing import Optional, List, Callable
 import logging
 
 import numpy as np
 from sklearn.utils.validation import _num_samples
 from sklearn.preprocessing import LabelBinarizer
-
-from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
+from .estimator import Estimator
+from .multiclass_extension import MulticlassExtension
 
 logger = logging.getLogger(__name__)
 
@@ -33,16 +34,10 @@ class OneAgainstRest(MulticlassExtension):
     """
       the multiclass extension based on the one-against-rest algorithm.
     """
-    _INPUT_SCHEMA = {
-        '$schema': 'http://json-schema.org/draft-07/schema#',
-        'id': 'one_against_rest_schema',
-        'type': 'object',
-        'properties': {
-        },
-        'additionalProperties': False
-    }
 
-    def __init__(self, estimator_cls, params=None):
+    def __init__(self,
+                 estimator_cls: Callable[[List], Estimator],
+                 params: Optional[List] = None) -> None:
         super().__init__()
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []

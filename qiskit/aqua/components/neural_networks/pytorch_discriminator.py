@@ -91,29 +91,12 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
     """
     ClassicalDiscriminator based on PyTorch
     """
-    _INPUT_SCHEMA = {
-        '$schema': 'http://json-schema.org/draft-07/schema#',
-        'id': 'discriminator_schema',
-        'type': 'object',
-        'properties': {
-            'n_features': {
-                'type': 'integer',
-                'default': 1
-            },
-            'n_out': {
-                'type': 'integer',
-                'default': 1
-            }
 
-        },
-        'additionalProperties': False
-    }
-
-    def __init__(self, n_features=1, n_out=1):
+    def __init__(self, n_features: int = 1, n_out: int = 1) -> None:
         """
         Args:
-            n_features (int): Dimension of input data vector.
-            n_out (int):, Dimension of the discriminator's output vector.
+            n_features: Dimension of input data vector.
+            n_out: Dimension of the discriminator's output vector.
 
         Raises:
             AquaError: Pytorch not installed
