@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019.
+# (C) Copyright IBM 2019, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,74 +17,21 @@ Discriminator
 """
 
 import os
-import importlib
 import logging
-
 import numpy as np
-
-from qiskit.aqua import AquaError
 from .discriminative_network import DiscriminativeNetwork
 
 logger = logging.getLogger(__name__)
 
-# pylint: disable=invalid-name
-
+_HAS_TORCH = False
 try:
     import torch
     from torch import nn, optim
     from torch.autograd.variable import Variable
-    torch_loaded = True
+    _HAS_TORCH = True
 except ImportError:
     logger.info('Pytorch is not installed. For installation instructions '
                 'see https://pytorch.org/get-started/locally/')
-    torch_loaded = False
-
-
-class DiscriminatorNet(torch.nn.Module):
-    """
-    Discriminator
-    """
-
-    def __init__(self, n_features=1, n_out=1):
-        """
-        Initialize the discriminator network.
-
-        Args:
-            n_features (int): Dimension of input data samples.
-            n_out (int): n out
-        """
-
-        super(DiscriminatorNet, self).__init__()
-        self.n_features = n_features
-
-        self.hidden0 = nn.Sequential(
-            nn.Linear(self.n_features, 512),
-            nn.LeakyReLU(0.2),
-        )
-
-        self.hidden1 = nn.Sequential(
-            nn.Linear(512, 256),
-            nn.LeakyReLU(0.2),
-        )
-        self.out = nn.Sequential(
-            nn.Linear(256, n_out),
-            nn.Sigmoid()
-        )
-
-    def forward(self, x):  # pylint: disable=arguments-differ
-        """
-
-        Args:
-            x (torch.Tensor): Discriminator input, i.e. data sample.
-
-        Returns:
-            torch.Tensor: Discriminator output, i.e. data label.
-        """
-        x = self.hidden0(x)
-        x = self.hidden1(x)
-        x = self.out(x)
-
-        return x
 
 
 class ClassicalDiscriminator(DiscriminativeNetwork):
@@ -99,17 +46,18 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
             n_out: Dimension of the discriminator's output vector.
 
         Raises:
-            AquaError: Pytorch not installed
+            NameError: Pytorch not installed
         """
-        self._check_valid()
         super().__init__()
-        if not torch_loaded:
-            raise AquaError('Pytorch is not installed. For installation instructions see '
+        if not _HAS_TORCH:
+            raise NameError('Pytorch is not installed. For installation instructions see '
                             'https://pytorch.org/get-started/locally/')
 
         self._n_features = n_features
         self._n_out = n_out
         # discriminator_net: torch.nn.Module or None, Discriminator network.
+        # pylint: disable=import-outside-toplevel
+        from ._pytorch_discriminator_net import DiscriminatorNet
         self._discriminator = DiscriminatorNet(self._n_features, self._n_out)
         # optimizer: torch.optim.Optimizer or None, Optimizer initialized w.r.t
         # discriminator network parameters.
@@ -117,47 +65,30 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
 
         self._ret = {}
 
-    @staticmethod
-    def _check_valid():
-        err_msg = \
-            'Pytorch is not installed. For installation instructions ' \
-            'see https://pytorch.org/get-started/locally/'
-        try:
-            spec = importlib.util.find_spec('torch.optim')
-            if spec is not None:
-                spec = importlib.util.find_spec('torch.nn')
-                if spec is not None:
-                    return
-        except Exception as ex:  # pylint: disable=broad-except
-            logger.debug('%s %s', err_msg, str(ex))
-            raise AquaError(err_msg) from ex
-
-        raise AquaError(err_msg)
-
-    def set_seed(self, seed):
+    def set_seed(self, seed: int):
         """
         Set seed.
 
         Args:
-            seed (int): seed
+            seed: seed
         """
         torch.manual_seed(seed)
 
-    def save_model(self, snapshot_dir):
+    def save_model(self, snapshot_dir: str):
         """
         Save discriminator model
 
         Args:
-            snapshot_dir (str):  directory path for saving the model
+            snapshot_dir:  directory path for saving the model
         """
         torch.save(self._discriminator, os.path.join(snapshot_dir, 'discriminator.pt'))
 
-    def load_model(self, load_dir):
+    def load_model(self, load_dir: str):
         """
         Save discriminator model
 
         Args:
-            load_dir (str): file with stored pytorch discriminator model to be loaded
+            load_dir: file with stored pytorch discriminator model to be loaded
         """
         torch.load(load_dir)
 
@@ -240,12 +171,12 @@ class ClassicalDiscriminator(DiscriminativeNetwork):
         # pylint: disable=no-member
         delta_ = torch.rand(x.size()) * c
         z = Variable(x+delta_, requires_grad=True)
-        o = self.get_label(z)
+        o_l = self.get_label(z)
         # pylint: disable=no-member
-        d = torch.autograd.grad(o, z, grad_outputs=torch.ones(o.size()),
-                                create_graph=True)[0].view(z.size(0), -1)
+        d_g = torch.autograd.grad(o_l, z, grad_outputs=torch.ones(o_l.size()),
+                                  create_graph=True)[0].view(z.size(0), -1)
 
-        return lambda_ * ((d.norm(p=2, dim=1) - k)**2).mean()
+        return lambda_ * ((d_g.norm(p=2, dim=1) - k)**2).mean()
 
     def train(self, data, weights, penalty=True, quantum_instance=None, shots=None):
         """

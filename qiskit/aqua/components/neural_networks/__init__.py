@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019.
+# (C) Copyright IBM 2019, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -47,16 +47,12 @@ from .generative_network import GenerativeNetwork
 from .quantum_generator import QuantumGenerator
 from .discriminative_network import DiscriminativeNetwork
 from .numpy_discriminator import NumpyDiscriminator
+from .pytorch_discriminator import ClassicalDiscriminator
 
 __all__ = [
     'DiscriminativeNetwork',
     'GenerativeNetwork',
     'QuantumGenerator',
-    'NumpyDiscriminator'
+    'NumpyDiscriminator',
+    'ClassicalDiscriminator'
 ]
-
-try:
-    from .pytorch_discriminator import ClassicalDiscriminator
-    __all__ += ['ClassicalDiscriminator']
-except Exception:  # pylint: disable=broad-except
-    pass
