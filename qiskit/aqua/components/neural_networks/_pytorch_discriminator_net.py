@@ -1,0 +1,76 @@
+# -*- coding: utf-8 -*-
+
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2019, 2020.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
+"""
+Discriminator
+"""
+
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+try:
+    import torch
+    from torch import nn
+except ImportError:
+    logger.info('Pytorch is not installed. For installation instructions '
+                'see https://pytorch.org/get-started/locally/')
+
+
+class DiscriminatorNet(torch.nn.Module):
+    """
+    Discriminator
+    """
+
+    def __init__(self, n_features: int = 1, n_out: int = 1) -> None:
+        """
+        Initialize the discriminator network.
+
+        Args:
+            n_features: Dimension of input data samples.
+            n_out: n out
+        """
+
+        super(DiscriminatorNet, self).__init__()
+        self.n_features = n_features
+
+        self.hidden0 = nn.Sequential(
+            nn.Linear(self.n_features, 512),
+            nn.LeakyReLU(0.2),
+        )
+
+        self.hidden1 = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2),
+        )
+        self.out = nn.Sequential(
+            nn.Linear(256, n_out),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):  # pylint: disable=arguments-differ
+        """
+
+        Args:
+            x (torch.Tensor): Discriminator input, i.e. data sample.
+
+        Returns:
+            torch.Tensor: Discriminator output, i.e. data label.
+        """
+        x = self.hidden0(x)
+        x = self.hidden1(x)
+        x = self.out(x)
+
+        return x
