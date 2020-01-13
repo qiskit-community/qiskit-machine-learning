@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019.
+# (C) Copyright IBM 2019, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -24,7 +24,7 @@ from qiskit.aqua.components.variational_forms import RY
 from qiskit.aqua.algorithms.adaptive.qgan.qgan import QGAN
 from qiskit.aqua import aqua_globals, QuantumInstance
 from qiskit.aqua.components.initial_states import Custom
-from qiskit.aqua.components.neural_networks import NumpyDiscriminator, ClassicalDiscriminator
+from qiskit.aqua.components.neural_networks import NumpyDiscriminator, PyTorchDiscriminator
 from qiskit import BasicAer
 
 
@@ -121,7 +121,7 @@ class TestQGAN(QiskitAquaTestCase):
                          num_qubits,
                          batch_size,
                          num_epochs,
-                         discriminator=ClassicalDiscriminator(n_features=len(num_qubits)),
+                         discriminator=PyTorchDiscriminator(n_features=len(num_qubits)),
                          snapshot_dir=None)
             _qgan.seed = self.seed
             _qgan.set_generator()

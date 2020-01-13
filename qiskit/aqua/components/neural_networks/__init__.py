@@ -38,7 +38,7 @@ Neural Networks
    :nosignatures:
 
    NumpyDiscriminator
-   ClassicalDiscriminator
+   PyTorchDiscriminator
    QuantumGenerator
 
 """
@@ -47,12 +47,12 @@ from .generative_network import GenerativeNetwork
 from .quantum_generator import QuantumGenerator
 from .discriminative_network import DiscriminativeNetwork
 from .numpy_discriminator import NumpyDiscriminator
-from .pytorch_discriminator import ClassicalDiscriminator
+from .pytorch_discriminator import PyTorchDiscriminator
 
 __all__ = [
     'DiscriminativeNetwork',
     'GenerativeNetwork',
     'QuantumGenerator',
     'NumpyDiscriminator',
-    'ClassicalDiscriminator'
+    'PyTorchDiscriminator'
 ]

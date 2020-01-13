@@ -34,9 +34,9 @@ except ImportError:
                 'see https://pytorch.org/get-started/locally/')
 
 
-class ClassicalDiscriminator(DiscriminativeNetwork):
+class PyTorchDiscriminator(DiscriminativeNetwork):
     """
-    ClassicalDiscriminator based on PyTorch
+    PyTorchDiscriminator based on PyTorch
     """
 
     def __init__(self, n_features: int = 1, n_out: int = 1) -> None:
