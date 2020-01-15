@@ -26,9 +26,9 @@ from qiskit.ml import __path__ as qiskit_ml_path
 
 class Path(Enum):
     """Helper with paths commonly used during the tests."""
-    # Main SDK path:    qiskit/optimization/
+    # Main SDK path:    qiskit/ml/
     SDK = qiskit_ml_path[0]
-    # test.python path: test/optimization
+    # test.python path: test/ml
     TEST = os.path.dirname(__file__)
 
 

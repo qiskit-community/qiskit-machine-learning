@@ -53,4 +53,5 @@ class TestVQC(QiskitMLTestCase):
                                            seed_transpiler=aqua_globals.random_seed)
 
         result = vqc.run(quantum_instance)
-        self.assertAlmostEqual(result['testing_accuracy'], 1, delta=0.3)
+        self.log.debug(result['testing_accuracy'])
+        self.assertGreaterEqual(result['testing_accuracy'], 0.5)

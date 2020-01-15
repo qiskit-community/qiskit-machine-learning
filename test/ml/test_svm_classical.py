@@ -45,5 +45,5 @@ class TestSVMClassical(QiskitMLTestCase):
 
         datapoints, _ = split_dataset_to_data_and_labels(test_input)
         result = SVM_Classical(training_input, test_input, datapoints[0]).run()
-
-        self.assertAlmostEqual(result['testing_accuracy'], 1, delta=0.5)
+        self.log.debug(result['testing_accuracy'])
+        self.assertGreaterEqual(result['testing_accuracy'], 0.5)
