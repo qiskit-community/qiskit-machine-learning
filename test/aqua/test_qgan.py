@@ -16,7 +16,7 @@
 """ Test QGAN """
 
 import unittest
-from test.aqua.common import QiskitAquaTestCase
+from test.aqua import QiskitAquaTestCase
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
                                                        UnivariateVariationalDistribution)

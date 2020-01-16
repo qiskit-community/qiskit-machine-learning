@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2018, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,7 +16,7 @@
 
 import os
 import unittest
-from test.aqua.common import QiskitAquaTestCase
+from test.aqua import QiskitAquaTestCase
 import numpy as np
 from qiskit import BasicAer
 from qiskit.aqua import QuantumInstance, aqua_globals
@@ -177,7 +177,7 @@ class TestVQC(QiskitAquaTestCase):
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
-        file_path = self._get_resource_path('vqc_test.npz')
+        file_path = self.get_resource_path('vqc_test.npz')
         vqc.save_model(file_path)
 
         self.assertTrue(os.path.exists(file_path))
@@ -209,12 +209,12 @@ class TestVQC(QiskitAquaTestCase):
     def test_vqc_callback(self):
         """ vqc callback test """
         tmp_filename = 'qvqc_callback_test.csv'
-        is_file_exist = os.path.exists(self._get_resource_path(tmp_filename))
+        is_file_exist = os.path.exists(self.get_resource_path(tmp_filename))
         if is_file_exist:
-            os.remove(self._get_resource_path(tmp_filename))
+            os.remove(self.get_resource_path(tmp_filename))
 
         def store_intermediate_result(eval_count, parameters, cost, batch_index):
-            with open(self._get_resource_path(tmp_filename), 'a') as file:
+            with open(self.get_resource_path(tmp_filename), 'a') as file:
                 content = "{},{},{:.5f},{}".format(eval_count, parameters, cost, batch_index)
                 print(content, file=file, flush=True)
 
@@ -234,7 +234,7 @@ class TestVQC(QiskitAquaTestCase):
                                            seed_transpiler=self.seed)
         vqc.run(quantum_instance)
 
-        is_file_exist = os.path.exists(self._get_resource_path(tmp_filename))
+        is_file_exist = os.path.exists(self.get_resource_path(tmp_filename))
         self.assertTrue(is_file_exist, "Does not store content successfully.")
 
         # check the content
@@ -244,7 +244,7 @@ class TestVQC(QiskitAquaTestCase):
             ['2', '[ 0.41794437 -1.97987177 -0.73153057  1.06577518]', '0.45975', '2'],
         ]
         try:
-            with open(self._get_resource_path(tmp_filename)) as file:
+            with open(self.get_resource_path(tmp_filename)) as file:
                 idx = 0
                 for record in file.readlines():
                     eval_count, parameters, cost, batch_index = record.split(",")
@@ -255,7 +255,7 @@ class TestVQC(QiskitAquaTestCase):
                     idx += 1
         finally:
             if is_file_exist:
-                os.remove(self._get_resource_path(tmp_filename))
+                os.remove(self.get_resource_path(tmp_filename))
 
     def test_vqc_on_wine(self):
         """ vqc on wine test """

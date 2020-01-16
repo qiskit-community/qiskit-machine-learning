@@ -12,8 +12,14 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" ML test packages """
+"""ML Test Case"""
 
-from .ml_test_case import QiskitMLTestCase
+from test import QiskitBaseTestCase
 
-__all__ = ['QiskitMLTestCase']
+
+class QiskitMLTestCase(QiskitBaseTestCase):
+    """ML Test Case"""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self._class_location = __file__
