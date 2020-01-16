@@ -35,6 +35,6 @@ class TestAdHocData(QiskitMLTestCase):
         np.testing.assert_array_equal(class_labels, ['A', 'B'])
 
         datapoints, class_to_label = split_dataset_to_data_and_labels(test_input)
-        np.testing.assert_array_equal(datapoints[1],
+        np.testing.assert_array_equal(datapoints[1].tolist(),
                                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         self.assertDictEqual(class_to_label, {'A': 0, 'B': 1})
