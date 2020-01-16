@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2018, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,7 +15,7 @@
 """ Test QSVM """
 
 import os
-from test.aqua.common import QiskitAquaTestCase
+from test.aqua import QiskitAquaTestCase
 import numpy as np
 from qiskit import BasicAer
 from qiskit.aqua import QuantumInstance, aqua_globals
@@ -116,7 +116,7 @@ class TestQSVM(QiskitAquaTestCase):
 
         self.assertEqual(result['testing_accuracy'], 0.5)
 
-        file_path = self._get_resource_path('qsvm_test.npz')
+        file_path = self.get_resource_path('qsvm_test.npz')
         svm.save_model(file_path)
 
         self.assertTrue(os.path.exists(file_path))
