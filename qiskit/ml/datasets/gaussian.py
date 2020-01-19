@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2018, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,6 +17,7 @@ gaussian dataset
 """
 
 import numpy as np
+from qiskit.aqua import aqua_globals
 try:
     import matplotlib.pyplot as plt
     HAS_MATPLOTLIB = True
@@ -33,19 +34,19 @@ def gaussian(training_size, test_size, n, plot_data=False):
         sample_train = []
         sample_a = [[0 for x in range(n)] for y in range(training_size+test_size)]
         sample_b = [[0 for x in range(n)] for y in range(training_size+test_size)]
-        randomized_vector1 = np.random.randint(2, size=n)
+        randomized_vector1 = aqua_globals.random.randint(2, size=n)
         randomized_vector2 = (randomized_vector1+1) % 2
         for t_r in range(training_size+test_size):
             for feat in range(n):
                 if randomized_vector1[feat] == 0:
-                    sample_a[t_r][feat] = np.random.normal(-1/2, sigma, None)
+                    sample_a[t_r][feat] = aqua_globals.random.normal(-1/2, sigma, None)
                 elif randomized_vector1[feat] == 1:
-                    sample_a[t_r][feat] = np.random.normal(1/2, sigma, None)
+                    sample_a[t_r][feat] = aqua_globals.random.normal(1/2, sigma, None)
 
                 if randomized_vector2[feat] == 0:
-                    sample_b[t_r][feat] = np.random.normal(-1/2, sigma, None)
+                    sample_b[t_r][feat] = aqua_globals.random.normal(-1/2, sigma, None)
                 elif randomized_vector2[feat] == 1:
-                    sample_b[t_r][feat] = np.random.normal(1/2, sigma, None)
+                    sample_b[t_r][feat] = aqua_globals.random.normal(1/2, sigma, None)
 
         sample_train = [sample_a, sample_b]
         for lindex in range(training_size+test_size):
@@ -78,31 +79,31 @@ def gaussian(training_size, test_size, n, plot_data=False):
         sample_a = [[0 for x in range(n)] for y in range(training_size+test_size)]
         sample_b = [[0 for x in range(n)] for y in range(training_size+test_size)]
         sample_c = [[0 for x in range(n)] for y in range(training_size+test_size)]
-        randomized_vector1 = np.random.randint(3, size=n)
+        randomized_vector1 = aqua_globals.random.randint(3, size=n)
         randomized_vector2 = (randomized_vector1+1) % 3
         randomized_vector3 = (randomized_vector2+1) % 3
         for t_r in range(training_size+test_size):
             for feat in range(n):
                 if randomized_vector1[feat] == 0:
-                    sample_a[t_r][feat] = np.random.normal(2*1*np.pi/6, sigma, None)
+                    sample_a[t_r][feat] = aqua_globals.random.normal(2*1*np.pi/6, sigma, None)
                 elif randomized_vector1[feat] == 1:
-                    sample_a[t_r][feat] = np.random.normal(2*3*np.pi/6, sigma, None)
+                    sample_a[t_r][feat] = aqua_globals.random.normal(2*3*np.pi/6, sigma, None)
                 elif randomized_vector1[feat] == 2:
-                    sample_a[t_r][feat] = np.random.normal(2*5*np.pi/6, sigma, None)
+                    sample_a[t_r][feat] = aqua_globals.random.normal(2*5*np.pi/6, sigma, None)
 
                 if randomized_vector2[feat] == 0:
-                    sample_b[t_r][feat] = np.random.normal(2*1*np.pi/6, sigma, None)
+                    sample_b[t_r][feat] = aqua_globals.random.normal(2*1*np.pi/6, sigma, None)
                 elif randomized_vector2[feat] == 1:
-                    sample_b[t_r][feat] = np.random.normal(2*3*np.pi/6, sigma, None)
+                    sample_b[t_r][feat] = aqua_globals.random.normal(2*3*np.pi/6, sigma, None)
                 elif randomized_vector2[feat] == 2:
-                    sample_b[t_r][feat] = np.random.normal(2*5*np.pi/6, sigma, None)
+                    sample_b[t_r][feat] = aqua_globals.random.normal(2*5*np.pi/6, sigma, None)
 
                 if randomized_vector3[feat] == 0:
-                    sample_c[t_r][feat] = np.random.normal(2*1*np.pi/6, sigma, None)
+                    sample_c[t_r][feat] = aqua_globals.random.normal(2*1*np.pi/6, sigma, None)
                 elif randomized_vector3[feat] == 1:
-                    sample_c[t_r][feat] = np.random.normal(2*3*np.pi/6, sigma, None)
+                    sample_c[t_r][feat] = aqua_globals.random.normal(2*3*np.pi/6, sigma, None)
                 elif randomized_vector3[feat] == 2:
-                    sample_c[t_r][feat] = np.random.normal(2*5*np.pi/6, sigma, None)
+                    sample_c[t_r][feat] = aqua_globals.random.normal(2*5*np.pi/6, sigma, None)
 
         sample_train = [sample_a, sample_b, sample_c]
         for lindex in range(training_size+test_size):
