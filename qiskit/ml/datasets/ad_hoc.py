@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2018, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,6 +18,7 @@ ad hoc dataset
 
 import numpy as np
 import scipy
+from qiskit.aqua import aqua_globals
 try:
     import matplotlib.pyplot as plt
     HAS_MATPLOTLIB = True
@@ -82,7 +83,8 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
     elif n == 3:
         d_m = np.diag(maj)
 
-    basis = np.random.random((2**n, 2**n)) + 1j*np.random.random((2**n, 2**n))
+    basis = aqua_globals.random.random_sample((2 ** n, 2 ** n)) + \
+        1j * aqua_globals.random.random_sample((2 ** n, 2 ** n))
     basis = np.asmatrix(basis).getH()*np.asmatrix(basis)
 
     [s_a, u_a] = np.linalg.eig(basis)
@@ -121,16 +123,16 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
         # Now sample randomly from sample_Total a number of times training_size+testing_size
         t_r = 0
         while t_r < (training_size+test_size):
-            draw1 = np.random.choice(count)
-            draw2 = np.random.choice(count)
+            draw1 = aqua_globals.random.choice(count)
+            draw2 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2] == +1:
                 sample_a[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
                 t_r += 1
 
         t_r = 0
         while t_r < (training_size+test_size):
-            draw1 = np.random.choice(count)
-            draw2 = np.random.choice(count)
+            draw1 = aqua_globals.random.choice(count)
+            draw2 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2] == -1:
                 sample_b[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
                 t_r += 1
@@ -190,18 +192,18 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
         # Now sample randomly from sample_Total a number of times training_size+testing_size
         t_r = 0
         while t_r < (training_size+test_size):
-            draw1 = np.random.choice(count)
-            draw2 = np.random.choice(count)
-            draw3 = np.random.choice(count)
+            draw1 = aqua_globals.random.choice(count)
+            draw2 = aqua_globals.random.choice(count)
+            draw3 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2][draw3] == +1:
                 sample_a[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count, 2*np.pi*draw3/count]
                 t_r += 1
 
         t_r = 0
         while t_r < (training_size+test_size):
-            draw1 = np.random.choice(count)
-            draw2 = np.random.choice(count)
-            draw3 = np.random.choice(count)
+            draw1 = aqua_globals.random.choice(count)
+            draw2 = aqua_globals.random.choice(count)
+            draw3 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2][draw3] == -1:
                 sample_b[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count, 2*np.pi*draw3/count]
                 t_r += 1
@@ -277,16 +279,16 @@ def sample_ad_hoc_data(sample_total, test_size, n):
     sample_b = [[0 for x in range(n)] for y in range(test_size)]
     t_r = 0
     while t_r < (test_size):
-        draw1 = np.random.choice(count)
-        draw2 = np.random.choice(count)
+        draw1 = aqua_globals.random.choice(count)
+        draw2 = aqua_globals.random.choice(count)
         if sample_total[draw1][draw2] == +1:
             sample_a[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
             t_r += 1
 
     t_r = 0
     while t_r < (test_size):
-        draw1 = np.random.choice(count)
-        draw2 = np.random.choice(count)
+        draw1 = aqua_globals.random.choice(count)
+        draw2 = aqua_globals.random.choice(count)
         if sample_total[draw1][draw2] == -1:
             sample_b[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
             t_r += 1

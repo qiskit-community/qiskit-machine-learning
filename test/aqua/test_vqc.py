@@ -137,7 +137,7 @@ class TestVQC(QiskitAquaTestCase):
         n_dim = 2  # dimension of each data point
         seed = 1024
         aqua_globals.random_seed = seed
-        _, training_input, test_input, _ = ad_hoc_data(training_size=6,
+        _, training_input, test_input, _ = ad_hoc_data(training_size=4,
                                                        test_size=2,
                                                        n=n_dim,
                                                        gap=0.3,
@@ -150,8 +150,9 @@ class TestVQC(QiskitAquaTestCase):
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
         result = vqc.run(quantum_instance)
+        vqc_accuracy = 0.5
         self.log.debug(result['testing_accuracy'])
-        self.assertGreaterEqual(result['testing_accuracy'], 0.5)
+        self.assertAlmostEqual(result['testing_accuracy'], vqc_accuracy, places=3)
 
     def test_save_and_load_model(self):
         """ save and load model test """
