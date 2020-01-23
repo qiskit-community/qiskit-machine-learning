@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2018, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,15 +14,25 @@
 
 """ qp solver """
 
+from typing import Optional, Tuple
 import logging
-
 import numpy as np
-from cvxopt import matrix, solvers
 
 logger = logging.getLogger(__name__)
 
+_HAS_CVXOPT = False
+try:
+    from cvxopt import matrix, solvers
+    _HAS_CVXOPT = True
+except ImportError:
+    logger.info('CVXOPT is not installed. See http://cvxopt.org/install/index.html')
 
-def optimize_svm(kernel_matrix, y, scaling=None, max_iters=500, show_progress=False):
+
+def optimize_svm(kernel_matrix: np.ndarray,
+                 y: np.ndarray,
+                 scaling: Optional[float] = None,
+                 max_iters: int = 500,
+                 show_progress: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Solving quadratic programming problem for SVM; thus, some constraints are fixed.
 
@@ -30,19 +40,24 @@ def optimize_svm(kernel_matrix, y, scaling=None, max_iters=500, show_progress=Fa
     http://cvxopt.org/userguide/coneprog.html#quadratic-programming
 
     Args:
-        kernel_matrix (numpy.ndarray): NxN array
-        y (numpy.ndarray): Nx1 array
-        scaling (float): the scaling factor to renormalize the `y`, if it is None,
-                            use L2-norm of `y` for normalization
-        max_iters (int): number of iterations for QP solver
-        show_progress (bool): showing the progress of QP solver
+        kernel_matrix: NxN array
+        y: Nx1 array
+        scaling: the scaling factor to renormalize the `y`, if it is None,
+                 use L2-norm of `y` for normalization
+        max_iters: number of iterations for QP solver
+        show_progress: showing the progress of QP solver
 
     Returns:
-        numpy.ndarray: Sx1 array, where S is the number of supports
-        numpy.ndarray: Sx1 array, where S is the number of supports
-        numpy.ndarray: Sx1 array, where S is the number of supports
+        np.ndarray: Sx1 array, where S is the number of supports
+        np.ndarray: Sx1 array, where S is the number of supports
+        np.ndarray: Sx1 array, where S is the number of supports
+
+    Raises:
+        NameError: CVXOPT not installed.
     """
     # pylint: disable=invalid-name
+    if not _HAS_CVXOPT:
+        raise NameError('CVXOPT is not installed. See http://cvxopt.org/install/index.html')
     if y.ndim == 1:
         y = y[:, np.newaxis]
     H = np.outer(y, y) * kernel_matrix
