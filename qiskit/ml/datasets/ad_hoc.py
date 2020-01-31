@@ -112,7 +112,7 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
                     (np.pi-x_1)*(np.pi-x_2)*np.kron(z_m, z_m)
                 u_u = scipy.linalg.expm(1j*phi)  # pylint: disable=no-member
                 psi = np.asmatrix(u_u)*h_2*np.asmatrix(u_u)*np.transpose(psi_0)
-                temp = np.asscalar(np.real(psi.getH()*m_m*psi))
+                temp = np.real(psi.getH()*m_m*psi).item()
                 if temp > gap:
                     sample_total[n_1][n_2] = +1
                 elif temp < -gap:
@@ -178,7 +178,7 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
                         (np.pi-x_1)*(np.pi-x_3)*np.kron(np.kron(z_m, j_m), z_m)
                     u_u = scipy.linalg.expm(1j*phi)  # pylint: disable=no-member
                     psi = np.asmatrix(u_u)*h_3*np.asmatrix(u_u)*np.transpose(psi_0)
-                    temp = np.asscalar(np.real(psi.getH()*m_m*psi))
+                    temp = np.real(psi.getH()*m_m*psi).item()
                     if temp > gap:
                         sample_total[n_1][n_2][n_3] = +1
                         sample_total_a.append([n_1, n_2, n_3])
