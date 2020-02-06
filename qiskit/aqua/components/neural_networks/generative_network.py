@@ -52,7 +52,7 @@ class GenerativeNetwork(ABC):
 
         Args:
             quantum_instance (QuantumInstance): Quantum Instance, used to run the generator circuit.
-            qc_state_in (QuantumCircuit): corresponding to the input state
+            qc_state_in (QuantumCircuit or vector): corresponding to the network input state
             params (numpy.ndarray): parameters which should be used to run the generator,
                 if None use self._params
             shots (int): if not None use a number of shots that is different from the number
