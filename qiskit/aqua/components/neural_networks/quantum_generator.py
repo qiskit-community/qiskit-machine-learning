@@ -39,11 +39,11 @@ from qiskit.aqua.components.initial_states import Custom
 class QuantumGenerator(GenerativeNetwork):
     """
     Quantum Generator
-    The quantum generator is a parametrized quantum circuit which can be trained with the QGAN algorithm
-    :ref:`QGAN` to generate a quantum state which approximates the probability distribution of given training data.
-    At the beginning of the training the parameters will be set randomly, thus, the output will is random.
-    Throughout the training the quantum generator learns to represent the target distribution.
-
+    The quantum generator is a parametrized quantum circuit which can be trained with the
+    QGAN algorithm :ref:`QGAN` to generate a quantum state which approximates the probability
+    distribution of given training data. At the beginning of the training the parameters will
+    be set randomly, thus, the output will is random. Throughout the training the quantum
+    generator learns to represent the target distribution.
     Eventually, the trained generator can be used for state preparation in e.g. QAE.
 
     """
@@ -221,8 +221,9 @@ class QuantumGenerator(GenerativeNetwork):
         """
         Get classical data samples from the generator.
         Running the quantum generator circuit results in a quantum state.
-        To train this generator with a classical discriminator, we need to sample classical outputs by
-        measuring the quantum state and mapping them to feature space defined by the training data.
+        To train this generator with a classical discriminator, we need to sample classical outputs
+        by measuring the quantum state and mapping them to feature space defined by the training
+        data.
 
         Args:
             quantum_instance (QuantumInstance): Quantum Instance, used to run the generator
