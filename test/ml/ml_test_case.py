@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,19 +12,14 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" estimator """
+"""ML Test Case"""
 
-from abc import ABC, abstractmethod
+from test import QiskitBaseTestCase
 
 
-class Estimator(ABC):
-    """ Estimator class """
-    @abstractmethod
-    def fit(self, x, y):
-        """ fit """
-        raise NotImplementedError("Should have implemented this")
+class QiskitMLTestCase(QiskitBaseTestCase):
+    """ML Test Case"""
 
-    @abstractmethod
-    def decision_function(self, x):
-        """ decision function """
-        raise NotImplementedError("Should have implemented this")
+    def setUp(self) -> None:
+        super().setUp()
+        self._class_location = __file__

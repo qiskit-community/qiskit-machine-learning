@@ -1,44 +1,33 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2018 IBM.
+# This code is part of Qiskit.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# (C) Copyright IBM 2018, 2020.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# =============================================================================
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
 
-from qiskit.aqua import Pluggable
-from abc import abstractmethod
+""" Base class for multiclass extension """
+
+from abc import ABC, abstractmethod
 
 
-class MulticlassExtension(Pluggable):
+class MulticlassExtension(ABC):
     """
         Base class for multiclass extension.
 
-        This method should initialize the module and its configuration, and
-        use an exception if a component of the module is available.
-
-        Args:
-            configuration (dict): configuration dictionary
+        This method should initialize the module and
+        use an exception if a component of the module is not available.
     """
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-
-    @classmethod
-    def init_params(cls, params):
-        multiclass_extension_params = params.get(Pluggable.SECTION_KEY_MULTICLASS_EXTENSION)
-        args = {k: v for k, v in multiclass_extension_params.items() if k != 'name'}
-        return cls(**args)
 
     @abstractmethod
     def train(self, x, y):
