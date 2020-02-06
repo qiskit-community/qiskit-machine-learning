@@ -13,7 +13,7 @@
 # that they have been altered from the originals.
 
 """
-Discriminator
+PyTorch Discriminator Neural Network
 """
 
 import os
@@ -85,7 +85,7 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
 
     def load_model(self, load_dir: str):
         """
-        Save discriminator model
+        Load discriminator model
 
         Args:
             load_dir: file with stored pytorch discriminator model to be loaded
@@ -180,7 +180,7 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
 
     def train(self, data, weights, penalty=True, quantum_instance=None, shots=None):
         """
-        Perform one training step w.r.t to the discriminator's parameters
+        Perform one training step w.r.t. to the discriminator's parameters
 
         Args:
             data (tuple):

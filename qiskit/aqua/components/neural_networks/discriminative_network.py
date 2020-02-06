@@ -12,7 +12,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Discriminative Quantum or Classical Neural Networks. """
+""" Discriminative Quantum or Classical Neural Networks."""
 
 from abc import ABC, abstractmethod
 
