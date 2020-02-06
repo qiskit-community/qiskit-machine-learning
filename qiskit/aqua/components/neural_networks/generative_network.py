@@ -12,7 +12,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Generative Quantum and Classical Neural Networks. """
+""" Generative Quantum and Classical Neural Networks.
+.. _GenerativeNN:"""
 
 from abc import ABC, abstractmethod
 
