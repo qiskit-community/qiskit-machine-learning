@@ -70,21 +70,23 @@ class TestQSVM(QiskitAquaTestCase):
                                            shots=self.shots,
                                            seed_simulator=self.random_seed,
                                            seed_transpiler=self.random_seed)
+        try:
+            result = svm.run(quantum_instance)
+            np.testing.assert_array_almost_equal(
+                result['kernel_matrix_training'], ref_kernel_training, decimal=1)
+            np.testing.assert_array_almost_equal(
+                result['kernel_matrix_testing'], ref_kernel_testing, decimal=1)
 
-        result = svm.run(quantum_instance)
-        np.testing.assert_array_almost_equal(
-            result['kernel_matrix_training'], ref_kernel_training, decimal=1)
-        np.testing.assert_array_almost_equal(
-            result['kernel_matrix_testing'], ref_kernel_testing, decimal=1)
+            self.assertEqual(len(result['svm']['support_vectors']), 4)
+            np.testing.assert_array_almost_equal(
+                result['svm']['support_vectors'], ref_support_vectors, decimal=4)
 
-        self.assertEqual(len(result['svm']['support_vectors']), 4)
-        np.testing.assert_array_almost_equal(
-            result['svm']['support_vectors'], ref_support_vectors, decimal=4)
+            np.testing.assert_array_almost_equal(result['svm']['alphas'], ref_alpha, decimal=8)
+            np.testing.assert_array_almost_equal(result['svm']['bias'], ref_bias, decimal=8)
 
-        np.testing.assert_array_almost_equal(result['svm']['alphas'], ref_alpha, decimal=8)
-        np.testing.assert_array_almost_equal(result['svm']['bias'], ref_bias, decimal=8)
-
-        self.assertEqual(result['testing_accuracy'], 0.5)
+            self.assertEqual(result['testing_accuracy'], 0.5)
+        except NameError as ex:
+            self.skipTest(str(ex))
 
     def test_qsvm_binary_directly_statevector(self):
         """ QSVM Binary Directly Statevector test """
@@ -103,46 +105,49 @@ class TestQSVM(QiskitAquaTestCase):
 
         quantum_instance = QuantumInstance(backend, seed_transpiler=self.random_seed,
                                            seed_simulator=self.random_seed)
-        result = svm.run(quantum_instance)
-
-        ori_alphas = result['svm']['alphas']
-
-        np.testing.assert_array_almost_equal(
-            result['kernel_matrix_testing'], ref_kernel_testing, decimal=4)
-
-        self.assertEqual(len(result['svm']['support_vectors']), 4)
-        np.testing.assert_array_almost_equal(
-            result['svm']['support_vectors'], ref_support_vectors, decimal=4)
-
-        self.assertEqual(result['testing_accuracy'], 0.5)
-
         file_path = self.get_resource_path('qsvm_test.npz')
-        svm.save_model(file_path)
+        try:
+            result = svm.run(quantum_instance)
 
-        self.assertTrue(os.path.exists(file_path))
+            ori_alphas = result['svm']['alphas']
 
-        loaded_svm = QSVM(feature_map)
-        loaded_svm.load_model(file_path)
+            np.testing.assert_array_almost_equal(
+                result['kernel_matrix_testing'], ref_kernel_testing, decimal=4)
 
-        np.testing.assert_array_almost_equal(
-            loaded_svm.ret['svm']['support_vectors'], ref_support_vectors, decimal=4)
+            self.assertEqual(len(result['svm']['support_vectors']), 4)
+            np.testing.assert_array_almost_equal(
+                result['svm']['support_vectors'], ref_support_vectors, decimal=4)
 
-        np.testing.assert_array_almost_equal(
-            loaded_svm.ret['svm']['alphas'], ori_alphas, decimal=4)
+            self.assertEqual(result['testing_accuracy'], 0.5)
 
-        loaded_test_acc = loaded_svm.test(svm.test_dataset[0],
-                                          svm.test_dataset[1],
-                                          quantum_instance)
-        self.assertEqual(result['testing_accuracy'], loaded_test_acc)
+            svm.save_model(file_path)
 
-        np.testing.assert_array_almost_equal(
-            loaded_svm.ret['kernel_matrix_testing'], ref_kernel_testing, decimal=4)
+            self.assertTrue(os.path.exists(file_path))
 
-        if os.path.exists(file_path):
-            try:
-                os.remove(file_path)
-            except Exception:  # pylint: disable=broad-except
-                pass
+            loaded_svm = QSVM(feature_map)
+            loaded_svm.load_model(file_path)
+
+            np.testing.assert_array_almost_equal(
+                loaded_svm.ret['svm']['support_vectors'], ref_support_vectors, decimal=4)
+
+            np.testing.assert_array_almost_equal(
+                loaded_svm.ret['svm']['alphas'], ori_alphas, decimal=4)
+
+            loaded_test_acc = loaded_svm.test(svm.test_dataset[0],
+                                              svm.test_dataset[1],
+                                              quantum_instance)
+            self.assertEqual(result['testing_accuracy'], loaded_test_acc)
+
+            np.testing.assert_array_almost_equal(
+                loaded_svm.ret['kernel_matrix_testing'], ref_kernel_testing, decimal=4)
+        except NameError as ex:
+            self.skipTest(str(ex))
+        finally:
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                except Exception:  # pylint: disable=broad-except
+                    pass
 
     def test_qsvm_setup_data(self):
         """ QSVM Setup Data test """
@@ -157,23 +162,25 @@ class TestQSVM(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits,
                                            depth=2,
                                            entangler_map=[[0, 1]])
+        try:
+            svm = QSVM(feature_map)
 
-        svm = QSVM(feature_map)
+            svm.setup_training_data(self.training_data)
+            svm.setup_test_data(self.testing_data)
+            quantum_instance = QuantumInstance(backend, seed_transpiler=self.random_seed,
+                                               seed_simulator=self.random_seed)
+            result = svm.run(quantum_instance)
 
-        svm.setup_training_data(self.training_data)
-        svm.setup_test_data(self.testing_data)
-        quantum_instance = QuantumInstance(backend, seed_transpiler=self.random_seed,
-                                           seed_simulator=self.random_seed)
-        result = svm.run(quantum_instance)
+            np.testing.assert_array_almost_equal(
+                result['kernel_matrix_testing'], ref_kernel_testing, decimal=4)
 
-        np.testing.assert_array_almost_equal(
-            result['kernel_matrix_testing'], ref_kernel_testing, decimal=4)
+            self.assertEqual(len(result['svm']['support_vectors']), 4)
+            np.testing.assert_array_almost_equal(
+                result['svm']['support_vectors'], ref_support_vectors, decimal=4)
 
-        self.assertEqual(len(result['svm']['support_vectors']), 4)
-        np.testing.assert_array_almost_equal(
-            result['svm']['support_vectors'], ref_support_vectors, decimal=4)
-
-        self.assertEqual(result['testing_accuracy'], 0.5)
+            self.assertEqual(result['testing_accuracy'], 0.5)
+        except NameError as ex:
+            self.skipTest(str(ex))
 
     def test_qsvm_multiclass_one_against_all(self):
         """ QSVM Multiclass One Against All test """
@@ -197,16 +204,20 @@ class TestQSVM(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=get_feature_dimension(training_input),
                                            depth=2,
                                            entangler_map=[[0, 1]])
-        svm = QSVM(feature_map, training_input, test_input, total_array,
-                   multiclass_extension=OneAgainstRest(_QSVM_Estimator, [feature_map]))
-        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots,
-                                           seed_simulator=aqua_globals.random_seed,
-                                           seed_transpiler=aqua_globals.random_seed)
-        result = svm.run(quantum_instance)
-        expected_accuracy = 0.444444444
-        expected_classes = ['A', 'A', 'C', 'A', 'A', 'A', 'A', 'C', 'C']
-        self.assertAlmostEqual(result['testing_accuracy'], expected_accuracy, places=4)
-        self.assertEqual(result['predicted_classes'], expected_classes)
+        try:
+            svm = QSVM(feature_map, training_input, test_input, total_array,
+                       multiclass_extension=OneAgainstRest(_QSVM_Estimator, [feature_map]))
+            quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                               shots=self.shots,
+                                               seed_simulator=aqua_globals.random_seed,
+                                               seed_transpiler=aqua_globals.random_seed)
+            result = svm.run(quantum_instance)
+            expected_accuracy = 0.444444444
+            expected_classes = ['A', 'A', 'C', 'A', 'A', 'A', 'A', 'C', 'C']
+            self.assertAlmostEqual(result['testing_accuracy'], expected_accuracy, places=4)
+            self.assertEqual(result['predicted_classes'], expected_classes)
+        except NameError as ex:
+            self.skipTest(str(ex))
 
     def test_qsvm_multiclass_all_pairs(self):
         """ QSVM Multiclass All Pairs test """
@@ -230,16 +241,20 @@ class TestQSVM(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=get_feature_dimension(training_input),
                                            depth=2,
                                            entangler_map=[[0, 1]])
-        svm = QSVM(feature_map, training_input, test_input, total_array,
-                   multiclass_extension=AllPairs(_QSVM_Estimator, [feature_map]))
+        try:
+            svm = QSVM(feature_map, training_input, test_input, total_array,
+                       multiclass_extension=AllPairs(_QSVM_Estimator, [feature_map]))
 
-        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots,
-                                           seed_simulator=aqua_globals.random_seed,
-                                           seed_transpiler=aqua_globals.random_seed)
-        result = svm.run(quantum_instance)
-        self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
-        self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
-                                                       'A', 'A', 'A', 'C', 'C'])
+            quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                               shots=self.shots,
+                                               seed_simulator=aqua_globals.random_seed,
+                                               seed_transpiler=aqua_globals.random_seed)
+            result = svm.run(quantum_instance)
+            self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
+            self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
+                                                           'A', 'A', 'A', 'C', 'C'])
+        except NameError as ex:
+            self.skipTest(str(ex))
 
     def test_qsvm_multiclass_error_correcting_code(self):
         """ QSVM Multiclass error Correcting Code test """
@@ -263,14 +278,18 @@ class TestQSVM(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=get_feature_dimension(training_input),
                                            depth=2,
                                            entangler_map=[[0, 1]])
-        svm = QSVM(feature_map, training_input, test_input, total_array,
-                   multiclass_extension=ErrorCorrectingCode(_QSVM_Estimator,
-                                                            [feature_map], code_size=5))
+        try:
+            svm = QSVM(feature_map, training_input, test_input, total_array,
+                       multiclass_extension=ErrorCorrectingCode(_QSVM_Estimator,
+                                                                [feature_map], code_size=5))
 
-        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'), shots=self.shots,
-                                           seed_simulator=aqua_globals.random_seed,
-                                           seed_transpiler=aqua_globals.random_seed)
-        result = svm.run(quantum_instance)
-        self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
-        self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
-                                                       'A', 'A', 'A', 'C', 'C'])
+            quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                               shots=self.shots,
+                                               seed_simulator=aqua_globals.random_seed,
+                                               seed_transpiler=aqua_globals.random_seed)
+            result = svm.run(quantum_instance)
+            self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
+            self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
+                                                           'A', 'A', 'A', 'C', 'C'])
+        except NameError as ex:
+            self.skipTest(str(ex))
