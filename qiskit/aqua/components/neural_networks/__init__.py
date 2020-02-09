@@ -15,8 +15,13 @@
 """
 Neural Networks (:mod:`qiskit.aqua.components.neural_networks`)
 ===============================================================
-Neural Networks, for example for use with :class:`QGAN` algorithm.
-Neural networks are either a discriminator network or generator network.
+A neural network is a parametrized network which may be defined as a artificial
+neural network - classical neural network - or as parametrized quantum circuits
+- quantum neural network. Furthermore, neural networks can be defined with respect
+to a discriminative or generative task.
+
+Neural Networks may be used, for example, with the
+:class:`~qiskit.aqua.algorithms.QGAN` algorithm.
 
 .. currentmodule:: qiskit.aqua.components.neural_networks
 
