@@ -13,7 +13,7 @@
 # that they have been altered from the originals.
 
 """
-The multiclass extension based on the all-pairs algorithm.
+The All-Pairs multiclass extension.
 """
 
 from typing import Optional, List, Callable
@@ -32,12 +32,24 @@ logger = logging.getLogger(__name__)
 
 class AllPairs(MulticlassExtension):
     """
-    The multiclass extension based on the all-pairs algorithm.
+    The All-Pairs multiclass extension.
+
+    In the **all-pairs** reduction, one trains :math:`k(k−1)/2` binary classifiers for a
+    :math:`k`-way multiclass problem; each receives the samples of a pair of classes from the
+    original training set, and must learn to distinguish these two classes. At prediction time,
+    a **weighted voting scheme** is used: all :math:`k(k−1)/2` classifiers are applied to an unseen
+    sample, and each class gets assigned the sum of all the scores obtained by the various
+    classifiers. The combined classifier returns as a result the class getting the highest value.
     """
 
     def __init__(self,
                  estimator_cls: Callable[[List], Estimator],
                  params: Optional[List] = None) -> None:
+        """
+        Args:
+            estimator_cls: An :class:`Estimator` class
+            params: Params for the estimator
+        """
         super().__init__()
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []
@@ -46,7 +58,8 @@ class AllPairs(MulticlassExtension):
 
     def train(self, x, y):
         """
-        training multiple estimators each for distinguishing a pair of classes.
+        Training multiple estimators each for distinguishing a pair of classes.
+
         Args:
             x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
@@ -75,7 +88,8 @@ class AllPairs(MulticlassExtension):
 
     def test(self, x, y):
         """
-        testing multiple estimators each for distinguishing a pair of classes.
+        Testing multiple estimators each for distinguishing a pair of classes.
+
         Args:
             x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
@@ -92,7 +106,8 @@ class AllPairs(MulticlassExtension):
 
     def predict(self, x):
         """
-        applying multiple estimators for prediction
+        Applying multiple estimators for prediction.
+
         Args:
             x (numpy.ndarray): NxD array
         Returns:

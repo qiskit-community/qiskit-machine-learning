@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2018, 2020.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,9 +15,13 @@
 """
 Multi-class Extensions (:mod:`qiskit.aqua.components.multiclass_extensions`)
 ============================================================================
-A multiclass extension allows Aqua's binary classifier algorithms to handle
-more than two classes to do
+A multiclass extension allows Aqua's binary classifier algorithms, such as
+:class:`~qiskit.aqua.algorithms.QSVM` and :class:`~qiskit.aqua.algorithms.SVM_Classical`
+to handle more than two classes and do
 `multiclass classification <https://en.wikipedia.org/wiki/Multiclass_classification>`_.
+
+The multiclass extensions use different techniques to perform multiclass classification
+using the underlying binary classifier.
 
 .. currentmodule:: qiskit.aqua.components.multiclass_extensions
 

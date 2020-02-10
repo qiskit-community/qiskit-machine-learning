@@ -32,7 +32,8 @@ class MulticlassExtension(ABC):
     @abstractmethod
     def train(self, x, y):
         """
-        training multiple estimators each for distinguishing a pair of classes.
+        Training multiple estimators each for distinguishing a pair of classes.
+
         Args:
             x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
@@ -42,7 +43,8 @@ class MulticlassExtension(ABC):
     @abstractmethod
     def test(self, x, y):
         """
-        testing multiple estimators each for distinguishing a pair of classes.
+        Testing multiple estimators each for distinguishing a pair of classes.
+
         Args:
             x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
@@ -52,7 +54,8 @@ class MulticlassExtension(ABC):
     @abstractmethod
     def predict(self, x):
         """
-        applying multiple estimators for prediction
+        Applying multiple estimators for prediction.
+
         Args:
             x (numpy.ndarray): input points
         """

@@ -36,7 +36,7 @@ except ImportError:
 
 class PyTorchDiscriminator(DiscriminativeNetwork):
     """
-    PyTorchDiscriminator based on PyTorch
+    Discriminator based on PyTorch
     """
 
     def __init__(self, n_features: int = 1, n_out: int = 1) -> None:

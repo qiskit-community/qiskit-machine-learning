@@ -13,7 +13,7 @@
 # that they have been altered from the originals.
 
 """
-the multiclass extension based on the one-against-rest algorithm.
+The One Against Rest multiclass extension.
 """
 
 from typing import Optional, List, Callable
@@ -31,13 +31,24 @@ logger = logging.getLogger(__name__)
 
 
 class OneAgainstRest(MulticlassExtension):
-    """
-      the multiclass extension based on the one-against-rest algorithm.
+    r"""
+    The One Against Rest multiclass extension.
+
+    For an :math:`n`-class problem, the **one-against-rest** method constructs :math:`n`
+    SVM classifiers, with the :math:`i`-th classifier separating class :math:`i` from all the
+    remaining classes, :math:`\forall i \in \{1, 2, \ldots, n\}`. When the :math:`n` classifiers
+    are combined to make the final decision, the classifier that generates the highest value from
+    its decision function is selected as the winner and the corresponding class label is returned.
     """
 
     def __init__(self,
                  estimator_cls: Callable[[List], Estimator],
                  params: Optional[List] = None) -> None:
+        """
+        Args:
+            estimator_cls: An :class:`Estimator` class
+            params: Params for the estimator
+        """
         super().__init__()
         self.estimator_cls = estimator_cls
         self.params = params if params is not None else []
@@ -47,7 +58,8 @@ class OneAgainstRest(MulticlassExtension):
 
     def train(self, x, y):
         """
-        training multiple estimators each for distinguishing a pair of classes.
+        Training multiple estimators each for distinguishing a pair of classes.
+
         Args:
             x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
@@ -71,7 +83,8 @@ class OneAgainstRest(MulticlassExtension):
 
     def test(self, x, y):
         """
-        testing multiple estimators each for distinguishing a pair of classes.
+        Testing multiple estimators each for distinguishing a pair of classes.
+
         Args:
             x (numpy.ndarray): input points
             y (numpy.ndarray): input labels
@@ -87,7 +100,8 @@ class OneAgainstRest(MulticlassExtension):
 
     def predict(self, x):
         """
-        applying multiple estimators for prediction
+        Applying multiple estimators for prediction.
+
         Args:
             x (numpy.ndarray): NxD array
         Returns:
