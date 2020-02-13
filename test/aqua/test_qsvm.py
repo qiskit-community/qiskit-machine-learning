@@ -24,7 +24,6 @@ from qiskit.aqua.components.multiclass_extensions import (ErrorCorrectingCode,
                                                           AllPairs,
                                                           OneAgainstRest)
 from qiskit.aqua.algorithms import QSVM
-from qiskit.aqua.algorithms.many_sample.qsvm._qsvm_estimator import _QSVM_Estimator
 from qiskit.aqua.utils import get_feature_dimension
 
 
@@ -206,7 +205,7 @@ class TestQSVM(QiskitAquaTestCase):
                                            entangler_map=[[0, 1]])
         try:
             svm = QSVM(feature_map, training_input, test_input, total_array,
-                       multiclass_extension=OneAgainstRest(_QSVM_Estimator, [feature_map]))
+                       multiclass_extension=OneAgainstRest())
             quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                                shots=self.shots,
                                                seed_simulator=aqua_globals.random_seed,
@@ -243,7 +242,7 @@ class TestQSVM(QiskitAquaTestCase):
                                            entangler_map=[[0, 1]])
         try:
             svm = QSVM(feature_map, training_input, test_input, total_array,
-                       multiclass_extension=AllPairs(_QSVM_Estimator, [feature_map]))
+                       multiclass_extension=AllPairs())
 
             quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                                shots=self.shots,
@@ -280,8 +279,7 @@ class TestQSVM(QiskitAquaTestCase):
                                            entangler_map=[[0, 1]])
         try:
             svm = QSVM(feature_map, training_input, test_input, total_array,
-                       multiclass_extension=ErrorCorrectingCode(_QSVM_Estimator,
-                                                                [feature_map], code_size=5))
+                       multiclass_extension=ErrorCorrectingCode(code_size=5))
 
             quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                                shots=self.shots,

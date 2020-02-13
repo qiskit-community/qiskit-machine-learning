@@ -14,7 +14,9 @@
 
 """ Base class for multiclass extension """
 
+from typing import Optional, List, Callable
 from abc import ABC, abstractmethod
+from .estimator import Estimator
 
 
 class MulticlassExtension(ABC):
@@ -28,6 +30,20 @@ class MulticlassExtension(ABC):
     @abstractmethod
     def __init__(self) -> None:
         super().__init__()
+        self.estimator_cls = None
+        self.params = []
+
+    def set_estimator(self,
+                      estimator_cls: Callable[[List], Estimator],
+                      params: Optional[List] = None) -> None:
+        """
+        Called internally to set :class:`Estimator` and parameters
+        Args:
+           estimator_cls: An :class:`Estimator` class
+           params: Parameters for the estimator
+        """
+        self.estimator_cls = estimator_cls
+        self.params = params if params is not None else []
 
     @abstractmethod
     def train(self, x, y):
