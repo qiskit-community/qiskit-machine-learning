@@ -16,13 +16,11 @@
 The One Against Rest multiclass extension.
 """
 
-from typing import Optional, List, Callable
 import logging
 
 import numpy as np
 from sklearn.utils.validation import _num_samples
 from sklearn.preprocessing import LabelBinarizer
-from .estimator import Estimator
 from .multiclass_extension import MulticlassExtension
 
 logger = logging.getLogger(__name__)
@@ -41,17 +39,8 @@ class OneAgainstRest(MulticlassExtension):
     its decision function is selected as the winner and the corresponding class label is returned.
     """
 
-    def __init__(self,
-                 estimator_cls: Callable[[List], Estimator],
-                 params: Optional[List] = None) -> None:
-        """
-        Args:
-            estimator_cls: An :class:`Estimator` class
-            params: Params for the estimator
-        """
+    def __init__(self) -> None:
         super().__init__()
-        self.estimator_cls = estimator_cls
-        self.params = params if params is not None else []
         self.label_binarizer_ = None
         self.classes = None
         self.estimators = None

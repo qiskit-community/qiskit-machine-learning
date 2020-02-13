@@ -16,13 +16,11 @@
 The All-Pairs multiclass extension.
 """
 
-from typing import Optional, List, Callable
 import logging
 
 import numpy as np
 from sklearn.utils.multiclass import _ovr_decision_function
 
-from .estimator import Estimator
 from .multiclass_extension import MulticlassExtension
 
 logger = logging.getLogger(__name__)
@@ -42,17 +40,8 @@ class AllPairs(MulticlassExtension):
     classifiers. The combined classifier returns as a result the class getting the highest value.
     """
 
-    def __init__(self,
-                 estimator_cls: Callable[[List], Estimator],
-                 params: Optional[List] = None) -> None:
-        """
-        Args:
-            estimator_cls: An :class:`Estimator` class
-            params: Params for the estimator
-        """
+    def __init__(self) -> None:
         super().__init__()
-        self.estimator_cls = estimator_cls
-        self.params = params if params is not None else []
         self.classes_ = None
         self.estimators = None
 

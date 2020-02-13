@@ -16,7 +16,6 @@
 The Error Correcting Code multiclass extension.
 """
 
-from typing import Optional, List, Callable
 import logging
 
 import numpy as np
@@ -25,7 +24,6 @@ from sklearn.multiclass import _ConstantPredictor
 
 from qiskit.aqua import aqua_globals
 from qiskit.aqua.utils.validation import validate_min
-from .estimator import Estimator
 from .multiclass_extension import MulticlassExtension
 
 logger = logging.getLogger(__name__)
@@ -63,20 +61,13 @@ class ErrorCorrectingCode(MulticlassExtension):
     output string as the predicted label. This implementation of ECC uses the Euclidean distance.
     """
 
-    def __init__(self,
-                 estimator_cls: Callable[[List], Estimator],
-                 params: Optional[List] = None,
-                 code_size: int = 4):
+    def __init__(self, code_size: int = 4):
         """
         Args:
-            estimator_cls: An :class:`Estimator` class
-            params: Params for the estimator
             code_size: Size of error correcting code
         """
         validate_min('code_size', code_size, 1)
         super().__init__()
-        self.estimator_cls = estimator_cls
-        self.params = params if params is not None else []
         self.code_size = code_size
         self.rand = aqua_globals.random
         self.estimators = None
