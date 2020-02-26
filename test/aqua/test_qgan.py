@@ -21,7 +21,7 @@ from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
                                                        UnivariateVariationalDistribution)
 from qiskit.aqua.components.variational_forms import RY
-from qiskit.aqua.algorithms.adaptive.qgan.qgan import QGAN
+from qiskit.aqua.algorithms import QGAN
 from qiskit.aqua import aqua_globals, QuantumInstance
 from qiskit.aqua.components.initial_states import Custom
 from qiskit.aqua.components.neural_networks import NumpyDiscriminator, PyTorchDiscriminator
