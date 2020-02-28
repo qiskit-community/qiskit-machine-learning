@@ -18,6 +18,7 @@ The Classical SVM algorithm.
 
 from typing import Dict, Optional
 import logging
+import warnings
 import numpy as np
 from qiskit.aqua import AquaError
 from qiskit.aqua.algorithms import ClassicalAlgorithm
@@ -29,10 +30,11 @@ from ._rbf_svc_estimator import _RBF_SVC_Estimator
 
 logger = logging.getLogger(__name__)
 
+
 # pylint: disable=invalid-name
 
 
-class SVM_Classical(ClassicalAlgorithm):
+class ClassicalSVM(ClassicalAlgorithm):
     """
     The Classical SVM algorithm.
 
@@ -166,3 +168,20 @@ class SVM_Classical(ClassicalAlgorithm):
             file_path (str): a path to save the model.
         """
         self.instance.save_model(file_path)
+
+
+class SVM_Classical(ClassicalSVM):
+    """ The deprecated Classical SVM algorithm. """
+
+    def __init__(self, training_dataset: Dict[str, np.ndarray],
+                 test_dataset: Optional[Dict[str, np.ndarray]] = None,
+                 datapoints: Optional[np.ndarray] = None,
+                 gamma: Optional[int] = None,
+                 multiclass_extension: Optional[MulticlassExtension] = None) -> None:
+        warnings.warn('Deprecated class {}, use {}.'.format('SVM_Classical', 'ClassicalSVM'),
+                      DeprecationWarning)
+        super().__init__(training_dataset,
+                         test_dataset,
+                         datapoints,
+                         gamma,
+                         multiclass_extension)

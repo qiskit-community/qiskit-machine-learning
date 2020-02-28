@@ -14,6 +14,7 @@
 
 """ svm packages """
 
-from .svm_classical import SVM_Classical
+from .classical_svm import ClassicalSVM, SVM_Classical
 
-__all__ = ['SVM_Classical']
+__all__ = ['ClassicalSVM',
+           'SVM_Classical']
