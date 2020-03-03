@@ -269,13 +269,18 @@ class VQC(VQAlgorithm):
         if minibatch_size > 0 and self.is_gradient_really_supported():  # we need some wrapper
             grad_fn = self._gradient_function_wrapper
 
-        self._ret = self.find_minimum(
-            initial_point=self.initial_point,
-            var_form=self.var_form,
-            cost_fn=self._cost_function_wrapper,
-            optimizer=self.optimizer,
-            gradient_fn=grad_fn  # func for computing gradient
-        )
+        result = self.find_minimum(initial_point=self.initial_point,
+                                   var_form=self.var_form,
+                                   cost_fn=self._cost_function_wrapper,
+                                   optimizer=self.optimizer,
+                                   gradient_fn=grad_fn)
+
+        # TODO remove - mimics former VQAlgorithm result dict so it can be extended
+        self._ret = {}
+        self._ret['num_optimizer_evals'] = result.optimizer_evals
+        self._ret['min_val'] = result.optimal_value
+        self._ret['opt_params'] = result.optimal_point
+        self._ret['eval_time'] = result.optimizer_time
 
         if self._ret['num_optimizer_evals'] is not None and \
                 self._eval_count >= self._ret['num_optimizer_evals']:
