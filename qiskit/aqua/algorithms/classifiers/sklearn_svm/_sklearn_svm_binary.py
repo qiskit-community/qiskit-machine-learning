@@ -22,14 +22,14 @@ import numpy as np
 from sklearn.metrics.pairwise import rbf_kernel
 
 from qiskit.aqua.utils import map_label_to_class_name, optimize_svm
-from ._svm_classical_abc import _SVM_Classical_ABC
+from ._sklearn_svm_abc import _SklearnSVMABC
 
 logger = logging.getLogger(__name__)
 
 # pylint: disable=invalid-name
 
 
-class _SVM_Classical_Binary(_SVM_Classical_ABC):
+class _SklearnSVMBinary(_SklearnSVMABC):
     """
     the binary classifier
     """

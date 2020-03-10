@@ -31,7 +31,7 @@ from qiskit.aqua.algorithms import QuantumAlgorithm
 from qiskit.aqua.components.neural_networks.discriminative_network import DiscriminativeNetwork
 from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
 from qiskit.aqua.components.neural_networks.quantum_generator import QuantumGenerator
-from qiskit.aqua.components.neural_networks.numpy_discriminator import NumpyDiscriminator
+from qiskit.aqua.components.neural_networks.numpy_discriminator import NumPyDiscriminator
 from qiskit.aqua.utils.dataset_helper import discretize_and_truncate
 from qiskit.aqua.utils.validation import validate_min
 
@@ -214,7 +214,7 @@ class QGAN(QuantumAlgorithm):
         """
 
         if discriminator is None:
-            self._discriminator = NumpyDiscriminator(len(self._num_qubits))
+            self._discriminator = NumPyDiscriminator(len(self._num_qubits))
         else:
             self._discriminator = discriminator
         self._discriminator.set_seed(self._random_seed)
