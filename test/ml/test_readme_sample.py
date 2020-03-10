@@ -57,7 +57,7 @@ class TestReadmeSample(QiskitMLTestCase):
         result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
                                          shots=1024, seed_simulator=seed, seed_transpiler=seed))
 
-        print('Testing accuracy: {:0.2f}'.format(result['testing_accuracy']))
+        self.log.debug('Testing accuracy: {:0.2f}'.format(result['testing_accuracy']))
 
         # ----------------------------------------------------------------------
 

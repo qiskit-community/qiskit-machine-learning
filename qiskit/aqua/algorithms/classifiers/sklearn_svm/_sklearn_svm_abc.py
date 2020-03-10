@@ -23,7 +23,7 @@ from qiskit.aqua.utils import split_dataset_to_data_and_labels
 # pylint: disable=invalid-name
 
 
-class _SVM_Classical_ABC(ABC):
+class _SklearnSVMABC(ABC):
     """
     abstract base class for the binary classifier and the multiclass classifier
     """

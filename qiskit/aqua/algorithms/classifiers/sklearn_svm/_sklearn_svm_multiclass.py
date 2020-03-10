@@ -19,14 +19,14 @@ import logging
 import numpy as np
 
 from qiskit.aqua.utils import map_label_to_class_name
-from ._svm_classical_abc import _SVM_Classical_ABC
+from ._sklearn_svm_abc import _SklearnSVMABC
 
 logger = logging.getLogger(__name__)
 
 # pylint: disable=invalid-name
 
 
-class _SVM_Classical_Multiclass(_SVM_Classical_ABC):
+class _SklearnSVMMulticlass(_SklearnSVMABC):
     """
     the multiclass classifier
     the classifier is built by wrapping the estimator

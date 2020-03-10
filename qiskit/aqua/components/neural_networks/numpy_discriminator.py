@@ -204,7 +204,7 @@ class DiscriminatorNet():
         return grads_values
 
 
-class NumpyDiscriminator(DiscriminativeNetwork):
+class NumPyDiscriminator(DiscriminativeNetwork):
     """
     Discriminator based on NumPy
     """

@@ -16,10 +16,10 @@
 
 from .vqc import VQC
 from .qsvm import QSVM
-from .classical_svm import ClassicalSVM, SVM_Classical
+from .sklearn_svm import SklearnSVM, SVM_Classical
 
 __all__ = [
     'VQC',
     'QSVM',
-    'ClassicalSVM',
+    'SklearnSVM',
     'SVM_Classical']
