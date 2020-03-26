@@ -14,7 +14,7 @@
 
 """Quantum SVM algorithm."""
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 import logging
 import sys
 
@@ -23,8 +23,8 @@ from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.tools import parallel_map
 from qiskit.tools.events import TextProgressBar
 from qiskit.circuit import ParameterVector
-
-from qiskit.aqua import aqua_globals
+from qiskit.providers import BaseBackend
+from qiskit.aqua import QuantumInstance, aqua_globals
 from qiskit.aqua.algorithms import QuantumAlgorithm
 from qiskit.aqua import AquaError
 from qiskit.aqua.utils.dataset_helper import get_num_classes
@@ -80,7 +80,8 @@ class QSVM(QuantumAlgorithm):
                  training_dataset: Optional[Dict[str, np.ndarray]] = None,
                  test_dataset: Optional[Dict[str, np.ndarray]] = None,
                  datapoints: Optional[np.ndarray] = None,
-                 multiclass_extension: Optional[MulticlassExtension] = None) -> None:
+                 multiclass_extension: Optional[MulticlassExtension] = None,
+                 quantum_instance: Optional[Union[QuantumInstance, BaseBackend]] = None) -> None:
         """
         Args:
             feature_map: Feature map module, used to transform data
@@ -89,11 +90,12 @@ class QSVM(QuantumAlgorithm):
             datapoints: Prediction dataset.
             multiclass_extension: If number of classes is greater than 2 then a multiclass scheme
                 must be supplied, in the form of a multiclass extension.
+            quantum_instance: Quantum Instance or Backend
 
         Raises:
             AquaError: Multiclass extension not supplied when number of classes > 2
         """
-        super().__init__()
+        super().__init__(quantum_instance)
         # check the validity of provided arguments if possible
         if training_dataset is not None:
             is_multiclass = get_num_classes(training_dataset) > 2

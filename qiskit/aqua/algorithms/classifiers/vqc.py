@@ -14,7 +14,7 @@
 
 """ The Variational Quantum Classifier algorithm """
 
-from typing import Optional, Callable, Dict
+from typing import Optional, Callable, Dict, Union
 import logging
 import math
 import numpy as np
@@ -23,7 +23,8 @@ from sklearn.utils import shuffle
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit import ParameterVector
 
-from qiskit.aqua import AquaError
+from qiskit.providers import BaseBackend
+from qiskit.aqua import QuantumInstance, AquaError
 from qiskit.aqua.utils import map_label_to_class_name
 from qiskit.aqua.utils import split_dataset_to_data_and_labels
 from qiskit.aqua.algorithms import VQAlgorithm
@@ -56,8 +57,8 @@ class VQC(VQAlgorithm):
             datapoints: Optional[np.ndarray] = None,
             max_evals_grouped: int = 1,
             minibatch_size: int = -1,
-            callback: Optional[Callable[[int, np.ndarray, float, int], None]] = None
-    ) -> None:
+            callback: Optional[Callable[[int, np.ndarray, float, int], None]] = None,
+            quantum_instance: Optional[Union[QuantumInstance, BaseBackend]] = None) -> None:
         """
         Args:
             optimizer: The classical optimizer to use.
@@ -73,6 +74,7 @@ class VQC(VQAlgorithm):
                 Four parameter values are passed to the callback as follows during each evaluation.
                 These are: the evaluation count, parameters of the variational form,
                 the evaluated value, the index of data batch.
+            quantum_instance: Quantum Instance or Backend
         Note:
             We use `label` to denotes numeric results and `class` the class names (str).
         Raises:
@@ -81,7 +83,8 @@ class VQC(VQAlgorithm):
         super().__init__(
             var_form=var_form,
             optimizer=optimizer,
-            cost_fn=self._cost_function_wrapper
+            cost_fn=self._cost_function_wrapper,
+            quantum_instance=quantum_instance
         )
         self._batches = None
         self._label_batches = None

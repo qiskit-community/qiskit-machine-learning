@@ -18,7 +18,7 @@ Quantum Generative Adversarial Network.
     <https://www.nature.com/articles/s41534-019-0223-2>`_
 """
 
-from typing import Optional
+from typing import Optional, Union
 import csv
 import os
 import logging
@@ -26,7 +26,8 @@ import logging
 import numpy as np
 from scipy.stats import entropy
 
-from qiskit.aqua import AquaError, aqua_globals
+from qiskit.providers import BaseBackend
+from qiskit.aqua import QuantumInstance, AquaError, aqua_globals
 from qiskit.aqua.algorithms import QuantumAlgorithm
 from qiskit.aqua.components.neural_networks.discriminative_network import DiscriminativeNetwork
 from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
@@ -65,7 +66,8 @@ class QGAN(QuantumAlgorithm):
                  num_epochs: int = 3000, seed: int = 7,
                  discriminator: Optional[DiscriminativeNetwork] = None,
                  generator: Optional[GenerativeNetwork] = None,
-                 tol_rel_ent: Optional[float] = None, snapshot_dir: Optional[str] = None) -> None:
+                 tol_rel_ent: Optional[float] = None, snapshot_dir: Optional[str] = None,
+                 quantum_instance: Optional[Union[QuantumInstance, BaseBackend]] = None) -> None:
         """
 
         Args:
@@ -84,11 +86,12 @@ class QGAN(QuantumAlgorithm):
                 If the training achieves relative entropy equal or lower than tolerance it finishes.
             snapshot_dir: Directory in to which to store cvs file with parameters,
                 if None (default) then no cvs file is created.
+            quantum_instance: Quantum Instance or Backend
         Raises:
             AquaError: invalid input
         """
         validate_min('batch_size', batch_size, 1)
-        super().__init__()
+        super().__init__(quantum_instance)
         if data is None:
             raise AquaError('Training data not given.')
         self._data = np.array(data)
