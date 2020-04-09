@@ -19,11 +19,6 @@ ad hoc dataset
 import numpy as np
 import scipy
 from qiskit.aqua import aqua_globals
-try:
-    import matplotlib.pyplot as plt
-    HAS_MATPLOTLIB = True
-except ImportError:
-    HAS_MATPLOTLIB = False
 
 
 def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
@@ -151,8 +146,10 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
             training_size+test_size)] for k, key in enumerate(class_labels)}
 
         if plot_data:
-            if not HAS_MATPLOTLIB:
-                raise NameError('Matplotlib not installed. Plase install it before plotting')
+            try:
+                import matplotlib.pyplot as plt
+            except ImportError:
+                raise NameError('Matplotlib not installed. Please install it before plotting')
 
             plt.show()
             fig2 = plt.figure()
@@ -222,8 +219,10 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
             training_size+test_size)] for k, key in enumerate(class_labels)}
 
         if plot_data:
-            if not HAS_MATPLOTLIB:
-                raise NameError('Matplotlib not installed. Plase install it before plotting')
+            try:
+                import matplotlib.pyplot as plt
+            except ImportError:
+                raise NameError('Matplotlib not installed. Please install it before plotting')
             sample_total_a = np.asarray(sample_total_a)
             sample_total_b = np.asarray(sample_total_b)
             x_1 = sample_total_a[:, 0]

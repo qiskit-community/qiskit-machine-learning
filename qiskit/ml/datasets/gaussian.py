@@ -18,11 +18,6 @@ gaussian dataset
 
 import numpy as np
 from qiskit.aqua import aqua_globals
-try:
-    import matplotlib.pyplot as plt
-    HAS_MATPLOTLIB = True
-except ImportError:
-    HAS_MATPLOTLIB = False
 
 
 def gaussian(training_size, test_size, n, plot_data=False):
@@ -61,8 +56,10 @@ def gaussian(training_size, test_size, n, plot_data=False):
             training_size+test_size)] for k, key in enumerate(class_labels)}
 
         if plot_data:
-            if not HAS_MATPLOTLIB:
-                raise NameError('Matplotlib not installed. Plase install it before plotting')
+            try:
+                import matplotlib.pyplot as plt
+            except ImportError:
+                raise NameError('Matplotlib not installed. Please install it before plotting')
 
             for k in range(0, 2):
                 plt.scatter(sample_train[label_train == k, 0][:training_size],
@@ -120,8 +117,10 @@ def gaussian(training_size, test_size, n, plot_data=False):
             training_size+test_size)] for k, key in enumerate(class_labels)}
 
         if plot_data:
-            if not HAS_MATPLOTLIB:
-                raise NameError('Matplotlib not installed. Plase install it before plotting')
+            try:
+                import matplotlib.pyplot as plt
+            except ImportError:
+                raise NameError('Matplotlib not installed. Please install it before plotting')
 
             for k in range(0, 3):
                 plt.scatter(sample_train[label_train == k, 0][:training_size],
