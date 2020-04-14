@@ -12,7 +12,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Quantum SVM algorithm."""
+"""The Quantum SVM algorithm."""
 
 from typing import Dict, Optional, Union
 import logging
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 class QSVM(QuantumAlgorithm):
     """
-    Quantum SVM algorithm.
+    The Quantum SVM algorithm.
 
     A key concept in classification methods is that of a kernel. Data cannot typically be
     separated by a hyperplane in its original space. A common technique used to find such a
