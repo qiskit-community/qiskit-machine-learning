@@ -12,16 +12,17 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" The Variational Quantum Classifier algorithm """
+"""The Variational Quantum Classifier algorithm."""
 
 from typing import Optional, Callable, Dict, Union
+import warnings
 import logging
 import math
 import numpy as np
 
 from sklearn.utils import shuffle
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
-from qiskit.circuit import ParameterVector
+from qiskit.circuit import ParameterVector, ParameterExpression
 
 from qiskit.providers import BaseBackend
 from qiskit.aqua import QuantumInstance, AquaError
@@ -38,8 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class VQC(VQAlgorithm):
-    """
-    The Variational Quantum Classifier algorithm.
+    """The Variational Quantum Classifier algorithm.
 
     Similar to :class:`QSVM`, the VQC algorithm also applies to classification problems.
     VQC uses the variational method to solve such problems in a quantum processor.  Specifically,
@@ -50,8 +50,8 @@ class VQC(VQAlgorithm):
     def __init__(
             self,
             optimizer: Optimizer,
-            feature_map: FeatureMap,
-            var_form: VariationalForm,
+            feature_map: Union[QuantumCircuit, FeatureMap],
+            var_form: Union[QuantumCircuit, VariationalForm],
             training_dataset: Dict[str, np.ndarray],
             test_dataset: Optional[Dict[str, np.ndarray]] = None,
             datapoints: Optional[np.ndarray] = None,
@@ -75,11 +75,24 @@ class VQC(VQAlgorithm):
                 These are: the evaluation count, parameters of the variational form,
                 the evaluated value, the index of data batch.
             quantum_instance: Quantum Instance or Backend
+
         Note:
             We use `label` to denotes numeric results and `class` the class names (str).
+
         Raises:
-            AquaError: invalid input
+            AquaError: Missing feature map or missing training dataset.
         """
+        # VariationalForm is not deprecated on level of the VQAlgorithm yet as UCCSD still
+        # derives from there, therefore we're adding a warning here
+        if isinstance(var_form, VariationalForm):
+            warnings.warn('The qiskit.aqua.components.variational_form.VariationalForm object as '
+                          'input for the VQC is deprecated as of 0.7.0 and will be removed no '
+                          'earlier than 3 months after the release. You should pass a '
+                          'QuantumCircuit object instead. '
+                          'See also qiskit.circuit.library.n_local for a collection of '
+                          'suitable circuits.',
+                          DeprecationWarning, stacklevel=2)
+
         super().__init__(
             var_form=var_form,
             optimizer=optimizer,
@@ -120,28 +133,48 @@ class VQC(VQAlgorithm):
 
         self._eval_count = 0
         self._ret = {}
-        self._feature_map = feature_map
-        self._num_qubits = feature_map.num_qubits
-        self._var_form_params = ParameterVector('θ', self._var_form.num_parameters)
-        self._feature_map_params = ParameterVector('x', self._feature_map.feature_dimension)
         self._parameterized_circuits = None
 
+        self.feature_map = feature_map
+
     def construct_circuit(self, x, theta, measurement=False):
-        """
-        Construct circuit based on data and parameters in variational form.
+        """Construct circuit based on data and parameters in variational form.
 
         Args:
             x (numpy.ndarray): 1-D array with D dimension
             theta (list[numpy.ndarray]): list of 1-D array, parameters sets for variational form
             measurement (bool): flag to add measurement
+
         Returns:
             QuantumCircuit: the circuit
+
+        Raises:
+            AquaError: If ``x`` and ``theta`` share parameters with the same name.
         """
+        # check x and theta do not have parameters of the same name
+        x_names = [param.name for param in x if isinstance(param, ParameterExpression)]
+        theta_names = [param.name for param in theta if isinstance(param, ParameterExpression)]
+        if any(x_name in theta_names for x_name in x_names):
+            raise AquaError('Variational form and feature map are not allowed to share parameters '
+                            'with the same name!')
+
         qr = QuantumRegister(self._num_qubits, name='q')
         cr = ClassicalRegister(self._num_qubits, name='c')
         qc = QuantumCircuit(qr, cr)
-        qc += self._feature_map.construct_circuit(x, qr)
-        qc += self._var_form.construct_circuit(theta, qr)
+
+        if isinstance(self.feature_map, QuantumCircuit):
+            param_dict = dict(zip(self._feature_map_params, x))
+            circuit = self._feature_map.assign_parameters(param_dict, inplace=False)
+            qc.append(circuit.to_instruction(), qr)
+        else:
+            qc += self._feature_map.construct_circuit(x, qr)
+
+        if isinstance(self.var_form, QuantumCircuit):
+            param_dict = dict(zip(self._var_form_params, theta))
+            circuit = self._var_form.assign_parameters(param_dict, inplace=False)
+            qc.append(circuit.to_instruction(), qr)
+        else:
+            qc += self._var_form.construct_circuit(theta, qr)
 
         if measurement:
             qc.barrier(qr)
@@ -149,12 +182,12 @@ class VQC(VQAlgorithm):
         return qc
 
     def _get_prediction(self, data, theta):
-        """
-        Make prediction on data based on each theta.
+        """Make prediction on data based on each theta.
 
         Args:
             data (numpy.ndarray): 2-D array, NxD, N data points, each with D dimension
             theta (list[numpy.ndarray]): list of 1-D array, parameters sets for variational form
+
         Returns:
             Union(numpy.ndarray or [numpy.ndarray], numpy.ndarray or [numpy.ndarray]):
                 list of NxK array, list of Nx1 array
@@ -165,10 +198,12 @@ class VQC(VQAlgorithm):
         theta_sets = np.split(theta, num_theta_sets)
 
         def _build_parameterized_circuits():
-            if self._var_form.support_parameterized_circuit and \
-                    self._feature_map.support_parameterized_circuit and \
-                    self._parameterized_circuits is None:
+            var_form_support = isinstance(self._var_form, QuantumCircuit) \
+                or self._var_form.support_parameterized_circuit
+            feat_map_support = isinstance(self._feature_map, QuantumCircuit) \
+                or self._feature_map.support_parameterized_circuit
 
+            if var_form_support and feat_map_support and self._parameterized_circuits is None:
                 parameterized_circuits = self.construct_circuit(
                     self._feature_map_params, self._var_form_params,
                     measurement=not self._quantum_instance.is_statevector)
@@ -179,9 +214,9 @@ class VQC(VQAlgorithm):
         for thet in theta_sets:
             for datum in data:
                 if self._parameterized_circuits is not None:
-                    curr_params = {self._feature_map_params: datum,
-                                   self._var_form_params: thet}
-                    circuit = self._parameterized_circuits.bind_parameters(curr_params)
+                    curr_params = dict(zip(self._feature_map_params, datum))
+                    curr_params.update(dict(zip(self._var_form_params, thet)))
+                    circuit = self._parameterized_circuits.assign_parameters(curr_params)
                 else:
                     circuit = self.construct_circuit(
                         datum, thet, measurement=not self._quantum_instance.is_statevector)
@@ -302,8 +337,10 @@ class VQC(VQAlgorithm):
     # temporary fix: this code should be unified with the gradient api in optimizer.py
     def _gradient_function_wrapper(self, theta):
         """Compute and return the gradient at the point theta.
+
         Args:
             theta (numpy.ndarray): 1-d array
+
         Returns:
             numpy.ndarray: 1-d array with the same shape as theta. The  gradient computed
         """
@@ -352,6 +389,7 @@ class VQC(VQAlgorithm):
             quantum_instance (QuantumInstance): quantum backend with all setting
             minibatch_size (int): the size of each minibatched accuracy evaluation
             params (list): list of parameters to populate in the variational form
+
         Returns:
             float: classification accuracy
         """
@@ -391,6 +429,7 @@ class VQC(VQAlgorithm):
             quantum_instance (QuantumInstance): quantum backend with all setting
             minibatch_size (int): the size of each minibatched accuracy evaluation
             params (list): list of parameters to populate in the variational form
+
         Returns:
             list: for each data point, generates the predicted probability for each class
             list: for each data point, generates the predicted label (that with the highest prob)
@@ -445,6 +484,9 @@ class VQC(VQAlgorithm):
         if 'opt_params' not in self._ret:
             raise AquaError("Cannot find optimal circuit before running "
                             "the algorithm to find optimal params.")
+        if isinstance(self._var_form, QuantumCircuit):
+            param_dict = dict(zip(self._var_form_params, self._ret['opt_params']))
+            return self._var_form.assign_parameters(param_dict)
         return self._var_form.construct_circuit(self._ret['opt_params'])
 
     def get_optimal_vector(self):
@@ -468,6 +510,44 @@ class VQC(VQAlgorithm):
             ret = self._quantum_instance.execute(qc)
             self._ret['min_vector'] = ret.get_counts(qc)
         return self._ret['min_vector']
+
+    @property
+    def feature_map(self) -> Optional[Union[FeatureMap, QuantumCircuit]]:
+        """Return the feature map."""
+        return self._feature_map
+
+    @feature_map.setter
+    def feature_map(self, feature_map: Union[FeatureMap, QuantumCircuit]):
+        """Set the feature map.
+
+        Also sets the number of qubits, the internally stored feature map parameters and,
+        if the feature map is a circuit, the order of the parameters.
+        """
+        if isinstance(feature_map, QuantumCircuit):
+            # patch the feature dimension to the circuit
+            feature_map.feature_dimension = len(feature_map.parameters)
+
+            # store the parameters
+            self._num_qubits = feature_map.num_qubits
+            self._feature_map_params = list(feature_map.parameters)
+            self._feature_map = feature_map
+        elif isinstance(feature_map, FeatureMap):
+            warnings.warn('The qiskit.aqua.components.feature_maps.FeatureMap object is deprecated '
+                          'as of 0.7.0 and will be removed no earlier than 3 months after the '
+                          'release. You should pass a QuantumCircuit object instead. '
+                          'See also qiskit.circuit.library.data_preparation for a collection of '
+                          'suitable circuits.',
+                          DeprecationWarning, stacklevel=2)
+
+            self._num_qubits = feature_map.num_qubits
+            self._feature_map_params = ParameterVector('x', length=feature_map.feature_dimension)
+            self._feature_map = feature_map
+        else:
+            raise ValueError('Unsupported type {} of feature_map.'.format(type(feature_map)))
+
+        if self._feature_map and self._feature_map.feature_dimension == 0:
+            warnings.warn('The feature map has no parameters that can be optimized to represent '
+                          'the data. This will most likely cause the VQC to fail.')
 
     @property
     def optimal_params(self):
@@ -570,15 +650,18 @@ def assign_label(measured_key, num_classes):
 
 
 def cost_estimate(probs, gt_labels, shots=None):  # pylint: disable=unused-argument
-    """Calculate cross entropy
-    # shots is kept since it may be needed in future.
+    """Calculate cross entropy.
 
     Args:
         shots (int): the number of shots used in quantum computing
         probs (numpy.ndarray): NxK array, N is the number of data and K is the number of class
         gt_labels (numpy.ndarray): Nx1 array
+
     Returns:
         float: cross entropy loss between estimated probs and gt_labels
+
+    Note:
+        shots is kept since it may be needed in future.
     """
     mylabels = np.zeros(probs.shape)
     for i in range(gt_labels.shape[0]):
@@ -603,6 +686,7 @@ def cost_estimate_sigmoid(shots, probs, gt_labels):
         shots (int): the number of shots used in quantum computing
         probs (numpy.ndarray): NxK array, N is the number of data and K is the number of class
         gt_labels (numpy.ndarray): Nx1 array
+
     Returns:
         float: sigmoid cross entropy loss between estimated probs and gt_labels
     """
@@ -619,6 +703,7 @@ def return_probabilities(counts, num_classes):
     Args:
         counts (list[dict]): N data and each with a dict recording the counts
         num_classes (int): number of classes
+
     Returns:
         numpy.ndarray: NxK array
     """

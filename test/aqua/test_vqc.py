@@ -18,8 +18,10 @@ import os
 import unittest
 from test.aqua import QiskitAquaTestCase
 import numpy as np
+from ddt import ddt, data
 from qiskit import BasicAer
-from qiskit.aqua import QuantumInstance, aqua_globals
+from qiskit.circuit import ParameterVector, QuantumCircuit, Parameter
+from qiskit.aqua import QuantumInstance, aqua_globals, AquaError
 from qiskit.aqua.algorithms import VQC
 from qiskit.aqua.components.optimizers import SPSA, COBYLA
 from qiskit.aqua.components.feature_maps import SecondOrderExpansion, RawFeatureVector
@@ -29,8 +31,10 @@ from qiskit.aqua.utils import get_feature_dimension
 from qiskit.ml.datasets import wine, ad_hoc_data
 
 
+@ddt
 class TestVQC(QiskitAquaTestCase):
     """ Test VQC """
+
     def setUp(self):
         super().setUp()
         self.seed = 1376
@@ -48,7 +52,8 @@ class TestVQC(QiskitAquaTestCase):
         self.ref_prediction_a_probs = [[0.79882812, 0.20117188]]
         self.ref_prediction_a_label = [0]
 
-    def test_vqc(self):
+    @data(False, True)
+    def test_vqc(self, use_circuits):
         """ vqc test """
         aqua_globals.random_seed = self.seed
         optimizer = SPSA(max_trials=10, save_steps=1,
@@ -56,7 +61,22 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(
             feature_dimension=get_feature_dimension(self.training_data), depth=2)
         var_form = RYRZ(num_qubits=feature_map.num_qubits, depth=3)
+
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
+        # set up algorithm
         vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            vqc._feature_map_params = list(x)
+            vqc._var_form_params = list(theta)
+
         quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                            shots=1024,
                                            seed_simulator=aqua_globals.random_seed,
@@ -70,7 +90,8 @@ class TestVQC(QiskitAquaTestCase):
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
-    def test_vqc_with_max_evals_grouped(self):
+    @data(False, True)
+    def test_vqc_with_max_evals_grouped(self, use_circuits):
         """ vqc with max evals grouped test """
         aqua_globals.random_seed = self.seed
         optimizer = SPSA(max_trials=10, save_steps=1,
@@ -78,8 +99,23 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(
             feature_dimension=get_feature_dimension(self.training_data), depth=2)
         var_form = RYRZ(num_qubits=feature_map.num_qubits, depth=3)
+
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
+        # set up algorithm
         vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data,
                   max_evals_grouped=2)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            vqc._feature_map_params = list(x)
+            vqc._var_form_params = list(theta)
+
         quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                            shots=1024,
                                            seed_simulator=aqua_globals.random_seed,
@@ -92,14 +128,30 @@ class TestVQC(QiskitAquaTestCase):
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
-    def test_vqc_statevector(self):
+    @data(False, True)
+    def test_vqc_statevector(self, use_circuits):
         """ vqc statevector test """
         aqua_globals.random_seed = 10598
         optimizer = COBYLA()
         feature_map = SecondOrderExpansion(
             feature_dimension=get_feature_dimension(self.training_data), depth=2)
         var_form = RYRZ(num_qubits=feature_map.num_qubits, depth=3)
+
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
+        # set up algorithm
         vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            vqc._feature_map_params = list(x)
+            vqc._var_form_params = list(theta)
+
         quantum_instance = QuantumInstance(BasicAer.get_backend('statevector_simulator'),
                                            seed_simulator=aqua_globals.random_seed,
                                            seed_transpiler=aqua_globals.random_seed)
@@ -110,7 +162,8 @@ class TestVQC(QiskitAquaTestCase):
         self.assertEqual(result['testing_accuracy'], 0.5)
 
     # we use the ad_hoc dataset (see the end of this file) to test the accuracy.
-    def test_vqc_minibatching_no_gradient_support(self):
+    @data(False, True)
+    def test_vqc_minibatching_no_gradient_support(self, use_circuits):
         """ vqc minibatching with no gradient support test """
         n_dim = 2  # dimension of each data point
         seed = 1024
@@ -125,14 +178,30 @@ class TestVQC(QiskitAquaTestCase):
         optimizer = COBYLA(maxiter=40)
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
+
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
+        # set up algorithm
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            vqc._feature_map_params = list(x)
+            vqc._var_form_params = list(theta)
+
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed,
                                            optimization_level=0)
         result = vqc.run(quantum_instance)
         self.log.debug(result['testing_accuracy'])
         self.assertGreaterEqual(result['testing_accuracy'], 0.5)
 
-    def test_vqc_minibatching_with_gradient_support(self):
+    @data(False, True)
+    def test_vqc_minibatching_with_gradient_support(self, use_circuits):
         """ vqc minibatching with gradient support test """
         n_dim = 2  # dimension of each data point
         seed = 1024
@@ -147,14 +216,30 @@ class TestVQC(QiskitAquaTestCase):
         optimizer = L_BFGS_B(maxfun=30)
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=1)
+
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
+        # set up algorithm
         vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            vqc._feature_map_params = list(x)
+            vqc._var_form_params = list(theta)
+
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
         result = vqc.run(quantum_instance)
         vqc_accuracy = 0.5
         self.log.debug(result['testing_accuracy'])
         self.assertAlmostEqual(result['testing_accuracy'], vqc_accuracy, places=3)
 
-    def test_save_and_load_model(self):
+    @data(False, True)
+    def test_save_and_load_model(self, use_circuits):
         """ save and load model test """
         aqua_globals.random_seed = self.seed
         backend = BasicAer.get_backend('qasm_simulator')
@@ -164,7 +249,21 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RYRZ(num_qubits=num_qubits, depth=3)
 
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
+        # set up algorithm
         vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            vqc._feature_map_params = list(x)
+            vqc._var_form_params = list(theta)
+
         quantum_instance = QuantumInstance(backend,
                                            shots=1024,
                                            seed_simulator=self.seed,
@@ -184,6 +283,12 @@ class TestVQC(QiskitAquaTestCase):
         self.assertTrue(os.path.exists(file_path))
 
         loaded_vqc = VQC(optimizer, feature_map, var_form, self.training_data, None)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            loaded_vqc._feature_map_params = list(x)
+            loaded_vqc._var_form_params = list(theta)
+
         loaded_vqc.load_model(file_path)
 
         np.testing.assert_array_almost_equal(
@@ -207,17 +312,16 @@ class TestVQC(QiskitAquaTestCase):
             except Exception:  # pylint: disable=broad-except
                 pass
 
-    def test_vqc_callback(self):
+    @data(False, True)
+    def test_vqc_callback(self, use_circuits):
         """ vqc callback test """
-        tmp_filename = 'qvqc_callback_test.csv'
-        is_file_exist = os.path.exists(self.get_resource_path(tmp_filename))
-        if is_file_exist:
-            os.remove(self.get_resource_path(tmp_filename))
+        history = {'eval_count': [], 'parameters': [], 'cost': [], 'batch_index': []}
 
         def store_intermediate_result(eval_count, parameters, cost, batch_index):
-            with open(self.get_resource_path(tmp_filename), 'a') as file:
-                content = "{},{},{:.5f},{}".format(eval_count, parameters, cost, batch_index)
-                print(content, file=file, flush=True)
+            history['eval_count'].append(eval_count)
+            history['parameters'].append(parameters)
+            history['cost'].append(cost)
+            history['batch_index'].append(batch_index)
 
         aqua_globals.random_seed = self.seed
         backend = BasicAer.get_backend('qasm_simulator')
@@ -227,6 +331,13 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
         var_form = RY(num_qubits=num_qubits, depth=1)
 
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
         vqc = VQC(optimizer, feature_map, var_form, self.training_data,
                   self.testing_data, callback=store_intermediate_result)
         quantum_instance = QuantumInstance(backend,
@@ -235,31 +346,37 @@ class TestVQC(QiskitAquaTestCase):
                                            seed_transpiler=self.seed)
         vqc.run(quantum_instance)
 
-        is_file_exist = os.path.exists(self.get_resource_path(tmp_filename))
-        self.assertTrue(is_file_exist, "Does not store content successfully.")
+        self.assertTrue(all(isinstance(count, int) for count in history['eval_count']))
+        self.assertTrue(all(isinstance(cost, float) for cost in history['cost']))
+        self.assertTrue(all(isinstance(index, int) for index in history['batch_index']))
+        for params in history['parameters']:
+            self.assertTrue(all(isinstance(param, float) for param in params))
 
-        # check the content
-        ref_content = [
-            ['0', '[-0.58205563 -2.97987177 -0.73153057  1.06577518]', '0.46841', '0'],
-            ['1', '[ 0.41794437 -2.97987177 -0.73153057  1.06577518]', '0.31861', '1'],
-            ['2', '[ 0.41794437 -1.97987177 -0.73153057  1.06577518]', '0.45975', '2'],
-        ]
-        try:
-            with open(self.get_resource_path(tmp_filename)) as file:
-                idx = 0
-                for record in file.readlines():
-                    eval_count, parameters, cost, batch_index = record.split(",")
-                    self.assertEqual(eval_count.strip(), ref_content[idx][0])
-                    self.assertEqual(parameters, ref_content[idx][1])
-                    self.assertEqual(cost.strip(), ref_content[idx][2])
-                    self.assertEqual(batch_index.strip(), ref_content[idx][3])
-                    idx += 1
-        finally:
-            if is_file_exist:
-                os.remove(self.get_resource_path(tmp_filename))
+    def test_same_parameter_names_raises(self):
+        """Test that the varform and feature map can have parameters with the same name."""
+        var_form = QuantumCircuit(1)
+        var_form.ry(Parameter('a'), 0)
+        feature_map = QuantumCircuit(1)
+        feature_map.rz(Parameter('a'), 0)
+        optimizer = SPSA()
+        vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
 
-    def test_vqc_on_wine(self):
-        """ vqc on wine test """
+        with self.assertRaises(AquaError):
+            _ = vqc.run(BasicAer.get_backend('statevector_simulator'))
+
+    def test_feature_map_without_parameters_warns(self):
+        """Test that specifying a feature map with 0 parameters raises a warning."""
+        var_form = QuantumCircuit(1)
+        var_form.ry(Parameter('a'), 0)
+        feature_map = QuantumCircuit(1)
+        feature_map.rx(0.2, 0)
+        optimizer = SPSA()
+        with self.assertWarns(UserWarning):
+            _ = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+
+    @data(False, True)
+    def test_vqc_on_wine(self, use_circuits):
+        """Test VQE on the wine test using circuits as feature map and variational form."""
         feature_dim = 4  # dimension of each data point
         training_dataset_size = 6
         testing_dataset_size = 3
@@ -270,11 +387,26 @@ class TestVQC(QiskitAquaTestCase):
                                                 plot_data=False)
         aqua_globals.random_seed = self.seed
         feature_map = SecondOrderExpansion(feature_dimension=feature_dim)
+        var_form = RYRZ(feature_map.num_qubits, depth=1)
+
+        # convert to circuit if circuits should be used
+        if use_circuits:
+            x = ParameterVector('x', feature_map.feature_dimension)
+            feature_map = feature_map.construct_circuit(x)
+            theta = ParameterVector('theta', var_form.num_parameters)
+            var_form = var_form.construct_circuit(theta)
+
         vqc = VQC(COBYLA(maxiter=100),
                   feature_map,
-                  RYRZ(feature_map.num_qubits, depth=1),
+                  var_form,
                   training_input,
                   test_input)
+
+        # sort parameters for reproducibility
+        if use_circuits:
+            vqc._feature_map_params = list(x)
+            vqc._var_form_params = list(theta)
+
         result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
                                          shots=1024,
                                          seed_simulator=aqua_globals.random_seed,
