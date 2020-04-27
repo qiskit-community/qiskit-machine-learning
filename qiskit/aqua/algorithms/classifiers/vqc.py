@@ -368,8 +368,8 @@ class VQC(VQAlgorithm):
             if self._callback is not None:
                 self._callback(
                     self._eval_count,
-                    theta[i * self._var_form.num_parameters:(i + 1) *
-                          self._var_form.num_parameters],
+                    theta[i * self._var_form.num_parameters:(i + 1)
+                          * self._var_form.num_parameters],
                     curr_cost,
                     self._batch_index
                 )
@@ -671,8 +671,8 @@ def cost_estimate(probs, gt_labels, shots=None):  # pylint: disable=unused-argum
     def cross_entropy(predictions, targets, epsilon=1e-12):
         predictions = np.clip(predictions, epsilon, 1. - epsilon)
         N = predictions.shape[0]
-        tmp = np.sum(targets*np.log(predictions), axis=1)
-        ce = -np.sum(tmp)/N
+        tmp = np.sum(targets * np.log(predictions), axis=1)
+        ce = -np.sum(tmp) / N
         return ce
 
     x = cross_entropy(probs, mylabels)

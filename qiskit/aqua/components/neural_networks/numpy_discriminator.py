@@ -27,6 +27,7 @@ from .discriminative_network import DiscriminativeNetwork
 
 logger = logging.getLogger(__name__)
 
+
 # pylint: disable=invalid-name
 
 
@@ -167,12 +168,13 @@ class DiscriminatorNet():
         m = y.shape[1]
         y = y.reshape(np.shape(x))
         if weights is not None:
-            da_prev = - np.multiply(weights,
-                                    np.divide(y, np.maximum(np.ones(np.shape(x))*1e-4, x)) -
-                                    np.divide(1 - y, np.maximum(np.ones(np.shape(x))*1e-4, 1 - x)))
+            da_prev = - np.multiply(
+                weights,
+                np.divide(y, np.maximum(np.ones(np.shape(x)) * 1e-4, x))
+                - np.divide(1 - y, np.maximum(np.ones(np.shape(x)) * 1e-4, 1 - x)))
         else:
-            da_prev = - (np.divide(y, np.maximum(np.ones(np.shape(x))*1e-4, x)) -
-                         np.divide(1 - y, np.maximum(np.ones(np.shape(x))*1e-4, 1 - x))) / m
+            da_prev = - (np.divide(y, np.maximum(np.ones(np.shape(x)) * 1e-4, x))
+                         - np.divide(1 - y, np.maximum(np.ones(np.shape(x)) * 1e-4, 1 - x))) / m
 
         pointer = 0
 
@@ -306,17 +308,18 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         if weights is not None:
             # Use weights as scaling factors for the samples and compute the sum
             return (-1) * np.dot(np.multiply(y,
-                                             np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x))) +
-                                 np.multiply(np.ones(np.shape(y))-y,
-                                             np.log(np.maximum(np.ones(np.shape(x))*1e-4,
-                                                               np.ones(np.shape(x))-x))), weights)
+                                             np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
+                                 + np.multiply(np.ones(np.shape(y)) - y,
+                                               np.log(np.maximum(np.ones(np.shape(x)) * 1e-4,
+                                                                 np.ones(np.shape(x)) - x))),
+                                 weights)
         else:
             # Compute the mean
             return (-1) * np.mean(np.multiply(y,
-                                              np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x))) +
-                                  np.multiply(np.ones(np.shape(y))-y,
-                                              np.log(np.maximum(np.ones(np.shape(x))*1e-4,
-                                                                np.ones(np.shape(x))-x))))
+                                              np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
+                                  + np.multiply(np.ones(np.shape(y)) - y,
+                                                np.log(np.maximum(np.ones(np.shape(x)) * 1e-4,
+                                                                  np.ones(np.shape(x)) - x))))
 
     def _get_objective_function(self, data, weights):
         """
@@ -342,7 +345,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
             prediction_fake = self.get_label(generated_batch)
             loss_fake = self.loss(prediction_fake,
                                   np.zeros(np.shape(prediction_fake)), generated_prob)
-            return 0.5*(loss_real[0]+loss_fake[0])
+            return 0.5 * (loss_real[0] + loss_fake[0])
 
         return objective_function
 
@@ -371,6 +374,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
             grad_generated = self._discriminator.backward(prediction_generated, np.zeros(
                 np.shape(prediction_generated)), generated_prob)
             return np.add(grad_real, grad_generated)
+
         return gradient_function
 
     def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):

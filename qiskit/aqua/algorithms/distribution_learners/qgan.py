@@ -116,7 +116,7 @@ class QGAN(QuantumAlgorithm):
         # pylint: disable=unsubscriptable-object
         if np.ndim(data) > 1:
             if self._num_qubits is None:
-                self._num_qubits = np.ones[len(data[0])]*3
+                self._num_qubits = np.ones[len(data[0])] * 3
         else:
             if self._num_qubits is None:
                 self._num_qubits = np.array([3])
@@ -274,15 +274,15 @@ class QGAN(QuantumAlgorithm):
         for e in range(self._num_epochs):
             aqua_globals.random.shuffle(self._data)
             index = 0
-            while (index+self._batch_size) <= len(self._data):
-                real_batch = self._data[index: index+self._batch_size]
+            while (index + self._batch_size) <= len(self._data):
+                real_batch = self._data[index: index + self._batch_size]
                 index += self._batch_size
                 generated_batch, generated_prob = self._generator.get_output(self._quantum_instance,
                                                                              shots=self._batch_size)
 
                 # 1. Train Discriminator
                 ret_d = self._discriminator.train([real_batch, generated_batch],
-                                                  [np.ones(len(real_batch))/len(real_batch),
+                                                  [np.ones(len(real_batch)) / len(real_batch),
                                                    generated_prob])
                 d_loss_min = ret_d['loss']
 

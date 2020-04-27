@@ -301,9 +301,9 @@ class QuantumGenerator(GenerativeNetwork):
         """
         try:
             # pylint: disable=no-member
-            loss = (-1)*np.dot(np.log(x).transpose(), weights)
+            loss = (-1) * np.dot(np.log(x).transpose(), weights)
         except Exception:  # pylint: disable=broad-except
-            loss = (-1)*np.dot(np.log(x), weights)
+            loss = (-1) * np.dot(np.log(x), weights)
         return loss.flatten()
 
     def _get_objective_function(self, quantum_instance, discriminator):

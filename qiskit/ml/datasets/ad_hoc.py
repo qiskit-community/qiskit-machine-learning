@@ -30,16 +30,16 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
     elif n == 3:
         count = 20   # coarseness of data separation
 
-    label_train = np.zeros(2*(training_size+test_size))
+    label_train = np.zeros(2 * (training_size + test_size))
     sample_train = []
-    sample_a = [[0 for x in range(n)] for y in range(training_size+test_size)]
-    sample_b = [[0 for x in range(n)] for y in range(training_size+test_size)]
+    sample_a = [[0 for x in range(n)] for y in range(training_size + test_size)]
+    sample_b = [[0 for x in range(n)] for y in range(training_size + test_size)]
 
     sample_total = [[[0 for x in range(count)] for y in range(count)] for z in range(count)]
 
     # interactions = np.transpose(np.array([[1, 0], [0, 1], [1, 1]]))
 
-    steps = 2*np.pi/count
+    steps = 2 * np.pi / count
 
     # sx = np.array([[0, 1], [1, 0]])
     # X = np.asmatrix(sx)
@@ -49,7 +49,7 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
     z_m = np.asmatrix(s_z)
     j_m = np.array([[1, 0], [0, 1]])
     j_m = np.asmatrix(j_m)
-    h_m = np.array([[1, 1], [1, -1]])/np.sqrt(2)
+    h_m = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
     h_2 = np.kron(h_m, h_m)
     h_3 = np.kron(h_m, h_2)
     h_m = np.asmatrix(h_m)
@@ -58,7 +58,7 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
 
     f_a = np.arange(2**n)
 
-    my_array = [[0 for x in range(n)] for y in range(2**n)]
+    my_array = [[0 for x in range(n)] for y in range(2 ** n)]
 
     for arindex, _ in enumerate(my_array):
         temp_f = bin(f_a[arindex])[2:].zfill(n)
@@ -69,9 +69,9 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
     my_array = np.transpose(my_array)
 
     # Define decision functions
-    maj = (-1)**(2*my_array.sum(axis=0) > n)
-    parity = (-1)**(my_array.sum(axis=0))
-    # dict1 = (-1)**(my_array[0])
+    maj = (-1) ** (2 * my_array.sum(axis=0) > n)
+    parity = (-1) ** (my_array.sum(axis=0))
+    # dict1 = (-1) ** (my_array[0])
     d_m = None
     if n == 2:
         d_m = np.diag(parity)
@@ -80,7 +80,7 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
 
     basis = aqua_globals.random.random_sample((2 ** n, 2 ** n)) + \
         1j * aqua_globals.random.random_sample((2 ** n, 2 ** n))
-    basis = np.asmatrix(basis).getH()*np.asmatrix(basis)
+    basis = np.asmatrix(basis).getH() * np.asmatrix(basis)
 
     [s_a, u_a] = np.linalg.eig(basis)
 
@@ -88,9 +88,9 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
     s_a = s_a[idx]
     u_a = u_a[:, idx]
 
-    m_m = (np.asmatrix(u_a)).getH()*np.asmatrix(d_m)*np.asmatrix(u_a)
+    m_m = (np.asmatrix(u_a)).getH() * np.asmatrix(d_m) * np.asmatrix(u_a)
 
-    psi_plus = np.transpose(np.ones(2))/np.sqrt(2)
+    psi_plus = np.transpose(np.ones(2)) / np.sqrt(2)
     psi_0 = 1
     for k in range(n):
         psi_0 = np.kron(np.asmatrix(psi_0), np.asmatrix(psi_plus))
@@ -101,13 +101,13 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
     if n == 2:
         for n_1 in range(count):
             for n_2 in range(count):
-                x_1 = steps*n_1
-                x_2 = steps*n_2
-                phi = x_1*np.kron(z_m, j_m) + x_2*np.kron(j_m, z_m) + \
-                    (np.pi-x_1)*(np.pi-x_2)*np.kron(z_m, z_m)
-                u_u = scipy.linalg.expm(1j*phi)  # pylint: disable=no-member
-                psi = np.asmatrix(u_u)*h_2*np.asmatrix(u_u)*np.transpose(psi_0)
-                temp = np.real(psi.getH()*m_m*psi).item()
+                x_1 = steps * n_1
+                x_2 = steps * n_2
+                phi = x_1 * np.kron(z_m, j_m) + x_2 * np.kron(j_m, z_m) + \
+                    (np.pi - x_1) * (np.pi - x_2) * np.kron(z_m, z_m)
+                u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
+                psi = np.asmatrix(u_u) * h_2 * np.asmatrix(u_u) * np.transpose(psi_0)
+                temp = np.real(psi.getH() * m_m * psi).item()
                 if temp > gap:
                     sample_total[n_1][n_2] = +1
                 elif temp < -gap:
@@ -117,33 +117,33 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
 
         # Now sample randomly from sample_Total a number of times training_size+testing_size
         t_r = 0
-        while t_r < (training_size+test_size):
+        while t_r < (training_size + test_size):
             draw1 = aqua_globals.random.choice(count)
             draw2 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2] == +1:
-                sample_a[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
+                sample_a[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
                 t_r += 1
 
         t_r = 0
-        while t_r < (training_size+test_size):
+        while t_r < (training_size + test_size):
             draw1 = aqua_globals.random.choice(count)
             draw2 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2] == -1:
-                sample_b[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
+                sample_b[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
                 t_r += 1
 
         sample_train = [sample_a, sample_b]
 
-        for lindex in range(training_size+test_size):
+        for lindex in range(training_size + test_size):
             label_train[lindex] = 0
-        for lindex in range(training_size+test_size):
-            label_train[training_size+test_size+lindex] = 1
+        for lindex in range(training_size + test_size):
+            label_train[training_size + test_size + lindex] = 1
         label_train = label_train.astype(int)
-        sample_train = np.reshape(sample_train, (2*(training_size+test_size), n))
+        sample_train = np.reshape(sample_train, (2 * (training_size + test_size), n))
         training_input = {key: (sample_train[label_train == k, :])[:training_size]
                           for k, key in enumerate(class_labels)}
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
-            training_size+test_size)] for k, key in enumerate(class_labels)}
+            training_size + test_size)] for k, key in enumerate(class_labels)}
 
         if plot_data:
             try:
@@ -164,18 +164,18 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
         for n_1 in range(count):
             for n_2 in range(count):
                 for n_3 in range(count):
-                    x_1 = steps*n_1
-                    x_2 = steps*n_2
-                    x_3 = steps*n_3
-                    phi = x_1*np.kron(np.kron(z_m, j_m), j_m) + \
-                        x_2*np.kron(np.kron(j_m, z_m), j_m) + \
-                        x_3*np.kron(np.kron(j_m, j_m), z_m) + \
-                        (np.pi-x_1)*(np.pi-x_2)*np.kron(np.kron(z_m, z_m), j_m) + \
-                        (np.pi-x_2)*(np.pi-x_3)*np.kron(np.kron(j_m, z_m), z_m) + \
-                        (np.pi-x_1)*(np.pi-x_3)*np.kron(np.kron(z_m, j_m), z_m)
-                    u_u = scipy.linalg.expm(1j*phi)  # pylint: disable=no-member
-                    psi = np.asmatrix(u_u)*h_3*np.asmatrix(u_u)*np.transpose(psi_0)
-                    temp = np.real(psi.getH()*m_m*psi).item()
+                    x_1 = steps * n_1
+                    x_2 = steps * n_2
+                    x_3 = steps * n_3
+                    phi = x_1 * np.kron(np.kron(z_m, j_m), j_m) + \
+                        x_2 * np.kron(np.kron(j_m, z_m), j_m) + \
+                        x_3 * np.kron(np.kron(j_m, j_m), z_m) + \
+                        (np.pi - x_1) * (np.pi - x_2) * np.kron(np.kron(z_m, z_m), j_m) + \
+                        (np.pi - x_2) * (np.pi - x_3) * np.kron(np.kron(j_m, z_m), z_m) + \
+                        (np.pi - x_1) * (np.pi - x_3) * np.kron(np.kron(z_m, j_m), z_m)
+                    u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
+                    psi = np.asmatrix(u_u) * h_3 * np.asmatrix(u_u) * np.transpose(psi_0)
+                    temp = np.real(psi.getH() * m_m * psi).item()
                     if temp > gap:
                         sample_total[n_1][n_2][n_3] = +1
                         sample_total_a.append([n_1, n_2, n_3])
@@ -188,35 +188,37 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
 
         # Now sample randomly from sample_Total a number of times training_size+testing_size
         t_r = 0
-        while t_r < (training_size+test_size):
+        while t_r < (training_size + test_size):
             draw1 = aqua_globals.random.choice(count)
             draw2 = aqua_globals.random.choice(count)
             draw3 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2][draw3] == +1:
-                sample_a[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count, 2*np.pi*draw3/count]
+                sample_a[t_r] = [2 * np.pi * draw1 / count,
+                                 2 * np.pi * draw2 / count, 2 * np.pi * draw3 / count]
                 t_r += 1
 
         t_r = 0
-        while t_r < (training_size+test_size):
+        while t_r < (training_size + test_size):
             draw1 = aqua_globals.random.choice(count)
             draw2 = aqua_globals.random.choice(count)
             draw3 = aqua_globals.random.choice(count)
             if sample_total[draw1][draw2][draw3] == -1:
-                sample_b[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count, 2*np.pi*draw3/count]
+                sample_b[t_r] = [2 * np.pi * draw1 / count,
+                                 2 * np.pi * draw2 / count, 2 * np.pi * draw3 / count]
                 t_r += 1
 
         sample_train = [sample_a, sample_b]
 
-        for lindex in range(training_size+test_size):
+        for lindex in range(training_size + test_size):
             label_train[lindex] = 0
-        for lindex in range(training_size+test_size):
-            label_train[training_size+test_size+lindex] = 1
+        for lindex in range(training_size + test_size):
+            label_train[training_size + test_size + lindex] = 1
         label_train = label_train.astype(int)
-        sample_train = np.reshape(sample_train, (2*(training_size+test_size), n))
+        sample_train = np.reshape(sample_train, (2 * (training_size + test_size), n))
         training_input = {key: (sample_train[label_train == k, :])[:training_size]
                           for k, key in enumerate(class_labels)}
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
-            training_size+test_size)] for k, key in enumerate(class_labels)}
+            training_size + test_size)] for k, key in enumerate(class_labels)}
 
         if plot_data:
             try:
@@ -273,7 +275,7 @@ def sample_ad_hoc_data(sample_total, test_size, n):
     elif n == 3:
         count = 20
 
-    label_train = np.zeros(2*test_size)
+    label_train = np.zeros(2 * test_size)
     sample_a = [[0 for x in range(n)] for y in range(test_size)]
     sample_b = [[0 for x in range(n)] for y in range(test_size)]
     t_r = 0
@@ -281,7 +283,7 @@ def sample_ad_hoc_data(sample_total, test_size, n):
         draw1 = aqua_globals.random.choice(count)
         draw2 = aqua_globals.random.choice(count)
         if sample_total[draw1][draw2] == +1:
-            sample_a[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
+            sample_a[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
             t_r += 1
 
     t_r = 0
@@ -289,13 +291,13 @@ def sample_ad_hoc_data(sample_total, test_size, n):
         draw1 = aqua_globals.random.choice(count)
         draw2 = aqua_globals.random.choice(count)
         if sample_total[draw1][draw2] == -1:
-            sample_b[t_r] = [2*np.pi*draw1/count, 2*np.pi*draw2/count]
+            sample_b[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
             t_r += 1
     sample_train = [sample_a, sample_b]
     for lindex in range(test_size):
         label_train[lindex] = 0
     for lindex in range(test_size):
-        label_train[test_size+lindex] = 1
+        label_train[test_size + lindex] = 1
     label_train = label_train.astype(int)
     sample_train = np.reshape(sample_train, (2 * test_size, n))
     test_input = {key: (sample_train[label_train == k, :])[:] for k, key in enumerate(class_labels)}
