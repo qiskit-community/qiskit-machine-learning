@@ -16,9 +16,12 @@
 ===================================================
 Qiskit's Machine Learning module (:mod:`qiskit.ml`)
 ===================================================
-This is the machine learning domain logic....
 
 .. currentmodule:: qiskit.ml
+
+This is the Qiskit`s machine learning module. There is an initial set of function here that
+will be built out over time. At present it has sample sets that can be used with
+Aqua's :mod:`~qiskit.aqua.algorithms.classifiers`.
 
 Submodules
 ==========
