@@ -13,9 +13,9 @@
 # that they have been altered from the originals.
 
 """
-==============================================================
-Machine Learning application stack for Aqua (:mod:`qiskit.ml`)
-==============================================================
+===================================================
+Qiskit's Machine Learning module (:mod:`qiskit.ml`)
+===================================================
 This is the machine learning domain logic....
 
 .. currentmodule:: qiskit.ml
