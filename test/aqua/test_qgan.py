@@ -20,7 +20,7 @@ import warnings
 import unittest
 from ddt import ddt, data
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit import ParameterVector
+from qiskit.circuit.library import RealAmplitudes
 from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
                                                        UnivariateVariationalDistribution)
 from qiskit.aqua.components.variational_forms import RY
@@ -83,39 +83,47 @@ class TestQGAN(QiskitAquaTestCase):
         qc = QuantumCircuit(q)
         init_dist.build(qc, q)
         init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
+
+        # Set generator's initial parameters
+        init_params = aqua_globals.random.rand(2 * sum(num_qubits)) * 2 * 1e-2
+
         # Set variational form
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
         var_form = RY(sum(num_qubits),
                       depth=1,
                       initial_state=init_distribution,
                       entangler_map=entangler_map,
-                      entanglement_gate='cz')
-        # Set generator's initial parameters
-        init_params = aqua_globals.random.rand(var_form._num_parameters) * 2 * 1e-2
-        # Set generator circuit
-        self.g_var_form = UnivariateVariationalDistribution(sum(num_qubits), var_form, init_params,
-                                                            low=self._bounds[0],
-                                                            high=self._bounds[1])
+                      entanglement_gate='cx')
+        dist_var_form = UnivariateVariationalDistribution(sum(num_qubits), var_form, init_params,
+                                                          low=self._bounds[0],
+                                                          high=self._bounds[1])
+        warnings.filterwarnings('always', category=DeprecationWarning)
 
-        theta = ParameterVector('θ', var_form.num_parameters)
-        var_form = var_form.construct_circuit(theta)
-        self.g_circuit = UnivariateVariationalDistribution(sum(num_qubits), var_form, init_params,
-                                                           low=self._bounds[0],
-                                                           high=self._bounds[1])
+        library = RealAmplitudes(sum(num_qubits), reps=1, initial_state=init_distribution,
+                                 entanglement=entangler_map)
+        dist_library = UnivariateVariationalDistribution(sum(num_qubits), library, init_params,
+                                                         low=self._bounds[0],
+                                                         high=self._bounds[1])
+        circuit = QuantumCircuit(sum(num_qubits)).compose(library)
+        dist_circuit = UnivariateVariationalDistribution(sum(num_qubits), circuit, init_params,
+                                                         low=self._bounds[0],
+                                                         high=self._bounds[1])
 
-    def tearDown(self):
-        super().tearDown()
-        warnings.filterwarnings(action="always", category=DeprecationWarning)
+        self.generator_circuits = {'wrapped': dist_var_form,
+                                   'circuit': dist_circuit,
+                                   'library': dist_library}
 
-    @data(False, True)
-    def test_sample_generation(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_sample_generation(self, mode):
         """ sample generation test """
-        if use_circuits:
-            self.qgan.set_generator(generator_circuit=self.g_circuit)
-        else:
+        if mode == 'wrapped':
             # ignore deprecation warnings from the deprecation of VariationalForm as input for
             # the univariate variational distribution
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            self.qgan.set_generator(generator_circuit=self.g_var_form)
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
+            warnings.filterwarnings('always', category=DeprecationWarning)
+        else:
+            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
 
         _, weights_statevector = \
             self.qgan._generator.get_output(self.qi_statevector, shots=100)
@@ -124,26 +132,21 @@ class TestQGAN(QiskitAquaTestCase):
         for i, weight_q in enumerate(weights_qasm):
             self.assertAlmostEqual(weight_q, weights_statevector[i], delta=0.1)
 
-        if not use_circuits:
-            warnings.filterwarnings(action="always", category=DeprecationWarning)
-
-    @data(False, True)
-    def test_qgan_training(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_qgan_training(self, mode):
         """ qgan training test """
-        if use_circuits:
-            self.qgan.set_generator(generator_circuit=self.g_circuit)
-        else:
+        if mode == 'wrapped':
             # ignore deprecation warnings from the deprecation of VariationalForm as input for
             # the univariate variational distribution
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            self.qgan.set_generator(generator_circuit=self.g_var_form)
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
+            warnings.filterwarnings('always', category=DeprecationWarning)
+        else:
+            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
 
         trained_statevector = self.qgan.run(self.qi_statevector)
         trained_qasm = self.qgan.run(self.qi_qasm)
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
-
-        if not use_circuits:
-            warnings.filterwarnings(action="always", category=DeprecationWarning)
 
     def test_qgan_training_run_algo_torch(self):
         """ qgan training run algo torch test """

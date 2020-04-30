@@ -16,18 +16,19 @@
 
 import os
 import unittest
+import warnings
 from test.aqua import QiskitAquaTestCase
 import numpy as np
 from ddt import ddt, data
 from qiskit import BasicAer
 from qiskit.circuit import ParameterVector, QuantumCircuit, Parameter
+from qiskit.circuit.library import TwoLocal, ZZFeatureMap
 from qiskit.aqua import QuantumInstance, aqua_globals, AquaError
 from qiskit.aqua.algorithms import VQC
 from qiskit.aqua.components.optimizers import SPSA, COBYLA
 from qiskit.aqua.components.feature_maps import SecondOrderExpansion, RawFeatureVector
-from qiskit.aqua.components.variational_forms import RYRZ, RY
+from qiskit.aqua.components.variational_forms import RYRZ
 from qiskit.aqua.components.optimizers import L_BFGS_B
-from qiskit.aqua.utils import get_feature_dimension
 from qiskit.ml.datasets import wine, ad_hoc_data
 
 
@@ -52,30 +53,57 @@ class TestVQC(QiskitAquaTestCase):
         self.ref_prediction_a_probs = [[0.79882812, 0.20117188]]
         self.ref_prediction_a_label = [0]
 
-    @data(False, True)
-    def test_vqc(self, use_circuits):
+        # ignore warnings from creating VariationalForm and FeatureMap objects
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
+        var_form_ryrz = RYRZ(2, depth=3)
+        feature_map = SecondOrderExpansion(2, depth=2)
+        warnings.filterwarnings('always', category=DeprecationWarning)
+
+        library_ryrz = TwoLocal(2, ['ry', 'rz'], 'cz', reps=3, insert_barriers=True)
+        theta = ParameterVector('theta', var_form_ryrz.num_parameters)
+        circuit_ryrz = var_form_ryrz.construct_circuit(theta)
+        resorted = []
+        for i in range(4):
+            layer = library_ryrz.ordered_parameters[4*i:4*(i+1)]
+            resorted += layer[::2]
+            resorted += layer[1::2]
+        library_ryrz.assign_parameters(dict(zip(resorted, theta)), inplace=True)
+        self._sorted_wavefunction_params = list(theta)
+
+        self.ryrz_wavefunction = {'wrapped': var_form_ryrz,
+                                  'circuit': circuit_ryrz,
+                                  'library': library_ryrz}
+
+        library_circuit = ZZFeatureMap(2, reps=2)
+        x = ParameterVector('x', 2)
+        circuit = feature_map.construct_circuit(x)
+        self._sorted_data_params = list(x)
+        library_circuit.assign_parameters(x, inplace=True)
+
+        self.data_preparation = {'wrapped': feature_map,
+                                 'circuit': circuit,
+                                 'library': library_circuit}
+
+    @data('wrapped', 'circuit', 'library')
+    def test_vqc(self, mode):
         """ vqc test """
         aqua_globals.random_seed = self.seed
         optimizer = SPSA(max_trials=10, save_steps=1,
                          c0=4.0, c1=0.1, c2=0.602, c3=0.101, c4=0.0, skip_calibration=True)
-        feature_map = SecondOrderExpansion(
-            feature_dimension=get_feature_dimension(self.training_data), depth=2)
-        var_form = RYRZ(num_qubits=feature_map.num_qubits, depth=3)
+        data_preparation = self.data_preparation[mode]
+        wavefunction = self.ryrz_wavefunction[mode]
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
 
         # set up algorithm
-        vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+        vqc = VQC(optimizer, data_preparation, wavefunction, self.training_data, self.testing_data)
 
-        # sort parameters for reproducibility
-        if use_circuits:
-            vqc._feature_map_params = list(x)
-            vqc._var_form_params = list(theta)
+        if mode in ['circuit', 'library']:
+            vqc._feature_map_params = self._sorted_data_params
+            vqc._var_form_params = self._sorted_wavefunction_params
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                            shots=1024,
@@ -90,31 +118,26 @@ class TestVQC(QiskitAquaTestCase):
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
-    @data(False, True)
-    def test_vqc_with_max_evals_grouped(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_vqc_with_max_evals_grouped(self, mode):
         """ vqc with max evals grouped test """
         aqua_globals.random_seed = self.seed
         optimizer = SPSA(max_trials=10, save_steps=1,
                          c0=4.0, c1=0.1, c2=0.602, c3=0.101, c4=0.0, skip_calibration=True)
-        feature_map = SecondOrderExpansion(
-            feature_dimension=get_feature_dimension(self.training_data), depth=2)
-        var_form = RYRZ(num_qubits=feature_map.num_qubits, depth=3)
+        data_preparation = self.data_preparation[mode]
+        wavefunction = self.ryrz_wavefunction[mode]
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
-
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
         # set up algorithm
-        vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data,
+        vqc = VQC(optimizer, data_preparation, wavefunction, self.training_data, self.testing_data,
                   max_evals_grouped=2)
 
-        # sort parameters for reproducibility
-        if use_circuits:
-            vqc._feature_map_params = list(x)
-            vqc._var_form_params = list(theta)
+        if mode in ['circuit', 'library']:
+            vqc._feature_map_params = self._sorted_data_params
+            vqc._var_form_params = self._sorted_wavefunction_params
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                            shots=1024,
@@ -128,29 +151,24 @@ class TestVQC(QiskitAquaTestCase):
 
         self.assertEqual(1.0, result['testing_accuracy'])
 
-    @data(False, True)
-    def test_vqc_statevector(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_vqc_statevector(self, mode):
         """ vqc statevector test """
         aqua_globals.random_seed = 10598
         optimizer = COBYLA()
-        feature_map = SecondOrderExpansion(
-            feature_dimension=get_feature_dimension(self.training_data), depth=2)
-        var_form = RYRZ(num_qubits=feature_map.num_qubits, depth=3)
+        data_preparation = self.data_preparation[mode]
+        wavefunction = self.ryrz_wavefunction[mode]
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
-
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
         # set up algorithm
-        vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+        vqc = VQC(optimizer, data_preparation, wavefunction, self.training_data, self.testing_data)
 
-        # sort parameters for reproducibility
-        if use_circuits:
-            vqc._feature_map_params = list(x)
-            vqc._var_form_params = list(theta)
+        if mode in ['circuit', 'library']:
+            vqc._feature_map_params = self._sorted_data_params
+            vqc._var_form_params = self._sorted_wavefunction_params
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         quantum_instance = QuantumInstance(BasicAer.get_backend('statevector_simulator'),
                                            seed_simulator=aqua_globals.random_seed,
@@ -162,8 +180,8 @@ class TestVQC(QiskitAquaTestCase):
         self.assertEqual(result['testing_accuracy'], 0.5)
 
     # we use the ad_hoc dataset (see the end of this file) to test the accuracy.
-    @data(False, True)
-    def test_vqc_minibatching_no_gradient_support(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_vqc_minibatching_no_gradient_support(self, mode):
         """ vqc minibatching with no gradient support test """
         n_dim = 2  # dimension of each data point
         seed = 1024
@@ -174,25 +192,22 @@ class TestVQC(QiskitAquaTestCase):
                                                        gap=0.3,
                                                        plot_data=False)
         backend = BasicAer.get_backend('statevector_simulator')
-        num_qubits = n_dim
         optimizer = COBYLA(maxiter=40)
-        feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
-        var_form = RYRZ(num_qubits=num_qubits, depth=3)
+        data_preparation = self.data_preparation[mode]
+        wavefunction = self.ryrz_wavefunction[mode]
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
 
         # set up algorithm
-        vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
+        vqc = VQC(optimizer, data_preparation, wavefunction, training_input, test_input,
+                  minibatch_size=2)
 
-        # sort parameters for reproducibility
-        if use_circuits:
-            vqc._feature_map_params = list(x)
-            vqc._var_form_params = list(theta)
+        if mode in ['circuit', 'library']:
+            vqc._feature_map_params = self._sorted_data_params
+            vqc._var_form_params = self._sorted_wavefunction_params
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed,
                                            optimization_level=0)
@@ -200,8 +215,8 @@ class TestVQC(QiskitAquaTestCase):
         self.log.debug(result['testing_accuracy'])
         self.assertGreaterEqual(result['testing_accuracy'], 0.5)
 
-    @data(False, True)
-    def test_vqc_minibatching_with_gradient_support(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_vqc_minibatching_with_gradient_support(self, mode):
         """ vqc minibatching with gradient support test """
         n_dim = 2  # dimension of each data point
         seed = 1024
@@ -212,25 +227,37 @@ class TestVQC(QiskitAquaTestCase):
                                                        gap=0.3,
                                                        plot_data=False)
         backend = BasicAer.get_backend('statevector_simulator')
-        num_qubits = n_dim
         optimizer = L_BFGS_B(maxfun=30)
-        feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
-        var_form = RYRZ(num_qubits=num_qubits, depth=1)
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
+        # set up data encoding circuit
+        data_preparation = self.data_preparation[mode]
+
+        # set up wavefunction
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            wavefunction = RYRZ(2, depth=1)
+        else:
+            wavefunction = TwoLocal(2, ['ry', 'rz'], 'cz', reps=1, insert_barriers=True)
+            theta = ParameterVector('theta', wavefunction.num_parameters)
+            resorted = []
+            for i in range(4):
+                layer = wavefunction.ordered_parameters[4*i:4*(i+1)]
+                resorted += layer[::2]
+                resorted += layer[1::2]
+            wavefunction.assign_parameters(dict(zip(resorted, theta)), inplace=True)
+
+        if mode == 'circuit':
+            wavefunction = QuantumCircuit(2).compose(wavefunction)
 
         # set up algorithm
-        vqc = VQC(optimizer, feature_map, var_form, training_input, test_input, minibatch_size=2)
+        vqc = VQC(optimizer, data_preparation, wavefunction, training_input, test_input,
+                  minibatch_size=2)
 
-        # sort parameters for reproducibility
-        if use_circuits:
-            vqc._feature_map_params = list(x)
+        if mode in ['circuit', 'library']:
+            vqc._feature_map_params = self._sorted_data_params
             vqc._var_form_params = list(theta)
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
         result = vqc.run(quantum_instance)
@@ -238,31 +265,24 @@ class TestVQC(QiskitAquaTestCase):
         self.log.debug(result['testing_accuracy'])
         self.assertAlmostEqual(result['testing_accuracy'], vqc_accuracy, places=3)
 
-    @data(False, True)
-    def test_save_and_load_model(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_save_and_load_model(self, mode):
         """ save and load model test """
         aqua_globals.random_seed = self.seed
         backend = BasicAer.get_backend('qasm_simulator')
 
-        num_qubits = 2
         optimizer = SPSA(max_trials=10, save_steps=1, c0=4.0, skip_calibration=True)
-        feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
-        var_form = RYRZ(num_qubits=num_qubits, depth=3)
+        data_preparation = self.data_preparation[mode]
+        wavefunction = self.ryrz_wavefunction[mode]
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
-
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
         # set up algorithm
-        vqc = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
+        vqc = VQC(optimizer, data_preparation, wavefunction, self.training_data, self.testing_data)
 
-        # sort parameters for reproducibility
-        if use_circuits:
-            vqc._feature_map_params = list(x)
-            vqc._var_form_params = list(theta)
+        if mode in ['circuit', 'library']:
+            vqc._feature_map_params = self._sorted_data_params
+            vqc._var_form_params = self._sorted_wavefunction_params
 
         quantum_instance = QuantumInstance(backend,
                                            shots=1024,
@@ -282,12 +302,14 @@ class TestVQC(QiskitAquaTestCase):
 
         self.assertTrue(os.path.exists(file_path))
 
-        loaded_vqc = VQC(optimizer, feature_map, var_form, self.training_data, None)
+        loaded_vqc = VQC(optimizer, data_preparation, wavefunction, self.training_data, None)
 
         # sort parameters for reproducibility
-        if use_circuits:
-            loaded_vqc._feature_map_params = list(x)
-            loaded_vqc._var_form_params = list(theta)
+        if mode in ['circuit', 'library']:
+            loaded_vqc._feature_map_params = self._sorted_data_params
+            loaded_vqc._var_form_params = self._sorted_wavefunction_params
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         loaded_vqc.load_model(file_path)
 
@@ -312,8 +334,8 @@ class TestVQC(QiskitAquaTestCase):
             except Exception:  # pylint: disable=broad-except
                 pass
 
-    @data(False, True)
-    def test_vqc_callback(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_vqc_callback(self, mode):
         """ vqc callback test """
         history = {'eval_count': [], 'parameters': [], 'cost': [], 'batch_index': []}
 
@@ -326,20 +348,23 @@ class TestVQC(QiskitAquaTestCase):
         aqua_globals.random_seed = self.seed
         backend = BasicAer.get_backend('qasm_simulator')
 
-        num_qubits = 2
         optimizer = COBYLA(maxiter=3)
-        feature_map = SecondOrderExpansion(feature_dimension=num_qubits, depth=2)
-        var_form = RY(num_qubits=num_qubits, depth=1)
+        data_preparation = self.data_preparation[mode]
+        wavefunction = self.ryrz_wavefunction[mode]
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
 
-        vqc = VQC(optimizer, feature_map, var_form, self.training_data,
-                  self.testing_data, callback=store_intermediate_result)
+        # set up algorithm
+        vqc = VQC(optimizer, data_preparation, wavefunction, self.training_data, self.testing_data,
+                  callback=store_intermediate_result)
+
+        if mode in ['circuit', 'library']:
+            vqc._feature_map_params = self._sorted_data_params
+            vqc._var_form_params = self._sorted_wavefunction_params
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
+
         quantum_instance = QuantumInstance(backend,
                                            shots=1024,
                                            seed_simulator=self.seed,
@@ -374,8 +399,8 @@ class TestVQC(QiskitAquaTestCase):
         with self.assertWarns(UserWarning):
             _ = VQC(optimizer, feature_map, var_form, self.training_data, self.testing_data)
 
-    @data(False, True)
-    def test_vqc_on_wine(self, use_circuits):
+    @data('wrapped', 'circuit', 'library')
+    def test_vqc_on_wine(self, mode):
         """Test VQE on the wine test using circuits as feature map and variational form."""
         feature_dim = 4  # dimension of each data point
         training_dataset_size = 6
@@ -386,26 +411,34 @@ class TestVQC(QiskitAquaTestCase):
                                                 n=feature_dim,
                                                 plot_data=False)
         aqua_globals.random_seed = self.seed
-        feature_map = SecondOrderExpansion(feature_dimension=feature_dim)
-        var_form = RYRZ(feature_map.num_qubits, depth=1)
+        if mode == 'wrapped':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            data_preparation = SecondOrderExpansion(feature_dim)
+            wavefunction = RYRZ(feature_dim, depth=1)
+        else:
+            data_preparation = ZZFeatureMap(feature_dim)
+            x = data_preparation.ordered_parameters
+            wavefunction = TwoLocal(feature_dim, ['ry', 'rz'], 'cz', reps=1, insert_barriers=True)
+            theta = ParameterVector('theta', wavefunction.num_parameters)
+            resorted = []
+            for i in range(2 * feature_dim):
+                layer = wavefunction.ordered_parameters[2 * feature_dim * i:2 * feature_dim * (i+1)]
+                resorted += layer[::2]
+                resorted += layer[1::2]
+            wavefunction.assign_parameters(dict(zip(resorted, theta)), inplace=True)
 
-        # convert to circuit if circuits should be used
-        if use_circuits:
-            x = ParameterVector('x', feature_map.feature_dimension)
-            feature_map = feature_map.construct_circuit(x)
-            theta = ParameterVector('theta', var_form.num_parameters)
-            var_form = var_form.construct_circuit(theta)
+        if mode == 'circuit':
+            data_preparation = QuantumCircuit(feature_dim).compose(data_preparation)
+            wavefunction = QuantumCircuit(feature_dim).compose(wavefunction)
 
-        vqc = VQC(COBYLA(maxiter=100),
-                  feature_map,
-                  var_form,
-                  training_input,
-                  test_input)
+        vqc = VQC(COBYLA(maxiter=100), data_preparation, wavefunction, training_input, test_input)
 
         # sort parameters for reproducibility
-        if use_circuits:
+        if mode in ['circuit', 'library']:
             vqc._feature_map_params = list(x)
             vqc._var_form_params = list(theta)
+        else:
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
                                          shots=1024,
@@ -429,7 +462,7 @@ class TestVQC(QiskitAquaTestCase):
         feature_map = RawFeatureVector(feature_dimension=feature_dim)
         vqc = VQC(COBYLA(maxiter=100),
                   feature_map,
-                  RYRZ(feature_map.num_qubits, depth=3),
+                  TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3),
                   training_input,
                   test_input)
         result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),

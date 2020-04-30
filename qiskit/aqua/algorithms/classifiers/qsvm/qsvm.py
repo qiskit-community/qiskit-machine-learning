@@ -15,6 +15,7 @@
 """The Quantum SVM algorithm."""
 
 from typing import Dict, Optional, Union
+import warnings
 import logging
 import sys
 
@@ -29,7 +30,7 @@ from qiskit.aqua.algorithms import QuantumAlgorithm
 from qiskit.aqua import AquaError
 from qiskit.aqua.utils.dataset_helper import get_num_classes
 from qiskit.aqua.utils import split_dataset_to_data_and_labels
-from qiskit.aqua.components.feature_maps import FeatureMap
+from qiskit.aqua.components.feature_maps import FeatureMap, RawFeatureVector
 from qiskit.aqua.components.multiclass_extensions import MulticlassExtension
 from ._qsvm_estimator import _QSVM_Estimator
 from ._qsvm_binary import _QSVM_Binary
@@ -129,6 +130,14 @@ class QSVM(QuantumAlgorithm):
             self.feature_map_params_x = ParameterVector('x', self.feature_map.feature_dimension)
             self.feature_map_params_y = ParameterVector('y', self.feature_map.feature_dimension)
         else:
+            if not isinstance(feature_map, RawFeatureVector):
+                warnings.warn("""
+                The {} object as input for the QSVM is deprecated as of 0.7.0 and will
+                be removed no earlier than 3 months after the release.
+                You should pass a QuantumCircuit object instead.
+                See also qiskit.circuit.library.data_preparation for a collection
+                of suitable circuits.""".format(type(feature_map)),
+                              DeprecationWarning, stacklevel=2)
             self.feature_map_params_x = ParameterVector('x', feature_map.feature_dimension)
             self.feature_map_params_y = ParameterVector('y', feature_map.feature_dimension)
 
