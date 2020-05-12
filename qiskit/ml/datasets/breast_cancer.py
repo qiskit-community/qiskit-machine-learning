@@ -26,7 +26,7 @@ from sklearn.decomposition import PCA
 def breast_cancer(training_size, test_size, n, plot_data=False):
     """ returns breast cancer dataset """
     class_labels = [r'A', r'B']
-    data, target = datasets.load_breast_cancer(True)
+    data, target = datasets.load_breast_cancer(return_X_y=True)
     sample_train, sample_test, label_train, label_test = \
         train_test_split(data, target, test_size=0.3, random_state=12)
 

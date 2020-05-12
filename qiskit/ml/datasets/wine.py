@@ -27,7 +27,7 @@ def wine(training_size, test_size, n, plot_data=False):
     """ returns wine dataset """
     class_labels = [r'A', r'B', r'C']
 
-    data, target = datasets.load_wine(True)
+    data, target = datasets.load_wine(return_X_y=True)
     sample_train, sample_test, label_train, label_test = \
         train_test_split(data, target, test_size=test_size, random_state=7)
 
