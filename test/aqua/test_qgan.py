@@ -85,7 +85,7 @@ class TestQGAN(QiskitAquaTestCase):
         init_distribution = Custom(num_qubits=sum(num_qubits), circuit=qc)
 
         # Set generator's initial parameters
-        init_params = aqua_globals.random.rand(2 * sum(num_qubits)) * 2 * 1e-2
+        init_params = aqua_globals.random.random(2 * sum(num_qubits)) * 2 * 1e-2
 
         # Set variational form
         warnings.filterwarnings('ignore', category=DeprecationWarning)

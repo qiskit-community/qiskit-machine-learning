@@ -86,7 +86,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         self.classes = np.unique(y)
         n_classes = self.classes.shape[0]
         code_size = int(n_classes * self.code_size)
-        self.codebook = self.rand.random_sample((n_classes, code_size))
+        self.codebook = self.rand.random((n_classes, code_size))
         self.codebook[self.codebook > 0.5] = 1
         self.codebook[self.codebook != 1] = 0
         classes_index = dict((c, i) for i, c in enumerate(self.classes))

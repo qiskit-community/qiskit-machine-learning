@@ -29,7 +29,7 @@ def gaussian(training_size, test_size, n, plot_data=False):
         sample_train = []
         sample_a = [[0 for x in range(n)] for y in range(training_size + test_size)]
         sample_b = [[0 for x in range(n)] for y in range(training_size + test_size)]
-        randomized_vector1 = aqua_globals.random.randint(2, size=n)
+        randomized_vector1 = aqua_globals.random.integers(2, size=n)
         randomized_vector2 = (randomized_vector1 + 1) % 2
         for t_r in range(training_size + test_size):
             for feat in range(n):
@@ -76,7 +76,7 @@ def gaussian(training_size, test_size, n, plot_data=False):
         sample_a = [[0 for x in range(n)] for y in range(training_size + test_size)]
         sample_b = [[0 for x in range(n)] for y in range(training_size + test_size)]
         sample_c = [[0 for x in range(n)] for y in range(training_size + test_size)]
-        randomized_vector1 = aqua_globals.random.randint(3, size=n)
+        randomized_vector1 = aqua_globals.random.integers(3, size=n)
         randomized_vector2 = (randomized_vector1 + 1) % 3
         randomized_vector3 = (randomized_vector2 + 1) % 3
         for t_r in range(training_size + test_size):

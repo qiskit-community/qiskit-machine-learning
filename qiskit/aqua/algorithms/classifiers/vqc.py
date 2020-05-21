@@ -25,7 +25,7 @@ from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit import ParameterVector, ParameterExpression
 
 from qiskit.providers import BaseBackend
-from qiskit.aqua import QuantumInstance, AquaError
+from qiskit.aqua import QuantumInstance, AquaError, aqua_globals
 from qiskit.aqua.utils import map_label_to_class_name
 from qiskit.aqua.utils import split_dataset_to_data_and_labels
 from qiskit.aqua.algorithms import VQAlgorithm
@@ -277,10 +277,11 @@ class VQC(VQAlgorithm):
         if 0 < minibatch_size < len(data):
             batch_size = min(minibatch_size, len(data))
             if labels is not None:
-                shuffled_samples, shuffled_labels = shuffle(data, labels, random_state=self.random)
+                shuffled_samples, shuffled_labels = shuffle(data, labels,
+                                                            random_state=aqua_globals.random_seed)
                 label_batches = np.array_split(shuffled_labels, batch_size)
             else:
-                shuffled_samples = shuffle(data, random_state=self.random)
+                shuffled_samples = shuffle(data, random_state=aqua_globals.random_seed)
             batches = np.array_split(shuffled_samples, batch_size)
         else:
             batches = np.asarray([data])
@@ -307,7 +308,7 @@ class VQC(VQAlgorithm):
         self._batch_index = 0
 
         if self.initial_point is None:
-            self.initial_point = self.random.randn(self._var_form.num_parameters)
+            self.initial_point = self.random.standard_normal(self._var_form.num_parameters)
 
         self._eval_count = 0
 

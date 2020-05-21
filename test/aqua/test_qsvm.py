@@ -327,8 +327,8 @@ class TestQSVM(QiskitAquaTestCase):
                                                seed_simulator=aqua_globals.random_seed,
                                                seed_transpiler=aqua_globals.random_seed)
             result = svm.run(quantum_instance)
-            self.assertAlmostEqual(result['testing_accuracy'], 0.444444444, places=4)
-            self.assertEqual(result['predicted_classes'], ['A', 'A', 'C', 'A',
+            self.assertAlmostEqual(result['testing_accuracy'], 0.555555555, places=4)
+            self.assertEqual(result['predicted_classes'], ['A', 'A', 'A', 'A',
                                                            'A', 'A', 'A', 'C', 'C'])
         except NameError as ex:
             self.skipTest(str(ex))

@@ -43,10 +43,10 @@ class TestDigits(QiskitMLTestCase):
                                                                         n=2,
                                                                         plot_data=False)
 
-        np.testing.assert_allclose(sample_train.tolist(), sample_train_ref, rtol=0.1)
+        np.testing.assert_allclose(sample_train.tolist(), sample_train_ref, rtol=1e-01)
         for key, _ in training_input.items():
             np.testing.assert_allclose(training_input[key].tolist(),
-                                       training_input_ref[key], rtol=0.1)
+                                       training_input_ref[key], rtol=1e-01)
         for key, _ in test_input.items():
-            np.testing.assert_allclose(test_input[key].tolist(), test_input_ref[key], rtol=0.1)
+            np.testing.assert_allclose(test_input[key].tolist(), test_input_ref[key], rtol=1e-01)
         np.testing.assert_array_equal(class_labels, list(training_input.keys()))

@@ -22,6 +22,7 @@ https://towardsdatascience.com/lets-code-a-neural-network-in-plain-numpy-ae7e744
 import os
 import logging
 import numpy as np
+from qiskit.aqua import aqua_globals
 from qiskit.aqua.components.optimizers import ADAM
 from .discriminative_network import DiscriminativeNetwork
 
@@ -60,7 +61,7 @@ class DiscriminatorNet():
             activ_function_curr = layer["activation"]
             layer_input_size = layer["input_dim"]
             layer_output_size = layer["output_dim"]
-            params_layer = np.random.rand(layer_output_size * layer_input_size)
+            params_layer = aqua_globals.random.random(layer_output_size * layer_input_size)
             if activ_function_curr == "leaky_relu":
                 params_layer = (params_layer * 2 - np.ones(np.shape(params_layer))) * 0.7
             elif activ_function_curr == "sigmoid":
@@ -233,7 +234,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         Args:
             seed (int): seed
         """
-        np.random.RandomState(seed)
+        aqua_globals.random_seed = seed
 
     def save_model(self, snapshot_dir):
         """
