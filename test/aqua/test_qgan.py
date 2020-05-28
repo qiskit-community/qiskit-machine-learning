@@ -12,18 +12,15 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test QGAN """
+"""Test the QGAN algorithm."""
 
 from test.aqua import QiskitAquaTestCase
 
-import warnings
 import unittest
-from ddt import ddt, data
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
                                                        UnivariateVariationalDistribution)
-from qiskit.aqua.components.variational_forms import RY
 from qiskit.aqua.algorithms import QGAN
 from qiskit.aqua import aqua_globals, QuantumInstance
 from qiskit.aqua.components.initial_states import Custom
@@ -31,9 +28,8 @@ from qiskit.aqua.components.neural_networks import NumPyDiscriminator, PyTorchDi
 from qiskit import BasicAer
 
 
-@ddt
 class TestQGAN(QiskitAquaTestCase):
-    """ Test QGAN """
+    """Test the QGAN algorithm."""
 
     def setUp(self):
         super().setUp()
@@ -46,7 +42,6 @@ class TestQGAN(QiskitAquaTestCase):
         m_u = 1
         sigma = 1
         self._real_data = aqua_globals.random.lognormal(mean=m_u, sigma=sigma, size=n_v)
-        # Set the data resolution
         # Set upper and lower data values as list of k
         # min/max data values [[min_0,max_0],...,[min_k-1,max_k-1]]
         self._bounds = [0., 3.]
@@ -88,68 +83,31 @@ class TestQGAN(QiskitAquaTestCase):
         init_params = aqua_globals.random.random(2 * sum(num_qubits)) * 2 * 1e-2
 
         # Set variational form
-        warnings.filterwarnings('ignore', category=DeprecationWarning)
-        var_form = RY(sum(num_qubits),
-                      depth=1,
-                      initial_state=init_distribution,
-                      entangler_map=entangler_map,
-                      entanglement_gate='cx')
-        dist_var_form = UnivariateVariationalDistribution(sum(num_qubits), var_form, init_params,
-                                                          low=self._bounds[0],
-                                                          high=self._bounds[1])
-        warnings.filterwarnings('always', category=DeprecationWarning)
+        var_form = RealAmplitudes(sum(num_qubits), reps=1, initial_state=init_distribution,
+                                  entanglement=entangler_map)
+        self.generator_circuit = UnivariateVariationalDistribution(sum(num_qubits), var_form,
+                                                                   init_params,
+                                                                   low=self._bounds[0],
+                                                                   high=self._bounds[1])
 
-        library = RealAmplitudes(sum(num_qubits), reps=1, initial_state=init_distribution,
-                                 entanglement=entangler_map)
-        dist_library = UnivariateVariationalDistribution(sum(num_qubits), library, init_params,
-                                                         low=self._bounds[0],
-                                                         high=self._bounds[1])
-        circuit = QuantumCircuit(sum(num_qubits)).compose(library)
-        dist_circuit = UnivariateVariationalDistribution(sum(num_qubits), circuit, init_params,
-                                                         low=self._bounds[0],
-                                                         high=self._bounds[1])
-
-        self.generator_circuits = {'wrapped': dist_var_form,
-                                   'circuit': dist_circuit,
-                                   'library': dist_library}
-
-    @data('wrapped', 'circuit', 'library')
-    def test_sample_generation(self, mode):
-        """ sample generation test """
-        if mode == 'wrapped':
-            # ignore deprecation warnings from the deprecation of VariationalForm as input for
-            # the univariate variational distribution
-            warnings.filterwarnings('ignore', category=DeprecationWarning)
-            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
-            warnings.filterwarnings('always', category=DeprecationWarning)
-        else:
-            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
-
-        _, weights_statevector = \
-            self.qgan._generator.get_output(self.qi_statevector, shots=100)
+    def test_sample_generation(self):
+        """Test sample generation."""
+        self.qgan.set_generator(generator_circuit=self.generator_circuit)
+        _, weights_statevector = self.qgan._generator.get_output(self.qi_statevector, shots=100)
         samples_qasm, weights_qasm = self.qgan._generator.get_output(self.qi_qasm, shots=100)
         samples_qasm, weights_qasm = zip(*sorted(zip(samples_qasm, weights_qasm)))
         for i, weight_q in enumerate(weights_qasm):
             self.assertAlmostEqual(weight_q, weights_statevector[i], delta=0.1)
 
-    @data('wrapped', 'circuit', 'library')
-    def test_qgan_training(self, mode):
-        """ qgan training test """
-        if mode == 'wrapped':
-            # ignore deprecation warnings from the deprecation of VariationalForm as input for
-            # the univariate variational distribution
-            warnings.filterwarnings('ignore', category=DeprecationWarning)
-            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
-            warnings.filterwarnings('always', category=DeprecationWarning)
-        else:
-            self.qgan.set_generator(generator_circuit=self.generator_circuits[mode])
-
+    def test_qgan_training(self):
+        """Test QGAN training."""
+        self.qgan.set_generator(generator_circuit=self.generator_circuit)
         trained_statevector = self.qgan.run(self.qi_statevector)
         trained_qasm = self.qgan.run(self.qi_qasm)
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
     def test_qgan_training_run_algo_torch(self):
-        """ qgan training run algo torch test """
+        """Test QGAN training using a PyTorch discriminator."""
         try:
             # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
             num_qubits = [2]
@@ -179,7 +137,7 @@ class TestQGAN(QiskitAquaTestCase):
             self.skipTest(str(ex))
 
     def test_qgan_training_run_algo_numpy(self):
-        """ qgan training run algo numpy test """
+        """Test QGAN training using a NumPy discriminator."""
         # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
         num_qubits = [2]
         # Batch size
