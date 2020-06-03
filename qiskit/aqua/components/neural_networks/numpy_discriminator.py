@@ -19,6 +19,7 @@ The neural network is based on a neural network introduced in:
 https://towardsdatascience.com/lets-code-a-neural-network-in-plain-numpy-ae7e74410795
 """
 
+from typing import Dict, Any
 import os
 import logging
 import numpy as np
@@ -378,7 +379,8 @@ class NumPyDiscriminator(DiscriminativeNetwork):
 
         return gradient_function
 
-    def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
+    def train(self, data, weights, penalty=False,
+              quantum_instance=None, shots=None) -> Dict[str, Any]:
         """
         Perform one training step w.r.t to the discriminator's parameters
 

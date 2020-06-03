@@ -14,6 +14,7 @@
 
 """ Discriminative Quantum or Classical Neural Networks."""
 
+from typing import List
 from abc import ABC, abstractmethod
 
 
@@ -29,7 +30,7 @@ class DiscriminativeNetwork(ABC):
         super().__init__()
         self._num_parameters = 0
         self._num_qubits = 0
-        self._bounds = list()
+        self._bounds = list()  # type: List[object]
 
     @abstractmethod
     def set_seed(self, seed):
