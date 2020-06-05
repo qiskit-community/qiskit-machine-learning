@@ -14,7 +14,7 @@
 
 """The Variational Quantum Classifier algorithm."""
 
-from typing import Optional, Callable, Dict, Union
+from typing import Optional, Callable, Dict, Union, Any
 import warnings
 import logging
 import math
@@ -140,7 +140,7 @@ class VQC(VQAlgorithm):
         self._minibatch_size = minibatch_size
 
         self._eval_count = 0
-        self._ret = {}
+        self._ret = {}  # type: Dict[str, Any]
         self._parameterized_circuits = None
 
         self.feature_map = feature_map

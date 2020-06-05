@@ -14,7 +14,7 @@
 
 """Quantum Generative Adversarial Network."""
 
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict, Any
 import csv
 import os
 import logging
@@ -131,9 +131,9 @@ class QGAN(QuantumAlgorithm):
         self._batch_size = batch_size
         self._num_epochs = num_epochs
         self._snapshot_dir = snapshot_dir
-        self._g_loss = []
-        self._d_loss = []
-        self._rel_entr = []
+        self._g_loss = []  # type: List[float]
+        self._d_loss = []  # type: List[float]
+        self._rel_entr = []  # type: List[float]
         self._tol_rel_ent = tol_rel_ent
 
         self._random_seed = seed
@@ -149,7 +149,7 @@ class QGAN(QuantumAlgorithm):
 
         self.seed = self._random_seed
 
-        self._ret = {}
+        self._ret = {}  # type: Dict[str, Any]
 
     @property
     def seed(self):
@@ -230,21 +230,21 @@ class QGAN(QuantumAlgorithm):
         self._discriminator.set_seed(self._random_seed)
 
     @property
-    def g_loss(self):
+    def g_loss(self) -> List[float]:
         """ Returns generator loss """
         return self._g_loss
 
     @property
-    def d_loss(self):
+    def d_loss(self) -> List[float]:
         """ Returns discriminator loss """
         return self._d_loss
 
     @property
-    def rel_entr(self):
+    def rel_entr(self) -> List[float]:
         """ Returns relative entropy between target and trained distribution """
         return self._rel_entr
 
-    def get_rel_entr(self):
+    def get_rel_entr(self) -> float:
         """ Get relative entropy between target and trained distribution """
         samples_gen, prob_gen = self._generator.get_output(self._quantum_instance)
         temp = np.zeros(len(self._grid_elements))

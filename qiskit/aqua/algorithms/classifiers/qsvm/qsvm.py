@@ -142,6 +142,7 @@ class QSVM(QuantumAlgorithm):
             self.feature_map_params_x = ParameterVector('x', feature_map.feature_dimension)
             self.feature_map_params_y = ParameterVector('y', feature_map.feature_dimension)
 
+        qsvm_instance = None  # type: Optional[Union[_QSVM_Binary, _QSVM_Multiclass]]
         if multiclass_extension is None:
             qsvm_instance = _QSVM_Binary(self)
         else:

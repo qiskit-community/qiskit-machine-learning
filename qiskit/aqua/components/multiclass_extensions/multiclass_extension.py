@@ -30,8 +30,8 @@ class MulticlassExtension(ABC):
     @abstractmethod
     def __init__(self) -> None:
         super().__init__()
-        self.estimator_cls = None
-        self.params = []
+        self.estimator_cls = None  # type: Optional[Callable[[List], Estimator]]
+        self.params = []  # type: List
 
     def set_estimator(self,
                       estimator_cls: Callable[[List], Estimator],

@@ -227,7 +227,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
                                noise_factor=1e-4,
                                eps=1e-6, amsgrad=True)
 
-        self._ret = {}
+        self._ret = {}  # type: Dict[str, Any]
 
     def set_seed(self, seed):
         """
