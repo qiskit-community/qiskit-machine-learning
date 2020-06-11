@@ -57,8 +57,8 @@ class TestQSVM(QiskitAquaTestCase):
         }
         self.ref_support_vectors = np.array([[2.95309709, 2.51327412], [3.14159265, 4.08407045],
                                              [4.08407045, 2.26194671], [4.46106157, 2.38761042]])
-        self.ref_alpha = np.array([0.34903335, 1.48325498, 0.03074852, 1.80153981])
-        self.ref_bias = np.array([-0.03059226])
+        self.ref_alpha = np.array([0.34902907, 1.48325913, 0.03073616, 1.80155205])
+        self.ref_bias = np.array([-0.03059395])
 
         self.qasm_simulator = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                               shots=self.shots,
