@@ -18,7 +18,11 @@ from typing import Optional, Tuple
 import logging
 
 import numpy as np
-import cvxpy
+try:
+    import cvxpy
+    HAS_CVX = True
+except ImportError:
+    HAS_CVX = False
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +47,15 @@ def optimize_svm(kernel_matrix: np.ndarray,
         np.ndarray: Sx1 array, where S is the number of supports
         np.ndarray: Sx1 array, where S is the number of supports
         np.ndarray: Sx1 array, where S is the number of supports
+
+    Raises:
+        NameError: If cvxpy is not installed
     """
     # pylint: disable=invalid-name, unused-argument
+    if not HAS_CVX:
+        raise NameError("The CVXPY package is required to use the "
+                        "optimize_svm() function. You can install it with "
+                        "'pip install qiskit-aqua[cvx]'.")
     if y.ndim == 1:
         y = y[:, np.newaxis]
     H = np.outer(y, y) * kernel_matrix
