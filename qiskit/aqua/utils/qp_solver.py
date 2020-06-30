@@ -78,7 +78,7 @@ def optimize_svm(kernel_matrix: np.ndarray,
         cvxpy.Minimize((1 / 2) * cvxpy.quad_form(x, P) + q.T@x),
         [G@x <= h,
          A@x == b])
-    prob.solve(verbose=show_progress)
+    prob.solve(verbose=show_progress, qcp=True)
     result = np.asarray(x.value).reshape((n, 1))
     alpha = result * scaling
     avg_y = np.sum(y)
