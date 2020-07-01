@@ -69,7 +69,7 @@ class TestVQC(QiskitAquaTestCase):
                                               seed_simulator=self.seed,
                                               seed_transpiler=self.seed)
 
-        self.spsa = SPSA(max_trials=10, save_steps=1, c0=4.0, c1=0.1, c2=0.602, c3=0.101,
+        self.spsa = SPSA(maxiter=10, save_steps=1, c0=4.0, c1=0.1, c2=0.602, c3=0.101,
                          c4=0.0, skip_calibration=True)
 
     def assertSimpleClassificationIsCorrect(self, vqc, backend=None, ref_opt_params=None,
