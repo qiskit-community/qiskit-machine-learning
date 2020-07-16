@@ -270,6 +270,9 @@ class QGAN(QuantumAlgorithm):
     def train(self):
         """
         Train the qGAN
+
+        Raises:
+            AquaError: Batch size bigger than the number of items in the truncated data set
         """
         if self._snapshot_dir is not None:
             with open(os.path.join(self._snapshot_dir, 'output.csv'), mode='w') as csv_file:
@@ -277,6 +280,11 @@ class QGAN(QuantumAlgorithm):
                               'rel_entropy']
                 writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                 writer.writeheader()
+
+        if len(self._data) < self._batch_size:
+            raise AquaError(
+                'The batch size needs to be less than the '
+                'truncated data size of {}'.format(len(self._data)))
 
         for e in range(self._num_epochs):
             aqua_globals.random.shuffle(self._data)
