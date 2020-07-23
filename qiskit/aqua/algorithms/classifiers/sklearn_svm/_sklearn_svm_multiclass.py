@@ -71,7 +71,7 @@ class _SklearnSVMMulticlass(_SklearnSVMABC):
 
     def load_model(self, file_path):
         """ load model """
-        model_npz = np.load(file_path, allow_pickle=True)
+        model_npz = np.load(file_path, allow_pickle=True)  # pylint: disable=unexpected-keyword-arg
         for i in range(len(self.multiclass_classifier.estimators)):
             self.multiclass_classifier.estimators.ret['svm']['alphas'] = \
                 model_npz['alphas_{}'.format(i)]
