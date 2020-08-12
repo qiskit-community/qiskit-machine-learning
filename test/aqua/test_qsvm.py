@@ -15,14 +15,12 @@
 """ Test QSVM """
 
 import os
-import warnings
 from test.aqua import QiskitAquaTestCase
 import numpy as np
 from ddt import ddt, data
 from qiskit import BasicAer, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.aqua import QuantumInstance, aqua_globals, MissingOptionalLibraryError
-from qiskit.aqua.components.feature_maps import SecondOrderExpansion
 from qiskit.aqua.components.multiclass_extensions import (ErrorCorrectingCode,
                                                           AllPairs,
                                                           OneAgainstRest)
@@ -71,23 +69,15 @@ class TestQSVM(QiskitAquaTestCase):
 
         self.data_preparation = ZZFeatureMap(feature_dimension=2, reps=2)
 
-    @data('library', 'component', 'circuit')
+    @data('library', 'circuit')
     def test_binary(self, mode):
         """Test QSVM on binary classification on BasicAer's QASM simulator."""
-        if mode == 'component':
-            warnings.filterwarnings('ignore', category=DeprecationWarning)
-            # data encoding using a FeatureMap type
-            data_preparation = SecondOrderExpansion(feature_dimension=2,
-                                                    depth=2,
-                                                    entangler_map=[[0, 1]])
-        elif mode == 'circuit':
+        if mode == 'circuit':
             data_preparation = QuantumCircuit(2).compose(self.data_preparation)
         else:
             data_preparation = self.data_preparation
 
         svm = QSVM(data_preparation, self.training_data, self.testing_data, None)
-        if mode == 'component':
-            warnings.filterwarnings('always', category=DeprecationWarning)
 
         try:
             result = svm.run(self.qasm_simulator)

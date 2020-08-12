@@ -16,7 +16,6 @@
 
 import os
 import unittest
-import warnings
 from test.aqua import QiskitAquaTestCase
 import numpy as np
 from qiskit import BasicAer
@@ -25,8 +24,7 @@ from qiskit.circuit.library import TwoLocal, ZZFeatureMap
 from qiskit.aqua import QuantumInstance, aqua_globals, AquaError
 from qiskit.aqua.algorithms import VQC
 from qiskit.aqua.components.optimizers import SPSA, COBYLA
-from qiskit.aqua.components.feature_maps import SecondOrderExpansion, RawFeatureVector
-from qiskit.aqua.components.variational_forms import RYRZ
+from qiskit.aqua.components.feature_maps import RawFeatureVector
 from qiskit.aqua.components.optimizers import L_BFGS_B
 from qiskit.ml.datasets import wine, ad_hoc_data
 
@@ -103,25 +101,6 @@ class TestVQC(QiskitAquaTestCase):
         vqc = VQC(optimizer, data_preparation, wavefunction, self.training_data, self.testing_data)
 
         self.assertSimpleClassificationIsCorrect(vqc)
-
-    def test_deprecated_components(self):
-        """Test running the VQC on FeatureMap and VariationalForm objects."""
-        ref_opt_params = np.array([3.76378585, -8.48815464, 11.78685004, -9.96768202, 2.65749365,
-                                   -4.25581973, -9.37524845, -4.41052704, -0.44151694, 15.19155236,
-                                   -9.35234735, -6.07004197, -0.03613872, 3.41111794, -1.0030384,
-                                   -4.14612403])
-        ref_train_loss = 0.99014958
-
-        # ignore warnings from creating VariationalForm and FeatureMap objects
-        warnings.filterwarnings('ignore', category=DeprecationWarning)
-        data_preparation = SecondOrderExpansion(2, depth=2)
-        wavefunction = RYRZ(2)
-        vqc = VQC(self.spsa, data_preparation, wavefunction, self.training_data, self.testing_data)
-        warnings.filterwarnings('always', category=DeprecationWarning)
-
-        self.assertSimpleClassificationIsCorrect(vqc, ref_opt_params=ref_opt_params,
-                                                 ref_train_loss=ref_train_loss,
-                                                 ref_test_accuracy=1)
 
     def test_plain_circuits(self):
         """Test running the VQC on QuantumCircuit objects."""
