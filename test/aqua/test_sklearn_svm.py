@@ -16,7 +16,7 @@
 
 from test.aqua import QiskitAquaTestCase
 import numpy as np
-from qiskit.aqua import aqua_globals
+from qiskit.aqua import aqua_globals, MissingOptionalLibraryError
 from qiskit.aqua.algorithms import SklearnSVM
 from qiskit.aqua.components.multiclass_extensions import (OneAgainstRest,
                                                           AllPairs,
@@ -104,7 +104,7 @@ class TestSklearnSVM(QiskitAquaTestCase):
             self.assertEqual(result['predicted_classes'],
                              ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',
                               'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'])
-        except NameError as ex:
+        except MissingOptionalLibraryError as ex:
             self.skipTest(str(ex))
 
     def test_multiclass_one_against_all(self):
