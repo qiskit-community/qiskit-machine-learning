@@ -54,7 +54,7 @@ class DiscriminatorNet(torch.nn.Module):  # pylint: disable=abstract-method
             n_out: n out
         """
 
-        super(DiscriminatorNet, self).__init__()
+        super().__init__()
         self.n_features = n_features
 
         self.hidden0 = nn.Sequential(

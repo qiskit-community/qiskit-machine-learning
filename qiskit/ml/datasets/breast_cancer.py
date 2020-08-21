@@ -56,11 +56,11 @@ def breast_cancer(training_size, test_size, n, plot_data=False):
     if plot_data:
         try:
             import matplotlib.pyplot as plt
-        except ImportError:
+        except ImportError as ex:
             raise MissingOptionalLibraryError(
                 libname='Matplotlib',
                 name='breast_cancer',
-                pip_install='pip install matplotlib')
+                pip_install='pip install matplotlib') from ex
         for k in range(0, 2):
             plt.scatter(sample_train[label_train == k, 0][:training_size],
                         sample_train[label_train == k, 1][:training_size])
