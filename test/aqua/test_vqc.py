@@ -310,7 +310,7 @@ class TestVQC(QiskitAquaTestCase):
         result = vqc.run(self.statevector_simulator)
 
         self.log.debug(result['testing_accuracy'])
-        self.assertGreater(result['testing_accuracy'], 0.8)
+        self.assertGreater(result['testing_accuracy'], 0.7)
 
 
 if __name__ == '__main__':
