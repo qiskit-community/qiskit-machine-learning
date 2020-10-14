@@ -12,20 +12,23 @@
 
 """Test the QGAN algorithm."""
 
-from test.aqua import QiskitAquaTestCase
-
 import unittest
+import warnings
+from test.aqua import QiskitAquaTestCase
+from ddt import ddt, data
+
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.aqua.components.uncertainty_models import (UniformDistribution,
                                                        UnivariateVariationalDistribution)
 from qiskit.aqua.algorithms import QGAN
-from qiskit.aqua import aqua_globals, QuantumInstance
+from qiskit.aqua import aqua_globals, QuantumInstance, MissingOptionalLibraryError
 from qiskit.aqua.components.initial_states import Custom
 from qiskit.aqua.components.neural_networks import NumPyDiscriminator, PyTorchDiscriminator
 from qiskit import BasicAer
 
 
+@ddt
 class TestQGAN(QiskitAquaTestCase):
     """Test the QGAN algorithm."""
 
@@ -83,14 +86,24 @@ class TestQGAN(QiskitAquaTestCase):
         # Set variational form
         var_form = RealAmplitudes(sum(num_qubits), reps=1, initial_state=init_distribution,
                                   entanglement=entangler_map)
-        self.generator_circuit = UnivariateVariationalDistribution(sum(num_qubits), var_form,
+        self.generator_circuit = var_form
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
+        self.generator_factory = UnivariateVariationalDistribution(sum(num_qubits), var_form,
                                                                    init_params,
                                                                    low=self._bounds[0],
                                                                    high=self._bounds[1])
+        warnings.filterwarnings('always', category=DeprecationWarning)
 
-    def test_sample_generation(self):
+    @data('circuit', 'factory')
+    def test_sample_generation(self, circuit_type):
         """Test sample generation."""
-        self.qgan.set_generator(generator_circuit=self.generator_circuit)
+        if circuit_type == 'factory':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            self.qgan.set_generator(generator_circuit=self.generator_factory)
+            warnings.filterwarnings('always', category=DeprecationWarning)
+        else:
+            self.qgan.set_generator(generator_circuit=self.generator_circuit)
+
         _, weights_statevector = self.qgan._generator.get_output(self.qi_statevector, shots=100)
         samples_qasm, weights_qasm = self.qgan._generator.get_output(self.qi_qasm, shots=100)
         samples_qasm, weights_qasm = zip(*sorted(zip(samples_qasm, weights_qasm)))
@@ -99,7 +112,10 @@ class TestQGAN(QiskitAquaTestCase):
 
     def test_qgan_training(self):
         """Test QGAN training."""
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.qgan.set_generator(generator_circuit=self.generator_circuit)
+        warnings.filterwarnings('always', category=DeprecationWarning)
+
         trained_statevector = self.qgan.run(self.qi_statevector)
         trained_qasm = self.qgan.run(self.qi_qasm)
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
@@ -131,8 +147,8 @@ class TestQGAN(QiskitAquaTestCase):
                                                      seed_transpiler=aqua_globals.random_seed))
             self.assertAlmostEqual(trained_qasm['rel_entr'],
                                    trained_statevector['rel_entr'], delta=0.1)
-        except Exception as ex:  # pylint: disable=broad-except
-            self.skipTest(str(ex))
+        except MissingOptionalLibraryError:
+            self.skipTest('pytorch not installed, skipping test')
 
     def test_qgan_training_run_algo_numpy(self):
         """Test QGAN training using a NumPy discriminator."""
