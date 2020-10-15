@@ -13,14 +13,16 @@
 """Quantum Generator."""
 
 from typing import Optional, List, Union, Dict, Any
-import warnings
 from copy import deepcopy
+import warnings
+
 import numpy as np
 
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.circuit.library import TwoLocal
 from qiskit.aqua import aqua_globals
 from qiskit.aqua.components.optimizers import ADAM
+from qiskit.aqua.components.optimizers import Optimizer
 from qiskit.aqua.components.uncertainty_models import UnivariateVariationalDistribution, \
     MultivariateVariationalDistribution
 from qiskit.aqua.components.neural_networks.generative_network import GenerativeNetwork
@@ -47,6 +49,7 @@ class QuantumGenerator(GenerativeNetwork):
                                                    MultivariateVariationalDistribution,
                                                    QuantumCircuit]] = None,
                  init_params: Optional[Union[List[float], np.ndarray]] = None,
+                 optimizer: Optional[Optimizer] = None,
                  snapshot_dir: Optional[str] = None) -> None:
         """
         Args:
@@ -59,6 +62,7 @@ class QuantumGenerator(GenerativeNetwork):
                 or a QuantumCircuit implementing the generator.
             init_params: 1D numpy array or list, Initialization for
                 the generator's parameters.
+            optimizer: optimizer to be used for the training of the generator
             snapshot_dir: str or None, if not None save the optimizer's parameter after every
                 update step to the given directory
 
@@ -96,9 +100,12 @@ class QuantumGenerator(GenerativeNetwork):
         self._bound_parameters = init_params
 
         # Set optimizer for updating the generator network
-        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7,
-                               beta_2=0.99, noise_factor=1e-6,
-                               eps=1e-6, amsgrad=True, snapshot_dir=snapshot_dir)
+        if optimizer:
+            self._optimizer = optimizer
+        else:
+            self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7,
+                                   beta_2=0.99, noise_factor=1e-6,
+                                   eps=1e-6, amsgrad=True, snapshot_dir=snapshot_dir)
 
         if np.ndim(self._bounds) == 1:
             bounds = np.reshape(self._bounds, (1, len(self._bounds)))
@@ -312,11 +319,28 @@ class QuantumGenerator(GenerativeNetwork):
         Returns:
             dict: generator loss(float) and updated parameters (array).
         """
-
         self._shots = shots
-        # Force single optimization iteration
-        self._optimizer._maxiter = 1
-        self._optimizer._t = 0
+
+        # TODO Improve access to maxiter, say via options getter, to avoid private member access
+        # and since not all optimizers have that exact naming figure something better as well to
+        # allow the checking below to not have to warn if it has something else and max iterations
+        # is truly 1 anyway.
+        try:
+            if self._optimizer._maxiter != 1:
+                warnings.warn('Please set the the optimizer maxiter argument to 1 '
+                              'to ensure that the generator '
+                              'and discriminator are updated in an alternating fashion.')
+        except AttributeError:
+            maxiter = self._optimizer._options.get('maxiter')
+            if maxiter is not None and maxiter != 1:
+                warnings.warn('Please set the the optimizer maxiter argument to 1 '
+                              'to ensure that the generator '
+                              'and discriminator are updated in an alternating fashion.')
+            elif maxiter is None:
+                warnings.warn('Please ensure the optimizer max iterations are set to 1 '
+                              'to ensure that the generator '
+                              'and discriminator are updated in an alternating fashion.')
+
         objective = self._get_objective_function(quantum_instance, self._discriminator)
         self._bound_parameters, loss, _ = self._optimizer.optimize(
             num_vars=len(self._bound_parameters),

@@ -208,6 +208,7 @@ class QGAN(QuantumAlgorithm):
         """
         self._generator = QuantumGenerator(self._bounds, self._num_qubits,
                                            generator_circuit, generator_init_params,
+                                           generator_optimizer,
                                            self._snapshot_dir)
 
     @property
