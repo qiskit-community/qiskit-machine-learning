@@ -79,7 +79,7 @@ class TestQSVM(QiskitAquaTestCase):
         else:
             data_preparation = self.data_preparation
 
-        svm = QSVM(data_preparation, self.training_data, self.testing_data, None)
+        svm = QSVM(data_preparation, self.training_data, self.testing_data, None, lambda2=0)
 
         try:
             result = svm.run(self.qasm_simulator)
@@ -104,7 +104,7 @@ class TestQSVM(QiskitAquaTestCase):
 
         Also tests saving and loading models."""
         data_preparation = self.data_preparation
-        svm = QSVM(data_preparation, self.training_data, self.testing_data, None)
+        svm = QSVM(data_preparation, self.training_data, self.testing_data, None, lambda2=0)
 
         file_path = self.get_resource_path('qsvm_test.npz')
         try:
@@ -213,7 +213,7 @@ class TestQSVM(QiskitAquaTestCase):
         data_preparation = self.data_preparation
         try:
             svm = QSVM(data_preparation, train_input, test_input, total_array,
-                       multiclass_extension=method[multiclass_extension])
+                       multiclass_extension=method[multiclass_extension], lambda2=0)
             result = svm.run(self.qasm_simulator)
             self.assertAlmostEqual(result['testing_accuracy'], accuracy[multiclass_extension],
                                    places=4)
@@ -252,7 +252,7 @@ class TestQSVM(QiskitAquaTestCase):
                                                seed_transpiler=seed)
             kernel_matrix = QSVM.get_kernel_matrix(quantum_instance, feature_map=feature_map,
                                                    x1_vec=training_data, enforce_psd=False)
-            _ = optimize_svm(kernel_matrix, labels)
+            _ = optimize_svm(kernel_matrix, labels, lambda2=0)
 
         # This time we enforce that the matrix be positive semi-definite which runs logic to
         # make it so.
@@ -261,7 +261,7 @@ class TestQSVM(QiskitAquaTestCase):
                                            seed_transpiler=seed)
         kernel_matrix = QSVM.get_kernel_matrix(quantum_instance, feature_map=feature_map,
                                                x1_vec=training_data, enforce_psd=True)
-        alpha, b, support = optimize_svm(kernel_matrix, labels)
+        alpha, b, support = optimize_svm(kernel_matrix, labels, lambda2=0)
 
         expected_alpha = [0.855861781, 2.59807482, 0, 0.962959215,
                           1.08141696, 0.217172547, 0, 0,

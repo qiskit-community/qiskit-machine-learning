@@ -33,7 +33,8 @@ def optimize_svm(kernel_matrix: np.ndarray,
                  scaling: Optional[float] = None,
                  maxiter: int = 500,
                  show_progress: bool = False,
-                 max_iters: Optional[int] = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+                 max_iters: Optional[int] = None,
+                 lambda2: float = 0.001) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Solving quadratic programming problem for SVM; thus, some constraints are fixed.
 
@@ -45,6 +46,7 @@ def optimize_svm(kernel_matrix: np.ndarray,
         maxiter: number of iterations for QP solver
         show_progress: showing the progress of QP solver
         max_iters: Deprecated, use maxiter.
+        lambda2: L2 Norm regularization factor
 
     Returns:
         np.ndarray: Sx1 array, where S is the number of supports
@@ -81,12 +83,13 @@ def optimize_svm(kernel_matrix: np.ndarray,
     P = np.array(H)
     q = np.array(f)
     G = -np.eye(n)
+    I = np.eye(n)
     h = np.zeros(n)
     A = y.reshape(y.T.shape)
     b = np.zeros((1, 1))
     x = cvxpy.Variable(n)
     prob = cvxpy.Problem(
-        cvxpy.Minimize((1 / 2) * cvxpy.quad_form(x, P) + q.T@x),
+        cvxpy.Minimize((1 / 2) * cvxpy.quad_form(x, P) + q.T@x + lambda2 * cvxpy.quad_form(x, I)),
         [G@x <= h,
          A@x == b])
     prob.solve(verbose=show_progress, qcp=True)

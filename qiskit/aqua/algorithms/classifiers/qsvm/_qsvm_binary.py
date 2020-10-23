@@ -76,9 +76,10 @@ class _QSVM_Binary(_QSVM_ABC):
         """
         scaling = 1.0 if self._qalgo.quantum_instance.is_statevector else None
         kernel_matrix = self._qalgo.construct_kernel_matrix(data)
+        lambda2 = self._qalgo.lambda2
         labels = labels * 2 - 1  # map label from 0 --> -1 and 1 --> 1
         labels = labels.astype(np.float)
-        [alpha, b, support] = optimize_svm(kernel_matrix, labels, scaling=scaling)
+        [alpha, b, support] = optimize_svm(kernel_matrix, labels, scaling=scaling, lambda2=lambda2)
         support_index = np.where(support)
         alphas = alpha[support_index]
         svms = data[support_index]
