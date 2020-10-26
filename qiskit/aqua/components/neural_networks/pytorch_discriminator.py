@@ -90,7 +90,7 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Args:
             load_dir: file with stored pytorch discriminator model to be loaded
         """
-        torch.load(load_dir)
+        self._discriminator = torch.load(load_dir)
 
     @property
     def discriminator_net(self):
