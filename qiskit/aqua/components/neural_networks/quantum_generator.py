@@ -92,7 +92,7 @@ class QuantumGenerator(GenerativeNetwork):
             self._free_parameters = generator_circuit._var_form_params
             self.generator_circuit = generator_circuit._var_form
         else:
-            self._free_parameters = list(self.generator_circuit.parameters)
+            self._free_parameters = sorted(self.generator_circuit.parameters, key=lambda p: p.name)
 
         if init_params is None:
             init_params = aqua_globals.random.random(self.generator_circuit.num_parameters) * 2e-2
