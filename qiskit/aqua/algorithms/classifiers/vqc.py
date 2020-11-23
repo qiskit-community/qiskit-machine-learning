@@ -29,7 +29,7 @@ from qiskit.aqua.utils import map_label_to_class_name
 from qiskit.aqua.utils import split_dataset_to_data_and_labels
 from qiskit.aqua.algorithms import VQAlgorithm
 from qiskit.aqua.components.optimizers import Optimizer
-from qiskit.aqua.components.feature_maps import FeatureMap, RawFeatureVector
+from qiskit.aqua.components.feature_maps import FeatureMap
 from qiskit.aqua.components.variational_forms import VariationalForm
 
 logger = logging.getLogger(__name__)
@@ -200,6 +200,7 @@ class VQC(VQAlgorithm):
             Union(numpy.ndarray or [numpy.ndarray], numpy.ndarray or [numpy.ndarray]):
                 list of NxK array, list of Nx1 array
         """
+        from qiskit.ml.circuit.library import RawFeatureVector
         circuits = []
 
         num_theta_sets = len(theta) // self._var_form.num_parameters
@@ -210,6 +211,10 @@ class VQC(VQAlgorithm):
                 or self._var_form.support_parameterized_circuit
             feat_map_support = isinstance(self._feature_map, QuantumCircuit) \
                 or self._feature_map.support_parameterized_circuit
+
+            # cannot transpile the RawFeatureVector
+            if isinstance(self._feature_map, RawFeatureVector):
+                feat_map_support = False
 
             if var_form_support and feat_map_support and self._parameterized_circuits is None:
                 parameterized_circuits = self.construct_circuit(
@@ -541,14 +546,11 @@ class VQC(VQAlgorithm):
             self._feature_map_params = sorted(feature_map.parameters, key=lambda p: p.name)
             self._feature_map = feature_map
         elif isinstance(feature_map, FeatureMap):
-            # raw feature vector is not yet replaced
-            if not isinstance(feature_map, RawFeatureVector):
-                warnings.warn('The qiskit.aqua.components.feature_maps.FeatureMap object is '
-                              'deprecated as of 0.7.0 and will be removed no earlier than 3 months '
-                              'after the release. You should pass a QuantumCircuit object instead. '
-                              'See also qiskit.circuit.library.data_preparation for a collection '
-                              'of suitable circuits.',
-                              DeprecationWarning, stacklevel=2)
+            warnings.warn('The qiskit.aqua.components.feature_maps.RawFeatureVector object is '
+                          'deprecated as of 0.9.0 and will be removed no earlier than 3 months '
+                          'after the release. You can use the RawFeatureVector from '
+                          'qiskit.ml.circuit.library instead.',
+                          DeprecationWarning, stacklevel=2)
 
             self._num_qubits = feature_map.num_qubits
             self._feature_map_params = ParameterVector('x', length=feature_map.feature_dimension)

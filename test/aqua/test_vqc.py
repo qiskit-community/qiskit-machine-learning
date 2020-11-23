@@ -14,7 +14,9 @@
 
 import os
 import unittest
+import warnings
 from test.aqua import QiskitAquaTestCase
+from ddt import ddt, data
 import numpy as np
 from qiskit import BasicAer
 from qiskit.circuit import QuantumCircuit, Parameter
@@ -22,11 +24,13 @@ from qiskit.circuit.library import TwoLocal, ZZFeatureMap
 from qiskit.aqua import QuantumInstance, aqua_globals, AquaError
 from qiskit.aqua.algorithms import VQC
 from qiskit.aqua.components.optimizers import SPSA, COBYLA
-from qiskit.aqua.components.feature_maps import RawFeatureVector
+from qiskit.ml.circuit.library import RawFeatureVector
+from qiskit.aqua.components.feature_maps import RawFeatureVector as LegacyRawFeatureVector
 from qiskit.aqua.components.optimizers import L_BFGS_B
 from qiskit.ml.datasets import wine, ad_hoc_data
 
 
+@ddt
 class TestVQC(QiskitAquaTestCase):
     """Tests for the VQC algorithm."""
 
@@ -290,7 +294,8 @@ class TestVQC(QiskitAquaTestCase):
         self.log.debug(result['testing_accuracy'])
         self.assertGreater(result['testing_accuracy'], 0.3)
 
-    def test_raw_feature_vector_on_wine(self):
+    @data('circuit', 'component')
+    def test_raw_feature_vector_on_wine(self, mode):
         """Test VQE on the wine dataset using the ``RawFeatureVector`` as data preparation."""
         feature_dim = 4  # dimension of each data point
         training_dataset_size = 8
@@ -300,7 +305,11 @@ class TestVQC(QiskitAquaTestCase):
                                                 test_size=testing_dataset_size,
                                                 n=feature_dim,
                                                 plot_data=False)
-        feature_map = RawFeatureVector(feature_dimension=feature_dim)
+        if mode == 'component':
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            feature_map = LegacyRawFeatureVector(feature_dimension=feature_dim)
+        else:
+            feature_map = RawFeatureVector(feature_dimension=feature_dim)
 
         vqc = VQC(COBYLA(maxiter=100),
                   feature_map,
@@ -308,6 +317,8 @@ class TestVQC(QiskitAquaTestCase):
                   training_input,
                   test_input)
         result = vqc.run(self.statevector_simulator)
+        if mode == 'component':
+            warnings.filterwarnings('always', category=DeprecationWarning)
 
         self.log.debug(result['testing_accuracy'])
         self.assertGreater(result['testing_accuracy'], 0.7)
