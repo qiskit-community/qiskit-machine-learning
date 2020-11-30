@@ -1,8 +1,8 @@
 .. _tutorials-machine_learning:
 
-###################
+##########################
 Machine Learning Tutorials
-###################
+##########################
 
 .. nbgallery::
     :glob:
