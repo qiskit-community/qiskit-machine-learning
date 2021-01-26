@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2020.
+# (C) Copyright IBM 2019, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -27,7 +27,7 @@ except ImportError:
         EXC = MissingOptionalLibraryError(
             libname='Pytorch',
             name='DiscriminatorNet',
-            pip_install='pip install qiskit-aqua[torch]')
+            pip_install="pip install 'qiskit-aqua[torch]'")
         logger.info(str(EXC))
 
 # torch 1.6.0 fixed a mypy error about not applying contravariance rules

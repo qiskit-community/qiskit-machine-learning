@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2020.
+# (C) Copyright IBM 2019, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -51,7 +51,7 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
             raise MissingOptionalLibraryError(
                 libname='Pytorch',
                 name='PyTorchDiscriminator',
-                pip_install='pip install qiskit-aqua[torch]')
+                pip_install="pip install 'qiskit-aqua[torch]'")
 
         self._n_features = n_features
         self._n_out = n_out

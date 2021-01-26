@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2020.
+# (C) Copyright IBM 2018, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -61,7 +61,7 @@ def optimize_svm(kernel_matrix: np.ndarray,
         raise MissingOptionalLibraryError(
             libname='CVXPY',
             name='optimize_svm',
-            pip_install='pip install qiskit-aqua[cvx]')
+            pip_install="pip install 'qiskit-aqua[cvx]'")
 
     if max_iters is not None:
         warnings.warn('The max_iters parameter is deprecated as of '
