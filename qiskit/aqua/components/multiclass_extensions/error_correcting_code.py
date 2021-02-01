@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2020.
+# (C) Copyright IBM 2018, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -89,7 +89,7 @@ class ErrorCorrectingCode(MulticlassExtension):
         self.codebook[self.codebook != 1] = 0
         classes_index = dict((c, i) for i, c in enumerate(self.classes))
         Y = np.array([self.codebook[classes_index[y[i]]]
-                      for i in range(x.shape[0])], dtype=np.int)
+                      for i in range(x.shape[0])], dtype=int)
         # pylint: disable=unsubscriptable-object
         logger.info("Require %s estimators.", Y.shape[1])
         for i in range(Y.shape[1]):

@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2020.
+# (C) Copyright IBM 2018, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -78,7 +78,7 @@ class _QSVM_Binary(_QSVM_ABC):
         kernel_matrix = self._qalgo.construct_kernel_matrix(data)
         lambda2 = self._qalgo.lambda2
         labels = labels * 2 - 1  # map label from 0 --> -1 and 1 --> 1
-        labels = labels.astype(np.float)
+        labels = labels.astype(float)
         [alpha, b, support] = optimize_svm(kernel_matrix, labels, scaling=scaling, lambda2=lambda2)
         support_index = np.where(support)
         alphas = alpha[support_index]

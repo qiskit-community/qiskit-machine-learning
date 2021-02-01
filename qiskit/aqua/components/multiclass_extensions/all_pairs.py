@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2020.
+# (C) Copyright IBM 2018, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -108,7 +108,7 @@ class AllPairs(MulticlassExtension):
                 estimator = estimators_from_i[j]
                 confidence = np.ravel(estimator.decision_function(x))
 
-                indices = (confidence > 0).astype(np.int)
+                indices = (confidence > 0).astype(int)
                 prediction = self.classes_[indices]
 
                 predictions.append(prediction.reshape(-1, 1))

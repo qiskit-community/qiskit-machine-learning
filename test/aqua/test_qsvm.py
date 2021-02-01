@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2020.
+# (C) Copyright IBM 2018, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -240,7 +240,7 @@ class TestQSVM(QiskitAquaTestCase):
         training_data = training_input[0]
         training_labels = training_input[1]
         labels = training_labels * 2 - 1  # map label from 0 --> -1 and 1 --> 1
-        labels = labels.astype(np.float)
+        labels = labels.astype(float)
 
         feature_map = ZZFeatureMap(feature_dimension=feature_dim, reps=2, entanglement='linear')
 

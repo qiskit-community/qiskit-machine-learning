@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2020.
+# (C) Copyright IBM 2018, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -43,7 +43,7 @@ class _SklearnSVMBinary(_SklearnSVMABC):
             data (dict): dictionary which maps each class to the points in the class
             labels (list): list of classes. For example: ['A', 'B']
         """
-        labels = labels.astype(np.float)
+        labels = labels.astype(float)
         labels = labels * 2. - 1.
         kernel_matrix = self.construct_kernel_matrix(data, data, self.gamma)
         self._ret['kernel_matrix_training'] = kernel_matrix
@@ -94,9 +94,9 @@ class _SklearnSVMBinary(_SklearnSVMABC):
 
             logger.debug("\n=============================================")
             logger.debug('classifying %s.', data[tin])
-            logger.debug('Label should be %s.', self.label_to_class[np.int(labels[tin])])
-            logger.debug('Predicted label is %s.', self.label_to_class[np.int(lsign[tin])])
-            if np.int(labels[tin]) == np.int(lsign[tin]):
+            logger.debug('Label should be %s.', self.label_to_class[int(labels[tin])])
+            logger.debug('Predicted label is %s.', self.label_to_class[int(lsign[tin])])
+            if int(labels[tin]) == int(lsign[tin]):
                 logger.debug('CORRECT')
             else:
                 logger.debug('INCORRECT')
@@ -131,7 +131,7 @@ class _SklearnSVMBinary(_SklearnSVMABC):
             for sin in range(len(svms)):
                 _l = yin[sin] * alphas[sin] * kernel_matrix[tin][sin]
                 ltot += _l
-            lsign[tin] = np.int((np.sign(ltot + bias) + 1.) / 2.)
+            lsign[tin] = int((np.sign(ltot + bias) + 1.) / 2.)
         self._ret['predicted_labels'] = lsign
         return lsign
 
