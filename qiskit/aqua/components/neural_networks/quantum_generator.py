@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2020.
+# (C) Copyright IBM 2019, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -118,7 +118,7 @@ class QuantumGenerator(GenerativeNetwork):
                 if len(self._num_qubits) > 1:
                     self._data_grid = [grid]
                 else:
-                    self._data_grid = grid
+                    self._data_grid = grid  # type: ignore
                 self._grid_elements = grid
             elif j == 1:
                 self._data_grid.append(grid)
@@ -128,7 +128,7 @@ class QuantumGenerator(GenerativeNetwork):
                         temp0 = [g_e]
                         temp0.append(g)
                         temp.append(temp0)
-                self._grid_elements = temp
+                self._grid_elements = temp  # type: ignore
             else:
                 self._data_grid.append(grid)
                 temp = []
@@ -137,8 +137,8 @@ class QuantumGenerator(GenerativeNetwork):
                         temp0 = deepcopy(g_e)
                         temp0.append(g)
                         temp.append(temp0)
-                self._grid_elements = deepcopy(temp)
-        self._data_grid = np.array(self._data_grid)
+                self._grid_elements = deepcopy(temp)  # type: ignore
+        self._data_grid = np.array(self._data_grid)  # type: ignore
 
         self._shots = None
         self._discriminator = None

@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2020.
+# (C) Copyright IBM 2019, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -102,9 +102,9 @@ class QGAN(QuantumAlgorithm):
         if bounds is None:
             bounds_min = np.percentile(self._data, 5, axis=0)
             bounds_max = np.percentile(self._data, 95, axis=0)
-            bounds = []
+            bounds = []  # type: ignore
             for i, _ in enumerate(bounds_min):
-                bounds.append([bounds_min[i], bounds_max[i]])
+                bounds.append([bounds_min[i], bounds_max[i]])  # type: ignore
         if np.ndim(data) > 1:
             if len(bounds) != (len(num_qubits) or len(data[0])):
                 raise AquaError('Dimensions of the data, the length of the data bounds '
@@ -120,7 +120,7 @@ class QGAN(QuantumAlgorithm):
         # pylint: disable=unsubscriptable-object
         if np.ndim(data) > 1:
             if self._num_qubits is None:
-                self._num_qubits = np.ones[len(data[0])] * 3
+                self._num_qubits = np.ones[len(data[0])] * 3  # type: ignore
         else:
             if self._num_qubits is None:
                 self._num_qubits = np.array([3])
