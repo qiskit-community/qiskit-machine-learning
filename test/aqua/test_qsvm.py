@@ -244,15 +244,19 @@ class TestQSVM(QiskitAquaTestCase):
 
         feature_map = ZZFeatureMap(feature_dimension=feature_dim, reps=2, entanglement='linear')
 
-        with self.assertRaises(DQCPError):
-            # Sampling noise means that the kernel matrix will not quite be positive
-            # semi-definite which will cause the optimize svm to fail
-            backend = BasicAer.get_backend('qasm_simulator')
-            quantum_instance = QuantumInstance(backend, shots=1024, seed_simulator=seed,
-                                               seed_transpiler=seed)
-            kernel_matrix = QSVM.get_kernel_matrix(quantum_instance, feature_map=feature_map,
-                                                   x1_vec=training_data, enforce_psd=False)
-            _ = optimize_svm(kernel_matrix, labels, lambda2=0)
+        try:
+            with self.assertRaises(DQCPError):
+                # Sampling noise means that the kernel matrix will not quite be positive
+                # semi-definite which will cause the optimize svm to fail
+                backend = BasicAer.get_backend('qasm_simulator')
+                quantum_instance = QuantumInstance(backend, shots=1024, seed_simulator=seed,
+                                                   seed_transpiler=seed)
+                kernel_matrix = QSVM.get_kernel_matrix(quantum_instance, feature_map=feature_map,
+                                                       x1_vec=training_data, enforce_psd=False)
+                _ = optimize_svm(kernel_matrix, labels, lambda2=0)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
+            return
 
         # This time we enforce that the matrix be positive semi-definite which runs logic to
         # make it so.
