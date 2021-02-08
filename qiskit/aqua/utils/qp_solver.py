@@ -17,11 +17,6 @@ from typing import Optional, Tuple
 import logging
 
 import numpy as np
-try:
-    import cvxpy
-    _HAS_CVX = True
-except ImportError:
-    _HAS_CVX = False
 
 from qiskit.aqua import MissingOptionalLibraryError
 
@@ -57,11 +52,14 @@ def optimize_svm(kernel_matrix: np.ndarray,
         MissingOptionalLibraryError: If cvxpy is not installed
     """
     # pylint: disable=invalid-name, unused-argument
-    if not _HAS_CVX:
+    try:
+        import cvxpy
+    except ImportError as ex:
         raise MissingOptionalLibraryError(
             libname='CVXPY',
             name='optimize_svm',
-            pip_install="pip install 'qiskit-aqua[cvx]'")
+            pip_install="pip install 'qiskit-aqua[cvx]'",
+            msg=str(ex)) from ex
 
     if max_iters is not None:
         warnings.warn('The max_iters parameter is deprecated as of '
