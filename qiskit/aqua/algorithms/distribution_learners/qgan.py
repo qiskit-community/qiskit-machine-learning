@@ -316,7 +316,7 @@ class QGAN(QuantumAlgorithm):
                 d_loss_min = ret_d['loss']
 
                 # 2. Train Generator
-                self._generator.set_discriminator(self._discriminator)
+                self._generator.discriminator = self._discriminator
                 ret_g = self._generator.train(self._quantum_instance, shots=self._batch_size)
                 g_loss_min = ret_g['loss']
 
