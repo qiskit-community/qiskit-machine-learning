@@ -12,7 +12,8 @@
 
 """Quantum Generative Adversarial Network."""
 
-from typing import Optional, Union, List, Dict, Any
+from typing import Optional, Union, List, Dict, Any, Callable
+from types import FunctionType
 import csv
 import os
 import logging
@@ -32,6 +33,7 @@ from qiskit.aqua.components.neural_networks.numpy_discriminator import NumPyDisc
 from qiskit.aqua.components.optimizers import Optimizer
 from qiskit.aqua.components.uncertainty_models import UnivariateVariationalDistribution
 from qiskit.aqua.components.uncertainty_models import MultivariateVariationalDistribution
+from qiskit.aqua.operators.gradients import Gradient
 from qiskit.aqua.utils.dataset_helper import discretize_and_truncate
 from qiskit.aqua.utils.validation import validate_min
 
@@ -197,7 +199,8 @@ class QGAN(QuantumAlgorithm):
                                                               MultivariateVariationalDistribution]
                                                         ] = None,
                       generator_init_params: Optional[np.ndarray] = None,
-                      generator_optimizer: Optional[Optimizer] = None):
+                      generator_optimizer: Optional[Optimizer] = None,
+                      generator_gradient: Optional[Union[Callable, Gradient]] = None):
         """Initialize generator.
 
         Args:
@@ -205,10 +208,20 @@ class QGAN(QuantumAlgorithm):
                 the structure of the quantum generator
             generator_init_params: initial parameters for the generator circuit
             generator_optimizer: optimizer to be used for the training of the generator
+            generator_gradient: A Gradient object, or a function returning partial
+                derivatives of the loss function w.r.t. the generator variational
+                params.
+        Raises:
+            AquaError: invalid input
         """
+        if generator_gradient:
+            if not isinstance(generator_gradient, (Gradient, FunctionType)):
+                raise AquaError('Please pass either a Gradient object or a function as '
+                                'the generator_gradient argument.')
         self._generator = QuantumGenerator(self._bounds, self._num_qubits,
                                            generator_circuit, generator_init_params,
                                            generator_optimizer,
+                                           generator_gradient,
                                            self._snapshot_dir)
 
     @property

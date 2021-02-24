@@ -26,6 +26,7 @@ from qiskit.aqua import aqua_globals, QuantumInstance, MissingOptionalLibraryErr
 from qiskit.aqua.components.initial_states import Custom
 from qiskit.aqua.components.optimizers import CG, COBYLA
 from qiskit.aqua.components.neural_networks import NumPyDiscriminator, PyTorchDiscriminator
+from qiskit.aqua.operators.gradients import Gradient
 from qiskit import BasicAer
 
 
@@ -264,6 +265,16 @@ class TestQGAN(QiskitAquaTestCase):
                                                  seed_simulator=aqua_globals.random_seed,
                                                  seed_transpiler=aqua_globals.random_seed))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
+
+    def test_qgan_training_analytic_gradients(self):
+        """Test QGAN training with analytic gradients"""
+        self.qgan.set_generator(self.generator_circuit)
+        numeric_results = self.qgan.run(self.qi_qasm)
+        self.qgan.set_generator(self.generator_circuit,
+                                generator_gradient=Gradient('param_shift'))
+        analytic_results = self.qgan.run(self.qi_qasm)
+        self.assertAlmostEqual(numeric_results['rel_entr'],
+                               analytic_results['rel_entr'], delta=0.1)
 
 
 if __name__ == '__main__':
