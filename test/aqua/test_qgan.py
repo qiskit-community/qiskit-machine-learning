@@ -14,6 +14,7 @@
 
 import unittest
 import warnings
+import tempfile
 from test.aqua import QiskitAquaTestCase
 from ddt import ddt, data
 
@@ -231,6 +232,33 @@ class TestQGAN(QiskitAquaTestCase):
         trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator'),
                                                  seed_simulator=aqua_globals.random_seed,
                                                  seed_transpiler=aqua_globals.random_seed))
+        self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
+
+    def test_qgan_save_model(self):
+        """Test the QGAN functionality to store the current model."""
+        # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
+        num_qubits = [2]
+        # Batch size
+        batch_size = 100
+        # Set number of training epochs
+        num_epochs = 5
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            _qgan = QGAN(self._real_data,
+                         self._bounds,
+                         num_qubits,
+                         batch_size,
+                         num_epochs,
+                         discriminator=NumPyDiscriminator(n_features=len(num_qubits)),
+                         snapshot_dir=tmpdirname)
+            _qgan.seed = self.seed
+            _qgan.set_generator()
+            trained_statevector = _qgan.run(
+                QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                                seed_simulator=aqua_globals.random_seed,
+                                seed_transpiler=aqua_globals.random_seed))
+            trained_qasm = _qgan.run(QuantumInstance(BasicAer.get_backend('qasm_simulator'),
+                                                     seed_simulator=aqua_globals.random_seed,
+                                                     seed_transpiler=aqua_globals.random_seed))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
     def test_qgan_training_run_algo_numpy_multivariate(self):

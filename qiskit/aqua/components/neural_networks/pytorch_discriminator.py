@@ -14,11 +14,12 @@
 PyTorch Discriminator Neural Network
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Iterable, Optional, Sequence, cast
 import os
 import logging
 import numpy as np
 from qiskit.aqua import MissingOptionalLibraryError
+from qiskit.aqua import QuantumInstance
 from .discriminative_network import DiscriminativeNetwork
 
 logger = logging.getLogger(__name__)
@@ -178,33 +179,37 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
 
         return lambda_ * ((d_g.norm(p=2, dim=1) - k)**2).mean()
 
-    def train(self, data, weights, penalty=True,
-              quantum_instance=None, shots=None) -> Dict[str, Any]:
+    def train(self,
+              data: Iterable,
+              weights: Iterable,
+              penalty: bool = False,
+              quantum_instance: Optional[QuantumInstance] = None,
+              shots: Optional[int] = None) -> Dict[str, Any]:
         """
-        Perform one training step w.r.t. to the discriminator's parameters
+        Perform one training step w.r.t to the discriminator's parameters
 
         Args:
-            data (tuple):
-                real_batch: torch.Tensor, Training data batch.
-                generated_batch: numpy array, Generated data batch.
-            weights (tuple): real problem, generated problem
-            penalty (bool): Indicate whether or not penalty function is
-                applied to the loss function.
-            quantum_instance (QuantumInstance): Quantum Instance (depreciated)
-            shots (int): Number of shots for hardware or qasm execution.
-                Not used for classical network (only quantum ones)
+            data: Data batch.
+            weights: Data sample weights.
+            penalty: Indicate whether or not penalty function
+               is applied to the loss function. Ignored if no penalty function defined.
+            quantum_instance (QuantumInstance): used to run Quantum network.
+               Ignored for a classical network.
+            shots: Number of shots for hardware or qasm execution.
+                Ignored for classical network
 
         Returns:
-            dict: with Discriminator loss (torch.Tensor) and updated parameters (array).
+            dict: with discriminator loss and updated parameters.data, weights, penalty=True,
+              quantum_instance=None, shots=None) -> Dict[str, Any]:
         """
         # pylint: disable=E1101
         # pylint: disable=E1102
         # Reset gradients
         self._optimizer.zero_grad()
-        real_batch = data[0]
-        real_prob = weights[0]
-        generated_batch = data[1]
-        generated_prob = weights[1]
+        real_batch = cast(Sequence, data)[0]
+        real_prob = cast(Sequence, weights)[0]
+        generated_batch = cast(Sequence, data)[1]
+        generated_prob = cast(Sequence, weights)[1]
 
         real_batch = np.reshape(real_batch, (len(real_batch), self._n_features))
         real_batch = torch.tensor(real_batch, dtype=torch.float32)

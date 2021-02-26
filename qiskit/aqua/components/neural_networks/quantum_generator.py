@@ -47,7 +47,7 @@ class QuantumGenerator(GenerativeNetwork):
 
     def __init__(self,
                  bounds: np.ndarray,
-                 num_qubits: List[int],
+                 num_qubits: Union[List[int], np.ndarray],
                  generator_circuit: Optional[Union[UnivariateVariationalDistribution,
                                                    MultivariateVariationalDistribution,
                                                    QuantumCircuit]] = None,
@@ -149,6 +149,27 @@ class QuantumGenerator(GenerativeNetwork):
         self._shots = None
         self._discriminator = None
         self._ret = {}  # type: Dict[str, Any]
+
+    @property
+    def parameter_values(self) -> Union[List, np.ndarray]:
+        """
+        Get parameter values from the quantum generator
+
+        Returns:
+            Current parameter values
+        """
+        return self._bound_parameters
+
+    @parameter_values.setter
+    def parameter_values(self, p_values: Union[List, np.ndarray]
+                         ) -> None:
+        """
+        Set parameter values for the quantum generator
+
+        Args:
+            p_values: Parameter values
+        """
+        self._bound_parameters = p_values
 
     @property
     def seed(self) -> int:

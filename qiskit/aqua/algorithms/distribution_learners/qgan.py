@@ -66,12 +66,15 @@ class QGAN(QuantumAlgorithm):
         <https://www.nature.com/articles/s41534-019-0223-2>`_
     """
 
-    def __init__(self, data: np.ndarray, bounds: Optional[np.ndarray] = None,
-                 num_qubits: Optional[np.ndarray] = None, batch_size: int = 500,
+    def __init__(self, data: Union[np.ndarray, List],
+                 bounds: Optional[Union[np.ndarray, List]] = None,
+                 num_qubits: Optional[Union[np.ndarray, List]] = None,
+                 batch_size: int = 500,
                  num_epochs: int = 3000, seed: int = 7,
                  discriminator: Optional[DiscriminativeNetwork] = None,
                  generator: Optional[GenerativeNetwork] = None,
-                 tol_rel_ent: Optional[float] = None, snapshot_dir: Optional[str] = None,
+                 tol_rel_ent: Optional[float] = None,
+                 snapshot_dir: Optional[str] = None,
                  quantum_instance: Optional[
                      Union[QuantumInstance, BaseBackend, Backend]] = None) -> None:
         """
@@ -278,7 +281,7 @@ class QGAN(QuantumAlgorithm):
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             writer.writerow({'epoch': e, 'loss_discriminator': np.average(d_loss),
                              'loss_generator': np.average(g_loss), 'params_generator':
-                                 self._generator.generator_circuit.params, 'rel_entropy': rel_entr})
+                                 self._generator.parameter_values, 'rel_entropy': rel_entr})
         self._discriminator.save_model(self._snapshot_dir)  # Store discriminator model
 
     def train(self):

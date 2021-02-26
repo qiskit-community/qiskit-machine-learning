@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2020.
+# (C) Copyright IBM 2019, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,8 +12,12 @@
 
 """ Discriminative Quantum or Classical Neural Networks."""
 
-from typing import List
+from typing import List, Iterable, Optional, Dict
 from abc import ABC, abstractmethod
+
+import numpy as np
+
+from qiskit.aqua import QuantumInstance
 
 
 class DiscriminativeNetwork(ABC):
@@ -44,7 +48,7 @@ class DiscriminativeNetwork(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_label(self, x):
+    def get_label(self, x: Iterable):
         """
         Apply quantum/classical neural network to the given input sample and compute
         the respective data label
@@ -58,14 +62,31 @@ class DiscriminativeNetwork(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def loss(self, x, y, weights=None):
+    def save_model(self, snapshot_dir: str):
+        """
+        Save discriminator model
+
+        Args:
+            snapshot_dir: Directory to save the model
+
+        Raises:
+            NotImplementedError: not implemented
+
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def loss(self,
+             x: Iterable,
+             y: Iterable,
+             weights: Optional[np.ndarray] = None):
         """
         Loss function used for optimization
 
         Args:
-            x (Discriminator): output.
-            y (Label): the data point
-            weights (numpy.ndarray): Data weights.
+            x: output.
+            y: the data point
+            weights: Data weights.
 
         Returns:
             Loss w.r.t to the generated data points.
@@ -76,22 +97,27 @@ class DiscriminativeNetwork(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def train(self, data, weights, penalty=False, quantum_instance=None, shots=None):
+    def train(self,
+              data: Iterable,
+              weights: Iterable,
+              penalty: bool = False,
+              quantum_instance: Optional[QuantumInstance] = None,
+              shots: Optional[int] = None) -> Dict:
         """
         Perform one training step w.r.t to the discriminator's parameters
 
         Args:
-            data (numpy.ndarray): Data batch.
-            weights (numpy.ndarray): Data sample weights.
-            penalty (bool): Indicate whether or not penalty function
+            data: Data batch.
+            weights: Data sample weights.
+            penalty: Indicate whether or not penalty function
                is applied to the loss function. Ignored if no penalty function defined.
             quantum_instance (QuantumInstance): used to run Quantum network.
                Ignored for a classical network.
-            shots (int): Number of shots for hardware or qasm execution.
+            shots: Number of shots for hardware or qasm execution.
                 Ignored for classical network
 
         Returns:
-            dict: with Discriminator loss and updated parameters.
+            dict: with discriminator loss and updated parameters.
 
         Raises:
             NotImplementedError: not implemented
