@@ -13,7 +13,6 @@
 """The Quantum SVM algorithm."""
 
 from typing import Dict, Optional, Union
-import warnings
 import logging
 import sys
 
@@ -124,26 +123,15 @@ class QSVM:
         self.feature_map = feature_map
         self.num_qubits = self.feature_map.num_qubits
 
-        if isinstance(feature_map, QuantumCircuit):
-            # patch the feature dimension attribute to the circuit
-            self.feature_map.feature_dimension = len(feature_map.parameters)
-            if not hasattr(feature_map, 'ordered_parameters'):
-                self.feature_map.ordered_parameters = sorted(feature_map.parameters,
-                                                             key=lambda p: p.name)
-            self.feature_map_params_x = ParameterVector('x', self.feature_map.feature_dimension)
-            self.feature_map_params_y = ParameterVector('y', self.feature_map.feature_dimension)
-        else:
-            warnings.warn("""
-            The {} object as input for the QSVM is deprecated as of 0.9.0 and will
-            be removed no earlier than 3 months after the release.
-            You should pass a QuantumCircuit object instead.
-            See also qiskit.circuit.library.data_preparation for a collection
-            of suitable circuits.""".format(type(feature_map)),
-                          DeprecationWarning, stacklevel=2)
-            self.feature_map_params_x = ParameterVector('x', feature_map.feature_dimension)
-            self.feature_map_params_y = ParameterVector('y', feature_map.feature_dimension)
+        # patch the feature dimension attribute to the circuit
+        self.feature_map.feature_dimension = len(feature_map.parameters)
+        if not hasattr(feature_map, 'ordered_parameters'):
+            self.feature_map.ordered_parameters = sorted(feature_map.parameters,
+                                                         key=lambda p: p.name)
+        self.feature_map_params_x = ParameterVector('x', self.feature_map.feature_dimension)
+        self.feature_map_params_y = ParameterVector('y', self.feature_map.feature_dimension)
 
-        qsvm_instance = None  # type: Optional[Union[_QSVM_Binary, _QSVM_Multiclass]]
+        qsvm_instance: Optional[Union[_QSVM_Binary, _QSVM_Multiclass]] = None
         if multiclass_extension is None:
             qsvm_instance = _QSVM_Binary(self)
         else:

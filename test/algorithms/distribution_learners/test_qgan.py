@@ -18,7 +18,7 @@ import tempfile
 from test import QiskitMachineLearningTestCase
 
 from qiskit import BasicAer
-from qiskit.circuit.library import RealAmplitudes
+from qiskit.circuit.library import UniformDistribution, RealAmplitudes
 from qiskit.utils import algorithm_globals, QuantumInstance
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.algorithms.optimizers import CG, COBYLA
@@ -71,10 +71,12 @@ class TestQGAN(QiskitMachineLearningTestCase):
         # Set entangler map
         entangler_map = [[0, 1]]
 
-        # Set variational form
-        var_form = RealAmplitudes(sum(num_qubits), reps=1,
-                                  entanglement=entangler_map)
-        self.generator_circuit = var_form
+        qc = UniformDistribution(sum(num_qubits))
+
+        ansatz = RealAmplitudes(sum(num_qubits), reps=1,
+                                entanglement=entangler_map)
+        qc.compose(ansatz, inplace=True)
+        self.generator_circuit = qc
 
     def test_sample_generation(self):
         """Test sample generation."""
@@ -267,7 +269,6 @@ class TestQGAN(QiskitMachineLearningTestCase):
                                                  seed_transpiler=algorithm_globals.random_seed))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
-    @unittest.skip(reason="Test failing probably because initial state is not set.")
     def test_qgan_training_analytic_gradients(self):
         """Test QGAN training with analytic gradients"""
         self.qgan.set_generator(self.generator_circuit)

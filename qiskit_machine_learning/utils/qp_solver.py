@@ -12,7 +12,6 @@
 
 """ qp solver """
 
-import warnings
 from typing import Optional, Tuple
 import logging
 
@@ -28,7 +27,6 @@ def optimize_svm(kernel_matrix: np.ndarray,
                  scaling: Optional[float] = None,
                  maxiter: int = 500,
                  show_progress: bool = False,
-                 max_iters: Optional[int] = None,
                  lambda2: float = 0.001) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Solving quadratic programming problem for SVM; thus, some constraints are fixed.
@@ -40,7 +38,6 @@ def optimize_svm(kernel_matrix: np.ndarray,
                  use L2-norm of `y` for normalization
         maxiter: number of iterations for QP solver
         show_progress: showing the progress of QP solver
-        max_iters: Deprecated, use maxiter.
         lambda2: L2 Norm regularization factor
 
     Returns:
@@ -61,12 +58,6 @@ def optimize_svm(kernel_matrix: np.ndarray,
             pip_install="pip install 'qiskit-aqua[cvx]'",
             msg=str(ex)) from ex
 
-    if max_iters is not None:
-        warnings.warn('The max_iters parameter is deprecated as of '
-                      '0.8.0 and will be removed no sooner than 3 months after the release. '
-                      'You should use maxiter instead.',
-                      DeprecationWarning)
-        maxiter = max_iters
     if y.ndim == 1:
         y = y[:, np.newaxis]
     H = np.outer(y, y) * kernel_matrix

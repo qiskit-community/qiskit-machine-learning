@@ -12,7 +12,6 @@
 
 """ svm packages """
 
-from .sklearn_svm import SklearnSVM, SVM_Classical
+from .sklearn_svm import SklearnSVM
 
-__all__ = ['SklearnSVM',
-           'SVM_Classical']
+__all__ = ['SklearnSVM']

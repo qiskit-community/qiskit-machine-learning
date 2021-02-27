@@ -41,13 +41,12 @@ Distribution Learners
 
 """
 
-from .classifiers import VQC, QSVM, SklearnSVM, SVM_Classical
+from .classifiers import VQC, QSVM, SklearnSVM
 from .distribution_learners import QGAN
 
 __all__ = [
     'VQC',
     'QSVM',
     'SklearnSVM',
-    'SVM_Classical',
     'QGAN',
 ]

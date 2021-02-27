@@ -16,7 +16,6 @@ The Sklearn SVM algorithm (classical).
 
 from typing import Dict, Optional, Union
 import logging
-import warnings
 import numpy as np
 from qiskit.utils import algorithm_globals
 from ....utils.dataset_helper import get_num_classes
@@ -180,20 +179,3 @@ class SklearnSVM:
             file_path (str): a path to save the model.
         """
         self.instance.save_model(file_path)
-
-
-class SVM_Classical(SklearnSVM):
-    """ The deprecated Sklearn SVM algorithm. """
-
-    def __init__(self, training_dataset: Dict[str, np.ndarray],
-                 test_dataset: Optional[Dict[str, np.ndarray]] = None,
-                 datapoints: Optional[np.ndarray] = None,
-                 gamma: Optional[int] = None,
-                 multiclass_extension: Optional[MulticlassExtension] = None) -> None:
-        warnings.warn('Deprecated class {}, use {}.'.format('SVM_Classical', 'SklearnSVM'),
-                      DeprecationWarning)
-        super().__init__(training_dataset,
-                         test_dataset,
-                         datapoints,
-                         gamma,
-                         multiclass_extension)
