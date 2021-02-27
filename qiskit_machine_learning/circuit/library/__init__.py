@@ -12,7 +12,7 @@
 
 """
 Circuit library for Machine Learning applications (:mod:`qiskit_machine_learning.circuit.library`)
-====================================================================================
+==================================================================================================
 
 A library of quantum circuits used for machine learning applications and as
 building blocks for machine learning algorithms.

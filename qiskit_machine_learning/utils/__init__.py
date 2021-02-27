@@ -12,7 +12,7 @@
 
 """
 Utilities (:mod:`qiskit_machine_learning.utils`)
-========================================
+================================================
 Various utility functionality...
 
 .. currentmodule:: qiskit_machine_learning.utils

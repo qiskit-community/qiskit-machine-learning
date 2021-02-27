@@ -12,7 +12,7 @@
 
 """
 Datasets (:mod:`qiskit_machine_learning.datasets`)
-===================================================
+==================================================
 Sample datasets suitable for machine learning problems
 
 .. currentmodule:: qiskit_machine_learning.datasets

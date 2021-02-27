@@ -12,7 +12,7 @@
 
 """
 Multi-class Extensions (:mod:`qiskit_machine_learning.multiclass_extensions`)
-============================================================================
+=============================================================================
 A multiclass extension allows Machine Learning's binary classifier algorithms, such as
 :class:`~qiskit_machine_learning.algorithms.QSVM` and
 :class:`~qiskit_machine_learning.algorithms.SklearnSVM`
