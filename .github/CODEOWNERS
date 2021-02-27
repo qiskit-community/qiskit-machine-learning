@@ -1,0 +1,7 @@
+# This file defines the persons who will be assigned as reviewers for PRs that
+# modify particular files in the repo. The PR can be merged when approved by at
+# least one codeowner. However, all Qiskit team members can (and should!) review the PRs.
+
+# Global rule, unless specialized by a later one
+* @stefan-woerner @pbark @manoelmarques @woodsp-ibm
+

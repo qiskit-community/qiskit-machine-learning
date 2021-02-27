@@ -1,0 +1,39 @@
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2021.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
+name: Deployment
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Deploy to Pypi
+        env:
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          TWINE_USERNAME: qiskit
+        run : |
+          pip install -U twine pip setuptools virtualenv wheel
+          python3 setup.py sdist bdist_wheel
+          twine upload dist/qiskit*
+        shell: bash

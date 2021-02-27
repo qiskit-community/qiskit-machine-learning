@@ -1,0 +1,240 @@
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2021.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
+name: Machine Learning Unit Tests
+
+on:
+  push:
+    branches:
+      - master
+      - 'stable/**'
+  pull_request:
+    branches:
+      - master
+      - 'stable/**'
+
+jobs:
+  Checks:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-libraries
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-master-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-machine-learning
+      - name: Install Dependencies
+        run: |
+          sudo apt-get -y install python3-enchant
+          sudo apt-get -y install hunspell-en-us
+          pip install pyenchant
+        shell: bash
+      - run:  pip check
+        if: ${{ !cancelled() }}
+        shell: bash
+      - run:  make copyright
+        if: ${{ !cancelled() }}
+        shell: bash
+      - run:  make spell
+        if: ${{ !cancelled() }}
+        shell: bash
+      - run:  make style
+        if: ${{ !cancelled() }}
+        shell: bash
+      - name: Run make html
+        run:  |
+          make html SPHINXOPTS=-W
+          cd docs/_build/html
+          mkdir artifacts
+          tar -zcvf artifacts/documentation.tar.gz --exclude=./artifacts .
+        if: ${{ !cancelled() }}
+        shell: bash
+      - name: Run upload documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: documentation
+          path: docs/_build/html/artifacts/documentation.tar.gz
+        if: ${{ !cancelled() }}
+      - run:  make doctest
+        if: ${{ !cancelled() }}
+        shell: bash
+  Lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-libraries
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-master-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-machine-learning
+      - run: make lint
+        if: ${{ !cancelled() }}
+        shell: bash
+      - run: make mypy
+        if: ${{ !cancelled() }}
+        shell: bash
+      - name: Run make lint latest version
+        run: |
+          pip install -U pylint
+          make lint
+        if: ${{ !cancelled() }}
+        shell: bash
+  MachineLearning:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.7, 3.8, 3.9 ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-libraries
+      - uses: ./.github/actions/install-master-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-machine-learning
+      - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
+        uses: ./.github/actions/run-tests
+        with:
+          domain: ml
+          python-version: ${{ matrix.python-version }}
+      - name: Deprecation Messages
+        run: |
+          mkdir ./m${{ matrix.python-version }}
+          python tools/extract_deprecation.py -file out.txt -output ./m${{ matrix.python-version }}/ml.dep
+        shell: bash
+      - name: Coverage combine
+        run: |
+          coverage3 combine
+          mv .coverage ./m${{ matrix.python-version }}/ml.dat
+        if: ${{ matrix.python-version == 3.7 }}
+        shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ml${{ matrix.python-version }}
+          path: ./m${{ matrix.python-version }}/*
+  Tutorials:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.8]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-libraries
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-master-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - name: Install Aqua from Master
+        run: |
+          # Install Aqua for now until tutorials point to new repo
+          pip install https://github.com/Qiskit/qiskit-aqua/archive/master.zip
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+        shell: bash
+      - name: Install Aqua from Pypi
+        run: |
+          # Install Aqua for now until tutorials point to new repo
+          pip install qiskit-aqua
+        if: ${{ startsWith(github.ref, 'refs/heads/stable') }}
+        shell: bash
+      - uses: ./.github/actions/install-machine-learning
+      - name: Install Dependencies
+        run: |
+          pip install -U jupyter sphinx nbsphinx sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization]
+          sudo apt-get install -y pandoc graphviz
+        shell: bash
+      - name: Run Machine Learning Tutorials
+        env:
+          QISKIT_PARALLEL: False
+        run: |
+          git clone https://github.com/Qiskit/qiskit-tutorials
+          cd qiskit-tutorials
+          rm -r tutorials/algorithms/
+          rm -r tutorials/chemistry/
+          rm -r tutorials/circuits/
+          rm -r tutorials/circuits_advanced/
+          rm -r tutorials/finance/
+          rm -r tutorials/noise/
+          rm -r tutorials/operators/
+          rm -r tutorials/optimization/
+          rm -r tutorials/simulators/
+          sphinx-build -b html . _build/html
+          cd _build/html
+          mkdir artifacts
+          tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
+        shell: bash
+      - name: Run upload tutorials
+        uses: actions/upload-artifact@v2
+        with:
+          name: tutorials${{ matrix.python-version }}
+          path: ./qiskit-tutorials/_build/html/artifacts/tutorials.tar.gz
+  Deprecation_Messages_and_Coverage:
+    needs: [Checks, Lint, MachineLearning, Tutorials]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/download-artifact@v2
+        with:
+          name: ml3.6
+          path: /tmp/m36
+      - uses: actions/download-artifact@v2
+        with:
+          name: ml3.7
+          path: /tmp/m37
+      - uses: actions/download-artifact@v2
+        with:
+          name: ml3.8
+          path: /tmp/m38
+      - uses: actions/download-artifact@v2
+        with:
+          name: ml3.9
+          path: /tmp/m39
+      - name: Install Dependencies
+        run: pip install -U coverage coveralls diff-cover
+        shell: bash
+      - name: Combined Deprecation Messages
+        run: |
+          sort -f -u /tmp/m36/ml.dep /tmp/m37/ml.dep /tmp/m38/ml.dep /tmp/m39/ml.dep || true
+        shell: bash
+      - name: Coverage combine
+        run: coverage3 combine /tmp/m37/ml.dat
+        shell: bash
+      - name: Upload to Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
+        shell: bash

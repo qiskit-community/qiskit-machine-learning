@@ -1,0 +1,56 @@
+# Entries in this file are made for two reasons:
+# 1) to merge multiple git commit authors that correspond to a single author
+# 2) to change the canonical name and/or email address of an author.
+#
+# Format is:
+#     Canonical Name <Canonical@email> commit name <commit@email>
+#     \--------------+---------------/ \----------+-------------/
+#                 replace                       find
+# See also: 'git shortlog --help' and 'git check-mailmap --help'.
+#
+# If you don't like the way your name is cited by qiskit, please feel free to
+# open a pull request against this file to set your preferred naming.
+#
+# Note that each qiskit element uses its own mailmap so it may be necessary to
+# propagate changes in other repos for consistency.
+
+Abdón Rodríguez Davila <a@abdonrd.com>
+Ali Javadi-Abhari <ali.javadi@ibm.com> <ajavadia@users.noreply.github.com>
+Ali Javadi-Abhari <ali.javadi@ibm.com> <ajavadia@princeton.edu>
+Albert Frisch <albert.frisch@de.ibm.com>
+Albert Frisch <albert.frisch@de.ibm.com> <alfr@de.ibm.com>
+Alejandro Pozas-Kerstjens <physics@alexpozas.com> <apozas@users.noreply.github.com>
+Almudena Carrera Vazquez <acv@zurich.ibm.com> <almudenacarreravazquez@hotmail.com>
+Anna Phan <9410731+attp@users.noreply.github.com> <annaphan@au.ibm.com>
+Christa Zoufal <ouf@zurich.ibm.com>
+Christian Clauss <cclauss@bluewin.ch>
+Antonio Mezzacapo <30698465+antoniomezzacapo@users.noreply.github.com> <amezzac@us.ibm.com>
+Donny Greenberg <dongreenberg2@gmail.com> 
+Donny Greenberg <dongreenberg2@gmail.com> <donny@ibm.com>
+Gawel Kus <gawel.kus@ibm.com>
+Gawel Kus <gawel.kus@ibm.com> <gawel@oc7832844175.ibm.com>
+Ian Gould <iangould@IANs-MacBook.local>
+Igor Olegovich Sokolov <iso@zurich.ibm.com> <ISO@zurich.ibm.com>
+Ikko Hamamura <ikkoham@users.noreply.github.com>
+Isabel Haide <isabel.haide@ibm.com>
+Jan Müggenburg <jan.mueggenburg@ibm.com> 
+Jan Müggenburg <jan.mueggenburg@ibm.com> <jan@oc6058543760.ibm.com>
+Jay M. Gambetta <jay.gambetta@us.ibm.com>
+Juan Cruz-Benito <juan.cruz@ibm.com>
+Julien Gacon <jul@zurich.ibm.com>
+Julien Gacon <jul@zurich.ibm.com> <jules.gacon@googlemail.com>
+Karel Dumon <dumonkarel@gmail.com>
+Marco Pistoia <pistoia@us.ibm.com> <mpistoia@gmail.com>
+Max Rossmannek <rmax@ethz.ch>
+Nick Singstock <35930611+Nick-Singstock@users.noreply.github.com>
+Panagiotis Barkoutsos <bpa@zurich.ibm.com>
+Panagiotis Barkoutsos <bpa@zurich.ibm.com> <pbarkoutsos@gmail.com>
+Peng Liu <34400304+liupibm@users.noreply.github.com>
+Shaohan Hu <shaohan.hu@ibm.com> 
+Shaohan Hu <shaohan.hu@ibm.com> <Shaohan.Hu@ibm.com>
+Stefan Woerner <wor@zurich.ibm.com> <stefan@swoerner.de>
+Stefan Woerner <wor@zurich.ibm.com> <41292468+stefan-woerner@users.noreply.github.com> 
+Stephen Wood <40241007+woodsp-ibm@users.noreply.github.com> <woodsp@us.ibm.com>
+Vivek Krishnan <krishnan.vivek@gmail.com>
+Yael Ben-Haim <yaelbh@il.ibm.com>
+Yotam Vaknin <Yotam.Vaknin@Ibm.com> <yotamvak@lnx-quantum.openstack.haifa.ibm.com>
