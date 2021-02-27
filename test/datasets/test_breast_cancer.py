@@ -10,36 +10,39 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test Iris """
+""" Test Breast Cancer """
 
 from test import QiskitMachineLearningTestCase
 import json
 import numpy as np
-from qiskit_machine_learning.datasets import iris
+from qiskit_machine_learning.datasets import breast_cancer
 
 
-class TestIris(QiskitMachineLearningTestCase):
-    """Iris tests."""
+class TestBreastCancer(QiskitMachineLearningTestCase):
+    """ Breast Cancer tests."""
 
-    def test_iris(self):
-        """Iris test."""
+    def test_breast_cancer(self):
+        """Breast Cancer test."""
 
-        input_file = self.get_resource_path('sample_train.iris')
+        input_file = self.get_resource_path('sample_train.breast_cancer',
+                                            'datasets')
         with open(input_file) as file:
             sample_train_ref = json.load(file)
 
-        input_file = self.get_resource_path('training_input.iris')
+        input_file = self.get_resource_path('training_input.breast_cancer',
+                                            'datasets')
         with open(input_file) as file:
             training_input_ref = json.load(file)
 
-        input_file = self.get_resource_path('test_input.iris')
+        input_file = self.get_resource_path('test_input.breast_cancer',
+                                            'datasets')
         with open(input_file) as file:
             test_input_ref = json.load(file)
 
-        sample_train, training_input, test_input, class_labels = iris(training_size=20,
-                                                                      test_size=10,
-                                                                      n=2,
-                                                                      plot_data=False)
+        sample_train, training_input, test_input, class_labels = breast_cancer(training_size=20,
+                                                                               test_size=10,
+                                                                               n=2,
+                                                                               plot_data=False)
         np.testing.assert_allclose(sample_train.tolist(), sample_train_ref, rtol=1e-04)
         for key, _ in training_input.items():
             np.testing.assert_allclose(training_input[key].tolist(),

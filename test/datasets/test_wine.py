@@ -25,15 +25,18 @@ class TestWine(QiskitMachineLearningTestCase):
     def test_wine(self):
         """Wine test."""
 
-        input_file = self.get_resource_path('sample_train.wine')
+        input_file = self.get_resource_path('sample_train.wine',
+                                            'datasets')
         with open(input_file) as file:
             sample_train_ref = json.load(file)
 
-        input_file = self.get_resource_path('training_input.wine')
+        input_file = self.get_resource_path('training_input.wine',
+                                            'datasets')
         with open(input_file) as file:
             training_input_ref = json.load(file)
 
-        input_file = self.get_resource_path('test_input.wine')
+        input_file = self.get_resource_path('test_input.wine',
+                                            'datasets')
         with open(input_file) as file:
             test_input_ref = json.load(file)
 
