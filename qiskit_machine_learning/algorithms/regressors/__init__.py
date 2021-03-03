@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,15 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Classifiers Package """
+""" Regressors Package"""
 
-from .qsvc import QSVC
-from .vqc import VQC
-from .qsvm import QSVM
-from .sklearn_svm import SklearnSVM
+from .qsvr import QSVR
 
 __all__ = [
-    'QSVC',
-    'VQC',
-    'QSVM',
-    'SklearnSVM']
+    'QSVR'
+]
