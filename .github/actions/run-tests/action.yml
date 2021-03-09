@@ -13,6 +13,9 @@
 name: 'Run Unit Tests'
 description: 'Run Unit Tests'
 inputs:
+  event-name:
+    description: 'Actions event'
+    required: true
   python-version:
     description: 'Python version'
     required: true
@@ -20,6 +23,10 @@ runs:
   using: "composite"
   steps: 
     - run: |
+        # run slow tests only on scheduled event
+        if [ "${{ inputs.event-name }}" == "schedule" ]; then
+          export QISKIT_TESTS="run_slow"
+        fi
         if [ "${{ inputs.python-version }}" == "3.7" ]; then
           export PYTHON="coverage3 run --source qiskit_machine_learning --parallel-mode"
         fi
