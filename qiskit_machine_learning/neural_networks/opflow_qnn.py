@@ -32,21 +32,21 @@ class OpflowQNN(NeuralNetwork):
     def __init__(self, operator: OperatorBase,
                  input_params: Optional[List[Parameter]] = None,
                  weight_params: Optional[List[Parameter]] = None,
-                 expval: Optional[ExpectationBase] = None,
+                 exp_val: Optional[ExpectationBase] = None,
                  gradient=Gradient(), quantum_instance=None):
         """Initializes the Opflow Quantum Neural Network.
         Args:
             operator: The parametrized operator that represents the neural network.
             input_params: The operator parameters that correspond to the input of the network.
             weight_params: The operator parameters that correspond to the trainable weights.
-            expval: The Expected Value converter to be used for the operator.
+            exp_val: The Expected Value converter to be used for the operator.
             gradient: The Gradient converter to be used for the operator's backward pass.
             quantum_instance: The quantum instance to evaluate the network.
         """
         self.operator = operator
         self.input_params = list(input_params or [])
         self.weight_params = list(weight_params or [])
-        self.expval = expval or PauliExpectation()  # TODO: currently not used by Gradient!
+        self.exp_val = exp_val or PauliExpectation()  # TODO: currently not used by Gradient!
         self.gradient = gradient
         if quantum_instance:
             self.quantum_instance = quantum_instance
@@ -61,7 +61,7 @@ class OpflowQNN(NeuralNetwork):
             self.circuit_sampler = None
             self.gradient_sampler = None
 
-        self.forward_operator = expval.convert(operator) if expval else operator
+        self.forward_operator = exp_val.convert(operator) if exp_val else operator
         self.gradient_operator = gradient.convert(operator, input_params + weight_params)
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self.input_params), len(self.weight_params), output_shape)

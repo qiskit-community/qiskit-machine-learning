@@ -15,7 +15,7 @@ machine learning module."""
 
 
 from abc import ABC, abstractmethod
-from typing import Tuple, Union, List, Optional
+from typing import Tuple, Union, List, Optional, Dict
 
 import numpy as np
 
@@ -23,7 +23,7 @@ from ..exceptions import QiskitMachineLearningError
 
 
 class NeuralNetwork(ABC):
-    """Abstract Neural Network class providing forward and backward pass and hanlding
+    """Abstract Neural Network class providing forward and backward pass and handling
     batched inputs. This is to be implemented by other (quantum) neural networks.
     """
 
@@ -79,7 +79,8 @@ class NeuralNetwork(ABC):
         return weights_.reshape(self.num_weights)
 
     def forward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                weights: Optional[Union[List[float], np.ndarray, float]]) -> np.ndarray:
+                weights: Optional[Union[List[float], np.ndarray, float]]
+                ) -> Union[np.ndarray, Dict]:
         """Forward pass of the network.
 
         Args:
@@ -95,13 +96,14 @@ class NeuralNetwork(ABC):
         return self._forward(input_, weights_)
 
     @abstractmethod
-    def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]) \
-            -> np.ndarray:
+    def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                 ) -> Union[np.ndarray, Dict]:
         raise NotImplementedError
 
     def backward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                  weights: Optional[Union[List[float], np.ndarray, float]]
-                 ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
+                 ) -> Tuple[Optional[Union[np.ndarray, Dict[str, float]]],
+                            Optional[Union[np.ndarray, Dict[str, float]]]]:
         """Backward pass of the network.
 
         Args:
@@ -120,5 +122,6 @@ class NeuralNetwork(ABC):
 
     @abstractmethod
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                  ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
+                  ) -> Tuple[Optional[Union[np.ndarray, Dict[str, float]]],
+                             Optional[Union[np.ndarray, Dict[str, float]]]]:
         raise NotImplementedError

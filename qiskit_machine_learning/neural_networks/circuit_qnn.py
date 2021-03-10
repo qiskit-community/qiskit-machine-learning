@@ -39,24 +39,25 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
             interpret: Determines the output format, possible choices are:
-                - 'tuple' (default): a tuple of binary values, e.g. (0, 1, 0, 1, 0)
-                - 'str': a bitstring of type str, e.g. '01010'
-                - 'int': an integer corresponding to the bitstring, e.g. 10
-                - a custom callable that takes a sample of type 'tuple' and maps it to some other
-                    output, output should be hashable for sparse representation of probabilities
-                    and probability gradients.
+                * 'tuple' (default): a tuple of binary values, e.g. (0, 1, 0, 1, 0)
+                * 'str': a bitstring of type str, e.g. '01010'
+                * 'int': an integer corresponding to the bitstring, e.g. 10
+                * a custom callable that takes a sample of type 'tuple' and maps it to some other
+                output, output should be hashable for sparse representation of probabilities
+                and probability gradients.
             dense: Whether to return a dense (array with 'output_shape') or sparse (dict)
                 probabilities. Dense probabilities require "interpret == 'int'" where the integer
                 will be the index in the array of probabilities.
                 TODO: what about "return_samples"??? (cf. base class)
-                TODO: update return types to handle dicts and arrays
+                TODO: update return types to handle dictionaries and arrays
             output_shape: Gives the output_shape in case of a custom interpret callable. If this is
                 None, the output_shape is set to 1.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits.
 
         Raises:
-            QiskitMachineLearningError: if an incorrect value for `interpert` is passed.
+            QiskitMachineLearningError: if an incorrect value for `interpret` or `output_shape`
+                is passed.
         """
 
         # TODO: currently cannot handle statevector simulator, at least throw exception
@@ -106,7 +107,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     output_shape_ = (quantum_instance.run_config.shots, *output_shape)
                 else:
                     raise QiskitMachineLearningError(
-                        f'Unsupported output_shape value: {interpret}!')
+                        f'Unsupported output_shape type: {interpret}!')
         else:
             raise QiskitMachineLearningError(f'Unsupported interpret value: {interpret}!')
 
