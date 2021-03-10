@@ -30,6 +30,7 @@ class TwoLayerQNN(OpflowQNN):
     def __init__(self, num_qubits, feature_map=None, var_form=None, observable=None,
                  quantum_instance=None):
         r"""Initializes the Two Layer Quantum Neural Network.
+
         Args:
             num_qubits: The number of qubits to represent the network.
             feature_map: The (parametrized) circuit to be used as feature map. If None is given,
