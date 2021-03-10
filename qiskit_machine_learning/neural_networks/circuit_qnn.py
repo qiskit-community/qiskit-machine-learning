@@ -34,17 +34,12 @@ class CircuitQNN(SamplingNeuralNetwork):
                  dense: bool = False, output_shape: Union[int, Tuple[int, ...]] = None,
                  gradient: Gradient = None, quantum_instance: QuantumInstance = None) -> None:
         """Initializes the Circuit Quantum Neural Network.
+
         Args:
             circuit: The (parametrized) quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
             interpret: Determines the output format, possible choices are:
-                * 'tuple' (default): a tuple of binary values, e.g. (0, 1, 0, 1, 0)
-                * 'str': a bitstring of type str, e.g. '01010'
-                * 'int': an integer corresponding to the bitstring, e.g. 10
-                * a custom callable that takes a sample of type 'tuple' and maps it to some other
-                output, output should be hashable for sparse representation of probabilities
-                and probability gradients.
             dense: Whether to return a dense (array with 'output_shape') or sparse (dict)
                 probabilities. Dense probabilities require "interpret == 'int'" where the integer
                 will be the index in the array of probabilities.
