@@ -35,6 +35,7 @@ class TwoLayerQNN(OpflowQNN):
                  observable: Union[QuantumCircuit, OperatorBase] = None,
                  quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None):
         r"""Initializes the Two Layer Quantum Neural Network.
+
         Args:
             num_qubits: The number of qubits to represent the network.
             feature_map: The (parametrized) circuit to be used as feature map. If None is given,
