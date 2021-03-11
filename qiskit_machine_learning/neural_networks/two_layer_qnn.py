@@ -13,11 +13,14 @@
 """A Two Layer Neural Network consisting of a first parametrized circuit representing a feature map
 to map the input data to a quantum states and a second one representing a variational form that can
 be trained to solve a particular tasks."""
+from typing import Optional, Union
 
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.opflow import PauliSumOp, StateFn
+from qiskit.opflow import PauliSumOp, StateFn, OperatorBase
+from qiskit.providers import BaseBackend, Backend
+from qiskit.utils import QuantumInstance
 
 from .opflow_qnn import OpflowQNN
 
@@ -27,8 +30,10 @@ class TwoLayerQNN(OpflowQNN):
     and an observable.
     """
 
-    def __init__(self, num_qubits, feature_map=None, var_form=None, observable=None,
-                 quantum_instance=None):
+    def __init__(self, num_qubits: int, feature_map: QuantumCircuit = None,
+                 var_form: QuantumCircuit = None,
+                 observable: Union[QuantumCircuit, OperatorBase] = None,
+                 quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None):
         r"""Initializes the Two Layer Quantum Neural Network.
         Args:
             num_qubits: The number of qubits to represent the network.

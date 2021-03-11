@@ -60,7 +60,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         weights = np.zeros(self.qnn.num_weights)
 
         result = self.qnn.probabilities(input_data, weights)
-        print(result)
+        self.assertAlmostEqual(result[1], 0.81484, places=4)
+        self.assertAlmostEqual(result[-1], 0.18516, places=4)
 
 
 if __name__ == '__main__':

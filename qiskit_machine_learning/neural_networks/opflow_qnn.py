@@ -14,12 +14,13 @@
 neural network."""
 
 from copy import deepcopy
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple, Dict
 
 import numpy as np
 from qiskit.circuit import Parameter
-from qiskit.opflow import PauliExpectation, Gradient, CircuitSampler, ListOp, OperatorBase, \
-    ExpectationBase
+from qiskit.opflow import Gradient, CircuitSampler, ListOp, OperatorBase, ExpectationBase
+from qiskit.providers import BaseBackend, Backend
+from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
 
 from .neural_network import NeuralNetwork
@@ -33,8 +34,10 @@ class OpflowQNN(NeuralNetwork):
                  input_params: Optional[List[Parameter]] = None,
                  weight_params: Optional[List[Parameter]] = None,
                  exp_val: Optional[ExpectationBase] = None,
-                 gradient=Gradient(), quantum_instance=None):
+                 gradient: Optional[Gradient] = None,
+                 quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None):
         """Initializes the Opflow Quantum Neural Network.
+
         Args:
             operator: The parametrized operator that represents the neural network.
             input_params: The operator parameters that correspond to the input of the network.
@@ -46,8 +49,12 @@ class OpflowQNN(NeuralNetwork):
         self.operator = operator
         self.input_params = list(input_params or [])
         self.weight_params = list(weight_params or [])
-        self.exp_val = exp_val or PauliExpectation()  # TODO: currently not used by Gradient!
-        self.gradient = gradient
+        self.exp_val = exp_val  # TODO: currently not used by Gradient!
+        self.gradient = gradient or Gradient()
+
+        if isinstance(quantum_instance, (BaseBackend, Backend)):
+            quantum_instance = QuantumInstance(quantum_instance)
+
         if quantum_instance:
             self.quantum_instance = quantum_instance
             self.circuit_sampler = CircuitSampler(
@@ -61,12 +68,13 @@ class OpflowQNN(NeuralNetwork):
             self.circuit_sampler = None
             self.gradient_sampler = None
 
-        self.forward_operator = exp_val.convert(operator) if exp_val else operator
-        self.gradient_operator = gradient.convert(operator, input_params + weight_params)
+        self.forward_operator = self.exp_val.convert(operator) if exp_val else operator
+        self.gradient_operator = self.gradient.convert(operator,
+                                                       self.input_params + self.weight_params)
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self.input_params), len(self.weight_params), output_shape)
 
-    def _get_output_shape_from_op(self, op):
+    def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
         # TODO: should eventually be moved to opflow
         if isinstance(op, ListOp):
@@ -85,10 +93,8 @@ class OpflowQNN(NeuralNetwork):
         else:
             return (1,)
 
-    def _forward(self, input_data, weights):
-
-        # TODO: efficiently handle batches (for input and weights)
-
+    def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                 ) -> Union[np.ndarray, Dict]:
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
@@ -103,10 +109,9 @@ class OpflowQNN(NeuralNetwork):
         result = np.array(result)
         return result.reshape(self.output_shape)
 
-    def _backward(self, input_data, weights):
-
-        # TODO: efficiently handle batches (for input and weights)
-
+    def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                  ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
+                             Optional[Union[np.ndarray, List[Dict]]]]:
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
@@ -128,6 +133,4 @@ class OpflowQNN(NeuralNetwork):
         weights_grad = np.array(grad[len(input_data):]).reshape(
             *self.output_shape, self.num_weights)
 
-        # input_grad = grad[:len(input)]
-        # weights_grad = grad[len(input):]
         return input_grad, weights_grad

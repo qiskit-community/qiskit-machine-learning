@@ -66,13 +66,13 @@ class NeuralNetwork(ABC):
         """Returns the output shape."""
         return self._output_shape
 
-    def _validate_input(self, input_data):
+    def _validate_input(self, input_data: Optional[Union[List[float], np.ndarray, float]]):
         if input_data is None:
             return None
         input_ = np.array(input_data)
         return input_.reshape(self.num_inputs)
 
-    def _validate_weights(self, weights):
+    def _validate_weights(self, weights: Optional[Union[List[float], np.ndarray, float]]):
         if weights is None:
             return None
         weights_ = np.array(weights)
@@ -102,8 +102,8 @@ class NeuralNetwork(ABC):
 
     def backward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                  weights: Optional[Union[List[float], np.ndarray, float]]
-                 ) -> Tuple[Optional[Union[np.ndarray, Dict[str, float]]],
-                            Optional[Union[np.ndarray, Dict[str, float]]]]:
+                 ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
+                            Optional[Union[np.ndarray, List[Dict]]]]:
         """Backward pass of the network.
 
         Args:
@@ -122,6 +122,6 @@ class NeuralNetwork(ABC):
 
     @abstractmethod
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                  ) -> Tuple[Optional[Union[np.ndarray, Dict[str, float]]],
-                             Optional[Union[np.ndarray, Dict[str, float]]]]:
+                  ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
+                             Optional[Union[np.ndarray, List[Dict]]]]:
         raise NotImplementedError

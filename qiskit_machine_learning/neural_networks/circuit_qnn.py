@@ -12,12 +12,13 @@
 
 """A Sampling Neural Network based on a given quantum circuit."""
 
-from typing import Tuple, Union, List, Callable, Any, Optional
+from typing import Tuple, Union, List, Callable, Any, Optional, Dict
 
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.opflow import Gradient, CircuitSampler, CircuitStateFn
+from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
 from .sampling_neural_network import SamplingNeuralNetwork
@@ -32,7 +33,9 @@ class CircuitQNN(SamplingNeuralNetwork):
                  weight_params: Optional[List[Parameter]] = None,
                  interpret: Union[str, Callable[[Tuple[int, ...]], Any]] = 'tuple',
                  dense: bool = False, output_shape: Union[int, Tuple[int, ...]] = None,
-                 gradient: Gradient = None, quantum_instance: QuantumInstance = None) -> None:
+                 gradient: Gradient = None,
+                 quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None
+                 ) -> None:
         """Initializes the Circuit Quantum Neural Network.
 
         Args:
@@ -76,6 +79,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._interpret = interpret
         self._dense = dense
         self._gradient = gradient
+
+        if isinstance(quantum_instance, (BaseBackend, Backend)):
+            quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 
         # TODO this should not be necessary... but currently prop grads fail otherwise
@@ -88,7 +94,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         params = list(input_params) + list(weight_params)
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
-        # TODO: verify...
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if isinstance(interpret, str):
             if interpret in ('str', 'int'):
@@ -139,16 +144,10 @@ class CircuitQNN(SamplingNeuralNetwork):
         """Returns the interpret option (str) or callable."""
         return self._interpret
 
-    @interpret.setter
-    def interpret(self, interpret: Union[str, Callable[[Tuple[int, ...]], Any]]) -> None:
-        """Sets the interpret option or callable."""
-        # todo: recompute output_shape
-        self._interpret = interpret
-
-    def _interpret_bitstring(self, bitstr):
+    def _interpret_bitstring(self, bitstr: str):
         """Interprets a measured bitstring and returns the required format."""
 
-        def _bit_string_to_tuple(bitstr):
+        def _bit_string_to_tuple(bitstr: str):
             # pylint:disable=consider-using-generator
             return tuple([1 if char == '1' else 0 for char in bitstr])
 
@@ -162,12 +161,8 @@ class CircuitQNN(SamplingNeuralNetwork):
         elif callable(self._interpret):
             return self._interpret(_bit_string_to_tuple(bitstr))
 
-    def _sample(self, input_data, weights):
-
-        # TODO: efficiently handle batches (for input and weights)
-
+    def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
         if self._quantum_instance.is_statevector:
-            # TODO
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
         # combine parameter dictionary
@@ -183,10 +178,8 @@ class CircuitQNN(SamplingNeuralNetwork):
         # return samples
         return np.array([self._interpret_bitstring(b) for b in result.get_memory()])
 
-    def _probabilities(self, input_data, weights):
-
-        # TODO: efficiently handle batches (for input and weights)
-
+    def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
+                       ) -> Union[np.ndarray, Dict[Any, float]]:
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
@@ -196,7 +189,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             self.circuit.bind_parameters(param_values))
         counts = result.get_counts()
         shots = sum(counts.values())
-        prob = {}
+        prob: Dict[Any, float] = {}
         for b, v in counts.items():
             key = self._interpret_bitstring(b)
             prob[key] = prob.get(key, 0.0) + v / shots
@@ -209,20 +202,19 @@ class CircuitQNN(SamplingNeuralNetwork):
         else:
             return prob
 
-    def _probability_gradients(self, input_data, weights):
-
-        # TODO: efficiently handle batches (for input and weights)
-
+    def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
+                               ) -> Tuple[Union[np.ndarray, List[Dict]],
+                                          Union[np.ndarray, List[Dict]]]:
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
-        # grad = self._sampler.convert(self._grad_circuit, param_values).eval()
+
         # TODO: additional "bind_parameters" should not be necessary, seems like a bug to be fixed
         grad = self._sampler.convert(self._grad_circuit, param_values
                                      ).bind_parameters(param_values).eval()
 
         # TODO: map to dictionary to pretend sparse logic --> needs to be fixed in opflow!
-        input_grad_dicts = None
+        input_grad_dicts: List[Dict] = []
         if self.num_inputs > 0:
             input_grad_dicts = [{} for _ in range(self.num_inputs)]
             for i in range(self.num_inputs):
@@ -232,7 +224,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
                                                 np.real(grad[i][k]))
 
-        weights_grad_dicts = None
+        weights_grad_dicts: List[Dict] = []
         if self.num_weights > 0:
             weights_grad_dicts = [{} for _ in range(self.num_weights)]
             for i in range(self.num_weights):

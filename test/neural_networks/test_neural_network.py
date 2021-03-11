@@ -44,7 +44,7 @@ class _NeuralNetwork(NeuralNetwork):
         if self.num_weights > 0:
             weight_grad = np.zeros((*self.output_shape, self.num_weights))
 
-        return (input_grad, weight_grad)
+        return input_grad, weight_grad
 
 
 @ddt

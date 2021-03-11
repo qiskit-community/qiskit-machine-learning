@@ -13,7 +13,7 @@
 """A Sampling Neural Network abstract class."""
 
 from abc import abstractmethod
-from typing import Tuple, Union, List, Optional, Dict
+from typing import Tuple, Union, List, Optional, Dict, Any
 
 import numpy as np
 
@@ -66,8 +66,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
 
     def _backward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                   weights: Optional[Union[List[float], np.ndarray, float]]
-                  ) -> Tuple[Optional[Union[np.ndarray, Dict[str, float]]],
-                             Optional[Union[np.ndarray, Dict[str, float]]]]:
+                  ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
+                             Optional[Union[np.ndarray, List[Dict]]]]:
         """Backward pass of the network. Returns (None, None) in case of samples and the
         corresponding here probability gradients otherwise.
         """
@@ -76,8 +76,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
         else:
             return self.probability_gradients(input_data, weights)
 
-    def sample(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-               weights: Optional[Union[List[float], np.ndarray, float]]) -> np.ndarray:
+    def sample(self, input_data: Union[List[float], np.ndarray, float],
+               weights: Union[List[float], np.ndarray, float]) -> np.ndarray:
         """Samples from the network. Returns an array of samples. Format depends on the set
         interpret function.
 
@@ -94,13 +94,13 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._sample(input_, weights_)
 
     @abstractmethod
-    def _sample(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                weights: Optional[Union[List[float], np.ndarray, float]]) -> np.ndarray:
+    def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
         """Returns samples from the network."""
         raise NotImplementedError
 
-    def probabilities(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                      weights: Optional[Union[List[float], np.ndarray, float]]) -> Dict[str, float]:
+    def probabilities(self, input_data: Union[List[float], np.ndarray, float],
+                      weights: Union[List[float], np.ndarray, float]
+                      ) -> Union[np.ndarray, Dict[str, float]]:
         """Histogram (as dict) of the samples from the network. Returns an array of samples. Format
         depends on the set interpret function.
 
@@ -117,14 +117,15 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._probabilities(input_, weights_)
 
     @abstractmethod
-    def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                       ) -> Dict[str, float]:
+    def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
+                       ) -> Union[np.ndarray, Dict[Any, float]]:
         """Returns the sample probabilities."""
         raise NotImplementedError
 
     def probability_gradients(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                               weights: Optional[Union[List[float], np.ndarray, float]]
-                              ) -> Tuple[Dict[str, float], Dict[str, float]]:
+                              ) -> Tuple[Union[np.ndarray, List[Dict]],
+                                         Union[np.ndarray, List[Dict]]]:
         """Probability gradients of histogram resulting from the network. Format depends on the set
         interpret function. Shape is (input_grad, weights_grad), where each grad has one dict for
         each parameter and each dict contains as value the derivative of the probability of
@@ -143,7 +144,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._probability_gradients(input_, weights_)
 
     @abstractmethod
-    def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                               ) -> Tuple[Dict[str, float], Dict[str, float]]:
+    def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
+                               ) -> Tuple[Union[np.ndarray, List[Dict]],
+                                          Union[np.ndarray, List[Dict]]]:
         """Returns the probability gradients."""
         raise NotImplementedError
