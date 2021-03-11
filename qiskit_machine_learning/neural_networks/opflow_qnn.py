@@ -82,7 +82,7 @@ class OpflowQNN(NeuralNetwork):
             for op_ in op.oplist:
                 shape_ = self._get_output_shape_from_op(op_)
                 shapes += [shape_]
-            if not np.alltrue([shape == shapes[0] for shape in shapes]):
+            if not np.all([shape == shapes[0] for shape in shapes]):
                 raise QiskitMachineLearningError(
                     'Only supports ListOps with children that return the same shape.')
             if shapes[0] == (1,):
