@@ -21,6 +21,9 @@ on:
     branches:
       - master
       - 'stable/**'
+  schedule:
+    # run every day at 1AM
+    - cron: '0 1 * * *'
 
 jobs:
   Checks:
@@ -80,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -121,6 +124,7 @@ jobs:
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
         with:
+          event-name: ${{ github.event_name }}
           python-version: ${{ matrix.python-version }}
       - name: Deprecation Messages
         run: |
@@ -152,18 +156,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-master-dependencies
         if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
-      - name: Install Aqua from Master
-        run: |
-          # Install Aqua for now until tutorials point to new repo
-          pip install https://github.com/Qiskit/qiskit-aqua/archive/master.zip
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
-        shell: bash
-      - name: Install Aqua from Pypi
-        run: |
-          # Install Aqua for now until tutorials point to new repo
-          pip install qiskit-aqua
-        if: ${{ startsWith(github.ref, 'refs/heads/stable') }}
-        shell: bash
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
@@ -174,17 +166,7 @@ jobs:
         env:
           QISKIT_PARALLEL: False
         run: |
-          git clone https://github.com/Qiskit/qiskit-tutorials
-          cd qiskit-tutorials
-          rm -r tutorials/algorithms/
-          rm -r tutorials/chemistry/
-          rm -r tutorials/circuits/
-          rm -r tutorials/circuits_advanced/
-          rm -r tutorials/finance/
-          rm -r tutorials/noise/
-          rm -r tutorials/operators/
-          rm -r tutorials/optimization/
-          rm -r tutorials/simulators/
+          cd tutorials
           sphinx-build -b html . _build/html
           cd _build/html
           mkdir artifacts
@@ -194,7 +176,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: tutorials${{ matrix.python-version }}
-          path: ./qiskit-tutorials/_build/html/artifacts/tutorials.tar.gz
+          path: ./tutorials/_build/html/artifacts/tutorials.tar.gz
   Deprecation_Messages_and_Coverage:
     needs: [Checks, Lint, MachineLearning, Tutorials]
     runs-on: ubuntu-latest

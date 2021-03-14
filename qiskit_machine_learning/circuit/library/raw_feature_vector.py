@@ -165,16 +165,16 @@ class RawFeatureVector(BlueprintCircuit):
         """
         return list(param for param in self._parameters if isinstance(param, ParameterExpression))
 
-    def bind_parameters(self, value_dict):
+    def bind_parameters(self, values):  # pylint: disable=arguments-differ
         """Bind parameters."""
-        if not isinstance(value_dict, dict):
-            value_dict = dict(zip(self.ordered_parameters, value_dict))
-        return super().bind_parameters(value_dict)
+        if not isinstance(values, dict):
+            values = dict(zip(self.ordered_parameters, values))
+        return super().bind_parameters(values)
 
-    def assign_parameters(self, param_dict, inplace=False):
+    def assign_parameters(self, parameters, inplace=False):  # pylint: disable=arguments-differ
         """Call the initialize instruction."""
-        if not isinstance(param_dict, dict):
-            param_dict = dict(zip(self.ordered_parameters, param_dict))
+        if not isinstance(parameters, dict):
+            parameters = dict(zip(self.ordered_parameters, parameters))
 
         if inplace:
             dest = self
@@ -185,8 +185,8 @@ class RawFeatureVector(BlueprintCircuit):
 
         # update the parameter list
         for i, param in enumerate(dest._parameters):
-            if param in param_dict.keys():
-                dest._parameters[i] = param_dict[param]
+            if param in parameters.keys():
+                dest._parameters[i] = parameters[param]
 
         # if fully bound call the initialize instruction
         if len(dest.parameters) == 0:
