@@ -26,10 +26,7 @@ Algorithms for data classification.
    :toctree: ../stubs/
    :nosignatures:
 
-   QSVC
-   QSVM
    VQC
-   SklearnSVM
 
 Distribution Learners
 +++++++++++++++++++++
@@ -38,29 +35,28 @@ Distribution Learners
    :toctree: ../stubs/
    :nosignatures:
 
+   DiscriminativeNetwork
+   GenerativeNetwork
+   NumPyDiscriminator
+   PyTorchDiscriminator
+   QuantumGenerator
    QGAN
-
-Regressors
-+++++++++++
-Algorithms for data regression.
-
-.. autosummary::
-   :toctree: ../stubs/
-   :nosignatures:
-
-   QSVR
 
 """
 
-from .classifiers import QSVC, VQC, QSVM, SklearnSVM
-from .distribution_learners import QGAN
-from .regressors import QSVR
+from .classifiers import VQC
+from .distribution_learners import (DiscriminativeNetwork,
+                                    GenerativeNetwork,
+                                    NumPyDiscriminator,
+                                    PyTorchDiscriminator,
+                                    QuantumGenerator, QGAN)
 
 __all__ = [
-    'QSVC',
     'VQC',
-    'QSVM',
-    'SklearnSVM',
+    'DiscriminativeNetwork',
+    'GenerativeNetwork',
+    'NumPyDiscriminator',
+    'PyTorchDiscriminator',
+    'QuantumGenerator',
     'QGAN',
-    'QSVR'
 ]
