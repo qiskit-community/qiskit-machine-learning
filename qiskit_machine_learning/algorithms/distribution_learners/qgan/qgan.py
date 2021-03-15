@@ -27,8 +27,8 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms.optimizers import Optimizer
 from qiskit.opflow.gradients import Gradient
 from qiskit.utils.validation import validate_min
-from ...datasets.dataset_helper import discretize_and_truncate
-from ...exceptions import QiskitMachineLearningError
+from ....datasets.dataset_helper import discretize_and_truncate
+from ....exceptions import QiskitMachineLearningError
 from .discriminative_network import DiscriminativeNetwork
 from .generative_network import GenerativeNetwork
 from .quantum_generator import QuantumGenerator
