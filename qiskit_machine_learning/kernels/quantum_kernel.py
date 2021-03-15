@@ -15,15 +15,13 @@
 from typing import Optional, Union
 
 import logging
-
 import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import ParameterVector
 from qiskit.providers import Backend, BaseBackend
-
 from qiskit.utils import QuantumInstance
-from qiskit.algorithms import AlgorithmError
+from ...exceptions import QiskitMachineLearningError
 
 logger = logging.getLogger(__name__)
 
@@ -55,10 +53,10 @@ class QuantumKernel:
                      Union[QuantumInstance, BaseBackend, Backend]] = None) -> None:
         """
         Args
-            feature_map:       # parameterized circuit to be used as the feature map
-            enforce_psd:       # project to closest positive semidefinite matrix if x = y
-            batch_size:        # number of circuits to batch together for computation
-            quantum_instance:  # Quantum Instance or Backend
+            feature_map: Parameterized circuit to be used as the feature map
+            enforce_psd: Project to closest positive semidefinite matrix if x = y
+            batch_size: Number of circuits to batch together for computation
+            quantum_instance: Quantum Instance or Backend
         """
         self._feature_map = feature_map
         self._enforce_psd = enforce_psd
@@ -74,9 +72,6 @@ class QuantumKernel:
     def feature_map(self, feature_map: QuantumCircuit):
         """ Sets feature map """
         self._feature_map = feature_map
-        if not hasattr(feature_map, 'ordered_parameters'):
-            self.feature_map.ordered_parameters = sorted(feature_map.parameters,
-                                                         key=lambda p: p.name)
 
     @property
     def quantum_instance(self) -> QuantumInstance:
@@ -103,11 +98,10 @@ class QuantumKernel:
         If y is None and not using `statevector_simulator`, self inner product is calculated.
 
         Args:
-            x:                  # first data point parameter vector
-            y:                  # second data point parameter vector,
-                                  ignored if using statevector simulator
-            measurement:        # include measurement if not using statevector simulator
-            is_statevector_sim: # use state vector simulator
+            x: first data point parameter vector
+            y: second data point parameter vector, ignored if using statevector simulator
+            measurement: include measurement if not using statevector simulator
+            is_statevector_sim: use state vector simulator
 
         Returns:
             QuantumCircuit
@@ -126,7 +120,7 @@ class QuantumKernel:
         c = ClassicalRegister(self._feature_map.num_qubits, 'c')
         qc = QuantumCircuit(q, c)
 
-        x_dict = dict(zip(self._feature_map.ordered_parameters, x))
+        x_dict = dict(zip(self._feature_map.parameters, x))
         psi_x = self._feature_map.assign_parameters(x_dict)
         qc.append(psi_x.to_instruction(), qc.qubits)
 
@@ -139,7 +133,7 @@ class QuantumKernel:
             if y is None:
                 y = x
 
-            y_dict = dict(zip(self._feature_map.ordered_parameters, y))
+            y_dict = dict(zip(self._feature_map.parameters, y))
             psi_y_dag = self._feature_map.assign_parameters(y_dict)
             qc.append(psi_y_dag.to_instruction().inverse(), qc.qubits)
 
@@ -167,7 +161,7 @@ class QuantumKernel:
         r"""
         Construct kernel matrix for given data and feature map
 
-        If y is None, self inner product is calculated.
+        If y_vec is None, self inner product is calculated.
         If using `statevector_simulator`, only build circuits for :math:`\Psi(x)|0\rangle`,
         then perform inner product classically.
 
