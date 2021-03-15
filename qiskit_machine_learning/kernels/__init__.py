@@ -10,7 +10,21 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Quantum Kernel Package """
+"""
+Quantum Kernels (:mod:`qiskit_machine_learning.kernels`)
+
+.. currentmodule:: qiskit_machine_learning.kernels
+
+Quantum Kernels
+===============
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QuantumKernel
+
+"""
 
 from .quantum_kernel import QuantumKernel
 
