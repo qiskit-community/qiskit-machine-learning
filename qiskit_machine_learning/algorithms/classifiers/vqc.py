@@ -29,7 +29,7 @@ from qiskit.algorithms import VariationalAlgorithm
 from qiskit.algorithms.optimizers import Optimizer
 from qiskit.algorithms.variational_forms import VariationalForm
 from ...exceptions import QiskitMachineLearningError
-from ...utils.dataset_helper import split_dataset_to_data_and_labels, map_label_to_class_name
+from ...datasets.dataset_helper import split_dataset_to_data_and_labels, map_label_to_class_name
 
 logger = logging.getLogger(__name__)
 

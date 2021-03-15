@@ -31,6 +31,11 @@ Datasets
    gaussian
    iris
    wine
+   get_feature_dimension
+   get_num_classes
+   split_dataset_to_data_and_labels
+   map_label_to_class_name
+   reduce_dim_to_via_pca
 
 """
 
@@ -40,11 +45,21 @@ from .digits import digits
 from .gaussian import gaussian
 from .iris import iris
 from .wine import wine
+from .dataset_helper import (get_feature_dimension, get_num_classes,
+                             split_dataset_to_data_and_labels,
+                             map_label_to_class_name, reduce_dim_to_via_pca)
 
-__all__ = ['ad_hoc_data',
-           'sample_ad_hoc_data',
-           'breast_cancer',
-           'digits',
-           'gaussian',
-           'iris',
-           'wine']
+__all__ = [
+    'ad_hoc_data',
+    'sample_ad_hoc_data',
+    'breast_cancer',
+    'digits',
+    'gaussian',
+    'iris',
+    'wine',
+    'get_feature_dimension',
+    'get_num_classes',
+    'split_dataset_to_data_and_labels',
+    'map_label_to_class_name',
+    'reduce_dim_to_via_pca'
+]

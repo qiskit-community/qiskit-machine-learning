@@ -12,6 +12,18 @@
 
 """ Distribution Learners Package """
 
-from .qgan import QGAN
+from .qgan import (DiscriminativeNetwork,
+                   GenerativeNetwork,
+                   NumPyDiscriminator,
+                   PyTorchDiscriminator,
+                   QuantumGenerator,
+                   QGAN)
 
-__all__ = ['QGAN']
+__all__ = [
+    'DiscriminativeNetwork',
+    'GenerativeNetwork',
+    'NumPyDiscriminator',
+    'PyTorchDiscriminator',
+    'QuantumGenerator',
+    'QGAN',
+]

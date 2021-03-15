@@ -17,6 +17,6 @@ runs:
   using: "composite"
   steps: 
     - run : |
-        pip install -e .[torch,cvx]
+        pip install -e .[torch]
         pip install -U -c constraints.txt -r requirements-dev.txt
       shell: bash
