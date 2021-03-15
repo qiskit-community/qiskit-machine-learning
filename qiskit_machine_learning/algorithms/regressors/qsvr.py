@@ -24,11 +24,13 @@ from ...kernels.quantum_kernel import QuantumKernel
 class QSVR(SVR):
     r"""Quantum Support Vector Regressor.
 
-        **Example**
-        .. code-block::
-            qsvr = QSVR(feature_map=map, quantum_instance=backend)
-            qsvr.fit(sample_train,label_train)
-            qsvr.predict(sample_test)
+    **Example**
+
+    .. code-block::
+
+        qsvr = QSVR(feature_map=map, quantum_instance=backend)
+        qsvr.fit(sample_train,label_train)
+        qsvr.predict(sample_test)
     """
 
     def __init__(self,

@@ -24,11 +24,13 @@ from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 class QSVC(SVC):
     r"""Quantum Support Vector Classifier.
 
-        **Example**
-        .. code-block::
-            qsvc = QSVC(feature_map=map, quantum_instance=backend)
-            qsvc.fit(sample_train,label_train)
-            qsvc.predict(sample_test)
+    **Example**
+
+    .. code-block::
+
+        qsvc = QSVC(feature_map=map, quantum_instance=backend)
+        qsvc.fit(sample_train,label_train)
+        qsvc.predict(sample_test)
     """
 
     def __init__(self,
