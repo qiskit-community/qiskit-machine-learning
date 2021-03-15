@@ -23,8 +23,8 @@ from qiskit.utils import algorithm_globals, QuantumInstance
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.algorithms.optimizers import CG, COBYLA
 from qiskit.opflow.gradients import Gradient
-from qiskit_machine_learning.algorithms import QGAN
-from qiskit_machine_learning.neural_networks import NumPyDiscriminator, PyTorchDiscriminator
+from qiskit_machine_learning.algorithms import (NumPyDiscriminator,
+                                                PyTorchDiscriminator, QGAN)
 
 
 class TestQGAN(QiskitMachineLearningTestCase):

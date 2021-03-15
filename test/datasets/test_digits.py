@@ -12,6 +12,7 @@
 
 """ Test Digits"""
 
+import unittest
 from test import QiskitMachineLearningTestCase
 import json
 import numpy as np
@@ -51,3 +52,7 @@ class TestDigits(QiskitMachineLearningTestCase):
         for key, _ in test_input.items():
             np.testing.assert_allclose(test_input[key].tolist(), test_input_ref[key], rtol=1e-01)
         np.testing.assert_array_equal(class_labels, list(training_input.keys()))
+
+
+if __name__ == '__main__':
+    unittest.main()

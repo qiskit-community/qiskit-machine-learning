@@ -37,9 +37,7 @@ Submodules
    algorithms
    circuit.library
    datasets
-   multiclass_extensions
    neural_networks
-   utils
 
 """
 
