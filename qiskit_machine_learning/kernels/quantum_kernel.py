@@ -205,9 +205,6 @@ class QuantumKernel:
         if y_vec is not None and y_vec.ndim == 1:
             y_vec = np.reshape(y_vec, (-1, 2))
 
-        # TODO: update number of qubits --> should allow setting the number of params too!
-        self._feature_map.num_qubits = x_vec.shape[1]
-
         if x_vec.shape[1] != self._feature_map.num_parameters:
             raise ValueError("x_vec and class feature map incompatible dimensions.\n" +
                              "x_vec has %s dimensions, but feature map has %s." %
