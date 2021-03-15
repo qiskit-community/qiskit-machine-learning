@@ -67,6 +67,7 @@ extensions = [
     'sphinx_autodoc_typehints',
     'reno.sphinxext',
     'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
 ]
 html_static_path = ['_static']
 templates_path = ['_templates']
@@ -148,3 +149,7 @@ html_theme_options = {
 }
 
 autoclass_content = 'both'
+
+intersphinx_mapping = {
+    'sklearn': ('http://scikit-learn.org/stable', None),
+}

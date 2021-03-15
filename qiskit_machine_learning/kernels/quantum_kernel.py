@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020.
+# (C) Copyright IBM 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,7 +21,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import ParameterVector
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
-from ...exceptions import QiskitMachineLearningError
+from ..exceptions import QiskitMachineLearningError
 
 logger = logging.getLogger(__name__)
 
@@ -175,15 +175,16 @@ class QuantumKernel:
             2D matrix, NxM
 
         Raises:
-            AlgorithmError:
+            QiskitMachineLearningError:
                 - A quantum instance or backend has not been provided to the class
             ValueError:
                 - x_vec and/or y_vec are not one or two dimensional arrays
                 - x_vec and/or y_vec have incompatible dimension with feature map
         """
         if self._quantum_instance is None:
-            raise AlgorithmError("A QuantumInstance or Backend "
-                            "must be supplied to run the quantum kernel.")
+            raise QiskitMachineLearningError(
+                "A QuantumInstance or Backend "
+                "must be supplied to run the quantum kernel.")
         if isinstance(self._quantum_instance, (BaseBackend, Backend)):
             self._quantum_instance = QuantumInstance(self._quantum_instance)
 

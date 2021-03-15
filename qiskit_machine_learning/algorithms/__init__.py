@@ -26,6 +26,7 @@ Algorithms for data classification.
    :toctree: ../stubs/
    :nosignatures:
 
+   QSVC
    VQC
 
 Distribution Learners
@@ -44,7 +45,8 @@ Distribution Learners
 
 """
 
-from .classifiers import VQC
+from .classifiers import QSVC, VQC
+from .regressors import QSVR
 from .distribution_learners import (DiscriminativeNetwork,
                                     GenerativeNetwork,
                                     NumPyDiscriminator,
