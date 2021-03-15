@@ -27,12 +27,12 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms.optimizers import Optimizer
 from qiskit.opflow.gradients import Gradient
 from qiskit.utils.validation import validate_min
-from ...neural_networks.discriminative_network import DiscriminativeNetwork
-from ...neural_networks.generative_network import GenerativeNetwork
-from ...neural_networks.quantum_generator import QuantumGenerator
-from ...neural_networks.numpy_discriminator import NumPyDiscriminator
+from ...datasets.dataset_helper import discretize_and_truncate
 from ...exceptions import QiskitMachineLearningError
-from ...utils.dataset_helper import discretize_and_truncate
+from .discriminative_network import DiscriminativeNetwork
+from .generative_network import GenerativeNetwork
+from .quantum_generator import QuantumGenerator
+from .numpy_discriminator import NumPyDiscriminator
 
 logger = logging.getLogger(__name__)
 

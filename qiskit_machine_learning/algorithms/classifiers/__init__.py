@@ -13,10 +13,7 @@
 """ Classifiers Package """
 
 from .vqc import VQC
-from .qsvm import QSVM
-from .sklearn_svm import SklearnSVM
 
 __all__ = [
-    'VQC',
-    'QSVM',
-    'SklearnSVM']
+    'VQC'
+]

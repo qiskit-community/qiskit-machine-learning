@@ -24,7 +24,7 @@ from qiskit.utils import algorithm_globals, QuantumInstance
 from qiskit.algorithms.optimizers import ADAM, Optimizer
 from qiskit.opflow.gradients import Gradient
 from qiskit.opflow import CircuitStateFn
-from ..exceptions import QiskitMachineLearningError
+from ...exceptions import QiskitMachineLearningError
 from .generative_network import GenerativeNetwork
 from .discriminative_network import DiscriminativeNetwork
 
