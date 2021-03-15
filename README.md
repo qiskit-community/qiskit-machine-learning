@@ -32,8 +32,6 @@ To do this follow the instructions in the
   package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). PyTorch
   being installed will enable the neural networks `PyTorchDiscriminator` component to be used with
   the QGAN algorithm.
-* **CVXPY**, may be installed using command `pip install 'qiskit-machine-learning[cvx]'` to enable use of the
-  `QSVM` and the classical `SklearnSVM` algorithms.
 
 ### Creating Your First Machine Learning Programming Experiment in Qiskit
 

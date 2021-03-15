@@ -12,6 +12,7 @@
 
 """ Test Gaussian """
 
+import unittest
 from test import QiskitMachineLearningTestCase
 import numpy as np
 from qiskit_machine_learning.datasets import gaussian
@@ -28,3 +29,7 @@ class TestGaussian(QiskitMachineLearningTestCase):
                                          n=2,
                                          plot_data=False)
         np.testing.assert_array_equal(class_labels, ['A', 'B'])
+
+
+if __name__ == '__main__':
+    unittest.main()
