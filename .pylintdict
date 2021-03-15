@@ -10,7 +10,6 @@ codeword
 contravariance
 currentmodule
 cvs
-cvxpy
 data's
 datapoints
 dataset
@@ -30,6 +29,7 @@ hashable
 hoc
 innerproduct
 kwargs
+langle
 ldots
 len
 maxiter
@@ -46,7 +46,9 @@ np
 numpy
 nxd
 nxk
+nxm
 nxn
+mxd
 opflow
 optim
 optimizer's
@@ -56,6 +58,7 @@ parameterexpression
 parametrized
 params
 pca
+precomputed
 probs
 py
 pytorch
@@ -66,13 +69,19 @@ qiskit
 qiskit's
 qnn
 qp
+qsvc
+qsvr
 qubit
 qubits
+rangle
 rbf
 readme
+Regressor
+Regressors
 renormalize
 scikit
 scipy
+semidefinite
 sigmoid
 sklearn
 statevector
@@ -88,6 +97,7 @@ toctree
 todo
 transpile
 univariate
+unsymmetric
 utils
 varform
 variational

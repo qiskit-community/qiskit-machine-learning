@@ -10,12 +10,20 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Classifiers Package """
+""" QGAN Package """
 
-from .qsvc import QSVC
-from .vqc import VQC
+from .discriminative_network import DiscriminativeNetwork
+from .generative_network import GenerativeNetwork
+from .numpy_discriminator import NumPyDiscriminator
+from .pytorch_discriminator import PyTorchDiscriminator
+from .quantum_generator import QuantumGenerator
+from .qgan import QGAN
 
 __all__ = [
-    'QSVC',
-    'VQC'
+    'DiscriminativeNetwork',
+    'GenerativeNetwork',
+    'NumPyDiscriminator',
+    'PyTorchDiscriminator',
+    'QuantumGenerator',
+    'QGAN',
 ]

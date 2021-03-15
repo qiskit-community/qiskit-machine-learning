@@ -17,8 +17,9 @@ from sklearn.svm import SVR
 
 from qiskit import QuantumCircuit
 from qiskit.providers import Backend, BaseBackend
-from qiskit.aqua import QuantumInstance
-from qiskit.ml.algorithms import QuantumKernel
+from qiskit.utils import QuantumInstance
+from ...kernels.quantum_kernel import QuantumKernel
+
 
 class QSVR(SVR):
     r"""Quantum Support Vector Regressor.
@@ -33,10 +34,10 @@ class QSVR(SVR):
     def __init__(self,
                  feature_map: QuantumCircuit,
                  quantum_instance:
-                    Union[QuantumInstance, BaseBackend, Backend],
+                 Union[QuantumInstance, BaseBackend, Backend],
                  *args, **kwargs) -> None:
 
         self._qkernel = QuantumKernel(feature_map=feature_map,
-                                     quantum_instance=quantum_instance)
+                                      quantum_instance=quantum_instance)
 
         super().__init__(kernel=self._qkernel.evaluate, *args, **kwargs)
