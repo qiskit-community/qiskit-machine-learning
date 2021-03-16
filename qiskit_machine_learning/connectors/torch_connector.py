@@ -85,7 +85,7 @@ class TorchConnector(Module):
 
     def __init__(self, nn: NeuralNetwork):
         """Initializes the TorchConnector."""
-        super(TorchConnector, self).__init__()
+        super().__init__()
         self._nn = nn
         self._weights = TorchParam(Tensor(nn.num_weights))
         self._weights.data.uniform_(-1, 1)  # TODO: enable more reasonable initialization
