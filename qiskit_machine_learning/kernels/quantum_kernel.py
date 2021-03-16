@@ -19,6 +19,7 @@ import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import ParameterVector
+from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
 from ..exceptions import QiskitMachineLearningError
@@ -46,19 +47,20 @@ class QuantumKernel:
     """
 
     def __init__(self,
-                 feature_map: QuantumCircuit,
+                 feature_map: QuantumCircuit = None,
                  enforce_psd: bool = False,
                  batch_size: int = 1000,
                  quantum_instance: Optional[
                      Union[QuantumInstance, BaseBackend, Backend]] = None) -> None:
         """
         Args
-            feature_map: Parameterized circuit to be used as the feature map
+            feature_map: Parameterized circuit to be used as the feature map. If None is given,
+                the `ZZFeatureMap` is used with two qubits.
             enforce_psd: Project to closest positive semidefinite matrix if x = y
             batch_size: Number of circuits to batch together for computation
             quantum_instance: Quantum Instance or Backend
         """
-        self._feature_map = feature_map
+        self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
