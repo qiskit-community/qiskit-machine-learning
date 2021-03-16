@@ -67,8 +67,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         """
 
         # TODO: currently cannot handle statevector simulator, at least throw exception
-
+        # TODO: need to be able ot handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
+
         self._circuit = circuit.copy()
         if quantum_instance.is_statevector:
             if len(self._circuit.clbits) > 0:
@@ -97,42 +98,54 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
         # analyze output shape
-        if dense:
+        output_shape_: Union[int, Tuple[int, ...]] = -1
+        if return_samples:
+            # TODO: handle case of statevector --> either sample or raise exception
+            if interpret == 'int' or interpret == 'str':
+                output_shape_ = (self.quantum_instance.run_config.shots,)
+            elif interpret == 'tuple':
+                output_shape_ = (self.quantum_instance.run_config.shots, self.circuit.num_qubits)
+            elif callable(interpret):
+                if output_shape:
+                    if isinstance(output_shape_, int):
+                        output_shape_ = (self.quantum_instance.run_config.shots, output_shape_)
+                    else:
+                        output_shape_ = (self.quantum_instance.run_config.shots, *output_shape_)
+                else:
+                    output_shape_ = (self.quantum_instance.run_config.shots,)
+            else:
+                raise QiskitMachineLearningError('Invalid parameter for "interpret".')
+        elif dense:
             if interpret == 'int':
-                output_shape_ = (1, 2**circuit.num_qubits)
+                output_shape_ = (2**circuit.num_qubits,)
             elif callable(interpret):
                 if output_shape is None:
                     raise QiskitMachineLearningError(
                         'Dense output with callable interpret requires output_shape != None!')
                 if isinstance(output_shape, int):
-                    output_shape_ = (1, output_shape)
+                    output_shape_ = (output_shape,)
                 else:
                     output_shape_ = output_shape
             else:
                 raise QiskitMachineLearningError(
                     'Dense output only works with interpret="int" or callable!')
         else:
-            # TODO: needs to be validated
-            output_shape_: Union[int, Tuple[int, ...]] = -1
             if isinstance(interpret, str):
-                if interpret in ('str', 'int'):
-                    output_shape_ = (quantum_instance.run_config.shots, 1)
-                elif interpret == 'tuple':
-                    output_shape_ = (quantum_instance.run_config.shots, self.circuit.num_qubits)
+                if interpret in ('str', 'int', 'tuple'):
+                    output_shape_ = (2**self.circuit.num_qubits, )
                 else:
                     raise QiskitMachineLearningError(f'Unknown interpret string: {interpret}!')
             elif callable(interpret):
-                # parameter: output_shape: Union[int, Tuple[int, ...]]
                 if output_shape is None:
-                    output_shape_ = (quantum_instance.run_config.shots, 1)
+                    raise QiskitMachineLearningError('Need to set output shape in case of ' +
+                                                     'callable interpret.')
+                if isinstance(output_shape, int):
+                    output_shape_ = (output_shape, )
+                elif isinstance(output_shape, tuple):
+                    output_shape_ = output_shape
                 else:
-                    if isinstance(output_shape, int):
-                        output_shape_ = (quantum_instance.run_config.shots, output_shape)
-                    elif isinstance(output_shape, tuple):
-                        output_shape_ = (quantum_instance.run_config.shots, *output_shape)
-                    else:
-                        raise QiskitMachineLearningError(
-                            f'Unsupported output_shape type: {interpret}!')
+                    raise QiskitMachineLearningError(
+                        f'Unsupported output_shape type: {interpret}!')
             else:
                 raise QiskitMachineLearningError(f'Unsupported interpret value: {interpret}!')
 
@@ -217,7 +230,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         if self._dense:
             prob_array = np.zeros(self._output_shape)
             for k, prob_value in prob.items():
-                prob_array[0, k] = prob_value
+                prob_array[k] = prob_value
             return prob_array
         else:
             return prob
@@ -259,12 +272,12 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_grad_array = np.zeros((*self.output_shape, self.num_inputs))
             for i in range(self.num_inputs):
                 for k, grad in input_grad_dicts[i].items():
-                    input_grad_array[0, k, i] = grad
+                    input_grad_array[k, i] = grad
 
             weights_grad_array = np.zeros((*self.output_shape, self.num_weights))
             for i in range(self.num_weights):
                 for k, grad in weights_grad_dicts[i].items():
-                    weights_grad_array[0, k, i] = grad
+                    weights_grad_array[k, i] = grad
 
             return input_grad_array, weights_grad_array
         else:

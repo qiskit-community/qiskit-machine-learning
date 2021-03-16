@@ -19,6 +19,7 @@ from torch.autograd import Function
 from torch.nn import Module, Parameter as TorchParam
 
 from ..neural_networks import NeuralNetwork
+from ..exceptions import QiskitMachineLearningError
 
 
 class TorchConnector(Module):
@@ -35,10 +36,15 @@ class TorchConnector(Module):
                 weights: weight input (torch tensor)
                 qnn: operator QNN
             """
+
             # TODO: efficiently handle batches (for input and weights)
-            input_ = input.flatten()
-            weights_ = weights.flatten()
-            result = qnn.forward(input_.numpy(), weights_.numpy())
+            # validate input shape
+            if input.shape[-1] != qnn.num_inputs:
+                raise QiskitMachineLearningError(
+                    f'Invalid input dimension! Received {input.shape} and ' +
+                    f'expected input compatible to {qnn.num_inputs}')
+
+            result = qnn.forward(input.numpy(), weights.numpy())
             result = np.array(result)
             if len(result.shape) == 0:
                 result = np.array([result])
@@ -55,16 +61,19 @@ class TorchConnector(Module):
                 grad_output: previous gradient
              """
 
-            # TODO: efficiently handle batches (for input and weights)
-
             # get context data
             input, weights = ctx.saved_tensors
-            input_ = input.flatten()
-            weights_ = weights.flatten()
             qnn = ctx.qnn
 
+            # TODO: efficiently handle batches (for input and weights)
+            # validate input shape
+            if input.shape[-1] != qnn.num_inputs:
+                raise QiskitMachineLearningError(
+                    f'Invalid input dimension! Received {input.shape} and ' +
+                    f' expected input compatible to {qnn.num_inputs}')
+
             # evaluate QNN gradient
-            input_grad, weights_grad = qnn.backward(input_.numpy(), weights_.numpy())
+            input_grad, weights_grad = qnn.backward(input.numpy(), weights.numpy())
             if input_grad is not None:
                 if np.prod(input_grad.shape) == 0:
                     input_grad = None
