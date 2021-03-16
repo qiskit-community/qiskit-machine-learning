@@ -63,13 +63,12 @@ setuptools.setup(
         "Topic :: Scientific/Engineering"
     ),
     keywords='qiskit sdk quantum machine learning ml',
-    packages=setuptools.find_namespace_packages(include=['qiskit_machine_learning.*']),
+    packages=setuptools.find_packages(include=['qiskit_machine_learning','qiskit_machine_learning.*']),
     install_requires=requirements,
     include_package_data=True,
     python_requires=">=3.6",
     extras_require={
         'torch': ["torch"],
-        'cvx': ['cvxpy>1.0.0,!=1.1.0,!=1.1.1,!=1.1.2,!=1.1.8'],
     },
     zip_safe=False
 )

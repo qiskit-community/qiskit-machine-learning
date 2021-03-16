@@ -12,10 +12,10 @@
 
 """ Test Ad Hoc Data """
 
+import unittest
 from test import QiskitMachineLearningTestCase
 import numpy as np
-from qiskit_machine_learning.datasets import ad_hoc_data
-from qiskit_machine_learning.utils import split_dataset_to_data_and_labels
+from qiskit_machine_learning.datasets import ad_hoc_data, split_dataset_to_data_and_labels
 
 
 class TestAdHocData(QiskitMachineLearningTestCase):
@@ -36,3 +36,7 @@ class TestAdHocData(QiskitMachineLearningTestCase):
         np.testing.assert_array_equal(datapoints[1].tolist(),
                                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         self.assertDictEqual(class_to_label, {'A': 0, 'B': 1})
+
+
+if __name__ == '__main__':
+    unittest.main()

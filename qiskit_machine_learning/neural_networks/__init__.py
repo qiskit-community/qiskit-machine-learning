@@ -30,8 +30,7 @@ Neural Network Base Classes
    :toctree: ../stubs/
    :nosignatures:
 
-   DiscriminativeNetwork
-   GenerativeNetwork
+   NeuralNetwork
 
 Neural Networks
 ===============
@@ -40,22 +39,23 @@ Neural Networks
    :toctree: ../stubs/
    :nosignatures:
 
-   NumPyDiscriminator
-   PyTorchDiscriminator
-   QuantumGenerator
+   CircuitQNN
+   NeuralNetwork
+   SamplingNeuralNetwork
+   TwoLayerQNN
 
 """
 
-from .generative_network import GenerativeNetwork
-from .quantum_generator import QuantumGenerator
-from .discriminative_network import DiscriminativeNetwork
-from .numpy_discriminator import NumPyDiscriminator
-from .pytorch_discriminator import PyTorchDiscriminator
+from .circuit_qnn import CircuitQNN
+from .neural_network import NeuralNetwork
+from .opflow_qnn import OpflowQNN
+from .sampling_neural_network import SamplingNeuralNetwork
+from .two_layer_qnn import TwoLayerQNN
 
 __all__ = [
-    'DiscriminativeNetwork',
-    'GenerativeNetwork',
-    'QuantumGenerator',
-    'NumPyDiscriminator',
-    'PyTorchDiscriminator'
+    'CircuitQNN',
+    'NeuralNetwork',
+    'OpflowQNN',
+    'SamplingNeuralNetwork',
+    'TwoLayerQNN'
 ]

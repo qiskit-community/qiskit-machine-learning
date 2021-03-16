@@ -10,7 +10,6 @@ codeword
 contravariance
 currentmodule
 cvs
-cvxpy
 data's
 datapoints
 dataset
@@ -26,10 +25,12 @@ eval
 formatter
 gaussian
 getter
+hashable
 hoc
 innerproduct
 kwargs
 ldots
+len
 maxiter
 minibatch
 minibatched
@@ -45,9 +46,11 @@ numpy
 nxd
 nxk
 nxn
+opflow
 optim
 optimizer's
 optimizers
+otimes
 parameterexpression
 parametrized
 params
@@ -60,6 +63,7 @@ qasm
 qc
 qiskit
 qiskit's
+qnn
 qp
 qubit
 qubits
@@ -80,6 +84,7 @@ sx
 sy
 terra
 toctree
+todo
 transpile
 univariate
 utils
