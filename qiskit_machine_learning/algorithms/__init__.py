@@ -54,6 +54,7 @@ from .distribution_learners import (DiscriminativeNetwork,
                                     QuantumGenerator, QGAN)
 
 __all__ = [
+    'QSVC',
     'VQC',
     'DiscriminativeNetwork',
     'GenerativeNetwork',

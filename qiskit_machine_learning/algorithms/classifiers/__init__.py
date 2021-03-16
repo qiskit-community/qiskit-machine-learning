@@ -12,6 +12,7 @@
 
 """ Classifiers Package """
 
+from .qsvc import QSVC
 from .vqc import VQC
 
 __all__ = [
