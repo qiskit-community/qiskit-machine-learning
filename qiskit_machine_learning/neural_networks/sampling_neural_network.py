@@ -35,9 +35,9 @@ class SamplingNeuralNetwork(NeuralNetwork):
             num_weights: The number of trainable weights.
             output_shape: The shape of the output.
             return_samples: Determines whether the network returns a batch of samples or a sparse
-                vector (dictionary) of probabilities in its forward pass. In case of probabilities,
-                the backward pass returns the probability gradients, while it returns (None, None)
-                in the case of samples.
+                vector (dictionary) of probabilities (default) in its forward pass. In case of
+                probabilities, the backward pass returns the probability gradients, while it
+                returns (None, None) in the case of samples.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """

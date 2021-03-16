@@ -15,7 +15,6 @@ to map the input data to a quantum states and a second one representing a variat
 be trained to solve a particular tasks."""
 from typing import Optional, Union
 
-import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.opflow import PauliSumOp, StateFn, OperatorBase
@@ -44,31 +43,24 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
+            quantum_instance: The quantum instance to evaluate the networks.
         """
 
+        # set number of qubits, feature map, and variational form
         self.num_qubits = num_qubits
-
-        # TODO: circuits need to have well-defined parameter order!
         self.feature_map = feature_map if feature_map else ZZFeatureMap(num_qubits)
-        idx = np.argsort([p.name for p in self.feature_map.parameters])
-        input_params = list(self.feature_map.parameters)
-        input_params = [input_params[i] for i in idx]
-
-        # TODO: circuits need to have well-defined parameter order!
         self.var_form = var_form if var_form else RealAmplitudes(num_qubits)
-        idx = np.argsort([p.name for p in self.var_form.parameters])
-        weight_params = list(self.var_form.parameters)
-        weight_params = [weight_params[i] for i in idx]
 
         # construct circuit
         self.qc = QuantumCircuit(num_qubits)
         self.qc.append(self.feature_map, range(num_qubits))
         self.qc.append(self.var_form, range(num_qubits))
 
-        # construct observable
+        # set observable
         self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits, 1)])
 
-        # combine all to operator
+        # combine everything to operator
         operator = ~StateFn(self.observable) @ StateFn(self.qc)
 
-        super().__init__(operator, input_params, weight_params, quantum_instance=quantum_instance)
+        super().__init__(operator, self.feature_map.parameters, self.var_form.parameters,
+                         quantum_instance=quantum_instance)

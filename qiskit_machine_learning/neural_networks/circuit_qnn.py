@@ -33,7 +33,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                  weight_params: Optional[List[Parameter]] = None,
                  interpret: Union[str, Callable[[Tuple[int, ...]], Any]] = 'int',
                  dense: bool = False, output_shape: Union[int, Tuple[int, ...]] = None,
-                 gradient: Gradient = None,
+                 return_samples: bool = False, gradient: Gradient = None,
                  quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None
                  ) -> None:
         """Initializes the Circuit Quantum Neural Network.
@@ -52,10 +52,12 @@ class CircuitQNN(SamplingNeuralNetwork):
             dense: Whether to return a dense (array with 'output_shape') or sparse (dict)
                 probabilities. Dense probabilities require "interpret == 'int'" where the integer
                 will be the index in the array of probabilities.
-                TODO: what about "return_samples"??? (cf. base class)
-                TODO: update return types to handle dictionaries and arrays
             output_shape: Gives the output_shape in case of a custom interpret callable. If this is
                 None, the output_shape is set to 1.
+            return_samples: Determines whether the network returns a batch of samples or a sparse
+                vector (dictionary) of probabilities (default) in its forward pass. In case of
+                probabilities, the backward pass returns the probability gradients, while it
+                returns (None, None) in the case of samples.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits.
 
@@ -95,14 +97,13 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
         # analyze output shape
-        # TODO: what about samples? do we need SamplingNeuralNetwork?
         if dense:
             if interpret == 'int':
                 output_shape_ = (1, 2**circuit.num_qubits)
             elif callable(interpret):
                 if output_shape is None:
                     raise QiskitMachineLearningError(
-                        'Dense output with callable interpret requires output_shape to be not None!')
+                        'Dense output with callable interpret requires output_shape != None!')
                 if isinstance(output_shape, int):
                     output_shape_ = (1, output_shape)
                 else:
@@ -135,7 +136,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             else:
                 raise QiskitMachineLearningError(f'Unsupported interpret value: {interpret}!')
 
-        super().__init__(len(self._input_params), len(self._weight_params), output_shape_)
+        super().__init__(len(self._input_params), len(self._weight_params), output_shape_,
+                         return_samples)
 
     @property
     def circuit(self) -> QuantumCircuit:
