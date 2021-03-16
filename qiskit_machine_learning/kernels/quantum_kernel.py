@@ -35,6 +35,7 @@ class QuantumKernel:
     through the use of a kernel function:
 
     .. math::
+
         K(x, y) = \langle f(x), f(y)\rangle.
 
     Here K is the kernel function, x, y are n dimensional inputs. f is a map from n-dimension
@@ -53,7 +54,7 @@ class QuantumKernel:
                  quantum_instance: Optional[
                      Union[QuantumInstance, BaseBackend, Backend]] = None) -> None:
         """
-        Args
+        Args:
             feature_map: Parameterized circuit to be used as the feature map. If None is given,
                 the `ZZFeatureMap` is used with two qubits.
             enforce_psd: Project to closest positive semidefinite matrix if x = y
