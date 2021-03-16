@@ -31,7 +31,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def __init__(self, circuit: QuantumCircuit,
                  input_params: Optional[List[Parameter]] = None,
                  weight_params: Optional[List[Parameter]] = None,
-                 interpret: Union[str, Callable[[Tuple[int, ...]], Any]] = 'tuple',
+                 interpret: Union[str, Callable[[Tuple[int, ...]], Any]] = 'int',
                  dense: bool = False, output_shape: Union[int, Tuple[int, ...]] = None,
                  gradient: Gradient = None,
                  quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None
@@ -43,9 +43,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
             interpret: Determines the output format, possible choices are:
-                * 'tuple' (default): a tuple of binary values, e.g. (0, 1, 0, 1, 0)
+                * 'int' (default): an integer corresponding to the bitstring, e.g. '01010' -> 10
                 * 'str': a bitstring of type str, e.g. '01010'
-                * 'int': an integer corresponding to the bitstring, e.g. 10
+                * 'tuple': a tuple of binary values, e.g. (0, 1, 0, 1, 0)
                 * a custom callable that takes a sample of type 'tuple' and maps it to some other
                 output, output should be hashable for sparse representation of probabilities
                 and probability gradients.
@@ -94,28 +94,46 @@ class CircuitQNN(SamplingNeuralNetwork):
         params = list(input_params) + list(weight_params)
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
-        output_shape_: Union[int, Tuple[int, ...]] = -1
-        if isinstance(interpret, str):
-            if interpret in ('str', 'int'):
-                output_shape_ = (quantum_instance.run_config.shots, 1)
-            elif interpret == 'tuple':
-                output_shape_ = (quantum_instance.run_config.shots, self.circuit.num_qubits)
-            else:
-                raise QiskitMachineLearningError(f'Unknown interpret string: {interpret}!')
-        elif callable(interpret):
-            # parameter: output_shape: Union[int, Tuple[int, ...]]
-            if output_shape is None:
-                output_shape_ = (quantum_instance.run_config.shots, 1)
-            else:
-                if isinstance(output_shape, int):
-                    output_shape_ = (quantum_instance.run_config.shots, output_shape)
-                elif isinstance(output_shape, tuple):
-                    output_shape_ = (quantum_instance.run_config.shots, *output_shape)
-                else:
+        # analyze output shape
+        # TODO: what about samples? do we need SamplingNeuralNetwork?
+        if dense:
+            if interpret == 'int':
+                output_shape_ = (1, 2**circuit.num_qubits)
+            elif callable(interpret):
+                if output_shape is None:
                     raise QiskitMachineLearningError(
-                        f'Unsupported output_shape type: {interpret}!')
+                        'Dense output with callable interpret requires output_shape to be not None!')
+                if isinstance(output_shape, int):
+                    output_shape_ = (1, output_shape)
+                else:
+                    output_shape_ = output_shape
+            else:
+                raise QiskitMachineLearningError(
+                    'Dense output only works with interpret="int" or callable!')
         else:
-            raise QiskitMachineLearningError(f'Unsupported interpret value: {interpret}!')
+            # TODO: needs to be validated
+            output_shape_: Union[int, Tuple[int, ...]] = -1
+            if isinstance(interpret, str):
+                if interpret in ('str', 'int'):
+                    output_shape_ = (quantum_instance.run_config.shots, 1)
+                elif interpret == 'tuple':
+                    output_shape_ = (quantum_instance.run_config.shots, self.circuit.num_qubits)
+                else:
+                    raise QiskitMachineLearningError(f'Unknown interpret string: {interpret}!')
+            elif callable(interpret):
+                # parameter: output_shape: Union[int, Tuple[int, ...]]
+                if output_shape is None:
+                    output_shape_ = (quantum_instance.run_config.shots, 1)
+                else:
+                    if isinstance(output_shape, int):
+                        output_shape_ = (quantum_instance.run_config.shots, output_shape)
+                    elif isinstance(output_shape, tuple):
+                        output_shape_ = (quantum_instance.run_config.shots, *output_shape)
+                    else:
+                        raise QiskitMachineLearningError(
+                            f'Unsupported output_shape type: {interpret}!')
+            else:
+                raise QiskitMachineLearningError(f'Unsupported interpret value: {interpret}!')
 
         super().__init__(len(self._input_params), len(self._weight_params), output_shape_)
 
@@ -233,17 +251,18 @@ class CircuitQNN(SamplingNeuralNetwork):
                                                      ).format(k))
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
                                                   np.real(grad[i + self.num_inputs][k]))
+        # TODO: end of mapping to dictionary ------------------------------------------------
 
         if self._dense:
-            input_grad_array = np.zeros((self.num_inputs, *self.output_shape))
+            input_grad_array = np.zeros((*self.output_shape, self.num_inputs))
             for i in range(self.num_inputs):
                 for k, grad in input_grad_dicts[i].items():
-                    input_grad_array[i, 0, k] = grad
+                    input_grad_array[0, k, i] = grad
 
-            weights_grad_array = np.zeros((self.num_weights, *self.output_shape))
+            weights_grad_array = np.zeros((*self.output_shape, self.num_weights))
             for i in range(self.num_weights):
                 for k, grad in weights_grad_dicts[i].items():
-                    weights_grad_array[i, 0, k] = grad
+                    weights_grad_array[0, k, i] = grad
 
             return input_grad_array, weights_grad_array
         else:
