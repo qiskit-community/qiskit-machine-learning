@@ -32,7 +32,7 @@ class TwoLayerQNN(OpflowQNN):
 
     def __init__(self, num_qubits: int, feature_map: QuantumCircuit = None,
                  var_form: QuantumCircuit = None,
-                 observable: Union[QuantumCircuit, OperatorBase] = None,
+                 observable: Optional[OperatorBase] = None,
                  quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None):
         r"""Initializes the Two Layer Quantum Neural Network.
 
