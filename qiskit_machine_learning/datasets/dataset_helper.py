@@ -141,15 +141,21 @@ def reduce_dim_to_via_pca(x, dim):
     return x_reduced
 
 
-def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=False,
+def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_elements=False,
                             return_prob=False, prob_non_zero=True):
     """
     Discretize & truncate classical data to enable digital encoding in qubit registers
-    whereby the data grid is [[grid elements dim 0],..., [grid elements dim k]]
-
+    whereby the data grid is [[grid elements dim 0], ..., [grid elements dim k]].
+    
+    For each dimension k, it splits the domain into (2 ** num_qubits[k]) bins equally spaced and equally sized,
+    each centered in discrete_bounds[k, 0], ..., discrete_bounds[k, 1]. Bins have size equal to 
+    (discrete_bounds[k, 1] - discrete_bounds[k, 0])/(2 ** num_qubits[k] - 1).
+    Every sample that falls out of the bins (namely,
+    out of ()) is discarded.
+    
     Args:
         data (list or array or np.array): training data (int or float) of dimension k
-        bounds (list or array or np.array):  k min/max data values
+        discrete_bounds (list or array or np.array):  k min/max data values
             [[min_0,max_0],...,[min_k-1,max_k-1]] if univariate data: [min_0,max_0]
         num_qubits (list or array or np.array): k numbers of qubits to determine
             representation resolution, i.e. n qubits enable the representation of 2**n
@@ -169,17 +175,19 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=
 
     """
     # Truncate the data
-    if np.ndim(bounds) == 1:
-        bounds = np.reshape(bounds, (1, len(bounds)))
+    if np.ndim(discrete_bounds) == 1:
+        discrete_bounds = np.reshape(discrete_bounds, (1, len(discrete_bounds)))
 
     data = data.reshape((len(data), len(num_qubits)))
     temp = []
     for i, data_sample in enumerate(data):
         append = True
         for j, entry in enumerate(data_sample):
-            if entry < bounds[j, 0]:
+            if entry < discrete_bounds[j, 0] -
+                       .5 * (discrete_bounds[j, 1]-discrete_bounds[j, 0])/(2 ** num_qubits[k] - 1):
                 append = False
-            if entry > bounds[j, 1]:
+            if entry > discrete_bounds[j, 1] +
+                       .5 * (discrete_bounds[j, 1]-discrete_bounds[j, 0])/(2 ** num_qubits[k] - 1):
                 append = False
         if append:
             temp.append(list(data_sample))
@@ -189,7 +197,7 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=
     for j, prec in enumerate(num_qubits):
         data_row = data[:, j]  # dim j of all data samples
         # prepare element grid for dim j
-        elements_current_dim = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec))
+        elements_current_dim = np.linspace(discrete_bounds[j, 0], discrete_bounds[j, 1], (2 ** prec))
         # find index for data sample in grid
         index_grid = np.searchsorted(
             elements_current_dim,
