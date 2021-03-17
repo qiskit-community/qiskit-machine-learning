@@ -27,19 +27,19 @@ try:
     from torch.autograd import Function
     from torch.nn import Module, Parameter as TorchParam
 except ImportError:
-    class Function:
+    class Function:  # type: ignore
         """ Empty Function class
             Replacement if torch.autograd.Function is not present.
         """
         pass
 
-    class Tensor:
+    class Tensor:  # type: ignore
         """ Empty Tensor class
             Replacement if torch.Tensor is not present.
         """
         pass
 
-    class Module:
+    class Module:  # type: ignore
         """ Empty Module class
             Replacement if torch.nn.Module is not present.
             Always fails to initialize
@@ -55,9 +55,9 @@ class TorchConnector(Module):
     """ Connects Qiskit (Quantum) Neural Network to PyTorch."""
 
     class _TorchNNFunction(Function):
-
+        # pylint: disable=arguments-differ
         @staticmethod
-        def forward(ctx: Any,  # pylint: disable=arguments-differ
+        def forward(ctx: Any,  # type: ignore
                     input_data: Tensor,
                     weights: Tensor,
                     qnn: NeuralNetwork) -> Tensor:
@@ -86,14 +86,14 @@ class TorchConnector(Module):
             result = np.array(result)
             if len(result.shape) == 0:
                 result = np.array([result])
-            result = Tensor(result)
+            result_tensor = Tensor(result)
             ctx.qnn = qnn
             ctx.save_for_backward(input_data, weights)
-            return result
+            return result_tensor
 
         @staticmethod
-        def backward(ctx: Any,  # pylint: disable=arguments-differ
-                     grad_output: np.ndarray) -> Tuple:
+        def backward(ctx: Any,  # type: ignore
+                     grad_output: Tensor) -> Tuple:
             """ Backward pass computation.
             Args:
                 ctx: context
