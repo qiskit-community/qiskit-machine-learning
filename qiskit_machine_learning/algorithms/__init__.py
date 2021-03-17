@@ -29,6 +29,16 @@ Algorithms for data classification.
    QSVC
    VQC
 
+Regressors
+++++++++++
+Quantum Support Vector Regressor.
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QSVR
+
 Distribution Learners
 +++++++++++++++++++++
 
@@ -56,6 +66,7 @@ from .distribution_learners import (DiscriminativeNetwork,
 __all__ = [
     'QSVC',
     'VQC',
+    'QSVR',
     'DiscriminativeNetwork',
     'GenerativeNetwork',
     'NumPyDiscriminator',

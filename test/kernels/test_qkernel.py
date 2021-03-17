@@ -252,7 +252,6 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_more_dim)
 
-    @unittest.skip(reason="TODO-Test needs fixing.")
     def test_x_feature_dim(self):
         """ Test incorrect x_vec feature dimension """
         qkclass = QuantumKernel(feature_map=self.feature_map,
