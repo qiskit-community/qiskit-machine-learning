@@ -17,7 +17,7 @@ from typing import Optional, Union
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.opflow import PauliSumOp, StateFn, OperatorBase
+from qiskit.opflow import PauliSumOp, StateFn, OperatorBase, ExpectationBase
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
@@ -32,6 +32,7 @@ class TwoLayerQNN(OpflowQNN):
     def __init__(self, num_qubits: int, feature_map: QuantumCircuit = None,
                  var_form: QuantumCircuit = None,
                  observable: Optional[OperatorBase] = None,
+                 exp_val: Optional[ExpectationBase] = None,
                  quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None):
         r"""Initializes the Two Layer Quantum Neural Network.
 
@@ -43,6 +44,7 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
+            exp_val: The Expected Value converter to be used for the operator.
             quantum_instance: The quantum instance to evaluate the networks.
         """
 
@@ -63,4 +65,4 @@ class TwoLayerQNN(OpflowQNN):
         operator = ~StateFn(self.observable) @ StateFn(self.qc)
 
         super().__init__(operator, self.feature_map.parameters, self.var_form.parameters,
-                         quantum_instance=quantum_instance)
+                         exp_val=exp_val, quantum_instance=quantum_instance)

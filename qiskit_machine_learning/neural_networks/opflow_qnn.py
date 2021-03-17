@@ -46,6 +46,7 @@ class OpflowQNN(NeuralNetwork):
             gradient: The Gradient converter to be used for the operator's backward pass.
             quantum_instance: The quantum instance to evaluate the network.
         """
+        #  TODO: most of these should be private properties
         self.operator = operator
         self.input_params = list(input_params or [])
         self.weight_params = list(weight_params or [])
