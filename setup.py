@@ -68,7 +68,7 @@ setuptools.setup(
     include_package_data=True,
     python_requires=">=3.6",
     extras_require={
-        'torch': ["torch"],
+        'torch': ["torch", "torchvision"],
     },
     zip_safe=False
 )
