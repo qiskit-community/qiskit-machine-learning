@@ -1,53 +1,57 @@
 import numpy as np
+from typing import Union
 
-from ..exceptions import QiskitMachineLearningError
+from qiskit.algorithms.optimizers import Optimizer
+
+from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ..utils.loss_functions.loss import L2Loss
+from ...utils.loss_functions.loss import Loss, L1Loss, L2Loss
 
 
 class NeuralNetworkClassifier():
     """ Quantum neural network classifier
     """
 
-    def __init__(self, qnn: NeuralNetwork, loss, optimizer, warm_start=False, callback=None):
+    def __init__(self, neural_network: NeuralNetwork, loss: Union[str, Loss] = 'l2',
+                 optimizer: Optimizer = None, warm_start: bool = False, callback=None):
         # TODO: callback
         """
         Args:
         """
 
-        self._qnn = qnn
-        self._loss = loss
-        self._optimizer = optimizer
-
-        # TODO: use nn.dense directly in "fit" instead (to be added to NeuralNetwork class)
-        self._value_objective = True
-        if isinstance(self._qnn, SamplingNeuralNetwork):
-            if self._qnn.return_samples:
-                pass  # TODO
+        self._neural_network = neural_network
+        if isinstance(loss, str):
+            if loss.lower() == 'l1':
+                self._loss = L1Loss()
+            elif loss.lower() == 'l2':
+                self._loss = L2Loss()
             else:
-                self._value_objective = False
-
+                raise QiskitMachineLearningError(f'Unknown loss {loss}!')
+        else:
+            self._loss = loss
+        self._optimizer = optimizer
         self._warm_start = warm_start
         self._fit_result = None
 
-    def fit(self, X, y):
+    def fit(self, X: np.ndarray, y: np.ndarray):
 
-        if self._value_objective:
+        if self._neural_network.dense:
 
             def objective(w):
                 val = 0.0
                 for x, y_target in zip(X, y):
                     # TODO: enable batching / proper handling of batches
-                    val += self._loss(self._qnn.forward(x, w), np.array([y_target]))
+                    val += self._loss(self._neural_network.forward(x, w), np.array([y_target]))
                 return val
 
             def objective_grad(w):
                 val = 0.0
                 for x, y_target in zip(X, y):
                     # TODO: allow setting which gradients to evaluate (input/weights)
-                    _, weights_grad = self._qnn.backward(x, w)
+                    _, weights_grad = self._neural_network.backward(x, w)
                     # TODO: can we store the forward result and reuse it?
-                    val += self._loss.gradient(self._qnn.forward(x, w)[0], y_target) * weights_grad
+                    val += self._loss.gradient(self._neural_network.forward(x,
+                                                                            w), y_target) * weights_grad
                 return val
 
         else:
@@ -55,16 +59,16 @@ class NeuralNetworkClassifier():
             def objective(w):
                 val = 0.0
                 for x, y_target in zip(X, y):
-                    probs = self._qnn.forward(x, w)
+                    probs = self._neural_network.forward(x, w)
                     for y_predict, p in probs.items():
                         val += p * self._loss(y_predict, y_target)
                 return val
 
             def objective_grad(w):
-                grad = np.zeros(self._qnn.num_weights)
+                grad = np.zeros(self._neural_network.num_weights)
                 for x, y_target in zip(X, y):
-                    _, weight_prob_grad = self._qnn.backward(x, w)
-                    for i in range(self._qnn.num_weights):
+                    _, weight_prob_grad = self._neural_network.backward(x, w)
+                    for i in range(self._neural_network.num_weights):
                         for y_predict, p_grad in weight_prob_grad[i].items():
                             grad[i] += p_grad * self._loss(y_predict, y_target)
                 return grad
@@ -72,13 +76,13 @@ class NeuralNetworkClassifier():
         if self._warm_start and not self._fit_result is None:
             initial_point = self._fit_result[0]
         else:
-            initial_point = np.random.rand(self._qnn.num_weights)
+            initial_point = np.random.rand(self._neural_network.num_weights)
 
-        self._fit_result = self._optimizer.optimize(self._qnn.num_weights, objective, objective_grad,
-                                                    initial_point=initial_point)
+        self._fit_result = self._optimizer.optimize(self._neural_network.num_weights, objective,
+                                                    objective_grad, initial_point=initial_point)
         return self
 
-    def predict(self, X):
+    def predict(self, X: np.ndarray):
 
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
@@ -87,10 +91,10 @@ class NeuralNetworkClassifier():
         result = np.zeros(len(X))
         for i, x in enumerate(X):
             # TODO: handle sampling case too
-            result[i] = np.sign(self._qnn.forward(x, self._fit_result[0]))
+            result[i] = np.sign(self._neural_network.forward(x, self._fit_result[0]))
         return result
 
-    def score(self, X, y):
+    def score(self, X: np.ndarray, y: np.ndarray):
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
-        return np.sum(self.predict(X) - y) / len(y)
+        return np.sum(nnc.predict(X) == y) / len(y)

@@ -77,7 +77,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
         self._interpret = interpret
-        self._dense = dense
         self._gradient = gradient
 
         if isinstance(quantum_instance, (BaseBackend, Backend)):
@@ -117,7 +116,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         else:
             raise QiskitMachineLearningError(f'Unsupported interpret value: {interpret}!')
 
-        super().__init__(len(self._input_params), len(self._weight_params), output_shape_)
+        super().__init__(len(self._input_params), len(self._weight_params), dense, output_shape_)
 
     @property
     def circuit(self) -> QuantumCircuit:
