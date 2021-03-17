@@ -10,7 +10,7 @@ class Loss(ABC):
     """
 
     def __call__(self, predict, target):
-        self.evaluate(predict, target)
+        return self.evaluate(predict, target)
 
     @abstractmethod
     def evaluate(self, predict, target):
@@ -26,7 +26,6 @@ class L2Loss(Loss):
     def evaluate(self, predict, target):
         predict = np.array(predict)
         target = np.array(target)
-
         if len(predict.shape) <= 1:
             return np.linalg.norm(predict - target)**2
         elif len(predict.shape) > 1:
@@ -43,7 +42,13 @@ class L2Loss(Loss):
 class L1Loss(Loss):
 
     def evaluate(self, predict, target):
-        if len(predict.shape) <= 1:
+        predict = np.array(predict)
+        target = np.array(target)
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+        if len(predict.shape) == 0:
+            return np.abs(predict - target)
+        elif len(predict.shape) <= 1:
             return np.linalg.norm(predict - target, ord=1)
         elif len(predict.shape) > 1:
             return np.linalg.norm(predict - target, ord=1, axis=len(predict.shape)-1)
@@ -53,10 +58,12 @@ class L1Loss(Loss):
     def gradient(self, predict, target):
         predict = np.array(predict)
         target = np.array(target)
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
         if len(predict.shape) <= 1:
-            return np.linalg.sign(predict - target)
+            return np.sign(predict - target)
         elif len(predict.shape) > 1:
-            return np.linalg.sign(predict - target, axis=len(predict.shape)-1)
+            return np.sign(predict - target)
         else:
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
