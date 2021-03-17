@@ -1,6 +1,7 @@
 import numpy as np
-from qiskit_machine_learning import QiskitMachineLearningError
-from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, SamplingNeuralNetwork
+
+from ..exceptions import QiskitMachineLearningError
+from ...neural_networks import NeuralNetwork
 from ..utils.loss_functions.loss import L2Loss
 
 
@@ -8,7 +9,8 @@ class NeuralNetworkClassifier():
     """ Quantum neural network classifier
     """
 
-    def __init__(self, qnn, loss, optimizer, warm_start=False, callback=None):  # TODO: callback
+    def __init__(self, qnn: NeuralNetwork, loss, optimizer, warm_start=False, callback=None):
+        # TODO: callback
         """
         Args:
         """

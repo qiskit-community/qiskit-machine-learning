@@ -93,6 +93,3 @@ class NeuralNetworkRegressor():
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
         return np.sum(self.predict(X) - y) / len(y)
-
-
-# do we need save & load model?
