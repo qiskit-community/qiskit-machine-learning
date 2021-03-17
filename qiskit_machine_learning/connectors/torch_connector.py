@@ -12,6 +12,7 @@
 
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 
+from typing import Tuple, Any
 import logging
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
@@ -26,66 +27,96 @@ try:
     from torch.autograd import Function
     from torch.nn import Module, Parameter as TorchParam
 except ImportError:
-    if logger.isEnabledFor(logging.INFO):
-        EXC = MissingOptionalLibraryError(
-            libname='Pytorch',
-            name='TorchConnector',
-            pip_install="pip install 'qiskit-machine-learning[torch]'")
-        logger.info(str(EXC))
+    class Function:  # type: ignore
+        """ Empty Function class
+            Replacement if torch.autograd.Function is not present.
+        """
+        pass
+
+    class Tensor:  # type: ignore
+        """ Empty Tensor class
+            Replacement if torch.Tensor is not present.
+        """
+        pass
+
+    class Module:  # type: ignore
+        """ Empty Module class
+            Replacement if torch.nn.Module is not present.
+            Always fails to initialize
+        """
+        def __init__(self) -> None:
+            raise MissingOptionalLibraryError(
+                    libname='Pytorch',
+                    name='TorchConnector',
+                    pip_install="pip install 'qiskit-machine-learning[torch]'")
 
 
 class TorchConnector(Module):
     """ Connects Qiskit (Quantum) Neural Network to PyTorch."""
 
     class _TorchNNFunction(Function):
-
+        # pylint: disable=arguments-differ
         @staticmethod
-        def forward(ctx, input, weights, qnn):
+        def forward(ctx: Any,  # type: ignore
+                    input_data: Tensor,
+                    weights: Tensor,
+                    qnn: NeuralNetwork) -> Tensor:
             """ Forward pass computation.
             Args:
                 ctx: context
-                input: data input (torch tensor)
+                input_data: data input (torch tensor)
                 weights: weight input (torch tensor)
                 qnn: operator QNN
+
+            Returns:
+                tensor result
+
+            Raises:
+                QiskitMachineLearningError: Invalid input data.
             """
 
             # TODO: efficiently handle batches (for input and weights)
             # validate input shape
-            if input.shape[-1] != qnn.num_inputs:
+            if input_data.shape[-1] != qnn.num_inputs:
                 raise QiskitMachineLearningError(
-                    f'Invalid input dimension! Received {input.shape} and ' +
+                    f'Invalid input dimension! Received {input_data.shape} and ' +
                     f'expected input compatible to {qnn.num_inputs}')
 
-            result = qnn.forward(input.numpy(), weights.numpy())
+            result = qnn.forward(input_data.numpy(), weights.numpy())
             result = np.array(result)
             if len(result.shape) == 0:
                 result = np.array([result])
-            result = Tensor(result)
+            result_tensor = Tensor(result)
             ctx.qnn = qnn
-            ctx.save_for_backward(input, weights)
-            return result
+            ctx.save_for_backward(input_data, weights)
+            return result_tensor
 
         @staticmethod
-        def backward(ctx, grad_output):
+        def backward(ctx: Any,  # type: ignore
+                     grad_output: Tensor) -> Tuple:
             """ Backward pass computation.
             Args:
                 ctx: context
                 grad_output: previous gradient
-             """
+            Raises:
+                QiskitMachineLearningError: Invalid input data.
+            Returns:
+                gradients for the first two arguments and None for the others
+            """
 
             # get context data
-            input, weights = ctx.saved_tensors
+            input_data, weights = ctx.saved_tensors
             qnn = ctx.qnn
 
             # TODO: efficiently handle batches (for input and weights)
             # validate input shape
-            if input.shape[-1] != qnn.num_inputs:
+            if input_data.shape[-1] != qnn.num_inputs:
                 raise QiskitMachineLearningError(
-                    f'Invalid input dimension! Received {input.shape} and ' +
+                    f'Invalid input dimension! Received {input_data.shape} and ' +
                     f' expected input compatible to {qnn.num_inputs}')
 
             # evaluate QNN gradient
-            input_grad, weights_grad = qnn.backward(input.numpy(), weights.numpy())
+            input_grad, weights_grad = qnn.backward(input_data.numpy(), weights.numpy())
             if input_grad is not None:
                 if np.prod(input_grad.shape) == 0:
                     input_grad = None
@@ -111,12 +142,12 @@ class TorchConnector(Module):
         self._weights = TorchParam(Tensor(nn.num_weights))
         self._weights.data.uniform_(-1, 1)  # TODO: enable more reasonable initialization
 
-    def forward(self, input: Tensor = None) -> Tensor:
+    def forward(self, input_data: Tensor = None) -> Tensor:
         """Forward pass.
         Args:
-            input: data to be evaluated.
+            input_data: data to be evaluated.
         Returns:
             Result of forward pass of this model.
         """
-        input_ = input if input is not None else Tensor([])
+        input_ = input_data if input_data is not None else Tensor([])
         return TorchConnector._TorchNNFunction.apply(input_, self._weights, self._nn)
