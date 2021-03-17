@@ -72,7 +72,6 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)
         self.assertTrue(test)
 
-    @unittest.skip(reason="TODO-Test needs fixing.")
     def test_torch_with_circuit_qnn(self):
         """Torch Connector + Circuit QNN Test."""
         try:

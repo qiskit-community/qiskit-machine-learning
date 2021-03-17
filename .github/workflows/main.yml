@@ -167,6 +167,11 @@ jobs:
           QISKIT_PARALLEL: False
         run: |
           cd tutorials
+          mkdir data
+          wget https://github.com/qiskit-community/qiskit-textbook/raw/master/content/ch-machine-learning/data/MNIST/processed/test.pt \
+          --tries=3 -O data/test.pst || echo "test.pst download failed"
+          wget https://github.com/qiskit-community/qiskit-textbook/raw/master/content/ch-machine-learning/data/MNIST/processed/training.pt \
+          --tries=3 -O data/training.pst || echo "training.pst download failed"
           sphinx-build -b html . _build/html
           cd _build/html
           mkdir artifacts
