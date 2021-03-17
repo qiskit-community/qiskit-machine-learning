@@ -67,7 +67,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         """
 
         # TODO: currently cannot handle statevector simulator, at least throw exception
-        # TODO: need to be able ot handle partial measurements! (partial trace...)
+        # TODO: need to be able to handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
 
         self._circuit = circuit.copy()
@@ -101,7 +101,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if return_samples:
             # TODO: handle case of statevector --> either sample or raise exception
-            if interpret == 'int' or interpret == 'str':
+            if interpret in ('int', 'str'):
                 output_shape_ = (self.quantum_instance.run_config.shots,)
             elif interpret == 'tuple':
                 output_shape_ = (self.quantum_instance.run_config.shots, self.circuit.num_qubits)
