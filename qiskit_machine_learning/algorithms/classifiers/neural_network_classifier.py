@@ -1,9 +1,10 @@
 import numpy as np
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, SamplingNeuralNetwork
-from .loss import L2Loss
+from ..utils.loss_functions.loss import L2Loss
 
-class NNClassifier():
+
+class NeuralNetworkClassifier():
     """ Quantum neural network classifier
     """
 
@@ -16,6 +17,7 @@ class NNClassifier():
         self._loss = loss
         self._optimizer = optimizer
 
+        # TODO: use nn.dense directly in "fit" instead (to be added to NeuralNetwork class)
         self._value_objective = True
         if isinstance(self._qnn, SamplingNeuralNetwork):
             if self._qnn.return_samples:
@@ -25,7 +27,6 @@ class NNClassifier():
 
         self._warm_start = warm_start
         self._fit_result = None
-
 
     def fit(self, X, y):
 
@@ -91,6 +92,3 @@ class NNClassifier():
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
         return np.sum(self.predict(X) - y) / len(y)
-
-
-## do we need save & load model?

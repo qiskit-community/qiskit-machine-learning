@@ -1,9 +1,12 @@
 import numpy as np
+
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, SamplingNeuralNetwork
-from .loss import L2Loss
 
-class NNRegressor():
+from ..utils.loss_functions.loss import L2Loss
+
+
+class NeuralNetworkRegressor():
     """ Quantum neural network regressor
     """
 
@@ -25,7 +28,6 @@ class NNRegressor():
 
         self._warm_start = warm_start
         self._fit_result = None
-
 
     def fit(self, X, y):
 
@@ -93,4 +95,4 @@ class NNRegressor():
         return np.sum(self.predict(X) - y) / len(y)
 
 
-## do we need save & load model?
+# do we need save & load model?
