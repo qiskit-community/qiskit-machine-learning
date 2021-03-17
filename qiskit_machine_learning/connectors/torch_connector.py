@@ -12,14 +12,26 @@
 
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 
+import logging
 import numpy as np
-
-from torch import Tensor
-from torch.autograd import Function
-from torch.nn import Module, Parameter as TorchParam
+from qiskit.exceptions import MissingOptionalLibraryError
 
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
+
+logger = logging.getLogger(__name__)
+
+try:
+    from torch import Tensor
+    from torch.autograd import Function
+    from torch.nn import Module, Parameter as TorchParam
+except ImportError:
+    if logger.isEnabledFor(logging.INFO):
+        EXC = MissingOptionalLibraryError(
+            libname='Pytorch',
+            name='TorchConnector',
+            pip_install="pip install 'qiskit-machine-learning[torch]'")
+        logger.info(str(EXC))
 
 
 class TorchConnector(Module):
