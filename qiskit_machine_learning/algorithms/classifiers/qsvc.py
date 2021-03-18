@@ -11,35 +11,34 @@
 # that they have been altered from the originals.
 
 """Quantum Support Vector Classifier"""
+import logging
 
-from typing import Union
 from sklearn.svm import SVC
 
-from qiskit import QuantumCircuit
-from qiskit.providers import Backend, BaseBackend
-from qiskit.utils import QuantumInstance
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 
+logger = logging.getLogger(__name__)
 
 class QSVC(SVC):
     r"""Quantum Support Vector Classifier.
 
+    This class shows how to use a quantum kernel for classification. The class extends
+    `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_,
+    and thus inherits its method like ``fit`` and ``predict`` used in the example below.
+    Read more in the
+    `sklearn user guide https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
+
     **Example**
 
     .. code-block::
-
-        qsvc = QSVC(feature_map=map, quantum_instance=backend)
+        qsvc = QSVC(quantum_kernel=qkernel)
         qsvc.fit(sample_train,label_train)
         qsvc.predict(sample_test)
     """
 
-    def __init__(self,
-                 feature_map: QuantumCircuit,
-                 quantum_instance:
-                 Union[QuantumInstance, BaseBackend, Backend],
-                 *args, **kwargs) -> None:
+    def __init__(self, *args,
+                 quantum_kernel: QuantumKernel, **kwargs):
 
-        self._qkernel = QuantumKernel(feature_map=feature_map,
-                                      quantum_instance=quantum_instance)
+        self._quantum_kernel = quantum_kernel
 
-        super().__init__(kernel=self._qkernel.evaluate, *args, **kwargs)
+        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
