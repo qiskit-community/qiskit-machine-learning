@@ -49,7 +49,7 @@ class QuantumKernel:
 
     def __init__(self,
                  feature_map: Optional[QuantumCircuit] = None,
-                 enforce_psd: bool = False,
+                 enforce_psd: bool = True,
                  batch_size: int = 1000,
                  quantum_instance: Optional[
                      Union[QuantumInstance, BaseBackend, Backend]] = None) -> None:
@@ -57,8 +57,9 @@ class QuantumKernel:
         Args:
             feature_map: Parameterized circuit to be used as the feature map. If None is given,
                 the `ZZFeatureMap` is used with two qubits.
-            enforce_psd: Project to closest positive semidefinite matrix if x = y
-            batch_size: Number of circuits to batch together for computation
+            enforce_psd: Project to closest positive semidefinite matrix if x = y.
+                Only enforced when not using the state vector simulator. Default True.
+            batch_size: Number of circuits to batch together for computation. Default 1000.
             quantum_instance: Quantum Instance or Backend
         """
         self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
