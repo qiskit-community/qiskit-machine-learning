@@ -55,7 +55,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If this is used, the output shape of the output needs to be
-                given as a seperate argument.
+                given as a separate argument.
             output_shape: The output shape of the custom interpretation. The output shape is
                 automatically determined in case of return_samples==True.
             gradient: The gradient converter to be used for the probability gradients.

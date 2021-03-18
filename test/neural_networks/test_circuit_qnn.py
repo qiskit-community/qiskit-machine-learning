@@ -41,7 +41,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.quantum_instance_sv = QuantumInstance(Aer.get_backend('statevector_simulator'))
         self.quantum_instance_qasm = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
 
-        # define featuremap and varform
+        # define feature map and variational form
         num_qubits = 2
         feature_map = ZZFeatureMap(num_qubits, reps=1)
         var_form = RealAmplitudes(num_qubits, reps=1)
@@ -129,7 +129,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
     def test_circuit_qnn(self, config):
         """Circuit QNN Test."""
 
-        # get config
+        # get configuration
         dense, samples, statevector, interpret_id = config
 
         # get QNN
@@ -182,7 +182,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
     def test_circuit_qnn_gradient(self, config):
         """Circuit QNN Gradient Test."""
 
-        # get config
+        # get configuration
         dense, samples, statevector, interpret_id = config
 
         # get QNN
