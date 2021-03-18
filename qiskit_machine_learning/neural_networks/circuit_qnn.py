@@ -12,7 +12,7 @@
 
 """A Sampling Neural Network based on a given quantum circuit."""
 
-from typing import Tuple, Union, List, Callable, Optional, Dict
+from typing import Tuple, Union, List, Callable, Optional, Dict, cast
 
 import numpy as np
 from sparse import SparseArray, DOK
@@ -55,7 +55,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If this is used, the output shape of the output needs to be
-                given as a seperate argument.
+                given as a separate argument.
             output_shape: The output shape of the custom interpretation.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits.
@@ -146,7 +146,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         for i, b in enumerate(memory):
             sample = int(b, 2)
             if self._interpret:
-                sample = self._interpret(sample)
+                sample = cast(int, self._interpret(sample))
             samples[0, i, :] = sample
         return samples
 
@@ -173,7 +173,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         for b, v in counts.items():
             key = int(b, 2)
             if self._interpret:
-                key = self._interpret(key)
+                key = cast(int, self._interpret(key))
             prob[0, key] += v / shots
 
         return prob
@@ -197,7 +197,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 for k in range(2 ** self.circuit.num_qubits):
                     key = k
                     if self._interpret:
-                        key = self._interpret(key)
+                        key = cast(int, self._interpret(key))
                     input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
                                                 np.real(grad[i][k]))
 
@@ -208,7 +208,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 for k in range(2 ** self.circuit.num_qubits):
                     key = k
                     if self._interpret:
-                        key = self._interpret(key)
+                        key = cast(int, self._interpret(key))
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
                                                   np.real(grad[i + self.num_inputs][k]))
 
