@@ -78,7 +78,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
         self._interpret = interpret
+        dense_ = dense
         if return_samples:
+            dense_ = True
             # infer shape from function
             if interpret:
                 result = interpret(0)
@@ -102,10 +104,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
-
-        # TODO this should not be necessary... but currently prop grads fail otherwise
-        from qiskit import Aer
-        self._sampler = CircuitSampler(Aer.get_backend('statevector_simulator'), param_qobj=False)
+        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
 
         # construct probability gradient opflow object
         grad_circuit = circuit.copy()
@@ -113,7 +112,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         params = list(input_params) + list(weight_params)
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
-        super().__init__(len(self._input_params), len(self._weight_params), dense, return_samples,
+        super().__init__(len(self._input_params), len(self._weight_params), dense_, return_samples,
                          output_shape_)
 
     @ property

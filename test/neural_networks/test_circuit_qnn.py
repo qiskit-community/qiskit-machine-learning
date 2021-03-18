@@ -16,15 +16,21 @@ import unittest
 
 from test import QiskitMachineLearningTestCase
 
+from ddt import ddt, data
+
 import numpy as np
+from sparse import SparseArray
+
 from qiskit import Aer
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
 
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
 
 
+@ddt
 class TestCircuitQNN(QiskitMachineLearningTestCase):
     """Opflow QNN Tests."""
 
@@ -32,36 +38,129 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify "run configuration"
-        backend = Aer.get_backend('statevector_simulator')
-        quantum_instance = QuantumInstance(backend)
+        self.quantum_instance_sv = QuantumInstance(Aer.get_backend('statevector_simulator'))
+        self.quantum_instance_qasm = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
 
-        # define QNN
+        # define featuremap and varform
         num_qubits = 2
-        feature_map = ZZFeatureMap(num_qubits)
+        feature_map = ZZFeatureMap(num_qubits, reps=1)
         var_form = RealAmplitudes(num_qubits, reps=1)
 
-        qc = QuantumCircuit(2)
-        qc.append(feature_map, range(2))
-        qc.append(var_form, range(2))
+        # construct circuit
+        self.qc = QuantumCircuit(num_qubits)
+        self.qc.append(feature_map, range(2))
+        self.qc.append(var_form, range(2))
 
-        input_params = list(feature_map.parameters)
-        weight_params = list(var_form.parameters)
+        # store params
+        self.input_params = list(feature_map.parameters)
+        self.weight_params = list(var_form.parameters)
 
-        def parity(x):
-            return (-1)**sum(x)
+        # define interpret functions
+        def interpret_1d(x):
+            return sum([s == '1' for s in '{0:0b}'.format(x)]) % 2
+        self.interpret_1d = interpret_1d
+        self.output_shape_1d = 2  # takes values in {0, 1}
 
-        self.qnn = CircuitQNN(qc, input_params, weight_params,
-                              interpret=parity, quantum_instance=quantum_instance)
+        def interpret_2d(x):
+            return np.array([self.interpret_1d(x), 2*self.interpret_1d(x)])
+        self.interpret_2d = interpret_2d
+        self.output_shape_2d = (2, 3)  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
-    def test_circuit_qnn1(self):
+    @data(
+        # dense, samples, statevector, interpret (0=no, 1=1d, 2=2d)
+        (True, True, True, 0),
+        (True, True, True, 1),
+        (True, True, True, 2),
+
+        (True, True, False, 0),
+        (True, True, False, 1),
+        (True, True, False, 2),
+
+        (True, False, True, 0),
+        (True, False, True, 1),
+        (True, False, True, 2),
+
+        (True, False, False, 0),
+        (True, False, False, 1),
+        (True, False, False, 2),
+
+        (False, True, True, 0),
+        (False, True, True, 1),
+        (False, True, True, 2),
+
+        (False, True, False, 0),
+        (False, True, False, 1),
+        (False, True, False, 2),
+
+        (False, False, True, 0),
+        (False, False, True, 1),
+        (False, False, True, 2),
+
+        (False, False, False, 0),
+        (False, False, False, 1),
+        (False, False, False, 2),
+    )
+    def test_circuit_qnn(self, config):
         """Opflow QNN Test."""
 
-        input_data = np.zeros(self.qnn.num_inputs)
-        weights = np.zeros(self.qnn.num_weights)
+        # get config
+        dense, samples, statevector, interpret_id = config
 
-        result = self.qnn.probabilities(input_data, weights)
-        self.assertAlmostEqual(result[1], 0.81484, places=4)
-        self.assertAlmostEqual(result[-1], 0.18516, places=4)
+        # get quantum instance
+        if statevector:
+            quantum_instance = self.quantum_instance_sv
+        else:
+            quantum_instance = self.quantum_instance_qasm
+
+        # get interpret setting
+        interpret = None
+        output_shape = None
+        if interpret_id == 1:
+            interpret = self.interpret_1d
+            output_shape = self.output_shape_1d
+        elif interpret_id == 2:
+            interpret_id = self.interpret_2d
+            output_shape = self.output_shape_2d
+
+        # construct QNN
+        qnn = CircuitQNN(self.qc, self.input_params, self.weight_params,
+                         dense=dense, return_samples=samples,
+                         interpret=interpret, output_shape=output_shape,
+                         quantum_instance=quantum_instance)
+        input_data = np.zeros(qnn.num_inputs)
+        weights = np.zeros(qnn.num_weights)
+
+        # if sampling and statevector, make sure it fails
+        if statevector and samples:
+            with self.assertRaises(QiskitMachineLearningError):
+                qnn.forward(input_data, weights)
+        else:
+
+            # evaluate QNN forward pass
+            result = qnn.forward(input_data, weights)
+
+            # make sure forward result is sparse if it should be
+            if not dense and not samples:
+                self.assertTrue(isinstance(result, SparseArray))
+            else:
+                self.assertTrue(isinstance(result, np.ndarray))
+
+            # check forward result shape
+            if samples:
+                num_samples = quantum_instance.run_config.shots
+                self.assertEqual(result.shape, (1, num_samples, *qnn.output_shape))
+            else:
+                self.assertEqual(result.shape, (1, *qnn.output_shape))
+
+            input_grad, weights_grad = qnn.backward(input_data, weights)
+            if samples:
+                self.assertIsNone(input_grad)
+                self.assertIsNone(weights_grad)
+            else:
+                self.assertEqual(input_grad.shape, (1, qnn.num_inputs, *qnn.output_shape))
+                self.assertEqual(weights_grad.shape, (1, qnn.num_weights, *qnn.output_shape))
+
+        # TODO: add batching
 
 
 if __name__ == '__main__':
