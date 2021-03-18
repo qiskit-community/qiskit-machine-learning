@@ -21,6 +21,7 @@ from ...kernels.quantum_kernel import QuantumKernel
 
 logger = logging.getLogger(__name__)
 
+
 class QSVR(SVR):
     r"""Quantum Support Vector Regressor.
 
