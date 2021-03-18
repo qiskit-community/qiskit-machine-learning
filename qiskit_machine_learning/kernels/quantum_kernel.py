@@ -218,7 +218,8 @@ class QuantumKernel:
             try:
                 self._feature_map.num_qubits = x_vec.shape[1]
             except AttributeError:
-                raise ValueError("x_vec and class feature map have incompatible dimensions.\n" +
+                raise ValueError(
+                    "x_vec and class feature map have incompatible dimensions.\n" +
                     "x_vec has %s dimensions, but feature map has %s." %
                     (x_vec.shape[1], self._feature_map.num_parameters)) from AttributeError
 

@@ -151,5 +151,5 @@ html_theme_options = {
 autoclass_content = 'both'
 
 intersphinx_mapping = {
-    'sklearn': ('http://scikit-learn.org/stable', None),
+    'sklearn': ('https://scikit-learn.org/stable', None),
 }

@@ -89,7 +89,9 @@ statevectors
 stdout
 str
 submodules
+SVC
 svm
+SVR
 sx
 sy
 terra

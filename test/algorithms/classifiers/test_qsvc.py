@@ -25,6 +25,7 @@ from qiskit_machine_learning.algorithms import QSVC
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
+
 class TestQSVC(QiskitMachineLearningTestCase):
     """ Test QSVC Algorithm """
 
@@ -53,7 +54,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
     def test_qsvc(self):
         """ Test QSVC """
         qkernel = QuantumKernel(feature_map=self.feature_map,
-                               quantum_instance=self.statevector_simulator)
+                                quantum_instance=self.statevector_simulator)
 
         qsvc = QSVC(quantum_kernel=qkernel)
         qsvc.fit(self.sample_train, self.label_train)
@@ -72,7 +73,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
     def test_change_kernel(self):
         """ Test QSVC with QuantumKernel later """
         qkernel = QuantumKernel(feature_map=self.feature_map,
-                               quantum_instance=self.statevector_simulator)
+                                quantum_instance=self.statevector_simulator)
 
         qsvc = QSVC()
         qsvc.quantum_kernel = qkernel

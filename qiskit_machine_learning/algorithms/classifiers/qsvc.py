@@ -21,6 +21,7 @@ from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 
 logger = logging.getLogger(__name__)
 
+
 class QSVC(SVC):
     r"""Quantum Support Vector Classifier.
 
@@ -28,7 +29,7 @@ class QSVC(SVC):
     `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_,
     and thus inherits its methods like ``fit`` and ``predict`` used in the example below.
     Read more in the
-    `sklearn user guide https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
+    `sklearn user guide <https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
 
     **Example**
 
