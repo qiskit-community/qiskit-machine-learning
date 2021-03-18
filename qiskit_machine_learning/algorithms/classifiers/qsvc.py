@@ -38,6 +38,10 @@ class QSVC(SVC):
 
     def __init__(self, *args,
                  quantum_kernel: QuantumKernel, **kwargs):
+        """
+        Args:
+            quantum_kernel: QuantumKernel to be used for classification.
+        """
 
         self._quantum_kernel = quantum_kernel
 
