@@ -166,7 +166,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertEqual(input_grad.shape, (1, qnn.num_inputs, *qnn.output_shape))
                 self.assertEqual(weights_grad.shape, (1, qnn.num_weights, *qnn.output_shape))
 
-        # TODO: add batching
+        # TODO: add test on batching
 
     @data(
         # dense, samples, statevector, interpret (0=no, 1=1d, 2=2d)
@@ -221,6 +221,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 grad = (f_1.todense() - f_2.todense()) / (2*eps)
                 diff = weights_grad.todense()[0][k] - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+
+        # TODO: add test on batching
 
 
 if __name__ == '__main__':
