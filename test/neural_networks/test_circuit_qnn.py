@@ -66,6 +66,31 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.interpret_2d = interpret_2d
         self.output_shape_2d = (2, 3)  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
+    def get_qnn(self, dense, samples, statevector, interpret_id):
+
+        # get quantum instance
+        if statevector:
+            quantum_instance = self.quantum_instance_sv
+        else:
+            quantum_instance = self.quantum_instance_qasm
+
+        # get interpret setting
+        interpret = None
+        output_shape = None
+        if interpret_id == 1:
+            interpret = self.interpret_1d
+            output_shape = self.output_shape_1d
+        elif interpret_id == 2:
+            interpret_id = self.interpret_2d
+            output_shape = self.output_shape_2d
+
+        # construct QNN
+        qnn = CircuitQNN(self.qc, self.input_params, self.weight_params,
+                         dense=dense, return_samples=samples,
+                         interpret=interpret, output_shape=output_shape,
+                         quantum_instance=quantum_instance)
+        return qnn
+
     @data(
         # dense, samples, statevector, interpret (0=no, 1=1d, 2=2d)
         (True, True, True, 0),
@@ -98,35 +123,16 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         (False, False, False, 0),
         (False, False, False, 1),
-        (False, False, False, 2),
+        (False, False, False, 2)
     )
     def test_circuit_qnn(self, config):
-        """Opflow QNN Test."""
+        """Circuit QNN Test."""
 
         # get config
         dense, samples, statevector, interpret_id = config
 
-        # get quantum instance
-        if statevector:
-            quantum_instance = self.quantum_instance_sv
-        else:
-            quantum_instance = self.quantum_instance_qasm
-
-        # get interpret setting
-        interpret = None
-        output_shape = None
-        if interpret_id == 1:
-            interpret = self.interpret_1d
-            output_shape = self.output_shape_1d
-        elif interpret_id == 2:
-            interpret_id = self.interpret_2d
-            output_shape = self.output_shape_2d
-
-        # construct QNN
-        qnn = CircuitQNN(self.qc, self.input_params, self.weight_params,
-                         dense=dense, return_samples=samples,
-                         interpret=interpret, output_shape=output_shape,
-                         quantum_instance=quantum_instance)
+        # get QNN
+        qnn = self.get_qnn(dense, samples, statevector, interpret_id)
         input_data = np.zeros(qnn.num_inputs)
         weights = np.zeros(qnn.num_weights)
 
@@ -147,7 +153,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
             # check forward result shape
             if samples:
-                num_samples = quantum_instance.run_config.shots
+                num_samples = self.quantum_instance_qasm.run_config.shots
                 self.assertEqual(result.shape, (1, num_samples, *qnn.output_shape))
             else:
                 self.assertEqual(result.shape, (1, *qnn.output_shape))
@@ -161,6 +167,60 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertEqual(weights_grad.shape, (1, qnn.num_weights, *qnn.output_shape))
 
         # TODO: add batching
+
+    @data(
+        # dense, samples, statevector, interpret (0=no, 1=1d, 2=2d)
+        (True, False, True, 0),
+        (True, False, True, 1),
+        (True, False, True, 2),
+
+        (False, False, True, 0),
+        (False, False, True, 1),
+        (False, False, True, 2)
+    )
+    def test_circuit_qnn_gradient(self, config):
+        """Circuit QNN Gradient Test."""
+
+        # get config
+        dense, samples, statevector, interpret_id = config
+
+        # get QNN
+        qnn = self.get_qnn(dense, samples, statevector, interpret_id)
+        input_data = np.ones(qnn.num_inputs)
+        weights = np.ones(qnn.num_weights)
+        input_grad, weights_grad = qnn.backward(input_data, weights)
+
+        # test input gradients
+        eps = 1e-2
+        for k in range(qnn.num_inputs):
+            delta = np.zeros(input_data.shape)
+            delta[k] = eps
+
+            f_1 = qnn.forward(input_data + delta, weights)
+            f_2 = qnn.forward(input_data - delta, weights)
+            if dense:
+                grad = (f_1 - f_2) / (2*eps)
+                diff = input_grad[0][k] - grad
+            else:
+                grad = (f_1.todense() - f_2.todense()) / (2*eps)
+                diff = input_grad.todense()[0][k] - grad
+            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+
+        # test input gradients
+        eps = 1e-2
+        for k in range(qnn.num_weights):
+            delta = np.zeros(weights.shape)
+            delta[k] = eps
+
+            f_1 = qnn.forward(input_data, weights + delta)
+            f_2 = qnn.forward(input_data, weights - delta)
+            if dense:
+                grad = (f_1 - f_2) / (2*eps)
+                diff = weights_grad[0][k] - grad
+            else:
+                grad = (f_1.todense() - f_2.todense()) / (2*eps)
+                diff = weights_grad.todense()[0][k] - grad
+            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
 
 if __name__ == '__main__':
