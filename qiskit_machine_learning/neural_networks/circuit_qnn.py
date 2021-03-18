@@ -180,6 +180,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
                        ) -> Union[np.ndarray, Dict[Any, float]]:
+        # todo: batches
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
@@ -205,6 +206,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
                                ) -> Tuple[Union[np.ndarray, List[Dict]],
                                           Union[np.ndarray, List[Dict]]]:
+        # todo: batches
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
