@@ -36,7 +36,7 @@ To do this follow the instructions in the
 ### Creating Your First Machine Learning Programming Experiment in Qiskit
 
 Now that Qiskit Machine Learning is installed, it's time to begin working with the Machine Learning module.
-LLet's try an experiment using VQC (Variational Quantum Classified) algorithm to
+Let's try an experiment using VQC (Variational Quantum Classifier) algorithm to
 train and test samples from a data set to see how accurately the test set can
 be classified.
 
