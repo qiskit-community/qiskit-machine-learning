@@ -56,7 +56,8 @@ class CircuitQNN(SamplingNeuralNetwork):
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If this is used, the output shape of the output needs to be
                 given as a seperate argument.
-            output_shape: The output shape of the custom interpretation.
+            output_shape: The output shape of the custom interpretation. The output shape is
+                automatically determined in case of return_samples==True.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits.
 
@@ -78,14 +79,23 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._weight_params = list(weight_params or [])
         self._interpret = interpret
         if return_samples:
-            output_shape_ = output_shape if output_shape else (1,)
+            # infer shape from function
+            if interpret:
+                result = interpret(0)
+                result = np.array(result)
+                output_shape_ = result.shape
+                if len(result.shape) == 0:
+                    output_shape_ = (1,)
+            else:
+                output_shape_ = (1,)
         else:
-            output_shape_ = (2**circuit.num_qubits,)
-        if interpret:
-            if output_shape is None:
-                raise QiskitMachineLearningError(
-                    'No output shape given, but required in case of custom interpret!')
-            output_shape_ = output_shape
+            if interpret:
+                if output_shape is None:
+                    raise QiskitMachineLearningError(
+                        'No output shape given, but required in case of custom interpret!')
+                output_shape_ = output_shape
+            else:
+                output_shape_ = (2**circuit.num_qubits,)
 
         self._gradient = gradient
 
@@ -174,7 +184,11 @@ class CircuitQNN(SamplingNeuralNetwork):
             key = int(b, 2)
             if self._interpret:
                 key = self._interpret(key)
-            prob[0, key] += v / shots
+            if hasattr(key, '__len__'):
+                key = (0, *key)
+            else:
+                key = (0, key)
+            prob[key] += v / shots
 
         return prob
 
@@ -198,6 +212,8 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key = k
                     if self._interpret:
                         key = self._interpret(key)
+                    if hasattr(key, '__len__'):
+                        key = tuple(key)
                     input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
                                                 np.real(grad[i][k]))
 
@@ -209,6 +225,8 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key = k
                     if self._interpret:
                         key = self._interpret(key)
+                    if hasattr(key, '__len__'):
+                        key = tuple(key)
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
                                                   np.real(grad[i + self.num_inputs][k]))
 
@@ -229,10 +247,16 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         for i in range(self.num_inputs):
             for k, grad in input_grad_dicts[i].items():
-                input_grad[0, i, k] = grad
+                key = (0, i, k)
+                if hasattr(k, '__len__'):
+                    key = (0, i, *k)
+                input_grad[key] = grad
 
         for i in range(self.num_weights):
             for k, grad in weights_grad_dicts[i].items():
-                weights_grad[0, i, k] = grad
+                key = (0, i, k)
+                if hasattr(k, '__len__'):
+                    key = (0, i, *k)
+                weights_grad[key] = grad
 
         return input_grad, weights_grad
