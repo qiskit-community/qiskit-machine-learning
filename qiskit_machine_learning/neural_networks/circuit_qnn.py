@@ -12,7 +12,7 @@
 
 """A Sampling Neural Network based on a given quantum circuit."""
 
-from typing import Tuple, Union, List, Callable, Optional, Dict
+from typing import Tuple, Union, List, Callable, Optional, Dict, cast
 
 import numpy as np
 from sparse import SparseArray, DOK
@@ -156,7 +156,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         for i, b in enumerate(memory):
             sample = int(b, 2)
             if self._interpret:
-                sample = self._interpret(sample)
+                sample = cast(int, self._interpret(sample))
             samples[0, i, :] = sample
         return samples
 
