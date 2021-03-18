@@ -184,7 +184,7 @@ class QuantumKernel:
                 - x_vec and/or y_vec are not one or two dimensional arrays
                 - x_vec and y_vec have have incompatible dimensions
                 - x_vec and/or y_vec have incompatible dimension with feature map and
-                    and feature map can not be modified to match. 
+                    and feature map can not be modified to match.
         """
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
