@@ -146,12 +146,12 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
     """
     Discretize & truncate classical data to enable digital encoding in qubit registers
     whereby the data grid is [[grid elements dim 0], ..., [grid elements dim k]].
-    
+
     For each dimension k, the domain is split into (2 ** num_qubits[k]) bins equally spaced and equally
-    sized, each centered in discrete_bounds[k, 0], ..., discrete_bounds[k, 1]. Bins have size equal to 
+    sized, each centered in discrete_bounds[k, 0], ..., discrete_bounds[k, 1]. Bins have size equal to
     (discrete_bounds[k, 1] - discrete_bounds[k, 0])/(2 ** num_qubits[k] - 1).
     Every sample in data that falls out of the bins is discarded.
-    
+
     Args:
         data (list or array or np.array): training data (int or float) of dimension k
         discrete_bounds (list or array or np.array):  k min/max data values
@@ -182,15 +182,13 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
     for i, data_sample in enumerate(data):
         append = True
         for j, entry in enumerate(data_sample):
-            if entry < discrete_bounds[j, 0] -
-                       .5 * (discrete_bounds[j, 1]-discrete_bounds[j, 0])/(2 ** num_qubits[k] - 1):
+            if entry < discrete_bounds[j, 0] - .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[k] - 1):
                 append = False
-            if entry > discrete_bounds[j, 1] +
-                       .5 * (discrete_bounds[j, 1]-discrete_bounds[j, 0])/(2 ** num_qubits[k] - 1):
+            if entry > discrete_bounds[j, 1] + .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[k] - 1):
                 append = False
         if append:
             temp.append(list(data_sample))
-    data = np.array(temp)
+    data = np.array(temp, dtype=float)
 
     # Fit the data to the data element grid
     for j, prec in enumerate(num_qubits):
@@ -220,7 +218,7 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
             temp = []
             for grid_element in grid_elements:
                 for element_current in elements_current_dim:
-                    temp.append(grid_element+[element_current])
+                    temp.append(grid_element + [element_current])
             grid_elements = deepcopy(temp)
             data_grid.append(elements_current_dim)
     data_grid = np.array(data_grid, dtype=object)
