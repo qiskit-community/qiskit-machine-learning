@@ -67,6 +67,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.output_shape_2d = (2, 3)  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
     def get_qnn(self, dense, samples, statevector, interpret_id):
+        """ Construct QNN from configuration. """
 
         # get quantum instance
         if statevector:
