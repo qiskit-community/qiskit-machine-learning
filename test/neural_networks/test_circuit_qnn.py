@@ -63,6 +63,39 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.assertAlmostEqual(result[1], 0.81484, places=4)
         self.assertAlmostEqual(result[-1], 0.18516, places=4)
 
+    # def test_circuit_samples(self):
+    #     """Opflow QNN samples test."""
+    #     backend = Aer.get_backend('qasm_simulator')
+    #     quantum_instance = QuantumInstance(backend)
+    #
+    #     # define QNN
+    #     num_qubits = 2
+    #     feature_map = ZZFeatureMap(num_qubits)
+    #     var_form = RealAmplitudes(num_qubits, reps=1)
+    #
+    #     qc = QuantumCircuit(num_qubits)
+    #     qc.append(feature_map, range(num_qubits))
+    #     qc.append(var_form, range(num_qubits))
+    #
+    #     input_params = list(feature_map.parameters)
+    #     print(f"input_params: {input_params}")
+    #
+    #     weight_params = list(var_form.parameters)
+    #     print(f"weight_params {weight_params}")
+    #
+    #     def parity(x):
+    #         return (-1)**sum(x)
+    #
+    #     qnn = CircuitQNN(qc, input_params, weight_params,
+    #                      interpret=parity, quantum_instance=quantum_instance)
+    #
+    #     input_data = np.zeros((10, self.qnn.num_inputs))
+    #     weights = np.zeros(self.qnn.num_weights)
+    #
+    #     samples = qnn.sample(input_data, weights)
+    #     print(samples.tolist())
+    #     print(len(samples.tolist()))
+
 
 if __name__ == '__main__':
     unittest.main()

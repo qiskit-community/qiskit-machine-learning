@@ -67,7 +67,16 @@ class CircuitQNN(SamplingNeuralNetwork):
         # TODO: currently cannot handle statevector simulator, at least throw exception
 
         # copy circuit and add measurements in case non are given
+        # todo: handle quantum_instance as None
+        # if quantum_instance is None:
+        #     raise QiskitMachineLearningError("A QuantumInstance or Backend must be supplied "
+        #                                      "to run the quantum algorithm.")
+
+        if isinstance(quantum_instance, (BaseBackend, Backend)):
+            quantum_instance = QuantumInstance(quantum_instance)
+
         self._circuit = circuit.copy()
+
         if quantum_instance.is_statevector:
             if len(self._circuit.clbits) > 0:
                 self._circuit.remove_final_measurements()
@@ -79,9 +88,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._interpret = interpret
         self._dense = dense
         self._gradient = gradient
-
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
-            quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 
         # TODO this should not be necessary... but currently prop grads fail otherwise
@@ -162,19 +168,32 @@ class CircuitQNN(SamplingNeuralNetwork):
             return self._interpret(_bit_string_to_tuple(bitstr))
 
     def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
+        # todo: batches
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
+        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
-        orig_memory = self.quantum_instance.backend_options.get('memory')
-        self.quantum_instance.backend_options['memory'] = True
-        result = self.quantum_instance.execute(self.circuit.bind_parameters(param_values))
-        self.quantum_instance.backend_options['memory'] = orig_memory
+        orig_memory = self._quantum_instance.backend_options.get('memory')
+        self._quantum_instance.backend_options['memory'] = True
 
+        circuits = []
+        # iterate over rows, each row is an element of a batch
+        for i in range(input_data.shape[0]):
+            param_values = {input_param: input_data[i, j]
+                            for j, input_param in enumerate(self.input_params)}
+            param_values.update({weight_param: weights[j]
+                                 for j, weight_param in enumerate(self.weight_params)})
+            circuits.append(self._circuit.bind_parameters(param_values))
+
+        # result = self._quantum_instance.execute(self._circuit.bind_parameters(param_values))
+        result = self._quantum_instance.execute(circuits)
+        self._quantum_instance.backend_options['memory'] = orig_memory
+
+        # todo: interpret results
         # return samples
         return np.array([self._interpret_bitstring(b) for b in result.get_memory()])
 
@@ -182,7 +201,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                        ) -> Union[np.ndarray, Dict[Any, float]]:
         # todo: batches
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
+        param_values = {p: input_data[:, i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator

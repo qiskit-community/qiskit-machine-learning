@@ -74,10 +74,10 @@ class OpflowQNN(NeuralNetwork):
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self.input_params), len(self.weight_params), output_shape)
 
-    def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
+    def _get_output_shape_from_op(self, op):
         """Determines the output shape of a given operator."""
         # TODO: should eventually be moved to opflow
-        if isinstance(op, ListOp):
+        if type(op) == ListOp:
             shapes = []
             for op_ in op.oplist:
                 shape_ = self._get_output_shape_from_op(op_)
@@ -96,14 +96,17 @@ class OpflowQNN(NeuralNetwork):
     def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                  ) -> Union[np.ndarray, Dict]:
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # take i-th column as values for the i-th param in a batch
+        param_values = {p: input_data[:, i].tolist() for i, p in enumerate(self.input_params)}
+        param_values.update({p: [weights[i]] * input_data.shape[0] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
         if self.circuit_sampler:
+            # todo: exception calling this method with a list of values
             op = self.circuit_sampler.convert(self.forward_operator, param_values)
             result = np.real(op.eval())
         else:
+            # todo: batches: does bind_parameters support a list of values and what the output is?
             op = self.forward_operator.bind_parameters(param_values)
             result = np.real(op.eval())
         result = np.array(result)
@@ -113,8 +116,9 @@ class OpflowQNN(NeuralNetwork):
                   ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
                              Optional[Union[np.ndarray, List[Dict]]]]:
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # take i-th column as values for the i-th param in a batch
+        param_values = {p: input_data[:, i].tolist() for i, p in enumerate(self.input_params)}
+        param_values.update({p: [weights[i]] * input_data.shape[0] for i, p in enumerate(self.weight_params)})
 
         # evaluate gradient over all parameters
         if self.gradient_sampler:
@@ -123,6 +127,7 @@ class OpflowQNN(NeuralNetwork):
             grad = grad.bind_parameters(param_values)
             grad = np.real(grad.eval())
         else:
+            # todo: batches: does bind_parameters support a list of values and what the output is?
             grad = self.gradient_operator.bind_parameters(param_values)
             grad = np.real(grad.eval())
 

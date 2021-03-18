@@ -19,7 +19,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from qiskit import Aer
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.opflow import PauliExpectation, Gradient, StateFn, PauliSumOp
+from qiskit.opflow import PauliExpectation, Gradient, StateFn, PauliSumOp, ListOp, X, Y, Z
 from qiskit.utils import QuantumInstance
 
 from qiskit_machine_learning.neural_networks import OpflowQNN
@@ -65,6 +65,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
 
         # test forward pass
         result = self.qnn.forward(input_data, weights)
+        print(result)
         self.assertEqual(result.shape, self.qnn.output_shape)
 
         # test backward pass
@@ -72,6 +73,15 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         self.assertEqual(result[0].shape, (self.qnn.num_inputs, *self.qnn.output_shape))
         self.assertEqual(result[1].shape, (self.qnn.num_weights, *self.qnn.output_shape))
 
+    # def test_opflow_batch(self):
+    #     print(f"output shape {self.qnn._output_shape}")
+    #     batch_size = 10
+    #     input_data = np.zeros((batch_size, self.qnn.num_inputs))
+    #     weights = np.zeros(self.qnn.num_weights)
+    #
+    #     result = self.qnn.forward(input_data, weights)
+    #     print(result)
+    #
 
 if __name__ == '__main__':
     unittest.main()
