@@ -19,7 +19,7 @@ import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import ParameterVector
-from qiskit.circuit.library import PauliFeatureMap
+from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
 from ..exceptions import QiskitMachineLearningError
@@ -48,7 +48,7 @@ class QuantumKernel:
     """
 
     def __init__(self,
-                 feature_map: QuantumCircuit = None,
+                 feature_map: Optional[QuantumCircuit] = None,
                  enforce_psd: bool = False,
                  batch_size: int = 1000,
                  quantum_instance: Optional[
@@ -61,7 +61,7 @@ class QuantumKernel:
             batch_size: Number of circuits to batch together for computation
             quantum_instance: Quantum Instance or Backend
         """
-        self._feature_map = feature_map if feature_map else PauliFeatureMap()
+        self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
@@ -180,20 +180,17 @@ class QuantumKernel:
         Raises:
             QiskitMachineLearningError:
                 - A quantum instance or backend has not been provided
-                - The provided feature map has zero dimension
             ValueError:
                 - x_vec and/or y_vec are not one or two dimensional arrays
-                - x_vec and/or y_vec have incompatible dimension with feature map
+                - x_vec and y_vec have have incompatible dimensions
+                - x_vec and/or y_vec have incompatible dimension with feature map and
+                    and feature map can not be modified to match. 
         """
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
                 "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel.")
         if isinstance(self._quantum_instance, (BaseBackend, Backend)):
             self._quantum_instance = QuantumInstance(self._quantum_instance)
-
-        if self._feature_map.num_parameters == 0:
-            raise QiskitMachineLearningError(
-                "Quantum kernel cannot be evaluated as feature map has zero dimension.")
 
         if not isinstance(x_vec, np.ndarray):
             x_vec = np.asarray(x_vec)
@@ -212,10 +209,18 @@ class QuantumKernel:
         if y_vec is not None and y_vec.ndim == 1:
             y_vec = np.reshape(y_vec, (-1, 2))
 
+        if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
+            raise ValueError("x_vec and y_vec have incompatible dimensions.\n" +
+                             "x_vec has %s dimensions, but y_vec has %s." %
+                             (x_vec.shape[1], y_vec.shape[1]))
+
         if x_vec.shape[1] != self._feature_map.num_parameters:
-            raise ValueError("x_vec and class feature map have incompatible dimensions.\n" +
-                             "x_vec has %s dimensions, but feature map has %s." %
-                             (x_vec.shape[1], self._feature_map.num_parameters))
+            try:
+                self._feature_map.num_qubits = x_vec.shape[1]
+            except AttributeError:
+                raise ValueError("x_vec and class feature map have incompatible dimensions.\n" +
+                    "x_vec has %s dimensions, but feature map has %s." %
+                    (x_vec.shape[1], self._feature_map.num_parameters)) from AttributeError
 
         if y_vec is not None and y_vec.shape[1] != self._feature_map.num_parameters:
             raise ValueError("y_vec and class feature map have incompatible dimensions.\n" +

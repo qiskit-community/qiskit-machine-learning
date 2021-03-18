@@ -229,13 +229,6 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         np.testing.assert_allclose(kernel, self.ref_kernel_test['one_xy_dim'], rtol=1e-4)
 
-    def test_no_featuremap(self):
-        """ Test no feature map provided """
-        qkclass = QuantumKernel(quantum_instance=self.qasm_simulator)
-
-        with self.assertRaises(QiskitMachineLearningError):
-            _ = qkclass.evaluate(x_vec=self.sample_train)
-
     def test_no_backend(self):
         """ Test no backend provided """
         qkclass = QuantumKernel(feature_map=self.feature_map)
@@ -258,14 +251,6 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_more_dim)
-
-    def test_x_feature_dim(self):
-        """ Test incorrect x_vec feature dimension """
-        qkclass = QuantumKernel(feature_map=self.feature_map,
-                                quantum_instance=self.qasm_simulator)
-
-        with self.assertRaises(ValueError):
-            _ = qkclass.evaluate(x_vec=self.sample_feature_dim)
 
     def test_y_feature_dim(self):
         """ Test incorrect y_vec feature dimension """
