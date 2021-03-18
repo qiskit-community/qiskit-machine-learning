@@ -195,6 +195,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # todo: interpret results
         # return samples
+        # todo: .get_memory(by circuit) and combine
         return np.array([self._interpret_bitstring(b) for b in result.get_memory()])
 
     def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
