@@ -69,5 +69,18 @@ class TestQSVC(QiskitMachineLearningTestCase):
         with self.assertRaises(QiskitMachineLearningError):
             _ = qsvc.fit(self.sample_train, self.label_train)
 
+    def test_change_kernel(self):
+        """ Test QSVC with QuantumKernel later """
+        qkernel = QuantumKernel(feature_map=self.feature_map,
+                               quantum_instance=self.statevector_simulator)
+
+        qsvc = QSVC()
+        qsvc.quantum_kernel = qkernel
+        qsvc.fit(self.sample_train, self.label_train)
+        score = qsvc.score(self.sample_test, self.label_test)
+
+        self.assertEqual(score, 0.5)
+
+
 if __name__ == '__main__':
     unittest.main()

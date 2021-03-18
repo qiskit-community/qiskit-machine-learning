@@ -11,35 +11,52 @@
 # that they have been altered from the originals.
 
 """Quantum Support Vector Regressor"""
+import logging
 
-from typing import Union
+from typing import Optional
+
 from sklearn.svm import SVR
 
-from qiskit import QuantumCircuit
-from qiskit.providers import Backend, BaseBackend
-from qiskit.utils import QuantumInstance
 from ...kernels.quantum_kernel import QuantumKernel
 
+logger = logging.getLogger(__name__)
 
 class QSVR(SVR):
     r"""Quantum Support Vector Regressor.
+
+    This class shows how to use a quantum kernel for classification. The class extends
+    `sklearn.svm.SVR <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html>`_,
+    and thus inherits its methods like ``fit`` and ``predict`` used in the example below.
+    Read more in the
+    `sklearn user guide <https://scikit-learn.org/stable/modules/svm.html#svm-regression>`_.
 
     **Example**
 
     .. code-block::
 
-        qsvr = QSVR(feature_map=map, quantum_instance=backend)
+        qsvr = QSVR(quantum_kernel=qkernel)
         qsvr.fit(sample_train,label_train)
         qsvr.predict(sample_test)
     """
 
-    def __init__(self,
-                 feature_map: QuantumCircuit,
-                 quantum_instance:
-                 Union[QuantumInstance, BaseBackend, Backend],
-                 *args, **kwargs) -> None:
+    def __init__(self, *args,
+                 quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+        """
+        Args:
+            quantum_kernel: QuantumKernel to be used for classification.
+        """
 
-        self._qkernel = QuantumKernel(feature_map=feature_map,
-                                      quantum_instance=quantum_instance)
+        self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
-        super().__init__(kernel=self._qkernel.evaluate, *args, **kwargs)
+        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+
+    @property
+    def quantum_kernel(self) -> QuantumKernel:
+        """ Returns quantum kernel """
+        return self._quantum_kernel
+
+    @quantum_kernel.setter
+    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+        """ Sets quantum kernel """
+        self._quantum_kernel = quantum_kernel
+        self.kernel = self._quantum_kernel

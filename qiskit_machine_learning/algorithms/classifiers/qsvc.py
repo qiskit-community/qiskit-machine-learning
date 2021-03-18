@@ -13,6 +13,8 @@
 """Quantum Support Vector Classifier"""
 import logging
 
+from typing import Optional
+
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
@@ -24,25 +26,37 @@ class QSVC(SVC):
 
     This class shows how to use a quantum kernel for classification. The class extends
     `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_,
-    and thus inherits its method like ``fit`` and ``predict`` used in the example below.
+    and thus inherits its methods like ``fit`` and ``predict`` used in the example below.
     Read more in the
     `sklearn user guide https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
 
     **Example**
 
     .. code-block::
+
         qsvc = QSVC(quantum_kernel=qkernel)
         qsvc.fit(sample_train,label_train)
         qsvc.predict(sample_test)
     """
 
     def __init__(self, *args,
-                 quantum_kernel: QuantumKernel, **kwargs):
+                 quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for classification.
         """
 
-        self._quantum_kernel = quantum_kernel
+        self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
         super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+
+    @property
+    def quantum_kernel(self) -> QuantumKernel:
+        """ Returns quantum kernel """
+        return self._quantum_kernel
+
+    @quantum_kernel.setter
+    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+        """ Sets quantum kernel """
+        self._quantum_kernel = quantum_kernel
+        self.kernel = self._quantum_kernel
