@@ -14,9 +14,11 @@
 neural network."""
 
 from copy import deepcopy
-from typing import List, Optional, Union, Tuple, Dict
+from typing import List, Optional, Union, Tuple
 
 import numpy as np
+from sparse import SparseArray
+
 from qiskit.circuit import Parameter
 from qiskit.opflow import Gradient, CircuitSampler, ListOp, OperatorBase, ExpectationBase
 from qiskit.providers import BaseBackend, Backend
@@ -72,7 +74,7 @@ class OpflowQNN(NeuralNetwork):
         self.gradient_operator = self.gradient.convert(operator,
                                                        self.input_params + self.weight_params)
         output_shape = self._get_output_shape_from_op(operator)
-        super().__init__(len(self.input_params), len(self.weight_params), output_shape)
+        super().__init__(len(self.input_params), len(self.weight_params), True, output_shape)
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
@@ -94,7 +96,7 @@ class OpflowQNN(NeuralNetwork):
             return (1,)
 
     def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                 ) -> Union[np.ndarray, Dict]:
+                 ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
@@ -110,8 +112,8 @@ class OpflowQNN(NeuralNetwork):
         return result.reshape(self.output_shape)
 
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                  ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
-                             Optional[Union[np.ndarray, List[Dict]]]]:
+                  ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
+                             Optional[Union[np.ndarray, SparseArray]]]:
         # combine parameter dictionary
         param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
