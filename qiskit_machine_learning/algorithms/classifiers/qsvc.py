@@ -44,6 +44,8 @@ class QSVC(SVC):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for classification.
+            *args: Variable length argument list to pass to SVC constructor.
+            **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
 
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
@@ -59,4 +61,4 @@ class QSVC(SVC):
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """ Sets quantum kernel """
         self._quantum_kernel = quantum_kernel
-        self.kernel = self._quantum_kernel
+        self.kernel = self._quantum_kernel.evaluate
