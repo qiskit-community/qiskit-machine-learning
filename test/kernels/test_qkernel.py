@@ -229,6 +229,13 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         np.testing.assert_allclose(kernel, self.ref_kernel_test['one_xy_dim'], rtol=1e-4)
 
+    def test_no_featuremap(self):
+        """ Test no feature map provided """
+        qkclass = QuantumKernel(quantum_instance=self.qasm_simulator)
+
+        with self.assertRaises(QiskitMachineLearningError):
+            _ = qkclass.evaluate(x_vec=self.sample_train)
+
     def test_no_backend(self):
         """ Test no backend provided """
         qkclass = QuantumKernel(feature_map=self.feature_map)
