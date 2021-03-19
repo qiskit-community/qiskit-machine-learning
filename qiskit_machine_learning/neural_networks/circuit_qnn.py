@@ -12,7 +12,8 @@
 
 """A Sampling Neural Network based on a given quantum circuit."""
 
-from typing import Tuple, Union, List, Callable, Optional, Dict, cast
+from typing import (Tuple, Union, List,
+                    Callable, Optional, Dict, cast, Iterable)
 
 import numpy as np
 from sparse import SparseArray, DOK
@@ -83,9 +84,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             dense_ = True
             # infer shape from function
             if interpret:
-                result = interpret(0)
-                result = np.array(result)
-                output_shape_ = result.shape
+                ret = interpret(0)
+                result = np.array(ret)
+                output_shape_: Union[int, Tuple[int, ...]] = result.shape
                 if len(result.shape) == 0:
                     output_shape_ = (1,)
             else:
@@ -180,13 +181,13 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # evaluate probabilities
         for b, v in counts.items():
-            key = int(b, 2)
+            key: Union[int, Tuple[int, ...]] = int(b, 2)
             if self._interpret:
-                key = self._interpret(key)
+                key = self._interpret(cast(int, key))
             if hasattr(key, '__len__'):
-                key = (0, *key)
+                key = (0, *key)  # type: ignore
             else:
-                key = (0, key)
+                key = cast(Tuple[int, ...], (0, key))
             prob[key] += v / shots
 
         return prob
@@ -208,11 +209,11 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_grad_dicts = [{} for _ in range(self.num_inputs)]
             for i in range(self.num_inputs):
                 for k in range(2 ** self.circuit.num_qubits):
-                    key = k
+                    key: Union[int, Tuple[int, ...]] = k
                     if self._interpret:
-                        key = self._interpret(key)
+                        key = self._interpret(cast(int, key))
                     if hasattr(key, '__len__'):
-                        key = tuple(key)
+                        key = tuple(cast(Iterable[int], key))
                     input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
                                                 np.real(grad[i][k]))
 
@@ -225,7 +226,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     if self._interpret:
                         key = self._interpret(key)
                     if hasattr(key, '__len__'):
-                        key = tuple(key)
+                        key = tuple(cast(Iterable[int], key))
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
                                                   np.real(grad[i + self.num_inputs][k]))
 
@@ -248,14 +249,14 @@ class CircuitQNN(SamplingNeuralNetwork):
             for k, grad in input_grad_dicts[i].items():
                 key = (0, i, k)
                 if hasattr(k, '__len__'):
-                    key = (0, i, *k)
+                    key = (0, i, *k)  # type: ignore
                 input_grad[key] = grad
 
         for i in range(self.num_weights):
             for k, grad in weights_grad_dicts[i].items():
                 key = (0, i, k)
                 if hasattr(k, '__len__'):
-                    key = (0, i, *k)
+                    key = (0, i, *k)  # type: ignore
                 weights_grad[key] = grad
 
         return input_grad, weights_grad
