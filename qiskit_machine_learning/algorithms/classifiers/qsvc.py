@@ -28,8 +28,8 @@ class QSVC(SVC):
     This class shows how to use a quantum kernel for classification. The class extends
     `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_,
     and thus inherits its methods like ``fit`` and ``predict`` used in the example below.
-    Read more in the
-    `sklearn user guide <https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
+    Read more in the `sklearn user guide
+    <https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
 
     **Example**
 

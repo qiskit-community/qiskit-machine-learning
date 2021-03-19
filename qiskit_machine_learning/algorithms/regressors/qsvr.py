@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class QSVR(SVR):
     r"""Quantum Support Vector Regressor.
 
-    This class shows how to use a quantum kernel for classification. The class extends
+    This class shows how to use a quantum kernel for regression. The class extends
     `sklearn.svm.SVR <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html>`_,
     and thus inherits its methods like ``fit`` and ``predict`` used in the example below.
     Read more in the
@@ -44,8 +44,10 @@ class QSVR(SVR):
                  quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: QuantumKernel to be used for classification.
-        """
+            quantum_kernel: QuantumKernel to be used for regression.
+            *args: Variable length argument list to pass to SVR constructor.
+            **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
+       """
 
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
@@ -60,4 +62,4 @@ class QSVR(SVR):
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """ Sets quantum kernel """
         self._quantum_kernel = quantum_kernel
-        self.kernel = self._quantum_kernel
+        self.kernel = self._quantum_kernel.evaluate

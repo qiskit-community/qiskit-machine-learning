@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test QSVC """
+""" Test QSVR """
 
 import unittest
 
@@ -21,13 +21,13 @@ import numpy as np
 from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance
-from qiskit_machine_learning.algorithms import QSVC
+from qiskit_machine_learning.algorithms import QSVR
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 
-class TestQSVC(QiskitMachineLearningTestCase):
-    """ Test QSVC Algorithm """
+class TestQSVR(QiskitMachineLearningTestCase):
+    """ Test QSVR Algorithm """
 
     def setUp(self):
         super().setUp()
@@ -51,47 +51,48 @@ class TestQSVC(QiskitMachineLearningTestCase):
                                        [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
 
-    def test_qsvc(self):
-        """ Test QSVC """
+    def test_qsvr(self):
+        """ Test QSVR """
         qkernel = QuantumKernel(feature_map=self.feature_map,
                                 quantum_instance=self.statevector_simulator)
 
-        qsvc = QSVC(quantum_kernel=qkernel)
-        qsvc.fit(self.sample_train, self.label_train)
-        score = qsvc.score(self.sample_test, self.label_test)
+        qsvr = QSVR(quantum_kernel=qkernel)
+        qsvr.fit(self.sample_train, self.label_train)
+        score = qsvr.score(self.sample_test, self.label_test)
 
-        self.assertEqual(score, 0.5)
+        self.assertAlmostEqual(score, 0.38365, places=4)
 
     def test_empty_kernel(self):
-        """ Test QSVC with empty QuantumKernel """
+        """ Test QSVR with empty QuantumKernel """
         qkernel = QuantumKernel()
-        qsvc = QSVC(quantum_kernel=qkernel)
+        qsvr = QSVR(quantum_kernel=qkernel)
 
         with self.assertRaises(QiskitMachineLearningError):
-            _ = qsvc.fit(self.sample_train, self.label_train)
+            _ = qsvr.fit(self.sample_train, self.label_train)
 
     def test_change_kernel(self):
-        """ Test QSVC with QuantumKernel later """
+        """ Test QSVR with QuantumKernel later """
         qkernel = QuantumKernel(feature_map=self.feature_map,
                                 quantum_instance=self.statevector_simulator)
 
-        qsvc = QSVC()
-        qsvc.quantum_kernel = qkernel
-        qsvc.fit(self.sample_train, self.label_train)
-        score = qsvc.score(self.sample_test, self.label_test)
+        qsvr = QSVR()
+        qsvr.quantum_kernel = qkernel
+        qsvr.fit(self.sample_train, self.label_train)
+        score = qsvr.score(self.sample_test, self.label_test)
 
-        self.assertEqual(score, 0.5)
+        self.assertAlmostEqual(score, 0.38365, places=4)
 
-    def test_qsvc_parameters(self):
-        """ Test QSVC with extra constructor parameters """
+    def test_qsvr_parameters(self):
+        """Test QSVR with extra constructor parameters """
+
         qkernel = QuantumKernel(feature_map=self.feature_map,
                                quantum_instance=self.statevector_simulator)
 
-        qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
-        qsvc.fit(self.sample_train, self.label_train)
-        score = qsvc.score(self.sample_test, self.label_test)
+        qsvr = QSVR(quantum_kernel=qkernel, tol=1e-4, C=0.5)
+        qsvr.fit(self.sample_train, self.label_train)
+        score = qsvr.score(self.sample_test, self.label_test)
 
-        self.assertEqual(score, 0.5)
+        self.assertAlmostEqual(score, 0.38365, places=4)
 
 
 if __name__ == '__main__':
