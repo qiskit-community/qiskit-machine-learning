@@ -183,7 +183,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         np.testing.assert_allclose(kernel, self.ref_kernel_test['statevector'], rtol=1e-4)
 
-    def test_qasm_sample(self):
+    def test_qasm_nopsd(self):
         """ Test symmetric matrix qasm sample no positive semi-definite enforcement"""
         qkclass = QuantumKernel(feature_map=self.feature_map,
                                 quantum_instance=self.qasm_sample,

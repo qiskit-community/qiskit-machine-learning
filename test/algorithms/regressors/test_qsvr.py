@@ -86,7 +86,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         """Test QSVR with extra constructor parameters """
 
         qkernel = QuantumKernel(feature_map=self.feature_map,
-                               quantum_instance=self.statevector_simulator)
+                                quantum_instance=self.statevector_simulator)
 
         qsvr = QSVR(quantum_kernel=qkernel, tol=1e-4, C=0.5)
         qsvr.fit(self.sample_train, self.label_train)

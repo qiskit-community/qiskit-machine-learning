@@ -85,7 +85,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
     def test_qsvc_parameters(self):
         """ Test QSVC with extra constructor parameters """
         qkernel = QuantumKernel(feature_map=self.feature_map,
-                               quantum_instance=self.statevector_simulator)
+                                quantum_instance=self.statevector_simulator)
 
         qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
         qsvc.fit(self.sample_train, self.label_train)
