@@ -22,6 +22,7 @@ requirements = [
     "qiskit-terra>=0.17.0",
     "scipy>=1.4",
     "numpy>=1.17",
+    "sparse",
     "psutil>=5",
     "scikit-learn>=0.20.0",
     "fastdtw",
