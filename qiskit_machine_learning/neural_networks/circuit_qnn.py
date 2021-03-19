@@ -67,10 +67,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """
 
-        # TODO: currently cannot handle statevector simulator, at least throw exception
         # TODO: need to be able to handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
-
         self._circuit = circuit.copy()
         if quantum_instance.is_statevector:
             if len(self._circuit.clbits) > 0:
@@ -80,20 +78,17 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
-        self._interpret = interpret
+        self._interpret = interpret if interpret else lambda x: x
         dense_ = dense
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if return_samples:
             num_samples = quantum_instance.run_config.shots
             dense_ = True
             # infer shape from function
-            if interpret:
-                ret = interpret(0)
-                result = np.array(ret)
-                output_shape_ = (num_samples, *result.shape)
-                if len(result.shape) == 0:
-                    output_shape_ = (num_samples, 1)
-            else:
+            ret = self._interpret(0)
+            result = np.array(ret)
+            output_shape_ = (num_samples, *result.shape)
+            if len(result.shape) == 0:
                 output_shape_ = (num_samples, 1)
         else:
             if interpret:
@@ -137,8 +132,22 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     @property
     def quantum_instance(self) -> QuantumInstance:
-        """Returns the quantum instance to evaluate the circuits."""
+        """Returns the quantum instance to evaluate the circuit."""
         return self._quantum_instance
+
+    @quantum_instance.setter
+    def quantum_instance(self, quantum_instance) -> None:
+        """Sets the quantum instance to evaluate the circuit and make sure circuit has
+        measurements or not depending on the type of backend used.
+        """
+        self._quantum_instance = quantum_instance
+
+        # add measurements in case non are given
+        if quantum_instance.is_statevector:
+            if len(self._circuit.clbits) > 0:
+                self._circuit.remove_final_measurements()
+        elif len(self._circuit.clbits) == 0:
+            self._circuit.measure_all()
 
     def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
         if self._quantum_instance.is_statevector:
@@ -158,10 +167,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         memory = result.get_memory()
         samples = np.zeros((1, *self.output_shape))
         for i, b in enumerate(memory):
-            sample: Union[int, Tuple[int, ...]] = int(b, 2)
-            if self._interpret:
-                sample = self._interpret(cast(int, sample))
-            samples[0, i, :] = sample
+            samples[0, i, :] = self._interpret(int(b, 2))
         return samples
 
     def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
@@ -185,9 +191,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # evaluate probabilities
         for b, v in counts.items():
-            key: Union[int, Tuple[int, ...]] = int(b, 2)
-            if self._interpret:
-                key = self._interpret(cast(int, key))
+            key = self._interpret(int(b, 2))
             if isinstance(key, Integral):
                 key = (cast(int, key),)
             key = (0, *key)  # type: ignore
@@ -215,9 +219,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_grad_dicts = [{} for _ in range(self.num_inputs)]
             for i in range(self.num_inputs):
                 for k in range(2 ** self.circuit.num_qubits):
-                    key: Union[int, Tuple[int, ...]] = k
-                    if self._interpret:
-                        key = self._interpret(cast(int, key))
+                    key = self._interpret(k)
                     if not isinstance(key, Integral):
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
@@ -229,9 +231,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             weights_grad_dicts = [{} for _ in range(self.num_weights)]
             for i in range(self.num_weights):
                 for k in range(2 ** self.circuit.num_qubits):
-                    key = k
-                    if self._interpret:
-                        key = self._interpret(key)
+                    key = self._interpret(k)
                     if not isinstance(key, Integral):
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
