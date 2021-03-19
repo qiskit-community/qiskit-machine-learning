@@ -118,22 +118,22 @@ class CircuitQNN(SamplingNeuralNetwork):
         super().__init__(len(self._input_params), len(self._weight_params), dense_, return_samples,
                          output_shape_)
 
-    @ property
+    @property
     def circuit(self) -> QuantumCircuit:
         """Returns the underlying quantum circuit."""
         return self._circuit
 
-    @ property
+    @property
     def input_params(self) -> List:
         """Returns the list of input parameters."""
         return self._input_params
 
-    @ property
+    @property
     def weight_params(self) -> List:
         """Returns the list of trainable weights parameters."""
         return self._weight_params
 
-    @ property
+    @property
     def quantum_instance(self) -> QuantumInstance:
         """Returns the quantum instance to evaluate the circuits."""
         return self._quantum_instance
@@ -156,9 +156,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         memory = result.get_memory()
         samples = np.zeros((1, *self.output_shape))
         for i, b in enumerate(memory):
-            sample = int(b, 2)
+            sample: Union[int, Tuple[int, ...]] = int(b, 2)
             if self._interpret:
-                sample = cast(int, self._interpret(sample))
+                sample = self._interpret(cast(int, sample))
             samples[0, i, :] = sample
         return samples
 
@@ -186,10 +186,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             key: Union[int, Tuple[int, ...]] = int(b, 2)
             if self._interpret:
                 key = self._interpret(cast(int, key))
-            if hasattr(key, '__len__'):
-                key = (0, *key)  # type: ignore
-            else:
-                key = cast(Tuple[int, ...], (0, key))
+            if isinstance(key, int):
+                key = (key,)
+            key = (0, *key)  # "type: --ignore"
             prob[key] += v / shots
 
         return prob
@@ -215,6 +214,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     if self._interpret:
                         key = self._interpret(cast(int, key))
                     if hasattr(key, '__len__'):
+                        # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
                     input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
                                                 np.real(grad[i][k]))
@@ -228,6 +228,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     if self._interpret:
                         key = self._interpret(key)
                     if hasattr(key, '__len__'):
+                        # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
                                                   np.real(grad[i + self.num_inputs][k]))
@@ -235,30 +236,34 @@ class CircuitQNN(SamplingNeuralNetwork):
         input_grad: Union[np.ndarray, SparseArray] = None
         weights_grad: Union[np.ndarray, SparseArray] = None
         if self._dense:
-            input_grad = np.zeros((1, self.num_inputs, *self.output_shape))
-            weights_grad = np.zeros((1, self.num_weights, *self.output_shape))
+            input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
+            weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
         else:
             if self.num_inputs > 0:
-                input_grad = DOK((1, self.num_inputs, *self.output_shape))
+                input_grad = DOK((1, *self.output_shape, self.num_inputs))
             else:
-                input_grad = np.zeros((1, self.num_inputs, *self.output_shape))
+                input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
             if self.num_weights > 0:
-                weights_grad = DOK((1, self.num_weights, *self.output_shape))
+                weights_grad = DOK((1, *self.output_shape, self.num_weights))
             else:
-                weights_grad = np.zeros((1, self.num_weights, *self.output_shape))
+                weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
 
         for i in range(self.num_inputs):
             for k, grad in input_grad_dicts[i].items():
-                key = (0, i, k)
-                if hasattr(k, '__len__'):
-                    key = (0, i, *k)  # type: ignore
+                key = -1
+                if isinstance(k, int):
+                    key = (0, k, i)
+                else:
+                    key = (0, *k, i)
                 input_grad[key] = grad
 
         for i in range(self.num_weights):
             for k, grad in weights_grad_dicts[i].items():
-                key = (0, i, k)
-                if hasattr(k, '__len__'):
-                    key = (0, i, *k)  # type: ignore
+                key = -1
+                if isinstance(key, int):
+                    key = (0, k, i)
+                else:
+                    key = (0, *k, i)
                 weights_grad[key] = grad
 
         return input_grad, weights_grad
