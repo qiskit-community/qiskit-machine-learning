@@ -72,10 +72,9 @@ class NeuralNetwork(ABC):
         input_ = np.array(input_data)
         shape = input_.shape
         if len(shape) == 0:
-            # there's a single value
+            # there's a single value in the input.
             input_ = input_.reshape((1, 1))
-            shape = input_.shape
-            # todo: return here
+            return input_, shape
 
         if shape[-1] != self._num_inputs:
             raise QiskitMachineLearningError(f"Input data has incorrect shape, last dimension "
