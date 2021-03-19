@@ -132,12 +132,12 @@ class TorchConnector(Module):
                 elif qnn.dense:
                     if len(input_grad.shape) == 1:
                         input_grad = input_grad.reshape(1, len(input_grad))
-                    input_grad = grad_output.float() * Tensor(input_grad)
+                    input_grad = grad_output.float() @ Tensor(input_grad)
                 else:
                     sparse_input_grad = sparse_coo_tensor(input_grad.coords, input_grad.data)
                     if len(sparse_input_grad.shape) == 1:
                         sparse_input_grad = sparse_input_grad.reshape(1, len(sparse_input_grad))
-                    sparse_input_grad = grad_output.float() * sparse_input_grad
+                    sparse_input_grad = grad_output.float() @ sparse_input_grad
 
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
@@ -151,7 +151,7 @@ class TorchConnector(Module):
                     if len(sparse_weights_grad.shape) == 1:
                         sparse_weights_grad = sparse_weights_grad.reshape(1,
                                                                           len(sparse_weights_grad))
-                    sparse_weights_grad = grad_output.float() * sparse_weights_grad
+                    sparse_weights_grad = grad_output.float() @ sparse_weights_grad
 
             # return gradients for the first two arguments and None for the others
             return input_grad, weights_grad, None
