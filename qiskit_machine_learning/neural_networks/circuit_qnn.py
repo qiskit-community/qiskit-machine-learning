@@ -12,11 +12,11 @@
 
 """A Sampling Neural Network based on a given quantum circuit."""
 
+from numbers import Integral
 from typing import (Tuple, Union, List,
                     Callable, Optional, Dict, cast, Iterable)
 
 import numpy as np
-from numbers import Integral
 from sparse import SparseArray, DOK
 
 from qiskit import QuantumCircuit
@@ -188,8 +188,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             if self._interpret:
                 key = self._interpret(cast(int, key))
             if isinstance(key, Integral):
-                key = (key,)
-            key = (0, *key)  # "type: --ignore"
+                key = (cast(int, key),)
+            key = (0, *key)  # type: ignore
             prob[key] += v / shots
 
         return prob
@@ -255,7 +255,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 if isinstance(k, Integral):
                     key = (0, k, i)
                 else:
-                    key = (0, *k, i)
+                    key = (0, *k, i)  # type: ignore
                 input_grad[key] = grad
 
         for i in range(self.num_weights):
@@ -264,7 +264,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 if isinstance(key, Integral):
                     key = (0, k, i)
                 else:
-                    key = (0, *k, i)
+                    key = (0, *k, i)  # type: ignore
                 weights_grad[key] = grad
 
         return input_grad, weights_grad
