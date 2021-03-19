@@ -160,8 +160,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
-                self.assertEqual(input_grad.shape, (1, qnn.num_inputs, *qnn.output_shape))
-                self.assertEqual(weights_grad.shape, (1, qnn.num_weights, *qnn.output_shape))
+                self.assertEqual(input_grad.shape, (1, *qnn.output_shape, qnn.num_inputs))
+                self.assertEqual(weights_grad.shape, (1, *qnn.output_shape, qnn.num_weights))
 
         # TODO: add test on batching
 
@@ -197,10 +197,10 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             f_2 = qnn.forward(input_data - delta, weights)
             if dense:
                 grad = (f_1 - f_2) / (2*eps)
-                diff = input_grad[0][k] - grad
+                diff = input_grad[0, :, k] - grad
             else:
                 grad = (f_1.todense() - f_2.todense()) / (2*eps)
-                diff = input_grad.todense()[0][k] - grad
+                diff = input_grad.todense()[0, :, k] - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
         # test input gradients
@@ -213,10 +213,10 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             f_2 = qnn.forward(input_data, weights - delta)
             if dense:
                 grad = (f_1 - f_2) / (2*eps)
-                diff = weights_grad[0][k] - grad
+                diff = weights_grad[0][:, k] - grad
             else:
                 grad = (f_1.todense() - f_2.todense()) / (2*eps)
-                diff = weights_grad.todense()[0][k] - grad
+                diff = weights_grad.todense()[0, :, k] - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
         # TODO: add test on batching
