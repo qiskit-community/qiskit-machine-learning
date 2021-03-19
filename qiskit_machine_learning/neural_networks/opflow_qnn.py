@@ -77,7 +77,7 @@ class OpflowQNN(NeuralNetwork):
     def _get_output_shape_from_op(self, op):
         """Determines the output shape of a given operator."""
         # TODO: should eventually be moved to opflow
-        # this "if" statement is on purpose, to prevent subclasses.
+        # this "if" statement is on purpose, to prevent sub-classes.
         # pylint:disable=unidiomatic-typecheck
         if type(op) == ListOp:
             shapes = []
