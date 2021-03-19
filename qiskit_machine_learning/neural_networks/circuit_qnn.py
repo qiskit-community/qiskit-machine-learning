@@ -16,6 +16,7 @@ from typing import (Tuple, Union, List,
                     Callable, Optional, Dict, cast, Iterable)
 
 import numpy as np
+from numbers import Integral
 from sparse import SparseArray, DOK
 
 from qiskit import QuantumCircuit
@@ -187,7 +188,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             key: Union[int, Tuple[int, ...]] = int(b, 2)
             if self._interpret:
                 key = self._interpret(cast(int, key))
-            if isinstance(key, int):
+            if isinstance(key, Integral):
                 key = (key,)
             key = (0, *key)  # "type: --ignore"
             prob[key] += v / shots
@@ -217,7 +218,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key: Union[int, Tuple[int, ...]] = k
                     if self._interpret:
                         key = self._interpret(cast(int, key))
-                    if not isinstance(key, int):
+                    if not isinstance(key, Integral):
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
                     input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
@@ -231,7 +232,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key = k
                     if self._interpret:
                         key = self._interpret(key)
-                    if not isinstance(key, int):
+                    if not isinstance(key, Integral):
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
@@ -256,7 +257,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         for i in range(self.num_inputs):
             for k, grad in input_grad_dicts[i].items():
                 key = -1
-                if isinstance(k, int):
+                if isinstance(k, Integral):
                     key = (0, k, i)
                 else:
                     key = (0, *k, i)
@@ -265,7 +266,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         for i in range(self.num_weights):
             for k, grad in weights_grad_dicts[i].items():
                 key = -1
-                if isinstance(key, int):
+                if isinstance(key, Integral):
                     key = (0, k, i)
                 else:
                     key = (0, *k, i)
