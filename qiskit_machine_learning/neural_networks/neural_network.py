@@ -98,7 +98,7 @@ class NeuralNetwork(ABC):
 
     def _validate_output(self, output_data: np.ndarray, original_shape: Tuple[int, ...]
                          ) -> np.ndarray:
-        if original_shape:
+        if original_shape and len(original_shape) >= 2:
             output_data = output_data.reshape((*original_shape[:-1], *self._output_shape))
 
         return output_data
@@ -142,7 +142,7 @@ class NeuralNetwork(ABC):
             for input and weights of shape (output_shape, num_input) and
             (output_shape, num_weights), respectively.
         """
-        input_, shape = self._validate_input(input_data)
+        input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         # todo: reshape input gradients.
         return self._backward(input_, weights_)

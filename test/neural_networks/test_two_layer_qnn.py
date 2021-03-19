@@ -52,7 +52,7 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
 
         # test forward pass
         result = qnn.forward(input_data, weights)
-        self.assertEqual(result.shape, self.qnn.output_shape)
+        self.assertEqual(result.shape, (1, *self.qnn.output_shape))
 
         # test backward pass
         result = self.qnn.backward(input_data, weights)
@@ -64,7 +64,8 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         """Batched Opflow QNN Test for the specified network."""
         batch_size = 10
 
-        input_data = np.arange(batch_size * self.qnn.num_inputs).reshape((batch_size, self.qnn.num_inputs))
+        input_data = np.arange(batch_size * self.qnn.num_inputs)\
+            .reshape((batch_size, self.qnn.num_inputs))
         weights = np.zeros(self.qnn.num_weights)
 
         # test forward pass
@@ -73,8 +74,10 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
 
         # test backward pass
         result = self.qnn.backward(input_data, weights)
-        self.assertEqual(result[0].shape, (batch_size, *self.qnn.output_shape, self.qnn.num_inputs))
-        self.assertEqual(result[1].shape, (batch_size, *self.qnn.output_shape, self.qnn.num_weights))
+        self.assertEqual(result[0].shape,
+                         (batch_size, *self.qnn.output_shape, self.qnn.num_inputs))
+        self.assertEqual(result[1].shape,
+                         (batch_size, *self.qnn.output_shape, self.qnn.num_weights))
 
     def test_qnn_simple(self):
         """Simple Opflow QNN Test on a network with an instance of QuantumInstance."""

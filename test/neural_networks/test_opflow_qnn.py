@@ -12,16 +12,14 @@
 
 """ Test Opflow QNN """
 
-import unittest
-
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-
 from test import QiskitMachineLearningTestCase
+
+import unittest
 
 import numpy as np
 from qiskit import Aer
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.opflow import PauliExpectation, Gradient, StateFn, PauliSumOp, ListOp, X, Y, Z
+from qiskit.opflow import PauliExpectation, Gradient, StateFn, PauliSumOp
 from qiskit.utils import QuantumInstance
 
 from qiskit_machine_learning.neural_networks import OpflowQNN
@@ -59,56 +57,21 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         op = ~cost_operator @ qc_sfn
 
         # define QNN
-        qnn = OpflowQNN(op, [params[0]], [params[1]], expval,
-                             gradient, quantum_instance=self._quantum_instance)
+        qnn = OpflowQNN(op, [params[0]], [params[1]],
+                        expval, gradient, quantum_instance=self._quantum_instance)
 
         input_data = np.zeros(qnn.num_inputs)
         weights = np.zeros(qnn.num_weights)
 
         # test forward pass
         result = qnn.forward(input_data, weights)
-        self.assertEqual(result.shape, qnn.output_shape)
+        self.assertEqual(result.shape, (1, *qnn.output_shape))
 
         # test backward pass
         result = qnn.backward(input_data, weights)
         # batch dimension of 1
         self.assertEqual(result[0].shape, (1, *qnn.output_shape, qnn.num_inputs))
         self.assertEqual(result[1].shape, (1, *qnn.output_shape, qnn.num_weights))
-
-    def _test_opflow_batch(self):
-        expval = PauliExpectation()
-        gradient = Gradient()
-
-        # construct parametrized circuit
-        input_params = [Parameter('input1'), Parameter('input2')]
-        weight_params = [Parameter('weight1'), Parameter('weight2')]
-        qc = QuantumCircuit(2)
-        qc.h(range(2))
-        qc.ry(input_params[0], 0)
-        qc.ry(input_params[1], 1)
-        qc.rx(weight_params[0], 0)
-        qc.rx(weight_params[1], 1)
-        qc_sfn = StateFn(qc)
-
-        # construct cost operator
-        cost_operator = StateFn(PauliSumOp.from_list([('Z', 1.0), ('X', 1.0)]))
-
-        # combine operator and circuit to objective function
-        op = ~cost_operator @ qc_sfn
-        print(op)
-        op = op.bind_parameters({input_params[0]: 1, input_params[1]: 2, weight_params[0]: 3, weight_params[1]: 4})
-        qc = expval.convert(op).to_circuit()
-        print(qc)
-
-        # define QNN
-        qnn = OpflowQNN(op, input_params, weight_params, expval,
-                        gradient, quantum_instance=self._quantum_instance)
-
-        batch_size = 10
-        input_data = np.zeros((batch_size, qnn.num_inputs))
-        weights = np.zeros(qnn.num_weights)
-        result = qnn.forward(input_data, weights)
-        print(result)
 
 
 if __name__ == '__main__':

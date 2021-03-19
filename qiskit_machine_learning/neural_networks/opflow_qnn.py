@@ -78,6 +78,7 @@ class OpflowQNN(NeuralNetwork):
         """Determines the output shape of a given operator."""
         # TODO: should eventually be moved to opflow
         # this "if" statement is on purpose, to prevent subclasses.
+        # pylint:disable=unidiomatic-typecheck
         if type(op) == ListOp:
             shapes = []
             for op_ in op.oplist:
@@ -137,8 +138,10 @@ class OpflowQNN(NeuralNetwork):
             grad_all[row, :] = grad
 
         # split into and return input and weights gradients
-        input_grad = np.array(grad_all[:, :self.num_inputs]).reshape(-1, *self.output_shape, self.num_inputs)
+        input_grad = np.array(grad_all[:, :self.num_inputs])\
+            .reshape(-1, *self.output_shape, self.num_inputs)
 
-        weights_grad = np.array(grad_all[:, self.num_inputs:]).reshape(-1, *self.output_shape, self.num_weights)
+        weights_grad = np.array(grad_all[:, self.num_inputs:])\
+            .reshape(-1, *self.output_shape, self.num_weights)
 
         return input_grad, weights_grad
