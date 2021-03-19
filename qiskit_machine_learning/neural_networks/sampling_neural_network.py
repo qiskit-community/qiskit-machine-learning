@@ -13,9 +13,10 @@
 """A Sampling Neural Network abstract class."""
 
 from abc import abstractmethod
-from typing import Tuple, Union, List, Optional, Dict, Any
+from typing import Tuple, Union, List, Optional
 
 import numpy as np
+from sparse import SparseArray
 
 from .neural_network import NeuralNetwork
 
@@ -26,23 +27,24 @@ class SamplingNeuralNetwork(NeuralNetwork):
     machine learning module that generate samples instead of (expected) values.
     """
 
-    def __init__(self, num_inputs: int, num_weights: int, output_shape: Union[int, Tuple[int, ...]],
-                 return_samples: bool = False) -> None:
+    def __init__(self, num_inputs: int, num_weights: int, dense: bool, return_samples: bool,
+                 output_shape: Union[int, Tuple[int, ...]]) -> None:
         """
 
         Args:
             num_inputs: The number of input features.
             num_weights: The number of trainable weights.
+            dense: Returns whether the output is dense or not.
+            return_samples: Determines whether the network returns a batch of samples or (possibly
+                sparse) array of probabilities in its forward pass. In case of probabilities,
+                the backward pass returns the probability gradients, while it returns (None, None)
+                in the case of samples.
             output_shape: The shape of the output.
-            return_samples: Determines whether the network returns a batch of samples or a sparse
-                vector (dictionary) of probabilities (default) in its forward pass. In case of
-                probabilities, the backward pass returns the probability gradients, while it
-                returns (None, None) in the case of samples.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
         self._return_samples = return_samples
-        super().__init__(num_inputs, num_weights, output_shape)
+        super().__init__(num_inputs, num_weights, dense, output_shape)
 
     @property
     def return_samples(self) -> bool:
@@ -55,7 +57,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
 
     def _forward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                  weights: Optional[Union[List[float], np.ndarray, float]]
-                 ) -> Union[np.ndarray, Dict]:
+                 ) -> Union[np.ndarray, SparseArray]:
         """Forward pass of the network. Returns an array of samples or the probabilities, depending
         on the setting. Format depends on the set interpret function.
         """
@@ -66,8 +68,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
 
     def _backward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                   weights: Optional[Union[List[float], np.ndarray, float]]
-                  ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
-                             Optional[Union[np.ndarray, List[Dict]]]]:
+                  ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
+                             Optional[Union[np.ndarray, SparseArray]]]:
         """Backward pass of the network. Returns (None, None) in case of samples and the
         corresponding here probability gradients otherwise.
         """
@@ -100,7 +102,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
 
     def probabilities(self, input_data: Union[List[float], np.ndarray, float],
                       weights: Union[List[float], np.ndarray, float]
-                      ) -> Union[np.ndarray, Dict[str, float]]:
+                      ) -> Union[np.ndarray, SparseArray]:
         """Histogram (as dict) of the samples from the network. Returns an array of samples. Format
         depends on the set interpret function.
 
@@ -118,14 +120,14 @@ class SamplingNeuralNetwork(NeuralNetwork):
 
     @abstractmethod
     def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
-                       ) -> Union[np.ndarray, Dict[Any, float]]:
+                       ) -> Union[np.ndarray, SparseArray]:
         """Returns the sample probabilities."""
         raise NotImplementedError
 
     def probability_gradients(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                               weights: Optional[Union[List[float], np.ndarray, float]]
-                              ) -> Tuple[Union[np.ndarray, List[Dict]],
-                                         Union[np.ndarray, List[Dict]]]:
+                              ) -> Tuple[Union[np.ndarray, SparseArray],
+                                         Union[np.ndarray, SparseArray]]:
         """Probability gradients of histogram resulting from the network. Format depends on the set
         interpret function. Shape is (input_grad, weights_grad), where each grad has one dict for
         each parameter and each dict contains as value the derivative of the probability of
@@ -145,7 +147,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
 
     @abstractmethod
     def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
-                               ) -> Tuple[Union[np.ndarray, List[Dict]],
-                                          Union[np.ndarray, List[Dict]]]:
+                               ) -> Tuple[Union[np.ndarray, SparseArray],
+                                          Union[np.ndarray, SparseArray]]:
         """Returns the probability gradients."""
         raise NotImplementedError
