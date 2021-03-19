@@ -153,11 +153,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertTrue(isinstance(result, np.ndarray))
 
             # check forward result shape
-            if samples:
-                num_samples = self.quantum_instance_qasm.run_config.shots
-                self.assertEqual(result.shape, (1, num_samples, *qnn.output_shape))
-            else:
-                self.assertEqual(result.shape, (1, *qnn.output_shape))
+            self.assertEqual(result.shape, (1, *qnn.output_shape))
 
             input_grad, weights_grad = qnn.backward(input_data, weights)
             if samples:

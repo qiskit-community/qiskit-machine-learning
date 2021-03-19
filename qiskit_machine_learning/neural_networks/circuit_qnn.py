@@ -80,17 +80,19 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._weight_params = list(weight_params or [])
         self._interpret = interpret
         dense_ = dense
+        output_shape_: Union[int, Tuple[int, ...]] = -1
         if return_samples:
+            num_samples = quantum_instance.run_config.shots
             dense_ = True
             # infer shape from function
             if interpret:
                 ret = interpret(0)
                 result = np.array(ret)
-                output_shape_: Union[int, Tuple[int, ...]] = result.shape
+                output_shape_ = (num_samples, *result.shape)
                 if len(result.shape) == 0:
-                    output_shape_ = (1,)
+                    output_shape_ = (num_samples, 1)
             else:
-                output_shape_ = (1,)
+                output_shape_ = (num_samples, 1)
         else:
             if interpret:
                 if output_shape is None:
@@ -152,7 +154,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # return samples
         memory = result.get_memory()
-        samples = np.zeros((1, len(memory), *self.output_shape))
+        samples = np.zeros((1, *self.output_shape))
         for i, b in enumerate(memory):
             sample = int(b, 2)
             if self._interpret:
