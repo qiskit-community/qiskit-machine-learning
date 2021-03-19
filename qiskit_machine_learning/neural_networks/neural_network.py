@@ -68,18 +68,25 @@ class NeuralNetwork(ABC):
 
     def _validate_input(self, input_data: Optional[Union[List[float], np.ndarray, float]]):
         if input_data is None:
-            return None
+            return None, None
         input_ = np.array(input_data)
-        shape = input_data.shape
+        shape = input_.shape
+        if len(shape) == 0:
+            # there's a single value
+            input_ = input_.reshape((1, 1))
+            shape = input_.shape
+            # todo: return here
+
         if shape[-1] != self._num_inputs:
             raise QiskitMachineLearningError(f"Input data has incorrect shape, last dimension "
                                              f"is not equal to the number of inputs: "
                                              f"{self._num_inputs}, but got: {shape[-1]}.")
+
         if len(shape) == 1:
-            # add empty dimension for samples (batch dimension)
+            # add an empty dimension for samples (batch dimension)
             input_ = input_.reshape((1, -1))
         elif len(shape) > 2:
-            # flatten higher dimensions, keep num_inputs as a last dimension
+            # flatten lower dimensions, keep num_inputs as a last dimension
             input_ = input_.reshape((np.product(input_.shape[:-1]), -1))
 
         return input_, shape
@@ -89,6 +96,13 @@ class NeuralNetwork(ABC):
             return None
         weights_ = np.array(weights)
         return weights_.reshape(self.num_weights)
+
+    def _validate_output(self, output_data: np.ndarray, original_shape: Tuple[int, ...]
+                         ) -> np.ndarray:
+        if original_shape:
+            output_data = output_data.reshape((*original_shape[:-1], *self._output_shape))
+
+        return output_data
 
     def forward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                 weights: Optional[Union[List[float], np.ndarray, float]]
@@ -105,8 +119,8 @@ class NeuralNetwork(ABC):
         """
         input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        forward_data = self._forward(input_, weights_)
-        return forward_data.reshape((*shape[:-1], *self._output_shape))
+        output_data = self._forward(input_, weights_)
+        return self._validate_output(output_data, shape)
 
     @abstractmethod
     def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]

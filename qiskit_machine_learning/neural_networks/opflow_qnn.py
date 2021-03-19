@@ -113,32 +113,6 @@ class OpflowQNN(NeuralNetwork):
         result = np.array(result)
         return result.reshape(-1, *self.output_shape)
 
-    def _backward_batch(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                        ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
-                                   Optional[Union[np.ndarray, List[Dict]]]]:
-        # combine parameter dictionary
-        # take i-th column as values for the i-th param in a batch
-        param_values = {p: input_data[:, i].tolist() for i, p in enumerate(self.input_params)}
-        param_values.update({p: [weights[i]] * input_data.shape[0] for i, p in enumerate(self.weight_params)})
-
-        # evaluate gradient over all parameters
-        if self._gradient_sampler:
-            grad = self._gradient_sampler.convert(self.gradient_operator, param_values)
-            # TODO: this should not be necessary and is a bug!
-            grad = grad.bind_parameters(param_values)
-            grad = np.real(grad.eval())
-        else:
-            # todo: batches: does bind_parameters support a list of values and what the output is?
-            grad = self.gradient_operator.bind_parameters(param_values)
-            grad = np.real(grad.eval())
-
-        # split into and return input and weights gradients
-        input_grad = np.array(grad[:, :self.num_inputs]).reshape(-1, *self.output_shape, self.num_inputs)
-
-        weights_grad = np.array(grad[:, self.num_inputs:]).reshape(-1, *self.output_shape, self.num_weights)
-
-        return input_grad, weights_grad
-
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                   ) -> Tuple[Optional[Union[np.ndarray, List[Dict]]],
                              Optional[Union[np.ndarray, List[Dict]]]]:
