@@ -48,12 +48,14 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
 
         # test forward pass
         result = self.qnn.forward(input_data, weights)
-        self.assertEqual(result.shape, self.qnn.output_shape)
+        self.assertEqual(result.shape, (1, *self.qnn.output_shape))
 
         # test backward pass
         result = self.qnn.backward(input_data, weights)
-        self.assertEqual(result[0].shape, (*self.qnn.output_shape, self.qnn.num_inputs))
-        self.assertEqual(result[1].shape, (*self.qnn.output_shape, self.qnn.num_weights))
+        self.assertEqual(result[0].shape, (1, *self.qnn.output_shape, self.qnn.num_inputs))
+        self.assertEqual(result[1].shape, (1, *self.qnn.output_shape, self.qnn.num_weights))
+
+        # TODO: test batching
 
 
 if __name__ == '__main__':
