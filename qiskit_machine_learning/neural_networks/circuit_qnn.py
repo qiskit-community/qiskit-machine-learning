@@ -213,7 +213,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key: Union[int, Tuple[int, ...]] = k
                     if self._interpret:
                         key = self._interpret(cast(int, key))
-                    if hasattr(key, '__len__'):
+                    if not isinstance(key, int):
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
                     input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
@@ -227,7 +227,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key = k
                     if self._interpret:
                         key = self._interpret(key)
-                    if hasattr(key, '__len__'):
+                    if not isinstance(key, int):
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
