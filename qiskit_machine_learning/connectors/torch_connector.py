@@ -23,7 +23,7 @@ from ..exceptions import QiskitMachineLearningError
 logger = logging.getLogger(__name__)
 
 try:
-    from torch import Tensor
+    from torch import Tensor, sparse_coo_tensor
     from torch.autograd import Function
     from torch.nn import Module, Parameter as TorchParam
 except ImportError:
@@ -44,6 +44,7 @@ except ImportError:
             Replacement if torch.nn.Module is not present.
             Always fails to initialize
         """
+
         def __init__(self) -> None:
             raise MissingOptionalLibraryError(
                     libname='Pytorch',
@@ -75,21 +76,29 @@ class TorchConnector(Module):
                 QiskitMachineLearningError: Invalid input data.
             """
 
-            # TODO: efficiently handle batches (for input and weights)
+            # TODO: efficiently handle batches
             # validate input shape
             if input_data.shape[-1] != qnn.num_inputs:
                 raise QiskitMachineLearningError(
                     f'Invalid input dimension! Received {input_data.shape} and ' +
                     f'expected input compatible to {qnn.num_inputs}')
 
-            result = qnn.forward(input_data.numpy(), weights.numpy())
-            result = np.array(result)
-            if len(result.shape) == 0:
-                result = np.array([result])
-            result_tensor = Tensor(result)
             ctx.qnn = qnn
             ctx.save_for_backward(input_data, weights)
-            return result_tensor
+            result = qnn.forward(input_data.numpy(), weights.numpy())
+            if qnn.dense:
+                result = np.array(result)
+                # if the input was not a batch, then remove the batch-dimension from the result
+                if len(input_data.shape) == 1:
+                    result = result[0]
+                result_tensor = Tensor(result)
+                return result_tensor
+            else:
+                sparse_result_tensor = sparse_coo_tensor(result.coords, result.data)
+                # if the input was not a batch, then remove the batch-dimension from the result
+                if len(input_data.shape) == 1:
+                    sparse_result_tensor = sparse_result_tensor[0]
+                return sparse_result_tensor
 
         @staticmethod
         def backward(ctx: Any,  # type: ignore
@@ -120,17 +129,29 @@ class TorchConnector(Module):
             if input_grad is not None:
                 if np.prod(input_grad.shape) == 0:
                     input_grad = None
-                else:
+                elif qnn.dense:
                     if len(input_grad.shape) == 1:
                         input_grad = input_grad.reshape(1, len(input_grad))
                     input_grad = grad_output.float() * Tensor(input_grad)
+                else:
+                    sparse_input_grad = sparse_coo_tensor(input_grad.coords, input_grad.data)
+                    if len(sparse_input_grad.shape) == 1:
+                        sparse_input_grad = sparse_input_grad.reshape(1, len(sparse_input_grad))
+                    sparse_input_grad = grad_output.float() * sparse_input_grad
+
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
                     weights_grad = None
-                else:
+                elif qnn.dense:
                     if len(weights_grad.shape) == 1:
                         weights_grad = weights_grad.reshape(1, len(weights_grad))
                     weights_grad = grad_output.float() @ Tensor(weights_grad)
+                else:
+                    sparse_weights_grad = sparse_coo_tensor(weights_grad.coords, weights_grad.data)
+                    if len(sparse_weights_grad.shape) == 1:
+                        sparse_weights_grad = sparse_weights_grad.reshape(1,
+                                                                          len(sparse_weights_grad))
+                    sparse_weights_grad = grad_output.float() * sparse_weights_grad
 
             # return gradients for the first two arguments and None for the others
             return input_grad, weights_grad, None

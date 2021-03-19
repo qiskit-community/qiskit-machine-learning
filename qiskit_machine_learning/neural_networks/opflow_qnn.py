@@ -80,7 +80,7 @@ class OpflowQNN(NeuralNetwork):
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
         # TODO: should eventually be moved to opflow
-        if isinstance(op, ListOp):
+        if type(op) == ListOp:  # this is on purpose, to exclude sub-types
             shapes = []
             for op_ in op.oplist:
                 shape_ = self._get_output_shape_from_op(op_)
