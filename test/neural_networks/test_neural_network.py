@@ -51,19 +51,19 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
 
     @data(
         # no input
-        ((0, 0, 1), None),
-        ((0, 1, 1), None),
-        ((0, 1, 2), None),
-        ((0, 1, (2, 2)), None),
+        ((0, 0, True, 1), None),
+        ((0, 1, True, 1), None),
+        ((0, 1, True, 2), None),
+        ((0, 1, True, (2, 2)), None),
 
         # 1d input
-        ((1, 0, 1), 0),
-        ((1, 1, 1), 0),
-        ((1, 1, 2), 0),
-        ((1, 1, (2, 2)), 0),
+        ((1, 0, True, 1), 0),
+        ((1, 1, True, 1), 0),
+        ((1, 1, True, 2), 0),
+        ((1, 1, True, (2, 2)), 0),
 
         # multi-dimensional input and weights
-        ((2, 2, (2, 2)), [0, 0])
+        ((2, 2, True, (2, 2)), [0, 0])
     )
     def test_forward_shape(self, params):
         """Test forward shape."""
@@ -76,19 +76,19 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
 
     @data(
         # no input
-        ((0, 0, 1), None),
-        ((0, 1, 1), None),
-        ((0, 1, 2), None),
-        ((0, 1, (2, 2)), None),
+        ((0, 0, True, 1), None),
+        ((0, 1, True, 1), None),
+        ((0, 1, True, 2), None),
+        ((0, 1, True, (2, 2)), None),
 
         # 1d input
-        ((1, 0, 1), 0),
-        ((1, 1, 1), 0),
-        ((1, 1, 2), 0),
-        ((1, 1, (2, 2)), 0),
+        ((1, 0, True, 1), 0),
+        ((1, 1, True, 1), 0),
+        ((1, 1, True, 2), 0),
+        ((1, 1, True, (2, 2)), 0),
 
         # multi-dimensional input and weights
-        ((2, 2, (2, 2)), [0, 0])
+        ((2, 2, True, (2, 2)), [0, 0])
     )
     def test_backward_shape(self, params):
         """ Test backward shape """

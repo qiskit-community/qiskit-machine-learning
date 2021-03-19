@@ -70,7 +70,7 @@ html_css_files = ['style.css', 'custom.css', 'gallery.css']
 html_sourcelink_suffix = ''
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
-cell_timeout = int(os.getenv('QISKIT_CELL_TIMEOUT', 180))
+cell_timeout = int(os.getenv('QISKIT_CELL_TIMEOUT', 360))
 nbsphinx_timeout = cell_timeout
 nbsphinx_execute = 'always'
 nbsphinx_execute_arguments = [
