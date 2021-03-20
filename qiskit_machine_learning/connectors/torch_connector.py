@@ -144,7 +144,7 @@ class TorchConnector(Module):
                     # cast to dense here, since PyTorch does not support sparse output yet.
                     # this should only happen if the network returns sparse output but the
                     # connector is configured to return dense output.
-                    input_grad = input_grad.to_dense()  # this should be eventtually removed
+                    input_grad = input_grad.to_dense()  # this should be eventually removed
                     input_grad = input_grad.to(grad_output.dtype)
                 else:
                     input_grad = Tensor(input_grad).to(grad_output.dtype)
@@ -162,7 +162,7 @@ class TorchConnector(Module):
                     # cast to dense here, since PyTorch does not support sparse output yet.
                     # this should only happen if the network returns sparse output but the
                     # connector is configured to return dense output.
-                    weights_grad = weights_grad.to_dense()  # this should be eventtually removed
+                    weights_grad = weights_grad.to_dense()  # this should be eventually removed
                     weights_grad = weights_grad.to(grad_output.dtype)
                 else:
                     weights_grad = Tensor(weights_grad).to(grad_output.dtype)
@@ -171,7 +171,7 @@ class TorchConnector(Module):
                     weights_grad = weights_grad.reshape(1, len(weights_grad))
                 weights_grad = grad_output @ weights_grad
 
-            # return gradients for the first two arguments and None for the others (ie. qnn, sparse)
+            # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
             return input_grad, weights_grad, None, None
 
     def __init__(self, neural_network: NeuralNetwork, sparse: Optional[bool] = None):
@@ -183,7 +183,7 @@ class TorchConnector(Module):
                 to None, then the setting from the given neural network is used. Note that sparse
                 output is only returned if the underlying neural network also returns sparse output,
                 otherwise it will be dense independent of the setting. Also note that PyTorch
-                currently does not support sparse backpropagation, i.e., if sparse is set to True,
+                currently does not support sparse back propagation, i.e., if sparse is set to True,
                 the backward pass of this module will return None.
         """
         super().__init__()
