@@ -66,7 +66,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.interpret_2d = interpret_2d
         self.output_shape_2d = (2, 3)  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
-    def get_qnn(self, sparse, samples, statevector, interpret_id):
+    def get_qnn(self, sparse, sampling, statevector, interpret_id):
         """ Construct QNN from configuration. """
 
         # get quantum instance
@@ -87,13 +87,13 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # construct QNN
         qnn = CircuitQNN(self.qc, self.input_params, self.weight_params,
-                         sparse=sparse, return_samples=samples,
+                         sparse=sparse, sampling=sampling,
                          interpret=interpret, output_shape=output_shape,
                          quantum_instance=quantum_instance)
         return qnn
 
     @data(
-        # sparse, samples, statevector, interpret (0=no, 1=1d, 2=2d)
+        # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)
         (True, True, True, 0),
         (True, True, True, 1),
         (True, True, True, 2),
@@ -130,15 +130,15 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         """Circuit QNN Test."""
 
         # get configuration
-        sparse, samples, statevector, interpret_id = config
+        sparse, sampling, statevector, interpret_id = config
 
         # get QNN
-        qnn = self.get_qnn(sparse, samples, statevector, interpret_id)
+        qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
         input_data = np.zeros(qnn.num_inputs)
         weights = np.zeros(qnn.num_weights)
 
         # if sampling and statevector, make sure it fails
-        if statevector and samples:
+        if statevector and sampling:
             with self.assertRaises(QiskitMachineLearningError):
                 qnn.forward(input_data, weights)
         else:
@@ -147,7 +147,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             result = qnn.forward(input_data, weights)
 
             # make sure forward result is sparse if it should be
-            if sparse and not samples:
+            if sparse and not sampling:
                 self.assertTrue(isinstance(result, SparseArray))
             else:
                 self.assertTrue(isinstance(result, np.ndarray))
@@ -156,7 +156,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             self.assertEqual(result.shape, (1, *qnn.output_shape))
 
             input_grad, weights_grad = qnn.backward(input_data, weights)
-            if samples:
+            if sampling:
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
@@ -166,7 +166,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         # TODO: add test on batching
 
     @data(
-        # sparse, samples, statevector, interpret (0=no, 1=1d, 2=2d)
+        # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)
         (True, False, True, 0),
         (True, False, True, 1),
         (True, False, True, 2),
@@ -179,10 +179,10 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         """Circuit QNN Gradient Test."""
 
         # get configuration
-        sparse, samples, statevector, interpret_id = config
+        sparse, sampling, statevector, interpret_id = config
 
         # get QNN
-        qnn = self.get_qnn(sparse, samples, statevector, interpret_id)
+        qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
         input_data = np.ones(qnn.num_inputs)
         weights = np.ones(qnn.num_weights)
         input_grad, weights_grad = qnn.backward(input_data, weights)

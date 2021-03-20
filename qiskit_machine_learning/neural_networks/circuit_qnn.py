@@ -36,7 +36,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                  input_params: Optional[List[Parameter]] = None,
                  weight_params: Optional[List[Parameter]] = None,
                  sparse: bool = False,
-                 return_samples: bool = False,
+                 sampling: bool = False,
                  interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]] = None,
                  output_shape: Union[int, Tuple[int, ...]] = None,
                  gradient: Gradient = None,
@@ -49,17 +49,17 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
             sparse: Returns whether the output is sparse or not.
-            return_samples: Determines whether the network returns a batch of samples or (possibly
+            sampling: Determines whether the network returns a batch of samples or (possibly
                 sparse) array of probabilities in its forward pass. In case of probabilities,
                 the backward pass returns the probability gradients, while it returns (None, None)
-                in the case of samples. Note that return_samples==True will always result in a
+                in the case of samples. Note that sampling==True will always result in a
                 dense return array independent of the other settings.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If this is used, the output shape of the output needs to be
                 given as a separate argument.
             output_shape: The output shape of the custom interpretation. The output shape is
-                automatically determined in case of return_samples==True.
+                automatically determined in case of sampling==True.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits.
 
@@ -81,7 +81,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._interpret = interpret if interpret else lambda x: x
         sparse_ = sparse
         output_shape_: Union[int, Tuple[int, ...]] = -1
-        if return_samples:
+        if sampling:
             num_samples = quantum_instance.run_config.shots
             sparse_ = False
             # infer shape from function
@@ -112,7 +112,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         params = list(input_params) + list(weight_params)
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
-        super().__init__(len(self._input_params), len(self._weight_params), sparse_, return_samples,
+        super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
                          output_shape_)
 
     @property
