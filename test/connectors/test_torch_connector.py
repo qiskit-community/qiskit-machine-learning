@@ -14,19 +14,30 @@
 
 import unittest
 
+from typing import List
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 
-from qiskit import Aer
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance
+from ddt import ddt, data
 
-from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN
+import torch
+from torch import Tensor
+from torch.nn import Linear
+
+from qiskit import Aer, QuantumCircuit
+from qiskit.circuit import Parameter
+from qiskit.utils import QuantumInstance
+from qiskit.opflow import StateFn, ListOp, PauliSumOp
+
+from qiskit_machine_learning import QiskitMachineLearningError
+from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN, OpflowQNN
 from qiskit_machine_learning.connectors import TorchConnector
 
 
-class TestCircuitQNN(QiskitMachineLearningTestCase):
+@ddt
+class TestTorchConnector(QiskitMachineLearningTestCase):
     """Torch Connector Tests."""
 
     def setUp(self):
@@ -36,84 +47,388 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'))
         self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
 
-    def test_torch_with_opflow_qnn(self):
-        """Torch Connector + Opflow QNN Test."""
-        try:
-            import torch
-        except ImportError as ex:
-            self.skipTest("Torch doesn't appear to be installed. Error: '{}'".format(str(ex)))
-            return
+    def validate_output_shape(self, model: TorchConnector, test_data: List[Tensor]) -> None:
+        """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
+            applies the list of test input data to both, and asserts that they have the same
+            output shape.
 
-        # create QNN
-        num_qubits = 2
-        feature_map = ZZFeatureMap(num_qubits)
-        var_form = RealAmplitudes(num_qubits, reps=1)
-        qnn = TwoLayerQNN(num_qubits=2, feature_map=feature_map, var_form=var_form,
-                          quantum_instance=self.sv_quantum_instance)
+            Args:
+                model: model to be tested
+                test_data: list of test input tensors
 
-        # connect to torch
-        torch_qnn = TorchConnector(qnn)
+            Raises:
+                QiskitMachineLearningError: Invalid input.
+        """
 
-        # test single input
-        input_data = torch.Tensor(np.ones(qnn.num_inputs))
-        output = torch_qnn(input_data)
-        self.assertEqual(output.shape, (1,))
+        # create benchmark model
+        in_dim = model.neural_network.num_inputs
+        out_dim = 0
+        if len(model.neural_network.output_shape) != 1:
+            raise QiskitMachineLearningError('Function only works for one dimensional output')
+        out_dim = model.neural_network.output_shape[0]
+        linear = Linear(in_dim, out_dim)
 
-        # test batch input
-        # TODO
+        # iterate over test data and validate behavior of model
+        for x in test_data:
+
+            # test linear model and track whether it failed or store the output shape
+            c_worked = True
+            try:
+                c_shape = linear(x).shape
+            except Exception:  # pylint: disable=broad-except
+                c_worked = False
+
+            # test quantum model and track whether it failed or store the output shape
+            q_worked = True
+            try:
+                q_shape = model(x).shape
+            except Exception:  # pylint: disable=broad-except
+                q_worked = False
+
+            # compare results and assert that the behavior is equal
+            self.assertEqual(c_worked, q_worked)
+            if c_worked:
+                self.assertEqual(c_shape, q_shape)
+
+    def validate_backward_pass(self, model: TorchConnector) -> None:
+        """Uses PyTorch to validate the backward pass / autograd.
+
+        Args:
+            model: The model to be tested.
+        """
 
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
         input_data = (
-            torch.randn(qnn.num_inputs, dtype=torch.double, requires_grad=True),
-            torch.randn(qnn.num_weights, dtype=torch.double, requires_grad=True),
-            qnn
+            torch.randn(model.neural_network.num_inputs, dtype=torch.double, requires_grad=True),
+            torch.randn(model.neural_network.num_weights, dtype=torch.double, requires_grad=True),
+            model.neural_network,
+            False
         )
-        test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)
+        test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)  # type: ignore
         self.assertTrue(test)
 
-    def test_torch_with_circuit_qnn(self):
-        """Torch Connector + Circuit QNN Test."""
-        try:
-            import torch
-        except ImportError as ex:
-            self.skipTest("Torch doesn't appear to be installed. Error: '{}'".format(str(ex)))
-            return
+    @data(
+        'sv', 'qasm'
+    )
+    def test_opflow_qnn_1_1(self, q_i):
+        """ Test Torch Connector + Opflow QNN with input/output dimension 1/1."""
 
-        # create QNN
-        num_qubits = 2
-        feature_map = ZZFeatureMap(num_qubits)
-        var_form = RealAmplitudes(num_qubits, reps=1)
-        qc = feature_map.copy()
-        qc.append(var_form, range(feature_map.num_qubits))
-        qnn = CircuitQNN(qc, input_params=feature_map.parameters, weight_params=var_form.parameters,
+        if q_i == 'sv':
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        # construct simple feature map
+        param_x = Parameter('x')
+        feature_map = QuantumCircuit(1, name='fm')
+        feature_map.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter('y')
+        var_form = QuantumCircuit(1, name='vf')
+        var_form.ry(param_y, 0)
+
+        # construct QNN with statevector simulator
+        qnn = TwoLayerQNN(1, feature_map, var_form, quantum_instance=quantum_instance)
+        model = TorchConnector(qnn)
+
+        test_data = [
+            Tensor(1),
+            Tensor([1]),
+            Tensor([1, 2]),
+            # TODO: Requires batching
+            # Tensor([[1], [2]]),               #
+            # Tensor([[[1], [2]], [[3], [4]]])  #
+        ]
+
+        # test model
+        self.validate_output_shape(model, test_data)
+        if q_i == 'sv':
+            self.validate_backward_pass(model)
+
+    @data(
+        'sv', 'qasm'
+    )
+    def test_opflow_qnn_2_1(self, q_i):
+        """ Test Torch Connector + Opflow QNN with input/output dimension 2/1."""
+
+        if q_i == 'sv':
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        # construct QNN
+        qnn = TwoLayerQNN(2, quantum_instance=quantum_instance)
+        model = TorchConnector(qnn)
+
+        test_data = [
+            Tensor(1),
+            Tensor([1, 2]),
+            Tensor([[1, 2]]),
+            Tensor([[1], [2]]),
+            # Requires batching
+            # Tensor([[[1], [2]], [[3], [4]]])
+        ]
+
+        # test model
+        self.validate_output_shape(model, test_data)
+        if q_i == 'sv':
+            self.validate_backward_pass(model)
+
+    @data(
+        'sv', 'qasm'
+    )
+    def test_opflow_qnn_2_2(self, q_i):
+        """ Test Torch Connector + Opflow QNN with input/output dimension 2/2."""
+
+        if q_i == 'sv':
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        # construct parametrized circuit
+        params_1 = [Parameter('input1'), Parameter('weight1')]
+        qc_1 = QuantumCircuit(1)
+        qc_1.h(0)
+        qc_1.ry(params_1[0], 0)
+        qc_1.rx(params_1[1], 0)
+        qc_sfn_1 = StateFn(qc_1)
+
+        # construct cost operator
+        h_1 = StateFn(PauliSumOp.from_list([('Z', 1.0), ('X', 1.0)]))
+
+        # combine operator and circuit to objective function
+        op_1 = ~h_1 @ qc_sfn_1
+
+        # construct parametrized circuit
+        params_2 = [Parameter('input2'), Parameter('weight2')]
+        qc_2 = QuantumCircuit(1)
+        qc_2.h(0)
+        qc_2.ry(params_2[0], 0)
+        qc_2.rx(params_2[1], 0)
+        qc_sfn_2 = StateFn(qc_2)
+
+        # construct cost operator
+        h_2 = StateFn(PauliSumOp.from_list([('Z', 1.0), ('X', 1.0)]))
+
+        # combine operator and circuit to objective function
+        op_2 = ~h_2 @ qc_sfn_2
+
+        op = ListOp([op_1, op_2])
+
+        qnn = OpflowQNN(op, [params_1[0], params_2[0]], [params_1[1], params_2[1]],
+                        quantum_instance=quantum_instance)
+        model = TorchConnector(qnn)
+
+        test_data = [
+            Tensor(1),                # OK: both fail
+            Tensor([1, 2]),           # OK: both work
+            Tensor([[1], [2]]),       # OK: both fail
+            # TODO: Requires batching
+            # Tensor([[1, 2], [3, 4]])
+        ]
+
+        # test model
+        self.validate_output_shape(model, test_data)
+        if q_i == 'sv':
+            self.validate_backward_pass(model)
+
+    @data(
+        # interpret, output_shape, sparse, quantum_instance
+        (None, None, False, 'sv'),
+        (None, None, True, 'sv'),
+        (lambda x: np.sum(x) % 2, 2, False, 'sv'),
+        (lambda x: np.sum(x) % 2, 2, True, 'sv'),
+        (None, None, False, 'qasm'),
+        (None, None, True, 'qasm'),
+        (lambda x: np.sum(x) % 2, 2, False, 'qasm'),
+        (lambda x: np.sum(x) % 2, 2, True, 'qasm'),
+    )
+    def test_circuit_qnn_1_1(self, config):
+        """Torch Connector + Circuit QNN with no interpret, dense output,
+        and input/output shape 1/1 ."""
+
+        interpret, output_shape, sparse, q_i = config
+        if q_i == 'sv':
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        qc = QuantumCircuit(1)
+
+        # construct simple feature map
+        param_x = Parameter('x')
+        qc.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter('y')
+        qc.ry(param_y, 0)
+
+        qnn = CircuitQNN(qc, [param_x], [param_y],
+                         sparse=sparse,
+                         sampling=False,
+                         interpret=interpret,
+                         output_shape=output_shape,
+                         quantum_instance=quantum_instance)
+        model = TorchConnector(qnn)
+
+        test_data = [
+            Tensor(1),                        # OK: both work
+            Tensor([1, 2]),                   # OK: both fail
+            # TODO: Requires batching
+            # Tensor([[1], [2]]),               #
+            # Tensor([[[1], [2]], [[3], [4]]])  #
+        ]
+
+        # test model
+        self.validate_output_shape(model, test_data)
+        if q_i == 'sv':
+            self.validate_backward_pass(model)
+
+    @data(
+        # interpret, output_shape, sparse, quantum_instance
+        (None, None, False, 'sv'),
+        (None, None, True, 'sv'),
+        (lambda x: np.sum(x) % 2, 2, False, 'sv'),
+        (lambda x: np.sum(x) % 2, 2, True, 'sv'),
+        (None, None, False, 'qasm'),
+        (None, None, True, 'qasm'),
+        (lambda x: np.sum(x) % 2, 2, False, 'qasm'),
+        (lambda x: np.sum(x) % 2, 2, True, 'qasm'),
+    )
+    def test_circuit_qnn_1_8(self, config):
+        """Torch Connector + Circuit QNN with no interpret, dense output,
+        and input/output shape 1/8 ."""
+
+        interpret, output_shape, sparse, q_i = config
+        if q_i == 'sv':
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        qc = QuantumCircuit(3)
+
+        # construct simple feature map
+        param_x = Parameter('x')
+        qc.ry(param_x, range(3))
+
+        # construct simple feature map
+        param_y = Parameter('y')
+        qc.ry(param_y, range(3))
+
+        qnn = CircuitQNN(qc, [param_x], [param_y],
+                         sparse=sparse,
+                         sampling=False,
+                         interpret=interpret,
+                         output_shape=output_shape,
+                         quantum_instance=quantum_instance)
+        model = TorchConnector(qnn)
+
+        test_data = [
+            Tensor(1),
+            Tensor([1, 2]),
+            # TODO: Requires batching
+            # Tensor([[1], [2]]),
+            # Tensor([[[1], [2]], [[3], [4]]])
+        ]
+
+        # test model
+        self.validate_output_shape(model, test_data)
+        if q_i == 'sv':
+            self.validate_backward_pass(model)
+
+    @data(
+        # interpret, output_shape, sparse, quantum_instance
+        (None, None, False, 'sv'),
+        (None, None, True, 'sv'),
+        (lambda x: np.sum(x) % 2, 2, False, 'sv'),
+        (lambda x: np.sum(x) % 2, 2, True, 'sv'),
+        (None, None, False, 'qasm'),
+        (None, None, True, 'qasm'),
+        (lambda x: np.sum(x) % 2, 2, False, 'qasm'),
+        (lambda x: np.sum(x) % 2, 2, True, 'qasm'),
+    )
+    def test_circuit_qnn_2_4(self, config):
+        """Torch Connector + Circuit QNN with no interpret, dense output,
+        and input/output shape 1/8 ."""
+
+        interpret, output_shape, sparse, q_i = config
+        if q_i == 'sv':
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        qc = QuantumCircuit(2)
+
+        # construct simple feature map
+        param_x_1, param_x_2 = Parameter('x1'), Parameter('x2')
+        qc.ry(param_x_1, range(2))
+        qc.ry(param_x_2, range(2))
+
+        # construct simple feature map
+        param_y = Parameter('y')
+        qc.ry(param_y, range(2))
+
+        qnn = CircuitQNN(qc, [param_x_1, param_x_2], [param_y],
+                         sparse=sparse,
+                         sampling=False,
+                         interpret=interpret,
+                         output_shape=output_shape,
+                         quantum_instance=quantum_instance)
+        model = TorchConnector(qnn)
+
+        test_data = [
+            Tensor(1),
+            Tensor([1, 2]),
+            Tensor([[1], [2]]),
+            # TODO: Requires batching
+            # Tensor([[1, 2], [3, 4]])
+            # Tensor([[[1], [2]], [[3], [4]]])
+        ]
+
+        # test model
+        self.validate_output_shape(model, test_data)
+        if q_i == 'sv':
+            self.validate_backward_pass(model)
+
+    @data(
+        # interpret
+        (None),
+        (lambda x: np.sum(x) % 2)
+    )
+    def test_circuit_qnn_sampling(self, interpret):
+        """Test Torch Connector + Circuit QNN for sampling."""
+
+        qc = QuantumCircuit(2)
+
+        # construct simple feature map
+        param_x1, param_x2 = Parameter('x1'), Parameter('x2')
+        qc.ry(param_x1, range(2))
+        qc.ry(param_x2, range(2))
+
+        # construct simple feature map
+        param_y = Parameter('y')
+        qc.ry(param_y, range(2))
+
+        qnn = CircuitQNN(qc, [param_x1, param_x2], [param_y],
+                         sparse=False,
+                         sampling=True,
+                         interpret=interpret,
+                         output_shape=None,
                          quantum_instance=self.qasm_quantum_instance)
+        model = TorchConnector(qnn)
 
-        # connect to torch
-        torch_qnn = TorchConnector(qnn)
-
-        # test single input
-        input_data = torch.Tensor(np.ones(qnn.num_inputs))
-        output = torch_qnn(input_data)
-        self.assertEqual(output.shape, (1,))
-
-        # test batch input
-        # TODO
-
-        # test autograd
-        func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
-        input_data = (
-            torch.randn(qnn.num_inputs, dtype=torch.double, requires_grad=True),
-            torch.randn(qnn.num_weights, dtype=torch.double, requires_grad=True),
-            qnn
-        )
-        test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)
-        self.assertTrue(test)
-
-    def test_torch_with_classical_nn(self):
-        """Torch Connector + Classical NN Test."""
-        # TODO
-        pass
+        test_data = [
+            Tensor([2, 2])
+            # TODO: test batching
+        ]
+        for i, x in enumerate(test_data):
+            if i == 0:
+                self.assertEqual(model(x).shape, qnn.output_shape)
+            else:
+                # TODO: test batching
+                pass
 
 
 if __name__ == '__main__':
