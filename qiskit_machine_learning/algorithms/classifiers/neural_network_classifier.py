@@ -77,8 +77,8 @@ class NeuralNetworkClassifier:
                     # TODO: allow setting which gradients to evaluate (input/weights)
                     _, weights_grad = self._neural_network.backward(x, w)
                     # TODO: can we store the forward result and reuse it?
-                    val += self._loss.gradient(self._neural_network.forward(x,
-                                                                            w), y_target) * weights_grad
+                    val += self._loss.gradient(
+                        self._neural_network.forward(x, w), y_target) * weights_grad
                 return val
 
         else:
@@ -100,7 +100,7 @@ class NeuralNetworkClassifier:
                             grad[i] += p_grad * self._loss(y_predict, y_target)
                 return grad
 
-        if self._warm_start and not self._fit_result is None:
+        if self._warm_start and self._fit_result is not None:
             initial_point = self._fit_result[0]
         else:
             initial_point = np.random.rand(self._neural_network.num_weights)

@@ -69,11 +69,13 @@ qubit
 qubits
 rbf
 readme
+regressor
 renormalize
 scikit
 scipy
 sigmoid
 sklearn
+softmax
 statevector
 statevectors
 stdout
@@ -82,6 +84,7 @@ submodules
 svm
 sx
 sy
+TBD
 terra
 toctree
 todo
@@ -92,4 +95,5 @@ varform
 variational
 vqc
 vqe
+wrt
 zoufal

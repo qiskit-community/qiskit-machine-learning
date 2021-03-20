@@ -16,15 +16,21 @@ import unittest
 
 from test import QiskitMachineLearningTestCase
 
+from ddt import ddt, data
+
 import numpy as np
+from sparse import SparseArray
+
 from qiskit import Aer
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
 
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
 
 
+@ddt
 class TestCircuitQNN(QiskitMachineLearningTestCase):
     """Opflow QNN Tests."""
 
@@ -32,36 +38,188 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify "run configuration"
-        backend = Aer.get_backend('statevector_simulator')
-        quantum_instance = QuantumInstance(backend)
+        self.quantum_instance_sv = QuantumInstance(Aer.get_backend('statevector_simulator'))
+        self.quantum_instance_qasm = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
 
-        # define QNN
+        # define feature map and variational form
         num_qubits = 2
-        feature_map = ZZFeatureMap(num_qubits)
+        feature_map = ZZFeatureMap(num_qubits, reps=1)
         var_form = RealAmplitudes(num_qubits, reps=1)
 
-        qc = QuantumCircuit(2)
-        qc.append(feature_map, range(2))
-        qc.append(var_form, range(2))
+        # construct circuit
+        self.qc = QuantumCircuit(num_qubits)
+        self.qc.append(feature_map, range(2))
+        self.qc.append(var_form, range(2))
 
-        input_params = list(feature_map.parameters)
-        weight_params = list(var_form.parameters)
+        # store params
+        self.input_params = list(feature_map.parameters)
+        self.weight_params = list(var_form.parameters)
 
-        def parity(x):
-            return (-1)**sum(x)
+        # define interpret functions
+        def interpret_1d(x):
+            return sum([s == '1' for s in '{0:0b}'.format(x)]) % 2
+        self.interpret_1d = interpret_1d
+        self.output_shape_1d = 2  # takes values in {0, 1}
 
-        self.qnn = CircuitQNN(qc, input_params, weight_params,
-                              interpret=parity, quantum_instance=quantum_instance)
+        def interpret_2d(x):
+            return np.array([self.interpret_1d(x), 2*self.interpret_1d(x)])
+        self.interpret_2d = interpret_2d
+        self.output_shape_2d = (2, 3)  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
-    def test_circuit_qnn1(self):
-        """Opflow QNN Test."""
+    def get_qnn(self, sparse, sampling, statevector, interpret_id):
+        """ Construct QNN from configuration. """
 
-        input_data = np.zeros(self.qnn.num_inputs)
-        weights = np.zeros(self.qnn.num_weights)
+        # get quantum instance
+        if statevector:
+            quantum_instance = self.quantum_instance_sv
+        else:
+            quantum_instance = self.quantum_instance_qasm
 
-        result = self.qnn.probabilities(input_data, weights)
-        self.assertAlmostEqual(result[1], 0.81484, places=4)
-        self.assertAlmostEqual(result[-1], 0.18516, places=4)
+        # get interpret setting
+        interpret = None
+        output_shape = None
+        if interpret_id == 1:
+            interpret = self.interpret_1d
+            output_shape = self.output_shape_1d
+        elif interpret_id == 2:
+            interpret_id = self.interpret_2d
+            output_shape = self.output_shape_2d
+
+        # construct QNN
+        qnn = CircuitQNN(self.qc, self.input_params, self.weight_params,
+                         sparse=sparse, sampling=sampling,
+                         interpret=interpret, output_shape=output_shape,
+                         quantum_instance=quantum_instance)
+        return qnn
+
+    @data(
+        # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)
+        (True, True, True, 0),
+        (True, True, True, 1),
+        (True, True, True, 2),
+
+        (True, True, False, 0),
+        (True, True, False, 1),
+        (True, True, False, 2),
+
+        (True, False, True, 0),
+        (True, False, True, 1),
+        (True, False, True, 2),
+
+        (True, False, False, 0),
+        (True, False, False, 1),
+        (True, False, False, 2),
+
+        (False, True, True, 0),
+        (False, True, True, 1),
+        (False, True, True, 2),
+
+        (False, True, False, 0),
+        (False, True, False, 1),
+        (False, True, False, 2),
+
+        (False, False, True, 0),
+        (False, False, True, 1),
+        (False, False, True, 2),
+
+        (False, False, False, 0),
+        (False, False, False, 1),
+        (False, False, False, 2)
+    )
+    def test_circuit_qnn(self, config):
+        """Circuit QNN Test."""
+
+        # get configuration
+        sparse, sampling, statevector, interpret_id = config
+
+        # get QNN
+        qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
+        input_data = np.zeros(qnn.num_inputs)
+        weights = np.zeros(qnn.num_weights)
+
+        # if sampling and statevector, make sure it fails
+        if statevector and sampling:
+            with self.assertRaises(QiskitMachineLearningError):
+                qnn.forward(input_data, weights)
+        else:
+
+            # evaluate QNN forward pass
+            result = qnn.forward(input_data, weights)
+
+            # make sure forward result is sparse if it should be
+            if sparse and not sampling:
+                self.assertTrue(isinstance(result, SparseArray))
+            else:
+                self.assertTrue(isinstance(result, np.ndarray))
+
+            # check forward result shape
+            self.assertEqual(result.shape, (1, *qnn.output_shape))
+
+            input_grad, weights_grad = qnn.backward(input_data, weights)
+            if sampling:
+                self.assertIsNone(input_grad)
+                self.assertIsNone(weights_grad)
+            else:
+                self.assertEqual(input_grad.shape, (1, *qnn.output_shape, qnn.num_inputs))
+                self.assertEqual(weights_grad.shape, (1, *qnn.output_shape, qnn.num_weights))
+
+        # TODO: add test on batching
+
+    @data(
+        # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)
+        (True, False, True, 0),
+        (True, False, True, 1),
+        (True, False, True, 2),
+
+        (False, False, True, 0),
+        (False, False, True, 1),
+        (False, False, True, 2)
+    )
+    def test_circuit_qnn_gradient(self, config):
+        """Circuit QNN Gradient Test."""
+
+        # get configuration
+        sparse, sampling, statevector, interpret_id = config
+
+        # get QNN
+        qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
+        input_data = np.ones(qnn.num_inputs)
+        weights = np.ones(qnn.num_weights)
+        input_grad, weights_grad = qnn.backward(input_data, weights)
+
+        # test input gradients
+        eps = 1e-2
+        for k in range(qnn.num_inputs):
+            delta = np.zeros(input_data.shape)
+            delta[k] = eps
+
+            f_1 = qnn.forward(input_data + delta, weights)
+            f_2 = qnn.forward(input_data - delta, weights)
+            if sparse:
+                grad = (f_1.todense() - f_2.todense()) / (2*eps)
+                diff = input_grad.todense()[0, :, k] - grad
+            else:
+                grad = (f_1 - f_2) / (2*eps)
+                diff = input_grad[0, :, k] - grad
+            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+
+        # test input gradients
+        eps = 1e-2
+        for k in range(qnn.num_weights):
+            delta = np.zeros(weights.shape)
+            delta[k] = eps
+
+            f_1 = qnn.forward(input_data, weights + delta)
+            f_2 = qnn.forward(input_data, weights - delta)
+            if sparse:
+                grad = (f_1.todense() - f_2.todense()) / (2*eps)
+                diff = weights_grad.todense()[0, :, k] - grad
+            else:
+                grad = (f_1 - f_2) / (2*eps)
+                diff = weights_grad[0][:, k] - grad
+            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+
+        # TODO: add test on batching
 
 
 if __name__ == '__main__':

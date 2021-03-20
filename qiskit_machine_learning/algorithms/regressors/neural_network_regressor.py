@@ -76,7 +76,7 @@ class NeuralNetworkRegressor():
                             grad[i] += p_grad * self._loss(y_predict, y_target)
                 return grad
 
-        if self._warm_start and not self._fit_result is None:
+        if self._warm_start and self._fit_result is not None:
             initial_point = self._fit_result[0]
         else:
             initial_point = np.random.rand(self._neural_network.num_weights)
