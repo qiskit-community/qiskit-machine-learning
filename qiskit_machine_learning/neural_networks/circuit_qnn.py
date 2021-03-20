@@ -197,10 +197,10 @@ class CircuitQNN(SamplingNeuralNetwork):
             key = (0, *key)  # type: ignore
             prob[key] += v / shots
 
-        if self.dense:
-            return prob
-        else:
+        if self.sparse:
             return prob.to_coo()
+        else:
+            return prob
 
     def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
                                ) -> Tuple[Union[np.ndarray, SparseArray],
@@ -272,7 +272,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key = (0, *k, i)  # type: ignore
                 weights_grad[key] = grad
 
-        if self.dense:
-            return input_grad, weights_grad
-        else:
+        if self.sparse:
             return input_grad.to_coo(), weights_grad.to_coo()
+        else:
+            return input_grad, weights_grad
