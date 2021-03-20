@@ -66,7 +66,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.interpret_2d = interpret_2d
         self.output_shape_2d = (2, 3)  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
-    def get_qnn(self, dense, samples, statevector, interpret_id):
+    def get_qnn(self, sparse, samples, statevector, interpret_id):
         """ Construct QNN from configuration. """
 
         # get quantum instance
@@ -87,13 +87,13 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # construct QNN
         qnn = CircuitQNN(self.qc, self.input_params, self.weight_params,
-                         dense=dense, return_samples=samples,
+                         sparse=sparse, return_samples=samples,
                          interpret=interpret, output_shape=output_shape,
                          quantum_instance=quantum_instance)
         return qnn
 
     @data(
-        # dense, samples, statevector, interpret (0=no, 1=1d, 2=2d)
+        # sparse, samples, statevector, interpret (0=no, 1=1d, 2=2d)
         (True, True, True, 0),
         (True, True, True, 1),
         (True, True, True, 2),
@@ -130,10 +130,10 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         """Circuit QNN Test."""
 
         # get configuration
-        dense, samples, statevector, interpret_id = config
+        sparse, samples, statevector, interpret_id = config
 
         # get QNN
-        qnn = self.get_qnn(dense, samples, statevector, interpret_id)
+        qnn = self.get_qnn(sparse, samples, statevector, interpret_id)
         input_data = np.zeros(qnn.num_inputs)
         weights = np.zeros(qnn.num_weights)
 
@@ -147,7 +147,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             result = qnn.forward(input_data, weights)
 
             # make sure forward result is sparse if it should be
-            if not dense and not samples:
+            if sparse and not samples:
                 self.assertTrue(isinstance(result, SparseArray))
             else:
                 self.assertTrue(isinstance(result, np.ndarray))
@@ -166,7 +166,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         # TODO: add test on batching
 
     @data(
-        # dense, samples, statevector, interpret (0=no, 1=1d, 2=2d)
+        # sparse, samples, statevector, interpret (0=no, 1=1d, 2=2d)
         (True, False, True, 0),
         (True, False, True, 1),
         (True, False, True, 2),
@@ -179,10 +179,10 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         """Circuit QNN Gradient Test."""
 
         # get configuration
-        dense, samples, statevector, interpret_id = config
+        sparse, samples, statevector, interpret_id = config
 
         # get QNN
-        qnn = self.get_qnn(dense, samples, statevector, interpret_id)
+        qnn = self.get_qnn(sparse, samples, statevector, interpret_id)
         input_data = np.ones(qnn.num_inputs)
         weights = np.ones(qnn.num_weights)
         input_grad, weights_grad = qnn.backward(input_data, weights)
@@ -195,12 +195,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
             f_1 = qnn.forward(input_data + delta, weights)
             f_2 = qnn.forward(input_data - delta, weights)
-            if dense:
-                grad = (f_1 - f_2) / (2*eps)
-                diff = input_grad[0, :, k] - grad
-            else:
+            if sparse:
                 grad = (f_1.todense() - f_2.todense()) / (2*eps)
                 diff = input_grad.todense()[0, :, k] - grad
+            else:
+                grad = (f_1 - f_2) / (2*eps)
+                diff = input_grad[0, :, k] - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
         # test input gradients
@@ -211,12 +211,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
             f_1 = qnn.forward(input_data, weights + delta)
             f_2 = qnn.forward(input_data, weights - delta)
-            if dense:
-                grad = (f_1 - f_2) / (2*eps)
-                diff = weights_grad[0][:, k] - grad
-            else:
+            if sparse:
                 grad = (f_1.todense() - f_2.todense()) / (2*eps)
                 diff = weights_grad.todense()[0, :, k] - grad
+            else:
+                grad = (f_1 - f_2) / (2*eps)
+                diff = weights_grad[0][:, k] - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
         # TODO: add test on batching
