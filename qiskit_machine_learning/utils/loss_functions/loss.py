@@ -10,6 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+""" Loss utilities """
+
 from abc import ABC, abstractmethod
 import numpy as np
 
@@ -26,15 +28,17 @@ class Loss(ABC):
 
     @abstractmethod
     def evaluate(self, predict, target):
+        """ evaluate """
         raise NotImplementedError
 
     @abstractmethod
     def gradient(self, predict, target):
+        """ gradient """
         raise NotImplementedError
 
 
 class L2Loss(Loss):
-
+    """ L2Loss """
     def evaluate(self, predict, target):
         predict = np.array(predict)
         target = np.array(target)
@@ -52,7 +56,7 @@ class L2Loss(Loss):
 
 
 class L1Loss(Loss):
-
+    """ L1Loss """
     def evaluate(self, predict, target):
         predict = np.array(predict)
         target = np.array(target)
@@ -86,8 +90,8 @@ class L1Loss(Loss):
 #################################################
 #################################################
 
-class L2Loss_Probability(Loss):
-
+class L2LossProbability(Loss):
+    """ L2LossProbability """
     def __init__(self, predict, target):  # predict and target are both probabilities
         super().__init__(predict, target)
         self.joint_keys = set(predict.keys())
@@ -107,7 +111,7 @@ class L2Loss_Probability(Loss):
 
 
 class CrossEntropyLoss(Loss):
-
+    """ CrossEntropyLoss """
     def __init__(self, predict, target):  # predict and target are both probabilities
         super().__init__(predict, target)
         self.predict = np.array(predict)
@@ -120,7 +124,7 @@ class CrossEntropyLoss(Loss):
 
 
 class KLDivergence(Loss):
-
+    """ KLDivergence """
     def __init__(self, predict, target):  # predict and target are both probabilities
         super().__init__(predict, target)
         self.predict = np.array(predict)

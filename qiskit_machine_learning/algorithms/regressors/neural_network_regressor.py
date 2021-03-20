@@ -10,12 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+""" neural network regressor """
+
 import numpy as np
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
-
-from ..utils.loss_functions.loss import L2Loss
 
 
 class NeuralNetworkRegressor():
@@ -28,6 +28,7 @@ class NeuralNetworkRegressor():
         """
         Args:
         """
+        del callback  # silence pylint until it is handled
 
         self._neural_network = neural_network
         self._loss = loss
@@ -37,7 +38,7 @@ class NeuralNetworkRegressor():
         self._fit_result = None
 
     def fit(self, X, y):
-
+        """ fit """
         if self._neural_network.dense:
 
             def objective(w):
@@ -86,7 +87,7 @@ class NeuralNetworkRegressor():
         return self
 
     def predict(self, X):
-
+        """ predict """
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
 
@@ -98,6 +99,7 @@ class NeuralNetworkRegressor():
         return result
 
     def score(self, X, y):
+        """ score """
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
         return np.sum(self.predict(X) - y) / len(y)

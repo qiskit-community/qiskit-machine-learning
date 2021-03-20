@@ -11,8 +11,8 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-import numpy as np
 from typing import Union
+import numpy as np
 
 from qiskit.algorithms.optimizers import Optimizer
 
@@ -33,8 +33,12 @@ class NeuralNetworkClassifier:
             optimizer: An instance of an optimizer to be used in training.
             warm_start:
             callback:
+
+        Raises:
+            QiskitMachineLearningError: unknown loss
         """
         # TODO: callback
+        del callback  # silence pylint until it is used
 
         self._neural_network = neural_network
         if isinstance(loss, str):
@@ -109,13 +113,14 @@ class NeuralNetworkClassifier:
                                                     objective_grad, initial_point=initial_point)
         return self
 
-    def predict(self, X: np.ndarray):
+    def predict(self, X: np.ndarray) -> np.ndarray:
         """
         Predict using the network specified to the classifier.
 
         Args:
             X: The input data.
-
+        Raises:
+            QiskitMachineLearningError: Model needs to be fit to some training data first
         Returns:
             The predicted classes.
         """
@@ -129,14 +134,15 @@ class NeuralNetworkClassifier:
             result[i] = np.sign(self._neural_network.forward(x, self._fit_result[0]))
         return result
 
-    def score(self, X: np.ndarray, y: np.ndarray):
+    def score(self, X: np.ndarray, y: np.ndarray) -> int:
         """
         Return the mean accuracy on the given test data and labels.
 
         Args:
             X: Test samples.
             y: True labels for `X`.
-
+        Raises:
+            QiskitMachineLearningError: Model needs to be fit to some training data first
         Returns:
             Mean accuracy of ``self.predict(X)`` wrt. `y`.
         """
