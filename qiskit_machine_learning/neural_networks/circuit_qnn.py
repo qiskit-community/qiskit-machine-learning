@@ -35,7 +35,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def __init__(self, circuit: QuantumCircuit,
                  input_params: Optional[List[Parameter]] = None,
                  weight_params: Optional[List[Parameter]] = None,
-                 dense: bool = False,
+                 sparse: bool = False,
                  return_samples: bool = False,
                  interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]] = None,
                  output_shape: Union[int, Tuple[int, ...]] = None,
@@ -48,7 +48,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             circuit: The (parametrized) quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
-            dense: Returns whether the output is dense or not.
+            sparse: Returns whether the output is sparse or not.
             return_samples: Determines whether the network returns a batch of samples or (possibly
                 sparse) array of probabilities in its forward pass. In case of probabilities,
                 the backward pass returns the probability gradients, while it returns (None, None)
@@ -78,11 +78,11 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
-        dense_ = dense
+        sparse_ = sparse
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if return_samples:
             num_samples = quantum_instance.run_config.shots
-            dense_ = True
+            sparse_ = False
             # infer shape from function
             ret = self._interpret(0)
             result = np.array(ret)
@@ -111,7 +111,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         params = list(input_params) + list(weight_params)
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
-        super().__init__(len(self._input_params), len(self._weight_params), dense_, return_samples,
+        super().__init__(len(self._input_params), len(self._weight_params), sparse_, return_samples,
                          output_shape_)
 
     @property
@@ -183,10 +183,10 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # initialize probabilities
         prob: Union[np.ndarray, SparseArray] = None
-        if self.dense:
-            prob = np.zeros((1, *self.output_shape))
-        else:
+        if self.sparse:
             prob = DOK((1, *self.output_shape))
+        else:
+            prob = np.zeros((1, *self.output_shape))
 
         # evaluate probabilities
         for b, v in counts.items():
@@ -236,10 +236,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         input_grad: Union[np.ndarray, SparseArray] = None
         weights_grad: Union[np.ndarray, SparseArray] = None
-        if self._dense:
-            input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
-            weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
-        else:
+        if self._sparse:
             if self.num_inputs > 0:
                 input_grad = DOK((1, *self.output_shape, self.num_inputs))
             else:
@@ -248,6 +245,9 @@ class CircuitQNN(SamplingNeuralNetwork):
                 weights_grad = DOK((1, *self.output_shape, self.num_weights))
             else:
                 weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
+        else:
+            input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
+            weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
 
         for i in range(self.num_inputs):
             for k, grad in input_grad_dicts[i].items():

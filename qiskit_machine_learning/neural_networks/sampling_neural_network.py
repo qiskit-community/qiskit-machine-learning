@@ -27,14 +27,14 @@ class SamplingNeuralNetwork(NeuralNetwork):
     machine learning module that generate samples instead of (expected) values.
     """
 
-    def __init__(self, num_inputs: int, num_weights: int, dense: bool, return_samples: bool,
+    def __init__(self, num_inputs: int, num_weights: int, sparse: bool, return_samples: bool,
                  output_shape: Union[int, Tuple[int, ...]]) -> None:
         """
 
         Args:
             num_inputs: The number of input features.
             num_weights: The number of trainable weights.
-            dense: Returns whether the output is dense or not.
+            sparse: Returns whether the output is sparse or not.
             return_samples: Determines whether the network returns a batch of samples or (possibly
                 sparse) array of probabilities in its forward pass. In case of probabilities,
                 the backward pass returns the probability gradients, while it returns (None, None)
@@ -44,7 +44,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
             QiskitMachineLearningError: Invalid parameter values.
         """
         self._return_samples = return_samples
-        super().__init__(num_inputs, num_weights, dense, output_shape)
+        super().__init__(num_inputs, num_weights, sparse, output_shape)
 
     @property
     def return_samples(self) -> bool:
