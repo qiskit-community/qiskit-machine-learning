@@ -173,7 +173,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
                        ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
+        param_values = {p: input_data[:, i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator

@@ -29,6 +29,7 @@ gaussian
 getter
 hashable
 hoc
+i-th
 innerproduct
 kwargs
 ldots

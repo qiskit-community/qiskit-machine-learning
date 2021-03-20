@@ -12,9 +12,9 @@
 
 """ Test Opflow QNN """
 
-import unittest
-
 from test import QiskitMachineLearningTestCase
+
+import unittest
 
 import numpy as np
 from qiskit import Aer
@@ -33,7 +33,10 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
 
         # specify "run configuration"
         backend = Aer.get_backend('statevector_simulator')
-        quantum_instance = QuantumInstance(backend)
+        self._quantum_instance = QuantumInstance(backend)
+
+    def test_opflow_qnn_simple(self):
+        """Simple Opflow QNN Test."""
 
         # specify how to evaluate expected values and gradients
         expval = PauliExpectation()
@@ -54,25 +57,21 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         op = ~cost_operator @ qc_sfn
 
         # define QNN
-        self.qnn = OpflowQNN(op, [params[0]], [params[1]], expval,
-                             gradient, quantum_instance=quantum_instance)
+        qnn = OpflowQNN(op, [params[0]], [params[1]],
+                        expval, gradient, quantum_instance=self._quantum_instance)
 
-    def test_opflow_qnn1(self):
-        """ Opflow QNN Test """
-
-        input_data = np.zeros(self.qnn.num_inputs)
-        weights = np.zeros(self.qnn.num_weights)
+        input_data = np.zeros(qnn.num_inputs)
+        weights = np.zeros(qnn.num_weights)
 
         # test forward pass
-        result = self.qnn.forward(input_data, weights)
-        self.assertEqual(result.shape, (1, *self.qnn.output_shape))
+        result = qnn.forward(input_data, weights)
+        self.assertEqual(result.shape, (1, *qnn.output_shape))
 
         # test backward pass
-        result = self.qnn.backward(input_data, weights)
-        self.assertEqual(result[0].shape, (1, self.qnn.num_inputs, *self.qnn.output_shape))
-        self.assertEqual(result[1].shape, (1, self.qnn.num_weights, *self.qnn.output_shape))
-
-        # TODO: test batching
+        result = qnn.backward(input_data, weights)
+        # batch dimension of 1
+        self.assertEqual(result[0].shape, (1, *qnn.output_shape, qnn.num_inputs))
+        self.assertEqual(result[1].shape, (1, *qnn.output_shape, qnn.num_weights))
 
 
 if __name__ == '__main__':
