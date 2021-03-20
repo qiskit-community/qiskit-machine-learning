@@ -28,13 +28,13 @@ class NeuralNetwork(ABC):
     batched inputs. This is to be implemented by other (quantum) neural networks.
     """
 
-    def __init__(self, num_inputs: int, num_weights: int, dense: bool,
+    def __init__(self, num_inputs: int, num_weights: int, sparse: bool,
                  output_shape: Union[int, Tuple[int, ...]]) -> None:
         """Initializes the Neural Network.
         Args:
             num_inputs: The number of input features.
             num_weights: The number of trainable weights.
-            dense: Determines whether the output is a dense or a sparse array.
+            sparse: Determines whether the output is a sparse array or not.
             output_shape: The shape of the output.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
@@ -47,7 +47,7 @@ class NeuralNetwork(ABC):
             raise QiskitMachineLearningError('Number of weights cannot be negative!')
         self._num_weights = num_weights
 
-        self._dense = dense
+        self._sparse = sparse
 
         if isinstance(output_shape, int):
             output_shape = (output_shape,)
@@ -66,9 +66,9 @@ class NeuralNetwork(ABC):
         return self._num_weights
 
     @property
-    def dense(self) -> bool:
-        """Returns whether the output is dense or not."""
-        return self._dense
+    def sparse(self) -> bool:
+        """Returns whether the output is sparse or not."""
+        return self._sparse
 
     @property
     def output_shape(self) -> Tuple[int, ...]:

@@ -74,7 +74,8 @@ class OpflowQNN(NeuralNetwork):
         self.gradient_operator = self.gradient.convert(operator,
                                                        self.input_params + self.weight_params)
         output_shape = self._get_output_shape_from_op(operator)
-        super().__init__(len(self.input_params), len(self.weight_params), True, output_shape)
+        super().__init__(len(self.input_params), len(self.weight_params),
+                         sparse=False, output_shape=output_shape)
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
