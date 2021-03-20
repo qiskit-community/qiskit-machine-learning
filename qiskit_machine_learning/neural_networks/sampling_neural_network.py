@@ -27,15 +27,15 @@ class SamplingNeuralNetwork(NeuralNetwork):
     machine learning module that generate samples instead of (expected) values.
     """
 
-    def __init__(self, num_inputs: int, num_weights: int, dense: bool, return_samples: bool,
+    def __init__(self, num_inputs: int, num_weights: int, sparse: bool, sampling: bool,
                  output_shape: Union[int, Tuple[int, ...]]) -> None:
         """
 
         Args:
             num_inputs: The number of input features.
             num_weights: The number of trainable weights.
-            dense: Returns whether the output is dense or not.
-            return_samples: Determines whether the network returns a batch of samples or (possibly
+            sparse: Returns whether the output is sparse or not.
+            sampling: Determines whether the network returns a batch of samples or (possibly
                 sparse) array of probabilities in its forward pass. In case of probabilities,
                 the backward pass returns the probability gradients, while it returns (None, None)
                 in the case of samples.
@@ -43,17 +43,17 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
-        self._return_samples = return_samples
-        super().__init__(num_inputs, num_weights, dense, output_shape)
+        self._sampling = sampling
+        super().__init__(num_inputs, num_weights, sparse, output_shape)
 
     @property
-    def return_samples(self) -> bool:
+    def sampling(self) -> bool:
         """
         Returns:
              ``True`` if the network returns a batch of samples and ``False`` if a sparse
              vector (dictionary) of probabilities in its forward pass.
         """
-        return self._return_samples
+        return self._sampling
 
     def _forward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                  weights: Optional[Union[List[float], np.ndarray, float]]
@@ -61,7 +61,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """Forward pass of the network. Returns an array of samples or the probabilities, depending
         on the setting. Format depends on the set interpret function.
         """
-        if self._return_samples:
+        if self._sampling:
             return self.sample(input_data, weights)
         else:
             return self.probabilities(input_data, weights)
@@ -73,7 +73,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """Backward pass of the network. Returns (None, None) in case of samples and the
         corresponding here probability gradients otherwise.
         """
-        if self._return_samples:
+        if self._sampling:
             return None, None
         else:
             return self.probability_gradients(input_data, weights)
