@@ -12,10 +12,12 @@
 
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 
-from typing import Tuple, Any, Optional
+from typing import Tuple, Any, Optional, cast
 import logging
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
+
+from sparse import SparseArray, COO
 
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
@@ -90,6 +92,7 @@ class TorchConnector(Module):
             ctx.save_for_backward(input_data, weights)
             result = neural_network.forward(input_data.numpy(), weights.numpy())
             if neural_network.sparse and sparse:
+                result = cast(COO, cast(SparseArray, result).asformat('coo'))
                 result_tensor = sparse_coo_tensor(result.coords, result.data)
             else:
                 result_tensor = Tensor(result)
@@ -136,32 +139,37 @@ class TorchConnector(Module):
                 if np.prod(input_grad.shape) == 0:
                     input_grad = None
                 elif qnn.sparse:
+                    input_grad = sparse_coo_tensor(input_grad.coords, input_grad.data)
+
                     # cast to dense here, since PyTorch does not support sparse output yet.
                     # this should only happen if the network returns sparse output but the
                     # connector is configured to return dense output.
-                    input_grad = sparse_coo_tensor(input_grad.coords, input_grad.data)
-                    input_grad = input_grad.to_dense()
-                    if len(input_grad.shape) == 1:  # TODO: can be removed after batching
-                        input_grad = input_grad.reshape(1, len(input_grad))
-
-                    input_grad = grad_output.float() @ input_grad
+                    input_grad = input_grad.to_dense()  # this should be eventtually removed
+                    input_grad = input_grad.to(grad_output.dtype)
                 else:
-                    if len(input_grad.shape) == 1:  # TODO: can be removed after batching is done
-                        input_grad = input_grad.reshape(1, len(input_grad))
-                    input_grad = grad_output.float() @ Tensor(input_grad)
+                    input_grad = Tensor(input_grad).to(grad_output.dtype)
+
+                if len(input_grad.shape) == 1:  # TODO: can be removed after batching is done
+                    input_grad = input_grad.reshape(1, len(input_grad))
+                input_grad = grad_output @ input_grad
 
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
                     weights_grad = None
                 elif qnn.sparse:
                     weights_grad = sparse_coo_tensor(weights_grad.coords, weights_grad.data)
-                    if len(weights_grad.shape) == 1:  # TODO: can be removed after batching
-                        weights_grad = weights_grad.reshape(1, len(weights_grad))
-                    weights_grad = grad_output.float() @ weights_grad
+
+                    # cast to dense here, since PyTorch does not support sparse output yet.
+                    # this should only happen if the network returns sparse output but the
+                    # connector is configured to return dense output.
+                    weights_grad = weights_grad.to_dense()  # this should be eventtually removed
+                    weights_grad = weights_grad.to(grad_output.dtype)
                 else:
-                    if len(weights_grad.shape) == 1:  # TODO: can be removed after batching is done
-                        weights_grad = weights_grad.reshape(1, len(weights_grad))
-                    weights_grad = grad_output.float() @ Tensor(weights_grad)
+                    weights_grad = Tensor(weights_grad).to(grad_output.dtype)
+
+                if len(weights_grad.shape) == 1:  # TODO: can be removed after batching is done
+                    weights_grad = weights_grad.reshape(1, len(weights_grad))
+                weights_grad = grad_output @ weights_grad
 
             # return gradients for the first two arguments and None for the others (ie. qnn, sparse)
             return input_grad, weights_grad, None, None
