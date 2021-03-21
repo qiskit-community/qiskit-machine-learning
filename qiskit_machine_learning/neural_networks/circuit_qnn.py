@@ -153,7 +153,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
+        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
@@ -172,7 +172,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
                        ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
-        param_values = {p: input_data[:, i] for i, p in enumerate(self.input_params)}
+        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
@@ -202,7 +202,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
+        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # TODO: additional "bind_parameters" should not be necessary, seems like a bug to be fixed
