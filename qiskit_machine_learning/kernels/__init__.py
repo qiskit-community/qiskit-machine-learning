@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,12 +10,24 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Classifiers Package """
+"""
+Quantum Kernels (:mod:`qiskit_machine_learning.kernels`)
 
-from .qsvc import QSVC
-from .vqc import VQC
+.. currentmodule:: qiskit_machine_learning.kernels
+
+Quantum Kernels
+===============
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QuantumKernel
+
+"""
+
+from .quantum_kernel import QuantumKernel
 
 __all__ = [
-    'QSVC',
-    'VQC'
+    'QuantumKernel'
 ]
