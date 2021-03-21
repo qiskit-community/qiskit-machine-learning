@@ -156,9 +156,8 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 Tensor(1),
                 Tensor([1]),
                 Tensor([1, 2]),
-                # TODO: Requires batching
-                # Tensor([[1], [2]]),               #
-                # Tensor([[[1], [2]], [[3], [4]]])  #
+                Tensor([[1], [2]]),
+                # Tensor([[[1], [2]], [[3], [4]]])  # TODO: requires complex batch shape
             ]
 
             # test model
@@ -189,8 +188,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 Tensor([1, 2]),
                 Tensor([[1, 2]]),
                 Tensor([[1], [2]]),
-                # Requires batching
-                # Tensor([[[1], [2]], [[3], [4]]])
+                Tensor([[[1], [2]], [[3], [4]]])
             ]
 
             # test model
@@ -247,11 +245,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             model = TorchConnector(qnn)
 
             test_data = [
-                Tensor(1),                # OK: both fail
-                Tensor([1, 2]),           # OK: both work
-                Tensor([[1], [2]]),       # OK: both fail
-                # TODO: Requires batching
-                # Tensor([[1, 2], [3, 4]])
+                Tensor(1),
+                Tensor([1, 2]),
+                Tensor([[1], [2]]),
+                Tensor([[1, 2], [3, 4]])
             ]
 
             # test model
