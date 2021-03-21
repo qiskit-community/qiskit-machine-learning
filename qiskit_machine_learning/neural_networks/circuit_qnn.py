@@ -148,7 +148,8 @@ class CircuitQNN(SamplingNeuralNetwork):
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
-    def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                ) -> np.ndarray:
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
@@ -169,7 +170,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             samples[0, i, :] = self._interpret(int(b, 2))
         return samples
 
-    def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
+    def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
         param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
@@ -198,7 +199,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         return prob
 
-    def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
+    def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
         # combine parameter dictionary

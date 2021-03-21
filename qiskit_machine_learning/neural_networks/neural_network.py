@@ -75,7 +75,8 @@ class NeuralNetwork(ABC):
         """Returns the output shape."""
         return self._output_shape
 
-    def _validate_input(self, input_data: Optional[Union[List[float], np.ndarray, float]]):
+    def _validate_input(self, input_data: Optional[Union[List[float], np.ndarray, float]]
+                        ) -> Union[np.ndarray, None]:
         if input_data is None:
             return None, None
         input_ = np.array(input_data)
@@ -99,7 +100,8 @@ class NeuralNetwork(ABC):
 
         return input_, shape
 
-    def _validate_weights(self, weights: Optional[Union[List[float], np.ndarray, float]]):
+    def _validate_weights(self, weights: Optional[Union[List[float], np.ndarray, float]]
+                          ) -> Union[np.ndarray, None]:
         if weights is None:
             return None
         weights_ = np.array(weights)
