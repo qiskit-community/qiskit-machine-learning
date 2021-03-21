@@ -76,7 +76,7 @@ class NeuralNetwork(ABC):
         return self._output_shape
 
     def _validate_input(self, input_data: Optional[Union[List[float], np.ndarray, float]]
-                        ) -> Union[np.ndarray, None]:
+                        ) -> Tuple[Union[np.ndarray, None], Union[Tuple[int, ...], None]]:
         if input_data is None:
             return None, None
         input_ = np.array(input_data)
