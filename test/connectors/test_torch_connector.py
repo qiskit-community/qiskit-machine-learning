@@ -22,11 +22,17 @@ import numpy as np
 
 from ddt import ddt, data
 
-import torch
-from torch import Tensor
-from torch.nn import Linear
+try:
+    from torch import Tensor
+except ImportError:
+    class Tensor:  # type: ignore
+        """ Empty Tensor class
+            Replacement if torch.Tensor is not present.
+        """
+        pass
 
 from qiskit import Aer, QuantumCircuit
+from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
 from qiskit.utils import QuantumInstance
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
@@ -57,8 +63,16 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 test_data: list of test input tensors
 
             Raises:
+                MissingOptionalLibraryError: torch not installed
                 QiskitMachineLearningError: Invalid input.
         """
+        try:
+            from torch.nn import Linear
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname='Pytorch',
+                name='TorchConnector',
+                pip_install="pip install 'qiskit-machine-learning[torch]'") from ex
 
         # create benchmark model
         in_dim = model.neural_network.num_inputs
@@ -96,6 +110,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         Args:
             model: The model to be tested.
         """
+        try:
+            import torch
+        except ImportError as ex:
+            self.skipTest('pytorch not installed, skipping test: {}'.format(str(ex)))
 
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
@@ -131,21 +149,24 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # construct QNN with statevector simulator
         qnn = TwoLayerQNN(1, feature_map, var_form, quantum_instance=quantum_instance)
-        model = TorchConnector(qnn)
+        try:
+            model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor(1),
-            Tensor([1]),
-            Tensor([1, 2]),
-            # TODO: Requires batching
-            # Tensor([[1], [2]]),               #
-            # Tensor([[[1], [2]], [[3], [4]]])  #
-        ]
+            test_data = [
+                Tensor(1),
+                Tensor([1]),
+                Tensor([1, 2]),
+                # TODO: Requires batching
+                # Tensor([[1], [2]]),               #
+                # Tensor([[[1], [2]], [[3], [4]]])  #
+            ]
 
-        # test model
-        self.validate_output_shape(model, test_data)
-        if q_i == 'sv':
-            self.validate_backward_pass(model)
+            # test model
+            self.validate_output_shape(model, test_data)
+            if q_i == 'sv':
+                self.validate_backward_pass(model)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
     @data(
         'sv', 'qasm'
@@ -160,21 +181,24 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # construct QNN
         qnn = TwoLayerQNN(2, quantum_instance=quantum_instance)
-        model = TorchConnector(qnn)
+        try:
+            model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor(1),
-            Tensor([1, 2]),
-            Tensor([[1, 2]]),
-            Tensor([[1], [2]]),
-            # Requires batching
-            # Tensor([[[1], [2]], [[3], [4]]])
-        ]
+            test_data = [
+                Tensor(1),
+                Tensor([1, 2]),
+                Tensor([[1, 2]]),
+                Tensor([[1], [2]]),
+                # Requires batching
+                # Tensor([[[1], [2]], [[3], [4]]])
+            ]
 
-        # test model
-        self.validate_output_shape(model, test_data)
-        if q_i == 'sv':
-            self.validate_backward_pass(model)
+            # test model
+            self.validate_output_shape(model, test_data)
+            if q_i == 'sv':
+                self.validate_backward_pass(model)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
     @data(
         'sv', 'qasm'
@@ -219,20 +243,23 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         qnn = OpflowQNN(op, [params_1[0], params_2[0]], [params_1[1], params_2[1]],
                         quantum_instance=quantum_instance)
-        model = TorchConnector(qnn)
+        try:
+            model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor(1),                # OK: both fail
-            Tensor([1, 2]),           # OK: both work
-            Tensor([[1], [2]]),       # OK: both fail
-            # TODO: Requires batching
-            # Tensor([[1, 2], [3, 4]])
-        ]
+            test_data = [
+                Tensor(1),                # OK: both fail
+                Tensor([1, 2]),           # OK: both work
+                Tensor([[1], [2]]),       # OK: both fail
+                # TODO: Requires batching
+                # Tensor([[1, 2], [3, 4]])
+            ]
 
-        # test model
-        self.validate_output_shape(model, test_data)
-        if q_i == 'sv':
-            self.validate_backward_pass(model)
+            # test model
+            self.validate_output_shape(model, test_data)
+            if q_i == 'sv':
+                self.validate_backward_pass(model)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -271,20 +298,23 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                          interpret=interpret,
                          output_shape=output_shape,
                          quantum_instance=quantum_instance)
-        model = TorchConnector(qnn)
+        try:
+            model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor(1),                        # OK: both work
-            Tensor([1, 2]),                   # OK: both fail
-            # TODO: Requires batching
-            # Tensor([[1], [2]]),               #
-            # Tensor([[[1], [2]], [[3], [4]]])  #
-        ]
+            test_data = [
+                Tensor(1),                        # OK: both work
+                Tensor([1, 2]),                   # OK: both fail
+                # TODO: Requires batching
+                # Tensor([[1], [2]]),               #
+                # Tensor([[[1], [2]], [[3], [4]]])  #
+            ]
 
-        # test model
-        self.validate_output_shape(model, test_data)
-        if q_i == 'sv':
-            self.validate_backward_pass(model)
+            # test model
+            self.validate_output_shape(model, test_data)
+            if q_i == 'sv':
+                self.validate_backward_pass(model)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -323,20 +353,23 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                          interpret=interpret,
                          output_shape=output_shape,
                          quantum_instance=quantum_instance)
-        model = TorchConnector(qnn)
+        try:
+            model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor(1),
-            Tensor([1, 2]),
-            # TODO: Requires batching
-            # Tensor([[1], [2]]),
-            # Tensor([[[1], [2]], [[3], [4]]])
-        ]
+            test_data = [
+                Tensor(1),
+                Tensor([1, 2]),
+                # TODO: Requires batching
+                # Tensor([[1], [2]]),
+                # Tensor([[[1], [2]], [[3], [4]]])
+            ]
 
-        # test model
-        self.validate_output_shape(model, test_data)
-        if q_i == 'sv':
-            self.validate_backward_pass(model)
+            # test model
+            self.validate_output_shape(model, test_data)
+            if q_i == 'sv':
+                self.validate_backward_pass(model)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -376,21 +409,24 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                          interpret=interpret,
                          output_shape=output_shape,
                          quantum_instance=quantum_instance)
-        model = TorchConnector(qnn)
+        try:
+            model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor(1),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            # TODO: Requires batching
-            # Tensor([[1, 2], [3, 4]])
-            # Tensor([[[1], [2]], [[3], [4]]])
-        ]
+            test_data = [
+                Tensor(1),
+                Tensor([1, 2]),
+                Tensor([[1], [2]]),
+                # TODO: Requires batching
+                # Tensor([[1, 2], [3, 4]])
+                # Tensor([[[1], [2]], [[3], [4]]])
+            ]
 
-        # test model
-        self.validate_output_shape(model, test_data)
-        if q_i == 'sv':
-            self.validate_backward_pass(model)
+            # test model
+            self.validate_output_shape(model, test_data)
+            if q_i == 'sv':
+                self.validate_backward_pass(model)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
     @data(
         # interpret
@@ -417,18 +453,21 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                          interpret=interpret,
                          output_shape=None,
                          quantum_instance=self.qasm_quantum_instance)
-        model = TorchConnector(qnn)
+        try:
+            model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([2, 2])
-            # TODO: test batching
-        ]
-        for i, x in enumerate(test_data):
-            if i == 0:
-                self.assertEqual(model(x).shape, qnn.output_shape)
-            else:
+            test_data = [
+                Tensor([2, 2])
                 # TODO: test batching
-                pass
+            ]
+            for i, x in enumerate(test_data):
+                if i == 0:
+                    self.assertEqual(model(x).shape, qnn.output_shape)
+                else:
+                    # TODO: test batching
+                    pass
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
 
 if __name__ == '__main__':
