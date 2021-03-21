@@ -55,8 +55,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """
         return self._sampling
 
-    def _forward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                 weights: Optional[Union[List[float], np.ndarray, float]]
+    def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                  ) -> Union[np.ndarray, SparseArray]:
         """Forward pass of the network. Returns an array of samples or the probabilities, depending
         on the setting. Format depends on the set interpret function.
@@ -66,8 +65,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         else:
             return self._probabilities(input_data, weights)
 
-    def _backward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                  weights: Optional[Union[List[float], np.ndarray, float]]
+    def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                   ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
                              Optional[Union[np.ndarray, SparseArray]]]:
         """Backward pass of the network. Returns (None, None) in case of samples and the
@@ -97,7 +95,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._sample(input_, weights_)
 
     @abstractmethod
-    def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                ) -> np.ndarray:
         """Returns samples from the network."""
         raise NotImplementedError
 
@@ -121,7 +120,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._probabilities(input_, weights_)
 
     @abstractmethod
-    def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
+    def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
         """Returns the sample probabilities."""
         raise NotImplementedError
@@ -149,7 +148,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._probability_gradients(input_, weights_)
 
     @abstractmethod
-    def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
+    def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
         """Returns the probability gradients."""
