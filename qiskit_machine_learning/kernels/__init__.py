@@ -10,10 +10,24 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Regressors Package"""
+"""
+Quantum Kernels (:mod:`qiskit_machine_learning.kernels`)
 
-from .qsvr import QSVR
+.. currentmodule:: qiskit_machine_learning.kernels
+
+Quantum Kernels
+===============
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QuantumKernel
+
+"""
+
+from .quantum_kernel import QuantumKernel
 
 __all__ = [
-    'QSVR'
+    'QuantumKernel'
 ]

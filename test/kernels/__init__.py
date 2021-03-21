@@ -9,11 +9,3 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-""" Regressors Package"""
-
-from .qsvr import QSVR
-
-__all__ = [
-    'QSVR'
-]
