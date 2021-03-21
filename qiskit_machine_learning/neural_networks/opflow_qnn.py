@@ -123,10 +123,12 @@ class OpflowQNN(NeuralNetwork):
         # combine parameter dictionary
 
         # iterate over rows, each row is an element of a batch
-        grad_all = np.zeros((input_data.shape[0], len(self.input_params) + len(self.weight_params)))
-        for row in range(input_data.shape[0]):
+        batch_size = input_data.shape[0]
+        grad_all = np.zeros((batch_size, *self.output_shape,
+                             self.num_inputs + self.num_weights))
+        for row in range(batch_size):
             # take i-th column as values for the i-th param in a batch
-            param_values = {p: input_data[row, j].tolist() for j, p in enumerate(self.input_params)}
+            param_values = {p: input_data[row, j] for j, p in enumerate(self.input_params)}
             param_values.update({p: weights[j] for j, p in enumerate(self.weight_params)})
 
             # evaluate gradient over all parameters
@@ -138,13 +140,14 @@ class OpflowQNN(NeuralNetwork):
             else:
                 grad = self.gradient_operator.bind_parameters(param_values)
                 grad = np.real(grad.eval())
-            grad_all[row, :] = grad
+            grad_all[row, :] = grad.transpose()
 
         # split into and return input and weights gradients
-        input_grad = np.array(grad_all[:, :self.num_inputs])\
+        # TODO: handling of multi-dimensional output needs to be validated (e.g. for 2d output etc.)
+        input_grad = np.array(grad_all[:batch_size, :, :self.num_inputs])\
             .reshape(-1, *self.output_shape, self.num_inputs)
 
-        weights_grad = np.array(grad_all[:, self.num_inputs:])\
+        weights_grad = np.array(grad_all[:batch_size, :, self.num_inputs:])\
             .reshape(-1, *self.output_shape, self.num_weights)
 
         return input_grad, weights_grad
