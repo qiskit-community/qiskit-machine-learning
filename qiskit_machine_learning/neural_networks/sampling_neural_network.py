@@ -62,9 +62,9 @@ class SamplingNeuralNetwork(NeuralNetwork):
         on the setting. Format depends on the set interpret function.
         """
         if self._sampling:
-            return self.sample(input_data, weights)
+            return self._sample(input_data, weights)
         else:
-            return self.probabilities(input_data, weights)
+            return self._probabilities(input_data, weights)
 
     def _backward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                   weights: Optional[Union[List[float], np.ndarray, float]]
@@ -76,7 +76,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         if self._sampling:
             return None, None
         else:
-            return self.probability_gradients(input_data, weights)
+            return self._probability_gradients(input_data, weights)
 
     def sample(self, input_data: Union[List[float], np.ndarray, float],
                weights: Union[List[float], np.ndarray, float]) -> np.ndarray:
@@ -91,8 +91,9 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample results of the neural network of the shape (output_shape).
         """
-        input_ = self._validate_input(input_data)
+        input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
+        # TODO: enable batching
         return self._sample(input_, weights_)
 
     @abstractmethod
@@ -114,8 +115,9 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample histogram of the neural network.
         """
-        input_ = self._validate_input(input_data)
+        input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
+        # TODO: enable batching
         return self._probabilities(input_, weights_)
 
     @abstractmethod
@@ -141,8 +143,9 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The probability gradients.
         """
-        input_ = self._validate_input(input_data)
+        input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
+        # TODO: enable batching
         return self._probability_gradients(input_, weights_)
 
     @abstractmethod
