@@ -67,6 +67,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """
 
+        # TODO: need to be able to handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
         self._circuit = circuit.copy()
         if quantum_instance.is_statevector:
@@ -221,7 +222,10 @@ class CircuitQNN(SamplingNeuralNetwork):
                 key = (i, *key)  # type: ignore
                 prob[key] += v / shots
 
-        return prob
+        if self.sparse:
+            return prob.to_coo()
+        else:
+            return prob
 
     def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
@@ -258,6 +262,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                         key = tuple(cast(Iterable[int], key))
                     weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
                                                   np.real(grad[i + self.num_inputs][k]))
+        # TODO: end of mapping to dictionary ------------------------------------------------
 
         input_grad: Union[np.ndarray, SparseArray] = None
         weights_grad: Union[np.ndarray, SparseArray] = None
@@ -292,4 +297,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     key = (0, *k, i)  # type: ignore
                 weights_grad[key] = grad
 
-        return input_grad, weights_grad
+        if self.sparse:
+            return input_grad.to_coo(), weights_grad.to_coo()
+        else:
+            return input_grad, weights_grad
