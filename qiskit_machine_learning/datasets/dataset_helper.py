@@ -147,9 +147,9 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
     Discretize & truncate classical data to enable digital encoding in qubit registers
     whereby the data grid is [[grid elements dim 0], ..., [grid elements dim k]].
 
-    For each dimension k, the domain is split into (2 ** num_qubits[k]) bins equally spaced and equally
-    sized, each centered in discrete_bounds[k, 0], ..., discrete_bounds[k, 1]. Bins have size equal to
-    (discrete_bounds[k, 1] - discrete_bounds[k, 0])/(2 ** num_qubits[k] - 1).
+    For each dimension k, the domain is split into (2 ** num_qubits[k]) bins equally spaced and
+    equally sized, each centered in discrete_bounds[k, 0], ..., discrete_bounds[k, 1]. Bins have
+    size equal to (discrete_bounds[k, 1] - discrete_bounds[k, 0])/(2 ** num_qubits[k] - 1).
     Every sample in data that falls out of the bins is discarded.
 
     Args:
@@ -196,7 +196,8 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
     for j, prec in enumerate(num_qubits):
         data_row = data[:, j]  # dim j of all data samples
         # prepare element grid for dim j
-        elements_current_dim = np.linspace(discrete_bounds[j, 0], discrete_bounds[j, 1], (2 ** prec))
+        elements_current_dim = np.linspace(discrete_bounds[j, 0], discrete_bounds[j, 1],
+                                           (2 ** prec))
         # find index for data sample in grid
         index_grid = np.searchsorted(
             elements_current_dim,
