@@ -80,6 +80,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
         sparse_ = sparse
+        # this definition required by mypy
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if sampling:
             num_samples = quantum_instance.run_config.shots
@@ -155,48 +156,71 @@ class CircuitQNN(SamplingNeuralNetwork):
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
         # combine parameter dictionary
-        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
+        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
         orig_memory = self.quantum_instance.backend_options.get('memory')
         self.quantum_instance.backend_options['memory'] = True
-        result = self.quantum_instance.execute(self.circuit.bind_parameters(param_values))
+
+        circuits = []
+        # iterate over rows, each row is an element of a batch
+        rows = input_data.shape[0]
+        for i in range(rows):
+            param_values = {input_param: input_data[i, j]
+                            for j, input_param in enumerate(self.input_params)}
+            param_values.update({weight_param: weights[j]
+                                 for j, weight_param in enumerate(self.weight_params)})
+            circuits.append(self._circuit.bind_parameters(param_values))
+
+        # result = self.quantum_instance.execute(self.circuit.bind_parameters(param_values))
+        result = self._quantum_instance.execute(circuits)
         self.quantum_instance.backend_options['memory'] = orig_memory
 
         # return samples
-        memory = result.get_memory()
-        samples = np.zeros((1, *self.output_shape))
-        for i, b in enumerate(memory):
-            samples[0, i, :] = self._interpret(int(b, 2))
+        samples = np.zeros((rows, *self.output_shape))
+        # collect them from all executed circuits
+        for i, circuit in enumerate(circuits):
+            memory = result.get_memory(circuit)
+            for j, b in enumerate(memory):
+                samples[i, j, :] = self._interpret(int(b, 2))
         return samples
 
     def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
-        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
+        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
-        result = self.quantum_instance.execute(
-            self.circuit.bind_parameters(param_values))
-        counts = result.get_counts()
-        shots = sum(counts.values())
+        circuits = []
+        rows = input_data.shape[0]
+        for i in range(rows):
+            param_values = {input_param: input_data[i, j]
+                            for j, input_param in enumerate(self.input_params)}
+            param_values.update({weight_param: weights[j]
+                                 for j, weight_param in enumerate(self.weight_params)})
+            circuits.append(self._circuit.bind_parameters(param_values))
 
+        result = self.quantum_instance.execute(circuits)
         # initialize probabilities
         prob: Union[np.ndarray, SparseArray] = None
         if self.sparse:
-            prob = DOK((1, *self.output_shape))
+            prob = DOK((rows, *self.output_shape))
         else:
-            prob = np.zeros((1, *self.output_shape))
+            prob = np.zeros((rows, *self.output_shape))
 
-        # evaluate probabilities
-        for b, v in counts.items():
-            key = self._interpret(int(b, 2))
-            if isinstance(key, Integral):
-                key = (cast(int, key),)
-            key = (0, *key)  # type: ignore
-            prob[key] += v / shots
+        for i, circuit in enumerate(circuits):
+            counts = result.get_counts(circuit)
+            shots = sum(counts.values())
+
+            # evaluate probabilities
+            for b, v in counts.items():
+                key = self._interpret(int(b, 2))
+                if isinstance(key, Integral):
+                    key = (cast(int, key),)
+                key = (i, *key)  # type: ignore
+                prob[key] += v / shots
 
         if self.sparse:
             return prob.to_coo()
