@@ -37,6 +37,7 @@ Submodules
    algorithms
    circuit.library
    datasets
+   kernels
    neural_networks
 
 """
