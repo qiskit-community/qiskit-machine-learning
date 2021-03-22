@@ -94,47 +94,47 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
     @data(
         # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)
-        (True, True, True, 0),
-        (True, True, True, 1),
-        (True, True, True, 2),
+        (True, True, True, 0, 1),
+        (True, True, True, 1, 1),
+        (True, True, True, 2, 1),
 
-        (True, True, False, 0),
-        (True, True, False, 1),
-        (True, True, False, 2),
+        (True, True, False, 0, 1),
+        (True, True, False, 1, 1),
+        (True, True, False, 2, 1),
 
-        (True, False, True, 0),
-        (True, False, True, 1),
-        (True, False, True, 2),
+        (True, False, True, 0, 1),
+        (True, False, True, 1, 1),
+        (True, False, True, 2, 1),
 
-        (True, False, False, 0),
-        (True, False, False, 1),
-        (True, False, False, 2),
+        (True, False, False, 0, 1),
+        (True, False, False, 1, 1),
+        (True, False, False, 2, 1),
 
-        (False, True, True, 0),
-        (False, True, True, 1),
-        (False, True, True, 2),
+        (False, True, True, 0, 10),
+        (False, True, True, 1, 10),
+        (False, True, True, 2, 10),
 
-        (False, True, False, 0),
-        (False, True, False, 1),
-        (False, True, False, 2),
+        (False, True, False, 0, 10),
+        (False, True, False, 1, 10),
+        (False, True, False, 2, 10),
 
-        (False, False, True, 0),
-        (False, False, True, 1),
-        (False, False, True, 2),
+        (False, False, True, 0, 10),
+        (False, False, True, 1, 10),
+        (False, False, True, 2, 10),
 
-        (False, False, False, 0),
-        (False, False, False, 1),
-        (False, False, False, 2)
+        (False, False, False, 0, 10),
+        (False, False, False, 1, 10),
+        (False, False, False, 2, 10)
     )
     def test_circuit_qnn(self, config):
         """Circuit QNN Test."""
 
         # get configuration
-        sparse, sampling, statevector, interpret_id = config
+        sparse, sampling, statevector, interpret_id, batch_size = config
 
         # get QNN
         qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
-        input_data = np.zeros(qnn.num_inputs)
+        input_data = np.zeros((batch_size, qnn.num_inputs))
         weights = np.zeros(qnn.num_weights)
 
         # if sampling and statevector, make sure it fails
@@ -153,17 +153,15 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertTrue(isinstance(result, np.ndarray))
 
             # check forward result shape
-            self.assertEqual(result.shape, (1, *qnn.output_shape))
+            self.assertEqual(result.shape, (batch_size, *qnn.output_shape))
 
             input_grad, weights_grad = qnn.backward(input_data, weights)
             if sampling:
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
-                self.assertEqual(input_grad.shape, (1, *qnn.output_shape, qnn.num_inputs))
-                self.assertEqual(weights_grad.shape, (1, *qnn.output_shape, qnn.num_weights))
-
-        # TODO: add test on batching
+                self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
+                self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
 
     @data(
         # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)

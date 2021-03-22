@@ -188,29 +188,38 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
-        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
+        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
-        result = self.quantum_instance.execute(
-            self.circuit.bind_parameters(param_values))
-        counts = result.get_counts()
-        shots = sum(counts.values())
+        circuits = []
+        rows = input_data.shape[0]
+        for i in range(rows):
+            param_values = {input_param: input_data[i, j]
+                            for j, input_param in enumerate(self.input_params)}
+            param_values.update({weight_param: weights[j]
+                                 for j, weight_param in enumerate(self.weight_params)})
+            circuits.append(self._circuit.bind_parameters(param_values))
 
+        result = self.quantum_instance.execute(circuits)
         # initialize probabilities
         prob: Union[np.ndarray, SparseArray] = None
         if self.sparse:
-            prob = DOK((1, *self.output_shape))
+            prob = DOK((rows, *self.output_shape))
         else:
-            prob = np.zeros((1, *self.output_shape))
+            prob = np.zeros((rows, *self.output_shape))
 
-        # evaluate probabilities
-        for b, v in counts.items():
-            key = self._interpret(int(b, 2))
-            if isinstance(key, Integral):
-                key = (cast(int, key),)
-            key = (0, *key)  # type: ignore
-            prob[key] += v / shots
+        for i, circuit in enumerate(circuits):
+            counts = result.get_counts(circuit)
+            shots = sum(counts.values())
+
+            # evaluate probabilities
+            for b, v in counts.items():
+                key = self._interpret(int(b, 2))
+                if isinstance(key, Integral):
+                    key = (cast(int, key),)
+                key = (i, *key)  # type: ignore
+                prob[key] += v / shots
 
         return prob
 
