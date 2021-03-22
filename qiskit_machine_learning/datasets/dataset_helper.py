@@ -182,13 +182,15 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
     for i, data_sample in enumerate(data):
         append = True
         for j, entry in enumerate(data_sample):
-            if entry < discrete_bounds[j, 0] - .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[k] - 1):
+            if entry < discrete_bounds[j, 0] -\
+                    .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[j] - 1):
                 append = False
-            if entry > discrete_bounds[j, 1] + .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[k] - 1):
+            if entry > discrete_bounds[j, 1] +\
+                    .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[j] - 1):
                 append = False
         if append:
             temp.append(list(data_sample))
-    data = np.array(temp, dtype=float)
+    data = np.array(temp)
 
     # Fit the data to the data element grid
     for j, prec in enumerate(num_qubits):
