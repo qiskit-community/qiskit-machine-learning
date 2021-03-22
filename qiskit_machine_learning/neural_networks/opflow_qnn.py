@@ -125,8 +125,7 @@ class OpflowQNN(NeuralNetwork):
 
         # iterate over rows, each row is an element of a batch
         batch_size = input_data.shape[0]
-        grad_all = np.zeros((batch_size, *self.output_shape,
-                             self.num_inputs + self.num_weights))
+        grad_all = np.zeros((batch_size, *self.output_shape, self.num_inputs + self.num_weights))
         for row in range(batch_size):
             # take i-th column as values for the i-th param in a batch
             param_values = {p: input_data[row, j] for j, p in enumerate(self.input_params)}
