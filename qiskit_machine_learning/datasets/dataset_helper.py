@@ -190,7 +190,7 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
                 append = False
         if append:
             temp.append(list(data_sample))
-    data = np.array(temp)
+    data = np.array(temp, dtype=float)
 
     # Fit the data to the data element grid
     for j, prec in enumerate(num_qubits):
