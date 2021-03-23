@@ -18,16 +18,8 @@ import os
 long_description = """Qiskit Machine Learning is a open-source library of quantum computing machine learning experiments.
  """
 
-requirements = [
-    "qiskit-terra>=0.17.0",
-    "scipy>=1.4",
-    "numpy>=1.17",
-    "sparse",
-    "psutil>=5",
-    "scikit-learn>=0.20.0",
-    "fastdtw",
-    "setuptools>=40.1.0",
-]
+with open('requirements.txt') as f:
+    REQUIREMENTS = f.read().splitlines()
 
 if not hasattr(setuptools, 'find_namespace_packages') or not inspect.ismethod(setuptools.find_namespace_packages):
     print("Your setuptools version:'{}' does not support PEP 420 (find_namespace_packages). "
@@ -65,7 +57,7 @@ setuptools.setup(
     ),
     keywords='qiskit sdk quantum machine learning ml',
     packages=setuptools.find_packages(include=['qiskit_machine_learning','qiskit_machine_learning.*']),
-    install_requires=requirements,
+    install_requires=REQUIREMENTS,
     include_package_data=True,
     python_requires=">=3.6",
     extras_require={
