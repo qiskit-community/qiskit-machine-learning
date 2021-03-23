@@ -160,8 +160,10 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
-                self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
-                self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
+                self.assertEqual(input_grad.shape,
+                                 (batch_size, *qnn.output_shape, qnn.num_inputs))
+                self.assertEqual(weights_grad.shape,
+                                 (batch_size, *qnn.output_shape, qnn.num_weights))
 
     @data(
         # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)

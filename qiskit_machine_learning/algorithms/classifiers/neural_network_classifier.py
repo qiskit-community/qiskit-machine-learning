@@ -25,22 +25,22 @@ class NeuralNetworkClassifier:
     """Quantum neural network classifier."""
 
     def __init__(self, neural_network: NeuralNetwork, loss: Union[str, Loss] = 'l2',
-                 optimizer: Optimizer = None, warm_start: bool = False, callback=None):
+                 optimizer: Optimizer = None, warm_start: bool = False):
         """
         Args:
             neural_network: An instance of an quantum neural network.
             loss: A target loss function to be used in training. Default is `l2`, L2 loss.
             optimizer: An instance of an optimizer to be used in training.
-            warm_start:
-            callback:
+            warm_start: Use weights from previous fit to start next fit.
 
         Raises:
-            QiskitMachineLearningError: unknown loss
+            QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        # TODO: callback
-        del callback  # silence pylint until it is used
 
+        # TODO: add getters and some setters (warm_start, loss, optimizer, neural_network?)
         self._neural_network = neural_network
+        if not neural_network.output_shape in [(1,), (2,)]:
+            raise QiskitMachineLearningError('Invalid neural network output shape!')
         if isinstance(loss, str):
             if loss.lower() == 'l1':
                 self._loss = L1Loss()
@@ -54,7 +54,7 @@ class NeuralNetworkClassifier:
         self._warm_start = warm_start
         self._fit_result = None
 
-    def fit(self, X: np.ndarray, y: np.ndarray):
+    def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
         """
         Fit the model to data matrix X and target(s) y.
 
@@ -64,35 +64,38 @@ class NeuralNetworkClassifier:
 
         Returns:
             self: returns a trained classifier.
-
         """
-        if self._neural_network.dense:
+
+        if self._neural_network.output_shape == (1,):
 
             def objective(w):
-                val = 0.0
-                for x, y_target in zip(X, y):
-                    # TODO: enable batching / proper handling of batches
-                    val += self._loss(self._neural_network.forward(x, w), np.array([y_target]))
-                return val
+
+                predict = self._neural_network.forward(X, w)
+                target = np.array(y).reshape(predict.shape)
+                value = np.sum(self._loss(predict, target))
+                return value
 
             def objective_grad(w):
-                val = 0.0
-                for x, y_target in zip(X, y):
-                    # TODO: allow setting which gradients to evaluate (input/weights)
-                    _, weights_grad = self._neural_network.backward(x, w)
-                    # TODO: can we store the forward result and reuse it?
-                    val += self._loss.gradient(
-                        self._neural_network.forward(x, w), y_target) * weights_grad
-                return val
 
-        else:
+                # TODO should store output from forward pass (implement loss interface?)
+                output = self._neural_network.forward(X, w)
+                # TODO: need to be able to turn off input grads if not needed.
+                _, weights_grad = self._neural_network.backward(X, w)
+
+                grad = 0.0
+                for i in range(len(X)):
+                    grad += self._loss.gradient(output[i][0], y[i]) * weights_grad[i]
+
+                return grad.reshape(w.shape)
+
+        else:  # self._neural_network.output_shape == (2,)
 
             def objective(w):
                 val = 0.0
-                for x, y_target in zip(X, y):
-                    probs = self._neural_network.forward(x, w)
-                    for y_predict, p in probs.items():
-                        val += p * self._loss(y_predict, y_target)
+                probs = self._neural_network.forward(X, w)
+                for i in range(len(X)):
+                    for y_predict, prob in enumerate(probs[i]):
+                        val += prob * self._loss(y_predict, y[i])
                 return val
 
             def objective_grad(w):
@@ -113,7 +116,7 @@ class NeuralNetworkClassifier:
                                                     objective_grad, initial_point=initial_point)
         return self
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
         """
         Predict using the network specified to the classifier.
 
@@ -127,14 +130,17 @@ class NeuralNetworkClassifier:
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
 
-        # TODO: proper handling of batching
-        result = np.zeros(len(X))
-        for i, x in enumerate(X):
-            # TODO: handle sampling case too
-            result[i] = np.sign(self._neural_network.forward(x, self._fit_result[0]))
-        return result
+        # TODO: currently its either {-1, +1} (sign) or {0, 1} (argmax), needs to be cleaned up.
+        if self._neural_network.output_shape == (1,):
+            predict = np.sign(self._neural_network.forward(X, self._fit_result[0]))
+        elif self._neural_network.output_shape == (2,):
+            predict = np.argmax(self._neural_network.forward(X, self._fit_result[0]), axis=1)
+        else:
+            raise QiskitMachineLearningError('Invalid output shape!')
 
-    def score(self, X: np.ndarray, y: np.ndarray) -> int:
+        return predict
+
+    def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
         """
         Return the mean accuracy on the given test data and labels.
 
@@ -148,4 +154,6 @@ class NeuralNetworkClassifier:
         """
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
-        return np.sum(nnc.predict(X) == y) / len(y)
+
+        predict = self.predict(X)
+        return np.sum(predict == y.reshape(predict.shape)) / len(y)

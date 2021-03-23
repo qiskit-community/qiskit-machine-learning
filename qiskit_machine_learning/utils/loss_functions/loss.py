@@ -39,6 +39,7 @@ class Loss(ABC):
 
 class L2Loss(Loss):
     """ L2Loss """
+
     def evaluate(self, predict, target):
         predict = np.array(predict)
         target = np.array(target)
@@ -57,6 +58,7 @@ class L2Loss(Loss):
 
 class L1Loss(Loss):
     """ L1Loss """
+
     def evaluate(self, predict, target):
         predict = np.array(predict)
         target = np.array(target)
@@ -67,7 +69,7 @@ class L1Loss(Loss):
         elif len(predict.shape) <= 1:
             return np.linalg.norm(predict - target, ord=1)
         elif len(predict.shape) > 1:
-            return np.linalg.norm(predict - target, ord=1, axis=len(predict.shape)-1)
+            return np.linalg.norm(predict - target, ord=1, axis=tuple(range(1, len(predict.shape))))
         else:
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
@@ -92,6 +94,7 @@ class L1Loss(Loss):
 
 class L2LossProbability(Loss):
     """ L2LossProbability """
+
     def __init__(self, predict, target):  # predict and target are both probabilities
         super().__init__(predict, target)
         self.joint_keys = set(predict.keys())
@@ -112,6 +115,7 @@ class L2LossProbability(Loss):
 
 class CrossEntropyLoss(Loss):
     """ CrossEntropyLoss """
+
     def __init__(self, predict, target):  # predict and target are both probabilities
         super().__init__(predict, target)
         self.predict = np.array(predict)
@@ -125,6 +129,7 @@ class CrossEntropyLoss(Loss):
 
 class KLDivergence(Loss):
     """ KLDivergence """
+
     def __init__(self, predict, target):  # predict and target are both probabilities
         super().__init__(predict, target)
         self.predict = np.array(predict)
