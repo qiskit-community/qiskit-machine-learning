@@ -35,27 +35,65 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         quantum_instance = QuantumInstance(backend)
 
         # define QNN
-        feature_map = ZZFeatureMap(2)
-        var_form = RealAmplitudes(2, reps=1)
-        self.qnn = TwoLayerQNN(2, feature_map=feature_map,
+        num_qubits = 2
+        feature_map = ZZFeatureMap(num_qubits)
+        var_form = RealAmplitudes(num_qubits, reps=1)
+        self.qnn = TwoLayerQNN(num_qubits, feature_map=feature_map,
                                var_form=var_form, quantum_instance=quantum_instance)
 
-    def test_two_layer_qnn1(self):
-        """ Opflow QNN Test """
+        self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map,
+                                     var_form=var_form)
+
+    def _test_qnn_simple(self, qnn: TwoLayerQNN):
+        """Simple Opflow QNN Test for a specified neural network."""
 
         input_data = np.zeros(self.qnn.num_inputs)
         weights = np.zeros(self.qnn.num_weights)
 
         # test forward pass
-        result = self.qnn.forward(input_data, weights)
+        result = qnn.forward(input_data, weights)
         self.assertEqual(result.shape, (1, *self.qnn.output_shape))
 
         # test backward pass
         result = self.qnn.backward(input_data, weights)
+        # batch dimension of 1
         self.assertEqual(result[0].shape, (1, *self.qnn.output_shape, self.qnn.num_inputs))
         self.assertEqual(result[1].shape, (1, *self.qnn.output_shape, self.qnn.num_weights))
 
-        # TODO: test batching
+    def _test_qnn_batch(self, qnn: TwoLayerQNN):
+        """Batched Opflow QNN Test for the specified network."""
+        batch_size = 10
+
+        input_data = np.arange(batch_size * self.qnn.num_inputs)\
+            .reshape((batch_size, self.qnn.num_inputs))
+        weights = np.zeros(self.qnn.num_weights)
+
+        # test forward pass
+        result = qnn.forward(input_data, weights)
+        self.assertEqual(result.shape, (batch_size, *self.qnn.output_shape))
+
+        # test backward pass
+        result = self.qnn.backward(input_data, weights)
+        self.assertEqual(result[0].shape,
+                         (batch_size, *self.qnn.output_shape, self.qnn.num_inputs))
+        self.assertEqual(result[1].shape,
+                         (batch_size, *self.qnn.output_shape, self.qnn.num_weights))
+
+    def test_qnn_simple(self):
+        """Simple Opflow QNN Test on a network with an instance of QuantumInstance."""
+        self._test_qnn_simple(self.qnn)
+
+    def test_qnn_batch(self):
+        """Batched Opflow QNN Test on a network with an instance of QuantumInstance."""
+        self._test_qnn_batch(self.qnn)
+
+    def test_no_quantum_instance(self):
+        """Simple Opflow QNN Test on a network without QuantumInstance."""
+        self._test_qnn_simple(self.qnn_no_qi)
+
+    def test_no_quantum_instance_batch(self):
+        """Batched Opflow QNN Test on a network without QuantumInstance."""
+        self._test_qnn_batch(self.qnn_no_qi)
 
 
 if __name__ == '__main__':

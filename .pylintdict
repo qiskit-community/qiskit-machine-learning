@@ -24,6 +24,8 @@ gaussian
 getter
 hashable
 hoc
+th
+innerproduct
 kwargs
 langle
 maxiter

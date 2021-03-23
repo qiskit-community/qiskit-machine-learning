@@ -18,6 +18,7 @@ from typing import (Tuple, Union, List,
 
 import numpy as np
 from sparse import SparseArray, DOK
+from scipy.sparse import coo_matrix
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
@@ -67,6 +68,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """
 
+        # TODO: need to be able to handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
         self._circuit = circuit.copy()
         if quantum_instance.is_statevector:
@@ -79,6 +81,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
         sparse_ = sparse
+        # this definition required by mypy
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if sampling:
             num_samples = quantum_instance.run_config.shots
@@ -148,92 +151,95 @@ class CircuitQNN(SamplingNeuralNetwork):
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
-    def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                ) -> np.ndarray:
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
+        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
         orig_memory = self.quantum_instance.backend_options.get('memory')
         self.quantum_instance.backend_options['memory'] = True
-        result = self.quantum_instance.execute(self.circuit.bind_parameters(param_values))
+
+        circuits = []
+        # iterate over rows, each row is an element of a batch
+        rows = input_data.shape[0]
+        for i in range(rows):
+            param_values = {input_param: input_data[i, j]
+                            for j, input_param in enumerate(self.input_params)}
+            param_values.update({weight_param: weights[j]
+                                 for j, weight_param in enumerate(self.weight_params)})
+            circuits.append(self._circuit.bind_parameters(param_values))
+
+        # result = self.quantum_instance.execute(self.circuit.bind_parameters(param_values))
+        result = self._quantum_instance.execute(circuits)
         self.quantum_instance.backend_options['memory'] = orig_memory
 
         # return samples
-        memory = result.get_memory()
-        samples = np.zeros((1, *self.output_shape))
-        for i, b in enumerate(memory):
-            samples[0, i, :] = self._interpret(int(b, 2))
+        samples = np.zeros((rows, *self.output_shape))
+        # collect them from all executed circuits
+        for i, circuit in enumerate(circuits):
+            memory = result.get_memory(circuit)
+            for j, b in enumerate(memory):
+                samples[i, j, :] = self._interpret(int(b, 2))
         return samples
 
-    def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
+    def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
+        # param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
+        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # evaluate operator
-        result = self.quantum_instance.execute(
-            self.circuit.bind_parameters(param_values))
-        counts = result.get_counts()
-        shots = sum(counts.values())
+        circuits = []
+        rows = input_data.shape[0]
+        for i in range(rows):
+            param_values = {input_param: input_data[i, j]
+                            for j, input_param in enumerate(self.input_params)}
+            param_values.update({weight_param: weights[j]
+                                 for j, weight_param in enumerate(self.weight_params)})
+            circuits.append(self._circuit.bind_parameters(param_values))
 
+        result = self.quantum_instance.execute(circuits)
         # initialize probabilities
         prob: Union[np.ndarray, SparseArray] = None
         if self.sparse:
-            prob = DOK((1, *self.output_shape))
+            prob = DOK((rows, *self.output_shape))
         else:
-            prob = np.zeros((1, *self.output_shape))
+            prob = np.zeros((rows, *self.output_shape))
 
-        # evaluate probabilities
-        for b, v in counts.items():
-            key = self._interpret(int(b, 2))
-            if isinstance(key, Integral):
-                key = (cast(int, key),)
-            key = (0, *key)  # type: ignore
-            prob[key] += v / shots
+        for i, circuit in enumerate(circuits):
+            counts = result.get_counts(circuit)
+            shots = sum(counts.values())
 
-        return prob
+            # evaluate probabilities
+            for b, v in counts.items():
+                key = self._interpret(int(b, 2))
+                if isinstance(key, Integral):
+                    key = (cast(int, key),)
+                key = (i, *key)  # type: ignore
+                prob[key] += v / shots
 
-    def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
+        if self.sparse:
+            return prob.to_coo()
+        else:
+            return prob
+
+    def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
         # combine parameter dictionary
-        param_values = {p: input_data[i] for i, p in enumerate(self.input_params)}
+        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
         param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
 
         # TODO: additional "bind_parameters" should not be necessary, seems like a bug to be fixed
         grad = self._sampler.convert(self._grad_circuit, param_values
                                      ).bind_parameters(param_values).eval()
 
-        # TODO: map to dictionary to pretend sparse logic --> needs to be fixed in opflow!
-        input_grad_dicts: List[Dict] = []
-        if self.num_inputs > 0:
-            input_grad_dicts = [{} for _ in range(self.num_inputs)]
-            for i in range(self.num_inputs):
-                for k in range(2 ** self.circuit.num_qubits):
-                    key = self._interpret(k)
-                    if not isinstance(key, Integral):
-                        # if key is an array-type, cast to hashable tuple
-                        key = tuple(cast(Iterable[int], key))
-                    input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
-                                                np.real(grad[i][k]))
-
-        weights_grad_dicts: List[Dict] = []
-        if self.num_weights > 0:
-            weights_grad_dicts = [{} for _ in range(self.num_weights)]
-            for i in range(self.num_weights):
-                for k in range(2 ** self.circuit.num_qubits):
-                    key = self._interpret(k)
-                    if not isinstance(key, Integral):
-                        # if key is an array-type, cast to hashable tuple
-                        key = tuple(cast(Iterable[int], key))
-                    weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
-                                                  np.real(grad[i + self.num_inputs][k]))
-
+        # initialize empty gradients
         input_grad: Union[np.ndarray, SparseArray] = None
         weights_grad: Union[np.ndarray, SparseArray] = None
         if self._sparse:
@@ -249,22 +255,31 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
             weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
 
-        for i in range(self.num_inputs):
-            for k, grad in input_grad_dicts[i].items():
-                key = -1
-                if isinstance(k, Integral):
-                    key = (0, k, i)
-                else:
-                    key = (0, *k, i)  # type: ignore
-                input_grad[key] = grad
+        # construct gradients
+        for i in range(self.num_inputs + self.num_weights):
+            coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
 
-        for i in range(self.num_weights):
-            for k, grad in weights_grad_dicts[i].items():
-                key = -1
+            # get index for input or weights gradients
+            j = i if i < self.num_inputs else i - self.num_inputs
+
+            for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
+
+                # interpret integer and construct key
+                key = self._interpret(k)
                 if isinstance(key, Integral):
-                    key = (0, k, i)
+                    key = (0, key, j)
                 else:
-                    key = (0, *k, i)  # type: ignore
-                weights_grad[key] = grad
+                    # if key is an array-type, cast to hashable tuple
+                    key = tuple(cast(Iterable[int], key))
+                    key = (0, *key, j)  # type: ignore
 
-        return input_grad, weights_grad
+                # store value for inputs or weights gradients
+                if i < self.num_inputs:
+                    input_grad[key] += np.real(val)
+                else:
+                    weights_grad[key] += np.real(val)
+
+        if self.sparse:
+            return input_grad.to_coo(), weights_grad.to_coo()
+        else:
+            return input_grad, weights_grad
