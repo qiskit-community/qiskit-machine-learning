@@ -37,7 +37,7 @@ class NeuralNetworkRegressor():
         self._warm_start = warm_start
         self._fit_result = None
 
-    def fit(self, X, y):
+    def fit(self, X, y):  # pylint: disable=invalid-name
         """ fit """
         if self._neural_network.dense:
 
@@ -64,8 +64,8 @@ class NeuralNetworkRegressor():
                 val = 0.0
                 for x, y_target in zip(X, y):
                     probs = self._neural_network.forward(x, w)
-                    for y_predict, p in probs.items():
-                        val += p * self._loss(y_predict, y_target)
+                    for y_predict, prob in probs.items():
+                        val += prob * self._loss(y_predict, y_target)
                 return val
 
             def objective_grad(w):
@@ -86,7 +86,7 @@ class NeuralNetworkRegressor():
                                                     objective_grad, initial_point=initial_point)
         return self
 
-    def predict(self, X):
+    def predict(self, X):  # pylint: disable=invalid-name
         """ predict """
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
@@ -98,7 +98,7 @@ class NeuralNetworkRegressor():
             result[i] = self._neural_network.forward(x, self._fit_result[0])
         return result
 
-    def score(self, X, y):
+    def score(self, X, y):  # pylint: disable=invalid-name
         """ score """
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')

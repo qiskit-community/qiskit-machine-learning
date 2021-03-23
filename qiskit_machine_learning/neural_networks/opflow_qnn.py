@@ -112,7 +112,7 @@ class OpflowQNN(NeuralNetwork):
             op = self._circuit_sampler.convert(self.forward_operator, param_values)
             result = np.real(op.eval())
         else:
-            # todo: batches: does bind_parameters support a list of values and what the output is?
+            # TODO: batches: does bind_parameters support a list of values and what the output is?
             op = self.forward_operator.bind_parameters(param_values)
             result = np.real(op.eval())
         result = np.array(result)

@@ -37,19 +37,20 @@ class NeuralNetworkClassifier:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
 
-        # TODO: add getters and some setters (warm_start, loss, optimizer, neural_network?)
+        # TODO: add getter and some setter (warm_start, loss, optimizer, neural_network?)
         self._neural_network = neural_network
-        if not neural_network.output_shape in [(1,), (2,)]:
+        if neural_network.output_shape not in [(1,), (2,)]:
             raise QiskitMachineLearningError('Invalid neural network output shape!')
-        if isinstance(loss, str):
+        if isinstance(loss, Loss):
+            self._loss = loss
+        else:
             if loss.lower() == 'l1':
                 self._loss = L1Loss()
             elif loss.lower() == 'l2':
                 self._loss = L2Loss()
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
-        else:
-            self._loss = loss
+
         self._optimizer = optimizer
         self._warm_start = warm_start
         self._fit_result = None
@@ -88,7 +89,7 @@ class NeuralNetworkClassifier:
 
                 return grad.reshape(w.shape)
 
-        else:  # self._neural_network.output_shape == (2,)
+        else:  # self._neural_network.output_shape == (2,) TODO: could be extended to multi-class
 
             def objective(w):
                 val = 0.0

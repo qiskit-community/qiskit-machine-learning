@@ -40,40 +40,40 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, warm start, quantum instance
-        ('cobyla', 'l1', False, 'sv'),
+        ('cobyla', 'l1', False, 'statevector'),
         ('cobyla', 'l1', False, 'qasm'),
-        ('cobyla', 'l1', True, 'sv'),
+        ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
-        ('cobyla', 'l1', False, 'sv'),
+        ('cobyla', 'l1', False, 'statevector'),
         ('cobyla', 'l1', False, 'qasm'),
-        ('cobyla', 'l1', True, 'sv'),
+        ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
 
-        ('cobyla', 'l2', False, 'sv'),
+        ('cobyla', 'l2', False, 'statevector'),
         ('cobyla', 'l2', False, 'qasm'),
-        ('cobyla', 'l2', True, 'sv'),
+        ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
-        ('cobyla', 'l2', False, 'sv'),
+        ('cobyla', 'l2', False, 'statevector'),
         ('cobyla', 'l2', False, 'qasm'),
-        ('cobyla', 'l2', True, 'sv'),
+        ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
 
-        ('bfgs', 'l1', False, 'sv'),
+        ('bfgs', 'l1', False, 'statevector'),
         ('bfgs', 'l1', False, 'qasm'),
-        ('bfgs', 'l1', True, 'sv'),
+        ('bfgs', 'l1', True, 'statevector'),
         ('bfgs', 'l1', True, 'qasm'),
-        ('bfgs', 'l1', False, 'sv'),
+        ('bfgs', 'l1', False, 'statevector'),
         ('bfgs', 'l1', False, 'qasm'),
-        ('bfgs', 'l1', True, 'sv'),
+        ('bfgs', 'l1', True, 'statevector'),
         ('bfgs', 'l1', True, 'qasm'),
 
-        ('bfgs', 'l2', False, 'sv'),
+        ('bfgs', 'l2', False, 'statevector'),
         ('bfgs', 'l2', False, 'qasm'),
-        ('bfgs', 'l2', True, 'sv'),
+        ('bfgs', 'l2', True, 'statevector'),
         ('bfgs', 'l2', True, 'qasm'),
-        ('bfgs', 'l2', False, 'sv'),
+        ('bfgs', 'l2', False, 'statevector'),
         ('bfgs', 'l2', False, 'qasm'),
-        ('bfgs', 'l2', True, 'sv'),
+        ('bfgs', 'l2', True, 'statevector'),
         ('bfgs', 'l2', True, 'qasm'),
     )
     def test_classifier_with_opflow_qnn(self, config):
@@ -81,7 +81,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         opt, loss, warm_start, q_i = config
 
-        if q_i == 'sv':
+        if q_i == 'statevector':
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
@@ -116,40 +116,40 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, warm start, quantum instance
-        ('cobyla', 'l1', False, 'sv'),
+        ('cobyla', 'l1', False, 'statevector'),
         ('cobyla', 'l1', False, 'qasm'),
-        ('cobyla', 'l1', True, 'sv'),
+        ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
-        ('cobyla', 'l1', False, 'sv'),
+        ('cobyla', 'l1', False, 'statevector'),
         ('cobyla', 'l1', False, 'qasm'),
-        ('cobyla', 'l1', True, 'sv'),
+        ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
 
-        ('cobyla', 'l2', False, 'sv'),
+        ('cobyla', 'l2', False, 'statevector'),
         ('cobyla', 'l2', False, 'qasm'),
-        ('cobyla', 'l2', True, 'sv'),
+        ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
-        ('cobyla', 'l2', False, 'sv'),
+        ('cobyla', 'l2', False, 'statevector'),
         ('cobyla', 'l2', False, 'qasm'),
-        ('cobyla', 'l2', True, 'sv'),
+        ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
 
-        # ('bfgs', 'l1', False, 'sv'),
+        # ('bfgs', 'l1', False, 'statevector'),
         # ('bfgs', 'l1', False, 'qasm'),
-        # ('bfgs', 'l1', True, 'sv'),
+        # ('bfgs', 'l1', True, 'statevector'),
         # ('bfgs', 'l1', True, 'qasm'),
-        # ('bfgs', 'l1', False, 'sv'),
+        # ('bfgs', 'l1', False, 'statevector'),
         # ('bfgs', 'l1', False, 'qasm'),
-        # ('bfgs', 'l1', True, 'sv'),
+        # ('bfgs', 'l1', True, 'statevector'),
         # ('bfgs', 'l1', True, 'qasm'),
 
-        # ('bfgs', 'l2', False, 'sv'),
+        # ('bfgs', 'l2', False, 'statevector'),
         # ('bfgs', 'l2', False, 'qasm'),
-        # ('bfgs', 'l2', True, 'sv'),
+        # ('bfgs', 'l2', True, 'statevector'),
         # ('bfgs', 'l2', True, 'qasm'),
-        # ('bfgs', 'l2', False, 'sv'),
+        # ('bfgs', 'l2', False, 'statevector'),
         # ('bfgs', 'l2', False, 'qasm'),
-        # ('bfgs', 'l2', True, 'sv'),
+        # ('bfgs', 'l2', True, 'statevector'),
         # ('bfgs', 'l2', True, 'qasm'),
     )
     def test_classifier_with_circuit_qnn(self, config):
@@ -157,7 +157,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         opt, loss, warm_start, q_i = config
 
-        if q_i == 'sv':
+        if q_i == 'statevector':
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
@@ -177,7 +177,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         qc.append(var_form, range(2))
 
         # construct qnn
-        parity = lambda x: '{:b}'.format(x).count('1') % 2
+        def parity(x):
+            return '{:b}'.format(x).count('1') % 2
         output_shape = 2
         qnn = CircuitQNN(qc, input_params=feature_map.parameters,
                          weight_params=var_form.parameters,

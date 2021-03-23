@@ -155,7 +155,7 @@ class NeuralNetwork(ABC):
         """
         input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        # todo: reshape input gradients.
+        # TODO: reshape input gradients.
         return self._backward(input_, weights_)
 
     @ abstractmethod

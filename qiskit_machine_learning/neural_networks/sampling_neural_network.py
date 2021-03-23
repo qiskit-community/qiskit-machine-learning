@@ -89,7 +89,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample results of the neural network of the shape (output_shape).
         """
-        input_, shape = self._validate_input(input_data)
+        input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         # TODO: enable batching
         return self._sample(input_, weights_)
@@ -114,7 +114,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample histogram of the neural network.
         """
-        input_, shape = self._validate_input(input_data)
+        input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         # TODO: enable batching
         return self._probabilities(input_, weights_)
@@ -142,7 +142,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The probability gradients.
         """
-        input_, shape = self._validate_input(input_data)
+        input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         # TODO: enable batching
         return self._probability_gradients(input_, weights_)

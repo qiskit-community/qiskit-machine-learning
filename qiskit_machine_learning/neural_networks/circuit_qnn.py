@@ -14,7 +14,7 @@
 
 from numbers import Integral
 from typing import (Tuple, Union, List,
-                    Callable, Optional, Dict, cast, Iterable)
+                    Callable, Optional, cast, Iterable)
 
 import numpy as np
 from sparse import SparseArray, DOK
@@ -267,7 +267,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 # interpret integer and construct key
                 key = self._interpret(k)
                 if isinstance(key, Integral):
-                    key = (0, key, j)
+                    key = (0, int(key), j)
                 else:
                     # if key is an array-type, cast to hashable tuple
                     key = tuple(cast(Iterable[int], key))
