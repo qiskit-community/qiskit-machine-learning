@@ -40,39 +40,23 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, warm start, quantum instance
-        ('cobyla', 'l1', False, 'statevector'),
-        ('cobyla', 'l1', False, 'qasm'),
         ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
-        ('cobyla', 'l1', False, 'statevector'),
-        ('cobyla', 'l1', False, 'qasm'),
         ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
 
-        ('cobyla', 'l2', False, 'statevector'),
-        ('cobyla', 'l2', False, 'qasm'),
         ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
-        ('cobyla', 'l2', False, 'statevector'),
-        ('cobyla', 'l2', False, 'qasm'),
         ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
 
-        ('bfgs', 'l1', False, 'statevector'),
-        ('bfgs', 'l1', False, 'qasm'),
         ('bfgs', 'l1', True, 'statevector'),
         ('bfgs', 'l1', True, 'qasm'),
-        ('bfgs', 'l1', False, 'statevector'),
-        ('bfgs', 'l1', False, 'qasm'),
         ('bfgs', 'l1', True, 'statevector'),
         ('bfgs', 'l1', True, 'qasm'),
 
-        ('bfgs', 'l2', False, 'statevector'),
-        ('bfgs', 'l2', False, 'qasm'),
         ('bfgs', 'l2', True, 'statevector'),
         ('bfgs', 'l2', True, 'qasm'),
-        ('bfgs', 'l2', False, 'statevector'),
-        ('bfgs', 'l2', False, 'qasm'),
         ('bfgs', 'l2', True, 'statevector'),
         ('bfgs', 'l2', True, 'qasm'),
     )
@@ -116,39 +100,23 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, warm start, quantum instance
-        ('cobyla', 'l1', False, 'statevector'),
-        ('cobyla', 'l1', False, 'qasm'),
         ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
-        ('cobyla', 'l1', False, 'statevector'),
-        ('cobyla', 'l1', False, 'qasm'),
         ('cobyla', 'l1', True, 'statevector'),
         ('cobyla', 'l1', True, 'qasm'),
 
-        ('cobyla', 'l2', False, 'statevector'),
-        ('cobyla', 'l2', False, 'qasm'),
         ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
-        ('cobyla', 'l2', False, 'statevector'),
-        ('cobyla', 'l2', False, 'qasm'),
         ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
 
-        # ('bfgs', 'l1', False, 'statevector'),
-        # ('bfgs', 'l1', False, 'qasm'),
         # ('bfgs', 'l1', True, 'statevector'),
         # ('bfgs', 'l1', True, 'qasm'),
-        # ('bfgs', 'l1', False, 'statevector'),
-        # ('bfgs', 'l1', False, 'qasm'),
         # ('bfgs', 'l1', True, 'statevector'),
         # ('bfgs', 'l1', True, 'qasm'),
 
-        # ('bfgs', 'l2', False, 'statevector'),
-        # ('bfgs', 'l2', False, 'qasm'),
         # ('bfgs', 'l2', True, 'statevector'),
         # ('bfgs', 'l2', True, 'qasm'),
-        # ('bfgs', 'l2', False, 'statevector'),
-        # ('bfgs', 'l2', False, 'qasm'),
         # ('bfgs', 'l2', True, 'statevector'),
         # ('bfgs', 'l2', True, 'qasm'),
     )

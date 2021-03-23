@@ -87,7 +87,7 @@ class NeuralNetworkClassifier:
                 for i in range(len(X)):
                     grad += self._loss.gradient(output[i][0], y[i]) * weights_grad[i]
 
-                return grad.reshape(w.shape)
+                return grad
 
         else:  # self._neural_network.output_shape == (2,) TODO: could be extended to multi-class
 
@@ -100,7 +100,7 @@ class NeuralNetworkClassifier:
                 return val
 
             def objective_grad(w):
-                grad = np.zeros(self._neural_network.num_weights)
+                grad = 0.0
                 for x, y_target in zip(X, y):
                     _, weight_prob_grad = self._neural_network.backward(x, w)
                     for i in range(self._neural_network.num_weights):
