@@ -18,6 +18,7 @@ from typing import (Tuple, Union, List,
 
 import numpy as np
 from sparse import SparseArray, DOK
+from scipy.sparse import coo_matrix
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
@@ -238,32 +239,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         grad = self._sampler.convert(self._grad_circuit, param_values
                                      ).bind_parameters(param_values).eval()
 
-        # TODO: map to dictionary to pretend sparse logic --> needs to be fixed in opflow!
-        input_grad_dicts: List[Dict] = []
-        if self.num_inputs > 0:
-            input_grad_dicts = [{} for _ in range(self.num_inputs)]
-            for i in range(self.num_inputs):
-                for k in range(2 ** self.circuit.num_qubits):
-                    key = self._interpret(k)
-                    if not isinstance(key, Integral):
-                        # if key is an array-type, cast to hashable tuple
-                        key = tuple(cast(Iterable[int], key))
-                    input_grad_dicts[i][key] = (input_grad_dicts[i].get(key, 0.0) +
-                                                np.real(grad[i][k]))
-
-        weights_grad_dicts: List[Dict] = []
-        if self.num_weights > 0:
-            weights_grad_dicts = [{} for _ in range(self.num_weights)]
-            for i in range(self.num_weights):
-                for k in range(2 ** self.circuit.num_qubits):
-                    key = self._interpret(k)
-                    if not isinstance(key, Integral):
-                        # if key is an array-type, cast to hashable tuple
-                        key = tuple(cast(Iterable[int], key))
-                    weights_grad_dicts[i][key] = (weights_grad_dicts[i].get(key, 0.0) +
-                                                  np.real(grad[i + self.num_inputs][k]))
-        # TODO: end of mapping to dictionary ------------------------------------------------
-
+        # initialize empty gradients
         input_grad: Union[np.ndarray, SparseArray] = None
         weights_grad: Union[np.ndarray, SparseArray] = None
         if self._sparse:
@@ -279,23 +255,29 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
             weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
 
-        for i in range(self.num_inputs):
-            for k, grad in input_grad_dicts[i].items():
-                key = -1
-                if isinstance(k, Integral):
-                    key = (0, k, i)
-                else:
-                    key = (0, *k, i)  # type: ignore
-                input_grad[key] = grad
+        # construct gradients
+        for i in range(self.num_inputs + self.num_weights):
+            coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
 
-        for i in range(self.num_weights):
-            for k, grad in weights_grad_dicts[i].items():
-                key = -1
+            # get index for input or weights gradients
+            j = i if i < self.num_inputs else i - self.num_inputs
+
+            for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
+
+                # interpret integer and construct key
+                key = self._interpret(k)
                 if isinstance(key, Integral):
-                    key = (0, k, i)
+                    key = (0, key, j)
                 else:
-                    key = (0, *k, i)  # type: ignore
-                weights_grad[key] = grad
+                    # if key is an array-type, cast to hashable tuple
+                    key = tuple(cast(Iterable[int], key))
+                    key = (0, *key, j)  # type: ignore
+
+                # store value for inputs or weights gradients
+                if i < self.num_inputs:
+                    input_grad[key] += np.real(val)
+                else:
+                    weights_grad[key] += np.real(val)
 
         if self.sparse:
             return input_grad.to_coo(), weights_grad.to_coo()
