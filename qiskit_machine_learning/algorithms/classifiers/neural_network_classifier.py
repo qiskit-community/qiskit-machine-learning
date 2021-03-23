@@ -83,7 +83,7 @@ class NeuralNetworkClassifier:
                 # TODO: need to be able to turn off input grads if not needed.
                 _, weights_grad = self._neural_network.backward(X, w)
 
-                grad = 0.0
+                grad = np.zeros((1, self._neural_network.num_weights))
                 for i in range(len(X)):
                     grad += self._loss.gradient(output[i][0], y[i]) * weights_grad[i]
 
@@ -100,7 +100,7 @@ class NeuralNetworkClassifier:
                 return val
 
             def objective_grad(w):
-                grad = 0.0
+                grad = np.zeros((1, self._neural_network.num_weights))
                 for x, y_target in zip(X, y):
                     _, weight_prob_grad = self._neural_network.backward(x, w)
                     for i in range(self._neural_network.num_weights):
