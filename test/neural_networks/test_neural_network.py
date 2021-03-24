@@ -113,12 +113,14 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
         input_grad, weights_grad = network.backward(input_data, np.zeros(network.num_weights))
 
         if network.num_inputs > 0:
-            self.assertEqual(input_grad.shape, (batch_size, *network.output_shape, network.num_inputs))
+            self.assertEqual(input_grad.shape, (batch_size, *
+                                                network.output_shape, network.num_inputs))
         else:
             self.assertEqual(input_grad, None)
 
         if network.num_weights > 0:
-            self.assertEqual(weights_grad.shape, (batch_size, *network.output_shape, network.num_weights))
+            self.assertEqual(weights_grad.shape, (batch_size, *
+                                                  network.output_shape, network.num_weights))
         else:
             self.assertEqual(weights_grad, None)
 
