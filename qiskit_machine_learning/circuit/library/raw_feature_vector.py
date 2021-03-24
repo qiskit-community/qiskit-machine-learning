@@ -72,7 +72,7 @@ class RawFeatureVector(BlueprintCircuit):
         super().__init__()
 
         self._num_qubits = None  # type: int
-        self._parameters = None  # type: List[ParameterExpression]
+        self._ordered_parameters = None  # type: List[ParameterExpression]
 
         if feature_dimension:
             self.feature_dimension = feature_dimension
@@ -82,11 +82,11 @@ class RawFeatureVector(BlueprintCircuit):
 
         # if the parameters are fully specified, use the initialize instruction
         if len(self.parameters) == 0:
-            self.initialize(self._parameters, self.qubits)  # pylint: disable=no-member
+            self.initialize(self._ordered_parameters, self.qubits)  # pylint: disable=no-member
 
         # otherwise get a gate that acts as placeholder
         else:
-            placeholder = Gate('Raw', self.num_qubits, self._parameters[:], label='Raw')
+            placeholder = Gate('Raw', self.num_qubits, self._ordered_parameters[:], label='Raw')
             self.append(placeholder, self.qubits)
 
     def _check_configuration(self, raise_on_failure=True):
@@ -112,7 +112,7 @@ class RawFeatureVector(BlueprintCircuit):
             # invalidate the circuit
             self._invalidate()
             self._num_qubits = num_qubits
-            self._parameters = list(ParameterVector('p', length=self.feature_dimension))
+            self._ordered_parameters = list(ParameterVector('p', length=self.feature_dimension))
             self.add_register(QuantumRegister(self.num_qubits, 'q'))
 
     @property
@@ -144,7 +144,7 @@ class RawFeatureVector(BlueprintCircuit):
 
     def _invalidate(self):
         super()._invalidate()
-        self._parameters = None
+        self._ordered_parameters = None
         self._num_qubits = None
 
     @property
@@ -163,7 +163,8 @@ class RawFeatureVector(BlueprintCircuit):
         Returns:
             A list of the free parameters.
         """
-        return list(param for param in self._parameters if isinstance(param, ParameterExpression))
+        return list(param for param in self._ordered_parameters
+                    if isinstance(param, ParameterExpression))
 
     def bind_parameters(self, values):  # pylint: disable=arguments-differ
         """Bind parameters."""
@@ -181,21 +182,21 @@ class RawFeatureVector(BlueprintCircuit):
         else:
             dest = RawFeatureVector(2 ** self.num_qubits)
             dest._build()
-            dest._parameters = self._parameters.copy()
+            dest._ordered_parameters = self._ordered_parameters.copy()
 
         # update the parameter list
-        for i, param in enumerate(dest._parameters):
+        for i, param in enumerate(dest._ordered_parameters):
             if param in parameters.keys():
-                dest._parameters[i] = parameters[param]
+                dest._ordered_parameters[i] = parameters[param]
 
         # if fully bound call the initialize instruction
         if len(dest.parameters) == 0:
             dest._data = []  # wipe the current data
-            parameters = dest._parameters / np.linalg.norm(dest._parameters)
+            parameters = dest._ordered_parameters / np.linalg.norm(dest._ordered_parameters)
             dest.initialize(parameters, dest.qubits)  # pylint: disable=no-member
 
         # else update the placeholder
         else:
-            dest.data[0][0].params = dest._parameters
+            dest.data[0][0].params = dest._ordered_parameters
 
         return None if inplace else dest

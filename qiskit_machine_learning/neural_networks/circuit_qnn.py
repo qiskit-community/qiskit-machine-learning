@@ -156,10 +156,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
-        # combine parameter dictionary
-        # param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
-        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
-
         # evaluate operator
         orig_memory = self.quantum_instance.backend_options.get('memory')
         self.quantum_instance.backend_options['memory'] = True
@@ -174,8 +170,8 @@ class CircuitQNN(SamplingNeuralNetwork):
                                  for j, weight_param in enumerate(self.weight_params)})
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        # result = self.quantum_instance.execute(self.circuit.bind_parameters(param_values))
         result = self._quantum_instance.execute(circuits)
+        # set the memory setting back
         self.quantum_instance.backend_options['memory'] = orig_memory
 
         # return samples
@@ -189,10 +185,6 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
-        # combine parameter dictionary
-        # param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
-        # param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
-
         # evaluate operator
         circuits = []
         rows = input_data.shape[0]
@@ -231,53 +223,58 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
-        # combine parameter dictionary
-        param_values = {p: input_data[0][i] for i, p in enumerate(self.input_params)}
-        param_values.update({p: weights[i] for i, p in enumerate(self.weight_params)})
-
-        # TODO: additional "bind_parameters" should not be necessary, seems like a bug to be fixed
-        grad = self._sampler.convert(self._grad_circuit, param_values
-                                     ).bind_parameters(param_values).eval()
+        rows = input_data.shape[0]
 
         # initialize empty gradients
         input_grad: Union[np.ndarray, SparseArray] = None
         weights_grad: Union[np.ndarray, SparseArray] = None
         if self._sparse:
             if self.num_inputs > 0:
-                input_grad = DOK((1, *self.output_shape, self.num_inputs))
+                input_grad = DOK((rows, *self.output_shape, self.num_inputs))
             else:
-                input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
+                input_grad = np.zeros((rows, *self.output_shape, self.num_inputs))
             if self.num_weights > 0:
-                weights_grad = DOK((1, *self.output_shape, self.num_weights))
+                weights_grad = DOK((rows, *self.output_shape, self.num_weights))
             else:
-                weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
+                weights_grad = np.zeros((rows, *self.output_shape, self.num_weights))
         else:
-            input_grad = np.zeros((1, *self.output_shape, self.num_inputs))
-            weights_grad = np.zeros((1, *self.output_shape, self.num_weights))
+            input_grad = np.zeros((rows, *self.output_shape, self.num_inputs))
+            weights_grad = np.zeros((rows, *self.output_shape, self.num_weights))
 
-        # construct gradients
-        for i in range(self.num_inputs + self.num_weights):
-            coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
+        for row in range(rows):
+            param_values = {input_param: input_data[row, j]
+                            for j, input_param in enumerate(self.input_params)}
+            param_values.update({weight_param: weights[j]
+                                 for j, weight_param in enumerate(self.weight_params)})
 
-            # get index for input or weights gradients
-            j = i if i < self.num_inputs else i - self.num_inputs
+            # TODO: additional "bind_parameters" should not be necessary,
+            #  seems like a bug to be fixed
+            grad = self._sampler.convert(self._grad_circuit, param_values
+                                         ).bind_parameters(param_values).eval()
 
-            for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
+            # construct gradients
+            for i in range(self.num_inputs + self.num_weights):
+                coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
 
-                # interpret integer and construct key
-                key = self._interpret(k)
-                if isinstance(key, Integral):
-                    key = (0, key, j)
-                else:
-                    # if key is an array-type, cast to hashable tuple
-                    key = tuple(cast(Iterable[int], key))
-                    key = (0, *key, j)  # type: ignore
+                # get index for input or weights gradients
+                j = i if i < self.num_inputs else i - self.num_inputs
 
-                # store value for inputs or weights gradients
-                if i < self.num_inputs:
-                    input_grad[key] += np.real(val)
-                else:
-                    weights_grad[key] += np.real(val)
+                for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
+
+                    # interpret integer and construct key
+                    key = self._interpret(k)
+                    if isinstance(key, Integral):
+                        key = (row, int(key), j)
+                    else:
+                        # if key is an array-type, cast to hashable tuple
+                        key = tuple(cast(Iterable[int], key))
+                        key = (row, *key, j)  # type: ignore
+
+                    # store value for inputs or weights gradients
+                    if i < self.num_inputs:
+                        input_grad[key] += np.real(val)
+                    else:
+                        weights_grad[key] += np.real(val)
 
         if self.sparse:
             return input_grad.to_coo(), weights_grad.to_coo()

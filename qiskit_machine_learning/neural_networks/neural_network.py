@@ -107,12 +107,23 @@ class NeuralNetwork(ABC):
         weights_ = np.array(weights)
         return weights_.reshape(self.num_weights)
 
-    def _validate_output(self, output_data: np.ndarray, original_shape: Tuple[int, ...]
-                         ) -> np.ndarray:
+    def _validate_forward_output(self, output_data: np.ndarray, original_shape: Tuple[int, ...]
+                                 ) -> np.ndarray:
         if original_shape and len(original_shape) >= 2:
             output_data = output_data.reshape((*original_shape[:-1], *self._output_shape))
 
         return output_data
+
+    def _validate_backward_output(self,
+                                  input_grad: np.ndarray, weight_grad: np.ndarray,
+                                  original_shape: Tuple[int, ...]) -> Tuple[np.ndarray, np.ndarray]:
+        if input_grad is not None and original_shape and len(original_shape) >= 2:
+            input_grad = input_grad.reshape(
+                (*original_shape[:-1], *self._output_shape, self._num_inputs))
+            weight_grad = weight_grad.reshape(
+                (*original_shape[:-1], *self._output_shape, self._num_weights))
+
+        return input_grad, weight_grad
 
     def forward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
                 weights: Optional[Union[List[float], np.ndarray, float]]
@@ -130,7 +141,7 @@ class NeuralNetwork(ABC):
         input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         output_data = self._forward(input_, weights_)
-        return self._validate_output(output_data, shape)
+        return self._validate_forward_output(output_data, shape)
 
     @abstractmethod
     def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
@@ -153,10 +164,14 @@ class NeuralNetwork(ABC):
             for input and weights of shape (output_shape, num_input) and
             (output_shape, num_weights), respectively.
         """
-        input_, _ = self._validate_input(input_data)
+        input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        # todo: reshape input gradients.
-        return self._backward(input_, weights_)
+        input_grad, weight_grad = self._backward(input_, weights_)
+
+        input_grad_reshaped, weight_grad_reshaped = \
+            self._validate_backward_output(input_grad, weight_grad, shape)
+
+        return input_grad_reshaped, weight_grad_reshaped
 
     @ abstractmethod
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
