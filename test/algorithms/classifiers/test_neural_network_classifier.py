@@ -25,6 +25,7 @@ from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
+from qiskit_machine_learning.utils.loss_functions.loss import CrossEntropyLoss
 
 
 @ddt
@@ -174,6 +175,68 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         if warm_start:
             # fit again to data
             classifier.fit(X, y)
+
+    @data(
+        # optimizer, loss, warm start, quantum instance
+        ('cobyla', 'statevector'),
+        ('cobyla', 'qasm'),
+
+        ('bfgs', 'statevector'),
+        ('bfgs', 'qasm'),
+    )
+    def test_classifier_with_circuit_qnn_and_cross_entropy(self, config):
+        """ Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
+
+        opt, q_i = config
+
+        if q_i == 'statevector':
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        if opt == 'bfgs':
+            optimizer = L_BFGS_B(maxiter=5)
+        else:
+            optimizer = COBYLA(maxiter=25)
+
+        loss = CrossEntropyLoss()
+
+        num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
+        var_form = RealAmplitudes(num_inputs, reps=1)
+
+        # construct circuit
+        qc = QuantumCircuit(num_inputs)
+        qc.append(feature_map, range(2))
+        qc.append(var_form, range(2))
+
+        # construct qnn
+        def parity(x):
+            return '{:b}'.format(x).count('1') % 2
+        output_shape = 2
+        qnn = CircuitQNN(qc, input_params=feature_map.parameters,
+                         weight_params=var_form.parameters,
+                         sparse=False,
+                         interpret=parity,
+                         output_shape=output_shape,
+                         quantum_instance=quantum_instance)
+
+        # construct classifier
+        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss,
+                                             eval_probabilities=True)
+
+        # construct data
+        num_samples = 5
+        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+        y = 1.0*(np.sum(X, axis=1) <= 1)
+        y = np.array([y, 1-y]).transpose()
+
+        # fit to data
+        classifier.fit(X, y)
+
+        # score
+        score = classifier.score(X, y)
+        print(score)  # TODO: should involve some criterion (like greater than threshold)
 
 
 if __name__ == '__main__':

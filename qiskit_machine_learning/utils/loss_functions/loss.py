@@ -116,14 +116,11 @@ class L2LossProbability(Loss):
 class CrossEntropyLoss(Loss):
     """ CrossEntropyLoss """
 
-    def __init__(self, predict, target):  # predict and target are both probabilities
-        super().__init__(predict, target)
-        self.predict = np.array(predict)
-        self.target = np.array(target)
+    def evaluate(self, predict, target):
+        return -np.sum([target[i]*np.log2(predict[i]) for i in range(len(predict))])
 
-    def evaluate(self):
-        return -sum([predict[i]*np.log2(target[i]) for i in range(len(predict))])
-
+    def gradient(self, predict, target):
+        pass  # TODO
     # gradient depends on how to handling softmax
 
 
