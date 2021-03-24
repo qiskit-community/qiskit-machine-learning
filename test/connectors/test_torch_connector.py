@@ -157,7 +157,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 Tensor([1]),
                 Tensor([1, 2]),
                 Tensor([[1], [2]]),
-                # Tensor([[[1], [2]], [[3], [4]]])  # TODO: requires complex batch shape
+                Tensor([[[1], [2]], [[3], [4]]])
             ]
 
             # test model
@@ -299,11 +299,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             model = TorchConnector(qnn)
 
             test_data = [
-                Tensor(1),                        # OK: both work
-                Tensor([1, 2]),                   # OK: both fail
-                # TODO: Requires batching
-                # Tensor([[1], [2]]),               #
-                # Tensor([[[1], [2]], [[3], [4]]])  #
+                Tensor(1),
+                Tensor([1, 2]),
+                Tensor([[1], [2]]),
+                Tensor([[[1], [2]], [[3], [4]]])
             ]
 
             # test model
@@ -356,9 +355,8 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             test_data = [
                 Tensor(1),
                 Tensor([1, 2]),
-                # TODO: Requires batching
-                # Tensor([[1], [2]]),
-                # Tensor([[[1], [2]], [[3], [4]]])
+                Tensor([[1], [2]]),
+                Tensor([[[1], [2]], [[3], [4]]])
             ]
 
             # test model
@@ -413,9 +411,8 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 Tensor(1),
                 Tensor([1, 2]),
                 Tensor([[1], [2]]),
-                # TODO: Requires batching
-                # Tensor([[1, 2], [3, 4]])
-                # Tensor([[[1], [2]], [[3], [4]]])
+                Tensor([[1, 2], [3, 4]]),
+                Tensor([[[1], [2]], [[3], [4]]])
             ]
 
             # test model
@@ -522,7 +519,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         batch_grad = np.sum(batch_grad, axis=1)
         batch_grad_qnn = np.sum(qnn.backward(x, w)[1], axis=0)
-        # TODO: validate that batch_grad_qnn.transpose() is correct!
         self.assertAlmostEqual(np.linalg.norm(batch_grad - batch_grad_qnn.transpose()),
                                0.0, places=4)
 
@@ -531,8 +527,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         batch_res_model.backward()
         self.assertAlmostEqual(
             np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]), 0.0, places=4)
-
-        # TODO: test multi-dimensional output and multi-dimensional batches
 
 
 if __name__ == '__main__':
