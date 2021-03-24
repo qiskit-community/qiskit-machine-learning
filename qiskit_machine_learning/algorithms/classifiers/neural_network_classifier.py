@@ -25,11 +25,17 @@ class NeuralNetworkClassifier:
     """Quantum neural network classifier."""
 
     def __init__(self, neural_network: NeuralNetwork, loss: Union[str, Loss] = 'l2',
+                 eval_probabilities: bool = False,  # TODO: better name?
                  optimizer: Optimizer = None, warm_start: bool = False):
         """
         Args:
             neural_network: An instance of an quantum neural network.
             loss: A target loss function to be used in training. Default is `l2`, L2 loss.
+            eval_probabilities: Determines in the case of a multi-dimensional result of the
+                neural_network how to interpret the result. If True it is interpreted as a single
+                sample (a probability vector, e.g. for 'CrossEntropy' loss function), and if False
+                as a set of individual predictions with occurance probabilities (the index would be
+                the prediction and the value the corresponding frequency).
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
 
@@ -39,7 +45,7 @@ class NeuralNetworkClassifier:
 
         # TODO: add getter and some setter (warm_start, loss, optimizer, neural_network?)
         self._neural_network = neural_network
-        if neural_network.output_shape not in [(1,), (2,)]:
+        if len(neural_network.output_shape) > 1:
             raise QiskitMachineLearningError('Invalid neural network output shape!')
         if isinstance(loss, Loss):
             self._loss = loss
@@ -51,6 +57,7 @@ class NeuralNetworkClassifier:
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
 
+        self._eval_probabilities = eval_probabilities
         self._optimizer = optimizer
         self._warm_start = warm_start
         self._fit_result = None
@@ -89,24 +96,46 @@ class NeuralNetworkClassifier:
 
                 return grad
 
-        else:  # self._neural_network.output_shape == (2,) TODO: could be extended to multi-class
+        else:
 
-            def objective(w):
-                val = 0.0
-                probs = self._neural_network.forward(X, w)
-                for i in range(len(X)):
-                    for y_predict, prob in enumerate(probs[i]):
-                        val += prob * self._loss(y_predict, y[i])
-                return val
+            if self._eval_probabilities:
 
-            def objective_grad(w):
-                grad = np.zeros((1, self._neural_network.num_weights))
-                for x, y_target in zip(X, y):
-                    _, weight_prob_grad = self._neural_network.backward(x, w)
-                    for i in range(self._neural_network.num_weights):
-                        for y_predict, p_grad in weight_prob_grad[i].items():
-                            grad[i] += p_grad * self._loss(y_predict, y_target)
-                return grad
+                def objective(w):
+                    val = 0.0
+                    probs = self._neural_network.forward(X, w)
+                    for i in range(len(X)):
+                        val += self._loss(probs[i], y[i])
+                    return val
+
+                def objective_grad(w):
+                    grad = np.zeros(self._neural_network.num_weights)
+                    for x, y_target in zip(X, y):
+                        # TODO: do batch eval
+                        y_predict = self._neural_network.forward(x, w)
+                        _, weight_prob_grad = self._neural_network.backward(x, w)
+                        grad += self._loss.gradient(y_predict[0], y_target) @ weight_prob_grad[0, :]
+                    return grad
+
+            else:
+
+                def objective(w):
+                    val = 0.0
+                    probs = self._neural_network.forward(X, w)
+                    for i in range(len(X)):
+                        for y_predict, prob in enumerate(probs[i]):
+                            val += prob * self._loss(y_predict, y[i])
+                    return val
+
+                def objective_grad(w):
+                    num_classes = self._neural_network.output_shape[0]
+                    grad = np.zeros((1, self._neural_network.num_weights))
+                    for x, y_target in zip(X, y):
+                        # TODO: do batch eval
+                        _, weight_prob_grad = self._neural_network.backward(x, w)
+                        for i in range(num_classes):
+                            grad += weight_prob_grad[
+                                0, i, :].reshape(grad.shape) * self._loss(i, y_target)
+                    return grad
 
         if self._warm_start and self._fit_result is not None:
             initial_point = self._fit_result[0]
@@ -134,11 +163,15 @@ class NeuralNetworkClassifier:
         # TODO: currently its either {-1, +1} (sign) or {0, 1} (argmax), needs to be cleaned up.
         if self._neural_network.output_shape == (1,):
             predict = np.sign(self._neural_network.forward(X, self._fit_result[0]))
-        elif self._neural_network.output_shape == (2,):
-            predict = np.argmax(self._neural_network.forward(X, self._fit_result[0]), axis=1)
         else:
-            raise QiskitMachineLearningError('Invalid output shape!')
-
+            forward = self._neural_network.forward(X, self._fit_result[0])
+            predict_ = np.argmax(forward, axis=1)
+            if self._eval_probabilities:
+                predict = np.zeros(forward.shape)
+                for i, v in enumerate(predict_):
+                    predict[i, v] = 1
+            else:
+                predict = predict_
         return predict
 
     def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
@@ -157,4 +190,7 @@ class NeuralNetworkClassifier:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
 
         predict = self.predict(X)
-        return np.sum(predict == y.reshape(predict.shape)) / len(y)
+        score = np.sum(predict == y.reshape(predict.shape)) / len(y)
+        if len(predict.shape) == 2:
+            score /= predict.shape[1]
+        return score

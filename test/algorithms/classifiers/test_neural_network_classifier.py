@@ -221,7 +221,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                          output_shape=output_shape,
                          quantum_instance=quantum_instance)
 
-        # construct classifier
+        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
         classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss,
                                              eval_probabilities=True)
 
