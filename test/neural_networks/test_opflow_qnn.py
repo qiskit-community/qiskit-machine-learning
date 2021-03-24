@@ -40,14 +40,15 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
 
     def validate_output_shape(self, qnn: OpflowQNN, test_data: List[np.ndarray]) -> None:
-        """Asserts that the opflow qnn returns results of the correct output shape.
+        """
+        Asserts that the opflow qnn returns results of the correct output shape.
 
-            Args:
-                qnn: QNN to be tested
-                test_data: list of test input arrays
+        Args:
+            qnn: QNN to be tested
+            test_data: list of test input arrays
 
-            Raises:
-                QiskitMachineLearningError: Invalid input.
+        Raises:
+            QiskitMachineLearningError: Invalid input.
         """
 
         # get weights
@@ -111,7 +112,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
             np.array(1),
             np.array([1]),
             np.array([[1], [2]]),
-            # np.array([[[1], [2]], [[3], [4]]])  # TODO: grad output shape not correct yet
+            np.array([[[1], [2]], [[3], [4]]])
         ]
 
         # test model
