@@ -82,7 +82,6 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             interpret = self.interpret_1d
             output_shape = self.output_shape_1d
         elif interpret_id == 2:
-            # TODO: was `interpret_id = self.interpret_2d` and this is incorrect
             interpret = self.interpret_2d
             output_shape = self.output_shape_2d
 
@@ -162,7 +161,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertIsNone(weights_grad)
             else:
                 self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
-                self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
+                self.assertEqual(weights_grad.shape, (batch_size, *
+                                                      qnn.output_shape, qnn.num_weights))
 
     @data(
         # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d)
@@ -196,10 +196,14 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             f_2 = qnn.forward(input_data - delta, weights)
             if sparse:
                 grad = (f_1.todense() - f_2.todense()) / (2*eps)
-                diff = input_grad.todense()[0, :, k] - grad
+                input_grad_ = input_grad.todense().reshape(
+                    (-1, qnn.num_inputs))[:, k].reshape(grad.shape)
+                diff = input_grad_ - grad
             else:
                 grad = (f_1 - f_2) / (2*eps)
-                diff = input_grad[0, :, k] - grad
+                input_grad_ = input_grad.reshape(
+                    (-1, qnn.num_inputs))[:, k].reshape(grad.shape)
+                diff = input_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
         # test input gradients
@@ -212,10 +216,14 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             f_2 = qnn.forward(input_data, weights - delta)
             if sparse:
                 grad = (f_1.todense() - f_2.todense()) / (2*eps)
-                diff = weights_grad.todense()[0, :, k] - grad
+                weights_grad_ = weights_grad.todense().reshape(
+                    (-1, qnn.num_weights))[:, k].reshape(grad.shape)
+                diff = weights_grad_ - grad
             else:
                 grad = (f_1 - f_2) / (2*eps)
-                diff = weights_grad[0][:, k] - grad
+                weights_grad_ = weights_grad.reshape(
+                    (-1, qnn.num_weights))[:, k].reshape(grad.shape)
+                diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
         # TODO: add test on batching
