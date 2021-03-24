@@ -17,6 +17,7 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
+from ddt import ddt, data
 from qiskit import Aer
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
@@ -24,6 +25,7 @@ from qiskit.utils import QuantumInstance
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 
 
+@ddt
 class TestTwoLayerQNN(QiskitMachineLearningTestCase):
     """Two Layer QNN Tests."""
 
@@ -35,27 +37,67 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         quantum_instance = QuantumInstance(backend)
 
         # define QNN
-        feature_map = ZZFeatureMap(2)
-        var_form = RealAmplitudes(2, reps=1)
-        self.qnn = TwoLayerQNN(2, feature_map=feature_map,
+        num_qubits = 2
+        feature_map = ZZFeatureMap(num_qubits)
+        var_form = RealAmplitudes(num_qubits, reps=1)
+        self.qnn = TwoLayerQNN(num_qubits, feature_map=feature_map,
                                var_form=var_form, quantum_instance=quantum_instance)
 
-    def test_two_layer_qnn1(self):
-        """ Opflow QNN Test """
+        self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map,
+                                     var_form=var_form)
+
+    @data(
+        "qi",
+        "no_qi"
+    )
+    def test_qnn_simple_new(self, qnn_type: str):
+        """Simple Opflow QNN Test for a specified neural network."""
 
         input_data = np.zeros(self.qnn.num_inputs)
         weights = np.zeros(self.qnn.num_weights)
 
+        if qnn_type == "qi":
+            qnn = self.qnn
+        else:
+            qnn = self.qnn_no_qi
+
         # test forward pass
-        result = self.qnn.forward(input_data, weights)
+        result = qnn.forward(input_data, weights)
         self.assertEqual(result.shape, (1, *self.qnn.output_shape))
 
         # test backward pass
         result = self.qnn.backward(input_data, weights)
+        # batch dimension of 1
         self.assertEqual(result[0].shape, (1, *self.qnn.output_shape, self.qnn.num_inputs))
         self.assertEqual(result[1].shape, (1, *self.qnn.output_shape, self.qnn.num_weights))
 
-        # TODO: test batching
+    @data(
+        "qi",
+        "no_qi"
+    )
+    def _test_qnn_batch(self, qnn_type: str):
+        """Batched Opflow QNN Test for the specified network."""
+        batch_size = 10
+
+        input_data = np.arange(batch_size * self.qnn.num_inputs)\
+            .reshape((batch_size, self.qnn.num_inputs))
+        weights = np.zeros(self.qnn.num_weights)
+
+        if qnn_type == "qi":
+            qnn = self.qnn
+        else:
+            qnn = self.qnn_no_qi
+
+        # test forward pass
+        result = qnn.forward(input_data, weights)
+        self.assertEqual(result.shape, (batch_size, *self.qnn.output_shape))
+
+        # test backward pass
+        result = self.qnn.backward(input_data, weights)
+        self.assertEqual(result[0].shape,
+                         (batch_size, *self.qnn.output_shape, self.qnn.num_inputs))
+        self.assertEqual(result[1].shape,
+                         (batch_size, *self.qnn.output_shape, self.qnn.num_weights))
 
 
 if __name__ == '__main__':
