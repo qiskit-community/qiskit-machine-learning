@@ -110,15 +110,15 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         ('cobyla', 'l2', True, 'statevector'),
         ('cobyla', 'l2', True, 'qasm'),
 
-        # ('bfgs', 'l1', True, 'statevector'),
-        # ('bfgs', 'l1', True, 'qasm'),
-        # ('bfgs', 'l1', True, 'statevector'),
-        # ('bfgs', 'l1', True, 'qasm'),
+        ('bfgs', 'l1', True, 'statevector'),
+        ('bfgs', 'l1', True, 'qasm'),
+        ('bfgs', 'l1', True, 'statevector'),
+        ('bfgs', 'l1', True, 'qasm'),
 
-        # ('bfgs', 'l2', True, 'statevector'),
-        # ('bfgs', 'l2', True, 'qasm'),
-        # ('bfgs', 'l2', True, 'statevector'),
-        # ('bfgs', 'l2', True, 'qasm'),
+        ('bfgs', 'l2', True, 'statevector'),
+        ('bfgs', 'l2', True, 'qasm'),
+        ('bfgs', 'l2', True, 'statevector'),
+        ('bfgs', 'l2', True, 'qasm'),
     )
     def test_classifier_with_circuit_qnn(self, config):
         """ Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""

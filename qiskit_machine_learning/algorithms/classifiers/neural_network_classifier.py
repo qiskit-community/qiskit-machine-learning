@@ -103,9 +103,9 @@ class NeuralNetworkClassifier:
                 grad = np.zeros((1, self._neural_network.num_weights))
                 for x, y_target in zip(X, y):
                     _, weight_prob_grad = self._neural_network.backward(x, w)
-                    for i in range(self._neural_network.num_weights):
-                        for y_predict, p_grad in weight_prob_grad[i].items():
-                            grad[i] += p_grad * self._loss(y_predict, y_target)
+                    for i in range(2):  # TOOD: num. classes should not be hardcoded to 2
+                        grad += weight_prob_grad[0, i,
+                                                 :].reshape(grad.shape) * self._loss(i, y_target)
                 return grad
 
         if self._warm_start and self._fit_result is not None:
