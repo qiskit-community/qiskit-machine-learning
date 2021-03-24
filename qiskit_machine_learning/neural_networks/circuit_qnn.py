@@ -13,8 +13,7 @@
 """A Sampling Neural Network based on a given quantum circuit."""
 
 from numbers import Integral
-from typing import (Tuple, Union, List,
-                    Callable, Optional, Dict, cast, Iterable)
+from typing import Tuple, Union, List, Callable, Optional, cast, Iterable
 
 import numpy as np
 from sparse import SparseArray, DOK

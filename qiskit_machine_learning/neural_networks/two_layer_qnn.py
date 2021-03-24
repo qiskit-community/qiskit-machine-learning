@@ -50,18 +50,8 @@ class TwoLayerQNN(OpflowQNN):
 
         # set number of qubits, feature map, and variational form
         self.num_qubits = num_qubits
-
-        # TODO: circuits need to have well-defined parameter order!
         self._feature_map = feature_map if feature_map else ZZFeatureMap(num_qubits)
-        idx = np.argsort([p.name for p in self._feature_map.parameters])
-        input_params = list(self._feature_map.parameters)
-        input_params = [input_params[i] for i in idx]
-
-        # TODO: circuits need to have well-defined parameter order!
         self._var_form = var_form if var_form else RealAmplitudes(num_qubits)
-        idx = np.argsort([p.name for p in self._var_form.parameters])
-        weight_params = list(self._var_form.parameters)
-        weight_params = [weight_params[i] for i in idx]
 
         # construct circuit
         self._qc = QuantumCircuit(num_qubits)
@@ -74,5 +64,5 @@ class TwoLayerQNN(OpflowQNN):
         # combine all to operator
         operator = ~StateFn(self.observable) @ StateFn(self._qc)
 
-        super().__init__(operator, self.feature_map.parameters, self.var_form.parameters,
+        super().__init__(operator, self._feature_map.parameters, self._var_form.parameters,
                          exp_val=exp_val, quantum_instance=quantum_instance)

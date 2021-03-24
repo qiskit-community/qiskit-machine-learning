@@ -131,15 +131,6 @@ class TorchConnector(Module):
                     f'Invalid input dimension! Received {input_data.shape} and ' +
                     f' expected input compatible to {neural_network.num_inputs}')
 
-            # get ranges to permute tensors
-            batch_end = np.maximum(1, len(input_data.shape) - 1)
-            output_end = batch_end + len(neural_network.output_shape)
-            param_end = output_end + 1
-
-            batch_range = tuple(range(0, batch_end))
-            output_range = tuple(range(batch_end, output_end))
-            param_range = tuple(range(output_end, param_end))
-
             # evaluate QNN gradient
             input_grad, weights_grad = neural_network.backward(input_data.numpy(), weights.numpy())
             if input_grad is not None:
@@ -155,11 +146,6 @@ class TorchConnector(Module):
                     input_grad = input_grad.to(grad_output.dtype)
                 else:
                     input_grad = Tensor(input_grad).to(grad_output.dtype)
-                # input_grad = input_grad.transpose(0, 2) @ grad_output  # TODO: validate
-                # input_grad = input_grad.permute((*param_range, *output_range, *batch_range))
-                # if len(input_data.shape) == 1:
-                #     input_grad = input_grad @ grad_output.reshape(1, -1)
-                # else:
 
                 if len(grad_output.shape) == 2:
                     input_grad = grad_output.transpose(0, 1) @ input_grad.transpose(0, 1)
@@ -180,11 +166,6 @@ class TorchConnector(Module):
                 else:
                     weights_grad = Tensor(weights_grad).to(grad_output.dtype)
 
-                # weights_grad = weights_grad.permute((*param_range, *output_range, *batch_range))
-                # if len(input_data.shape) == 1:
-                #     weights_grad = weights_grad @ grad_output.reshape(1, -1)
-                # else:
-
                 if len(grad_output.shape) == 2:
                     weights_grad = grad_output.transpose(0, 1) @ weights_grad.transpose(0, 1)
                 else:
@@ -192,16 +173,6 @@ class TorchConnector(Module):
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
             return input_grad, weights_grad, None, None
-            if len(input_data.shape) == 1:
-                return \
-                    input_grad.permute((-1, *tuple(range(len(neural_network.output_shape))))),\
-                    weights_grad.permute((-1, *tuple(range(len(neural_network.output_shape))))), \
-                    None, None
-            else:
-                return \
-                    input_grad.permute((*param_range, *output_range, *batch_range)),\
-                    weights_grad.permute((*param_range, *output_range, *batch_range)), \
-                    None, None
 
     def __init__(self, neural_network: NeuralNetwork,
                  initial_weights: Optional[Union[np.ndarray, Tensor]] = None,
