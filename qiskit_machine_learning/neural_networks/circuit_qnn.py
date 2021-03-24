@@ -46,7 +46,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         """Initializes the Circuit Quantum Neural Network.
 
         Args:
-            circuit: The (parametrized) quantum circuit that generates the samples of this network.
+            circuit: The parametrized quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
             sparse: Returns whether the output is sparse or not.
@@ -68,7 +68,6 @@ class CircuitQNN(SamplingNeuralNetwork):
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """
 
-        # TODO: need to be able to handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
         self._circuit = circuit.copy()
         if quantum_instance.is_statevector:
@@ -81,7 +80,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
         sparse_ = sparse
-        # this definition required by mypy
+        # this definition is required by mypy
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if sampling:
             num_samples = quantum_instance.run_config.shots
@@ -99,7 +98,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                         'No output shape given, but required in case of custom interpret!')
                 output_shape_ = output_shape
             else:
-                output_shape_ = (2**circuit.num_qubits,)
+                output_shape_ = (2 ** circuit.num_qubits,)
 
         self._gradient = gradient
 
@@ -110,7 +109,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # construct probability gradient opflow object
         grad_circuit = circuit.copy()
-        grad_circuit.remove_final_measurements()  # TODO: ideally this would not be necessary
+        grad_circuit.remove_final_measurements()  # ideally this would not be necessary
         params = list(input_params) + list(weight_params)
         self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
 
@@ -197,7 +196,6 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         result = self.quantum_instance.execute(circuits)
         # initialize probabilities
-        prob: Union[np.ndarray, SparseArray] = None
         if self.sparse:
             prob = DOK((rows, *self.output_shape))
         else:
@@ -226,8 +224,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         rows = input_data.shape[0]
 
         # initialize empty gradients
-        input_grad: Union[np.ndarray, SparseArray] = None
-        weights_grad: Union[np.ndarray, SparseArray] = None
         if self._sparse:
             if self.num_inputs > 0:
                 input_grad = DOK((rows, *self.output_shape, self.num_inputs))
