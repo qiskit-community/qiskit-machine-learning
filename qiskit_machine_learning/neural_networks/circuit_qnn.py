@@ -264,7 +264,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     # interpret integer and construct key
                     key = self._interpret(k)
                     if isinstance(key, Integral):
-                        key = (row, key, j)
+                        key = (row, int(key), j)
                     else:
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
