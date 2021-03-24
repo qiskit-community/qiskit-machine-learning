@@ -40,11 +40,12 @@ class NeuralNetwork(ABC):
             QiskitMachineLearningError: Invalid parameter values.
         """
         if num_inputs < 0:
-            raise QiskitMachineLearningError('Number of inputs cannot be negative!')
+            raise QiskitMachineLearningError(f'Number of inputs cannot be negative: {num_inputs}!')
         self._num_inputs = num_inputs
 
         if num_weights < 0:
-            raise QiskitMachineLearningError('Number of weights cannot be negative!')
+            raise QiskitMachineLearningError(
+                f'Number of weights cannot be negative: {num_weights}!')
         self._num_weights = num_weights
 
         self._sparse = sparse
@@ -52,7 +53,8 @@ class NeuralNetwork(ABC):
         if isinstance(output_shape, int):
             output_shape = (output_shape,)
         if not np.all([s > 0 for s in output_shape]):
-            raise QiskitMachineLearningError('Invalid output shape, all components must be > 0!')
+            raise QiskitMachineLearningError(
+                f'Invalid output shape, all components must be > 0, but got: {output_shape}.')
         self._output_shape = output_shape
 
     @property

@@ -13,17 +13,15 @@
 """An Opflow Quantum Neural Network that allows to use a parametrized opflow object as a
 neural network."""
 
-from copy import deepcopy
 from typing import List, Optional, Union, Tuple
 
 import numpy as np
-from sparse import SparseArray
-
 from qiskit.circuit import Parameter
 from qiskit.opflow import Gradient, CircuitSampler, ListOp, OperatorBase, ExpectationBase
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
+from sparse import SparseArray
 
 from .neural_network import NeuralNetwork
 from .. import QiskitMachineLearningError
@@ -48,12 +46,8 @@ class OpflowQNN(NeuralNetwork):
             gradient: The Gradient converter to be used for the operator's backward pass.
             quantum_instance: The quantum instance to evaluate the network.
         """
-        #  TODO: most of these should be private properties
-        self.operator = operator
-        self.input_params = list(input_params or [])
-        self.weight_params = list(weight_params or [])
-        self.exp_val = exp_val  # TODO: currently not used by Gradient!
-        self.gradient = gradient or Gradient()
+        self._input_params = list(input_params) or []
+        self._weight_params = list(weight_params) or []
 
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             quantum_instance = QuantumInstance(quantum_instance)
@@ -62,20 +56,19 @@ class OpflowQNN(NeuralNetwork):
             self._quantum_instance = quantum_instance
             self._circuit_sampler = CircuitSampler(
                 self._quantum_instance,
-                param_qobj=is_aer_provider(self._quantum_instance.backend)
+                param_qobj=is_aer_provider(self._quantum_instance.backend),
+                caching="all"
             )
-            # TODO: replace by extended caching in circuit sampler after merged: "caching='all'"
-            self._gradient_sampler = deepcopy(self._circuit_sampler)
         else:
             self._quantum_instance = None
             self._circuit_sampler = None
-            self._gradient_sampler = None
 
-        self.forward_operator = self.exp_val.convert(operator) if exp_val else operator
-        self.gradient_operator = self.gradient.convert(operator,
-                                                       self.input_params + self.weight_params)
+        gradient = gradient or Gradient()
+        self._forward_operator = exp_val.convert(operator) if exp_val else operator
+        self._gradient_operator = gradient.convert(operator,
+                                                   self._input_params + self._weight_params)
         output_shape = self._get_output_shape_from_op(operator)
-        super().__init__(len(self.input_params), len(self.weight_params),
+        super().__init__(len(self._input_params), len(self._weight_params),
                          sparse=False, output_shape=output_shape)
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
@@ -103,17 +96,16 @@ class OpflowQNN(NeuralNetwork):
                  ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
         # take i-th column as values for the i-th param in a batch
-        param_values = {p: input_data[:, i].tolist() for i, p in enumerate(self.input_params)}
+        param_values = {p: input_data[:, i].tolist() for i, p in enumerate(self._input_params)}
         param_values.update({p: [weights[i]] * input_data.shape[0]
-                             for i, p in enumerate(self.weight_params)})
+                             for i, p in enumerate(self._weight_params)})
 
         # evaluate operator
         if self._circuit_sampler:
-            op = self._circuit_sampler.convert(self.forward_operator, param_values)
+            op = self._circuit_sampler.convert(self._forward_operator, param_values)
             result = np.real(op.eval())
         else:
-            # todo: batches: does bind_parameters support a list of values and what the output is?
-            op = self.forward_operator.bind_parameters(param_values)
+            op = self._forward_operator.bind_parameters(param_values)
             result = np.real(op.eval())
         result = np.array(result)
         return result.reshape(-1, *self.output_shape)
@@ -128,22 +120,21 @@ class OpflowQNN(NeuralNetwork):
         grad_all = np.zeros((batch_size, *self.output_shape, self.num_inputs + self.num_weights))
         for row in range(batch_size):
             # take i-th column as values for the i-th param in a batch
-            param_values = {p: input_data[row, j] for j, p in enumerate(self.input_params)}
-            param_values.update({p: weights[j] for j, p in enumerate(self.weight_params)})
+            param_values = {p: input_data[row, j] for j, p in enumerate(self._input_params)}
+            param_values.update({p: weights[j] for j, p in enumerate(self._weight_params)})
 
             # evaluate gradient over all parameters
-            if self._gradient_sampler:
-                grad = self._gradient_sampler.convert(self.gradient_operator, param_values)
+            if self._circuit_sampler:
+                grad = self._circuit_sampler.convert(self._gradient_operator, param_values)
                 # TODO: this should not be necessary and is a bug!
                 grad = grad.bind_parameters(param_values)
                 grad = np.real(grad.eval())
             else:
-                grad = self.gradient_operator.bind_parameters(param_values)
+                grad = self._gradient_operator.bind_parameters(param_values)
                 grad = np.real(grad.eval())
             grad_all[row, :] = grad.transpose()
 
         # split into and return input and weights gradients
-        # TODO: handling of multi-dimensional output needs to be validated (e.g. for 2d output etc.)
         input_grad = np.array(grad_all[:batch_size, :, :self.num_inputs])\
             .reshape(-1, *self.output_shape, self.num_inputs)
 
