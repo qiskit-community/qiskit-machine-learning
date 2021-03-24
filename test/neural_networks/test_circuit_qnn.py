@@ -82,7 +82,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             interpret = self.interpret_1d
             output_shape = self.output_shape_1d
         elif interpret_id == 2:
-            interpret_id = self.interpret_2d
+            # TODO: was `interpret_id = self.interpret_2d` and this is incorrect
+            interpret = self.interpret_2d
             output_shape = self.output_shape_2d
 
         # construct QNN
