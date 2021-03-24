@@ -145,8 +145,10 @@ class SamplingNeuralNetwork(NeuralNetwork):
         input_, _ = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         input_grad, weight_grad = self._probability_gradients(input_, weights_)
-        input_grad_reshaped = self._validate_backward_output(input_grad, shape)
-        return input_grad_reshaped, weight_grad
+        input_grad_reshaped, weight_grad_reshaped = \
+            self._validate_backward_output(input_grad, weight_grad, shape)
+
+        return input_grad_reshaped, weight_grad_reshaped
 
     @abstractmethod
     def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]

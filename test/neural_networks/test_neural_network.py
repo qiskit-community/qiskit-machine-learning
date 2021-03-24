@@ -74,6 +74,7 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
 
         # multi-dimensional input and weights
         ((2, 2, True, (2, 2)), [0, 0]),
+        # batch test
         ((2, 2, True, (2, 2)), [[0, 0], [1, 1]])
     )
     def test_forward_shape(self, params):
@@ -101,6 +102,7 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
 
         # multi-dimensional input and weights
         ((2, 2, True, (2, 2)), [0, 0]),
+        # batch test
         ((2, 2, True, (2, 2)), [[0, 0], [1, 1]])
     )
     def test_backward_shape(self, params):
@@ -113,12 +115,14 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
         input_grad, weights_grad = network.backward(input_data, np.zeros(network.num_weights))
 
         if network.num_inputs > 0:
-            self.assertEqual(input_grad.shape, (batch_size, *network.output_shape, network.num_inputs))
+            self.assertEqual(input_grad.shape, (batch_size,
+                                                *network.output_shape, network.num_inputs))
         else:
             self.assertEqual(input_grad, None)
 
         if network.num_weights > 0:
-            self.assertEqual(weights_grad.shape, (batch_size, *network.output_shape, network.num_weights))
+            self.assertEqual(weights_grad.shape, (batch_size,
+                                                  *network.output_shape, network.num_weights))
         else:
             self.assertEqual(weights_grad, None)
 
