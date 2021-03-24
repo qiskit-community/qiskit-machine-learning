@@ -54,7 +54,7 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
     @staticmethod
     def _get_batch_size(input_data):
         batch_size = 1
-        # if we have list of lists then the batch size is length of the first list
+        # if we have list of lists then the batch size is len of the first list
         if isinstance(input_data, list) and isinstance(input_data[0], list):
             batch_size = len(input_data)
         return batch_size

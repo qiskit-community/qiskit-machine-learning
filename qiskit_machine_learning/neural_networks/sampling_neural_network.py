@@ -89,7 +89,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample results of the neural network of the shape (output_shape).
         """
-        input_, _ = self._validate_input(input_data)
+        input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         output_data = self._sample(input_, weights_)
         return self._validate_forward_output(output_data, shape)
@@ -114,7 +114,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample histogram of the neural network.
         """
-        input_, _ = self._validate_input(input_data)
+        input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         output_data = self._probabilities(input_, weights_)
         return self._validate_forward_output(output_data, shape)
@@ -142,7 +142,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The probability gradients.
         """
-        input_, _ = self._validate_input(input_data)
+        input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         input_grad, weight_grad = self._probability_gradients(input_, weights_)
         input_grad_reshaped, weight_grad_reshaped = \
