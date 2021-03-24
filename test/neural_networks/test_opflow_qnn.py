@@ -123,11 +123,6 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
     def test_opflow_qnn_2_1(self, q_i):
         """ Test Opflow QNN with input/output dimension 2/1."""
 
-        if q_i == 'sv':
-            quantum_instance = self.sv_quantum_instance
-        else:
-            quantum_instance = self.qasm_quantum_instance
-
         # construct QNN
         if q_i == 'sv':
             quantum_instance = self.sv_quantum_instance
