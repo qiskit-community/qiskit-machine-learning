@@ -68,6 +68,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """
 
+        # TODO: need to handle case without a quantum instance
         # TODO: need to be able to handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
         self._circuit = circuit.copy()
@@ -81,6 +82,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
         sparse_ = sparse
+
         # this definition required by mypy
         output_shape_: Union[int, Tuple[int, ...]] = -1
         if sampling:
@@ -150,6 +152,29 @@ class CircuitQNN(SamplingNeuralNetwork):
                 self._circuit.remove_final_measurements()
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
+
+    def set_interpret(self, interpret, output_shape=None):
+        """ Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
+        output _shape does not have to be set and is infered from the interpret function. Otherwise,
+        the output_shape needs to be given."""
+
+        if self.sampling:
+            num_samples = self.quantum_instance.run_config.shots
+
+            # infer shape from function
+            ret = interpret(0)
+            result = np.array(ret)
+            output_shape = (num_samples, *result.shape)
+            if len(result.shape) == 0:
+                output_shape = (num_samples, 1)
+            self._output_shape = output_shape
+        else:
+            if output_shape is None:
+                raise QiskitMachineLearningError(
+                    'No output shape given, but required in case of custom interpret!')
+            elif isinstance(output_shape, Integral):
+                output_shape = (output_shape,)
+            self._output_shape = output_shape
 
     def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                 ) -> np.ndarray:
