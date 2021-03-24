@@ -43,6 +43,8 @@ class L2Loss(Loss):
     def evaluate(self, predict, target):
         predict = np.array(predict)
         target = np.array(target)
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
         if len(predict.shape) <= 1:
             return np.linalg.norm(predict - target)**2
         elif len(predict.shape) > 1:
@@ -86,11 +88,6 @@ class L1Loss(Loss):
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
 
-#################################################
-#################################################
-# TBD
-#################################################
-#################################################
 
 class L2LossProbability(Loss):
     """ L2LossProbability """
@@ -116,12 +113,25 @@ class L2LossProbability(Loss):
 class CrossEntropyLoss(Loss):
     """ CrossEntropyLoss """
 
+
     def evaluate(self, predict, target):
+        predict = np.array(predict)
+        target = np.array(target)
+
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+
         return -np.sum([target[i]*np.log2(predict[i]) for i in range(len(predict))])
 
     def gradient(self, predict, target):
-        pass  # TODO
-    # gradient depends on how to handling softmax
+        """ Assume softmax is used, and target vector may or may not be one-hot encoding"""
+        predict = np.array(predict)
+        target = np.array(target)
+
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+
+        return predict * np.sum(target) - target
 
 
 class KLDivergence(Loss):
