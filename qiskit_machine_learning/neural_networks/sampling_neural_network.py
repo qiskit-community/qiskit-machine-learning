@@ -91,8 +91,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """
         input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        # TODO: enable batching
-        return self._sample(input_, weights_)
+        output_data = self._sample(input_, weights_)
+        return self._validate_forward_output(output_data, shape)
 
     @abstractmethod
     def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
@@ -116,8 +116,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """
         input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        # TODO: enable batching
-        return self._probabilities(input_, weights_)
+        output_data = self._probabilities(input_, weights_)
+        return self._validate_forward_output(output_data, shape)
 
     @abstractmethod
     def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
@@ -144,8 +144,9 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """
         input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        # TODO: enable batching
-        return self._probability_gradients(input_, weights_)
+        input_grad, weight_grad = self._probability_gradients(input_, weights_)
+        input_grad_reshaped = self._validate_backward_output(input_grad, shape)
+        return input_grad_reshaped, weight_grad
 
     @abstractmethod
     def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
