@@ -169,7 +169,7 @@ class TorchConnector(Module):
                 if len(grad_output.shape) == 2:
                     weights_grad = grad_output.transpose(0, 1) @ weights_grad.transpose(0, 1)
                 else:
-                    weights_grad = grad_output @ weights_grad  # TODO: validate
+                    weights_grad = grad_output @ weights_grad
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
             return input_grad, weights_grad, None, None
