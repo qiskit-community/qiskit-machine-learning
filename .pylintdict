@@ -24,6 +24,7 @@ eval
 formatter
 gaussian
 getter
+getters
 hashable
 hoc
 th
@@ -74,6 +75,8 @@ regressor
 regressors
 scipy
 semidefinite
+setter
+setters
 sigmoid
 sklearn
 softmax

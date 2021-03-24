@@ -34,7 +34,7 @@ class NeuralNetworkClassifier:
             eval_probabilities: Determines in the case of a multi-dimensional result of the
                 neural_network how to interpret the result. If True it is interpreted as a single
                 sample (a probability vector, e.g. for 'CrossEntropy' loss function), and if False
-                as a set of individual predictions with occurance probabilities (the index would be
+                as a set of individual predictions with occurrence probabilities (the index would be
                 the prediction and the value the corresponding frequency).
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.

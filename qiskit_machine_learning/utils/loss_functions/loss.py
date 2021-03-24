@@ -88,7 +88,6 @@ class L1Loss(Loss):
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
 
-
 class L2LossProbability(Loss):
     """ L2LossProbability """
 
@@ -112,7 +111,6 @@ class L2LossProbability(Loss):
 
 class CrossEntropyLoss(Loss):
     """ CrossEntropyLoss """
-
 
     def evaluate(self, predict, target):
         predict = np.array(predict)
