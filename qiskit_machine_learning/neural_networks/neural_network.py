@@ -167,7 +167,10 @@ class NeuralNetwork(ABC):
         input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         input_grad, weight_grad = self._backward(input_, weights_)
-        input_grad_reshaped, weight_grad_reshaped = self._validate_backward_output(input_grad, weight_grad, shape)
+
+        input_grad_reshaped, weight_grad_reshaped = \
+            self._validate_backward_output(input_grad, weight_grad, shape)
+
         return input_grad_reshaped, weight_grad_reshaped
 
     @ abstractmethod
