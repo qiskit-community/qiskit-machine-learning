@@ -13,8 +13,7 @@
 """A Sampling Neural Network based on a given quantum circuit."""
 
 from numbers import Integral
-from typing import (Tuple, Union, List,
-                    Callable, Optional, Dict, cast, Iterable)
+from typing import Tuple, Union, List, Callable, Optional, cast, Iterable
 
 import numpy as np
 from sparse import SparseArray, DOK
@@ -110,11 +109,14 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
 
         # construct probability gradient opflow object
-        grad_circuit = circuit.copy()
-        grad_circuit.remove_final_measurements()  # ideally this would not be necessary
-        params = list(input_params) + list(weight_params)
-        self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
-
+        self._grad_circuit: QuantumCircuit = None
+        try:
+            grad_circuit = circuit.copy()
+            grad_circuit.remove_final_measurements()  # ideally this would not be necessary
+            params = list(input_params) + list(weight_params)
+            self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
+        except:
+            print('Warning: cannot compute gradient')
         super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
                          output_shape_)
 
@@ -246,6 +248,11 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
+
+        # check whether gradient circuit could be constructed
+        if self._grad_circuit is None:
+            return None, None
+
         rows = input_data.shape[0]
 
         # initialize empty gradients

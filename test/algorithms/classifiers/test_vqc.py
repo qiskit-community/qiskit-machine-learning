@@ -74,6 +74,9 @@ class TestVQC(QiskitMachineLearningTestCase):
         num_samples = 5
         X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
         y = 1.0*(np.sum(X, axis=1) <= 1)
+        while len(np.unique(y)) == 1:
+            X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+            y = 1.0*(np.sum(X, axis=1) <= 1)
         y = np.array([y, 1-y]).transpose()
 
         # fit to data

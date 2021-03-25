@@ -55,8 +55,8 @@ class VQC(NeuralNetworkClassifier):
         self._var_form = var_form
         self._num_qubits = feature_map.num_qubits
         self._circuit = QuantumCircuit(self._num_qubits)
-        self._circuit.append(feature_map, range(self._num_qubits))
-        self._circuit.append(var_form, range(self._num_qubits))
+        self._circuit.compose(feature_map, inplace=True)
+        self._circuit.compose(var_form, inplace=True)
 
         # construct circuit QNN
         neural_network = CircuitQNN(self._circuit,

@@ -63,10 +63,16 @@ class OpflowQNN(NeuralNetwork):
             self._quantum_instance = None
             self._circuit_sampler = None
 
-        gradient = gradient or Gradient()
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
-        self._gradient_operator = gradient.convert(operator,
-                                                   self._input_params + self._weight_params)
+        self._gradient_operator: OperatorBase = None
+        try:
+            gradient = gradient or Gradient()
+            self._gradient_operator = gradient.convert(operator,
+                                                       self._input_params + self._weight_params)
+        except:
+            # TODO: use logger
+            print('Warning: cannot compute gradient operator')
+
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self._input_params), len(self._weight_params),
                          sparse=False, output_shape=output_shape)
@@ -113,7 +119,10 @@ class OpflowQNN(NeuralNetwork):
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                   ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
                              Optional[Union[np.ndarray, SparseArray]]]:
-        # combine parameter dictionary
+
+        # check whether gradient circuit could be constructed
+        if self._gradient_operator is None:
+            return None, None
 
         # iterate over rows, each row is an element of a batch
         batch_size = input_data.shape[0]
