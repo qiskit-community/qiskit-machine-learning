@@ -199,4 +199,5 @@ class RawFeatureVector(BlueprintCircuit):
         else:
             dest.data[0][0].params = dest._ordered_parameters
 
+
         return None if inplace else dest

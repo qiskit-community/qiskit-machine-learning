@@ -67,6 +67,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """
 
+        # TODO: need to handle case without a quantum instance
         # TODO: need to be able to handle partial measurements! (partial trace...)
         # copy circuit and add measurements in case non are given
         self._circuit = circuit.copy()
@@ -108,11 +109,14 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
 
         # construct probability gradient opflow object
-        grad_circuit = circuit.copy()
-        grad_circuit.remove_final_measurements()  # ideally this would not be necessary
-        params = list(input_params) + list(weight_params)
-        self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
-
+        self._grad_circuit: QuantumCircuit = None
+        try:
+            grad_circuit = circuit.copy()
+            grad_circuit.remove_final_measurements()  # ideally this would not be necessary
+            params = list(input_params) + list(weight_params)
+            self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
+        except:
+            print('Warning: cannot compute gradient')
         super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
                          output_shape_)
 
@@ -149,6 +153,29 @@ class CircuitQNN(SamplingNeuralNetwork):
                 self._circuit.remove_final_measurements()
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
+
+    def set_interpret(self, interpret, output_shape=None):
+        """ Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
+        output _shape does not have to be set and is inferred from the interpret function.
+        Otherwise, the output_shape needs to be given."""
+
+        if self.sampling:
+            num_samples = self.quantum_instance.run_config.shots
+
+            # infer shape from function
+            ret = interpret(0)
+            result = np.array(ret)
+            output_shape = (num_samples, *result.shape)
+            if len(result.shape) == 0:
+                output_shape = (num_samples, 1)
+            self._output_shape = output_shape
+        else:
+            if output_shape is None:
+                raise QiskitMachineLearningError(
+                    'No output shape given, but required in case of custom interpret!')
+            elif isinstance(output_shape, Integral):
+                output_shape = (output_shape,)
+            self._output_shape = output_shape
 
     def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                 ) -> np.ndarray:
@@ -221,11 +248,14 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
+
+        # check whether gradient circuit could be constructed
+        if self._grad_circuit is None:
+            return None, None
+
         rows = input_data.shape[0]
 
         # initialize empty gradients
-        input_grad: Union[np.ndarray, SparseArray] = None
-        weights_grad: Union[np.ndarray, SparseArray] = None
         if self._sparse:
             if self.num_inputs > 0:
                 input_grad = DOK((rows, *self.output_shape, self.num_inputs))
