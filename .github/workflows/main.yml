@@ -27,7 +27,7 @@ on:
 
 jobs:
   Checks:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
@@ -46,6 +46,8 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
+          pip install -U jupyter sphinx nbsphinx sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization]
+          sudo apt-get -y install pandoc graphviz
           sudo apt-get -y install python3-enchant
           sudo apt-get -y install hunspell-en-us
           pip install pyenchant
@@ -141,21 +143,15 @@ jobs:
         with:
           name: ml${{ matrix.python-version }}
           path: ./m${{ matrix.python-version }}/*
-      - name: Machine Learning Unit Tests without torch under Python ${{ matrix.python-version }}
-        run: |
-          pip uninstall -y torchvision torch
-          if [ "${{ github.event_name }}" == "schedule" ]; then
-              export QISKIT_TESTS="run_slow"
-          fi
-          stestr --test-path test run
-        shell: bash
   Tutorials:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.8]
+        python-version: [3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
@@ -173,15 +169,10 @@ jobs:
       - name: Run Machine Learning Tutorials
         env:
           QISKIT_PARALLEL: False
+          QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
-          cd tutorials
-          mkdir -p data/MNIST/processed
-          wget https://github.com/qiskit-community/qiskit-textbook/raw/master/content/ch-machine-learning/data/MNIST/processed/test.pt \
-          --tries=3 -O data/MNIST/processed/test.pt || echo "test.pt download failed"
-          wget https://github.com/qiskit-community/qiskit-textbook/raw/master/content/ch-machine-learning/data/MNIST/processed/training.pt \
-          --tries=3 -O data/MNIST/processed/training.pt || echo "training.pt download failed"
-          sphinx-build -b html . _build/html
-          cd _build/html
+          make html SPHINXOPTS=-W
+          cd docs/_build/html
           mkdir artifacts
           tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
         shell: bash
@@ -189,7 +180,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: tutorials${{ matrix.python-version }}
-          path: ./tutorials/_build/html/artifacts/tutorials.tar.gz
+          path: docs/_build/html/artifacts/tutorials.tar.gz
   Deprecation_Messages_and_Coverage:
     needs: [Checks, Lint, MachineLearning, Tutorials]
     runs-on: ubuntu-latest
