@@ -18,7 +18,8 @@ from qiskit.algorithms.optimizers import Optimizer
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ...utils.loss_functions.loss import Loss, L1Loss, L2Loss, CrossEntropyLoss, CrossEntropySigmodLoss
+from ...utils.loss_functions.loss import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
+                                          CrossEntropySigmoidLoss)
 
 
 class NeuralNetworkClassifier:
@@ -69,7 +70,7 @@ class NeuralNetworkClassifier:
             elif loss.lower() == 'CrossEntropyLoss':
                 self._loss = CrossEntropyLoss()
             elif loss.lower() == 'CrossEntropySigmodLoss':
-                self._loss = CrossEntropySigmodLoss()
+                self._loss = CrossEntropySigmoidLoss()
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
 

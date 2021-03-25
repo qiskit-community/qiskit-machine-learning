@@ -18,16 +18,18 @@ import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ...utils.loss_functions.loss import Loss, L1Loss, L2Loss
+from ...utils.loss_functions.loss import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
+                                          CrossEntropySigmoidLoss)
+
 
 class NeuralNetworkRegressor:
     """ Quantum neural network regressor"""
 
     def __init__(self, neural_network: NeuralNetwork,
-             loss: Union[str, Loss] = 'l2',
-             one_hot: bool = False,
-             optimizer: Optimizer = None,
-             warm_start: bool = False):
+                 loss: Union[str, Loss] = 'l2',
+                 one_hot: bool = False,
+                 optimizer: Optimizer = None,
+                 warm_start: bool = False):
         """
         Args:
             neural_network: An instance of an quantum neural network. If the neural network has a
@@ -67,8 +69,8 @@ class NeuralNetworkRegressor:
                 self._loss = L2Loss()
             elif loss.lower() == 'CrossEntropyLoss':
                 self._loss = CrossEntropyLoss()
-            elif loss.lower() == 'CrossEntropySigmodLoss':
-                self._loss = CrossEntropySigmodLoss()
+            elif loss.lower() == 'CrossEntropySigmoidLoss':
+                self._loss = CrossEntropySigmoidLoss()
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
 

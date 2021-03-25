@@ -22,7 +22,7 @@ from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import CircuitQNN
 from ...utils.loss_functions.loss import Loss
 
-from . import NeuralNetworkClassifier
+from .neural_network_classifier import NeuralNetworkClassifier
 
 
 class VQC(NeuralNetworkClassifier):
