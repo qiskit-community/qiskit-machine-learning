@@ -297,6 +297,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
     def loss(self, x, y, weights=None):
         """
         Loss function
+
         Args:
             x (numpy.ndarray): sample label (equivalent to discriminator output)
             y (numpy.ndarray): target label

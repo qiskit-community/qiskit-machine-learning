@@ -27,7 +27,6 @@ from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms import VariationalAlgorithm
 from qiskit.algorithms.optimizers import Optimizer
-from qiskit.algorithms.variational_forms import VariationalForm
 from ...exceptions import QiskitMachineLearningError
 from ...datasets.dataset_helper import split_dataset_to_data_and_labels, map_label_to_class_name
 
@@ -57,7 +56,7 @@ class VQC(VariationalAlgorithm):
             self,
             optimizer: Optimizer,
             feature_map: QuantumCircuit,
-            var_form: Union[QuantumCircuit, VariationalForm],
+            var_form: QuantumCircuit,
             training_dataset: Dict[str, np.ndarray],
             test_dataset: Optional[Dict[str, np.ndarray]] = None,
             datapoints: Optional[np.ndarray] = None,
@@ -91,17 +90,6 @@ class VQC(VariationalAlgorithm):
         Raises:
             QiskitMachineLearningError: Missing feature map or missing training dataset.
         """
-        # VariationalForm is not deprecated on level of the VariationalAlgorithm yet as UCCSD still
-        # derives from there, therefore we're adding a warning here
-        if isinstance(var_form, VariationalForm):
-            warnings.warn("""
-            The {} object as input for the VQC is deprecated as of 0.7.0 and will
-            be removed no earlier than 3 months after the release.
-            You should pass a QuantumCircuit object instead.
-            See also qiskit.circuit.library.n_local for a collection
-            of suitable circuits.""".format(type(feature_map)),
-                          DeprecationWarning, stacklevel=2)
-
         super().__init__(
             var_form=var_form,
             optimizer=optimizer,
