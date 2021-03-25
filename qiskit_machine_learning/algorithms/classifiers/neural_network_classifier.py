@@ -66,11 +66,10 @@ class NeuralNetworkClassifier:
                 self._loss = L1Loss()
             elif loss.lower() == 'l2':
                 self._loss = L2Loss()
-            elif loss.lower() == 'cross_entropy':
+            elif loss.lower() == 'CrossEntropyLoss':
                 self._loss = CrossEntropyLoss()
-            elif loss.lower() == 'sigmoid_cross_entropy':
+            elif loss.lower() == 'CrossEntropySigmodLoss':
                 self._loss = CrossEntropySigmodLoss()
-                pass
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
 
