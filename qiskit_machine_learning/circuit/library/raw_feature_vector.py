@@ -163,18 +163,17 @@ class ParameterizedInitialize(Instruction):
         super().__init__('ParameterizedInitialize', int(num_qubits), 0, amplitudes)
 
     def _define(self):
-        if any(isinstance(param, ParameterExpression) for param in self.params):
-            raise QiskitError('Cannot define a ParameterizedInitialize with unbound parameters.')
+        # cast ParameterExpressions that are fully bound to numbers
+        cleaned_params = []
+        for param in self.params:
+            if len(param.parameters) == 0:
+                cleaned_params.append(complex(param))
+            else:
+                raise QiskitError('Cannot define a ParameterizedInitialize with unbound parameters')
 
         # normalize
-        normalized = np.array(self.params) / np.linalg.norm(self.params)
+        normalized = np.array(cleaned_params) / np.linalg.norm(cleaned_params)
 
         circuit = QuantumCircuit(self.num_qubits)
         circuit.initialize(normalized, range(self.num_qubits))
         self.definition = circuit
-
-    def validate_parameter(self, parameter):
-        if isinstance(parameter, ParameterExpression):
-            if len(parameter.parameters) == 0:
-                return complex(parameter)
-        return parameter
