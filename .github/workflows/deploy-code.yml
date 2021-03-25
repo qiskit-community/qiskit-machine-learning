@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-name: Deployment
+name: Deploy Code
 
 on:
   push:
@@ -18,7 +18,7 @@ on:
       - '*'
 
 jobs:
-  Deploy:
+  code_publish:
     runs-on: ubuntu-latest
     strategy:
       matrix:
