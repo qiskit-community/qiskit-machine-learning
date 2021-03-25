@@ -49,26 +49,26 @@ class TwoLayerQNN(OpflowQNN):
         self.num_qubits = num_qubits
 
         # TODO: circuits need to have well-defined parameter order!
-        self.feature_map = feature_map if feature_map else ZZFeatureMap(num_qubits)
-        idx = np.argsort([p.name for p in self.feature_map.parameters])
-        input_params = list(self.feature_map.parameters)
+        self._feature_map = feature_map if feature_map else ZZFeatureMap(num_qubits)
+        idx = np.argsort([p.name for p in self._feature_map.parameters])
+        input_params = list(self._feature_map.parameters)
         input_params = [input_params[i] for i in idx]
 
         # TODO: circuits need to have well-defined parameter order!
-        self.var_form = var_form if var_form else RealAmplitudes(num_qubits)
-        idx = np.argsort([p.name for p in self.var_form.parameters])
-        weight_params = list(self.var_form.parameters)
+        self._var_form = var_form if var_form else RealAmplitudes(num_qubits)
+        idx = np.argsort([p.name for p in self._var_form.parameters])
+        weight_params = list(self._var_form.parameters)
         weight_params = [weight_params[i] for i in idx]
 
         # construct circuit
-        self.qc = QuantumCircuit(num_qubits)
-        self.qc.append(self.feature_map, range(num_qubits))
-        self.qc.append(self.var_form, range(num_qubits))
+        self._qc = QuantumCircuit(num_qubits)
+        self._qc.append(self._feature_map, range(num_qubits))
+        self._qc.append(self._var_form, range(num_qubits))
 
         # construct observable
         self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits, 1)])
 
         # combine all to operator
-        operator = ~StateFn(self.observable) @ StateFn(self.qc)
+        operator = ~StateFn(self.observable) @ StateFn(self._qc)
 
         super().__init__(operator, input_params, weight_params, quantum_instance=quantum_instance)

@@ -55,19 +55,17 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """
         return self._sampling
 
-    def _forward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                 weights: Optional[Union[List[float], np.ndarray, float]]
+    def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                  ) -> Union[np.ndarray, SparseArray]:
         """Forward pass of the network. Returns an array of samples or the probabilities, depending
         on the setting. Format depends on the set interpret function.
         """
         if self._sampling:
-            return self.sample(input_data, weights)
+            return self._sample(input_data, weights)
         else:
-            return self.probabilities(input_data, weights)
+            return self._probabilities(input_data, weights)
 
-    def _backward(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                  weights: Optional[Union[List[float], np.ndarray, float]]
+    def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                   ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
                              Optional[Union[np.ndarray, SparseArray]]]:
         """Backward pass of the network. Returns (None, None) in case of samples and the
@@ -76,7 +74,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         if self._sampling:
             return None, None
         else:
-            return self.probability_gradients(input_data, weights)
+            return self._probability_gradients(input_data, weights)
 
     def sample(self, input_data: Union[List[float], np.ndarray, float],
                weights: Union[List[float], np.ndarray, float]) -> np.ndarray:
@@ -91,12 +89,14 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample results of the neural network of the shape (output_shape).
         """
-        input_ = self._validate_input(input_data)
+        input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        return self._sample(input_, weights_)
+        output_data = self._sample(input_, weights_)
+        return self._validate_forward_output(output_data, shape)
 
     @abstractmethod
-    def _sample(self, input_data: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                ) -> np.ndarray:
         """Returns samples from the network."""
         raise NotImplementedError
 
@@ -114,12 +114,13 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The sample histogram of the neural network.
         """
-        input_ = self._validate_input(input_data)
+        input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        return self._probabilities(input_, weights_)
+        output_data = self._probabilities(input_, weights_)
+        return self._validate_forward_output(output_data, shape)
 
     @abstractmethod
-    def _probabilities(self, input_data: np.ndarray, weights: np.ndarray
+    def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
         """Returns the sample probabilities."""
         raise NotImplementedError
@@ -141,12 +142,16 @@ class SamplingNeuralNetwork(NeuralNetwork):
         Returns:
             The probability gradients.
         """
-        input_ = self._validate_input(input_data)
+        input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
-        return self._probability_gradients(input_, weights_)
+        input_grad, weight_grad = self._probability_gradients(input_, weights_)
+        input_grad_reshaped, weight_grad_reshaped = \
+            self._validate_backward_output(input_grad, weight_grad, shape)
+
+        return input_grad_reshaped, weight_grad_reshaped
 
     @abstractmethod
-    def _probability_gradients(self, input_data: np.ndarray, weights: np.ndarray
+    def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                                ) -> Tuple[Union[np.ndarray, SparseArray],
                                           Union[np.ndarray, SparseArray]]:
         """Returns the probability gradients."""
