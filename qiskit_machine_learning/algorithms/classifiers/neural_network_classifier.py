@@ -18,32 +18,44 @@ from qiskit.algorithms.optimizers import Optimizer
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ...utils.loss_functions.loss import Loss, L1Loss, L2Loss
+from ...utils.loss_functions.loss import Loss, L1Loss, L2Loss, CrossEntropyLoss
 
 
 class NeuralNetworkClassifier:
     """Quantum neural network classifier."""
 
-    def __init__(self, neural_network: NeuralNetwork, loss: Union[str, Loss] = 'l2',
-                 eval_probabilities: bool = False,  # TODO: better name?
-                 optimizer: Optimizer = None, warm_start: bool = False):
+    def __init__(self, neural_network: NeuralNetwork,
+                 loss: Union[str, Loss] = 'l2',
+                 one_hot: bool = False,
+                 optimizer: Optimizer = None,
+                 warm_start: bool = False):
         """
         Args:
-            neural_network: An instance of an quantum neural network.
-            loss: A target loss function to be used in training. Default is `l2`, L2 loss.
-            eval_probabilities: Determines in the case of a multi-dimensional result of the
+            neural_network: An instance of an quantum neural network. If the neural network has a
+                one-dimensional output, i.e., `neural_network.output_shape=(1,)`, then it is
+                expected to return values in [-1, +1] and it can only be used for binary
+                classification. If the output is multi-dimensional, it is assumed that the result
+                is a probability distribution, i.e., that the entries are non-negative and sum up
+                to one. Then there are two options, either one-hot encoding or not. In case of
+                one-hot encoding, each probability vector resulting a neural network is considered
+                as one sample and the loss function is applied to the whole vector. Otherwise, each
+                entry of the probability vector is considered as an individual sample and the loss
+                function is applied to the index and weighted with the corresponding probability.
+            loss: A target loss function to be used in training. Default is `l2`, i.e. L2 loss.
+                Can be given either as a string for 'l1', 'l2', 'cross_entropy',
+                'sigmoid_cross_entropy', or as a loss function implementing the Loss interface.
+            one_hot: Determines in the case of a multi-dimensional result of the
                 neural_network how to interpret the result. If True it is interpreted as a single
-                sample (a probability vector, e.g. for 'CrossEntropy' loss function), and if False
+                one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
                 as a set of individual predictions with occurrence probabilities (the index would be
-                the prediction and the value the corresponding frequency).
+                the prediction and the value the corresponding frequency, e.g. for L1/L2 loss).
+                This option is ignored in case of a one-dimensional output.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
 
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-
-        # TODO: add getter and some setter (warm_start, loss, optimizer, neural_network?)
         self._neural_network = neural_network
         if len(neural_network.output_shape) > 1:
             raise QiskitMachineLearningError('Invalid neural network output shape!')
@@ -54,13 +66,43 @@ class NeuralNetworkClassifier:
                 self._loss = L1Loss()
             elif loss.lower() == 'l2':
                 self._loss = L2Loss()
+            elif loss.lower() == 'cross_entropy':
+                self._loss = CrossEntropyLoss()
+            elif loss.lower() == 'sigmoid_cross_entropy':
+                # TODO
+                pass
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
 
-        self._eval_probabilities = eval_probabilities
+        self._one_hot = one_hot
         self._optimizer = optimizer
         self._warm_start = warm_start
         self._fit_result = None
+
+    @property
+    def neural_network(self):
+        """ Returns the underlying neural network."""
+        return self._neural_network
+
+    @property
+    def loss(self):
+        """ Returns the underlying neural network."""
+        return self._loss
+
+    @property
+    def one_hot(self):
+        """ Returns the underlying neural network."""
+        return self._one_hot
+
+    @property
+    def warm_start(self) -> bool:
+        """ Returns the warm start flag."""
+        return self._warm_start
+
+    @warm_start.setter
+    def warm_start(self, warm_start: bool) -> None:
+        """ Sets the warm start flag."""
+        self._warm_start = warm_start
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
         """
@@ -72,9 +114,16 @@ class NeuralNetworkClassifier:
 
         Returns:
             self: returns a trained classifier.
+
+        Raises:
+            QiskitMachineLearningError: In case of invalid data (e.g. incompatible with network)
         """
 
         if self._neural_network.output_shape == (1,):
+
+            if len(y.shape) != 1 or len(np.unique(y)) != 2:
+                raise QiskitMachineLearningError(
+                    "Current settings only applicable to binary classification!")
 
             def objective(w):
 
@@ -86,8 +135,8 @@ class NeuralNetworkClassifier:
             def objective_grad(w):
 
                 # TODO should store output from forward pass (implement loss interface?)
-                output = self._neural_network.forward(X, w)
                 # TODO: need to be able to turn off input grads if not needed.
+                output = self._neural_network.forward(X, w)
                 _, weights_grad = self._neural_network.backward(X, w)
 
                 grad = np.zeros((1, self._neural_network.num_weights))
@@ -98,7 +147,7 @@ class NeuralNetworkClassifier:
 
         else:
 
-            if self._eval_probabilities:
+            if self._one_hot:
 
                 def objective(w):
                     val = 0.0
@@ -159,14 +208,12 @@ class NeuralNetworkClassifier:
         """
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
-
-        # TODO: currently its either {-1, +1} (sign) or {0, 1} (argmax), needs to be cleaned up.
         if self._neural_network.output_shape == (1,):
             predict = np.sign(self._neural_network.forward(X, self._fit_result[0]))
         else:
             forward = self._neural_network.forward(X, self._fit_result[0])
             predict_ = np.argmax(forward, axis=1)
-            if self._eval_probabilities:
+            if self._one_hot:
                 predict = np.zeros(forward.shape)
                 for i, v in enumerate(predict_):
                     predict[i, v] = 1

@@ -30,7 +30,7 @@ from qiskit_machine_learning.utils.loss_functions.loss import CrossEntropyLoss
 
 @ddt
 class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
-    """Opflow QNN Tests."""
+    """Neural Network Classifier Tests."""
 
     def setUp(self):
         super().setUp()
@@ -40,31 +40,31 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
 
     @data(
-        # optimizer, loss, warm start, quantum instance
-        ('cobyla', 'l1', True, 'statevector'),
-        ('cobyla', 'l1', True, 'qasm'),
-        ('cobyla', 'l1', True, 'statevector'),
-        ('cobyla', 'l1', True, 'qasm'),
+        # optimizer, loss, quantum instance
+        ('cobyla', 'l1', 'statevector'),
+        ('cobyla', 'l1', 'qasm'),
+        ('cobyla', 'l1', 'statevector'),
+        ('cobyla', 'l1', 'qasm'),
 
-        ('cobyla', 'l2', True, 'statevector'),
-        ('cobyla', 'l2', True, 'qasm'),
-        ('cobyla', 'l2', True, 'statevector'),
-        ('cobyla', 'l2', True, 'qasm'),
+        ('cobyla', 'l2', 'statevector'),
+        ('cobyla', 'l2', 'qasm'),
+        ('cobyla', 'l2', 'statevector'),
+        ('cobyla', 'l2', 'qasm'),
 
-        ('bfgs', 'l1', True, 'statevector'),
-        ('bfgs', 'l1', True, 'qasm'),
-        ('bfgs', 'l1', True, 'statevector'),
-        ('bfgs', 'l1', True, 'qasm'),
+        ('bfgs', 'l1', 'statevector'),
+        ('bfgs', 'l1', 'qasm'),
+        ('bfgs', 'l1', 'statevector'),
+        ('bfgs', 'l1', 'qasm'),
 
-        ('bfgs', 'l2', True, 'statevector'),
-        ('bfgs', 'l2', True, 'qasm'),
-        ('bfgs', 'l2', True, 'statevector'),
-        ('bfgs', 'l2', True, 'qasm'),
+        ('bfgs', 'l2', 'statevector'),
+        ('bfgs', 'l2', 'qasm'),
+        ('bfgs', 'l2', 'statevector'),
+        ('bfgs', 'l2', 'qasm'),
     )
     def test_classifier_with_opflow_qnn(self, config):
         """ Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
 
-        opt, loss, warm_start, q_i = config
+        opt, loss, q_i = config
 
         if q_i == 'statevector':
             quantum_instance = self.sv_quantum_instance
@@ -80,8 +80,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         var_form = RealAmplitudes(num_inputs, reps=1)
         qnn = TwoLayerQNN(num_inputs, var_form=var_form, quantum_instance=quantum_instance)
 
-        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss,
-                                             warm_start=warm_start)
+        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
 
         # construct data
         num_samples = 5
@@ -93,38 +92,34 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # score
         score = classifier.score(X, y)
-        print(score)  # TODO: should involve some criterion (like greater than threshold)
-
-        if warm_start:
-            # fit again to data
-            classifier.fit(X, y)
+        self.assertGreater(score, 0.5)
 
     @data(
-        # optimizer, loss, warm start, quantum instance
-        ('cobyla', 'l1', True, 'statevector'),
-        ('cobyla', 'l1', True, 'qasm'),
-        ('cobyla', 'l1', True, 'statevector'),
-        ('cobyla', 'l1', True, 'qasm'),
+        # optimizer, loss, quantum instance
+        ('cobyla', 'l1', 'statevector'),
+        ('cobyla', 'l1', 'qasm'),
+        ('cobyla', 'l1', 'statevector'),
+        ('cobyla', 'l1', 'qasm'),
 
-        ('cobyla', 'l2', True, 'statevector'),
-        ('cobyla', 'l2', True, 'qasm'),
-        ('cobyla', 'l2', True, 'statevector'),
-        ('cobyla', 'l2', True, 'qasm'),
+        ('cobyla', 'l2', 'statevector'),
+        ('cobyla', 'l2', 'qasm'),
+        ('cobyla', 'l2', 'statevector'),
+        ('cobyla', 'l2', 'qasm'),
 
-        ('bfgs', 'l1', True, 'statevector'),
-        ('bfgs', 'l1', True, 'qasm'),
-        ('bfgs', 'l1', True, 'statevector'),
-        ('bfgs', 'l1', True, 'qasm'),
+        ('bfgs', 'l1', 'statevector'),
+        ('bfgs', 'l1', 'qasm'),
+        ('bfgs', 'l1', 'statevector'),
+        ('bfgs', 'l1', 'qasm'),
 
-        ('bfgs', 'l2', True, 'statevector'),
-        ('bfgs', 'l2', True, 'qasm'),
-        ('bfgs', 'l2', True, 'statevector'),
-        ('bfgs', 'l2', True, 'qasm'),
+        ('bfgs', 'l2', 'statevector'),
+        ('bfgs', 'l2', 'qasm'),
+        ('bfgs', 'l2', 'statevector'),
+        ('bfgs', 'l2', 'qasm'),
     )
     def test_classifier_with_circuit_qnn(self, config):
-        """ Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
+        """ Test Neural Network Classifier with Circuit QNN."""
 
-        opt, loss, warm_start, q_i = config
+        opt, loss, q_i = config
 
         if q_i == 'statevector':
             quantum_instance = self.sv_quantum_instance
@@ -157,8 +152,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                          quantum_instance=quantum_instance)
 
         # construct classifier
-        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss,
-                                             warm_start=warm_start)
+        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
 
         # construct data
         num_samples = 5
@@ -170,11 +164,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # score
         score = classifier.score(X, y)
-        print(score)  # TODO: should involve some criterion (like greater than threshold)
-
-        if warm_start:
-            # fit again to data
-            classifier.fit(X, y)
+        self.assertGreater(score, 0.5)
 
     @data(
         # optimizer, loss, warm start, quantum instance
@@ -185,7 +175,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         ('bfgs', 'qasm'),
     )
     def test_classifier_with_circuit_qnn_and_cross_entropy(self, config):
-        """ Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
+        """ Test Neural Network Classifier with Circuit QNN and Cross Entropy loss."""
 
         opt, q_i = config
 
@@ -222,8 +212,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                          quantum_instance=quantum_instance)
 
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss,
-                                             eval_probabilities=True)
+        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss, one_hot=True)
 
         # construct data
         num_samples = 5
@@ -236,7 +225,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # score
         score = classifier.score(X, y)
-        print(score)  # TODO: should involve some criterion (like greater than threshold)
+        self.assertGreater(score, 0.5)
 
 
 if __name__ == '__main__':

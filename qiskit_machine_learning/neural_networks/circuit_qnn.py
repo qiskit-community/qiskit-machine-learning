@@ -154,8 +154,8 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     def set_interpret(self, interpret, output_shape=None):
         """ Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
-        output _shape does not have to be set and is inferred from the interpret function. Otherwise,
-        the output_shape needs to be given."""
+        output _shape does not have to be set and is inferred from the interpret function.
+        Otherwise, the output_shape needs to be given."""
 
         if self.sampling:
             num_samples = self.quantum_instance.run_config.shots

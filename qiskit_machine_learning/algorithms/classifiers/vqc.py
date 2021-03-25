@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-from typing import Union
+from typing import Union, cast
 import numpy as np
 
 from qiskit import QuantumCircuit
@@ -31,7 +31,7 @@ class VQC(NeuralNetworkClassifier):
     def __init__(self,
                  feature_map: QuantumCircuit,
                  var_form: QuantumCircuit,
-                 loss: Union[str, Loss] = 'l1',  # TODO: different default?
+                 loss: Union[str, Loss] = 'cross_entropy',
                  optimizer: Optimizer = None,
                  warm_start: bool = False,
                  quantum_instance: QuantumInstance = None) -> None:
@@ -39,7 +39,7 @@ class VQC(NeuralNetworkClassifier):
         Args:
             feature_map: The QuantumCircuit instance to use.
             var_form: The variational form instance.
-            loss: A target loss function to be used in training. Default is `l2`, L2 loss.
+            loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
 
@@ -66,11 +66,35 @@ class VQC(NeuralNetworkClassifier):
                                     output_shape=2,
                                     quantum_instance=quantum_instance)
 
-        super().__init__(neural_network, loss, optimizer, warm_start)
+        super().__init__(neural_network=neural_network,
+                         loss=loss,
+                         one_hot=True,
+                         optimizer=optimizer,
+                         warm_start=warm_start)
+
+    @property
+    def feature_map(self) -> QuantumCircuit:
+        """ Returns the used feature map."""
+        return self._feature_map
+
+    @property
+    def var_form(self) -> QuantumCircuit:
+        """ Returns the used variational form."""
+        return self._var_form
+
+    @property
+    def circuit(self) -> QuantumCircuit:
+        """ Returns the underlying quantum circuit."""
+        return self._circuit
+
+    @property
+    def num_qubits(self) -> int:
+        """ Returns the number of qubits used by variational form and feature map."""
+        return self.circuit.num_qubits
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
         """
-        Fit the model to data matrix X and target(s) y.
+        Fit the model to data matrix X and targets y.
 
         Args:
             X: The input data.
@@ -79,8 +103,9 @@ class VQC(NeuralNetworkClassifier):
         Returns:
             self: returns a trained classifier.
         """
-        num_classes = len(np.unique(y))
-        self._neural_network.set(self._get_interpret(num_classes), num_classes)
+        num_classes = len(np.unique(y, axis=0))
+        cast(CircuitQNN, self._neural_network).set_interpret(self._get_interpret(num_classes),
+                                                             num_classes)
         return super().fit(X, y)
 
     def _get_interpret(self, num_classes):
