@@ -20,10 +20,11 @@ import unittest
 from ddt import ddt, data
 
 import numpy as np
-from qiskit import Aer
+from qiskit.providers.aer import QasmSimulator, StatevectorSimulator
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliExpectation, Gradient, StateFn, PauliSumOp, ListOp
 from qiskit.utils import QuantumInstance
+
 
 from qiskit_machine_learning.neural_networks import OpflowQNN
 
@@ -36,8 +37,8 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'))
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
+        self.sv_quantum_instance = QuantumInstance(StatevectorSimulator())
+        self.qasm_quantum_instance = QuantumInstance(QasmSimulator(shots=100))
 
     def validate_output_shape(self, qnn: OpflowQNN, test_data: List[np.ndarray]) -> None:
         """
