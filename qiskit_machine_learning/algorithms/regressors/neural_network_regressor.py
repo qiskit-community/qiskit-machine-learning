@@ -12,15 +12,16 @@
 
 """ neural network regressor """
 
+from typing import Union
 import numpy as np
 
-from qiskit_machine_learning import QiskitMachineLearningError
-from qiskit_machine_learning.neural_networks import NeuralNetwork
+from qiskit.algorithms.optimizers import Optimizer
+from ...exceptions import QiskitMachineLearningError
+from ...neural_networks import NeuralNetwork
+from ...utils.loss_functions.loss import Loss, L1Loss, L2Loss
 
-
-class NeuralNetworkRegressor():
-    """ Quantum neural network regressor
-    """
+class NeuralNetworkRegressor:
+    """ Quantum neural network regressor"""
 
     def __init__(self, neural_network: NeuralNetwork, loss, optimizer, warm_start=False,
                  callback=None) -> None:
