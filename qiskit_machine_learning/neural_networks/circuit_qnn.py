@@ -177,8 +177,6 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                 ) -> np.ndarray:
-    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                ) -> np.ndarray:
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
