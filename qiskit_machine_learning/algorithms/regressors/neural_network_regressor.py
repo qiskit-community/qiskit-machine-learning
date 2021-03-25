@@ -25,7 +25,6 @@ class NeuralNetworkRegressor:
 
     def __init__(self, neural_network: NeuralNetwork, loss, optimizer, warm_start=False,
                  callback=None) -> None:
-        # TODO: callback
         """
         Args:
         """
