@@ -16,7 +16,7 @@ from typing import Optional
 import numpy as np
 from qiskit.exceptions import QiskitError
 from qiskit.circuit import (
-    QuantumRegister, QuantumCircuit, ParameterVector, ParameterExpression, Instruction
+    QuantumRegister, QuantumCircuit, ParameterVector, Instruction
 )
 from qiskit.circuit.library import BlueprintCircuit
 
