@@ -131,6 +131,37 @@ class CrossEntropyLoss(Loss):
 
         return predict * np.sum(target) - target
 
+class CrossEntropySigmodLoss(Loss):
+    """This is used for binary classificiation"""
+    def evaluate(self, predict, target):
+        predict = np.array(predict)
+        target = np.array(target)
+        if len(set(target)) != 2:
+            raise QiskitMachineLearningError(f'Sigmod Cross Entropy is used for binary classification!')
+
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+
+        x = CrossEntropyLoss()
+        return (1.) / (1. + np.exp(-x.evaluate(predict, target)))
+
+    def gradient(self, predict, target):
+        predict = np.array(predict)
+        target = np.array(target)
+
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+        return target*((1.) / (1. + np.exp(-predict)) -1) + (1-target)*((1.) / (1. + np.exp(-predict)))
+
+def softmax(X):
+    """X is a array of prediction"""
+    exps = np.exp(X)
+    return exps / np.sum(exps)
+
+def stable_softmax(X):
+    exps = np.exp(X - np.max(X))
+    return exps / np.sum(exps)
+
 
 class KLDivergence(Loss):
     """ KLDivergence """
