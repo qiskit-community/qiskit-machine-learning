@@ -1,0 +1,53 @@
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2021.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
+name: Deploy Docs
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  docs_publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-libraries
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/install-master-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-machine-learning
+      - name: Install Dependencies
+        run: |
+          pip install -U jupyter sphinx nbsphinx sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization]
+          sudo apt-get install -y pandoc graphviz
+        shell: bash
+      - name: Build and publish
+        env:
+          encrypted_rclone_key: ${{ secrets.encrypted_rclone_key }}
+          encrypted_rclone_iv: ${{ secrets.encrypted_rclone_iv }}
+          QISKIT_PARALLEL: False
+          QISKIT_DOCS_BUILD_TUTORIALS: 'always'
+        run: |
+          make html SPHINXOPTS=-W
+          tools/deploy_documentation.sh
+        shell: bash

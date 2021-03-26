@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -32,14 +32,15 @@ Sphinx documentation builder
 """
 
 import os
+import qiskit_sphinx_theme
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
 os.environ['QISKIT_DOCS'] = 'TRUE'
 
 # -- Project information -----------------------------------------------------
 project = 'Qiskit Machine Learning'
-copyright = '2018, 2021, Qiskit Development Team'  # pylint: disable=redefined-builtin
-author = 'Qiskit Development Team'
+copyright = '2018, 2021, Qiskit Machine Learning Development Team'  # pylint: disable=redefined-builtin
+author = 'Qiskit Machine Learning Development Team'
 
 # The short X.Y version
 version = ''
@@ -67,11 +68,36 @@ extensions = [
     'sphinx_autodoc_typehints',
     'reno.sphinxext',
     'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
+    'nbsphinx',
+    'sphinx.ext.intersphinx'
 ]
 html_static_path = ['_static']
-templates_path = ['_templates']
+templates_path = ['theme/']
 html_css_files = ['style.css', 'custom.css']
+
+nbsphinx_timeout = 180
+nbsphinx_execute = os.getenv('QISKIT_DOCS_BUILD_TUTORIALS', 'never')
+nbsphinx_widgets_path = ''
+exclude_patterns = ['_build', '**.ipynb_checkpoints']
+nbsphinx_thumbnails = {
+}
+
+nbsphinx_prolog = """
+{% set docname = env.doc2path(env.docname, base=None) %}
+
+.. only:: html
+
+    .. role:: raw-html(raw)
+        :format: html
+
+    .. note::
+        This page was generated from `{{ docname }}`__.
+
+        Run interactively in the `IBM Quantum lab <https://quantum-computing.ibm.com/jupyter/tutorial/{{ env.doc2path(env.docname, base=None)|replace("tutorials/", "") }}>`_.
+
+    __ https://github.com/Qiskit/qiskit-optimization/blob/master/docs/{{ docname }}
+
+"""
 
 # -----------------------------------------------------------------------------
 # Autosummary
@@ -134,21 +160,27 @@ modindex_common_prefix = ['qiskit.']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'  # use the theme in subdir 'theme'
+  #
+html_theme = "qiskit_sphinx_theme"
 
-html_logo = 'images/logo.png'
-#html_sidebars = {'**': ['globaltoc.html']}
-html_last_updated_fmt = '%Y/%m/%d'
+html_theme_path = ['.', qiskit_sphinx_theme.get_html_theme_path()]
 
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+#
 html_theme_options = {
-    'logo_only': True,
+    'logo_only': False,
     'display_version': True,
     'prev_next_buttons_location': 'bottom',
-    'style_external_links': True,
-    'style_nav_header_background': '#212121',
+    'style_external_links': False,
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False,
 }
-
-autoclass_content = 'both'
 
 intersphinx_mapping = {
     'sklearn': ('https://scikit-learn.org/stable', None),
