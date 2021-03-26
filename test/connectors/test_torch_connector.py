@@ -24,8 +24,15 @@ from ddt import ddt, data
 
 try:
     from torch import Tensor
+    from torch.nn import CrossEntropyLoss
 except ImportError:
     class Tensor:  # type: ignore
+        """ Empty Tensor class
+            Replacement if torch.Tensor is not present.
+        """
+        pass
+
+    class CrossEntropyLoss:  # type: ignore
         """ Empty Tensor class
             Replacement if torch.Tensor is not present.
         """
@@ -35,6 +42,7 @@ from qiskit import QuantumCircuit
 from qiskit.providers.aer import QasmSimulator, StatevectorSimulator
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
 
@@ -528,6 +536,48 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         batch_res_model.backward()
         self.assertAlmostEqual(
             np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]), 0.0, places=4)
+
+    def test_classification_with_pytorch(self):
+
+        num_inputs = 2
+        num_samples = 20
+        X = 2*np.random.rand(num_samples, num_inputs) - 1
+        y01 = 1*(np.sum(X, axis=1) >= 0)  # in { 0,  1}
+
+        X_ = Tensor(X)
+        y01_ = Tensor(y01).reshape(len(y01)).long()
+
+        feature_map = ZZFeatureMap(num_inputs)
+        var_form = RealAmplitudes(num_inputs, entanglement='linear', reps=1)
+
+        qc = QuantumCircuit(num_inputs)
+        qc.append(feature_map, range(num_inputs))
+        qc.append(var_form, range(num_inputs))
+
+        def parity(x):
+            return '{:b}'.format(x).count('1') % 2
+        output_shape = 2  # parity = 0, 1
+
+        qnn2 = CircuitQNN(qc, input_params=feature_map.parameters,
+                          weight_params=var_form.parameters,
+                          interpret=parity, output_shape=output_shape,
+                          quantum_instance=self.sv_quantum_instance)
+
+        # set up PyTorch module
+        initial_weights = 0.1*(2*np.random.rand(qnn2.num_weights) - 1)
+        model2 = TorchConnector(qnn2, initial_weights)
+        model2.train()
+
+        f_loss = CrossEntropyLoss()
+
+        output = model2(X_)
+        loss = f_loss(output, y01_)
+        loss.backward()
+
+        for x in model2.parameters():
+            print(x)
+
+        print('done')
 
 
 if __name__ == '__main__':
