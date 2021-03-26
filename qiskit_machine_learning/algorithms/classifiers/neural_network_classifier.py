@@ -44,7 +44,7 @@ class NeuralNetworkClassifier:
                 function is applied to the index and weighted with the corresponding probability.
             loss: A target loss function to be used in training. Default is `l2`, i.e. L2 loss.
                 Can be given either as a string for 'l1', 'l2', 'cross_entropy',
-                'sigmoid_cross_entropy', or as a loss function implementing the Loss interface.
+                'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
             one_hot: Determines in the case of a multi-dimensional result of the
                 neural_network how to interpret the result. If True it is interpreted as a single
                 one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
@@ -67,9 +67,9 @@ class NeuralNetworkClassifier:
                 self._loss = L1Loss()
             elif loss.lower() == 'l2':
                 self._loss = L2Loss()
-            elif loss.lower() == 'CrossEntropyLoss':
+            elif loss.lower() == 'cross_entropy':
                 self._loss = CrossEntropyLoss()
-            elif loss.lower() == 'CrossEntropySigmodLoss':
+            elif loss.lower() == 'cross_entropy_sigmoid':
                 self._loss = CrossEntropySigmoidLoss()
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')

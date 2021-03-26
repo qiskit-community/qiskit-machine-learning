@@ -46,8 +46,6 @@ class VQC(NeuralNetworkClassifier):
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        # TODO: add getters/setters
-
         # construct circuit
         if feature_map.num_qubits != var_form.num_qubits:
             raise QiskitMachineLearningError('Feature map and var form need same number of qubits!')
