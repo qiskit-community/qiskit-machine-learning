@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 """A Sampling Neural Network based on a given quantum circuit."""
-
+import logging
 from numbers import Integral
 from typing import Tuple, Union, List, Callable, Optional, cast, Iterable
 
@@ -21,12 +21,14 @@ from scipy.sparse import coo_matrix
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.opflow import Gradient, CircuitSampler, CircuitStateFn
+from qiskit.opflow import Gradient, CircuitSampler, CircuitStateFn, OpflowError
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
 from .sampling_neural_network import SamplingNeuralNetwork
 from ..exceptions import QiskitMachineLearningError
+
+logger = logging.getLogger(__name__)
 
 
 class CircuitQNN(SamplingNeuralNetwork):
@@ -98,8 +100,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             grad_circuit.remove_final_measurements()  # ideally this would not be necessary
             params = list(input_params) + list(weight_params)
             self._grad_circuit = self._gradient.convert(CircuitStateFn(grad_circuit), params)
-        except Exception:
-            print('Warning: cannot compute gradient')
+        except (ValueError, TypeError, OpflowError):
+            logger.warning('Cannot compute gradient operator! Further results are undefined!')
+
         super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
                          output_shape_)
 

@@ -77,7 +77,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         while len(np.unique(y)) == 1:
             X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
             y = 1.0*(np.sum(X, axis=1) <= 1)
-        y = np.array([y, 1-y]).transpose()  # VQC rquires one-hot encoded input
+        y = np.array([y, 1-y]).transpose()  # VQC requires one-hot encoded input
 
         # fit to data
         classifier.fit(X, y)

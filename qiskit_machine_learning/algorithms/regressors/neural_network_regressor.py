@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" neural network regressor """
+""" Neural network regressor """
 
 from typing import Union
 import numpy as np
@@ -211,8 +211,7 @@ class NeuralNetworkRegressor:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
 
         # TODO: proper handling of batching
-        return  self._neural_network.forward(X, self._fit_result[0])
-
+        return self._neural_network.forward(X, self._fit_result[0])
 
     def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
         """
@@ -232,7 +231,7 @@ class NeuralNetworkRegressor:
         predict = self.predict(X)
 
         # Compute R2 for score
-        ss_res = sum(map(lambda k: (k[0]-k[1])**2, zip(y, predict)))
-        ss_tot = sum([(k-np.mean(y))**2 for k in y])
+        ss_res = sum(map(lambda k: (k[0] - k[1]) ** 2, zip(y, predict)))
+        ss_tot = sum([(k - np.mean(y)) ** 2 for k in y])
 
-        return 1-(ss_res/ss_tot)
+        return 1 - (ss_res / ss_tot)
