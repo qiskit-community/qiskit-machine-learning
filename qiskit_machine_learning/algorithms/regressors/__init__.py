@@ -13,7 +13,9 @@
 """ Regressors Package"""
 
 from .qsvr import QSVR
+from .neural_network_regressor import NeuralNetworkRegressor
 
 __all__ = [
-    'QSVR'
+    'QSVR',
+    'NeuralNetworkRegressor'
 ]

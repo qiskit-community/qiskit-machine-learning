@@ -121,9 +121,7 @@ class NeuralNetworkRegressor:
 
         if self._neural_network.output_shape == (1,):
 
-            if len(y.shape) != 1 or len(np.unique(y)) != 2:
-                raise QiskitMachineLearningError(
-                    "Current settings only applicable to binary classification!")
+            # TODO: we should add some reasonable compatibility checks and raise meaningful errors.
 
             def objective(w):
 
@@ -233,5 +231,8 @@ class NeuralNetworkRegressor:
         # Compute R2 for score
         ss_res = sum(map(lambda k: (k[0] - k[1]) ** 2, zip(y, predict)))
         ss_tot = sum([(k - np.mean(y)) ** 2 for k in y])
-
-        return 1 - (ss_res / ss_tot)
+        score = 1 - (ss_res / ss_tot)
+        if len(np.array(score).shape) > 0:
+            return score[0]
+        else:
+            return score
