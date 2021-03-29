@@ -12,16 +12,16 @@
 
 """ Test Neural Network Classifier """
 
+import unittest
+
 from test import QiskitMachineLearningTestCase
 
-import unittest
-from ddt import ddt, data
-
 import numpy as np
+from ddt import ddt, data
 from qiskit import Aer
-from qiskit.utils import QuantumInstance
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.utils import QuantumInstance
 
 from qiskit_machine_learning.algorithms import VQC
 
@@ -34,8 +34,14 @@ class TestVQC(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'))
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
+        self.random_seed = 12345
+        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
+                                                   seed_simulator=self.random_seed,
+                                                   seed_transpiler=self.random_seed)
+        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100,
+                                                     seed_simulator=self.random_seed,
+                                                     seed_transpiler=self.random_seed)
+        np.random.seed(self.random_seed)
 
     @data(
         # optimizer, loss, warm start, quantum instance
@@ -73,11 +79,11 @@ class TestVQC(QiskitMachineLearningTestCase):
         # construct data
         num_samples = 5
         X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-        y = 1.0*(np.sum(X, axis=1) <= 1)
+        y = 1.0 * (np.sum(X, axis=1) <= 1)
         while len(np.unique(y)) == 1:
             X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-            y = 1.0*(np.sum(X, axis=1) <= 1)
-        y = np.array([y, 1-y]).transpose()  # VQC requires one-hot encoded input
+            y = 1.0 * (np.sum(X, axis=1) <= 1)
+        y = np.array([y, 1 - y]).transpose()  # VQC requires one-hot encoded input
 
         # fit to data
         classifier.fit(X, y)
