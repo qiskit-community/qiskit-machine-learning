@@ -27,7 +27,6 @@ class NeuralNetworkRegressor:
 
     def __init__(self, neural_network: NeuralNetwork,
                  loss: Union[str, Loss] = 'l2',
-                 one_hot: bool = False,
                  optimizer: Optimizer = None,
                  warm_start: bool = False):
         """
@@ -45,12 +44,6 @@ class NeuralNetworkRegressor:
             loss: A target loss function to be used in training. Default is `l2`, i.e. L2 loss.
                 Can be given either as a string for 'l1', 'l2', 'cross_entropy',
                 'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
-            one_hot: Determines in the case of a multi-dimensional result of the
-                neural_network how to interpret the result. If True it is interpreted as a single
-                one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
-                as a set of individual predictions with occurrence probabilities (the index would be
-                the prediction and the value the corresponding frequency, e.g. for L1/L2 loss).
-                This option is ignored in case of a one-dimensional output.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
 
@@ -74,7 +67,6 @@ class NeuralNetworkRegressor:
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
 
-        self._one_hot = one_hot
         self._optimizer = optimizer
         self._warm_start = warm_start
         self._fit_result = None
@@ -88,11 +80,6 @@ class NeuralNetworkRegressor:
     def loss(self):
         """ Returns the underlying neural network."""
         return self._loss
-
-    @property
-    def one_hot(self):
-        """ Returns the underlying neural network."""
-        return self._one_hot
 
     @property
     def warm_start(self) -> bool:
@@ -145,44 +132,24 @@ class NeuralNetworkRegressor:
 
         else:
 
-            if self._one_hot:
+            def objective(w):
+                val = 0.0
+                probs = self._neural_network.forward(X, w)
+                for i in range(len(X)):
+                    for y_predict, prob in enumerate(probs[i]):
+                        val += prob * self._loss(y_predict, y[i])
+                return val
 
-                def objective(w):
-                    val = 0.0
-                    probs = self._neural_network.forward(X, w)
-                    for i in range(len(X)):
-                        val += self._loss(probs[i], y[i])
-                    return val
-
-                def objective_grad(w):
-                    grad = np.zeros(self._neural_network.num_weights)
-                    for x, y_target in zip(X, y):
-                        # TODO: do batch eval
-                        y_predict = self._neural_network.forward(x, w)
-                        _, weight_prob_grad = self._neural_network.backward(x, w)
-                        grad += self._loss.gradient(y_predict[0], y_target) @ weight_prob_grad[0, :]
-                    return grad
-
-            else:
-
-                def objective(w):
-                    val = 0.0
-                    probs = self._neural_network.forward(X, w)
-                    for i in range(len(X)):
-                        for y_predict, prob in enumerate(probs[i]):
-                            val += prob * self._loss(y_predict, y[i])
-                    return val
-
-                def objective_grad(w):
-                    num_classes = self._neural_network.output_shape[0]
-                    grad = np.zeros((1, self._neural_network.num_weights))
-                    for x, y_target in zip(X, y):
-                        # TODO: do batch eval
-                        _, weight_prob_grad = self._neural_network.backward(x, w)
-                        for i in range(num_classes):
-                            grad += weight_prob_grad[
-                                    0, i, :].reshape(grad.shape) * self._loss(i, y_target)
-                    return grad
+            def objective_grad(w):
+                num_classes = self._neural_network.output_shape[0]
+                grad = np.zeros((1, self._neural_network.num_weights))
+                for x, y_target in zip(X, y):
+                    # TODO: do batch eval
+                    _, weight_prob_grad = self._neural_network.backward(x, w)
+                    for i in range(num_classes):
+                        grad += weight_prob_grad[
+                                0, i, :].reshape(grad.shape) * self._loss(i, y_target)
+                return grad
 
         if self._warm_start and self._fit_result is not None:
             initial_point = self._fit_result[0]
