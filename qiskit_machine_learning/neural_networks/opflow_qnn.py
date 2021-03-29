@@ -25,7 +25,7 @@ from qiskit.utils.backend_utils import is_aer_provider
 from sparse import SparseArray
 
 from .neural_network import NeuralNetwork
-from .. import QiskitMachineLearningError, QiskitError
+from ..exceptions import QiskitMachineLearningError, QiskitError
 
 logger = logging.getLogger(__name__)
 
