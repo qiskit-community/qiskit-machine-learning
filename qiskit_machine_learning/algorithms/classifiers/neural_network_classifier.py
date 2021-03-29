@@ -123,7 +123,7 @@ class NeuralNetworkClassifier:
 
             if len(y.shape) != 1 or len(np.unique(y)) != 2:
                 raise QiskitMachineLearningError(
-                    "Current settings only applicable to binary classification!")
+                    f"Current settings only applicable to binary classification! Got labels: {y}")
 
             def objective(w):
 
