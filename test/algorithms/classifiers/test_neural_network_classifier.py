@@ -36,9 +36,14 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'))
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
-        np.random.seed(12345)
+        self.random_seed = 12345
+        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
+                                                   seed_simulator=self.random_seed,
+                                                   seed_transpiler=self.random_seed)
+        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100,
+                                                     seed_simulator=self.random_seed,
+                                                     seed_transpiler=self.random_seed)
+        np.random.seed(self.random_seed)
 
     @data(
         # optimizer, loss, quantum instance

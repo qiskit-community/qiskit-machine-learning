@@ -21,12 +21,12 @@ from scipy.sparse import coo_matrix
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.opflow import Gradient, CircuitSampler, CircuitStateFn, OpflowError
+from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
 from .sampling_neural_network import SamplingNeuralNetwork
-from ..exceptions import QiskitMachineLearningError
+from ..exceptions import QiskitMachineLearningError, QiskitError
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,12 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._circuit = circuit.copy()
         if quantum_instance.is_statevector:
             if len(self._circuit.clbits) > 0:
-                self._circuit.remove_final_measurements()
+                # TODO: this is due to a bug in Qiskit, see Issue #6108.
+                # Once the issue is fixed, this should be enabled again.
+                # self._circuit.remove_final_measurements()
+                raise QiskitMachineLearningError(
+                    'Please provide circuit without final measurement as this will be ' +
+                    'added automatically.')
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
@@ -97,11 +102,12 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._grad_circuit: QuantumCircuit = None
         try:
             grad_circuit = circuit.copy()
-            grad_circuit.remove_final_measurements()  # ideally this would not be necessary
+            # TODO: this is due to the bug #6108, once this is fixed, this should be enabled.
+            # grad_circuit.remove_final_measurements()  # ideally this would not be necessary
             params = list(input_params) + list(weight_params)
-            self._grad_circuit = self._gradient.convert(CircuitStateFn(grad_circuit), params)
-        except (ValueError, TypeError, OpflowError):
-            logger.warning('Cannot compute gradient operator! Further results are undefined!')
+            self._grad_circuit = self._gradient.convert(StateFn(grad_circuit), params)
+        except (ValueError, TypeError, OpflowError, QiskitError):
+            logger.warning('Cannot compute gradient operator! Continuing without gradients!')
 
         super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
                          output_shape_)
