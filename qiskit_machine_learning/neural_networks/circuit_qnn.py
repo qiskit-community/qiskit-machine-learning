@@ -26,7 +26,7 @@ from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
 from .sampling_neural_network import SamplingNeuralNetwork
-from ..exceptions import QiskitMachineLearningError
+from ..exceptions import QiskitMachineLearningError, QiskitError
 
 logger = logging.getLogger(__name__)
 
@@ -106,8 +106,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             # grad_circuit.remove_final_measurements()  # ideally this would not be necessary
             params = list(input_params) + list(weight_params)
             self._grad_circuit = self._gradient.convert(StateFn(grad_circuit), params)
-        except (ValueError, TypeError, OpflowError):
-            logger.warning('Cannot compute gradient operator! Further results are undefined!')
+        except (ValueError, TypeError, OpflowError, QiskitError):
+            logger.warning('Cannot compute gradient operator! Continuing without gradients!')
 
         super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
                          output_shape_)

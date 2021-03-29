@@ -25,7 +25,7 @@ from qiskit.utils.backend_utils import is_aer_provider
 from sparse import SparseArray
 
 from .neural_network import NeuralNetwork
-from .. import QiskitMachineLearningError
+from .. import QiskitMachineLearningError, QiskitError
 
 logger = logging.getLogger(__name__)
 
@@ -72,8 +72,8 @@ class OpflowQNN(NeuralNetwork):
             gradient = gradient or Gradient()
             self._gradient_operator = gradient.convert(operator,
                                                        self._input_params + self._weight_params)
-        except (ValueError, TypeError, OpflowError):
-            logger.warning('Cannot compute gradient operator! Further results are undefined!')
+        except (ValueError, TypeError, OpflowError, QiskitError):
+            logger.warning('Cannot compute gradient operator! Continuing without gradients!')
 
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self._input_params), len(self._weight_params),

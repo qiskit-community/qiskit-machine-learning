@@ -20,7 +20,7 @@ import numpy as np
 from qiskit import transpile, Aer
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import EfficientSU2
+from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
 from qiskit.utils import QuantumInstance
@@ -86,8 +86,15 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
     def test_usage_in_vqc(self):
         """Test using the circuit the a single VQC iteration works."""
 
+        # specify quantum instance and random seed
+        random_seed = 12345
+        quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
+                                           seed_simulator=random_seed,
+                                           seed_transpiler=random_seed)
+        np.random.seed(random_seed)
+
         # construct data
-        num_samples = 5
+        num_samples = 10
         num_inputs = 4
         X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
         y = 1.0 * (np.sum(X, axis=1) <= 2)
@@ -98,9 +105,9 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
 
         vqc = VQC(feature_map=feature_map,
-                  var_form=EfficientSU2(feature_map.num_qubits, reps=1),
-                  optimizer=COBYLA(maxiter=1),
-                  quantum_instance=QuantumInstance(Aer.get_backend('statevector_simulator')))
+                  var_form=RealAmplitudes(feature_map.num_qubits, reps=1),
+                  optimizer=COBYLA(maxiter=10),
+                  quantum_instance=quantum_instance)
 
         vqc.fit(X, y)
         score = vqc.score(X, y)
