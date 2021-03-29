@@ -17,10 +17,11 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit import transpile, Aer
-from qiskit.exceptions import QiskitError
+from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import EfficientSU2
-from qiskit.algorithms.optimizers import COBYLA
+from qiskit.exceptions import QiskitError
+from qiskit.quantum_info import Statevector
 from qiskit_machine_learning.circuit.library import RawFeatureVector
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.datasets import wine
@@ -57,13 +58,13 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         ref = QuantumCircuit(3)
         ref.initialize(params, ref.qubits)
 
-        self.assertEqual(bound, ref)
+        self.assertEqual(bound.decompose(), ref)
 
     def test_partially_bound(self):
         """Test partially binding the circuit works."""
 
         circuit = RawFeatureVector(4)
-        params = circuit.ordered_parameters
+        params = circuit.parameters
 
         with self.subTest('single numeric value'):
             circuit.assign_parameters({params[0]: 0.2}, inplace=True)
@@ -77,7 +78,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
             bound = circuit.assign_parameters({params[2]: 0.4, params[3]: 0.8})
             ref = QuantumCircuit(2)
             ref.initialize([0.2, 0.4, 0.4, 0.8], ref.qubits)
-            self.assertEqual(bound, ref)
+            self.assertEqual(bound.decompose(), ref)
 
     def test_usage_in_vqc(self):
         """Test using the circuit the a single VQC iteration works."""
@@ -96,6 +97,18 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         backend = Aer.get_backend('qasm_simulator')
         result = vqc.run(backend)
         self.assertTrue(result['eval_count'] > 0)
+
+    def test_bind_after_composition(self):
+        """Test binding the parameters after the circuit was composed onto a larger one."""
+        circuit = QuantumCircuit(2)
+        circuit.h([0, 1])
+
+        raw = RawFeatureVector(4)
+        circuit.append(raw, [0, 1])
+
+        bound = circuit.bind_parameters([1, 0, 0, 0])
+
+        self.assertTrue(Statevector.from_label('00').equiv(bound))
 
 
 if __name__ == '__main__':
