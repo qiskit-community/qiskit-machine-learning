@@ -11,18 +11,17 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network regressor."""
 
-from typing import Union, cast
-import numpy as np
+from typing import Union
 
 from qiskit import QuantumCircuit
-from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer
+from qiskit.opflow import OperatorBase
+from qiskit.utils import QuantumInstance
 
+from .neural_network_regressor import NeuralNetworkRegressor
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import TwoLayerQNN
 from ...utils.loss_functions.loss import Loss
-
-from .neural_network_regressor import NeuralNetworkRegressor
 
 
 class VQR(NeuralNetworkRegressor):
@@ -36,7 +35,7 @@ class VQR(NeuralNetworkRegressor):
                  optimizer: Optimizer = None,
                  warm_start: bool = False,
                  quantum_instance: QuantumInstance = None) -> None:
-        """
+        r"""
         Args:
             feature_map: The QuantumCircuit instance to use.
             var_form: The variational form instance.
@@ -58,13 +57,12 @@ class VQR(NeuralNetworkRegressor):
         self._num_qubits = feature_map.num_qubits
         self._observable = observable
 
-
         # construct circuit QNN
         neural_network = TwoLayerQNN(num_qubits=self._num_qubits,
-                                    feature_map=self.feature_map,
-                                    var_form=self.var_form,
-                                    obervable=self._observable,
-                                    quantum_instance=quantum_instance)
+                                     feature_map=self.feature_map,
+                                     var_form=self.var_form,
+                                     observable=self._observable,
+                                     quantum_instance=quantum_instance)
 
         super().__init__(neural_network=neural_network,
                          loss=loss,
@@ -85,8 +83,3 @@ class VQR(NeuralNetworkRegressor):
     def num_qubits(self) -> int:
         """ Returns the number of qubits used by variational form and feature map."""
         return self._num_qubits
-
-
-
-
-

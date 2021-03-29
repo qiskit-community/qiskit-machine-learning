@@ -17,18 +17,32 @@ the issue then ensure changes are made to readme too.
 """
 
 import unittest
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
+from sklearn import preprocessing
 
 
 class TestReadmeSample(QiskitMachineLearningTestCase):
     """Test sample code from readme"""
 
+    # TODO: move it somewhere!
+    def _to_features_labels(self, input_data, class_labels):
+        features = np.concatenate(list(input_data.values()))
+        encoder = preprocessing.OneHotEncoder()
+        encoder.fit(np.array(class_labels).reshape(-1, 1))
+        raw_labels = []
+        for category in input_data.keys():
+            num_samples = input_data[category].shape[0]
+            raw_labels += [category] * num_samples
+        raw_labels = np.array(raw_labels)
+        labels = np.array(encoder.transform(raw_labels.reshape(-1, 1)).todense())
+        return features, labels
+
     def test_readme_sample(self):
         """ readme sample test """
         # pylint: disable=import-outside-toplevel,redefined-builtin
-
         def print(*args):
             """ overloads print to log values """
             if args:
@@ -52,39 +66,32 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
         # sample_train, training_input, test_input, class_labels
         training_size = 12
         test_size = 4
-        _, training_input, test_input, _ = wine(training_size=training_size,
-                                                test_size=test_size,
-                                                n=feature_dim)
+        _, training_input, test_input, class_labels = wine(training_size=training_size,
+                                                           test_size=test_size,
+                                                           n=feature_dim)
 
         # prepare features and labels
-        # TODO: make it better or move to wine()
-        train_features = np.concatenate(list(training_input.values()))
-        # one hot
-        train_labels = np.concatenate([np.array([[1, 0, 0]] * training_size),
-                                       np.array([[0, 1, 0]] * training_size),
-                                       np.array([[0, 0, 1]] * training_size)])
-        test_features = np.concatenate(list(test_input.values()))
-        # one hot
-        test_labels = np.concatenate([np.array([[1, 0, 0]] * test_size),
-                                      np.array([[0, 1, 0]] * test_size),
-                                      np.array([[0, 0, 1]] * test_size)])
+        training_features, train_labels = self._to_features_labels(training_input, class_labels)
+        test_features, test_labels = self._to_features_labels(test_input, class_labels)
 
         feature_map = RawFeatureVector(feature_dimension=feature_dim)
+        var_form = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
         vqc = VQC(feature_map=feature_map,
-                  var_form=TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3),
+                  var_form=var_form,
                   optimizer=COBYLA(maxiter=100),
                   quantum_instance=QuantumInstance(BasicAer.get_backend('statevector_simulator'),
                                                    shots=1024,
                                                    seed_simulator=seed,
                                                    seed_transpiler=seed)
                   )
-        vqc.fit(train_features, train_labels)
+        vqc.fit(training_features, train_labels)
+
         score = vqc.score(test_features, test_labels)
         print('Testing accuracy: {:0.2f}'.format(score))
 
         # ----------------------------------------------------------------------
 
-        # self.assertGreater(result['testing_accuracy'], 0.8)
+        self.assertGreater(score, 0.8)
 
 
 if __name__ == '__main__':
