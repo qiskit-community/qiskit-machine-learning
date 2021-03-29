@@ -180,7 +180,7 @@ class NeuralNetworkRegressor:
 
     def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
         """
-        Return the mean accuracy on the given test data and labels.
+        Return R-squared on the given test data and targeted values.
 
         Args:
             X: Test samples.
@@ -188,7 +188,7 @@ class NeuralNetworkRegressor:
         Raises:
             QiskitMachineLearningError: Model needs to be fit to some training data first
         Returns:
-            Mean accuracy of ``self.predict(X)`` wrt. `y`.
+            R-squared value.
         """
         if self._fit_result is None:
             raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
