@@ -125,11 +125,12 @@ class CircuitQNN(SamplingNeuralNetwork):
                     raise QiskitMachineLearningError(
                         'No output shape given, but required in case of custom interpret!')
                 if isinstance(output_shape, Integral):
+                    output_shape = int(output_shape)
                     output_shape_ = (output_shape,)
                 else:
                     output_shape_ = output_shape
             else:
-                output_shape_ = (2**self.circuit.num_qubits,)
+                output_shape_ = (2 ** self.circuit.num_qubits,)
         return output_shape_
 
     @property
