@@ -20,25 +20,9 @@ import unittest
 
 from test import QiskitMachineLearningTestCase
 
-import numpy as np
-from sklearn import preprocessing
-
 
 class TestReadmeSample(QiskitMachineLearningTestCase):
     """Test sample code from readme"""
-
-    # TODO: move it somewhere!
-    def _to_features_labels(self, input_data, class_labels):
-        features = np.concatenate(list(input_data.values()))
-        encoder = preprocessing.OneHotEncoder()
-        encoder.fit(np.array(class_labels).reshape(-1, 1))
-        raw_labels = []
-        for category in input_data.keys():
-            num_samples = input_data[category].shape[0]
-            raw_labels += [category] * num_samples
-        raw_labels = np.array(raw_labels)
-        labels = np.array(encoder.transform(raw_labels.reshape(-1, 1)).todense())
-        return features, labels
 
     def test_readme_sample(self):
         """ readme sample test """
@@ -55,7 +39,7 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
         from qiskit.algorithms.optimizers import COBYLA
         from qiskit.circuit.library import TwoLocal
         from qiskit_machine_learning.algorithms import VQC
-        from qiskit_machine_learning.datasets import wine
+        from qiskit_machine_learning.datasets import wine, features_and_labels
         from qiskit_machine_learning.circuit.library import RawFeatureVector
 
         seed = 1376
@@ -71,8 +55,8 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
                                                            n=feature_dim)
 
         # prepare features and labels
-        training_features, train_labels = self._to_features_labels(training_input, class_labels)
-        test_features, test_labels = self._to_features_labels(test_input, class_labels)
+        training_features, train_labels, _ = features_and_labels(training_input, class_labels)
+        test_features, test_labels, _ = features_and_labels(test_input, class_labels)
 
         feature_map = RawFeatureVector(feature_dimension=feature_dim)
         var_form = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
