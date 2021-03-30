@@ -100,7 +100,7 @@ class TwoLayerQNN(OpflowQNN):
         self._qc.append(self._var_form, range(num_qubits_))
 
         # construct observable
-        self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits, 1)])
+        self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits_, 1)])
 
         # combine all to operator
         operator = ~StateFn(self.observable) @ StateFn(self._qc)
