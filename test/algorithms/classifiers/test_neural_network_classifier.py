@@ -12,19 +12,19 @@
 
 """ Test Neural Network Classifier """
 
+import unittest
+
 from test import QiskitMachineLearningTestCase
 
-import unittest
-from ddt import ddt, data
-
 import numpy as np
+from ddt import ddt, data
 from qiskit import Aer, QuantumCircuit
-from qiskit.utils import QuantumInstance
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.utils import QuantumInstance
 
-from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
+from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
 from qiskit_machine_learning.utils.loss_functions.loss import CrossEntropyLoss
 
 
@@ -36,28 +36,26 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'))
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
+        self.random_seed = 12345
+        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
+                                                   seed_simulator=self.random_seed,
+                                                   seed_transpiler=self.random_seed)
+        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100,
+                                                     seed_simulator=self.random_seed,
+                                                     seed_transpiler=self.random_seed)
+        np.random.seed(self.random_seed)
 
     @data(
         # optimizer, loss, quantum instance
         ('cobyla', 'l1', 'statevector'),
         ('cobyla', 'l1', 'qasm'),
-        ('cobyla', 'l1', 'statevector'),
-        ('cobyla', 'l1', 'qasm'),
 
-        ('cobyla', 'l2', 'statevector'),
-        ('cobyla', 'l2', 'qasm'),
         ('cobyla', 'l2', 'statevector'),
         ('cobyla', 'l2', 'qasm'),
 
         ('bfgs', 'l1', 'statevector'),
         ('bfgs', 'l1', 'qasm'),
-        ('bfgs', 'l1', 'statevector'),
-        ('bfgs', 'l1', 'qasm'),
 
-        ('bfgs', 'l2', 'statevector'),
-        ('bfgs', 'l2', 'qasm'),
         ('bfgs', 'l2', 'statevector'),
         ('bfgs', 'l2', 'qasm'),
     )
@@ -85,7 +83,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # construct data
         num_samples = 5
         X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-        y = 2.0*(np.sum(X, axis=1) <= 1) - 1.0
+        y = 2.0 * (np.sum(X, axis=1) <= 1) - 1.0
 
         # fit to data
         classifier.fit(X, y)
@@ -98,21 +96,13 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # optimizer, loss, quantum instance
         ('cobyla', 'l1', 'statevector'),
         ('cobyla', 'l1', 'qasm'),
-        ('cobyla', 'l1', 'statevector'),
-        ('cobyla', 'l1', 'qasm'),
 
-        ('cobyla', 'l2', 'statevector'),
-        ('cobyla', 'l2', 'qasm'),
         ('cobyla', 'l2', 'statevector'),
         ('cobyla', 'l2', 'qasm'),
 
         ('bfgs', 'l1', 'statevector'),
         ('bfgs', 'l1', 'qasm'),
-        ('bfgs', 'l1', 'statevector'),
-        ('bfgs', 'l1', 'qasm'),
 
-        ('bfgs', 'l2', 'statevector'),
-        ('bfgs', 'l2', 'qasm'),
         ('bfgs', 'l2', 'statevector'),
         ('bfgs', 'l2', 'qasm'),
     )
@@ -143,6 +133,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # construct qnn
         def parity(x):
             return '{:b}'.format(x).count('1') % 2
+
         output_shape = 2
         qnn = CircuitQNN(qc, input_params=feature_map.parameters,
                          weight_params=var_form.parameters,
@@ -157,7 +148,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # construct data
         num_samples = 5
         X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-        y = 1.0*(np.sum(X, axis=1) <= 1)
+        y = 1.0 * (np.sum(X, axis=1) <= 1)
 
         # fit to data
         classifier.fit(X, y)
@@ -167,7 +158,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         self.assertGreater(score, 0.5)
 
     @data(
-        # optimizer, loss, warm start, quantum instance
+        # optimizer, quantum instance
         ('cobyla', 'statevector'),
         ('cobyla', 'qasm'),
 
@@ -203,6 +194,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # construct qnn
         def parity(x):
             return '{:b}'.format(x).count('1') % 2
+
         output_shape = 2
         qnn = CircuitQNN(qc, input_params=feature_map.parameters,
                          weight_params=var_form.parameters,
@@ -217,8 +209,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # construct data
         num_samples = 5
         X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-        y = 1.0*(np.sum(X, axis=1) <= 1)
-        y = np.array([y, 1-y]).transpose()
+        y = 1.0 * (np.sum(X, axis=1) <= 1)
+        y = np.array([y, 1 - y]).transpose()
 
         # fit to data
         classifier.fit(X, y)

@@ -12,9 +12,12 @@
 
 """The raw feature vector circuit."""
 
-from typing import Set, List, Optional
+from typing import Optional
 import numpy as np
-from qiskit.circuit import QuantumRegister, ParameterVector, ParameterExpression, Gate
+from qiskit.exceptions import QiskitError
+from qiskit.circuit import (
+    QuantumRegister, QuantumCircuit, ParameterVector, Instruction
+)
 from qiskit.circuit.library import BlueprintCircuit
 
 
@@ -22,10 +25,8 @@ class RawFeatureVector(BlueprintCircuit):
     """The raw feature vector circuit.
 
     This circuit acts as parameterized initialization for statevectors with ``feature_dimension``
-    dimensions, thus with ``log2(feature_dimension)`` qubits. As long as there are free parameters,
-    this circuit holds a placeholder instruction and can not be decomposed.
-    Once all parameters are bound, the placeholder is replaced by a state initialization and can
-    be unrolled.
+    dimensions, thus with ``log2(feature_dimension)`` qubits. The circuit contains a
+    placeholder instruction that can only be synthesized/defined when all parameters are bound.
 
     In ML, this circuit can be used to load the training data into qubit amplitudes. It does not
     apply an kernel transformation. (Therefore, it is a "raw" feature vector.)
@@ -41,11 +42,11 @@ class RawFeatureVector(BlueprintCircuit):
 
         print(circuit.draw(output='text'))
         # prints:
-        #      ┌──────┐
-        # q_0: ┤0     ├
-        #      │  Raw │
-        # q_1: ┤1     ├
-        #      └──────┘
+        #      ┌───────────────────────────────────────────────┐
+        # q_0: ┤0                                              ├
+        #      │  PARAMETERIZEDINITIALIZE(x[0],x[1],x[2],x[3]) │
+        # q_1: ┤1                                              ├
+        #      └───────────────────────────────────────────────┘
 
         print(circuit.ordered_parameters)
         # prints: [Parameter(p[0]), Parameter(p[1]), Parameter(p[2]), Parameter(p[3])]
@@ -55,11 +56,11 @@ class RawFeatureVector(BlueprintCircuit):
         bound = circuit.assign_parameters(state)
         print(bound.draw())
         # prints:
-        #      ┌──────────────────────────────────┐
-        # q_0: ┤0                                 ├
-        #      │  initialize(0.70711,0,0,0.70711) │
-        # q_1: ┤1                                 ├
-        #      └──────────────────────────────────┘
+        #      ┌───────────────────────────────────────────────┐
+        # q_0: ┤0                                              ├
+        #      │  PARAMETERIZEDINITIALIZE(0.70711,0,0,0.70711) │
+        # q_1: ┤1                                              ├
+        #      └───────────────────────────────────────────────┘
 
         """
 
@@ -71,8 +72,8 @@ class RawFeatureVector(BlueprintCircuit):
         """
         super().__init__()
 
-        self._num_qubits = None  # type: int
-        self._ordered_parameters = None  # type: List[ParameterExpression]
+        self._num_qubits = None
+        self._ordered_parameters = ParameterVector('x')
 
         if feature_dimension:
             self.feature_dimension = feature_dimension
@@ -80,17 +81,22 @@ class RawFeatureVector(BlueprintCircuit):
     def _build(self):
         super()._build()
 
-        # if the parameters are fully specified, use the initialize instruction
-        if len(self.parameters) == 0:
-            self.initialize(self._ordered_parameters, self.qubits)  # pylint: disable=no-member
+        placeholder = ParameterizedInitialize(self._ordered_parameters[:])
+        self.append(placeholder, self.qubits)
 
-        # otherwise get a gate that acts as placeholder
-        else:
-            placeholder = Gate('Raw', self.num_qubits, self._ordered_parameters[:], label='Raw')
-            self.append(placeholder, self.qubits)
+    def _unsorted_parameters(self):
+        if self.data is None:
+            self._build()
+        return super()._unsorted_parameters()
 
     def _check_configuration(self, raise_on_failure=True):
-        pass
+        if isinstance(self._ordered_parameters, ParameterVector):
+            self._ordered_parameters.resize(self.feature_dimension)
+        elif len(self._ordered_parameters) != self.feature_dimension:
+            if raise_on_failure:
+                raise ValueError('Mismatching number of parameters and feature dimension.')
+            return False
+        return True
 
     @property
     def num_qubits(self) -> int:
@@ -112,7 +118,6 @@ class RawFeatureVector(BlueprintCircuit):
             # invalidate the circuit
             self._invalidate()
             self._num_qubits = num_qubits
-            self._ordered_parameters = list(ParameterVector('p', length=self.feature_dimension))
             self.add_register(QuantumRegister(self.num_qubits, 'q'))
 
     @property
@@ -144,60 +149,31 @@ class RawFeatureVector(BlueprintCircuit):
 
     def _invalidate(self):
         super()._invalidate()
-        self._ordered_parameters = None
         self._num_qubits = None
 
-    @property
-    def parameters(self) -> Set[ParameterExpression]:
-        """Return the free parameters in the RawFeatureVector.
 
-        Returns:
-            A set of the free parameters.
-        """
-        return set(self.ordered_parameters)
+class ParameterizedInitialize(Instruction):
+    """A normalized parameterized initialize instruction."""
 
-    @property
-    def ordered_parameters(self) -> List[ParameterExpression]:
-        """Return the free parameters in the RawFeatureVector.
+    def __init__(self, amplitudes):
+        num_qubits = np.log2(len(amplitudes))
+        if int(num_qubits) != num_qubits:
+            raise ValueError('feature_dimension must be a power of 2!')
 
-        Returns:
-            A list of the free parameters.
-        """
-        return list(param for param in self._ordered_parameters
-                    if isinstance(param, ParameterExpression))
+        super().__init__('ParameterizedInitialize', int(num_qubits), 0, amplitudes)
 
-    def bind_parameters(self, values):  # pylint: disable=arguments-differ
-        """Bind parameters."""
-        if not isinstance(values, dict):
-            values = dict(zip(self.ordered_parameters, values))
-        return super().bind_parameters(values)
+    def _define(self):
+        # cast ParameterExpressions that are fully bound to numbers
+        cleaned_params = []
+        for param in self.params:
+            if len(param.parameters) == 0:
+                cleaned_params.append(complex(param))
+            else:
+                raise QiskitError('Cannot define a ParameterizedInitialize with unbound parameters')
 
-    def assign_parameters(self, parameters, inplace=False):  # pylint: disable=arguments-differ
-        """Call the initialize instruction."""
-        if not isinstance(parameters, dict):
-            parameters = dict(zip(self.ordered_parameters, parameters))
+        # normalize
+        normalized = np.array(cleaned_params) / np.linalg.norm(cleaned_params)
 
-        if inplace:
-            dest = self
-        else:
-            dest = RawFeatureVector(2 ** self.num_qubits)
-            dest._build()
-            dest._ordered_parameters = self._ordered_parameters.copy()
-
-        # update the parameter list
-        for i, param in enumerate(dest._ordered_parameters):
-            if param in parameters.keys():
-                dest._ordered_parameters[i] = parameters[param]
-
-        # if fully bound call the initialize instruction
-        if len(dest.parameters) == 0:
-            dest._data = []  # wipe the current data
-            parameters = dest._ordered_parameters / np.linalg.norm(dest._ordered_parameters)
-            dest.initialize(parameters, dest.qubits)  # pylint: disable=no-member
-
-        # else update the placeholder
-        else:
-            dest.data[0][0].params = dest._ordered_parameters
-
-
-        return None if inplace else dest
+        circuit = QuantumCircuit(self.num_qubits)
+        circuit.initialize(normalized, range(self.num_qubits))
+        self.definition = circuit

@@ -13,17 +13,20 @@
 """Test the ``RawFeatureVector`` circuit."""
 
 import unittest
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit import transpile, Aer
-from qiskit.utils import QuantumInstance
-from qiskit.exceptions import QiskitError
-from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import EfficientSU2
 from qiskit.algorithms.optimizers import COBYLA
-from qiskit_machine_learning.circuit.library import RawFeatureVector
+from qiskit.circuit import QuantumCircuit
+from qiskit.circuit.library import RealAmplitudes
+from qiskit.exceptions import QiskitError
+from qiskit.quantum_info import Statevector
+from qiskit.utils import QuantumInstance
+
 from qiskit_machine_learning.algorithms import VQC
+from qiskit_machine_learning.circuit.library import RawFeatureVector
 
 
 class TestRawFeatureVector(QiskitMachineLearningTestCase):
@@ -57,13 +60,13 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         ref = QuantumCircuit(3)
         ref.initialize(params, ref.qubits)
 
-        self.assertEqual(bound, ref)
+        self.assertEqual(bound.decompose(), ref)
 
     def test_partially_bound(self):
         """Test partially binding the circuit works."""
 
         circuit = RawFeatureVector(4)
-        params = circuit.ordered_parameters
+        params = circuit.parameters
 
         with self.subTest('single numeric value'):
             circuit.assign_parameters({params[0]: 0.2}, inplace=True)
@@ -77,31 +80,50 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
             bound = circuit.assign_parameters({params[2]: 0.4, params[3]: 0.8})
             ref = QuantumCircuit(2)
             ref.initialize([0.2, 0.4, 0.4, 0.8], ref.qubits)
-            self.assertEqual(bound, ref)
+            self.assertEqual(bound.decompose(), ref)
 
     # TODO: currently fails due to the way the RawFeatureVector handles parameters
-    # def test_usage_in_vqc(self):
-    #     """Test using the circuit the a single VQC iteration works."""
+    def test_usage_in_vqc(self):
+        """Test using the circuit the a single VQC iteration works."""
 
-    #     # construct data
-    #     num_samples = 5
-    #     num_inputs = 4
-    #     X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-    #     y = 1.0*(np.sum(X, axis=1) <= 2)
-    #     while len(np.unique(y, axis=0)) == 1:
-    #         y = 1.0*(np.sum(X, axis=1) <= 2)
-    #     y = np.array([y, 1-y]).transpose()
+        # specify quantum instance and random seed
+        random_seed = 12345
+        quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
+                                           seed_simulator=random_seed,
+                                           seed_transpiler=random_seed)
+        np.random.seed(random_seed)
 
-    #     feature_map = RawFeatureVector(feature_dimension=num_inputs)
+        # construct data
+        num_samples = 10
+        num_inputs = 4
+        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+        y = 1.0 * (np.sum(X, axis=1) <= 2)
+        while len(np.unique(y, axis=0)) == 1:
+            y = 1.0 * (np.sum(X, axis=1) <= 2)
+        y = np.array([y, 1 - y]).transpose()
 
-    #     vqc = VQC(feature_map=feature_map,
-    #               var_form=EfficientSU2(feature_map.num_qubits, reps=1),
-    #               optimizer=COBYLA(maxiter=1),
-    #               quantum_instance=QuantumInstance(Aer.get_backend('statevector_simulator')))
+        feature_map = RawFeatureVector(feature_dimension=num_inputs)
 
-    #     vqc.fit(X, y)
-    #     score = vqc.score(X, y)
-    #     self.assertGreater(score, 0.5)
+        vqc = VQC(feature_map=feature_map,
+                  var_form=RealAmplitudes(feature_map.num_qubits, reps=1),
+                  optimizer=COBYLA(maxiter=10),
+                  quantum_instance=quantum_instance)
+
+        vqc.fit(X, y)
+        score = vqc.score(X, y)
+        self.assertGreater(score, 0.5)
+
+    def test_bind_after_composition(self):
+        """Test binding the parameters after the circuit was composed onto a larger one."""
+        circuit = QuantumCircuit(2)
+        circuit.h([0, 1])
+
+        raw = RawFeatureVector(4)
+        circuit.append(raw, [0, 1])
+
+        bound = circuit.bind_parameters([1, 0, 0, 0])
+
+        self.assertTrue(Statevector.from_label('00').equiv(bound))
 
 
 if __name__ == '__main__':

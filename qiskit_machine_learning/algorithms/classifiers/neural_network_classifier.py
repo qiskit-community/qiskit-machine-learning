@@ -18,7 +18,8 @@ from qiskit.algorithms.optimizers import Optimizer
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ...utils.loss_functions.loss import Loss, L1Loss, L2Loss, CrossEntropyLoss
+from ...utils.loss_functions.loss import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
+                                          CrossEntropySigmoidLoss)
 
 
 class NeuralNetworkClassifier:
@@ -43,7 +44,7 @@ class NeuralNetworkClassifier:
                 function is applied to the index and weighted with the corresponding probability.
             loss: A target loss function to be used in training. Default is `l2`, i.e. L2 loss.
                 Can be given either as a string for 'l1', 'l2', 'cross_entropy',
-                'sigmoid_cross_entropy', or as a loss function implementing the Loss interface.
+                'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
             one_hot: Determines in the case of a multi-dimensional result of the
                 neural_network how to interpret the result. If True it is interpreted as a single
                 one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
@@ -68,9 +69,8 @@ class NeuralNetworkClassifier:
                 self._loss = L2Loss()
             elif loss.lower() == 'cross_entropy':
                 self._loss = CrossEntropyLoss()
-            elif loss.lower() == 'sigmoid_cross_entropy':
-                # TODO
-                pass
+            elif loss.lower() == 'cross_entropy_sigmoid':
+                self._loss = CrossEntropySigmoidLoss()
             else:
                 raise QiskitMachineLearningError(f'Unknown loss {loss}!')
 
@@ -123,7 +123,7 @@ class NeuralNetworkClassifier:
 
             if len(y.shape) != 1 or len(np.unique(y)) != 2:
                 raise QiskitMachineLearningError(
-                    "Current settings only applicable to binary classification!")
+                    f"Current settings only applicable to binary classification! Got labels: {y}")
 
             def objective(w):
 

@@ -36,6 +36,7 @@ Datasets
    split_dataset_to_data_and_labels
    map_label_to_class_name
    reduce_dim_to_via_pca
+   features_and_labels
 
 """
 
@@ -47,7 +48,7 @@ from .iris import iris
 from .wine import wine
 from .dataset_helper import (get_feature_dimension, get_num_classes,
                              split_dataset_to_data_and_labels,
-                             map_label_to_class_name, reduce_dim_to_via_pca)
+                             map_label_to_class_name, reduce_dim_to_via_pca, features_and_labels)
 
 __all__ = [
     'ad_hoc_data',
@@ -61,5 +62,6 @@ __all__ = [
     'get_num_classes',
     'split_dataset_to_data_and_labels',
     'map_label_to_class_name',
-    'reduce_dim_to_via_pca'
+    'reduce_dim_to_via_pca',
+    'features_and_labels'
 ]

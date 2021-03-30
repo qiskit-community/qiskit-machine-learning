@@ -16,44 +16,87 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.utils import QuantumInstance
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.algorithms.optimizers import Optimizer
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import CircuitQNN
 from ...utils.loss_functions.loss import Loss
 
-from . import NeuralNetworkClassifier
+from .neural_network_classifier import NeuralNetworkClassifier
 
 
 class VQC(NeuralNetworkClassifier):
     """Quantum neural network classifier."""
 
     def __init__(self,
-                 feature_map: QuantumCircuit,
-                 var_form: QuantumCircuit,
+                 num_qubits: int = None,
+                 feature_map: QuantumCircuit = None,
+                 var_form: QuantumCircuit = None,
                  loss: Union[str, Loss] = 'cross_entropy',
                  optimizer: Optimizer = None,
                  warm_start: bool = False,
                  quantum_instance: QuantumInstance = None) -> None:
         """
         Args:
-            feature_map: The QuantumCircuit instance to use.
-            var_form: The variational form instance.
+            num_qubits: The number of qubits for the underlying CircuitQNN. If None, derive from
+                feature_map or var_form. If neither of those is given, raise exception.
+            feature_map: The feature map for underlying CircuitQNN. If None, use ZZFeatureMap.
+            var_form: The variational for the underlying CircuitQNN. If None, use RealAmplitudes.
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
 
         Raises:
-            QiskitMachineLearningError: unknown loss, invalid neural network
+            QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
+                var_form to be given.
         """
+<<<<<<< HEAD
         # TODO: add getters/setters
+=======
+
+        # check num_qubits, feature_map, and var_form
+        if num_qubits is None and feature_map is None and var_form is None:
+            raise QiskitMachineLearningError(
+                'Need at least one of num_qubits, feature_map, or var_form!')
+        num_qubits_: int = None
+        feature_map_: QuantumCircuit = None
+        var_form_: QuantumCircuit = None
+        if num_qubits:
+            num_qubits_ = num_qubits
+            if feature_map:
+                if feature_map.num_qubits != num_qubits:
+                    raise QiskitMachineLearningError('Incompatible num_qubits and feature_map!')
+                feature_map_ = feature_map
+            else:
+                feature_map_ = ZZFeatureMap(num_qubits)
+            if var_form:
+                if var_form.num_qubits != num_qubits:
+                    raise QiskitMachineLearningError('Incompatible num_qubits and var_form!')
+                var_form_ = var_form
+            else:
+                var_form_ = RealAmplitudes(num_qubits)
+        else:
+            if feature_map and var_form:
+                if feature_map.num_qubits != var_form.num_qubits:
+                    raise QiskitMachineLearningError('Incompatible feature_map and var_form!')
+                feature_map_ = feature_map
+                var_form_ = var_form
+                num_qubits_ = feature_map.num_qubits
+            elif feature_map:
+                num_qubits_ = feature_map.num_qubits
+                feature_map_ = feature_map
+                var_form_ = RealAmplitudes(num_qubits_)
+            elif var_form:
+                num_qubits_ = var_form.num_qubits
+                var_form_ = var_form
+                feature_map_ = ZZFeatureMap(num_qubits_)
+>>>>>>> pr/13
 
         # construct circuit
-        if feature_map.num_qubits != var_form.num_qubits:
-            raise QiskitMachineLearningError('Feature map and var form need same number of qubits!')
-        self._feature_map = feature_map
-        self._var_form = var_form
-        self._num_qubits = feature_map.num_qubits
+        self._feature_map = feature_map_
+        self._var_form = var_form_
+        self._num_qubits = num_qubits_
         self._circuit = QuantumCircuit(self._num_qubits)
         self._circuit.compose(feature_map, inplace=True)
         self._circuit.compose(var_form, inplace=True)

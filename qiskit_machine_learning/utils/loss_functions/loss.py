@@ -36,36 +36,41 @@ class Loss(ABC):
         """ gradient """
         raise NotImplementedError
 
+    @staticmethod
+    def _validate(predict, target):
+        predict = np.array(predict)
+        target = np.array(target)
+        if predict.shape != target.shape:
+            raise QiskitMachineLearningError(f"Shapes don't match, predict: {predict.shape}, "
+                                             f"target: {target.shape}!")
+        return predict, target
+
 
 class L2Loss(Loss):
     """ L2Loss """
 
     def evaluate(self, predict, target):
-        predict = np.array(predict)
-        target = np.array(target)
-        if predict.shape != target.shape:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+        predict, target = self._validate(predict, target)
+
         if len(predict.shape) <= 1:
-            return np.linalg.norm(predict - target)**2
+            return np.linalg.norm(predict - target) ** 2
         elif len(predict.shape) > 1:
-            return np.linalg.norm(predict - target, axis=len(predict.shape)-1)**2
+            return np.linalg.norm(predict - target, axis=len(predict.shape) - 1) ** 2
         else:
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
     def gradient(self, predict, target):
-        predict = np.array(predict)
-        target = np.array(target)
-        return 2*(predict - target)
+        predict, target = self._validate(predict, target)
+
+        return 2 * (predict - target)
 
 
 class L1Loss(Loss):
     """ L1Loss """
 
     def evaluate(self, predict, target):
-        predict = np.array(predict)
-        target = np.array(target)
-        if predict.shape != target.shape:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+        predict, target = self._validate(predict, target)
+
         if len(predict.shape) == 0:
             return np.abs(predict - target)
         elif len(predict.shape) <= 1:
@@ -76,69 +81,83 @@ class L1Loss(Loss):
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
     def gradient(self, predict, target):
-        predict = np.array(predict)
-        target = np.array(target)
-        if predict.shape != target.shape:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
-        if len(predict.shape) <= 1:
-            return np.sign(predict - target)
-        elif len(predict.shape) > 1:
-            return np.sign(predict - target)
-        else:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+        predict, target = self._validate(predict, target)
+
+        return np.sign(predict - target)
 
 
 class L2LossProbability(Loss):
     """ L2LossProbability """
 
-    def __init__(self, predict, target):  # predict and target are both probabilities
-        super().__init__(predict, target)
-        self.joint_keys = set(predict.keys())
-        self.joint_keys.update(target.keys())
+    # predict and target are both probabilities
+    def evaluate(self, predict, target):
+        predict, target = self._validate(predict, target)
 
-    def evaluate(self):
-        val = 0.0
-        for k in self.joint_keys:
-            val += (self.predict.get(k, 0) - self.target.get(k, 0))**2
-        return val
+        return np.sum(np.square(predict - target))
 
-    def gradient(self):
-        val = {}
-        for k in self.joint_keys:
-            val[k] = 2*(self.predict.get(k, 0) - self.target.get(k, 0))
-        return val
+    def gradient(self, predict, target):
+        predict, target = self._validate(predict, target)
+
+        return 2 * (predict - target)
 
 
 class CrossEntropyLoss(Loss):
     """ CrossEntropyLoss """
 
     def evaluate(self, predict, target):
-        predict = np.array(predict)
-        target = np.array(target)
+        predict, target = self._validate(predict, target)
 
-        if predict.shape != target.shape:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
-
-        return -np.sum([target[i]*np.log2(predict[i]) for i in range(len(predict))])
+        return -np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))])
 
     def gradient(self, predict, target):
         """ Assume softmax is used, and target vector may or may not be one-hot encoding"""
-        predict = np.array(predict)
-        target = np.array(target)
-
-        if predict.shape != target.shape:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+        predict, target = self._validate(predict, target)
 
         return predict * np.sum(target) - target
+
+
+class CrossEntropySigmoidLoss(Loss):
+    """This is used for binary classification"""
+
+    def evaluate(self, predict, target):
+        predict, target = self._validate(predict, target)
+
+        if len(set(target)) != 2:
+            raise QiskitMachineLearningError(
+                'Sigmoid Cross Entropy is used for binary classification!')
+
+        x = CrossEntropyLoss()
+        return 1. / (1. + np.exp(-x.evaluate(predict, target)))
+
+    def gradient(self, predict, target):
+        predict, target = self._validate(predict, target)
+
+        return target * (1. / (1. + np.exp(-predict)) - 1) + (1 - target) * (
+                1. / (1. + np.exp(-predict)))
+
+
+# pylint: disable=invalid-name
+def softmax(X):
+    """X is a array of prediction"""
+    exps = np.exp(X)
+    return exps / np.sum(exps)
+
+
+# pylint: disable=invalid-name
+def stable_softmax(X):
+    """Stable softmax"""
+    exps = np.exp(X - np.max(X))
+    return exps / np.sum(exps)
 
 
 class KLDivergence(Loss):
     """ KLDivergence """
 
-    def __init__(self, predict, target):  # predict and target are both probabilities
-        super().__init__(predict, target)
-        self.predict = np.array(predict)
-        self.target = np.array(target)
+    # predict and target are both probabilities
+    def evaluate(self, predict, target):
+        predict, target = self._validate(predict, target)
 
-    def evaluate(self):
-        return sum(predict[i] * np.log2(predict[i]/target[i]) for i in range(len(predict)))
+        return np.sum(predict * np.log2(predict / target))
+
+    def gradient(self, predict, target):
+        raise NotImplementedError
