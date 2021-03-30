@@ -303,6 +303,6 @@ def features_and_labels_transform(dataset: Dict[str, np.ndarray],
         for category in dataset.keys():
             num_samples = dataset[category].shape[0]
             raw_labels += [category] * num_samples
-        labels = np.array(encoder.transform(np.array(raw_labels).reshape(-1, 1)).todense())
+        labels = np.array(raw_labels).todense()
 
     return features, labels
