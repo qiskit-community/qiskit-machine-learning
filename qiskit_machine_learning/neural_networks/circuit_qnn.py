@@ -80,12 +80,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._circuit = circuit.copy()
         if quantum_instance.is_statevector:
             if len(self._circuit.clbits) > 0:
-                # TODO: this is due to a bug in Qiskit, see Issue #6108.
-                # Once the issue is fixed, this should be enabled again.
-                # self._circuit.remove_final_measurements()
-                raise QiskitMachineLearningError(
-                    'Please provide circuit without final measurement as this will be ' +
-                    'added automatically.')
+                self._circuit.remove_final_measurements()
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
@@ -102,8 +97,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._grad_circuit: QuantumCircuit = None
         try:
             grad_circuit = circuit.copy()
-            # TODO: this is due to the bug #6108, once this is fixed, this should be enabled.
-            # grad_circuit.remove_final_measurements()  # ideally this would not be necessary
+            grad_circuit.remove_final_measurements()  # ideally this would not be necessary
             params = list(input_params) + list(weight_params)
             self._grad_circuit = self._gradient.convert(StateFn(grad_circuit), params)
         except (ValueError, TypeError, OpflowError, QiskitError):
