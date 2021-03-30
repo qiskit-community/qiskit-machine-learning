@@ -18,10 +18,9 @@ import numpy as np
 import scipy
 from qiskit.utils import algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
-from .dataset_helper import features_and_labels_transform
 
 
-def ad_hoc_data(training_size, test_size, n, gap, plot_data=False, one_hot=True):
+def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
     """ returns ad hoc dataset """
     class_labels = [r'A', r'B']
     count = 0
@@ -145,9 +144,6 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False, one_hot=True)
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
             training_size + test_size)] for k, key in enumerate(class_labels)}
 
-        training_feature_array, training_label_array = features_and_labels_transform(training_input, class_labels, one_hot)
-        test_feature_array, test_label_array = features_and_labels_transform(test_input, class_labels, one_hot)
-
         if plot_data:
             try:
                 import matplotlib.pyplot as plt
@@ -225,8 +221,6 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False, one_hot=True)
                           for k, key in enumerate(class_labels)}
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
             training_size + test_size)] for k, key in enumerate(class_labels)}
-        training_feature_array, training_label_array = features_and_labels_transform(training_input, class_labels, one_hot)
-        test_feature_array, test_label_array = features_and_labels_transform(test_input, class_labels, one_hot)
 
         if plot_data:
             try:
@@ -273,7 +267,7 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False, one_hot=True)
             ax_1.scatter(x_2, y_2, z_2, c='#683FC8')
             plt.show()
 
-    return training_feature_array, training_label_array, test_feature_array, test_label_array
+    return sample_total, training_input, test_input, class_labels
 
 
 def sample_ad_hoc_data(sample_total, test_size, n):
