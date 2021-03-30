@@ -12,10 +12,12 @@
 
 """ Classifiers Package """
 
+from .neural_network_classifier import NeuralNetworkClassifier
 from .qsvc import QSVC
 from .vqc import VQC
 
 __all__ = [
+    'NeuralNetworkClassifier',
     'QSVC',
     'VQC'
 ]

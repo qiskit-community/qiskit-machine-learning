@@ -13,18 +13,20 @@
 """Test the ``RawFeatureVector`` circuit."""
 
 import unittest
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit import transpile, Aer
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import EfficientSU2
+from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit_machine_learning.circuit.library import RawFeatureVector
+from qiskit.utils import QuantumInstance
+
 from qiskit_machine_learning.algorithms import VQC
-from qiskit_machine_learning.datasets import wine
+from qiskit_machine_learning.circuit.library import RawFeatureVector
 
 
 class TestRawFeatureVector(QiskitMachineLearningTestCase):
@@ -80,23 +82,36 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
             ref.initialize([0.2, 0.4, 0.4, 0.8], ref.qubits)
             self.assertEqual(bound.decompose(), ref)
 
+    # TODO: currently fails due to the way the RawFeatureVector handles parameters
     def test_usage_in_vqc(self):
         """Test using the circuit the a single VQC iteration works."""
-        feature_dim = 4
-        _, training_input, test_input, _ = wine(training_size=1,
-                                                test_size=1,
-                                                n=feature_dim,
-                                                plot_data=False)
-        feature_map = RawFeatureVector(feature_dimension=feature_dim)
 
-        vqc = VQC(COBYLA(maxiter=1),
-                  feature_map,
-                  EfficientSU2(feature_map.num_qubits, reps=1),
-                  training_input,
-                  test_input)
-        backend = Aer.get_backend('qasm_simulator')
-        result = vqc.run(backend)
-        self.assertTrue(result['eval_count'] > 0)
+        # specify quantum instance and random seed
+        random_seed = 12345
+        quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
+                                           seed_simulator=random_seed,
+                                           seed_transpiler=random_seed)
+        np.random.seed(random_seed)
+
+        # construct data
+        num_samples = 10
+        num_inputs = 4
+        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+        y = 1.0 * (np.sum(X, axis=1) <= 2)
+        while len(np.unique(y, axis=0)) == 1:
+            y = 1.0 * (np.sum(X, axis=1) <= 2)
+        y = np.array([y, 1 - y]).transpose()
+
+        feature_map = RawFeatureVector(feature_dimension=num_inputs)
+
+        vqc = VQC(feature_map=feature_map,
+                  var_form=RealAmplitudes(feature_map.num_qubits, reps=1),
+                  optimizer=COBYLA(maxiter=10),
+                  quantum_instance=quantum_instance)
+
+        vqc.fit(X, y)
+        score = vqc.score(X, y)
+        self.assertGreater(score, 0.5)
 
     def test_bind_after_composition(self):
         """Test binding the parameters after the circuit was composed onto a larger one."""

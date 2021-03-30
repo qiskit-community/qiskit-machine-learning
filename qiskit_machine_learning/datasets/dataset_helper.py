@@ -14,8 +14,12 @@
 
 import operator
 from copy import deepcopy
+from typing import Dict, List, Tuple
+
 import numpy as np
+from sklearn import preprocessing
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import OneHotEncoder
 
 
 def get_num_classes(dataset):
@@ -244,3 +248,26 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=
 
         else:
             return data, data_grid
+
+
+def features_and_labels(dataset: Dict[str, np.ndarray], class_labels: List[str]
+                        ) -> Tuple[np.ndarray, np.ndarray, OneHotEncoder]:
+    """
+    Converts a dataset into arrays of features and labels.
+
+    Args:
+        dataset: A dictionary in the format of {'A': numpy.ndarray, 'B': numpy.ndarray, ...}
+        class_labels: A list of classes in the dataset
+
+    Returns:
+        A tuple of features as np.ndarray, labels as np.ndarray, and a one hot encoder.
+    """
+    features = np.concatenate(list(dataset.values()))
+    encoder = preprocessing.OneHotEncoder()
+    encoder.fit(np.array(class_labels).reshape(-1, 1))
+    raw_labels = []
+    for category in dataset.keys():
+        num_samples = dataset[category].shape[0]
+        raw_labels += [category] * num_samples
+    labels = np.array(encoder.transform(np.array(raw_labels).reshape(-1, 1)).todense())
+    return features, labels, encoder

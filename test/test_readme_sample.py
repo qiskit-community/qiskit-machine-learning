@@ -17,6 +17,7 @@ the issue then ensure changes are made to readme too.
 """
 
 import unittest
+
 from test import QiskitMachineLearningTestCase
 
 
@@ -26,7 +27,6 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
     def test_readme_sample(self):
         """ readme sample test """
         # pylint: disable=import-outside-toplevel,redefined-builtin
-
         def print(*args):
             """ overloads print to log values """
             if args:
@@ -39,7 +39,7 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
         from qiskit.algorithms.optimizers import COBYLA
         from qiskit.circuit.library import TwoLocal
         from qiskit_machine_learning.algorithms import VQC
-        from qiskit_machine_learning.datasets import wine
+        from qiskit_machine_learning.datasets import wine, features_and_labels
         from qiskit_machine_learning.circuit.library import RawFeatureVector
 
         seed = 1376
@@ -47,24 +47,35 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
 
         # Use Wine data set for training and test data
         feature_dim = 4  # dimension of each data point
-        _, training_input, test_input, _ = wine(training_size=12,
-                                                test_size=4,
-                                                n=feature_dim)
+        # sample_train, training_input, test_input, class_labels
+        training_size = 12
+        test_size = 4
+        _, training_input, test_input, class_labels = wine(training_size=training_size,
+                                                           test_size=test_size,
+                                                           n=feature_dim)
+
+        # prepare features and labels
+        training_features, train_labels, _ = features_and_labels(training_input, class_labels)
+        test_features, test_labels, _ = features_and_labels(test_input, class_labels)
 
         feature_map = RawFeatureVector(feature_dimension=feature_dim)
-        vqc = VQC(COBYLA(maxiter=100),
-                  feature_map,
-                  TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3),
-                  training_input,
-                  test_input)
-        result = vqc.run(QuantumInstance(BasicAer.get_backend('statevector_simulator'),
-                                         shots=1024, seed_simulator=seed, seed_transpiler=seed))
+        var_form = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
+        vqc = VQC(feature_map=feature_map,
+                  var_form=var_form,
+                  optimizer=COBYLA(maxiter=100),
+                  quantum_instance=QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                                                   shots=1024,
+                                                   seed_simulator=seed,
+                                                   seed_transpiler=seed)
+                  )
+        vqc.fit(training_features, train_labels)
 
-        print('Testing accuracy: {:0.2f}'.format(result['testing_accuracy']))
+        score = vqc.score(test_features, test_labels)
+        print('Testing accuracy: {:0.2f}'.format(score))
 
         # ----------------------------------------------------------------------
 
-        self.assertGreater(result['testing_accuracy'], 0.8)
+        self.assertGreater(score, 0.8)
 
 
 if __name__ == '__main__':

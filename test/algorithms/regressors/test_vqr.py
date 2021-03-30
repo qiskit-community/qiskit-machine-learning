@@ -10,25 +10,26 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test Neural Network Classifier """
+""" Test Neural Network Regressor """
 
 import unittest
+
+from qiskit.circuit import Parameter
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, data
-from qiskit import Aer
+from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
 
-from qiskit_machine_learning.algorithms import VQC
+from qiskit_machine_learning.algorithms import VQR
 
 
 @ddt
-class TestVQC(QiskitMachineLearningTestCase):
-    """VQC Tests."""
+class TestVQR(QiskitMachineLearningTestCase):
+    """VQR Tests."""
 
     def setUp(self):
         super().setUp()
@@ -43,18 +44,31 @@ class TestVQC(QiskitMachineLearningTestCase):
                                                      seed_transpiler=self.random_seed)
         np.random.seed(self.random_seed)
 
+        num_samples = 20
+        eps = 0.2
+
+        lb, ub = -np.pi, np.pi
+        self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
+        self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
+
     @data(
-        # optimizer, quantum instance
-        ('cobyla', 'statevector'),
-        ('cobyla', 'qasm'),
+        # optimizer, loss, quantum instance
+        ('cobyla', 'statevector', True),
+        ('cobyla', 'qasm', True),
 
-        ('bfgs', 'statevector'),
-        ('bfgs', 'qasm'),
+        ('bfgs', 'statevector', True),
+        ('bfgs', 'qasm', True),
+
+        ('cobyla', 'statevector', False),
+        ('cobyla', 'qasm', False),
+
+        ('bfgs', 'statevector', False),
+        ('bfgs', 'qasm', False),
     )
-    def test_vqc(self, config):
-        """ Test VQC."""
+    def test_vqr(self, config):
+        """ Test VQR."""
 
-        opt, q_i = config
+        opt, q_i, has_var_form = config
 
         if q_i == 'statevector':
             quantum_instance = self.sv_quantum_instance
@@ -66,30 +80,30 @@ class TestVQC(QiskitMachineLearningTestCase):
         else:
             optimizer = COBYLA(maxiter=25)
 
-        num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        var_form = RealAmplitudes(num_inputs, reps=1)
+        num_qubits = 1
+        # construct simple feature map
+        param_x = Parameter('x')
+        feature_map = QuantumCircuit(num_qubits, name='fm')
+        feature_map.ry(param_x, 0)
 
-        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = VQC(feature_map=feature_map,
-                         var_form=var_form,
-                         optimizer=optimizer,
-                         quantum_instance=quantum_instance)
+        if has_var_form:
+            param_y = Parameter('y')
+            var_form = QuantumCircuit(num_qubits, name='vf')
+            var_form.ry(param_y, 0)
+        else:
+            var_form = None
 
-        # construct data
-        num_samples = 5
-        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-        y = 1.0 * (np.sum(X, axis=1) <= 1)
-        while len(np.unique(y)) == 1:
-            X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-            y = 1.0 * (np.sum(X, axis=1) <= 1)
-        y = np.array([y, 1 - y]).transpose()  # VQC requires one-hot encoded input
+        # construct regressor
+        regressor = VQR(feature_map=feature_map,
+                        var_form=var_form,
+                        optimizer=optimizer,
+                        quantum_instance=quantum_instance)
 
         # fit to data
-        classifier.fit(X, y)
+        regressor.fit(self.X, self.y)
 
         # score
-        score = classifier.score(X, y)
+        score = regressor.score(self.X, self.y)
         self.assertGreater(score, 0.5)
 
 
