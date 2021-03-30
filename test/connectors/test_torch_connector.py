@@ -24,7 +24,6 @@ from ddt import ddt, data
 
 try:
     from torch import Tensor
-    from torch.nn import CrossEntropyLoss
 except ImportError:
     class Tensor:  # type: ignore
         """ Empty Tensor class
@@ -32,17 +31,10 @@ except ImportError:
         """
         pass
 
-    class CrossEntropyLoss:  # type: ignore
-        """ Empty Tensor class
-            Replacement if torch.nn.CrossEntropyLoss is not present.
-        """
-        pass
-
 from qiskit import QuantumCircuit
 from qiskit.providers.aer import QasmSimulator, StatevectorSimulator
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
 
@@ -85,7 +77,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # create benchmark model
         in_dim = model.neural_network.num_inputs
-        out_dim = 0
         if len(model.neural_network.output_shape) != 1:
             raise QiskitMachineLearningError('Function only works for one dimensional output')
         out_dim = model.neural_network.output_shape[0]
@@ -460,15 +451,15 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             model = TorchConnector(qnn)
 
             test_data = [
-                Tensor([2, 2])
-                # TODO: test batching
+                Tensor([2, 2]),
+                Tensor([[1, 1], [2, 2]])
             ]
             for i, x in enumerate(test_data):
                 if i == 0:
                     self.assertEqual(model(x).shape, qnn.output_shape)
                 else:
-                    # TODO: test batching
-                    pass
+                    shape = model(x).shape
+                    self.assertEqual(shape, (len(x), *qnn.output_shape))
         except MissingOptionalLibraryError as ex:
             self.skipTest(str(ex))
 
@@ -536,49 +527,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         batch_res_model.backward()
         self.assertAlmostEqual(
             np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]), 0.0, places=4)
-
-    def test_classification_with_pytorch(self):
-        """Test classification with PyTorch."""
-
-        num_inputs = 2
-        num_samples = 20
-        X = 2*np.random.rand(num_samples, num_inputs) - 1  # pylint: disable=invalid-name
-        y01 = 1*(np.sum(X, axis=1) >= 0)  # in { 0,  1}
-
-        X_ = Tensor(X)  # pylint: disable=invalid-name
-        y01_ = Tensor(y01).reshape(len(y01)).long()
-
-        feature_map = ZZFeatureMap(num_inputs)
-        var_form = RealAmplitudes(num_inputs, entanglement='linear', reps=1)
-
-        qc = QuantumCircuit(num_inputs)
-        qc.append(feature_map, range(num_inputs))
-        qc.append(var_form, range(num_inputs))
-
-        def parity(x):
-            return '{:b}'.format(x).count('1') % 2
-        output_shape = 2  # parity = 0, 1
-
-        qnn2 = CircuitQNN(qc, input_params=feature_map.parameters,
-                          weight_params=var_form.parameters,
-                          interpret=parity, output_shape=output_shape,
-                          quantum_instance=self.sv_quantum_instance)
-
-        # set up PyTorch module
-        initial_weights = 0.1*(2*np.random.rand(qnn2.num_weights) - 1)
-        model2 = TorchConnector(qnn2, initial_weights)
-        model2.train()
-
-        f_loss = CrossEntropyLoss()
-
-        output = model2(X_)
-        loss = f_loss(output, y01_)
-        loss.backward()
-
-        for x in model2.parameters():
-            print(x)
-
-        print('done')
 
 
 if __name__ == '__main__':
