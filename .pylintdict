@@ -9,6 +9,7 @@ backend
 bfgs
 bool
 contravariance
+crossentropyloss
 ctx
 currentmodule
 cvs

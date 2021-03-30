@@ -38,7 +38,8 @@ except ImportError:
         """
         pass
 
-from qiskit import QuantumCircuit, Aer
+from qiskit import QuantumCircuit
+from qiskit.providers.aer import QasmSimulator, StatevectorSimulator
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
@@ -58,8 +59,8 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'))
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
+        self.sv_quantum_instance = QuantumInstance(StatevectorSimulator())
+        self.qasm_quantum_instance = QuantumInstance(QasmSimulator(), shots=100)
 
     def validate_output_shape(self, model: TorchConnector, test_data: List[Tensor]) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
