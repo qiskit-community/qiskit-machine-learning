@@ -95,14 +95,34 @@ class TwoLayerQNN(OpflowQNN):
         weight_params = list(self._var_form.parameters)
 
         # construct circuit
-        self._qc = QuantumCircuit(num_qubits_)
-        self._qc.append(self._feature_map, range(num_qubits_))
-        self._qc.append(self._var_form, range(num_qubits_))
+        self._circuit = QuantumCircuit(num_qubits_)
+        self._circuit.append(self._feature_map, range(num_qubits_))
+        self._circuit.append(self._var_form, range(num_qubits_))
 
         # construct observable
         self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits_, 1)])
 
         # combine all to operator
-        operator = ~StateFn(self.observable) @ StateFn(self._qc)
+        operator = ~StateFn(self.observable) @ StateFn(self._circuit)
 
         super().__init__(operator, input_params, weight_params, quantum_instance=quantum_instance)
+
+    @property
+    def feature_map(self) -> QuantumCircuit:
+        """ Returns the used feature map."""
+        return self._feature_map
+
+    @property
+    def var_form(self) -> QuantumCircuit:
+        """ Returns the used variational form."""
+        return self._var_form
+
+    @property
+    def circuit(self) -> QuantumCircuit:
+        """ Returns the underlying quantum circuit."""
+        return self._circuit
+
+    @property
+    def num_qubits(self) -> int:
+        """ Returns the number of qubits used by variational form and feature map."""
+        return self._circuit.num_qubits

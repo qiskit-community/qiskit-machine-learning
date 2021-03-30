@@ -68,14 +68,14 @@ class VQR(NeuralNetworkRegressor):
     @property
     def feature_map(self) -> QuantumCircuit:
         """ Returns the used feature map."""
-        return cast(self.neural_network, TwoLayerQNN).feature_map
+        return cast(TwoLayerQNN, super().neural_network).feature_map
 
     @property
     def var_form(self) -> QuantumCircuit:
         """ Returns the used variational form."""
-        return cast(self.neural_network, TwoLayerQNN).var_form
+        return cast(TwoLayerQNN, super().neural_network).var_form
 
     @property
     def num_qubits(self) -> int:
         """ Returns the number of qubits used by variational form and feature map."""
-        return cast(self.neural_network, TwoLayerQNN).num_qubits
+        return cast(TwoLayerQNN, super().neural_network).num_qubits
