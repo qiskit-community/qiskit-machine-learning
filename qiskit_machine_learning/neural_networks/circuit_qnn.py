@@ -254,14 +254,8 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # initialize empty gradients
         if self._sparse:
-            if self.num_inputs > 0:
-                input_grad = DOK((rows, *self.output_shape, self.num_inputs))
-            else:
-                input_grad = np.zeros((rows, *self.output_shape, self.num_inputs))
-            if self.num_weights > 0:
-                weights_grad = DOK((rows, *self.output_shape, self.num_weights))
-            else:
-                weights_grad = np.zeros((rows, *self.output_shape, self.num_weights))
+            input_grad = DOK((rows, *self.output_shape, self.num_inputs))
+            weights_grad = DOK((rows, *self.output_shape, self.num_weights))
         else:
             input_grad = np.zeros((rows, *self.output_shape, self.num_inputs))
             weights_grad = np.zeros((rows, *self.output_shape, self.num_weights))
