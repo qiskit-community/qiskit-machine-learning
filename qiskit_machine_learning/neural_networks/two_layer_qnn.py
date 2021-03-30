@@ -15,7 +15,6 @@ to map the input data to a quantum states and a second one representing a variat
 be trained to solve a particular tasks."""
 from typing import Optional, Union
 
-import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.opflow import PauliSumOp, StateFn, OperatorBase
