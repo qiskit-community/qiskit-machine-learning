@@ -20,9 +20,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 from qiskit.exceptions import MissingOptionalLibraryError
+from .dataset_helper import features_and_labels_transform
 
-
-def breast_cancer(training_size, test_size, n, plot_data=False):
+def breast_cancer(training_size, test_size, n, plot_data=False, one_hot=True):
     """ returns breast cancer dataset """
     class_labels = [r'A', r'B']
     data, target = datasets.load_breast_cancer(return_X_y=True)
@@ -50,6 +50,8 @@ def breast_cancer(training_size, test_size, n, plot_data=False):
                       for k, key in enumerate(class_labels)}
     test_input = {key: (sample_test[label_test == k, :])[:test_size]
                   for k, key in enumerate(class_labels)}
+    training_feature_array, training_label_array = features_and_labels_transform(training_input, class_labels, one_hot)
+    test_feature_array, test_label_array = features_and_labels_transform(test_input, class_labels, one_hot)
 
     if plot_data:
         try:
@@ -66,4 +68,4 @@ def breast_cancer(training_size, test_size, n, plot_data=False):
         plt.title("PCA dim. reduced Breast cancer dataset")
         plt.show()
 
-    return sample_train, training_input, test_input, class_labels
+    return training_feature_array, training_label_array, test_feature_array, test_label_array
