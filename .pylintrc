@@ -299,12 +299,12 @@ ignore-mixin-members=yes
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis. It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=matplotlib.cm,numpy.random,retworkx
+ignored-modules=matplotlib.cm,numpy.random,retworkx,torch
 
 # List of class names for which member attributes should not be checked (useful
 # for classes with dynamically set attributes). This supports the use of
 # qualified names.
-ignored-classes=optparse.Values,thread._local,_thread._local,QuantumCircuit
+ignored-classes=optparse.Values,thread._local,_thread._local,QuantumCircuit,torch
 
 # List of members which are set dynamically and missed by pylint inference
 # system, and so shouldn't trigger E1101 when accessed. Python regular

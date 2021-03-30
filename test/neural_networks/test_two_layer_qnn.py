@@ -18,7 +18,7 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, data
-from qiskit import Aer
+from qiskit.providers.aer import StatevectorSimulator
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
 
@@ -33,8 +33,7 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify "run configuration"
-        backend = Aer.get_backend('statevector_simulator')
-        quantum_instance = QuantumInstance(backend)
+        quantum_instance = QuantumInstance(StatevectorSimulator())
 
         # define QNN
         num_qubits = 2

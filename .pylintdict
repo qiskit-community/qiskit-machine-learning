@@ -3,11 +3,14 @@ api
 argmax
 args
 asmatrix
+autograd
 autosummary
 backend
 bfgs
 bool
 contravariance
+crossentropyloss
+ctx
 currentmodule
 cvs
 data's

@@ -66,6 +66,7 @@ class OpflowQNN(NeuralNetwork):
             self._quantum_instance = None
             self._circuit_sampler = None
 
+        self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
         self._gradient_operator: OperatorBase = None
         try:
@@ -99,6 +100,11 @@ class OpflowQNN(NeuralNetwork):
             return out.shape
         else:
             return (1,)
+
+    @property
+    def operator(self):
+        """ Returns the underlying operator of this QNN."""
+        return self._operator
 
     def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                  ) -> Union[np.ndarray, SparseArray]:
