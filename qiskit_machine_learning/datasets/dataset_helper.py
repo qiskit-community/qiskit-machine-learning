@@ -276,7 +276,7 @@ def features_and_labels(dataset: Dict[str, np.ndarray], class_labels: List[str]
 def features_and_labels_transform(dataset: Dict[str, np.ndarray],
                                                class_labels: List[str],
                                                one_hot = True
-                                               ) -> tuple[np.ndarray, np.ndarray]:
+                                               ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Converts a dataset into arrays of features and labels.
 
