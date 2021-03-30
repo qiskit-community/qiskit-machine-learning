@@ -271,3 +271,38 @@ def features_and_labels(dataset: Dict[str, np.ndarray], class_labels: List[str]
         raw_labels += [category] * num_samples
     labels = np.array(encoder.transform(np.array(raw_labels).reshape(-1, 1)).todense())
     return features, labels, encoder
+
+
+def features_and_labels_transform(dataset: Dict[str, np.ndarray],
+                                               class_labels: List[str],
+                                               one_hot = True
+                                               ) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Converts a dataset into arrays of features and labels.
+
+    Args:
+        dataset: A dictionary in the format of {'A': numpy.ndarray, 'B': numpy.ndarray, ...}
+        class_labels: A list of classes in the dataset
+        one_hot (Bool): if True - return one-hot encoded label
+
+    Returns:
+        A tuple of features as np.ndarray, label as np.ndarray
+    """
+    features = np.concatenate(list(dataset.values()))
+
+    if one_hot:
+        encoder = preprocessing.OneHotEncoder()
+        encoder.fit(np.array(class_labels).reshape(-1, 1))
+        raw_labels = []
+        for category in dataset.keys():
+            num_samples = dataset[category].shape[0]
+            raw_labels += [category] * num_samples
+        labels = np.array(encoder.transform(np.array(raw_labels).reshape(-1, 1)).todense())
+    else:
+        raw_labels = []
+        for category in dataset.keys():
+            num_samples = dataset[category].shape[0]
+            raw_labels += [category] * num_samples
+        labels = np.array(encoder.transform(np.array(raw_labels).reshape(-1, 1)).todense())
+
+    return features, labels
