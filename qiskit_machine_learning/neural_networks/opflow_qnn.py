@@ -73,14 +73,8 @@ class OpflowQNN(NeuralNetwork):
             gradient = gradient or Gradient()
             self._gradient_operator = gradient.convert(operator,
                                                        self._input_params + self._weight_params)
-<<<<<<< HEAD
-        except Exception:
-            # TODO: use logger instead of print
-            print('Warning: cannot compute gradient operator')
-=======
         except (ValueError, TypeError, OpflowError, QiskitError):
             logger.warning('Cannot compute gradient operator! Continuing without gradients!')
->>>>>>> pr/13
 
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self._input_params), len(self._weight_params),

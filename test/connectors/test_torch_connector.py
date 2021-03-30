@@ -34,12 +34,11 @@ except ImportError:
 
     class CrossEntropyLoss:  # type: ignore
         """ Empty Tensor class
-            Replacement if torch.Tensor is not present.
+            Replacement if torch.nn.CrossEntropyLoss is not present.
         """
         pass
 
-from qiskit import QuantumCircuit
-from qiskit.providers.aer import QasmSimulator, StatevectorSimulator
+from qiskit import QuantumCircuit, Aer
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
@@ -59,8 +58,8 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(StatevectorSimulator())
-        self.qasm_quantum_instance = QuantumInstance(QasmSimulator(shots=100))
+        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'))
+        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100)
 
     def validate_output_shape(self, model: TorchConnector, test_data: List[Tensor]) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
@@ -538,13 +537,14 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]), 0.0, places=4)
 
     def test_classification_with_pytorch(self):
+        """Test classification with PyTorch."""
 
         num_inputs = 2
         num_samples = 20
-        X = 2*np.random.rand(num_samples, num_inputs) - 1
+        X = 2*np.random.rand(num_samples, num_inputs) - 1  # pylint: disable=invalid-name
         y01 = 1*(np.sum(X, axis=1) >= 0)  # in { 0,  1}
 
-        X_ = Tensor(X)
+        X_ = Tensor(X)  # pylint: disable=invalid-name
         y01_ = Tensor(y01).reshape(len(y01)).long()
 
         feature_map = ZZFeatureMap(num_inputs)

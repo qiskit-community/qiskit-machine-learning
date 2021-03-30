@@ -51,9 +51,6 @@ class VQC(NeuralNetworkClassifier):
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
                 var_form to be given.
         """
-<<<<<<< HEAD
-        # TODO: add getters/setters
-=======
 
         # check num_qubits, feature_map, and var_form
         if num_qubits is None and feature_map is None and var_form is None:
@@ -91,7 +88,6 @@ class VQC(NeuralNetworkClassifier):
                 num_qubits_ = var_form.num_qubits
                 var_form_ = var_form
                 feature_map_ = ZZFeatureMap(num_qubits_)
->>>>>>> pr/13
 
         # construct circuit
         self._feature_map = feature_map_

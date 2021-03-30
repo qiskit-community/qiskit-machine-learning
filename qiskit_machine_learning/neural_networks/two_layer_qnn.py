@@ -47,16 +47,6 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
-<<<<<<< HEAD
-            exp_val: The Expected Value converter to be used for the operator.
-            quantum_instance: The quantum instance to evaluate the networks.
-        """
-
-        # set number of qubits, feature map, and variational form
-        self.num_qubits = num_qubits
-        self._feature_map = feature_map if feature_map else ZZFeatureMap(num_qubits)
-        self._var_form = var_form if var_form else RealAmplitudes(num_qubits)
-=======
 
         Raises:
             QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, var_form.
@@ -104,28 +94,18 @@ class TwoLayerQNN(OpflowQNN):
 
         self._var_form = var_form_
         weight_params = list(self._var_form.parameters)
->>>>>>> pr/13
 
         # construct circuit
         self._circuit = QuantumCircuit(num_qubits_)
         self._circuit.append(self._feature_map, range(num_qubits_))
         self._circuit.append(self._var_form, range(num_qubits_))
 
-<<<<<<< HEAD
-        # set observable
-        self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits, 1)])
-=======
         # construct observable
         self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits_, 1)])
->>>>>>> pr/13
 
         # combine all to operator
         operator = ~StateFn(self.observable) @ StateFn(self._circuit)
 
-<<<<<<< HEAD
-        super().__init__(operator, self._feature_map.parameters, self._var_form.parameters,
-                         exp_val=exp_val, quantum_instance=quantum_instance)
-=======
         super().__init__(operator, input_params, weight_params, quantum_instance=quantum_instance)
 
     @property
@@ -147,4 +127,3 @@ class TwoLayerQNN(OpflowQNN):
     def num_qubits(self) -> int:
         """ Returns the number of qubits used by variational form and feature map."""
         return self._circuit.num_qubits
->>>>>>> pr/13

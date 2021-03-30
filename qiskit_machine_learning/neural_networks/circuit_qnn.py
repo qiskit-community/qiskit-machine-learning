@@ -130,32 +130,8 @@ class CircuitQNN(SamplingNeuralNetwork):
                 else:
                     output_shape_ = output_shape
             else:
-<<<<<<< HEAD
-                output_shape_ = (2 ** circuit.num_qubits,)
-
-        self._gradient = gradient
-
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
-            quantum_instance = QuantumInstance(quantum_instance)
-        self._quantum_instance = quantum_instance
-        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
-
-        # construct probability gradient opflow object
-        self._grad_circuit: QuantumCircuit = None
-        try:
-            grad_circuit = circuit.copy()
-            grad_circuit.remove_final_measurements()  # ideally this would not be necessary
-            params = list(input_params) + list(weight_params)
-            self._grad_circuit = Gradient().convert(CircuitStateFn(grad_circuit), params)
-        except Exception:
-            # TODO: use logger instead of print
-            print('Warning: cannot compute gradient')
-        super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
-                         output_shape_)
-=======
                 output_shape_ = (2 ** self.circuit.num_qubits,)
         return output_shape_
->>>>>>> pr/13
 
     @property
     def circuit(self) -> QuantumCircuit:
