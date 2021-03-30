@@ -29,22 +29,25 @@ class VQC(NeuralNetworkClassifier):
     """Quantum neural network classifier."""
 
     def __init__(self,
-                 feature_map: QuantumCircuit,
-                 var_form: QuantumCircuit,
+                 feature_map: QuantumCircuit = None,
+                 var_form: QuantumCircuit = None,
                  loss: Union[str, Loss] = 'cross_entropy',
                  optimizer: Optimizer = None,
                  warm_start: bool = False,
                  quantum_instance: QuantumInstance = None) -> None:
         """
         Args:
-            feature_map: The QuantumCircuit instance to use.
-            var_form: The variational form instance.
+            num_qubits: The number of qubits for the underlying CircuitQNN. If None, derive from
+                feature_map or var_form. If neither of those is given, raise exception.
+            feature_map: The feature map for underlying CircuitQNN. If None, use ZZFeatureMap.
+            var_form: The variational for the underlying CircuitQNN. If None, use RealAmplitudes.
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
 
         Raises:
-            QiskitMachineLearningError: unknown loss, invalid neural network
+            QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
+                var_form to be given.
         """
         # construct circuit
         if feature_map.num_qubits != var_form.num_qubits:
