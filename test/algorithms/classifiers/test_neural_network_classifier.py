@@ -75,8 +75,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             optimizer = COBYLA(maxiter=25)
 
         num_inputs = 2
-        var_form = RealAmplitudes(num_inputs, reps=1)
-        qnn = TwoLayerQNN(num_inputs, var_form=var_form, quantum_instance=quantum_instance)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
+        qnn = TwoLayerQNN(num_inputs, ansatz=ansatz, quantum_instance=quantum_instance)
 
         classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
 
@@ -123,12 +123,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
-        var_form = RealAmplitudes(num_inputs, reps=1)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
 
         # construct circuit
         qc = QuantumCircuit(num_inputs)
         qc.append(feature_map, range(2))
-        qc.append(var_form, range(2))
+        qc.append(ansatz, range(2))
 
         # construct qnn
         def parity(x):
@@ -136,7 +136,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         output_shape = 2
         qnn = CircuitQNN(qc, input_params=feature_map.parameters,
-                         weight_params=var_form.parameters,
+                         weight_params=ansatz.parameters,
                          sparse=False,
                          interpret=parity,
                          output_shape=output_shape,
@@ -184,12 +184,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
-        var_form = RealAmplitudes(num_inputs, reps=1)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
 
         # construct circuit
         qc = QuantumCircuit(num_inputs)
         qc.append(feature_map, range(2))
-        qc.append(var_form, range(2))
+        qc.append(ansatz, range(2))
 
         # construct qnn
         def parity(x):
@@ -197,7 +197,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         output_shape = 2
         qnn = CircuitQNN(qc, input_params=feature_map.parameters,
-                         weight_params=var_form.parameters,
+                         weight_params=ansatz.parameters,
                          sparse=False,
                          interpret=parity,
                          output_shape=output_shape,

@@ -38,12 +38,12 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         # define QNN
         num_qubits = 2
         feature_map = ZZFeatureMap(num_qubits)
-        var_form = RealAmplitudes(num_qubits, reps=1)
+        ansatz = RealAmplitudes(num_qubits, reps=1)
         self.qnn = TwoLayerQNN(num_qubits, feature_map=feature_map,
-                               var_form=var_form, quantum_instance=quantum_instance)
+                               ansatz=ansatz, quantum_instance=quantum_instance)
 
         self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map,
-                                     var_form=var_form)
+                                     ansatz=ansatz)
 
     @data(
         "qi",

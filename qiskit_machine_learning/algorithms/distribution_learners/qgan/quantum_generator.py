@@ -78,8 +78,8 @@ class QuantumGenerator(GenerativeNetwork):
         if generator_circuit is None:
             circuit = QuantumCircuit(sum(num_qubits))
             circuit.h(circuit.qubits)
-            var_form = TwoLocal(sum(num_qubits), 'ry', 'cz', reps=1, entanglement='circular')
-            circuit.compose(var_form, inplace=True)
+            ansatz = TwoLocal(sum(num_qubits), 'ry', 'cz', reps=1, entanglement='circular')
+            circuit.compose(ansatz, inplace=True)
 
             # Set generator circuit
             self.generator_circuit = circuit

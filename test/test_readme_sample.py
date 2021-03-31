@@ -59,9 +59,9 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
         test_features, test_labels, _ = features_and_labels(test_input, class_labels)
 
         feature_map = RawFeatureVector(feature_dimension=feature_dim)
-        var_form = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
+        ansatz = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
         vqc = VQC(feature_map=feature_map,
-                  var_form=var_form,
+                  ansatz=ansatz,
                   optimizer=COBYLA(maxiter=100),
                   quantum_instance=QuantumInstance(BasicAer.get_backend('statevector_simulator'),
                                                    shots=1024,
