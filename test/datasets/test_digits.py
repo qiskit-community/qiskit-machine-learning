@@ -25,11 +25,6 @@ class TestDigits(QiskitMachineLearningTestCase):
     def test_digits(self):
         """Digits test."""
 
-        input_file = self.get_resource_path('sample_train.digits',
-                                            'datasets')
-        with open(input_file) as file:
-            sample_train_ref = json.load(file)
-
         input_file = self.get_resource_path('training_input.digits',
                                             'datasets')
         with open(input_file) as file:
