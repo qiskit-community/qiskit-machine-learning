@@ -269,8 +269,10 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False, one_hot=True)
             ax_1.scatter(x_2, y_2, z_2, c='#683FC8')
             plt.show()
 
-    training_feature_array, training_label_array = features_and_labels_transform(training_input, class_labels, one_hot)
-    test_feature_array, test_label_array = features_and_labels_transform(test_input, class_labels, one_hot)
+    training_feature_array, training_label_array = features_and_labels_transform(
+        training_input, class_labels, one_hot)
+    test_feature_array, test_label_array = features_and_labels_transform(
+        test_input, class_labels, one_hot)
 
     return training_feature_array, training_label_array, test_feature_array, test_label_array
 

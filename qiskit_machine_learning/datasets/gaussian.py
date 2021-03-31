@@ -19,6 +19,7 @@ from qiskit.utils import algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
 from .dataset_helper import features_and_labels_transform
 
+
 def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
     """ returns gaussian dataset """
     sigma = 1
@@ -54,8 +55,10 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
                 training_size + test_size)] for k, key in enumerate(class_labels)}
 
-        training_feature_array, training_label_array = features_and_labels_transform(training_input, class_labels, one_hot)
-        test_feature_array, test_label_array = features_and_labels_transform(test_input, class_labels, one_hot)
+        training_feature_array, training_label_array = features_and_labels_transform(
+            training_input, class_labels, one_hot)
+        test_feature_array, test_label_array = features_and_labels_transform(
+            test_input, class_labels, one_hot)
 
         if plot_data:
             try:
@@ -130,8 +133,10 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
                 training_size + test_size)] for k, key in enumerate(class_labels)}
 
-        training_feature_array, training_label_array = features_and_labels_transform(training_input, class_labels, one_hot)
-        test_feature_array, test_label_array = features_and_labels_transform(test_input, class_labels, one_hot)
+        training_feature_array, training_label_array = features_and_labels_transform(
+            training_input, class_labels, one_hot)
+        test_feature_array, test_label_array = features_and_labels_transform(
+            test_input, class_labels, one_hot)
 
         if plot_data:
             try:

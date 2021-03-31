@@ -52,8 +52,10 @@ def wine(training_size, test_size, n, plot_data=False, one_hot=True):
     test_input = {key: (sample_test[label_test == k, :])[:test_size]
                   for k, key in enumerate(class_labels)}
 
-    training_feature_array, training_label_array = features_and_labels_transform(training_input, class_labels, one_hot)
-    test_feature_array, test_label_array = features_and_labels_transform(test_input, class_labels, one_hot)
+    training_feature_array, training_label_array = features_and_labels_transform(
+        training_input, class_labels, one_hot)
+    test_feature_array, test_label_array = features_and_labels_transform(
+        test_input, class_labels, one_hot)
 
     if plot_data:
         try:
