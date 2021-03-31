@@ -295,14 +295,20 @@ def features_and_labels_transform(dataset: Dict[str, np.ndarray],
         num_samples = dataset[category].shape[0]
         raw_labels += [category] * num_samples
 
+    if not raw_labels:
+        # no labels, empty dataset
+        labels = np.zeros((0, len(class_labels)))
+        return features, labels
+
     if one_hot:
         encoder = preprocessing.OneHotEncoder()
+        encoder.fit(np.array(class_labels).reshape(-1, 1))
+        labels = encoder.transform(np.array(raw_labels).reshape(-1, 1))
+        if not isinstance(labels, np.ndarray):
+            labels = np.array(labels.todense())
     else:
         encoder = preprocessing.LabelEncoder()
-
-    encoder.fit(np.array(class_labels).reshape(-1, 1))
-    labels = encoder.transform(np.array(raw_labels).reshape(-1, 1))
-    if not isinstance(labels, np.ndarray):
-        labels = np.array(labels.todense())
+        encoder.fit(np.array(class_labels))
+        labels = encoder.transform(np.array(raw_labels))
 
     return features, labels
