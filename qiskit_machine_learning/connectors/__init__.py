@@ -10,14 +10,26 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Regressors Package"""
+"""
+Connectors (:mod:`qiskit_machine_learning.connectors`)
+===============================================================
 
-from .qsvr import QSVR
-from .neural_network_regressor import NeuralNetworkRegressor
-from .vqr import VQR
+Connectors from Qiskit Machine Learning to other frameworks.
 
-__all__ = [
-    'QSVR',
-    'VQR',
-    'NeuralNetworkRegressor'
-]
+.. currentmodule:: qiskit_machine_learning.connectors
+
+Connectors
+======================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   TorchConnector
+
+"""
+
+from .torch_connector import TorchConnector
+
+
+__all__ = ["TorchConnector"]

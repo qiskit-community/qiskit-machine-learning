@@ -118,7 +118,9 @@ class NeuralNetwork(ABC):
 
     def _validate_backward_output(self,
                                   input_grad: np.ndarray, weight_grad: np.ndarray,
-                                  original_shape: Tuple[int, ...]) -> Tuple[np.ndarray, np.ndarray]:
+                                  original_shape: Tuple[int, ...]
+                                  ) -> Tuple[Union[np.ndarray, SparseArray],
+                                             Union[np.ndarray, SparseArray]]:
         if input_grad is not None and original_shape and len(original_shape) >= 2:
             input_grad = input_grad.reshape(
                 (*original_shape[:-1], *self._output_shape, self._num_inputs))

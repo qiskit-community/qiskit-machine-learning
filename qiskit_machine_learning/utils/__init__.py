@@ -9,15 +9,3 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-""" Regressors Package"""
-
-from .qsvr import QSVR
-from .neural_network_regressor import NeuralNetworkRegressor
-from .vqr import VQR
-
-__all__ = [
-    'QSVR',
-    'VQR',
-    'NeuralNetworkRegressor'
-]

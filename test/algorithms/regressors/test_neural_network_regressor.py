@@ -10,26 +10,23 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test Neural Network Classifier """
+""" Test Neural Network Regressor """
+from ddt import ddt, data
+from qiskit import QuantumCircuit, Aer
+from qiskit.algorithms.optimizers import L_BFGS_B, COBYLA
+from qiskit.circuit import Parameter
+from qiskit.utils import QuantumInstance
 
-import unittest
-
+from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
+from qiskit_machine_learning.neural_networks import TwoLayerQNN
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt, data
-from qiskit import Aer
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance
-
-from qiskit_machine_learning.algorithms import VQC
 
 
 @ddt
-class TestVQC(QiskitMachineLearningTestCase):
-    """VQC Tests."""
-
+class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
+    """Test Neural Network Regressor."""
     def setUp(self):
         super().setUp()
 
@@ -43,18 +40,34 @@ class TestVQC(QiskitMachineLearningTestCase):
                                                      seed_transpiler=self.random_seed)
         np.random.seed(self.random_seed)
 
+        num_samples = 20
+        eps = 0.2
+
+        lb, ub = -np.pi, np.pi
+        self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
+        self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
+
     @data(
-        # optimizer, quantum instance
+        # optimizer, loss, quantum instance
         ('cobyla', 'statevector'),
         ('cobyla', 'qasm'),
 
         ('bfgs', 'statevector'),
         ('bfgs', 'qasm'),
     )
-    def test_vqc(self, config):
-        """ Test VQC."""
-
+    def test_classifier_with_opflow_qnn(self, config):
         opt, q_i = config
+
+        num_qubits = 1
+        # construct simple feature map
+        param_x = Parameter('x')
+        feature_map = QuantumCircuit(num_qubits, name='fm')
+        feature_map.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter('y')
+        var_form = QuantumCircuit(num_qubits, name='vf')
+        var_form.ry(param_y, 0)
 
         if q_i == 'statevector':
             quantum_instance = self.sv_quantum_instance
@@ -66,32 +79,18 @@ class TestVQC(QiskitMachineLearningTestCase):
         else:
             optimizer = COBYLA(maxiter=25)
 
-        num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        var_form = RealAmplitudes(num_inputs, reps=1)
+        # construct QNN
+        regression_opflow_qnn = TwoLayerQNN(num_qubits, feature_map, var_form,
+                                            quantum_instance=quantum_instance)
 
-        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = VQC(feature_map=feature_map,
-                         var_form=var_form,
-                         optimizer=optimizer,
-                         quantum_instance=quantum_instance)
-
-        # construct data
-        num_samples = 5
-        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-        y = 1.0 * (np.sum(X, axis=1) <= 1)
-        while len(np.unique(y)) == 1:
-            X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
-            y = 1.0 * (np.sum(X, axis=1) <= 1)
-        y = np.array([y, 1 - y]).transpose()  # VQC requires one-hot encoded input
+        # construct the regressor from the neural network
+        regressor = NeuralNetworkRegressor(neural_network=regression_opflow_qnn,
+                                           loss='l2',
+                                           optimizer=optimizer)
 
         # fit to data
-        classifier.fit(X, y)
+        regressor.fit(self.X, self.y)
 
-        # score
-        score = classifier.score(X, y)
+        # score the result
+        score = regressor.score(self.X, self.y)
         self.assertGreater(score, 0.5)
-
-
-if __name__ == '__main__':
-    unittest.main()

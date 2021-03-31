@@ -12,19 +12,22 @@
 
 """An Opflow Quantum Neural Network that allows to use a parametrized opflow object as a
 neural network."""
-
+import logging
 from typing import List, Optional, Union, Tuple
 
 import numpy as np
 from qiskit.circuit import Parameter
-from qiskit.opflow import Gradient, CircuitSampler, ListOp, OperatorBase, ExpectationBase
+from qiskit.opflow import Gradient, CircuitSampler, ListOp, OperatorBase, ExpectationBase, \
+    OpflowError
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
 from sparse import SparseArray
 
 from .neural_network import NeuralNetwork
-from .. import QiskitMachineLearningError
+from ..exceptions import QiskitMachineLearningError, QiskitError
+
+logger = logging.getLogger(__name__)
 
 
 class OpflowQNN(NeuralNetwork):
@@ -63,10 +66,16 @@ class OpflowQNN(NeuralNetwork):
             self._quantum_instance = None
             self._circuit_sampler = None
 
-        gradient = gradient or Gradient()
+        self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
-        self._gradient_operator = gradient.convert(operator,
-                                                   self._input_params + self._weight_params)
+        self._gradient_operator: OperatorBase = None
+        try:
+            gradient = gradient or Gradient()
+            self._gradient_operator = gradient.convert(operator,
+                                                       self._input_params + self._weight_params)
+        except (ValueError, TypeError, OpflowError, QiskitError):
+            logger.warning('Cannot compute gradient operator! Continuing without gradients!')
+
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self._input_params), len(self._weight_params),
                          sparse=False, output_shape=output_shape)
@@ -92,6 +101,11 @@ class OpflowQNN(NeuralNetwork):
         else:
             return (1,)
 
+    @property
+    def operator(self):
+        """ Returns the underlying operator of this QNN."""
+        return self._operator
+
     def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                  ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
@@ -113,7 +127,10 @@ class OpflowQNN(NeuralNetwork):
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                   ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
                              Optional[Union[np.ndarray, SparseArray]]]:
-        # combine parameter dictionary
+
+        # check whether gradient circuit could be constructed
+        if self._gradient_operator is None:
+            return None, None
 
         # iterate over rows, each row is an element of a batch
         batch_size = input_data.shape[0]

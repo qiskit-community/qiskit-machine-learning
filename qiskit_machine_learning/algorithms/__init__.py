@@ -55,8 +55,8 @@ Distribution Learners
 
 """
 
-from .classifiers import QSVC, VQC
-from .regressors import QSVR
+from .classifiers import QSVC, VQC, NeuralNetworkClassifier
+from .regressors import QSVR, VQR, NeuralNetworkRegressor
 from .distribution_learners import (DiscriminativeNetwork,
                                     GenerativeNetwork,
                                     NumPyDiscriminator,
@@ -66,7 +66,10 @@ from .distribution_learners import (DiscriminativeNetwork,
 __all__ = [
     'QSVC',
     'VQC',
+    'NeuralNetworkClassifier',
     'QSVR',
+    'VQR',
+    'NeuralNetworkRegressor',
     'DiscriminativeNetwork',
     'GenerativeNetwork',
     'NumPyDiscriminator',
