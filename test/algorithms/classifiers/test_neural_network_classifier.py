@@ -25,7 +25,7 @@ from qiskit.utils import QuantumInstance
 
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
-from qiskit_machine_learning.utils.loss_functions.loss import CrossEntropyLoss
+from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
 
 
 @ddt

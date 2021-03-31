@@ -27,6 +27,7 @@ Algorithms for data classification.
    :nosignatures:
 
    QSVC
+   NeuralNetworkClassifier
    VQC
 
 Regressors
@@ -38,6 +39,8 @@ Quantum Support Vector Regressor.
    :nosignatures:
 
    QSVR
+   NeuralNetworkRegressor
+   VQR
 
 Distribution Learners
 +++++++++++++++++++++
@@ -65,11 +68,11 @@ from .distribution_learners import (DiscriminativeNetwork,
 
 __all__ = [
     'QSVC',
-    'VQC',
     'NeuralNetworkClassifier',
+    'VQC',
     'QSVR',
-    'VQR',
     'NeuralNetworkRegressor',
+    'VQR',
     'DiscriminativeNetwork',
     'GenerativeNetwork',
     'NumPyDiscriminator',
