@@ -16,7 +16,7 @@ import unittest
 from test import QiskitMachineLearningTestCase
 import json
 import numpy as np
-from qiskit_machine_learning.datasets import wine, split_dataset_to_data_and_labels
+from qiskit_machine_learning.datasets import wine
 
 
 class TestWine(QiskitMachineLearningTestCase):
@@ -35,11 +35,11 @@ class TestWine(QiskitMachineLearningTestCase):
         with open(input_file) as file:
             test_input_ref = json.load(file)
 
-        training_features, training_labels, test_features, test_labels = wine(training_size=20,
-                                                                              test_size=10,
-                                                                              n=2,
-                                                                              plot_data=False,
-                                                                              one_hot=False)
+        training_features, _, test_features, test_labels = wine(training_size=20,
+                                                                test_size=10,
+                                                                n=2,
+                                                                plot_data=False,
+                                                                one_hot=False)
 
         training_features_ref = np.concatenate(list(training_input_ref.values()))
         np.testing.assert_almost_equal(training_features_ref, training_features)

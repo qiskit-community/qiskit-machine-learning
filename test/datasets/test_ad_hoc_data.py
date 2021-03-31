@@ -44,11 +44,10 @@ class TestAdHocData(QiskitMachineLearningTestCase):
             plot_data=False, one_hot=True)
 
         np.testing.assert_array_equal(test_labels.shape, (20, 2))
-        np.testing.assert_array_almost_equal(test_labels,
-                                             [[1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0],
-                                              [1, 0], [1, 0], [1, 0], [1, 0], [0, 1], [0, 1],
-                                              [0, 1], [0, 1], [0, 1], [0, 1], [0, 1], [0, 1],
-                                              [0, 1], [0, 1]])
+        np.testing.assert_array_equal(test_labels,
+                                      [[1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0],
+                                       [1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [0, 1], [0, 1],
+                                       [0, 1], [0, 1], [0, 1], [0, 1], [0, 1], [0, 1]])
 
 
 if __name__ == '__main__':
