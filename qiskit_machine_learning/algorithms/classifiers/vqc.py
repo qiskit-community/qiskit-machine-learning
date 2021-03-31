@@ -21,7 +21,7 @@ from qiskit.algorithms.optimizers import Optimizer
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import CircuitQNN
-from ...utils.loss_functions.loss import Loss
+from ...utils.loss_functions import Loss
 
 from .neural_network_classifier import NeuralNetworkClassifier
 

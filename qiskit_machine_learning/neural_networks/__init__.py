@@ -39,10 +39,11 @@ Neural Networks
    :toctree: ../stubs/
    :nosignatures:
 
-   CircuitQNN
    NeuralNetwork
-   SamplingNeuralNetwork
+   OpflowQNN
    TwoLayerQNN
+   SamplingNeuralNetwork
+   CircuitQNN
 
 """
 
@@ -53,9 +54,9 @@ from .sampling_neural_network import SamplingNeuralNetwork
 from .two_layer_qnn import TwoLayerQNN
 
 __all__ = [
-    'CircuitQNN',
     'NeuralNetwork',
     'OpflowQNN',
+    'TwoLayerQNN',
     'SamplingNeuralNetwork',
-    'TwoLayerQNN'
+    'CircuitQNN'
 ]
