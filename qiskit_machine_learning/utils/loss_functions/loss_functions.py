@@ -46,25 +46,6 @@ class Loss(ABC):
         return predict, target
 
 
-class L2Loss(Loss):
-    """ L2Loss """
-
-    def evaluate(self, predict, target):
-        predict, target = self._validate(predict, target)
-
-        if len(predict.shape) <= 1:
-            return np.linalg.norm(predict - target) ** 2
-        elif len(predict.shape) > 1:
-            return np.linalg.norm(predict - target, axis=len(predict.shape) - 1) ** 2
-        else:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
-
-    def gradient(self, predict, target):
-        predict, target = self._validate(predict, target)
-
-        return 2 * (predict - target)
-
-
 class L1Loss(Loss):
     """ L1Loss """
 
@@ -86,14 +67,18 @@ class L1Loss(Loss):
         return np.sign(predict - target)
 
 
-class L2LossProbability(Loss):
-    """ L2LossProbability """
+class L2Loss(Loss):
+    """ L2Loss """
 
-    # predict and target are both probabilities
     def evaluate(self, predict, target):
         predict, target = self._validate(predict, target)
 
-        return np.sum(np.square(predict - target))
+        if len(predict.shape) <= 1:
+            return np.linalg.norm(predict - target) ** 2
+        elif len(predict.shape) > 1:
+            return np.linalg.norm(predict - target, axis=len(predict.shape) - 1) ** 2
+        else:
+            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
     def gradient(self, predict, target):
         predict, target = self._validate(predict, target)
@@ -134,30 +119,3 @@ class CrossEntropySigmoidLoss(Loss):
 
         return target * (1. / (1. + np.exp(-predict)) - 1) + (1 - target) * (
                 1. / (1. + np.exp(-predict)))
-
-
-# pylint: disable=invalid-name
-def softmax(X):
-    """X is a array of prediction"""
-    exps = np.exp(X)
-    return exps / np.sum(exps)
-
-
-# pylint: disable=invalid-name
-def stable_softmax(X):
-    """Stable softmax"""
-    exps = np.exp(X - np.max(X))
-    return exps / np.sum(exps)
-
-
-class KLDivergence(Loss):
-    """ KLDivergence """
-
-    # predict and target are both probabilities
-    def evaluate(self, predict, target):
-        predict, target = self._validate(predict, target)
-
-        return np.sum(predict * np.log2(predict / target))
-
-    def gradient(self, predict, target):
-        raise NotImplementedError

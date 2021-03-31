@@ -20,7 +20,7 @@ from qiskit.utils import QuantumInstance
 
 from .neural_network_regressor import NeuralNetworkRegressor
 from ...neural_networks import TwoLayerQNN
-from ...utils.loss_functions.loss import Loss
+from ...utils.loss_functions import Loss
 
 
 class VQR(NeuralNetworkRegressor):

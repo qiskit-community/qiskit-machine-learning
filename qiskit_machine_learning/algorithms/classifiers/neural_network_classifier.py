@@ -18,8 +18,8 @@ from qiskit.algorithms.optimizers import Optimizer
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ...utils.loss_functions.loss import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
-                                          CrossEntropySigmoidLoss)
+from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
+                                     CrossEntropySigmoidLoss)
 
 
 class NeuralNetworkClassifier:
