@@ -22,14 +22,8 @@ from qiskit_machine_learning.datasets import iris
 class TestIris(QiskitMachineLearningTestCase):
     """Iris tests."""
 
-
     def test_iris(self):
         """Iris test."""
-
-        # input_file = self.get_resource_path('sample_train.iris',
-        #                                     'datasets')
-        # with open(input_file) as file:
-        #     sample_train_ref = json.load(file)
 
         input_file = self.get_resource_path('training_input.iris',
                                             'datasets')
@@ -51,12 +45,10 @@ class TestIris(QiskitMachineLearningTestCase):
 
         test_features_ref = np.concatenate([x for x in list(test_input_ref.values()) if len(x) > 0])
         np.testing.assert_almost_equal(test_features_ref, test_features, 3)
-        #
-        np.testing.assert_array_equal(test_labels.shape, (1, 3))
 
+        np.testing.assert_array_equal(test_labels.shape, (1, 3))
         np.testing.assert_array_equal(np.sum(test_labels, axis=1), np.ones(1))
 
 
 if __name__ == '__main__':
     unittest.main()
-
