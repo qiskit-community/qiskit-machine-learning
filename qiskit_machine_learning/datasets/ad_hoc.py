@@ -274,7 +274,7 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False, one_hot=True)
     test_feature_array, test_label_array = features_and_labels_transform(
         test_input, class_labels, one_hot)
 
-    return training_feature_array, training_label_array, test_feature_array, test_label_array
+    return training_feature_array, training_label_array, test_feature_array, test_label_array, sample_total
 
 
 def sample_ad_hoc_data(sample_total, test_size, n):
