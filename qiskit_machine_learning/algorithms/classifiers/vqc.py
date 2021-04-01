@@ -32,7 +32,7 @@ class VQC(NeuralNetworkClassifier):
     def __init__(self,
                  num_qubits: int = None,
                  feature_map: QuantumCircuit = None,
-                 var_form: QuantumCircuit = None,
+                 ansatz: QuantumCircuit = None,
                  loss: Union[str, Loss] = 'cross_entropy',
                  optimizer: Optimizer = None,
                  warm_start: bool = False,
@@ -40,25 +40,25 @@ class VQC(NeuralNetworkClassifier):
         """
         Args:
             num_qubits: The number of qubits for the underlying CircuitQNN. If None, derive from
-                feature_map or var_form. If neither of those is given, raise exception.
+                feature_map or ansatz. If neither of those is given, raise exception.
             feature_map: The feature map for underlying CircuitQNN. If None, use ZZFeatureMap.
-            var_form: The variational for the underlying CircuitQNN. If None, use RealAmplitudes.
+            ansatz: The ansatz for the underlying CircuitQNN. If None, use RealAmplitudes.
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
 
         Raises:
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
-                var_form to be given.
+                ansatz to be given.
         """
 
-        # check num_qubits, feature_map, and var_form
-        if num_qubits is None and feature_map is None and var_form is None:
+        # check num_qubits, feature_map, and ansatz
+        if num_qubits is None and feature_map is None and ansatz is None:
             raise QiskitMachineLearningError(
-                'Need at least one of num_qubits, feature_map, or var_form!')
+                'Need at least one of num_qubits, feature_map, or ansatz!')
         num_qubits_: int = None
         feature_map_: QuantumCircuit = None
-        var_form_: QuantumCircuit = None
+        ansatz_: QuantumCircuit = None
         if num_qubits:
             num_qubits_ = num_qubits
             if feature_map:
@@ -67,40 +67,40 @@ class VQC(NeuralNetworkClassifier):
                 feature_map_ = feature_map
             else:
                 feature_map_ = ZZFeatureMap(num_qubits)
-            if var_form:
-                if var_form.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError('Incompatible num_qubits and var_form!')
-                var_form_ = var_form
+            if ansatz:
+                if ansatz.num_qubits != num_qubits:
+                    raise QiskitMachineLearningError('Incompatible num_qubits and ansatz!')
+                ansatz_ = ansatz
             else:
-                var_form_ = RealAmplitudes(num_qubits)
+                ansatz_ = RealAmplitudes(num_qubits)
         else:
-            if feature_map and var_form:
-                if feature_map.num_qubits != var_form.num_qubits:
-                    raise QiskitMachineLearningError('Incompatible feature_map and var_form!')
+            if feature_map and ansatz:
+                if feature_map.num_qubits != ansatz.num_qubits:
+                    raise QiskitMachineLearningError('Incompatible feature_map and ansatz!')
                 feature_map_ = feature_map
-                var_form_ = var_form
+                ansatz_ = ansatz
                 num_qubits_ = feature_map.num_qubits
             elif feature_map:
                 num_qubits_ = feature_map.num_qubits
                 feature_map_ = feature_map
-                var_form_ = RealAmplitudes(num_qubits_)
-            elif var_form:
-                num_qubits_ = var_form.num_qubits
-                var_form_ = var_form
+                ansatz_ = RealAmplitudes(num_qubits_)
+            elif ansatz:
+                num_qubits_ = ansatz.num_qubits
+                ansatz_ = ansatz
                 feature_map_ = ZZFeatureMap(num_qubits_)
 
         # construct circuit
         self._feature_map = feature_map_
-        self._var_form = var_form_
+        self._ansatz = ansatz_
         self._num_qubits = num_qubits_
         self._circuit = QuantumCircuit(self._num_qubits)
         self._circuit.compose(feature_map, inplace=True)
-        self._circuit.compose(var_form, inplace=True)
+        self._circuit.compose(ansatz, inplace=True)
 
         # construct circuit QNN
         neural_network = CircuitQNN(self._circuit,
                                     feature_map.parameters,
-                                    var_form.parameters,
+                                    ansatz.parameters,
                                     interpret=self._get_interpret(2),
                                     output_shape=2,
                                     quantum_instance=quantum_instance)
@@ -117,9 +117,9 @@ class VQC(NeuralNetworkClassifier):
         return self._feature_map
 
     @property
-    def var_form(self) -> QuantumCircuit:
-        """ Returns the used variational form."""
-        return self._var_form
+    def ansatz(self) -> QuantumCircuit:
+        """ Returns the used ansatz."""
+        return self._ansatz
 
     @property
     def circuit(self) -> QuantumCircuit:
@@ -128,7 +128,7 @@ class VQC(NeuralNetworkClassifier):
 
     @property
     def num_qubits(self) -> int:
-        """ Returns the number of qubits used by variational form and feature map."""
+        """ Returns the number of qubits used by ansatz and feature map."""
         return self.circuit.num_qubits
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name

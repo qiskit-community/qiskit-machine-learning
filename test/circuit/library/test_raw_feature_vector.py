@@ -105,7 +105,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
 
         vqc = VQC(feature_map=feature_map,
-                  var_form=RealAmplitudes(feature_map.num_qubits, reps=1),
+                  ansatz=RealAmplitudes(feature_map.num_qubits, reps=1),
                   optimizer=COBYLA(maxiter=10),
                   quantum_instance=quantum_instance)
 

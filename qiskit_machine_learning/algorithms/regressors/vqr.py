@@ -29,7 +29,7 @@ class VQR(NeuralNetworkRegressor):
     def __init__(self,
                  num_qubits: int = None,
                  feature_map: QuantumCircuit = None,
-                 var_form: QuantumCircuit = None,
+                 ansatz: QuantumCircuit = None,
                  observable: Union[QuantumCircuit, OperatorBase] = None,
                  loss: Union[str, Loss] = 'l2',
                  optimizer: Optimizer = None,
@@ -38,10 +38,10 @@ class VQR(NeuralNetworkRegressor):
         r"""
         Args:
             num_qubits: The number of qubits to be used. If None, and neither feature_map nor
-                var_form are given, it is initially set to 2, i.e., the default of the TwoLayerQNN.
+                ansatz are given, it is initially set to 2, i.e., the default of the TwoLayerQNN.
             feature_map: The feature map to be used to construct a TwoLayerQNN. If None, use the
                 ZZFeatureMap, i.e., the default of the TwoLayerQNN.
-            var_form: The variational to be used to construct a TwoLayerQNN. If None, use the
+            ansatz: The ansatz to be used to construct a TwoLayerQNN. If None, use the
                 RealAmplitudes, i.e., the default of the TwoLayerQNN.
             observable: The observable to be measured in the underlying TwoLayerQNN. If  None, use
                 the default from the TwoLayerQNN, i.e., `Z^{\otimes num_qubits}`.
@@ -50,13 +50,13 @@ class VQR(NeuralNetworkRegressor):
             warm_start: Use weights from previous fit to start next fit.
 
         Raises:
-            QiskitMachineLearningError: Neither num_qubits, nor feature_map, nor var_form given.
+            QiskitMachineLearningError: Neither num_qubits, nor feature_map, nor ansatz given.
         """
 
         # construct QNN
         neural_network = TwoLayerQNN(num_qubits=num_qubits,
                                      feature_map=feature_map,
-                                     var_form=var_form,
+                                     ansatz=ansatz,
                                      observable=observable,
                                      quantum_instance=quantum_instance)
 
@@ -71,11 +71,11 @@ class VQR(NeuralNetworkRegressor):
         return cast(TwoLayerQNN, super().neural_network).feature_map
 
     @property
-    def var_form(self) -> QuantumCircuit:
-        """ Returns the used variational form."""
-        return cast(TwoLayerQNN, super().neural_network).var_form
+    def ansatz(self) -> QuantumCircuit:
+        """ Returns the used ansatz."""
+        return cast(TwoLayerQNN, super().neural_network).ansatz
 
     @property
     def num_qubits(self) -> int:
-        """ Returns the number of qubits used by variational form and feature map."""
+        """ Returns the number of qubits used by ansatz and feature map."""
         return cast(TwoLayerQNN, super().neural_network).num_qubits

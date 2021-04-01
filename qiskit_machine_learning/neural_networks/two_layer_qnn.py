@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 """A Two Layer Neural Network consisting of a first parametrized circuit representing a feature map
-to map the input data to a quantum states and a second one representing a variational form that can
+to map the input data to a quantum states and a second one representing a ansatz that can
 be trained to solve a particular tasks."""
 from typing import Optional, Union
 
@@ -26,13 +26,13 @@ from ..exceptions import QiskitMachineLearningError
 
 
 class TwoLayerQNN(OpflowQNN):
-    """Two Layer Quantum Neural Network consisting of a feature map, a variational form,
+    """Two Layer Quantum Neural Network consisting of a feature map, a ansatz,
     and an observable.
     """
 
     def __init__(self, num_qubits: int = None,
                  feature_map: QuantumCircuit = None,
-                 var_form: QuantumCircuit = None,
+                 ansatz: QuantumCircuit = None,
                  observable: Optional[OperatorBase] = None,
                  exp_val: Optional[ExpectationBase] = None,
                  quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None):
@@ -40,25 +40,25 @@ class TwoLayerQNN(OpflowQNN):
 
         Args:
             num_qubits: The number of qubits to represent the network, if None and neither the
-                feature_map not the var_form are given, raise exception.
+                feature_map not the ansatz are given, raise exception.
             feature_map: The (parametrized) circuit to be used as feature map. If None is given,
                 the `ZZFeatureMap` is used.
-            var_form: The (parametrized) circuit to be used as variational form. If None is given,
+            ansatz: The (parametrized) circuit to be used as ansatz. If None is given,
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
 
         Raises:
-            QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, var_form.
+            QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
         """
 
-        # check num_qubits, feature_map, and var_form
-        if num_qubits is None and feature_map is None and var_form is None:
+        # check num_qubits, feature_map, and ansatz
+        if num_qubits is None and feature_map is None and ansatz is None:
             raise QiskitMachineLearningError(
-                'Need at least one of num_qubits, feature_map, or var_form!')
+                'Need at least one of num_qubits, feature_map, or ansatz!')
         num_qubits_: int = None
         feature_map_: QuantumCircuit = None
-        var_form_: QuantumCircuit = None
+        ansatz_: QuantumCircuit = None
         if num_qubits:
             num_qubits_ = num_qubits
             if feature_map:
@@ -67,38 +67,38 @@ class TwoLayerQNN(OpflowQNN):
                 feature_map_ = feature_map
             else:
                 feature_map_ = ZZFeatureMap(num_qubits)
-            if var_form:
-                if var_form.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError('Incompatible num_qubits and var_form!')
-                var_form_ = var_form
+            if ansatz:
+                if ansatz.num_qubits != num_qubits:
+                    raise QiskitMachineLearningError('Incompatible num_qubits and ansatz!')
+                ansatz_ = ansatz
             else:
-                var_form_ = RealAmplitudes(num_qubits)
+                ansatz_ = RealAmplitudes(num_qubits)
         else:
-            if feature_map and var_form:
-                if feature_map.num_qubits != var_form.num_qubits:
-                    raise QiskitMachineLearningError('Incompatible feature_map and var_form!')
+            if feature_map and ansatz:
+                if feature_map.num_qubits != ansatz.num_qubits:
+                    raise QiskitMachineLearningError('Incompatible feature_map and ansatz!')
                 feature_map_ = feature_map
-                var_form_ = var_form
+                ansatz_ = ansatz
                 num_qubits_ = feature_map.num_qubits
             elif feature_map:
                 num_qubits_ = feature_map.num_qubits
                 feature_map_ = feature_map
-                var_form_ = RealAmplitudes(num_qubits_)
-            elif var_form:
-                num_qubits_ = var_form.num_qubits
-                var_form_ = var_form
+                ansatz_ = RealAmplitudes(num_qubits_)
+            elif ansatz:
+                num_qubits_ = ansatz.num_qubits
+                ansatz_ = ansatz
                 feature_map_ = ZZFeatureMap(num_qubits_)
 
         self._feature_map = feature_map_
         input_params = list(self._feature_map.parameters)
 
-        self._var_form = var_form_
-        weight_params = list(self._var_form.parameters)
+        self._ansatz = ansatz_
+        weight_params = list(self._ansatz.parameters)
 
         # construct circuit
         self._circuit = QuantumCircuit(num_qubits_)
         self._circuit.append(self._feature_map, range(num_qubits_))
-        self._circuit.append(self._var_form, range(num_qubits_))
+        self._circuit.append(self._ansatz, range(num_qubits_))
 
         # construct observable
         self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits_, 1)])
@@ -114,9 +114,9 @@ class TwoLayerQNN(OpflowQNN):
         return self._feature_map
 
     @property
-    def var_form(self) -> QuantumCircuit:
-        """ Returns the used variational form."""
-        return self._var_form
+    def ansatz(self) -> QuantumCircuit:
+        """ Returns the used ansatz."""
+        return self._ansatz
 
     @property
     def circuit(self) -> QuantumCircuit:
@@ -125,5 +125,5 @@ class TwoLayerQNN(OpflowQNN):
 
     @property
     def num_qubits(self) -> int:
-        """ Returns the number of qubits used by variational form and feature map."""
+        """ Returns the number of qubits used by ansatz and feature map."""
         return self._circuit.num_qubits
