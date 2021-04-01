@@ -25,11 +25,6 @@ class TestDigits(QiskitMachineLearningTestCase):
     def test_digits(self):
         """Digits test."""
 
-        input_file = self.get_resource_path('sample_train.digits',
-                                            'datasets')
-        with open(input_file) as file:
-            sample_train_ref = json.load(file)
-
         input_file = self.get_resource_path('training_input.digits',
                                             'datasets')
         with open(input_file) as file:
@@ -40,18 +35,20 @@ class TestDigits(QiskitMachineLearningTestCase):
         with open(input_file) as file:
             test_input_ref = json.load(file)
 
-        sample_train, training_input, test_input, class_labels = digits(training_size=20,
-                                                                        test_size=10,
-                                                                        n=2,
-                                                                        plot_data=False)
+        training_features, _, test_features, test_labels = digits(training_size=20,
+                                                                  test_size=10,
+                                                                  n=2,
+                                                                  plot_data=False)
 
-        np.testing.assert_allclose(sample_train.tolist(), sample_train_ref, rtol=1e-01)
-        for key, _ in training_input.items():
-            np.testing.assert_allclose(training_input[key].tolist(),
-                                       training_input_ref[key], rtol=1e-01)
-        for key, _ in test_input.items():
-            np.testing.assert_allclose(test_input[key].tolist(), test_input_ref[key], rtol=1e-01)
-        np.testing.assert_array_equal(class_labels, list(training_input.keys()))
+        training_features_ref = np.concatenate(list(training_input_ref.values()))
+        np.testing.assert_almost_equal(training_features_ref, training_features, 4)
+
+        test_features_ref = np.concatenate(list(test_input_ref.values()))
+        np.testing.assert_almost_equal(test_features_ref, test_features, 3)
+
+        np.testing.assert_array_equal(test_labels.shape, (100, 10))
+        np.testing.assert_array_equal(np.sum(test_labels, axis=0), np.array([10] * 10))
+        np.testing.assert_array_equal(np.sum(test_labels, axis=1), np.ones(100))
 
 
 if __name__ == '__main__':

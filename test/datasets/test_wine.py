@@ -16,7 +16,7 @@ import unittest
 from test import QiskitMachineLearningTestCase
 import json
 import numpy as np
-from qiskit_machine_learning.datasets import wine, split_dataset_to_data_and_labels
+from qiskit_machine_learning.datasets import wine
 
 
 class TestWine(QiskitMachineLearningTestCase):
@@ -24,11 +24,6 @@ class TestWine(QiskitMachineLearningTestCase):
 
     def test_wine(self):
         """Wine test."""
-
-        input_file = self.get_resource_path('sample_train.wine',
-                                            'datasets')
-        with open(input_file) as file:
-            sample_train_ref = json.load(file)
 
         input_file = self.get_resource_path('training_input.wine',
                                             'datasets')
@@ -40,22 +35,19 @@ class TestWine(QiskitMachineLearningTestCase):
         with open(input_file) as file:
             test_input_ref = json.load(file)
 
-        sample_train, training_input, test_input, class_labels = wine(training_size=20,
-                                                                      test_size=10,
-                                                                      n=2,
-                                                                      plot_data=False)
+        training_features, _, test_features, test_labels = wine(training_size=20,
+                                                                test_size=10,
+                                                                n=2,
+                                                                plot_data=False,
+                                                                one_hot=False)
 
-        np.testing.assert_allclose(sample_train.tolist(), sample_train_ref, rtol=1e-04)
-        for key, _ in training_input.items():
-            np.testing.assert_allclose(training_input[key].tolist(),
-                                       training_input_ref[key], rtol=1e-04)
-        for key, _ in test_input.items():
-            np.testing.assert_allclose(test_input[key].tolist(), test_input_ref[key], rtol=1e-04)
-        np.testing.assert_array_equal(class_labels, list(training_input.keys()))
+        training_features_ref = np.concatenate(list(training_input_ref.values()))
+        np.testing.assert_almost_equal(training_features_ref, training_features)
 
-        datapoints, class_to_label = split_dataset_to_data_and_labels(test_input)
-        np.testing.assert_array_equal(datapoints[1], [0, 0, 1, 1, 1, 2, 2, 2, 2, 2])
-        self.assertDictEqual(class_to_label, {'A': 0, 'B': 1, 'C': 2})
+        test_features_ref = np.concatenate(list(test_input_ref.values()))
+        np.testing.assert_almost_equal(test_features_ref, test_features)
+
+        np.testing.assert_almost_equal(test_labels, [0, 0, 1, 1, 1, 2, 2, 2, 2, 2])
 
 
 if __name__ == '__main__':

@@ -24,11 +24,21 @@ class TestGaussian(QiskitMachineLearningTestCase):
     def test_gaussian(self):
         """Gaussian test."""
 
-        _, _, _, class_labels = gaussian(training_size=20,
-                                         test_size=10,
-                                         n=2,
-                                         plot_data=False)
-        np.testing.assert_array_equal(class_labels, ['A', 'B'])
+        training_features, training_labels, test_features, test_labels = gaussian(training_size=20,
+                                                                                  test_size=10,
+                                                                                  n=2,
+                                                                                  plot_data=False)
+        np.testing.assert_array_equal(training_features.shape, (40, 2))
+        np.testing.assert_array_equal(training_labels.shape, (40, 2))
+
+        np.testing.assert_array_equal(np.sum(training_labels, axis=0), np.array([20, 20]))
+        np.testing.assert_array_equal(np.sum(training_labels, axis=1), np.ones(40))
+
+        np.testing.assert_array_equal(test_features.shape, (20, 2))
+        np.testing.assert_array_equal(test_features.shape, (20, 2))
+
+        np.testing.assert_array_equal(np.sum(test_labels, axis=0), np.array([10, 10]))
+        np.testing.assert_array_equal(np.sum(test_labels, axis=1), np.ones(20))
 
 
 if __name__ == '__main__':
