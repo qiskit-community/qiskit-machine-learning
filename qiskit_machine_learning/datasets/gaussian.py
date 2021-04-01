@@ -17,9 +17,10 @@ gaussian dataset
 import numpy as np
 from qiskit.utils import algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
+from .dataset_helper import features_and_labels_transform
 
 
-def gaussian(training_size, test_size, n, plot_data=False):
+def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
     """ returns gaussian dataset """
     sigma = 1
     if n == 2:
@@ -52,7 +53,12 @@ def gaussian(training_size, test_size, n, plot_data=False):
         training_input = {key: (sample_train[label_train == k, :])[:training_size]
                           for k, key in enumerate(class_labels)}
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
-            training_size + test_size)] for k, key in enumerate(class_labels)}
+                training_size + test_size)] for k, key in enumerate(class_labels)}
+
+        training_feature_array, training_label_array = features_and_labels_transform(
+            training_input, class_labels, one_hot)
+        test_feature_array, test_label_array = features_and_labels_transform(
+            test_input, class_labels, one_hot)
 
         if plot_data:
             try:
@@ -70,7 +76,7 @@ def gaussian(training_size, test_size, n, plot_data=False):
             plt.title("Gaussians")
             plt.show()
 
-        return sample_train, training_input, test_input, class_labels
+        return training_feature_array, training_label_array, test_feature_array, test_label_array
     elif n == 3:
         class_labels = [r'A', r'B', r'C']
         label_train = np.zeros(3 * (training_size + test_size))
@@ -125,7 +131,12 @@ def gaussian(training_size, test_size, n, plot_data=False):
         training_input = {key: (sample_train[label_train == k, :])[:training_size]
                           for k, key in enumerate(class_labels)}
         test_input = {key: (sample_train[label_train == k, :])[training_size:(
-            training_size + test_size)] for k, key in enumerate(class_labels)}
+                training_size + test_size)] for k, key in enumerate(class_labels)}
+
+        training_feature_array, training_label_array = features_and_labels_transform(
+            training_input, class_labels, one_hot)
+        test_feature_array, test_label_array = features_and_labels_transform(
+            test_input, class_labels, one_hot)
 
         if plot_data:
             try:
@@ -143,6 +154,6 @@ def gaussian(training_size, test_size, n, plot_data=False):
             plt.title("Gaussians")
             plt.show()
 
-        return sample_train, training_input, test_input, class_labels
+        return training_feature_array, training_label_array, test_feature_array, test_label_array
     else:
         raise ValueError("Gaussian presently only supports 2 or 3 qubits")

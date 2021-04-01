@@ -15,7 +15,7 @@
 import unittest
 from test import QiskitMachineLearningTestCase
 import numpy as np
-from qiskit_machine_learning.datasets import ad_hoc_data, split_dataset_to_data_and_labels
+from qiskit_machine_learning.datasets import ad_hoc_data
 
 
 class TestAdHocData(QiskitMachineLearningTestCase):
@@ -24,18 +24,30 @@ class TestAdHocData(QiskitMachineLearningTestCase):
     def test_ad_hoc_data(self):
         """Ad Hoc Data test."""
 
-        _, _, test_input, class_labels = ad_hoc_data(training_size=20,
-                                                     test_size=10,
-                                                     n=2,
-                                                     gap=0.3,
-                                                     plot_data=False)
+        training_features, training_labels, _, test_labels = ad_hoc_data(
+            training_size=20,
+            test_size=10,
+            n=2,
+            gap=0.3,
+            plot_data=False, one_hot=False)
+        np.testing.assert_array_equal(training_features.shape, (40, 2))
+        np.testing.assert_array_equal(training_labels.shape, (40,))
+        np.testing.assert_array_almost_equal(test_labels,
+                                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-        np.testing.assert_array_equal(class_labels, ['A', 'B'])
+        _, _, _, test_labels = ad_hoc_data(
+            training_size=20,
+            test_size=10,
+            n=2,
+            gap=0.3,
+            plot_data=False, one_hot=True)
 
-        datapoints, class_to_label = split_dataset_to_data_and_labels(test_input)
-        np.testing.assert_array_equal(datapoints[1].tolist(),
-                                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        self.assertDictEqual(class_to_label, {'A': 0, 'B': 1})
+        np.testing.assert_array_equal(test_labels.shape, (20, 2))
+        np.testing.assert_array_equal(test_labels,
+                                      [[1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0],
+                                       [1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [0, 1], [0, 1],
+                                       [0, 1], [0, 1], [0, 1], [0, 1], [0, 1], [0, 1]])
 
 
 if __name__ == '__main__':
