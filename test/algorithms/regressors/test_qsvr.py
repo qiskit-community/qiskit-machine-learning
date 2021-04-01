@@ -13,7 +13,6 @@
 """ Test QSVR """
 
 import unittest
-
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
@@ -22,8 +21,8 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance
 from qiskit_machine_learning.algorithms import QSVR
-from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.kernels import QuantumKernel
 
 
 class TestQSVR(QiskitMachineLearningTestCase):

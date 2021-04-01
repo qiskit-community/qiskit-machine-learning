@@ -13,17 +13,15 @@
 """ Test Neural Network Regressor """
 
 import unittest
-
-from qiskit.circuit import Parameter
-
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt, data
+from ddt import data, ddt
+
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit.circuit import Parameter
 from qiskit.utils import QuantumInstance
-
 from qiskit_machine_learning.algorithms import VQR
 
 
@@ -47,6 +45,7 @@ class TestVQR(QiskitMachineLearningTestCase):
         num_samples = 20
         eps = 0.2
 
+        # pylint: disable=invalid-name
         lb, ub = -np.pi, np.pi
         self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
@@ -68,7 +67,7 @@ class TestVQR(QiskitMachineLearningTestCase):
     def test_vqr(self, config):
         """ Test VQR."""
 
-        opt, q_i, has_var_form = config
+        opt, q_i, has_ansatz = config
 
         if q_i == 'statevector':
             quantum_instance = self.sv_quantum_instance
@@ -86,16 +85,16 @@ class TestVQR(QiskitMachineLearningTestCase):
         feature_map = QuantumCircuit(num_qubits, name='fm')
         feature_map.ry(param_x, 0)
 
-        if has_var_form:
+        if has_ansatz:
             param_y = Parameter('y')
-            var_form = QuantumCircuit(num_qubits, name='vf')
-            var_form.ry(param_y, 0)
+            ansatz = QuantumCircuit(num_qubits, name='vf')
+            ansatz.ry(param_y, 0)
         else:
-            var_form = None
+            ansatz = None
 
         # construct regressor
         regressor = VQR(feature_map=feature_map,
-                        ansatz=var_form,
+                        ansatz=ansatz,
                         optimizer=optimizer,
                         quantum_instance=quantum_instance)
 
