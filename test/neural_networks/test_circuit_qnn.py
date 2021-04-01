@@ -41,7 +41,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         self.quantum_instance_sv = QuantumInstance(StatevectorSimulator())
         self.quantum_instance_qasm = QuantumInstance(QasmSimulator(shots=100))
 
-        # define feature map and variational form
+        # define feature map and ansatz
         num_qubits = 2
         feature_map = ZZFeatureMap(num_qubits, reps=1)
         var_form = RealAmplitudes(num_qubits, reps=1)

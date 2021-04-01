@@ -144,11 +144,11 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # construct simple feature map
         param_y = Parameter('y')
-        var_form = QuantumCircuit(1, name='vf')
-        var_form.ry(param_y, 0)
+        ansatz = QuantumCircuit(1, name='vf')
+        ansatz.ry(param_y, 0)
 
         # construct QNN with statevector simulator
-        qnn = TwoLayerQNN(1, feature_map, var_form, quantum_instance=quantum_instance)
+        qnn = TwoLayerQNN(1, feature_map, ansatz, quantum_instance=quantum_instance)
         try:
             model = TorchConnector(qnn)
 
