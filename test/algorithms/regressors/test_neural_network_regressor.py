@@ -11,17 +11,17 @@
 # that they have been altered from the originals.
 
 """ Test Neural Network Regressor """
-from ddt import ddt, data
-from qiskit import QuantumCircuit, Aer
-from qiskit.algorithms.optimizers import L_BFGS_B, COBYLA
-from qiskit.circuit import Parameter
-from qiskit.utils import QuantumInstance
-
-from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
-from qiskit_machine_learning.neural_networks import TwoLayerQNN
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
+from ddt import data, ddt
+
+from qiskit import Aer, QuantumCircuit
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit.circuit import Parameter
+from qiskit.utils import QuantumInstance
+from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
+from qiskit_machine_learning.neural_networks import TwoLayerQNN
 
 
 @ddt
@@ -43,6 +43,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         num_samples = 20
         eps = 0.2
 
+        # pylint: disable=invalid-name
         lb, ub = -np.pi, np.pi
         self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
@@ -55,7 +56,8 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         ('bfgs', 'statevector'),
         ('bfgs', 'qasm'),
     )
-    def test_classifier_with_opflow_qnn(self, config):
+    def test_regressor_with_opflow_qnn(self, config):
+        """ Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
         opt, q_i = config
 
         num_qubits = 1
