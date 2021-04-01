@@ -95,7 +95,7 @@ class TestVQR(QiskitMachineLearningTestCase):
 
         # construct regressor
         regressor = VQR(feature_map=feature_map,
-                        var_form=var_form,
+                        ansatz=var_form,
                         optimizer=optimizer,
                         quantum_instance=quantum_instance)
 
