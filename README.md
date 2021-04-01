@@ -46,7 +46,7 @@ be classified.
         from qiskit.algorithms.optimizers import COBYLA
         from qiskit.circuit.library import TwoLocal
         from qiskit_machine_learning.algorithms import VQC
-        from qiskit_machine_learning.datasets import wine, features_and_labels
+        from qiskit_machine_learning.datasets import wine
         from qiskit_machine_learning.circuit.library import RawFeatureVector
 
         seed = 1376
@@ -54,16 +54,13 @@ be classified.
 
         # Use Wine data set for training and test data
         feature_dim = 4  # dimension of each data point
-        # sample_train, training_input, test_input, class_labels
         training_size = 12
         test_size = 4
-        _, training_input, test_input, class_labels = wine(training_size=training_size,
-                                                           test_size=test_size,
-                                                           n=feature_dim)
 
-        # prepare features and labels
-        training_features, train_labels, _ = features_and_labels(training_input, class_labels)
-        test_features, test_labels, _ = features_and_labels(test_input, class_labels)
+        # training features, training labels, test features, test labels as np.array,
+        # one hot encoding for labels
+        training_features, training_labels, test_features, test_labels = \
+            wine(training_size=training_size, test_size=test_size, n=feature_dim)
 
         feature_map = RawFeatureVector(feature_dimension=feature_dim)
         ansatz = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
@@ -75,7 +72,7 @@ be classified.
                                                    seed_simulator=seed,
                                                    seed_transpiler=seed)
                   )
-        vqc.fit(training_features, train_labels)
+        vqc.fit(training_features, training_labels)
 
         score = vqc.score(test_features, test_labels)
         print('Testing accuracy: {:0.2f}'.format(score))

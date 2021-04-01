@@ -19,8 +19,11 @@ import scipy
 from qiskit.utils import algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
 
+from qiskit_machine_learning.datasets.dataset_helper import features_and_labels_transform
 
-def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
+
+def ad_hoc_data(training_size, test_size, n, gap, plot_data=False,
+                one_hot=True, include_sample_total=False):
     """ returns ad hoc dataset """
     class_labels = [r'A', r'B']
     count = 0
@@ -267,7 +270,16 @@ def ad_hoc_data(training_size, test_size, n, gap, plot_data=False):
             ax_1.scatter(x_2, y_2, z_2, c='#683FC8')
             plt.show()
 
-    return sample_total, training_input, test_input, class_labels
+    training_feature_array, training_label_array = features_and_labels_transform(
+        training_input, class_labels, one_hot)
+    test_feature_array, test_label_array = features_and_labels_transform(
+        test_input, class_labels, one_hot)
+
+    if include_sample_total:
+        return (training_feature_array, training_label_array, test_feature_array, test_label_array,
+                sample_total)
+    else:
+        return training_feature_array, training_label_array, test_feature_array, test_label_array
 
 
 def sample_ad_hoc_data(sample_total, test_size, n):
