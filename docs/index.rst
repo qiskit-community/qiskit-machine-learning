@@ -6,8 +6,8 @@ Qiskit Machine Learning documentation
   :maxdepth: 2
 
   API References <apidocs/qiskit_machine_learning>
-  Release Notes <release_notes>
   Tutorials <tutorials/index>
+  Release Notes <release_notes>
 
 .. Hiding - Indices and tables
    :ref:`genindex`

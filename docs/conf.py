@@ -33,6 +33,7 @@ Sphinx documentation builder
 
 import os
 import qiskit_sphinx_theme
+import qiskit_machine_learning
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
 os.environ['QISKIT_DOCS'] = 'TRUE'
@@ -43,9 +44,32 @@ copyright = '2018, 2021, Qiskit Machine Learning Development Team'  # pylint: di
 author = 'Qiskit Machine Learning Development Team'
 
 # The short X.Y version
-version = ''
+version = qiskit_machine_learning.__version__
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = qiskit_machine_learning.__version__
+
+rst_prolog = """
+.. raw:: html
+
+    <br><br><br>
+
+.. |version| replace:: {0}
+""".format(release)
+
+nbsphinx_prolog = """
+{% set docname = env.doc2path(env.docname, base=None) %}
+.. only:: html
+
+    .. role:: raw-html(raw)
+        :format: html
+
+    .. raw:: html
+
+        <br><br><br>
+
+    .. note::
+        Run interactively in jupyter notebook.
+"""
 
 # -- General configuration ---------------------------------------------------
 
@@ -72,8 +96,8 @@ extensions = [
     'sphinx.ext.intersphinx'
 ]
 html_static_path = ['_static']
-templates_path = ['theme/']
-html_css_files = ['style.css', 'custom.css']
+templates_path = ['_templates']
+html_css_files = ['style.css', 'custom.css', 'gallery.css']
 
 nbsphinx_timeout = 360
 nbsphinx_execute = os.getenv('QISKIT_DOCS_BUILD_TUTORIALS', 'never')
@@ -97,6 +121,7 @@ autodoc_default_options = {
     'inherited-members': None,
 }
 
+autoclass_content = 'both'
 
 # If true, figures, tables and code-blocks are automatically numbered if they
 # have a caption.
@@ -132,7 +157,7 @@ add_module_names = False
 # (e.g., if this is set to ['foo.'], then foo.bar is shown under B, not F).
 # This can be handy if you document a project that consists of a single
 # package. Works only for the HTML builder currently.
-modindex_common_prefix = ['qiskit.']
+modindex_common_prefix = ['qiskit_machine_learning.']
 
 # -- Configuration for extlinks extension ------------------------------------
 # Refer to https://www.sphinx-doc.org/en/master/usage/extensions/extlinks.html

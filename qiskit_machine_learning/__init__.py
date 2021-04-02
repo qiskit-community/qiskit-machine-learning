@@ -42,6 +42,10 @@ Submodules
 
 """
 
+from .version import __version__
 from .exceptions import QiskitMachineLearningError
 
-__all__ = ['QiskitMachineLearningError']
+__all__ = [
+    '__version__',
+    'QiskitMachineLearningError'
+]
