@@ -19,21 +19,26 @@ import numpy as np
 from sklearn import preprocessing
 
 
-def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_elements=False,
+def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_grid_elements=False,
                             return_prob=False, prob_non_zero=True):
     """
     Discretize & truncate classical data to enable digital encoding in qubit registers
     whereby the data grid is [[grid elements dim 0], ..., [grid elements dim k]].
 
     For each dimension k, the domain is split into (2 ** num_qubits[k]) bins equally spaced and
-    equally sized, each centered in discrete_bounds[k, 0], ..., discrete_bounds[k, 1]. Bins have
-    size equal to (discrete_bounds[k, 1] - discrete_bounds[k, 0])/(2 ** num_qubits[k] - 1).
+    equally sized, each centered in min_max_bin_centers[k, 0], ..., min_max_bin_centers[k, 1]. Bins have
+    size equal to (min_max_bin_centers[k, 1] - min_max_bin_centers[k, 0])/(2 ** num_qubits[k] - 1).
     Every sample in data that falls out of the bins is discarded.
+    
+    Notice that the leftmost bin extends both to the left and to the right around its center,
+    therefore min_max_bin_centers[k, 0] is not the left bound for truncation, but only the center of
+    the leftmost bin. Similar considerations hold for min_max_bin_centers[k, 1] on the right.
 
     Args:
         data (list or array or np.array): training data (int or float) of dimension k
-        discrete_bounds (list or array or np.array):  k min/max data values
-            [[min_0,max_0],...,[min_k-1,max_k-1]] if univariate data: [min_0,max_0]
+        min_max_bin_centers (list or array or np.array):  k min/max data values
+            [[min_center_0, max_center_0],...,[min_center_k-1, max_center_k-1]].
+            If univariate data: [min_center_0, max_center_0]
         num_qubits (list or array or np.array): k numbers of qubits to determine
             representation resolution, i.e. n qubits enable the representation of 2**n
             values [num_qubits_0,..., num_qubits_k-1]
@@ -52,19 +57,19 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
 
     """
     # Truncate the data
-    if np.ndim(discrete_bounds) == 1:
-        discrete_bounds = np.reshape(discrete_bounds, (1, len(discrete_bounds)))
+    if np.ndim(min_max_bin_centers) == 1:
+        min_max_bin_centers = np.reshape(min_max_bin_centers, (1, len(min_max_bin_centers)))
 
     data = data.reshape((len(data), len(num_qubits)))
     temp = []
     for i, data_sample in enumerate(data):
         append = True
         for j, entry in enumerate(data_sample):
-            if entry < discrete_bounds[j, 0] -\
-                    .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[j] - 1):
+            if entry < min_max_bin_centers[j, 0] - .5 / (2 ** num_qubits[j] - 1) *\
+                    (min_max_bin_centers[j, 1] - min_max_bin_centers[j, 0]):
                 append = False
-            if entry > discrete_bounds[j, 1] +\
-                    .5 * (discrete_bounds[j, 1] - discrete_bounds[j, 0]) / (2 ** num_qubits[j] - 1):
+            if entry > min_max_bin_centers[j, 1] + .5 / (2 ** num_qubits[j] - 1) *\
+                    (min_max_bin_centers[j, 1] - min_max_bin_centers[j, 0]):
                 append = False
         if append:
             temp.append(list(data_sample))
@@ -74,7 +79,7 @@ def discretize_and_truncate(data, discrete_bounds, num_qubits, return_data_grid_
     for j, prec in enumerate(num_qubits):
         data_row = data[:, j]  # dim j of all data samples
         # prepare element grid for dim j
-        elements_current_dim = np.linspace(discrete_bounds[j, 0], discrete_bounds[j, 1],
+        elements_current_dim = np.linspace(min_max_bin_centers[j, 0], min_max_bin_centers[j, 1],
                                            (2 ** prec))
         # find index for data sample in grid
         index_grid = np.searchsorted(
