@@ -26,11 +26,12 @@ def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_g
     whereby the data grid is [[grid elements dim 0], ..., [grid elements dim k]].
 
     For each dimension k, the domain is split into (2 ** num_qubits[k]) bins equally spaced and
-    equally sized, each centered in min_max_bin_centers[k, 0], ..., min_max_bin_centers[k, 1]. Bins have
-    size equal to (min_max_bin_centers[k, 1] - min_max_bin_centers[k, 0])/(2 ** num_qubits[k] - 1).
-    Every sample in data that falls out of the bins is discarded.
-    
-    Notice that the leftmost bin extends both to the left and to the right around its center,
+    equally sized, each centered in min_max_bin_centers[k, 0], ..., min_max_bin_centers[k, 1]. Bins
+    have size equal to
+    (min_max_bin_centers[k, 1] - min_max_bin_centers[k, 0])/(2 ** num_qubits[k] - 1).
+    Notice that:
+    * Every sample in data that falls out of the bins is discarded.
+    * The leftmost bin extends both to the left and to the right around its center,
     therefore min_max_bin_centers[k, 0] is not the left bound for truncation, but only the center of
     the leftmost bin. Similar considerations hold for min_max_bin_centers[k, 1] on the right.
 
