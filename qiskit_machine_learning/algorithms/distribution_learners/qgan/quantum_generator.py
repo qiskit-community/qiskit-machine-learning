@@ -28,6 +28,7 @@ from ....exceptions import QiskitMachineLearningError
 from .generative_network import GenerativeNetwork
 from .discriminative_network import DiscriminativeNetwork
 
+
 # pylint: disable=invalid-name
 
 
@@ -278,9 +279,9 @@ class QuantumGenerator(GenerativeNetwork):
         if params is None:
             params = cast(np.ndarray, self._bound_parameters)
         qc.append(self.construct_circuit(params), q)
-        if quantum_instance.is_statevector:
-            pass
-        else:
+
+        # TODO handle statevector case
+        if not quantum_instance.is_statevector:
             c = ClassicalRegister(sum(self._num_qubits), name='c')
             qc.add_register(c)
             qc.measure(q, c)
@@ -388,6 +389,7 @@ class QuantumGenerator(GenerativeNetwork):
                 parameter values and returns partial derivatives of the loss
                 function w.r.t. the variational parameters.
         """
+
         def gradient_function(current_point):
             """
             Gradient function
@@ -449,7 +451,7 @@ class QuantumGenerator(GenerativeNetwork):
         if isinstance(self._gradient_function, Gradient):
             self._gradient_function = self._convert_to_gradient_function(
                 self._gradient_function, quantum_instance, self._discriminator
-                )
+            )
 
         objective = self._get_objective_function(quantum_instance, self._discriminator)
         self._bound_parameters, loss, _ = self._optimizer.optimize(
@@ -457,7 +459,7 @@ class QuantumGenerator(GenerativeNetwork):
             objective_function=objective,
             initial_point=self._bound_parameters,
             gradient_function=self._gradient_function
-            )
+        )
 
         self._ret['loss'] = loss
         self._ret['params'] = self._bound_parameters

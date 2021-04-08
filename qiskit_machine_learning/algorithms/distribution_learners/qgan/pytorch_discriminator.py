@@ -119,10 +119,9 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
             torch.Tensor: Discriminator output, i.e. data label
         """
 
+        # TODO handle tensor case
         # pylint: disable=not-callable, no-member
-        if isinstance(x, torch.Tensor):
-            pass
-        else:
+        if not isinstance(x, torch.Tensor):
             x = torch.tensor(x, dtype=torch.float32)
             x = Variable(x)
 
@@ -163,12 +162,12 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Returns:
             torch.Tensor: Gradient penalty.
         """
+        # TODO handle tensor case
         # pylint: disable=not-callable, no-member
-        if isinstance(x, torch.Tensor):
-            pass
-        else:
+        if not isinstance(x, torch.Tensor):
             x = torch.tensor(x, dtype=torch.float32)
             x = Variable(x)
+
         # pylint: disable=no-member
         delta_ = torch.rand(x.size()) * c
         z = Variable(x + delta_, requires_grad=True)

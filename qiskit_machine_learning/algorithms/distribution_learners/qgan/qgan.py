@@ -275,11 +275,10 @@ class QGAN:
         Raises:
             QiskitMachineLearningError: invalid input
         """
-        if generator_gradient:
-            if not isinstance(generator_gradient, (Gradient, FunctionType)):
-                raise QiskitMachineLearningError(
-                                'Please pass either a Gradient object or a function as '
-                                'the generator_gradient argument.')
+        if generator_gradient and not isinstance(generator_gradient, (Gradient, FunctionType)):
+            raise QiskitMachineLearningError(
+                            'Please pass either a Gradient object or a function as '
+                            'the generator_gradient argument.')
         self._generator = QuantumGenerator(self._bounds, self._num_qubits,
                                            generator_circuit, generator_init_params,
                                            generator_optimizer,
@@ -401,9 +400,8 @@ class QGAN:
             logger.debug('Loss Generator: %s', np.around(g_loss_min, 4))
             logger.debug('Relative Entropy: %s', np.around(rel_entr, 4))
 
-            if self._tol_rel_ent is not None:
-                if rel_entr <= self._tol_rel_ent:
-                    break
+            if self._tol_rel_ent is not None and rel_entr <= self._tol_rel_ent:
+                break
 
     def _run(self):
         """

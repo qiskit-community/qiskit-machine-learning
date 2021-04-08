@@ -53,13 +53,7 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=
     data = data.reshape((len(data), len(num_qubits)))
     temp = []
     for i, data_sample in enumerate(data):
-        append = True
-        for j, entry in enumerate(data_sample):
-            if entry < bounds[j, 0]:
-                append = False
-            if entry > bounds[j, 1]:
-                append = False
-        if append:
+        if all(bounds[j, 0] <= entry <= bounds[j, 1] for j, entry in enumerate(data_sample)):
             temp.append(list(data_sample))
     data = np.array(temp)
 
@@ -91,7 +85,7 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=
             temp = []
             for grid_element in grid_elements:
                 for element_current in elements_current_dim:
-                    temp.append(grid_element+[element_current])
+                    temp.append(grid_element + [element_current])
             grid_elements = deepcopy(temp)
             data_grid.append(elements_current_dim)
     data_grid = np.array(data_grid, dtype=object)
@@ -116,12 +110,11 @@ def discretize_and_truncate(data, bounds, num_qubits, return_data_grid_elements=
         else:
             return data, data_grid, prob_data
 
-    else:
-        if return_data_grid_elements:
-            return data, data_grid, grid_elements
+    elif return_data_grid_elements:
+        return data, data_grid, grid_elements
 
-        else:
-            return data, data_grid
+    else:
+        return data, data_grid
 
 
 def features_and_labels_transform(dataset: Dict[str, np.ndarray],

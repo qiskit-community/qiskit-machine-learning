@@ -27,8 +27,8 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         class_labels = [r'A', r'B']
         label_train = np.zeros(2 * (training_size + test_size))
         sample_train = []
-        sample_a = [[0 for x in range(n)] for y in range(training_size + test_size)]
-        sample_b = [[0 for x in range(n)] for y in range(training_size + test_size)]
+        sample_a = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
+        sample_b = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
         randomized_vector1 = algorithm_globals.random.integers(2, size=n)
         randomized_vector2 = (randomized_vector1 + 1) % 2
         for t_r in range(training_size + test_size):
@@ -81,9 +81,9 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         class_labels = [r'A', r'B', r'C']
         label_train = np.zeros(3 * (training_size + test_size))
         sample_train = []
-        sample_a = [[0 for x in range(n)] for y in range(training_size + test_size)]
-        sample_b = [[0 for x in range(n)] for y in range(training_size + test_size)]
-        sample_c = [[0 for x in range(n)] for y in range(training_size + test_size)]
+        sample_a = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
+        sample_b = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
+        sample_c = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
         randomized_vector1 = algorithm_globals.random.integers(3, size=n)
         randomized_vector2 = (randomized_vector1 + 1) % 3
         randomized_vector3 = (randomized_vector2 + 1) % 3
