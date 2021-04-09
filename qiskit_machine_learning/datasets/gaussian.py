@@ -36,7 +36,7 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
                 sample[t_r][feat] = _calc_random_normal(randomized_vector, feat,
                                                         sigma) if n == 2 \
                     else _calc_random_normal_2(randomized_vector, feat, sigma)
-                # TODO unify both functions in the future when other n's supported
+                # TODO unify both functions in the future when other n supported
 
     _update_label_train(n, label_train, test_size, training_size)
     label_train = label_train.astype(int)
