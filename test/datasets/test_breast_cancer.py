@@ -40,7 +40,7 @@ class TestBreastCancer(QiskitMachineLearningTestCase):
         np.testing.assert_almost_equal(ref_data["training_labels"], training_labels)
 
         np.testing.assert_almost_equal(ref_data["test_features"], test_features)
-        np.testing.assert_array_equal(ref_data["test_labels"],  test_labels)
+        np.testing.assert_array_equal(ref_data["test_labels"], test_labels)
 
 
 if __name__ == '__main__':

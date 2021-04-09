@@ -22,7 +22,7 @@ from .dataset_helper import features_and_labels_transform
 
 def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
     """ returns gaussian dataset """
-    if n != 2 and n != 3:
+    if n not in (2, 3):
         raise ValueError("Gaussian presently only supports 2 or 3 qubits")
 
     class_labels = _generate_class_labels(n)
@@ -44,8 +44,9 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
     samples_train = np.reshape(samples_train, (n * (training_size + test_size), n))
     training_input = {key: (samples_train[label_train == k, :])[:training_size]
                       for k, key in enumerate(class_labels)}
-    test_input = {key: (samples_train[label_train == k, :])[training_size:(
-            training_size + test_size)] for k, key in enumerate(class_labels)}
+    test_input = {
+        key: (samples_train[label_train == k, :])[training_size:(training_size + test_size)] for
+        k, key in enumerate(class_labels)}
 
     training_feature_array, training_label_array = features_and_labels_transform(
         training_input, class_labels, one_hot)
