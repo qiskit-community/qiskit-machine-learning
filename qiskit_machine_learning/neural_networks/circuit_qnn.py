@@ -183,6 +183,15 @@ class CircuitQNN(SamplingNeuralNetwork):
         orig_memory = self.quantum_instance.backend_options.get('memory')
         self.quantum_instance.backend_options['memory'] = True
 
+        circuits, rows = self._build_circuits(input_data, weights)
+
+        result = self._quantum_instance.execute(circuits)
+        # set the memory setting back
+        self.quantum_instance.backend_options['memory'] = orig_memory
+
+        return self._collect_samples(circuits, result, rows)
+
+    def _build_circuits(self, input_data, weights):
         circuits = []
         # iterate over rows, each row is an element of a batch
         rows = input_data.shape[0]
@@ -192,12 +201,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             param_values.update({weight_param: weights[j]
                                  for j, weight_param in enumerate(self.weight_params)})
             circuits.append(self._circuit.bind_parameters(param_values))
+        return circuits, rows
 
-        result = self._quantum_instance.execute(circuits)
-        # set the memory setting back
-        self.quantum_instance.backend_options['memory'] = orig_memory
-
-        # return samples
+    def _collect_samples(self, circuits, result, rows):
         samples = np.zeros((rows, *self.output_shape))
         # collect them from all executed circuits
         for i, circuit in enumerate(circuits):
@@ -209,14 +215,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                        ) -> Union[np.ndarray, SparseArray]:
         # evaluate operator
-        circuits = []
-        rows = input_data.shape[0]
-        for i in range(rows):
-            param_values = {input_param: input_data[i, j]
-                            for j, input_param in enumerate(self.input_params)}
-            param_values.update({weight_param: weights[j]
-                                 for j, weight_param in enumerate(self.weight_params)})
-            circuits.append(self._circuit.bind_parameters(param_values))
+        circuits, rows = self._build_circuits(input_data, weights)
 
         result = self.quantum_instance.execute(circuits)
         # initialize probabilities
@@ -252,13 +251,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         rows = input_data.shape[0]
 
-        # initialize empty gradients
-        if self._sparse:
-            input_grad = DOK((rows, *self.output_shape, self.num_inputs))
-            weights_grad = DOK((rows, *self.output_shape, self.num_weights))
-        else:
-            input_grad = np.zeros((rows, *self.output_shape, self.num_inputs))
-            weights_grad = np.zeros((rows, *self.output_shape, self.num_weights))
+        input_grad, weights_grad = self._init_empty_gradients(rows)
 
         for row in range(rows):
             param_values = {input_param: input_data[row, j]
@@ -271,31 +264,45 @@ class CircuitQNN(SamplingNeuralNetwork):
             grad = self._sampler.convert(self._grad_circuit, param_values
                                          ).bind_parameters(param_values).eval()
 
-            # construct gradients
-            for i in range(self.num_inputs + self.num_weights):
-                coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
-
-                # get index for input or weights gradients
-                j = i if i < self.num_inputs else i - self.num_inputs
-
-                for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
-
-                    # interpret integer and construct key
-                    key = self._interpret(k)
-                    if isinstance(key, Integral):
-                        key = (row, int(key), j)
-                    else:
-                        # if key is an array-type, cast to hashable tuple
-                        key = tuple(cast(Iterable[int], key))
-                        key = (row, *key, j)  # type: ignore
-
-                    # store value for inputs or weights gradients
-                    if i < self.num_inputs:
-                        input_grad[key] += np.real(val)
-                    else:
-                        weights_grad[key] += np.real(val)
+            self._construct_gradients(grad, input_grad, row, weights_grad)
 
         if self.sparse:
             return input_grad.to_coo(), weights_grad.to_coo()
         else:
             return input_grad, weights_grad
+
+    def _init_empty_gradients(self, rows):
+        if self._sparse:
+            input_grad = DOK((rows, *self.output_shape, self.num_inputs))
+            weights_grad = DOK((rows, *self.output_shape, self.num_weights))
+        else:
+            input_grad = np.zeros((rows, *self.output_shape, self.num_inputs))
+            weights_grad = np.zeros((rows, *self.output_shape, self.num_weights))
+        return input_grad, weights_grad
+
+    def _construct_gradients(self, grad, input_grad, row, weights_grad):
+        for i in range(self.num_inputs + self.num_weights):
+            coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
+
+            # get index for input or weights gradients
+            j = i if i < self.num_inputs else i - self.num_inputs
+
+            for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
+                # interpret integer and construct key
+                key = self._construct_key(j, k, row)
+
+                # store value for inputs or weights gradients
+                if i < self.num_inputs:
+                    input_grad[key] += np.real(val)
+                else:
+                    weights_grad[key] += np.real(val)
+
+    def _construct_key(self, j, k, row):
+        key = self._interpret(k)
+        if isinstance(key, Integral):
+            key = (row, int(key), j)
+        else:
+            # if key is an array-type, cast to hashable tuple
+            key = tuple(cast(Iterable[int], key))
+            key = (row, *key, j)  # type: ignore
+        return key

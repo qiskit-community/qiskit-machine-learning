@@ -22,138 +22,101 @@ from .dataset_helper import features_and_labels_transform
 
 def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
     """ returns gaussian dataset """
-    sigma = 1
-    if n == 2:
-        class_labels = [r'A', r'B']
-        label_train = np.zeros(2 * (training_size + test_size))
-        sample_train = []
-        sample_a = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
-        sample_b = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
-        randomized_vector1 = algorithm_globals.random.integers(2, size=n)
-        randomized_vector2 = (randomized_vector1 + 1) % 2
-        for t_r in range(training_size + test_size):
-            for feat in range(n):
-                if randomized_vector1[feat] == 0:
-                    sample_a[t_r][feat] = algorithm_globals.random.normal(-1 / 2, sigma, None)
-                elif randomized_vector1[feat] == 1:
-                    sample_a[t_r][feat] = algorithm_globals.random.normal(1 / 2, sigma, None)
-
-                if randomized_vector2[feat] == 0:
-                    sample_b[t_r][feat] = algorithm_globals.random.normal(-1 / 2, sigma, None)
-                elif randomized_vector2[feat] == 1:
-                    sample_b[t_r][feat] = algorithm_globals.random.normal(1 / 2, sigma, None)
-
-        sample_train = [sample_a, sample_b]
-        for lindex in range(training_size + test_size):
-            label_train[lindex] = 0
-        for lindex in range(training_size + test_size):
-            label_train[training_size + test_size + lindex] = 1
-        label_train = label_train.astype(int)
-        sample_train = np.reshape(sample_train, (2 * (training_size + test_size), n))
-        training_input = {key: (sample_train[label_train == k, :])[:training_size]
-                          for k, key in enumerate(class_labels)}
-        test_input = {key: (sample_train[label_train == k, :])[training_size:(
-                training_size + test_size)] for k, key in enumerate(class_labels)}
-
-        training_feature_array, training_label_array = features_and_labels_transform(
-            training_input, class_labels, one_hot)
-        test_feature_array, test_label_array = features_and_labels_transform(
-            test_input, class_labels, one_hot)
-
-        if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname='Matplotlib',
-                    name='gaussian',
-                    pip_install='pip install matplotlib') from ex
-
-            for k in range(0, 2):
-                plt.scatter(sample_train[label_train == k, 0][:training_size],
-                            sample_train[label_train == k, 1][:training_size])
-
-            plt.title("Gaussians")
-            plt.show()
-
-        return training_feature_array, training_label_array, test_feature_array, test_label_array
-    elif n == 3:
-        class_labels = [r'A', r'B', r'C']
-        label_train = np.zeros(3 * (training_size + test_size))
-        sample_train = []
-        sample_a = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
-        sample_b = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
-        sample_c = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
-        randomized_vector1 = algorithm_globals.random.integers(3, size=n)
-        randomized_vector2 = (randomized_vector1 + 1) % 3
-        randomized_vector3 = (randomized_vector2 + 1) % 3
-        for t_r in range(training_size + test_size):
-            for feat in range(n):
-                if randomized_vector1[feat] == 0:
-                    sample_a[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 1 * np.pi / 6, sigma, None)
-                elif randomized_vector1[feat] == 1:
-                    sample_a[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 3 * np.pi / 6, sigma, None)
-                elif randomized_vector1[feat] == 2:
-                    sample_a[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 5 * np.pi / 6, sigma, None)
-
-                if randomized_vector2[feat] == 0:
-                    sample_b[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 1 * np.pi / 6, sigma, None)
-                elif randomized_vector2[feat] == 1:
-                    sample_b[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 3 * np.pi / 6, sigma, None)
-                elif randomized_vector2[feat] == 2:
-                    sample_b[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 5 * np.pi / 6, sigma, None)
-
-                if randomized_vector3[feat] == 0:
-                    sample_c[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 1 * np.pi / 6, sigma, None)
-                elif randomized_vector3[feat] == 1:
-                    sample_c[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 3 * np.pi / 6, sigma, None)
-                elif randomized_vector3[feat] == 2:
-                    sample_c[t_r][feat] = \
-                        algorithm_globals.random.normal(2 * 5 * np.pi / 6, sigma, None)
-
-        sample_train = [sample_a, sample_b, sample_c]
-        for lindex in range(training_size + test_size):
-            label_train[lindex] = 0
-        for lindex in range(training_size + test_size):
-            label_train[training_size + test_size + lindex] = 1
-        for lindex in range(training_size + test_size):
-            label_train[training_size + test_size + training_size + test_size + lindex] = 2
-        label_train = label_train.astype(int)
-        sample_train = np.reshape(sample_train, (3 * (training_size + test_size), n))
-        training_input = {key: (sample_train[label_train == k, :])[:training_size]
-                          for k, key in enumerate(class_labels)}
-        test_input = {key: (sample_train[label_train == k, :])[training_size:(
-                training_size + test_size)] for k, key in enumerate(class_labels)}
-
-        training_feature_array, training_label_array = features_and_labels_transform(
-            training_input, class_labels, one_hot)
-        test_feature_array, test_label_array = features_and_labels_transform(
-            test_input, class_labels, one_hot)
-
-        if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname='Matplotlib',
-                    name='gaussian',
-                    pip_install='pip install matplotlib') from ex
-
-            for k in range(0, 3):
-                plt.scatter(sample_train[label_train == k, 0][:training_size],
-                            sample_train[label_train == k, 1][:training_size])
-
-            plt.title("Gaussians")
-            plt.show()
-
-        return training_feature_array, training_label_array, test_feature_array, test_label_array
-    else:
+    if n != 2 and n != 3:
         raise ValueError("Gaussian presently only supports 2 or 3 qubits")
+
+    class_labels = _generate_class_labels(n)
+    label_train, randomized_vectors, samples_train = _init_data_structures(n, test_size,
+                                                                           training_size)
+    sigma = 1
+
+    for t_r in range(training_size + test_size):
+        for feat in range(n):
+            for sample, randomized_vector in zip(samples_train, randomized_vectors):
+                sample[t_r][feat] = _calc_random_normal(randomized_vector, feat,
+                                                        sigma) if n == 2 \
+                    else _calc_random_normal_2(randomized_vector, feat, sigma)
+                # TODO unify both functions in the future when other n's supported
+
+    _update_label_train(n, label_train, test_size, training_size)
+    label_train = label_train.astype(int)
+
+    samples_train = np.reshape(samples_train, (n * (training_size + test_size), n))
+    training_input = {key: (samples_train[label_train == k, :])[:training_size]
+                      for k, key in enumerate(class_labels)}
+    test_input = {key: (samples_train[label_train == k, :])[training_size:(
+            training_size + test_size)] for k, key in enumerate(class_labels)}
+
+    training_feature_array, training_label_array = features_and_labels_transform(
+        training_input, class_labels, one_hot)
+    test_feature_array, test_label_array = features_and_labels_transform(
+        test_input, class_labels, one_hot)
+
+    if plot_data:
+        _plot(n, label_train, samples_train, training_size)
+
+    return training_feature_array, training_label_array, test_feature_array, test_label_array
+
+
+def _generate_class_labels(n):
+    if n > 25:
+        # TODO change to it a more complex labeling system e.g. AA, AB, AAA etc. or just to C1,
+        #  C2, C3 etc.
+        raise Exception("To many classes requested. Maximum is 26")
+    capital_a_ascii = 65
+    return [r'%c' % x for x in range(capital_a_ascii, capital_a_ascii + n)]
+
+
+def _update_label_train(n, label_train, test_size, training_size):
+    for lindex in range(training_size + test_size):
+        for ind in range(n):
+            label_train[ind * (training_size + test_size) + lindex] = ind
+
+
+def _plot(n, label_train, sample_train, training_size):
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError as ex:
+        raise MissingOptionalLibraryError(
+            libname='Matplotlib',
+            name='gaussian',
+            pip_install='pip install matplotlib') from ex
+    for k in range(n):
+        plt.scatter(sample_train[label_train == k, 0][:training_size],
+                    sample_train[label_train == k, 1][:training_size])
+    plt.title("Gaussians")
+    plt.show()
+
+
+def _init_data_structures(n, test_size, training_size):
+    label_train = np.zeros(n * (training_size + test_size))
+    samples = _init_samples(n, test_size, training_size)
+    randomized_vectors = _init_randomized_vectors(n)
+    return label_train, randomized_vectors, samples
+
+
+def _init_randomized_vectors(n):
+    randomized_vector = algorithm_globals.random.integers(n, size=n)
+    randomized_vectors = [randomized_vector]
+    for _ in range(n - 1):
+        randomized_vector = (randomized_vector + 1) % n
+        randomized_vectors.append(randomized_vector)
+    return randomized_vectors
+
+
+def _init_samples(n, test_size, training_size):
+    samples = []
+    for _ in range(n):
+        sample = [[0 for _ in range(n)] for _ in range(training_size + test_size)]
+        samples.append(sample)
+    return samples
+
+
+def _calc_random_normal(randomized_vector, feat, sigma):
+    center = 1 / 2
+    return algorithm_globals.random.normal(pow(-1, randomized_vector[feat]) * center, sigma, None)
+
+
+def _calc_random_normal_2(randomized_vector, feat, sigma):
+    coefficient = 2 * (1 + 2 * randomized_vector[feat])
+    return algorithm_globals.random.normal(coefficient * np.pi / 6, sigma, None)
