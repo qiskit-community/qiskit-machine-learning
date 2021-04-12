@@ -23,7 +23,7 @@ from .dataset_helper import features_and_labels_transform
 def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
     """ returns gaussian dataset """
     if n not in (2, 3):
-        raise ValueError("Gaussian presently only supports 2 or 3 qubits")
+        raise ValueError(f"Gaussian presently only supports 2 or 3 qubits, {n} qubits requested.")
 
     class_labels = _generate_class_labels(n)
     label_train, randomized_vectors, samples_train = _init_data_structures(n, test_size,
@@ -63,7 +63,7 @@ def _generate_class_labels(n):
     if n > 25:
         # TODO change to it a more complex labeling system e.g. AA, AB, AAA etc. or just to C1,
         #  C2, C3 etc.
-        raise Exception("To many classes requested. Maximum is 26")
+        raise ValueError(f"To many classes requested, {n}. Maximum is 26")
     capital_a_ascii = 65
     return [r'%c' % x for x in range(capital_a_ascii, capital_a_ascii + n)]
 
