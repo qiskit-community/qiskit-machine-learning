@@ -39,7 +39,7 @@ class TestDigits(QiskitMachineLearningTestCase):
         np.testing.assert_almost_equal(ref_data["training_features"], training_features, 4)
         np.testing.assert_almost_equal(ref_data["training_labels"], training_labels, 4)
 
-        np.testing.assert_almost_equal(ref_data["test_features"], test_features, 4)
+        np.testing.assert_almost_equal(ref_data["test_features"], test_features, 3)
         np.testing.assert_almost_equal(ref_data["test_labels"], test_labels, 4)
 
 
