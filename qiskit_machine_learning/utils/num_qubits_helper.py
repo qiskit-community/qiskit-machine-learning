@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-from typing import Union, List, Tuple, Dict
+from typing import Tuple, Dict
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
@@ -18,7 +18,7 @@ from qiskit_machine_learning import QiskitMachineLearningError
 
 
 def retrieve_arguments_if_none(ansatz: QuantumCircuit, feature_map: QuantumCircuit,
-                               num_qubits: int) -> Tuple[QuantumCircuit, QuantumCircuit, int]:
+                               num_qubits: int):
     num_qubits_dic = {}
     if ansatz:
         num_qubits_dic["ansatz"] = ansatz.num_qubits

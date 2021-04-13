@@ -52,13 +52,10 @@ class TwoLayerQNN(OpflowQNN):
         """
 
         # check num_qubits, feature_map, and ansatz
-        ansatz_, feature_map_, num_qubits_ = retrieve_arguments_if_none(ansatz, feature_map,
+        self._ansatz, self._feature_map, num_qubits_ = retrieve_arguments_if_none(ansatz, feature_map,
                                                                         num_qubits)
 
-        self._feature_map = feature_map_
         input_params = list(self._feature_map.parameters)
-
-        self._ansatz = ansatz_
         weight_params = list(self._ansatz.parameters)
 
         # construct circuit
