@@ -146,7 +146,8 @@ class QuantumKernel:
                 qc.measure(q, c)
         return qc
 
-    def _compute_overlap(self, idx, results, is_statevector_sim, measurement_basis):
+    @staticmethod
+    def _compute_overlap(idx, results, is_statevector_sim, measurement_basis):
         """
         Helper function to compute overlap for given input.
         """
@@ -187,47 +188,7 @@ class QuantumKernel:
                 - x_vec and/or y_vec have incompatible dimension with feature map and
                     and feature map can not be modified to match.
         """
-        if self._quantum_instance is None:
-            raise QiskitMachineLearningError(
-                "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel.")
-        if isinstance(self._quantum_instance, (BaseBackend, Backend)):
-            self._quantum_instance = QuantumInstance(self._quantum_instance)
-
-        if not isinstance(x_vec, np.ndarray):
-            x_vec = np.asarray(x_vec)
-        if y_vec is not None and not isinstance(y_vec, np.ndarray):
-            y_vec = np.asarray(y_vec)
-
-        if x_vec.ndim > 2:
-            raise ValueError("x_vec must be a 1D or 2D array")
-
-        if x_vec.ndim == 1:
-            x_vec = np.reshape(x_vec, (-1, 2))
-
-        if y_vec is not None and y_vec.ndim > 2:
-            raise ValueError("y_vec must be a 1D or 2D array")
-
-        if y_vec is not None and y_vec.ndim == 1:
-            y_vec = np.reshape(y_vec, (-1, 2))
-
-        if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
-            raise ValueError("x_vec and y_vec have incompatible dimensions.\n" +
-                             "x_vec has %s dimensions, but y_vec has %s." %
-                             (x_vec.shape[1], y_vec.shape[1]))
-
-        if x_vec.shape[1] != self._feature_map.num_parameters:
-            try:
-                self._feature_map.num_qubits = x_vec.shape[1]
-            except AttributeError:
-                raise ValueError(
-                    "x_vec and class feature map have incompatible dimensions.\n" +
-                    "x_vec has %s dimensions, but feature map has %s." %
-                    (x_vec.shape[1], self._feature_map.num_parameters)) from AttributeError
-
-        if y_vec is not None and y_vec.shape[1] != self._feature_map.num_parameters:
-            raise ValueError("y_vec and class feature map have incompatible dimensions.\n" +
-                             "y_vec has %s dimensions, but feature map has %s." %
-                             (y_vec.shape[1], self._feature_map.num_parameters))
+        x_vec, y_vec = self._validate_and_adjust_input(x_vec, y_vec)
 
         # determine if calculating self inner product
         is_symmetric = True
@@ -243,13 +204,7 @@ class QuantumKernel:
         if is_symmetric:
             np.fill_diagonal(kernel, 1)
 
-        # get indices to calculate
-        if is_symmetric:
-            mus, nus = np.triu_indices(x_vec.shape[0], k=1)  # remove diagonal
-        else:
-            mus, nus = np.indices((x_vec.shape[0], y_vec.shape[0]))
-            mus = np.asarray(mus.flat)
-            nus = np.asarray(nus.flat)
+        mus, nus = self._get_indices_to_calculate(is_symmetric, x_vec, y_vec)
 
         is_statevector_sim = self._quantum_instance.is_statevector
         measurement = not is_statevector_sim
@@ -257,72 +212,134 @@ class QuantumKernel:
 
         # calculate kernel
         if is_statevector_sim:  # using state vector simulator
-            if is_symmetric:
-                to_be_computed_data = x_vec
-            else:  # not symmetric
-                to_be_computed_data = np.concatenate((x_vec, y_vec))
+            self._calc_kernel_state_vec_sim(is_statevector_sim, is_symmetric, kernel, measurement,
+                                            measurement_basis, mus, nus, x_vec, y_vec)
 
-            feature_map_params = ParameterVector('par_x', self._feature_map.num_parameters)
-            parameterized_circuit = self.construct_circuit(
-                feature_map_params, feature_map_params,
-                measurement=measurement, is_statevector_sim=is_statevector_sim)
-            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
-            circuits = [parameterized_circuit.assign_parameters({feature_map_params: x})
-                        for x in to_be_computed_data]
+        else:  # not using state vector simulator
+            kernel = self._calc_kernel_other_method(is_statevector_sim, is_symmetric, kernel,
+                                                    measurement, measurement_basis, mus, nus, x_vec,
+                                                    y_vec)
+
+        return kernel
+
+    # TODO simplify
+    def _validate_and_adjust_input(self, x_vec, y_vec):
+        self._validate_and_adjust_backend()
+        if not isinstance(x_vec, np.ndarray):
+            x_vec = np.asarray(x_vec)
+        if y_vec is not None and not isinstance(y_vec, np.ndarray):
+            y_vec = np.asarray(y_vec)
+        x_vec, y_vec = self._validate_adjust_vecs_dims(x_vec, y_vec)
+        if x_vec.shape[1] != self._feature_map.num_parameters:
+            try:
+                self._feature_map.num_qubits = x_vec.shape[1]
+            except AttributeError:
+                raise ValueError(
+                    "x_vec and class feature map have incompatible dimensions.\n" +
+                    "x_vec has %s dimensions, but feature map has %s." %
+                    (x_vec.shape[1], self._feature_map.num_parameters)) from AttributeError
+        if y_vec is not None and y_vec.shape[1] != self._feature_map.num_parameters:
+            raise ValueError("y_vec and class feature map have incompatible dimensions.\n" +
+                             "y_vec has %s dimensions, but feature map has %s." %
+                             (y_vec.shape[1], self._feature_map.num_parameters))
+        return x_vec, y_vec
+
+    def _validate_and_adjust_backend(self):
+        if self._quantum_instance is None:
+            raise QiskitMachineLearningError(
+                "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel.")
+        if isinstance(self._quantum_instance, (BaseBackend, Backend)):
+            self._quantum_instance = QuantumInstance(self._quantum_instance)
+
+    def _validate_adjust_vecs_dims(self, x_vec, y_vec):
+        x_vec = self._validate_and_adjust_vec_by_dim(x_vec, "x_vec")
+        y_vec = self._validate_and_adjust_vec_by_dim(y_vec, "y_vec")
+        if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
+            raise ValueError("x_vec and y_vec have incompatible dimensions.\n" +
+                             "x_vec has %s dimensions, but y_vec has %s." %
+                             (x_vec.shape[1], y_vec.shape[1]))
+        return x_vec, y_vec
+
+    @staticmethod
+    def _validate_and_adjust_vec_by_dim(vec, var_name: str):
+        # might get rid of var_name unless we insist on having it in the error message
+        if vec is not None and vec.ndim > 2:
+            raise ValueError(f"{var_name} must be a 1D or 2D array")
+        if vec is not None and vec.ndim == 1:
+            vec = np.reshape(vec, (-1, 2))
+        return vec
+
+    @staticmethod
+    def _get_indices_to_calculate(is_symmetric, x_vec, y_vec):
+        if is_symmetric:
+            mus, nus = np.triu_indices(x_vec.shape[0], k=1)  # remove diagonal
+        else:
+            mus, nus = np.indices((x_vec.shape[0], y_vec.shape[0]))
+            mus = np.asarray(mus.flat)
+            nus = np.asarray(nus.flat)
+        return mus, nus
+
+    def _calc_kernel_state_vec_sim(self, is_statevector_sim, is_symmetric, kernel, measurement,
+                                   measurement_basis, mus, nus, x_vec, y_vec):
+
+        to_be_computed_data = x_vec if is_symmetric else np.concatenate((x_vec, y_vec))
+        feature_map_params = ParameterVector('par_x', self._feature_map.num_parameters)
+        parameterized_circuit = self.construct_circuit(
+            feature_map_params, feature_map_params,
+            measurement=measurement, is_statevector_sim=is_statevector_sim)
+        parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
+        circuits = [parameterized_circuit.assign_parameters({feature_map_params: x})
+                    for x in to_be_computed_data]
+        results = self._quantum_instance.execute(circuits)
+        offset = 0 if is_symmetric else len(x_vec)
+        matrix_elements = [self._compute_overlap(idx, results,
+                                                 is_statevector_sim, measurement_basis)
+                           for idx in list(zip(mus, nus + offset))]
+        for i, j, value in zip(mus, nus, matrix_elements):
+            kernel[i, j] = value
+            if is_symmetric:
+                kernel[j, i] = kernel[i, j]
+
+    # TODO what would be a better name? could be simplified
+    def _calc_kernel_other_method(self, is_statevector_sim, is_symmetric, kernel, measurement,
+                                  measurement_basis, mus, nus, x_vec, y_vec):
+        feature_map_params_x = ParameterVector('par_x', self._feature_map.num_parameters)
+        feature_map_params_y = ParameterVector('par_y', self._feature_map.num_parameters)
+        parameterized_circuit = self.construct_circuit(
+            feature_map_params_x, feature_map_params_y,
+            measurement=measurement, is_statevector_sim=is_statevector_sim)
+        parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
+        for idx in range(0, len(mus), self._batch_size):
+            to_be_computed_data_pair = []
+            to_be_computed_index = []
+            for sub_idx in range(idx, min(idx + self._batch_size, len(mus))):
+                i = mus[sub_idx]
+                j = nus[sub_idx]
+                x_i = x_vec[i]
+                y_j = y_vec[j]
+                if not np.all(x_i == y_j):
+                    to_be_computed_data_pair.append((x_i, y_j))
+                    to_be_computed_index.append((i, j))
+
+            circuits = [parameterized_circuit.assign_parameters({feature_map_params_x: x,
+                                                                 feature_map_params_y: y})
+                        for x, y in to_be_computed_data_pair]
 
             results = self._quantum_instance.execute(circuits)
 
-            offset = 0 if is_symmetric else len(x_vec)
-            matrix_elements = [self._compute_overlap(idx, results,
+            matrix_elements = [self._compute_overlap(circuit, results,
                                                      is_statevector_sim, measurement_basis)
-                               for idx in list(zip(mus, nus + offset))]
+                               for circuit in range(len(circuits))]
 
-            for i, j, value in zip(mus, nus, matrix_elements):
+            for (i, j), value in zip(to_be_computed_index, matrix_elements):
                 kernel[i, j] = value
                 if is_symmetric:
                     kernel[j, i] = kernel[i, j]
-
-        else:  # not using state vector simulator
-            feature_map_params_x = ParameterVector('par_x', self._feature_map.num_parameters)
-            feature_map_params_y = ParameterVector('par_y', self._feature_map.num_parameters)
-            parameterized_circuit = self.construct_circuit(
-                feature_map_params_x, feature_map_params_y,
-                measurement=measurement, is_statevector_sim=is_statevector_sim)
-            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
-
-            for idx in range(0, len(mus), self._batch_size):
-                to_be_computed_data_pair = []
-                to_be_computed_index = []
-                for sub_idx in range(idx, min(idx + self._batch_size, len(mus))):
-                    i = mus[sub_idx]
-                    j = nus[sub_idx]
-                    x_i = x_vec[i]
-                    y_j = y_vec[j]
-                    if not np.all(x_i == y_j):
-                        to_be_computed_data_pair.append((x_i, y_j))
-                        to_be_computed_index.append((i, j))
-
-                circuits = [parameterized_circuit.assign_parameters({feature_map_params_x: x,
-                                                                     feature_map_params_y: y})
-                            for x, y in to_be_computed_data_pair]
-
-                results = self._quantum_instance.execute(circuits)
-
-                matrix_elements = [self._compute_overlap(circuit, results,
-                                                         is_statevector_sim, measurement_basis)
-                                   for circuit in range(len(circuits))]
-
-                for (i, j), value in zip(to_be_computed_index, matrix_elements):
-                    kernel[i, j] = value
-                    if is_symmetric:
-                        kernel[j, i] = kernel[i, j]
-
-            if self._enforce_psd and is_symmetric:
-                # Find the closest positive semi-definite approximation to symmetric kernel matrix.
-                # The (symmetric) matrix should always be positive semi-definite by construction,
-                # but this can be violated in case of noise, such as sampling noise, thus the
-                # adjustment is only done if NOT using the statevector simulation.
-                D, U = np.linalg.eig(kernel)  # pylint: disable=invalid-name
-                kernel = U @ np.diag(np.maximum(0, D)) @ U.transpose()
-
+        if self._enforce_psd and is_symmetric:
+            # Find the closest positive semi-definite approximation to symmetric kernel matrix.
+            # The (symmetric) matrix should always be positive semi-definite by construction,
+            # but this can be violated in case of noise, such as sampling noise, thus the
+            # adjustment is only done if NOT using the statevector simulation.
+            D, U = np.linalg.eig(kernel)  # pylint: disable=invalid-name
+            kernel = U @ np.diag(np.maximum(0, D)) @ U.transpose()
         return kernel
