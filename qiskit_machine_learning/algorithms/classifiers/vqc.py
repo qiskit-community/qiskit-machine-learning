@@ -18,8 +18,8 @@ from qiskit import QuantumCircuit
 from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer
 
-from ...neural_networks import CircuitQNN
 from qiskit_machine_learning.utils.num_qubits_helper import retrieve_arguments_if_none
+from ...neural_networks import CircuitQNN
 from ...utils.loss_functions import Loss
 
 from .neural_network_classifier import NeuralNetworkClassifier
@@ -116,4 +116,5 @@ class VQC(NeuralNetworkClassifier):
     def _get_interpret(self, num_classes):
         def parity(x, num_classes=num_classes):
             return '{:b}'.format(x).count('1') % num_classes
+
         return parity

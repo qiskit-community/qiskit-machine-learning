@@ -52,8 +52,9 @@ class TwoLayerQNN(OpflowQNN):
         """
 
         # check num_qubits, feature_map, and ansatz
-        self._ansatz, self._feature_map, num_qubits_ = retrieve_arguments_if_none(ansatz, feature_map,
-                                                                        num_qubits)
+        self._ansatz, self._feature_map, num_qubits_ = retrieve_arguments_if_none(ansatz,
+                                                                                  feature_map,
+                                                                                  num_qubits)
 
         input_params = list(self._feature_map.parameters)
         weight_params = list(self._ansatz.parameters)
@@ -64,7 +65,8 @@ class TwoLayerQNN(OpflowQNN):
         self._circuit.append(self._ansatz, range(num_qubits_))
 
         # construct observable
-        self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits_, 1)])
+        self.observable = observable if observable else PauliSumOp.from_list(
+            [('Z' * num_qubits_, 1)])
 
         # combine all to operator
         operator = ~StateFn(self.observable) @ StateFn(self._circuit)
