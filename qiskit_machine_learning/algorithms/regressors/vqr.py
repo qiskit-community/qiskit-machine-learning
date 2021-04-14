@@ -48,6 +48,7 @@ class VQR(NeuralNetworkRegressor):
             loss: A target loss function to be used in training. Default is L2.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
+            quantum_instance: Quantum Instance or Backend or BaseBackend.
 
         Raises:
             QiskitMachineLearningError: Neither num_qubits, nor feature_map, nor ansatz given.

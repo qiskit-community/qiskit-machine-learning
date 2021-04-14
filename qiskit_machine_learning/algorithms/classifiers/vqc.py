@@ -18,7 +18,7 @@ from qiskit import QuantumCircuit
 from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer
 
-from qiskit_machine_learning.utils.num_qubits_helper import retrieve_arguments_if_none
+from qiskit_machine_learning.utils.num_qubits_helper import _retrieve_arguments_if_none
 from ...neural_networks import CircuitQNN
 from ...utils.loss_functions import Loss
 
@@ -45,6 +45,7 @@ class VQC(NeuralNetworkClassifier):
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
+            quantum_instance: Quantum Instance or Backend or BaseBackend.
 
         Raises:
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
@@ -52,8 +53,8 @@ class VQC(NeuralNetworkClassifier):
         """
 
         # check num_qubits, feature_map, and ansatz
-        ansatz_, feature_map_, num_qubits_ = retrieve_arguments_if_none(ansatz, feature_map,
-                                                                        num_qubits)
+        ansatz_, feature_map_, num_qubits_ = _retrieve_arguments_if_none(ansatz, feature_map,
+                                                                         num_qubits)
 
         # construct circuit
         self._feature_map = feature_map_

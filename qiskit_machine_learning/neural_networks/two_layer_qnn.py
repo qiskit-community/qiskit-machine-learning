@@ -20,7 +20,7 @@ from qiskit.opflow import PauliSumOp, StateFn, OperatorBase, ExpectationBase
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
-from qiskit_machine_learning.utils.num_qubits_helper import retrieve_arguments_if_none
+from qiskit_machine_learning.utils.num_qubits_helper import _retrieve_arguments_if_none
 from .opflow_qnn import OpflowQNN
 
 
@@ -46,15 +46,16 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
+            quantum_instance: Quantum Instance or Backend or BaseBackend.
 
         Raises:
             QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
         """
 
         # check num_qubits, feature_map, and ansatz
-        self._ansatz, self._feature_map, num_qubits_ = retrieve_arguments_if_none(ansatz,
-                                                                                  feature_map,
-                                                                                  num_qubits)
+        self._ansatz, self._feature_map, num_qubits_ = _retrieve_arguments_if_none(ansatz,
+                                                                                   feature_map,
+                                                                                   num_qubits)
 
         input_params = list(self._feature_map.parameters)
         weight_params = list(self._ansatz.parameters)

@@ -9,6 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Populates ansatz, feature_map, num_qubits if any of them is None."""
 from typing import Dict
 
 from qiskit import QuantumCircuit
@@ -17,8 +18,28 @@ from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit_machine_learning import QiskitMachineLearningError
 
 
-def retrieve_arguments_if_none(ansatz: QuantumCircuit, feature_map: QuantumCircuit,
-                               num_qubits: int):
+# TODO perhaps move to a better place. Used in 2 classes that do not have a common ancestor.
+def _retrieve_arguments_if_none(ansatz: QuantumCircuit, feature_map: QuantumCircuit,
+                                num_qubits: int):
+    r"""
+    Populates ansatz, feature_map, num_qubits if any of them is None, based on information
+    retreived from others.
+
+    Args:
+        ansatz: The ansatz for the underlying CircuitQNN. If None, use RealAmplitudes.
+        feature_map: The feature map for underlying CircuitQNN. If None, use ZZFeatureMap.
+        num_qubits: The number of qubits for the underlying CircuitQNN. If None, derive from
+        feature_map or ansatz. If neither of those is given, raise exception.
+
+    Returns:
+        Input arguments which were populated if None.
+
+    Raises:
+        QiskitMachineLearningError:
+            - all of the arguments are None,
+            - incompatible number of qubits detected
+    """
+
     num_qubits_dic = {}
     if ansatz:
         num_qubits_dic["ansatz"] = ansatz.num_qubits

@@ -116,6 +116,4 @@ class CrossEntropySigmoidLoss(Loss):
 
     def gradient(self, predict, target):
         predict, target = self._validate(predict, target)
-
-        return target * (1. / (1. + np.exp(-predict)) - 1) + (1 - target) * (
-                1. / (1. + np.exp(-predict)))
+        return 1. / (1. + np.exp(-predict)) - target
