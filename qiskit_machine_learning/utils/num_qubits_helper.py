@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Populates ansatz, feature_map, num_qubits if any of them is None."""
-from typing import Dict
+from typing import Dict, Tuple
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
@@ -20,7 +20,7 @@ from qiskit_machine_learning import QiskitMachineLearningError
 
 # TODO perhaps move to a better place. Used in 2 classes that do not have a common ancestor.
 def _retrieve_arguments_if_none(ansatz: QuantumCircuit, feature_map: QuantumCircuit,
-                                num_qubits: int):
+                                num_qubits: int) -> Tuple[QuantumCircuit, QuantumCircuit, int]:
     r"""
     Populates ansatz, feature_map, num_qubits if any of them is None, based on information
     retreived from others.
@@ -32,7 +32,7 @@ def _retrieve_arguments_if_none(ansatz: QuantumCircuit, feature_map: QuantumCirc
         feature_map or ansatz. If neither of those is given, raise exception.
 
     Returns:
-        Input arguments which were populated if None.
+        Populated input args.
 
     Raises:
         QiskitMachineLearningError:
