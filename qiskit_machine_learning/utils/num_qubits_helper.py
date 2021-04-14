@@ -23,7 +23,7 @@ def _retrieve_arguments_if_none(ansatz: QuantumCircuit, feature_map: QuantumCirc
                                 num_qubits: int) -> Tuple[QuantumCircuit, QuantumCircuit, int]:
     r"""
     Populates ansatz, feature_map, num_qubits if any of them is None, based on information
-    retreived from others.
+    retrieved from others.
 
     Args:
         ansatz: The ansatz for the underlying CircuitQNN. If None, use RealAmplitudes.
