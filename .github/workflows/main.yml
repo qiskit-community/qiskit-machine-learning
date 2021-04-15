@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
@@ -95,7 +95,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - run: make lint
         if: ${{ !cancelled() }}
@@ -121,7 +121,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-libraries
       - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
@@ -159,7 +159,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
