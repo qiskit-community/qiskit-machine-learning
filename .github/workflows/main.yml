@@ -143,6 +143,14 @@ jobs:
         with:
           name: ml${{ matrix.python-version }}
           path: ./m${{ matrix.python-version }}/*
+      - name: Machine Learning Unit Tests without torch/torchvision under Python ${{ matrix.python-version }}
+        run: |
+          pip uninstall -y torch torchvision
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+              export QISKIT_TESTS="run_slow"
+          fi
+          stestr --test-path test run
+        shell: bash
   Tutorials:
     runs-on: ubuntu-latest
     strategy:

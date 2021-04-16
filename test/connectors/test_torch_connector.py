@@ -476,57 +476,61 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # set up PyTorch module
         initial_weights = np.random.rand(qnn.num_weights)
-        model = TorchConnector(qnn, initial_weights=initial_weights)
+        try:
+            model = TorchConnector(qnn, initial_weights=initial_weights)
 
-        # test single gradient
-        w = model.weights.detach().numpy()
-        res_qnn = qnn.forward(x[0, :], w)
+            # test single gradient
+            w = model.weights.detach().numpy()
+            res_qnn = qnn.forward(x[0, :], w)
 
-        # construct finite difference gradient for weights
-        eps = 1e-4
-        grad = np.zeros(w.shape)
-        for k in range(len(w)):
-            delta = np.zeros(w.shape)
-            delta[k] += eps
+            # construct finite difference gradient for weights
+            eps = 1e-4
+            grad = np.zeros(w.shape)
+            for k in range(len(w)):
+                delta = np.zeros(w.shape)
+                delta[k] += eps
 
-            f_1 = qnn.forward(x[0, :], w + delta)
-            f_2 = qnn.forward(x[0, :], w - delta)
+                f_1 = qnn.forward(x[0, :], w + delta)
+                f_2 = qnn.forward(x[0, :], w - delta)
 
-            grad[k] = (f_1 - f_2) / (2*eps)
+                grad[k] = (f_1 - f_2) / (2*eps)
 
-        grad_qnn = qnn.backward(x[0, :], w)[1][0, 0, :]
-        self.assertAlmostEqual(np.linalg.norm(grad - grad_qnn), 0.0, places=4)
+            grad_qnn = qnn.backward(x[0, :], w)[1][0, 0, :]
+            self.assertAlmostEqual(np.linalg.norm(grad - grad_qnn), 0.0, places=4)
 
-        model.zero_grad()
-        res_model = model(Tensor(x[0, :]))
-        self.assertAlmostEqual(np.linalg.norm(res_model.detach().numpy() - res_qnn[0]), 0.0,
-                               places=4)
-        res_model.backward()
-        grad_model = model.weights.grad
-        self.assertAlmostEqual(np.linalg.norm(grad_model.detach().numpy() - grad_qnn), 0.0,
-                               places=4)
+            model.zero_grad()
+            res_model = model(Tensor(x[0, :]))
+            self.assertAlmostEqual(np.linalg.norm(res_model.detach().numpy() - res_qnn[0]), 0.0,
+                                   places=4)
+            res_model.backward()
+            grad_model = model.weights.grad
+            self.assertAlmostEqual(np.linalg.norm(grad_model.detach().numpy() - grad_qnn), 0.0,
+                                   places=4)
 
-        # test batch input
-        batch_grad = np.zeros((*w.shape, num_samples, 1))
-        for k in range(len(w)):
-            delta = np.zeros(w.shape)
-            delta[k] += eps
+            # test batch input
+            batch_grad = np.zeros((*w.shape, num_samples, 1))
+            for k in range(len(w)):
+                delta = np.zeros(w.shape)
+                delta[k] += eps
 
-            f_1 = qnn.forward(x, w + delta)
-            f_2 = qnn.forward(x, w - delta)
+                f_1 = qnn.forward(x, w + delta)
+                f_2 = qnn.forward(x, w - delta)
 
-            batch_grad[k] = (f_1 - f_2) / (2*eps)
+                batch_grad[k] = (f_1 - f_2) / (2*eps)
 
-        batch_grad = np.sum(batch_grad, axis=1)
-        batch_grad_qnn = np.sum(qnn.backward(x, w)[1], axis=0)
-        self.assertAlmostEqual(np.linalg.norm(batch_grad - batch_grad_qnn.transpose()),
-                               0.0, places=4)
+            batch_grad = np.sum(batch_grad, axis=1)
+            batch_grad_qnn = np.sum(qnn.backward(x, w)[1], axis=0)
+            self.assertAlmostEqual(np.linalg.norm(batch_grad - batch_grad_qnn.transpose()),
+                                   0.0, places=4)
 
-        model.zero_grad()
-        batch_res_model = sum(model(Tensor(x)))
-        batch_res_model.backward()
-        self.assertAlmostEqual(
-            np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]), 0.0, places=4)
+            model.zero_grad()
+            batch_res_model = sum(model(Tensor(x)))
+            batch_res_model.backward()
+            self.assertAlmostEqual(
+                np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]),
+                0.0, places=4)
+        except MissingOptionalLibraryError as ex:
+            self.skipTest(str(ex))
 
 
 if __name__ == '__main__':
