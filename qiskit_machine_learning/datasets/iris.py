@@ -28,7 +28,7 @@ def iris(training_size, test_size, n, plot_data=False, one_hot=True):
     class_labels = [r'A', r'B', r'C']
     data, target = datasets.load_iris(return_X_y=True)
     sample_train, sample_test, label_train, label_test = \
-        train_test_split(data, target, test_size=1, random_state=42)
+        train_test_split(data, target, test_size=test_size, random_state=42)
 
     # Now we standardize for gaussian around 0 with unit variance
     std_scale = StandardScaler().fit(sample_train)
