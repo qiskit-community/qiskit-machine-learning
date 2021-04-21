@@ -10,19 +10,19 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-name: 'Install Qiskit Machine Learning Master Dependencies'
-description: 'Installs Python dependencies from Master'
+name: 'Install Qiskit Machine Learning Main Dependencies'
+description: 'Installs Python dependencies from Main'
 
 runs:
   using: "composite"
   steps:
-    - name: Install Dependencies from Master
+    - name: Install Dependencies from Main
       env:
         DISABLE_CONAN: 1
       run: |
-        pip install https://github.com/Qiskit/qiskit-terra/archive/master.zip
+        pip install git+https://github.com/Qiskit/qiskit-terra
         sudo apt-get -y install nlohmann-json3-dev
         sudo apt-get -y install libspdlog-dev
         sudo apt-get -y install libmuparserx-dev
-        pip install https://github.com/Qiskit/qiskit-aer/archive/master.zip
+        pip install git+https://github.com/Qiskit/qiskit-aer
       shell: bash
