@@ -15,11 +15,11 @@ name: Machine Learning Unit Tests
 on:
   push:
     branches:
-      - master
+      - main
       - 'stable/**'
   pull_request:
     branches:
-      - master
+      - main
       - 'stable/**'
   schedule:
     # run every day at 1AM
@@ -41,8 +41,8 @@ jobs:
       - uses: ./.github/actions/install-libraries
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-main-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
@@ -94,8 +94,8 @@ jobs:
       - uses: ./.github/actions/install-libraries
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-main-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - run: make lint
         if: ${{ !cancelled() }}
@@ -120,8 +120,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-libraries
-      - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-main-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
@@ -143,6 +143,14 @@ jobs:
         with:
           name: ml${{ matrix.python-version }}
           path: ./m${{ matrix.python-version }}/*
+      - name: Machine Learning Unit Tests without torch under Python ${{ matrix.python-version }}
+        run: |
+          pip uninstall -y torch
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+              export QISKIT_TESTS="run_slow"
+          fi
+          stestr --test-path test run
+        shell: bash
   Tutorials:
     runs-on: ubuntu-latest
     strategy:
@@ -158,12 +166,12 @@ jobs:
       - uses: ./.github/actions/install-libraries
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-master-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') }}
+      - uses: ./.github/actions/install-main-dependencies
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install -U jupyter sphinx nbsphinx sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization]
+          pip install -U jupyter sphinx nbsphinx sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision
           sudo apt-get install -y pandoc graphviz
         shell: bash
       - name: Run Machine Learning Tutorials
