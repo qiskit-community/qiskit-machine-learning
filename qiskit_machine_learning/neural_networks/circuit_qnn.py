@@ -303,18 +303,21 @@ class CircuitQNN(SamplingNeuralNetwork):
                 coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
 
                 # get index for input or weights gradients
-                j = i if i < self.num_inputs else i - self.num_inputs
+                if self._input_gradients:
+                    grad_index = i if i < self._num_inputs else i - self._num_inputs
+                else:
+                    grad_index = i
 
                 for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
 
                     # interpret integer and construct key
                     key = self._interpret(k)
                     if isinstance(key, Integral):
-                        key = (row, int(key), j)
+                        key = (row, int(key), grad_index)
                     else:
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
-                        key = (row, *key, j)  # type: ignore
+                        key = (row, *key, grad_index)  # type: ignore
 
                     # store value for inputs or weights gradients
                     if self._input_gradients:
