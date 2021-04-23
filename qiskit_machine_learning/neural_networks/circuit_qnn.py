@@ -73,8 +73,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             quantum_instance = QuantumInstance(quantum_instance)
 
         self._quantum_instance = quantum_instance
-        self._input_params = list(input_params or [])
-        self._weight_params = list(weight_params or [])
+        self._input_params = input_params or []
+        self._weight_params = weight_params or []
         self._interpret = interpret if interpret else lambda x: x
         sparse_ = False if sampling else sparse
 
@@ -104,7 +104,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._construct_gradient_circuit()
 
     def _construct_gradient_circuit(self):
-        self._grad_circuit: QuantumCircuit = None
+        self._gradient_circuit: QuantumCircuit = None
         try:
             grad_circuit = self._original_circuit.copy()
             grad_circuit.remove_final_measurements()  # ideally this would not be necessary
@@ -112,7 +112,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 params = self._input_params + self._weight_params
             else:
                 params = self._weight_params
-            self._grad_circuit = self._gradient.convert(StateFn(grad_circuit), params)
+            self._gradient_circuit = self._gradient.convert(StateFn(grad_circuit), params)
         except (ValueError, TypeError, OpflowError, QiskitError):
             logger.warning('Cannot compute gradient operator! Continuing without gradients!')
 
@@ -266,7 +266,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                                           Union[np.ndarray, SparseArray]]:
 
         # check whether gradient circuit could be constructed
-        if self._grad_circuit is None:
+        if self._gradient_circuit is None:
             return None, None
 
         rows = input_data.shape[0]
@@ -290,7 +290,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
             # TODO: additional "bind_parameters" should not be necessary,
             #  seems like a bug to be fixed
-            grad = self._sampler.convert(self._grad_circuit, param_values
+            grad = self._sampler.convert(self._gradient_circuit, param_values
                                          ).bind_parameters(param_values).eval()
 
             # construct gradients
