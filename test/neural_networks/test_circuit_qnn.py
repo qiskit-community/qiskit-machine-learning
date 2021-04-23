@@ -92,6 +92,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                          sparse=sparse, sampling=sampling,
                          interpret=interpret, output_shape=output_shape,
                          quantum_instance=quantum_instance)
+        qnn.input_gradients = True
         return qnn
 
     @data(

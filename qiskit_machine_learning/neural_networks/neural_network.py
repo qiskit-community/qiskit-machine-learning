@@ -57,6 +57,8 @@ class NeuralNetwork(ABC):
                 f'Invalid output shape, all components must be > 0, but got: {output_shape}.')
         self._output_shape = output_shape
 
+        self._input_gradients = False
+
     @property
     def num_inputs(self) -> int:
         """Returns the number of input features."""
@@ -76,6 +78,16 @@ class NeuralNetwork(ABC):
     def output_shape(self) -> Tuple[int, ...]:
         """Returns the output shape."""
         return self._output_shape
+
+    @property
+    def input_gradients(self) -> bool:
+        """Returns whether gradients with respect to input data is computed by this neural network
+        in the ``backward`` method or not. By default such gradients are not computed."""
+        return self._input_gradients
+
+    @input_gradients.setter
+    def input_gradients(self, input_gradients: bool) -> None:
+        self._input_gradients = input_gradients
 
     def _validate_input(self, input_data: Optional[Union[List[float], np.ndarray, float]]
                         ) -> Tuple[Union[np.ndarray, None], Union[Tuple[int, ...], None]]:
