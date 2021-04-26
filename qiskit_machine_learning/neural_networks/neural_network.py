@@ -81,12 +81,13 @@ class NeuralNetwork(ABC):
 
     @property
     def input_gradients(self) -> bool:
-        """Returns whether gradients with respect to input data is computed by this neural network
+        """Returns whether gradients with respect to input data are computed by this neural network
         in the ``backward`` method or not. By default such gradients are not computed."""
         return self._input_gradients
 
     @input_gradients.setter
     def input_gradients(self, input_gradients: bool) -> None:
+        """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
 
     def _validate_input(self, input_data: Optional[Union[List[float], np.ndarray, float]]

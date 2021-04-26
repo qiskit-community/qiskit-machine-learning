@@ -116,11 +116,14 @@ class OpflowQNN(NeuralNetwork):
         return self._operator
 
     @property
-    def input_gradients(self):
+    def input_gradients(self) -> bool:
+        """Returns whether gradients with respect to input data are computed by this neural network
+        in the ``backward`` method or not. By default such gradients are not computed."""
         return self._input_gradients
 
     @input_gradients.setter
-    def input_gradients(self, input_gradients: bool):
+    def input_gradients(self, input_gradients: bool) -> None:
+        """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
         self._construct_gradient_operator()
 

@@ -94,7 +94,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                          output_shape_)
 
         # prepare sampler
-        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
+        self._sampler = CircuitSampler(self._quantum_instance, param_qobj=False, caching='all')
 
         self._original_circuit = circuit
         # use given gradient or default
@@ -163,15 +163,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         """Returns the quantum instance to evaluate the circuit."""
         return self._quantum_instance
 
-    @property
-    def input_gradients(self):
-        return self._input_gradients
-
-    @input_gradients.setter
-    def input_gradients(self, input_gradients: bool):
-        self._input_gradients = input_gradients
-        self._construct_gradient_circuit()
-
     @quantum_instance.setter
     def quantum_instance(self, quantum_instance) -> None:
         """Sets the quantum instance to evaluate the circuit and make sure circuit has
@@ -186,6 +177,18 @@ class CircuitQNN(SamplingNeuralNetwork):
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
+    @property
+    def input_gradients(self) -> bool:
+        """Returns whether gradients with respect to input data are computed by this neural network
+        in the ``backward`` method or not. By default such gradients are not computed."""
+        return self._input_gradients
+
+    @input_gradients.setter
+    def input_gradients(self, input_gradients: bool) -> None:
+        """Turn on/off gradient with respect to input data."""
+        self._input_gradients = input_gradients
+        self._construct_gradient_circuit()
+
     def set_interpret(self, interpret, output_shape=None):
         """ Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
         output _shape does not have to be set and is inferred from the interpret function.
@@ -199,8 +202,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
 
         # evaluate operator
-        orig_memory = self.quantum_instance.backend_options.get('memory')
-        self.quantum_instance.backend_options['memory'] = True
+        orig_memory = self._quantum_instance.backend_options.get('memory')
+        self._quantum_instance.backend_options['memory'] = True
 
         circuits = []
         # iterate over rows, each row is an element of a batch
@@ -214,7 +217,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         result = self._quantum_instance.execute(circuits)
         # set the memory setting back
-        self.quantum_instance.backend_options['memory'] = orig_memory
+        self._quantum_instance.backend_options['memory'] = orig_memory
 
         # return samples
         samples = np.zeros((rows, *self.output_shape))
@@ -237,7 +240,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                                  for j, weight_param in enumerate(self.weight_params)})
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        result = self.quantum_instance.execute(circuits)
+        result = self._quantum_instance.execute(circuits)
         # initialize probabilities
         if self.sparse:
             prob = DOK((rows, *self.output_shape))
