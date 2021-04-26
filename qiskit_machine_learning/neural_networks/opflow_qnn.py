@@ -156,13 +156,13 @@ class OpflowQNN(NeuralNetwork):
         # iterate over rows, each row is an element of a batch
         batch_size = input_data.shape[0]
         if self._input_gradients:
-            grad_all = np.zeros((batch_size,
-                                 *self._output_shape,
-                                 self._num_inputs + self._num_weights))
+            num_params = self._num_inputs + self._num_weights
         else:
-            grad_all = np.zeros((batch_size,
-                                 *self._output_shape,
-                                 self._num_weights))
+            num_params = self._num_weights
+
+        grad_all = np.zeros((batch_size,
+                             *self._output_shape,
+                             num_params))
 
         for row in range(batch_size):
             # take i-th column as values for the i-th param in a batch
