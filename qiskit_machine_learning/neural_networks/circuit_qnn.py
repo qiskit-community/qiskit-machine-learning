@@ -113,7 +113,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             else:
                 params = self._weight_params
             self._gradient_circuit = self._gradient.convert(StateFn(grad_circuit), params)
-        except (ValueError, TypeError, OpflowError, QiskitError) as e:
+        except (ValueError, TypeError, OpflowError, QiskitError):
             logger.warning('Cannot compute gradient operator! Continuing without gradients!')
 
     def _compute_output_shape(self, interpret, output_shape, sampling) -> Tuple[int, ...]:
