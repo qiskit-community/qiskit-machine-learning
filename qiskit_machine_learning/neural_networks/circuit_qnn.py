@@ -73,8 +73,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             quantum_instance = QuantumInstance(quantum_instance)
 
         self._quantum_instance = quantum_instance
-        self._input_params = input_params or []
-        self._weight_params = weight_params or []
+        self._input_params = list(input_params or [])
+        self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
         sparse_ = False if sampling else sparse
 
