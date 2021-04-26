@@ -16,6 +16,9 @@ inputs:
   event-name:
     description: 'Actions event'
     required: true
+  run-slow:
+    description: 'Run slow tests or not'
+    required: true
   python-version:
     description: 'Python version'
     required: true
@@ -23,8 +26,8 @@ runs:
   using: "composite"
   steps: 
     - run: |
-        # run slow tests only on scheduled event
-        if [ "${{ inputs.event-name }}" == "schedule" ]; then
+        # run slow tests only on scheduled event or if input flag is set
+        if [ "${{ inputs.event-name }}" == "schedule" ] || [ "${{ inputs.run-slow }}" == "true" ]; then
           export QISKIT_TESTS="run_slow"
         fi
         if [ "${{ inputs.python-version }}" == "3.7" ]; then
