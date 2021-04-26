@@ -30,14 +30,14 @@ def _minimal_ext_cmd(cmd):
     env['LANGUAGE'] = 'C'
     env['LANG'] = 'C'
     env['LC_ALL'] = 'C'
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, env=env,
-                            cwd=os.path.join(os.path.dirname(QISKIT_DIR)))
-    stdout, stderr = proc.communicate()
-    if proc.returncode > 0:
-        raise OSError('Command {} exited with code {}: {}'.format(
-            cmd, proc.returncode, stderr.strip().decode('ascii')))
-    return stdout
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE, env=env,
+                          cwd=os.path.join(os.path.dirname(QISKIT_DIR))) as proc:
+        stdout, stderr = proc.communicate()
+        if proc.returncode > 0:
+            raise OSError('Command {} exited with code {}: {}'.format(
+                cmd, proc.returncode, stderr.strip().decode('ascii')))
+        return stdout
 
 
 def git_version():
