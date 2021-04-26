@@ -136,6 +136,7 @@ class NeuralNetwork(ABC):
         if input_grad is not None and original_shape and len(original_shape) >= 2:
             input_grad = input_grad.reshape(
                 (*original_shape[:-1], *self._output_shape, self._num_inputs))
+        if weight_grad is not None and original_shape and len(original_shape) >= 2:
             weight_grad = weight_grad.reshape(
                 (*original_shape[:-1], *self._output_shape, self._num_weights))
 

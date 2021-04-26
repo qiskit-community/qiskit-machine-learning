@@ -68,17 +68,33 @@ class OpflowQNN(NeuralNetwork):
 
         self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
-        self._gradient_operator: OperatorBase = None
-        try:
-            gradient = gradient or Gradient()
-            self._gradient_operator = gradient.convert(operator,
-                                                       self._input_params + self._weight_params)
-        except (ValueError, TypeError, OpflowError, QiskitError):
-            logger.warning('Cannot compute gradient operator! Continuing without gradients!')
+        self._gradient = gradient
+        self._input_gradients = False
+        self._construct_gradient_operator()
+        # self._gradient_operator: OperatorBase = None
+        # try:
+        #     gradient = gradient or Gradient()
+        #     self._gradient_operator = gradient.convert(operator,
+        #                                                self._input_params + self._weight_params)
+        # except (ValueError, TypeError, OpflowError, QiskitError):
+        #     logger.warning('Cannot compute gradient operator! Continuing without gradients!')
 
         output_shape = self._get_output_shape_from_op(operator)
         super().__init__(len(self._input_params), len(self._weight_params),
                          sparse=False, output_shape=output_shape)
+
+    def _construct_gradient_operator(self):
+        self._gradient_operator: OperatorBase = None
+        try:
+            gradient = self._gradient or Gradient()
+            if self._input_gradients:
+                params = self._input_params + self._weight_params
+            else:
+                params = self._weight_params
+
+            self._gradient_operator = gradient.convert(self._operator, params)
+        except (ValueError, TypeError, OpflowError, QiskitError):
+            logger.warning('Cannot compute gradient operator! Continuing without gradients!')
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
@@ -105,6 +121,15 @@ class OpflowQNN(NeuralNetwork):
     def operator(self):
         """ Returns the underlying operator of this QNN."""
         return self._operator
+
+    @property
+    def input_gradients(self):
+        return self._input_gradients
+
+    @input_gradients.setter
+    def input_gradients(self, input_gradients: bool):
+        self._input_gradients = input_gradients
+        self._construct_gradient_operator()
 
     def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                  ) -> Union[np.ndarray, SparseArray]:
@@ -134,7 +159,15 @@ class OpflowQNN(NeuralNetwork):
 
         # iterate over rows, each row is an element of a batch
         batch_size = input_data.shape[0]
-        grad_all = np.zeros((batch_size, *self.output_shape, self.num_inputs + self.num_weights))
+        if self._input_gradients:
+            grad_all = np.zeros((batch_size,
+                                 *self._output_shape,
+                                 self._num_inputs + self._num_weights))
+        else:
+            grad_all = np.zeros((batch_size,
+                                 *self._output_shape,
+                                 self._num_weights))
+
         for row in range(batch_size):
             # take i-th column as values for the i-th param in a batch
             param_values = {p: input_data[row, j] for j, p in enumerate(self._input_params)}
@@ -152,10 +185,16 @@ class OpflowQNN(NeuralNetwork):
             grad_all[row, :] = grad.transpose()
 
         # split into and return input and weights gradients
-        input_grad = np.array(grad_all[:batch_size, :, :self.num_inputs])\
-            .reshape(-1, *self.output_shape, self.num_inputs)
+        if self._input_gradients:
+            # todo: we don't need np.array(...) call here
+            # todo: ":batch_size" is the same as ":"
+            input_grad = np.array(grad_all[:batch_size, :, :self.num_inputs])\
+                .reshape(-1, *self.output_shape, self.num_inputs)
 
-        weights_grad = np.array(grad_all[:batch_size, :, self.num_inputs:])\
-            .reshape(-1, *self.output_shape, self.num_weights)
+            weights_grad = np.array(grad_all[:batch_size, :, self.num_inputs:])\
+                .reshape(-1, *self.output_shape, self.num_weights)
+        else:
+            input_grad = None
+            weights_grad = grad_all.reshape(-1, *self.output_shape, self.num_weights)
 
         return input_grad, weights_grad

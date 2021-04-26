@@ -141,6 +141,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                          interpret=parity,
                          output_shape=output_shape,
                          quantum_instance=quantum_instance)
+        qnn.input_gradients = True
 
         # construct classifier
         classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
