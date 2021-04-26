@@ -112,6 +112,7 @@ jobs:
   MachineLearning:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
@@ -127,6 +128,7 @@ jobs:
         uses: ./.github/actions/run-tests
         with:
           event-name: ${{ github.event_name }}
+          run-slow: ${{ contains(github.event.pull_request.labels.*.name, 'run_slow') }}
           python-version: ${{ matrix.python-version }}
       - name: Deprecation Messages
         run: |
@@ -143,6 +145,14 @@ jobs:
         with:
           name: ml${{ matrix.python-version }}
           path: ./m${{ matrix.python-version }}/*
+      - name: Machine Learning Unit Tests without torch under Python ${{ matrix.python-version }}
+        run: |
+          pip uninstall -y torch
+          if [ "${{ github.event_name }}" == "schedule" ] || [ "${{ contains(github.event.pull_request.labels.*.name, 'run_slow') }}" == "true" ]; then
+              export QISKIT_TESTS="run_slow"
+          fi
+          stestr --test-path test run
+        shell: bash
   Tutorials:
     runs-on: ubuntu-latest
     strategy:
