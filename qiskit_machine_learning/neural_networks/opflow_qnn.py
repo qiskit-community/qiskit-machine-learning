@@ -179,13 +179,13 @@ class OpflowQNN(NeuralNetwork):
 
         # split into and return input and weights gradients
         if self._input_gradients:
-            # todo: we don't need np.array(...) call here
-            # todo: ":batch_size" is the same as ":"
-            input_grad = np.array(grad_all[:batch_size, :, :self.num_inputs])\
-                .reshape(-1, *self.output_shape, self.num_inputs)
+            input_grad = grad_all[:, :, :self.num_inputs].reshape(-1,
+                                                                  *self.output_shape,
+                                                                  self.num_inputs)
 
-            weights_grad = np.array(grad_all[:batch_size, :, self.num_inputs:])\
-                .reshape(-1, *self.output_shape, self.num_weights)
+            weights_grad = grad_all[:, :, self.num_inputs:].reshape(-1,
+                                                                    *self.output_shape,
+                                                                    self.num_weights)
         else:
             input_grad = None
             weights_grad = grad_all.reshape(-1, *self.output_shape, self.num_weights)
