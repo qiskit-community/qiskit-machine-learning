@@ -27,6 +27,7 @@ from qiskit.opflow.gradients import Gradient
 from qiskit_machine_learning.algorithms import (NumPyDiscriminator,
                                                 PyTorchDiscriminator, QGAN)
 
+
 @ddt
 class TestQGAN(QiskitMachineLearningTestCase):
     """Test the QGAN algorithm."""
