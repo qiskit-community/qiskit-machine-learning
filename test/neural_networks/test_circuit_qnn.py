@@ -21,7 +21,7 @@ from ddt import ddt, data
 import numpy as np
 from sparse import SparseArray
 
-from qiskit.providers.aer import QasmSimulator, StatevectorSimulator
+from qiskit.providers.aer import AerSimulator, StatevectorSimulator
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
@@ -39,7 +39,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # specify "run configuration"
         self.quantum_instance_sv = QuantumInstance(StatevectorSimulator())
-        self.quantum_instance_qasm = QuantumInstance(QasmSimulator(shots=100))
+        self.quantum_instance_qasm = QuantumInstance(AerSimulator(shots=100))
 
         # define feature map and ansatz
         num_qubits = 2
