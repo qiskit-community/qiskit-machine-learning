@@ -23,40 +23,41 @@ def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_g
                             return_prob=False, prob_non_zero=True):
     """
     Discretize & truncate classical data to enable digital encoding in qubit registers
-    whereby the data grid is [[grid elements dim 0], ..., [grid elements dim k]].
+    whereby the data grid is ``[[grid elements dim 0], ..., [grid elements dim k]]``.
 
-    For each dimension k, the domain is split into ``(2 ** num_qubits[k])`` bins equally spaced and
-    equally sized, each centered in ``min_max_bin_centers[k, 0], ..., min_max_bin_centers[k, 1]``. Bins
-    have size equal to
+    For each dimension ``k``, the domain is split into ``(2 ** num_qubits[k])`` bins equally spaced
+    and equally sized, each centered in
+    ``min_max_bin_centers[k, 0], ..., min_max_bin_centers[k, 1]``. Bins have size equal to
     ``(min_max_bin_centers[k, 1] - min_max_bin_centers[k, 0]) / (2 ** num_qubits[k] - 1)``.
     Notice that:
-    
+
     * Every sample in data that falls out of the bins is discarded.
     * The leftmost bin extends both to the left and to the right around its center,
-    
-    therefore ``min_max_bin_centers[k, 0]`` is not the left bound for truncation, but only the center of
-    the leftmost bin. Similar considerations hold for ``min_max_bin_centers[k, 1]`` on the right.
+
+    therefore ``min_max_bin_centers[k, 0]`` is not the left bound for truncation, but only
+    the center of the leftmost bin. Similar considerations hold for ``min_max_bin_centers[k, 1]``
+    on the right.
 
     Args:
-        data (list or array or np.array): training data (int or float) of dimension k
+        data (list or array or np.array): training data (int or float) of dimension ``k``.
         min_max_bin_centers (list or array or np.ndarray):  ``k`` min/max data values
             ``[[min_center_0, max_center_0],...,[min_center_k-1, max_center_k-1]]``.
-            If univariate data: ``[min_center_0, max_center_0]``
-        num_qubits (list or array or np.array): k numbers of qubits to determine
+            If univariate data: ``[min_center_0, max_center_0]``.
+        num_qubits (list or array or np.array): ``k`` numbers of qubits to determine
             representation resolution, i.e. n qubits enable the representation of 2**n
-            values [num_qubits_0,..., num_qubits_k-1]
-        return_data_grid_elements (Bool): if True - return an array with the data grid
-            elements
-        return_prob (Bool): if True - return a normalized frequency count of the discretized and
-            truncated data samples
-        prob_non_zero (Bool): if True - set 0 values in the prob_data to 10^-1 to avoid potential
-            problems when using the probabilities in loss functions - division by 0
+            values ``[num_qubits_0,..., num_qubits_k-1]``.
+        return_data_grid_elements (Bool): if ``True`` - return an array with the data grid
+            elements.
+        return_prob (Bool): if ``True`` - return a normalized frequency count of the discretized and
+            truncated data samples.
+        prob_non_zero (Bool): if ``True`` - set 0 values in the prob_data to ``10^-1`` to avoid
+            potential problems when using the probabilities in loss functions - division by 0.
 
     Returns:
-        array: discretized and truncated data
-        array: data grid [[grid elements dim 0],..., [grid elements dim k]]
-        array: grid elements, Product_j=0^k-1 2**num_qubits_j element vectors
-        array: data probability, normalized frequency count sorted from smallest to biggest element
+        array: discretized and truncated data.
+        array: data grid ``[[grid elements dim 0],..., [grid elements dim k]]``.
+        array: grid elements, ``Product_j=0^k-1 2**num_qubits_j`` element vectors.
+        array: data probability, normalized frequency count sorted from smallest to biggest element.
 
     """
     # Truncate the data
