@@ -268,15 +268,21 @@ class TestQGAN(QiskitMachineLearningTestCase):
 
     @data('qasm', 'sv')
     def test_qgan_training_analytic_gradients(self, backend):
+        """
+        Test QGAN with analytic gradients
+        Args:
+            backend: backend to run the qgan training
+
+        """
         if backend == 'qasm':
             q_inst = self.qi_qasm
         else:
             q_inst = self.qi_statevector
         self.qgan.set_generator(self.generator_circuit)
-        numeric_results = self.qgan.run(qi)
+        numeric_results = self.qgan.run(q_inst)
         self.qgan.set_generator(self.generator_circuit,
                                 generator_gradient=Gradient('param_shift'))
-        analytic_results = self.qgan.run(qi)
+        analytic_results = self.qgan.run(q_inst)
         self.assertAlmostEqual(numeric_results['rel_entr'],
                                analytic_results['rel_entr'], delta=0.1)
 
