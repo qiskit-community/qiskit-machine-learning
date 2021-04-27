@@ -15,8 +15,9 @@
 import unittest
 import warnings
 import tempfile
-from ddt import ddt, data
 from test import QiskitMachineLearningTestCase, requires_extra_library
+
+from ddt import ddt, data
 
 from qiskit import BasicAer
 from qiskit.circuit.library import UniformDistribution, RealAmplitudes
@@ -268,9 +269,9 @@ class TestQGAN(QiskitMachineLearningTestCase):
     @data('qasm', 'sv')
     def test_qgan_training_analytic_gradients(self, backend):
         if backend == 'qasm':
-            qi = self.qi_qasm
+            q_inst = self.qi_qasm
         else:
-            qi = self.qi_statevector
+            q_inst = self.qi_statevector
         self.qgan.set_generator(self.generator_circuit)
         numeric_results = self.qgan.run(qi)
         self.qgan.set_generator(self.generator_circuit,
