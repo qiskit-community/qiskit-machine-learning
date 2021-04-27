@@ -272,7 +272,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
         """
         Test QGAN with analytic gradients
         Args:
-            backend: backend to run the qgan training
+            backend: backend to run the training
         """
         if backend == 'qasm':
             q_inst = self.qi_qasm
