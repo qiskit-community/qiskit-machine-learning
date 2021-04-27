@@ -39,9 +39,9 @@ def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_g
 
     Args:
         data (list or array or np.array): training data (int or float) of dimension k
-        min_max_bin_centers (list or array or np.array):  k min/max data values
-            [[min_center_0, max_center_0],...,[min_center_k-1, max_center_k-1]].
-            If univariate data: [min_center_0, max_center_0]
+        min_max_bin_centers (list or array or np.ndarray):  ``k`` min/max data values
+            ``[[min_center_0, max_center_0],...,[min_center_k-1, max_center_k-1]]``.
+            If univariate data: ``[min_center_0, max_center_0]``
         num_qubits (list or array or np.array): k numbers of qubits to determine
             representation resolution, i.e. n qubits enable the representation of 2**n
             values [num_qubits_0,..., num_qubits_k-1]
