@@ -194,7 +194,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         output _shape does not have to be set and is inferred from the interpret function.
         Otherwise, the output_shape needs to be given."""
         self._interpret = interpret if interpret else lambda x: x
-        self._output_shape = self._compute_output_shape(interpret, output_shape, self.sampling)
+        self._output_shape = self._compute_output_shape(interpret, output_shape, self._sampling)
 
     def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                 ) -> np.ndarray:
@@ -210,9 +210,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         rows = input_data.shape[0]
         for i in range(rows):
             param_values = {input_param: input_data[i, j]
-                            for j, input_param in enumerate(self.input_params)}
+                            for j, input_param in enumerate(self._input_params)}
             param_values.update({weight_param: weights[j]
-                                 for j, weight_param in enumerate(self.weight_params)})
+                                 for j, weight_param in enumerate(self._weight_params)})
             circuits.append(self._circuit.bind_parameters(param_values))
 
         result = self._quantum_instance.execute(circuits)
@@ -220,7 +220,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._quantum_instance.backend_options['memory'] = orig_memory
 
         # return samples
-        samples = np.zeros((rows, *self.output_shape))
+        samples = np.zeros((rows, *self._output_shape))
         # collect them from all executed circuits
         for i, circuit in enumerate(circuits):
             memory = result.get_memory(circuit)
@@ -235,17 +235,17 @@ class CircuitQNN(SamplingNeuralNetwork):
         rows = input_data.shape[0]
         for i in range(rows):
             param_values = {input_param: input_data[i, j]
-                            for j, input_param in enumerate(self.input_params)}
+                            for j, input_param in enumerate(self._input_params)}
             param_values.update({weight_param: weights[j]
-                                 for j, weight_param in enumerate(self.weight_params)})
+                                 for j, weight_param in enumerate(self._weight_params)})
             circuits.append(self._circuit.bind_parameters(param_values))
 
         result = self._quantum_instance.execute(circuits)
         # initialize probabilities
-        if self.sparse:
-            prob = DOK((rows, *self.output_shape))
+        if self._sparse:
+            prob = DOK((rows, *self._output_shape))
         else:
-            prob = np.zeros((rows, *self.output_shape))
+            prob = np.zeros((rows, *self._output_shape))
 
         for i, circuit in enumerate(circuits):
             counts = result.get_counts(circuit)
@@ -259,7 +259,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 key = (i, *key)  # type: ignore
                 prob[key] += v / shots
 
-        if self.sparse:
+        if self._sparse:
             return prob.to_coo()
         else:
             return prob
@@ -278,18 +278,18 @@ class CircuitQNN(SamplingNeuralNetwork):
         input_grad = None       # by default we don't have data gradients
         if self._sparse:
             if self._input_gradients:
-                input_grad = DOK((rows, *self.output_shape, self.num_inputs))
-            weights_grad = DOK((rows, *self.output_shape, self.num_weights))
+                input_grad = DOK((rows, *self._output_shape, self._num_inputs))
+            weights_grad = DOK((rows, *self._output_shape, self._num_weights))
         else:
             if self._input_gradients:
-                input_grad = np.zeros((rows, *self.output_shape, self.num_inputs))
-            weights_grad = np.zeros((rows, *self.output_shape, self.num_weights))
+                input_grad = np.zeros((rows, *self._output_shape, self._num_inputs))
+            weights_grad = np.zeros((rows, *self._output_shape, self._num_weights))
 
         for row in range(rows):
             param_values = {input_param: input_data[row, j]
-                            for j, input_param in enumerate(self.input_params)}
+                            for j, input_param in enumerate(self._input_params)}
             param_values.update({weight_param: weights[j]
-                                 for j, weight_param in enumerate(self.weight_params)})
+                                 for j, weight_param in enumerate(self._weight_params)})
 
             # TODO: additional "bind_parameters" should not be necessary,
             #  seems like a bug to be fixed

@@ -120,7 +120,7 @@ class NeuralNetwork(ABC):
         if weights is None:
             return None
         weights_ = np.array(weights)
-        return weights_.reshape(self.num_weights)
+        return weights_.reshape(self._num_weights)
 
     def _validate_forward_output(self, output_data: np.ndarray, original_shape: Tuple[int, ...]
                                  ) -> np.ndarray:

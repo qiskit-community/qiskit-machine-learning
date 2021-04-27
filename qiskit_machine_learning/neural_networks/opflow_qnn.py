@@ -143,7 +143,7 @@ class OpflowQNN(NeuralNetwork):
             op = self._forward_operator.bind_parameters(param_values)
             result = np.real(op.eval())
         result = np.array(result)
-        return result.reshape(-1, *self.output_shape)
+        return result.reshape(-1, *self._output_shape)
 
     def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
                   ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
@@ -182,15 +182,15 @@ class OpflowQNN(NeuralNetwork):
 
         # split into and return input and weights gradients
         if self._input_gradients:
-            input_grad = grad_all[:, :, :self.num_inputs].reshape(-1,
-                                                                  *self.output_shape,
-                                                                  self.num_inputs)
+            input_grad = grad_all[:, :, :self._num_inputs].reshape(-1,
+                                                                   *self._output_shape,
+                                                                   self._num_inputs)
 
-            weights_grad = grad_all[:, :, self.num_inputs:].reshape(-1,
-                                                                    *self.output_shape,
-                                                                    self.num_weights)
+            weights_grad = grad_all[:, :, self._num_inputs:].reshape(-1,
+                                                                     *self._output_shape,
+                                                                     self._num_weights)
         else:
             input_grad = None
-            weights_grad = grad_all.reshape(-1, *self.output_shape, self.num_weights)
+            weights_grad = grad_all.reshape(-1, *self._output_shape, self._num_weights)
 
         return input_grad, weights_grad
