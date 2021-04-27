@@ -151,6 +151,7 @@ jobs:
           if [ "${{ github.event_name }}" == "schedule" ] || [ "${{ contains(github.event.pull_request.labels.*.name, 'run_slow') }}" == "true" ]; then
               export QISKIT_TESTS="run_slow"
           fi
+          export PYTHONWARNINGS=default
           stestr --test-path test run
         shell: bash
   Tutorials:
