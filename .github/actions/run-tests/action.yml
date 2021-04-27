@@ -33,5 +33,6 @@ runs:
         if [ "${{ inputs.python-version }}" == "3.7" ]; then
           export PYTHON="coverage3 run --source qiskit_machine_learning --parallel-mode"
         fi
+        export PYTHONWARNINGS=default
         stestr --test-path test run 2> >(tee /dev/stderr out.txt > /dev/null)
       shell: bash
