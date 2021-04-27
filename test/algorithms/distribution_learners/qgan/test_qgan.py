@@ -15,6 +15,7 @@
 import unittest
 import warnings
 import tempfile
+from ddt import ddt, data
 from test import QiskitMachineLearningTestCase, requires_extra_library
 
 from qiskit import BasicAer
@@ -25,7 +26,7 @@ from qiskit.opflow.gradients import Gradient
 from qiskit_machine_learning.algorithms import (NumPyDiscriminator,
                                                 PyTorchDiscriminator, QGAN)
 
-
+@ddt
 class TestQGAN(QiskitMachineLearningTestCase):
     """Test the QGAN algorithm."""
 
@@ -264,20 +265,20 @@ class TestQGAN(QiskitMachineLearningTestCase):
                                                  seed_transpiler=algorithm_globals.random_seed))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
-    def test_qgan_training_analytic_gradients(self):
-        """Test QGAN training with analytic gradients"""
-        for backend in ['qasm', 'sv']:
-            if backend == 'qasm':
-                qi = self.qi_qasm
-            else:
-                qi = self.qi_statevector
-            self.qgan.set_generator(self.generator_circuit)
-            numeric_results = self.qgan.run(qi)
-            self.qgan.set_generator(self.generator_circuit,
-                                    generator_gradient=Gradient('param_shift'))
-            analytic_results = self.qgan.run(qi)
-            self.assertAlmostEqual(numeric_results['rel_entr'],
-                                   analytic_results['rel_entr'], delta=0.1)
+    @data('qasm', 'sv')
+    def test_qgan_training_analytic_gradients(self, backend):
+        if backend == 'qasm':
+            qi = self.qi_qasm
+        else:
+            qi = self.qi_statevector
+        self.qgan.set_generator(self.generator_circuit)
+        numeric_results = self.qgan.run(qi)
+        self.qgan.set_generator(self.generator_circuit,
+                                generator_gradient=Gradient('param_shift'))
+        analytic_results = self.qgan.run(qi)
+        self.assertAlmostEqual(numeric_results['rel_entr'],
+                               analytic_results['rel_entr'], delta=0.1)
+
 
 if __name__ == '__main__':
     unittest.main()
