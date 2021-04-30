@@ -60,9 +60,10 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
 
             # evaluate network
             forward_shape = qnn.forward(x, weights).shape
-            grad = qnn.backward(x, weights)
-            backward_shape_input = grad[0].shape
-            backward_shape_weights = grad[1].shape
+            input_grad, weights_grad = qnn.backward(x, weights)
+            if qnn.input_gradients:
+                backward_shape_input = input_grad.shape
+            backward_shape_weights = weights_grad.shape
 
             # derive batch shape form input
             batch_shape = x.shape[:-len(qnn.output_shape)]
@@ -71,16 +72,23 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
 
             # compare results and assert that the behavior is equal
             self.assertEqual(forward_shape, (*batch_shape, *qnn.output_shape))
-            self.assertEqual(backward_shape_input,
-                             (*batch_shape, *qnn.output_shape, qnn.num_inputs))
+            if qnn.input_gradients:
+                self.assertEqual(backward_shape_input,
+                                 (*batch_shape, *qnn.output_shape, qnn.num_inputs))
+            else:
+                self.assertIsNone(input_grad)
             self.assertEqual(backward_shape_weights,
                              (*batch_shape, *qnn.output_shape, qnn.num_weights))
 
     @data(
-        'sv', 'qasm'
+        ('sv', True),
+        ('sv', False),
+        ('qasm', True),
+        ('qasm', False)
     )
-    def test_opflow_qnn_1_1(self, q_i):
+    def test_opflow_qnn_1_1(self, config):
         """ Test Opflow QNN with input/output dimension 1/1."""
+        q_i, input_grad_required = config
 
         if q_i == 'sv':
             quantum_instance = self.sv_quantum_instance
@@ -108,6 +116,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         # define QNN
         qnn = OpflowQNN(op, [params[0]], [params[1]],
                         expval, gradient, quantum_instance=quantum_instance)
+        qnn.input_gradients = input_grad_required
 
         test_data = [
             np.array(1),
@@ -120,10 +129,14 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         self.validate_output_shape(qnn, test_data)
 
     @data(
-        'sv', 'qasm'
+        ('sv', True),
+        ('sv', False),
+        ('qasm', True),
+        ('qasm', False)
     )
-    def test_opflow_qnn_2_1(self, q_i):
+    def test_opflow_qnn_2_1(self, config):
         """ Test Opflow QNN with input/output dimension 2/1."""
+        q_i, input_grad_required = config
 
         # construct QNN
         if q_i == 'sv':
@@ -155,6 +168,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         # define QNN
         qnn = OpflowQNN(op, params[:2], params[2:],
                         expval, gradient, quantum_instance=quantum_instance)
+        qnn.input_gradients = input_grad_required
 
         test_data = [
             np.array([1, 2]),
@@ -166,10 +180,14 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         self.validate_output_shape(qnn, test_data)
 
     @data(
-        'sv', 'qasm'
+        ('sv', True),
+        ('sv', False),
+        ('qasm', True),
+        ('qasm', False)
     )
-    def test_opflow_qnn_2_2(self, q_i):
+    def test_opflow_qnn_2_2(self, config):
         """ Test Opflow QNN with input/output dimension 2/2."""
+        q_i, input_grad_required = config
 
         if q_i == 'sv':
             quantum_instance = self.sv_quantum_instance
@@ -208,6 +226,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
 
         qnn = OpflowQNN(op, [params_1[0], params_2[0]], [params_1[1], params_2[1]],
                         quantum_instance=quantum_instance)
+        qnn.input_gradients = input_grad_required
 
         test_data = [
             np.array([1, 2]),

@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Computation of gradients with respect to input data in the backward method of ``NeuralNetwork``
+    is now optional. By default gradients are not computed. They may inspected and turned on,
+    if required, by getting or setting a new property ``input_gradients`` in
+    the ``NeuralNetwork`` class.
