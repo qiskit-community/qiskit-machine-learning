@@ -185,6 +185,17 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
+                self.assertIsNone(input_grad)
+                self.assertEqual(weights_grad.shape, (batch_size,
+                                                      *qnn.output_shape, qnn.num_weights))
+
+            # verify that input gradients are None if turned off
+            qnn.input_gradients = True
+            input_grad, weights_grad = qnn.backward(input_data, weights)
+            if sampling:
+                self.assertIsNone(input_grad)
+                self.assertIsNone(weights_grad)
+            else:
                 self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
                 self.assertEqual(weights_grad.shape, (batch_size,
                                                       *qnn.output_shape, qnn.num_weights))
@@ -213,6 +224,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # get QNN
         qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
+        qnn.input_gradients = True
         input_data = np.ones((batch_size, qnn.num_inputs))
         weights = np.ones(qnn.num_weights)
         input_grad, weights_grad = qnn.backward(input_data, weights)
