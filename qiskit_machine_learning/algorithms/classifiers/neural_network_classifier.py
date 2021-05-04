@@ -25,9 +25,8 @@ from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
 
 class NeuralNetworkClassifier(ClassifierMixin):
     """Quantum neural network classifier. Implements Scikit-Learn compatible methods for
-    classification and extends ``ClassifierMixin``. See:
-    `Classifier Mixin
-     <https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html>`__
+    classification and extends ``ClassifierMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
+    for more details.
     """
 
     def __init__(self, neural_network: NeuralNetwork,

@@ -26,9 +26,9 @@ from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
 
 class NeuralNetworkRegressor(RegressorMixin):
     """ Quantum neural network regressor. Implements Scikit-Learn compatible methods for
-    regression and extends ``RegressorMixin``. See:
-    `Regressor Mixin
-     <https://scikit-learn.org/stable/modules/generated/sklearn.base.RegressorMixin.html>`__"""
+    regression and extends ``RegressorMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
+    for more details.
+    """
 
     def __init__(self, neural_network: NeuralNetwork,
                  loss: Union[str, Loss] = 'l2',
