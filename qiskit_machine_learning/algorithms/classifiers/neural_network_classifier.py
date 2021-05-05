@@ -16,6 +16,7 @@ import numpy as np
 
 from qiskit.algorithms.optimizers import Optimizer
 
+from ..trainable_model import SingleObjectiveFunction, OneHotFunction, ClassifierFunction
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
 from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
@@ -125,74 +126,76 @@ class NeuralNetworkClassifier:
                 raise QiskitMachineLearningError(
                     f"Current settings only applicable to binary classification! Got labels: {y}")
 
-            def objective(w):
+            function = SingleObjectiveFunction(X, y, self._neural_network, self._loss)
 
-                predict = self._neural_network.forward(X, w)
-                target = np.array(y).reshape(predict.shape)
-                value = np.sum(self._loss(predict, target))
-                return value
-
-            def objective_grad(w):
-
-                # TODO should store output from forward pass (implement loss interface?)
-                # TODO: need to be able to turn off input grads if not needed.
-                output = self._neural_network.forward(X, w)
-                _, weights_grad = self._neural_network.backward(X, w)
-
-                grad = np.zeros((1, self._neural_network.num_weights))
-                for i in range(len(X)):
-                    grad += self._loss.gradient(output[i][0], y[i]) * weights_grad[i]
-
-                return grad
+            # def objective(w):
+            #
+            #     predict = self._neural_network.forward(X, w)
+            #     target = np.array(y).reshape(predict.shape)
+            #     value = np.sum(self._loss(predict, target))
+            #     return value
+            #
+            # def objective_grad(w):
+            #
+            #     # TODO should store output from forward pass (implement loss interface?)
+            #     # TODO: need to be able to turn off input grads if not needed.
+            #     output = self._neural_network.forward(X, w)
+            #     _, weights_grad = self._neural_network.backward(X, w)
+            #
+            #     grad = np.zeros((1, self._neural_network.num_weights))
+            #     for i in range(len(X)):
+            #         grad += self._loss.gradient(output[i][0], y[i]) * weights_grad[i]
+            #
+            #     return grad
 
         else:
 
             if self._one_hot:
-
-                def objective(w):
-                    val = 0.0
-                    probs = self._neural_network.forward(X, w)
-                    for i in range(len(X)):
-                        val += self._loss(probs[i], y[i])
-                    return val
-
-                def objective_grad(w):
-                    grad = np.zeros(self._neural_network.num_weights)
-                    for x, y_target in zip(X, y):
-                        # TODO: do batch eval
-                        y_predict = self._neural_network.forward(x, w)
-                        _, weight_prob_grad = self._neural_network.backward(x, w)
-                        grad += self._loss.gradient(y_predict[0], y_target) @ weight_prob_grad[0, :]
-                    return grad
+                function = OneHotFunction(X, y, self._neural_network, self._loss)
+                # def objective(w):
+                #     val = 0.0
+                #     probs = self._neural_network.forward(X, w)
+                #     for i in range(len(X)):
+                #         val += self._loss(probs[i], y[i])
+                #     return val
+                #
+                # def objective_grad(w):
+                #     grad = np.zeros(self._neural_network.num_weights)
+                #     for x, y_target in zip(X, y):
+                #         # TODO: do batch eval
+                #         y_predict = self._neural_network.forward(x, w)
+                #         _, weight_prob_grad = self._neural_network.backward(x, w)
+                #         grad += self._loss.gradient(y_predict[0], y_target) @ weight_prob_grad[0, :]
+                #     return grad
 
             else:
-
-                def objective(w):
-                    val = 0.0
-                    probs = self._neural_network.forward(X, w)
-                    for i in range(len(X)):
-                        for y_predict, prob in enumerate(probs[i]):
-                            val += prob * self._loss(y_predict, y[i])
-                    return val
-
-                def objective_grad(w):
-                    num_classes = self._neural_network.output_shape[0]
-                    grad = np.zeros((1, self._neural_network.num_weights))
-                    for x, y_target in zip(X, y):
-                        # TODO: do batch eval
-                        _, weight_prob_grad = self._neural_network.backward(x, w)
-                        for i in range(num_classes):
-                            grad += weight_prob_grad[
-                                0, i, :].reshape(grad.shape) * self._loss(i, y_target)
-                    return grad
+                function = ClassifierFunction(X, y, self._neural_network, self._loss)
+                # def objective(w):
+                #     val = 0.0
+                #     probs = self._neural_network.forward(X, w)
+                #     for i in range(len(X)):
+                #         for y_predict, prob in enumerate(probs[i]):
+                #             val += prob * self._loss(y_predict, y[i])
+                #     return val
+                #
+                # def objective_grad(w):
+                #     num_classes = self._neural_network.output_shape[0]
+                #     grad = np.zeros((1, self._neural_network.num_weights))
+                #     for x, y_target in zip(X, y):
+                #         # TODO: do batch eval
+                #         _, weight_prob_grad = self._neural_network.backward(x, w)
+                #         for i in range(num_classes):
+                #             grad += weight_prob_grad[
+                #                 0, i, :].reshape(grad.shape) * self._loss(i, y_target)
+                #     return grad
 
         if self._warm_start and self._fit_result is not None:
             initial_point = self._fit_result[0]
         else:
             initial_point = np.random.rand(self._neural_network.num_weights)
 
-        self._fit_result = self._optimizer.optimize(self._neural_network.num_weights, objective,
-                                                    objective_grad, initial_point=initial_point)
+        self._fit_result = self._optimizer.optimize(self._neural_network.num_weights, function.objective,
+                                                    function.gradient, initial_point=initial_point)
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
