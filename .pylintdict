@@ -31,7 +31,7 @@ getter
 getters
 hashable
 hoc
-th
+init
 innerproduct
 kwargs
 langle
@@ -95,6 +95,7 @@ svr
 sx
 sy
 tbd
+th
 toctree
 transpile
 univariate
