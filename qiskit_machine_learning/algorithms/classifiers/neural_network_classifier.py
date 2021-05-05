@@ -12,9 +12,10 @@
 """An implementation of quantum neural network classifier."""
 
 from typing import Union
-import numpy as np
 
+import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
+from sklearn.base import ClassifierMixin
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
@@ -22,8 +23,11 @@ from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
                                      CrossEntropySigmoidLoss)
 
 
-class NeuralNetworkClassifier:
-    """Quantum neural network classifier."""
+class NeuralNetworkClassifier(ClassifierMixin):
+    """Quantum neural network classifier. Implements Scikit-Learn compatible methods for
+    classification and extends ``ClassifierMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
+    for more details.
+    """
 
     def __init__(self, neural_network: NeuralNetwork,
                  loss: Union[str, Loss] = 'l2',
@@ -220,24 +224,3 @@ class NeuralNetworkClassifier:
             else:
                 predict = predict_
         return predict
-
-    def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
-        """
-        Return the mean accuracy on the given test data and labels.
-
-        Args:
-            X: Test samples.
-            y: True labels for `X`.
-        Raises:
-            QiskitMachineLearningError: Model needs to be fit to some training data first
-        Returns:
-            Mean accuracy of ``self.predict(X)`` wrt. `y`.
-        """
-        if self._fit_result is None:
-            raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
-
-        predict = self.predict(X)
-        score = np.sum(predict == y.reshape(predict.shape)) / len(y)
-        if len(predict.shape) == 2:
-            score /= predict.shape[1]
-        return score

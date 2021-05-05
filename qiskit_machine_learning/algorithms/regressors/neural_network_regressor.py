@@ -13,17 +13,22 @@
 """ Neural network regressor """
 
 from typing import Union
-import numpy as np
 
+import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
+from sklearn.base import RegressorMixin
+
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
 from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
                                      CrossEntropySigmoidLoss)
 
 
-class NeuralNetworkRegressor:
-    """ Quantum neural network regressor"""
+class NeuralNetworkRegressor(RegressorMixin):
+    """ Quantum neural network regressor. Implements Scikit-Learn compatible methods for
+    regression and extends ``RegressorMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
+    for more details.
+    """
 
     def __init__(self, neural_network: NeuralNetwork,
                  loss: Union[str, Loss] = 'l2',
@@ -177,29 +182,3 @@ class NeuralNetworkRegressor:
 
         # TODO: proper handling of batching
         return self._neural_network.forward(X, self._fit_result[0])
-
-    def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
-        """
-        Return R-squared on the given test data and targeted values.
-
-        Args:
-            X: Test samples.
-            y: True target values given `X`.
-        Raises:
-            QiskitMachineLearningError: Model needs to be fit to some training data first
-        Returns:
-            R-squared value.
-        """
-        if self._fit_result is None:
-            raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
-
-        predict = self.predict(X)
-
-        # Compute R2 for score
-        ss_res = sum(map(lambda k: (k[0] - k[1]) ** 2, zip(y, predict)))
-        ss_tot = sum([(k - np.mean(y)) ** 2 for k in y])
-        score = 1 - (ss_res / ss_tot)
-        if len(np.array(score).shape) > 0:
-            return score[0]
-        else:
-            return score
