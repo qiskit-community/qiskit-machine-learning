@@ -25,17 +25,13 @@ class TestWine(QiskitMachineLearningTestCase):
     def test_wine(self):
         """Wine test."""
 
-        input_file = self.get_resource_path('wine_ref.json',
-                                            'datasets')
+        input_file = self.get_resource_path("wine_ref.json", "datasets")
         with open(input_file) as file:
             ref_data = json.load(file)
 
         training_features, training_labels, test_features, test_labels = wine(
-            training_size=20,
-            test_size=10,
-            n=2,
-            plot_data=False,
-            one_hot=False)
+            training_size=20, test_size=10, n=2, plot_data=False, one_hot=False
+        )
 
         np.testing.assert_almost_equal(ref_data["training_features"], training_features)
         np.testing.assert_almost_equal(ref_data["training_labels"], training_labels)
@@ -44,5 +40,5 @@ class TestWine(QiskitMachineLearningTestCase):
         np.testing.assert_almost_equal(ref_data["test_labels"], test_labels)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

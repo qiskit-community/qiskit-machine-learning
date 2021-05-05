@@ -61,14 +61,14 @@ class QiskitMachineLearningTestCase(unittest.TestCase, ABC):
     log = None
 
     def setUp(self) -> None:
-        warnings.filterwarnings('default', category=DeprecationWarning)
+        warnings.filterwarnings("default", category=DeprecationWarning)
         self._started_at = time.time()
         self._class_location = __file__
 
     def tearDown(self) -> None:
         elapsed = time.time() - self._started_at
         if elapsed > 5.0:
-            print('({:.2f}s)'.format(round(elapsed, 2)), flush=True)
+            print("({:.2f}s)".format(round(elapsed, 2)), flush=True)
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -77,28 +77,27 @@ class QiskitMachineLearningTestCase(unittest.TestCase, ABC):
 
         # Set logging to file and stdout if the LOG_LEVEL environment variable
         # is set.
-        if os.getenv('LOG_LEVEL'):
+        if os.getenv("LOG_LEVEL"):
             # Set up formatter.
-            log_fmt = ('{}.%(funcName)s:%(levelname)s:%(asctime)s:'
-                       ' %(message)s'.format(cls.__name__))
+            log_fmt = (
+                "{}.%(funcName)s:%(levelname)s:%(asctime)s:"
+                " %(message)s".format(cls.__name__)
+            )
             formatter = logging.Formatter(log_fmt)
 
             # Set up the file handler.
-            log_file_name = '%s.log' % cls.moduleName
+            log_file_name = "%s.log" % cls.moduleName
             file_handler = logging.FileHandler(log_file_name)
             file_handler.setFormatter(formatter)
             cls.log.addHandler(file_handler)
 
             # Set the logging level from the environment variable, defaulting
             # to INFO if it is not a valid level.
-            level = logging._nameToLevel.get(os.getenv('LOG_LEVEL'),
-                                             logging.INFO)
+            level = logging._nameToLevel.get(os.getenv("LOG_LEVEL"), logging.INFO)
             cls.log.setLevel(level)
 
-    def get_resource_path(self,
-                          filename: str,
-                          path: Optional[str] = None) -> str:
-        """ Get the absolute path to a resource.
+    def get_resource_path(self, filename: str, path: Optional[str] = None) -> str:
+        """Get the absolute path to a resource.
         Args:
             filename: filename or relative path to the resource.
             path: path used as relative to the filename.

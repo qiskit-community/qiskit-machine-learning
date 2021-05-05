@@ -17,4 +17,5 @@ from qiskit.exceptions import QiskitError
 
 class QiskitMachineLearningError(QiskitError):
     """Class for errors returned by Qiskit's machine learning module."""
+
     pass

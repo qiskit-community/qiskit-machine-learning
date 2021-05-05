@@ -28,6 +28,7 @@ try:
     import torch
     from torch import nn, optim
     from torch.autograd.variable import Variable
+
     _HAS_TORCH = True
 except ImportError:
     _HAS_TORCH = False
@@ -50,19 +51,23 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         super().__init__()
         if not _HAS_TORCH:
             raise MissingOptionalLibraryError(
-                libname='Pytorch',
-                name='PyTorchDiscriminator',
-                pip_install="pip install 'qiskit-meachine-learning[torch]'")
+                libname="Pytorch",
+                name="PyTorchDiscriminator",
+                pip_install="pip install 'qiskit-meachine-learning[torch]'",
+            )
 
         self._n_features = n_features
         self._n_out = n_out
         # discriminator_net: torch.nn.Module or None, Discriminator network.
         # pylint: disable=import-outside-toplevel
         from ._pytorch_discriminator_net import DiscriminatorNet
+
         self._discriminator = DiscriminatorNet(self._n_features, self._n_out)
         # optimizer: torch.optim.Optimizer or None, Optimizer initialized w.r.t
         # discriminator network parameters.
-        self._optimizer = optim.Adam(self._discriminator.parameters(), lr=1e-5, amsgrad=True)
+        self._optimizer = optim.Adam(
+            self._discriminator.parameters(), lr=1e-5, amsgrad=True
+        )
 
         self._ret = {}  # type: Dict[str, Any]
 
@@ -82,7 +87,7 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Args:
             snapshot_dir:  directory path for saving the model
         """
-        torch.save(self._discriminator, os.path.join(snapshot_dir, 'discriminator.pt'))
+        torch.save(self._discriminator, os.path.join(snapshot_dir, "discriminator.pt"))
 
     def load_model(self, load_dir: str):
         """
@@ -144,13 +149,13 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
             torch.Tensor: Loss w.r.t to the generated data points.
         """
         if weights is not None:
-            loss_funct = nn.BCELoss(weight=weights, reduction='sum')
+            loss_funct = nn.BCELoss(weight=weights, reduction="sum")
         else:
             loss_funct = nn.BCELoss()
 
         return loss_funct(x, y)
 
-    def gradient_penalty(self, x, lambda_=5., k=0.01, c=1.):
+    def gradient_penalty(self, x, lambda_=5.0, k=0.01, c=1.0):
         """
         Compute gradient penalty for discriminator optimization
 
@@ -174,17 +179,20 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         z = Variable(x + delta_, requires_grad=True)
         o_l = self.get_label(z)
         # pylint: disable=no-member
-        d_g = torch.autograd.grad(o_l, z, grad_outputs=torch.ones(o_l.size()),
-                                  create_graph=True)[0].view(z.size(0), -1)
+        d_g = torch.autograd.grad(
+            o_l, z, grad_outputs=torch.ones(o_l.size()), create_graph=True
+        )[0].view(z.size(0), -1)
 
-        return lambda_ * ((d_g.norm(p=2, dim=1) - k)**2).mean()
+        return lambda_ * ((d_g.norm(p=2, dim=1) - k) ** 2).mean()
 
-    def train(self,
-              data: Iterable,
-              weights: Iterable,
-              penalty: bool = False,
-              quantum_instance: Optional[QuantumInstance] = None,
-              shots: Optional[int] = None) -> Dict[str, Any]:
+    def train(
+        self,
+        data: Iterable,
+        weights: Iterable,
+        penalty: bool = False,
+        quantum_instance: Optional[QuantumInstance] = None,
+        shots: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """
         Perform one training step w.r.t to the discriminator's parameters
 
@@ -221,18 +229,23 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         prediction_real = self.get_label(real_batch)
 
         # Calculate error and back propagate
-        error_real = self.loss(prediction_real, torch.ones(len(prediction_real), 1), real_prob)
+        error_real = self.loss(
+            prediction_real, torch.ones(len(prediction_real), 1), real_prob
+        )
         error_real.backward()
 
         # Train on Generated Data
-        generated_batch = np.reshape(generated_batch, (len(generated_batch), self._n_features))
+        generated_batch = np.reshape(
+            generated_batch, (len(generated_batch), self._n_features)
+        )
         generated_prob = np.reshape(generated_prob, (len(generated_prob), 1))
         generated_prob = torch.tensor(generated_prob, dtype=torch.float32)
         prediction_fake = self.get_label(generated_batch)
 
         # Calculate error and back propagate
-        error_fake = self.loss(prediction_fake, torch.zeros(len(prediction_fake), 1),
-                               generated_prob)
+        error_fake = self.loss(
+            prediction_fake, torch.zeros(len(prediction_fake), 1), generated_prob
+        )
         error_fake.backward()
 
         if penalty:
@@ -244,11 +257,11 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
 
         # Return error and predictions for real and fake inputs
         loss_ret = 0.5 * (error_real + error_fake)
-        self._ret['loss'] = loss_ret.detach().numpy()
+        self._ret["loss"] = loss_ret.detach().numpy()
         params = []
 
         for param in self._discriminator.parameters():
             params.append(param.data.detach().numpy())
-        self._ret['params'] = params
+        self._ret["params"] = params
 
         return self._ret

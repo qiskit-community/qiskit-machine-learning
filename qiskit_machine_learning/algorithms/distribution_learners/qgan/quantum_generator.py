@@ -43,14 +43,16 @@ class QuantumGenerator(GenerativeNetwork):
     Eventually, the trained generator can be used for state preparation e.g. in QAE.
     """
 
-    def __init__(self,
-                 bounds: np.ndarray,
-                 num_qubits: Union[List[int], np.ndarray],
-                 generator_circuit: Optional[QuantumCircuit] = None,
-                 init_params: Optional[Union[List[float], np.ndarray]] = None,
-                 optimizer: Optional[Optimizer] = None,
-                 gradient_function: Optional[Union[Callable, Gradient]] = None,
-                 snapshot_dir: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        bounds: np.ndarray,
+        num_qubits: Union[List[int], np.ndarray],
+        generator_circuit: Optional[QuantumCircuit] = None,
+        init_params: Optional[Union[List[float], np.ndarray]] = None,
+        optimizer: Optional[Optimizer] = None,
+        gradient_function: Optional[Union[Callable, Gradient]] = None,
+        snapshot_dir: Optional[str] = None,
+    ) -> None:
         """
         Args:
             bounds: k min/max data values [[min_1,max_1],...,[min_k,max_k]],
@@ -78,17 +80,23 @@ class QuantumGenerator(GenerativeNetwork):
         if generator_circuit is None:
             circuit = QuantumCircuit(sum(num_qubits))
             circuit.h(circuit.qubits)
-            ansatz = TwoLocal(sum(num_qubits), 'ry', 'cz', reps=1, entanglement='circular')
+            ansatz = TwoLocal(
+                sum(num_qubits), "ry", "cz", reps=1, entanglement="circular"
+            )
             circuit.compose(ansatz, inplace=True)
 
             # Set generator circuit
             self.generator_circuit = circuit
 
-        self._free_parameters = sorted(self.generator_circuit.parameters, key=lambda p: p.name)
+        self._free_parameters = sorted(
+            self.generator_circuit.parameters, key=lambda p: p.name
+        )
 
         if init_params is None:
-            init_params = \
-                algorithm_globals.random.random(self.generator_circuit.num_parameters) * 2e-2
+            init_params = (
+                algorithm_globals.random.random(self.generator_circuit.num_parameters)
+                * 2e-2
+            )
 
         self._bound_parameters = init_params
 
@@ -147,8 +155,7 @@ class QuantumGenerator(GenerativeNetwork):
         return self._bound_parameters
 
     @parameter_values.setter
-    def parameter_values(self, p_values: Union[List, np.ndarray]
-                         ) -> None:
+    def parameter_values(self, p_values: Union[List, np.ndarray]) -> None:
         """
         Set parameter values for the quantum generator
 
@@ -216,13 +223,21 @@ class QuantumGenerator(GenerativeNetwork):
                 self._optimizer = optimizer
             else:
                 raise QiskitMachineLearningError(
-                    'Please provide an Optimizer object to use'
-                    'as the generator optimizer.')
+                    "Please provide an Optimizer object to use"
+                    "as the generator optimizer."
+                )
         else:
-            self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7,
-                                   beta_2=0.99, noise_factor=1e-6,
-                                   eps=1e-6, amsgrad=True,
-                                   snapshot_dir=self._snapshot_dir)
+            self._optimizer = ADAM(
+                maxiter=1,
+                tol=1e-6,
+                lr=1e-3,
+                beta_1=0.7,
+                beta_2=0.99,
+                noise_factor=1e-6,
+                eps=1e-6,
+                amsgrad=True,
+                snapshot_dir=self._snapshot_dir,
+            )
 
     def construct_circuit(self, params=None):
         """
@@ -250,10 +265,12 @@ class QuantumGenerator(GenerativeNetwork):
         # # return qc.copy(name='qc')
         # return qc.to_instruction()
 
-    def get_output(self,
-                   quantum_instance: QuantumInstance,
-                   params: Optional[np.ndarray] = None,
-                   shots: Optional[int] = None) -> Tuple[List, List]:
+    def get_output(
+        self,
+        quantum_instance: QuantumInstance,
+        params: Optional[np.ndarray] = None,
+        shots: Optional[int] = None,
+    ) -> Tuple[List, List]:
         """
         Get classical data samples from the generator.
         Running the quantum generator circuit results in a quantum state.
@@ -273,7 +290,7 @@ class QuantumGenerator(GenerativeNetwork):
             generated samples, array: sample occurrence in percentage
         """
         instance_shots = quantum_instance.run_config.shots
-        q = QuantumRegister(sum(self._num_qubits), name='q')
+        q = QuantumRegister(sum(self._num_qubits), name="q")
         qc = QuantumCircuit(q)
         if params is None:
             params = cast(np.ndarray, self._bound_parameters)
@@ -281,7 +298,7 @@ class QuantumGenerator(GenerativeNetwork):
         if quantum_instance.is_statevector:
             pass
         else:
-            c = ClassicalRegister(sum(self._num_qubits), name='c')
+            c = ClassicalRegister(sum(self._num_qubits), name="c")
             qc.add_register(c)
             qc.measure(q, c)
 
@@ -366,14 +383,17 @@ class QuantumGenerator(GenerativeNetwork):
             Returns:
                 self.loss: loss function
             """
-            generated_data, generated_prob = self.get_output(quantum_instance, params=params,
-                                                             shots=self._shots)
+            generated_data, generated_prob = self.get_output(
+                quantum_instance, params=params, shots=self._shots
+            )
             prediction_generated = discriminator.get_label(generated_data, detach=True)
             return self.loss(prediction_generated, generated_prob)
 
         return objective_function
 
-    def _convert_to_gradient_function(self, gradient_object, quantum_instance, discriminator):
+    def _convert_to_gradient_function(
+        self, gradient_object, quantum_instance, discriminator
+    ):
         """
         Convert to gradient function
 
@@ -388,6 +408,7 @@ class QuantumGenerator(GenerativeNetwork):
                 parameter values and returns partial derivatives of the loss
                 function w.r.t. the variational parameters.
         """
+
         def gradient_function(current_point):
             """
             Gradient function
@@ -400,16 +421,21 @@ class QuantumGenerator(GenerativeNetwork):
                     function w.r.t. the variational parameters.
             """
             free_params = self._free_parameters
-            generated_data, _ = self.get_output(quantum_instance,
-                                                params=current_point,
-                                                shots=self._shots)
+            generated_data, _ = self.get_output(
+                quantum_instance, params=current_point, shots=self._shots
+            )
             prediction_generated = discriminator.get_label(generated_data, detach=True)
             op = ~CircuitStateFn(primitive=self.generator_circuit)
             grad_object = gradient_object.convert(operator=op, params=free_params)
-            value_dict = {free_params[i]: current_point[i] for i in range(len(free_params))}
-            analytical_gradients = np.array(grad_object.assign_parameters(value_dict).eval())
-            loss_gradients = self.loss(prediction_generated, np.transpose(
-                analytical_gradients)).real
+            value_dict = {
+                free_params[i]: current_point[i] for i in range(len(free_params))
+            }
+            analytical_gradients = np.array(
+                grad_object.assign_parameters(value_dict).eval()
+            )
+            loss_gradients = self.loss(
+                prediction_generated, np.transpose(analytical_gradients)
+            ).real
             return loss_gradients
 
         return gradient_function
@@ -433,34 +459,40 @@ class QuantumGenerator(GenerativeNetwork):
         # is truly 1 anyway.
         try:
             if self._optimizer._maxiter != 1:
-                warnings.warn('Please set the the optimizer maxiter argument to 1 '
-                              'to ensure that the generator '
-                              'and discriminator are updated in an alternating fashion.')
+                warnings.warn(
+                    "Please set the the optimizer maxiter argument to 1 "
+                    "to ensure that the generator "
+                    "and discriminator are updated in an alternating fashion."
+                )
         except AttributeError:
-            maxiter = self._optimizer._options.get('maxiter')
+            maxiter = self._optimizer._options.get("maxiter")
             if maxiter is not None and maxiter != 1:
-                warnings.warn('Please set the the optimizer maxiter argument to 1 '
-                              'to ensure that the generator '
-                              'and discriminator are updated in an alternating fashion.')
+                warnings.warn(
+                    "Please set the the optimizer maxiter argument to 1 "
+                    "to ensure that the generator "
+                    "and discriminator are updated in an alternating fashion."
+                )
             elif maxiter is None:
-                warnings.warn('Please ensure the optimizer max iterations are set to 1 '
-                              'to ensure that the generator '
-                              'and discriminator are updated in an alternating fashion.')
+                warnings.warn(
+                    "Please ensure the optimizer max iterations are set to 1 "
+                    "to ensure that the generator "
+                    "and discriminator are updated in an alternating fashion."
+                )
 
         if isinstance(self._gradient_function, Gradient):
             self._gradient_function = self._convert_to_gradient_function(
                 self._gradient_function, quantum_instance, self._discriminator
-                )
+            )
 
         objective = self._get_objective_function(quantum_instance, self._discriminator)
         self._bound_parameters, loss, _ = self._optimizer.optimize(
             num_vars=len(self._bound_parameters),
             objective_function=objective,
             initial_point=self._bound_parameters,
-            gradient_function=self._gradient_function
-            )
+            gradient_function=self._gradient_function,
+        )
 
-        self._ret['loss'] = loss
-        self._ret['params'] = self._bound_parameters
+        self._ret["loss"] = loss
+        self._ret["params"] = self._bound_parameters
 
         return self._ret
