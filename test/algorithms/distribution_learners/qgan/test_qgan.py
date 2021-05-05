@@ -17,6 +17,8 @@ import warnings
 import tempfile
 from test import QiskitMachineLearningTestCase, requires_extra_library
 
+from ddt import ddt, data
+
 from qiskit import BasicAer
 from qiskit.circuit.library import UniformDistribution, RealAmplitudes
 from qiskit.utils import algorithm_globals, QuantumInstance
@@ -26,6 +28,7 @@ from qiskit_machine_learning.algorithms import (NumPyDiscriminator,
                                                 PyTorchDiscriminator, QGAN)
 
 
+@ddt
 class TestQGAN(QiskitMachineLearningTestCase):
     """Test the QGAN algorithm."""
 
@@ -264,13 +267,22 @@ class TestQGAN(QiskitMachineLearningTestCase):
                                                  seed_transpiler=algorithm_globals.random_seed))
         self.assertAlmostEqual(trained_qasm['rel_entr'], trained_statevector['rel_entr'], delta=0.1)
 
-    def test_qgan_training_analytic_gradients(self):
-        """Test QGAN training with analytic gradients"""
+    @data('qasm', 'sv')
+    def test_qgan_training_analytic_gradients(self, backend: str):
+        """
+        Test QGAN with analytic gradients
+        Args:
+            backend: backend to run the training
+        """
+        if backend == 'qasm':
+            q_inst = self.qi_qasm
+        else:
+            q_inst = self.qi_statevector
         self.qgan.set_generator(self.generator_circuit)
-        numeric_results = self.qgan.run(self.qi_qasm)
+        numeric_results = self.qgan.run(q_inst)
         self.qgan.set_generator(self.generator_circuit,
                                 generator_gradient=Gradient('param_shift'))
-        analytic_results = self.qgan.run(self.qi_qasm)
+        analytic_results = self.qgan.run(q_inst)
         self.assertAlmostEqual(numeric_results['rel_entr'],
                                analytic_results['rel_entr'], delta=0.1)
 

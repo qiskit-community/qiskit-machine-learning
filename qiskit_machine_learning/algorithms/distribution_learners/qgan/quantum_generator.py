@@ -408,7 +408,8 @@ class QuantumGenerator(GenerativeNetwork):
             grad_object = gradient_object.convert(operator=op, params=free_params)
             value_dict = {free_params[i]: current_point[i] for i in range(len(free_params))}
             analytical_gradients = np.array(grad_object.assign_parameters(value_dict).eval())
-            loss_gradients = self.loss(prediction_generated, analytical_gradients).real
+            loss_gradients = self.loss(prediction_generated, np.transpose(
+                analytical_gradients)).real
             return loss_gradients
 
         return gradient_function
