@@ -19,7 +19,7 @@ import argparse
 
 
 class DeprecationExtractor:
-    """ Extract deprecation messages """
+    """Extract deprecation messages"""
 
     def __init__(self, in_file: str, out_file: str) -> None:
         self._input_filename = in_file
@@ -35,9 +35,9 @@ class DeprecationExtractor:
 
         self._messages = None
         messages = set()
-        with open(self._input_filename, 'rt', encoding="utf8", errors='ignore') as file:
+        with open(self._input_filename, "rt", encoding="utf8", errors="ignore") as file:
             for line in file:
-                if line.find('DeprecationWarning:') > 0:
+                if line.find("DeprecationWarning:") > 0:
                     messages.add(line.strip())
 
         if messages:
@@ -57,19 +57,19 @@ class DeprecationExtractor:
         if self._output_filename:
             # create file even if it is empty
             if self._messages or force_create:
-                with open(self._output_filename, 'w') as file:
+                with open(self._output_filename, "w") as file:
                     if self._messages:
-                        file.write('\n'.join(self._messages))
+                        file.write("\n".join(self._messages))
                         return True
 
         return False
 
     def print_messages(self) -> None:
-        """ print messages """
+        """print messages"""
         if self._messages:
-            print('---------------------')
-            print('Deprecation Messages:')
-            print('---------------------')
+            print("---------------------")
+            print("Deprecation Messages:")
+            print("---------------------")
             for line in self._messages:
                 print(line)
 
@@ -81,16 +81,14 @@ def _check_file(path) -> str:
     return path
 
 
-if __name__ == '__main__':
-    PARSER = argparse.ArgumentParser(description='Qiskit Extract Deprecation Messages Tool')
-    PARSER.add_argument('-file',
-                        type=_check_file,
-                        required=True,
-                        metavar='file',
-                        help='Input file.')
-    PARSER.add_argument('-output',
-                        metavar='output',
-                        help='Output file.')
+if __name__ == "__main__":
+    PARSER = argparse.ArgumentParser(
+        description="Qiskit Extract Deprecation Messages Tool"
+    )
+    PARSER.add_argument(
+        "-file", type=_check_file, required=True, metavar="file", help="Input file."
+    )
+    PARSER.add_argument("-output", metavar="output", help="Output file.")
 
     ARGS = PARSER.parse_args()
 

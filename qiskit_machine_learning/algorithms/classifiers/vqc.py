@@ -29,14 +29,16 @@ from .neural_network_classifier import NeuralNetworkClassifier
 class VQC(NeuralNetworkClassifier):
     """Quantum neural network classifier."""
 
-    def __init__(self,
-                 num_qubits: int = None,
-                 feature_map: QuantumCircuit = None,
-                 ansatz: QuantumCircuit = None,
-                 loss: Union[str, Loss] = 'cross_entropy',
-                 optimizer: Optimizer = None,
-                 warm_start: bool = False,
-                 quantum_instance: QuantumInstance = None) -> None:
+    def __init__(
+        self,
+        num_qubits: int = None,
+        feature_map: QuantumCircuit = None,
+        ansatz: QuantumCircuit = None,
+        loss: Union[str, Loss] = "cross_entropy",
+        optimizer: Optimizer = None,
+        warm_start: bool = False,
+        quantum_instance: QuantumInstance = None,
+    ) -> None:
         """
         Args:
             num_qubits: The number of qubits for the underlying CircuitQNN. If None, derive from
@@ -55,7 +57,8 @@ class VQC(NeuralNetworkClassifier):
         # check num_qubits, feature_map, and ansatz
         if num_qubits is None and feature_map is None and ansatz is None:
             raise QiskitMachineLearningError(
-                'Need at least one of num_qubits, feature_map, or ansatz!')
+                "Need at least one of num_qubits, feature_map, or ansatz!"
+            )
         num_qubits_: int = None
         feature_map_: QuantumCircuit = None
         ansatz_: QuantumCircuit = None
@@ -63,20 +66,26 @@ class VQC(NeuralNetworkClassifier):
             num_qubits_ = num_qubits
             if feature_map:
                 if feature_map.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError('Incompatible num_qubits and feature_map!')
+                    raise QiskitMachineLearningError(
+                        "Incompatible num_qubits and feature_map!"
+                    )
                 feature_map_ = feature_map
             else:
                 feature_map_ = ZZFeatureMap(num_qubits)
             if ansatz:
                 if ansatz.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError('Incompatible num_qubits and ansatz!')
+                    raise QiskitMachineLearningError(
+                        "Incompatible num_qubits and ansatz!"
+                    )
                 ansatz_ = ansatz
             else:
                 ansatz_ = RealAmplitudes(num_qubits)
         else:
             if feature_map and ansatz:
                 if feature_map.num_qubits != ansatz.num_qubits:
-                    raise QiskitMachineLearningError('Incompatible feature_map and ansatz!')
+                    raise QiskitMachineLearningError(
+                        "Incompatible feature_map and ansatz!"
+                    )
                 feature_map_ = feature_map
                 ansatz_ = ansatz
                 num_qubits_ = feature_map.num_qubits
@@ -98,37 +107,41 @@ class VQC(NeuralNetworkClassifier):
         self._circuit.compose(ansatz, inplace=True)
 
         # construct circuit QNN
-        neural_network = CircuitQNN(self._circuit,
-                                    feature_map.parameters,
-                                    ansatz.parameters,
-                                    interpret=self._get_interpret(2),
-                                    output_shape=2,
-                                    quantum_instance=quantum_instance)
+        neural_network = CircuitQNN(
+            self._circuit,
+            feature_map.parameters,
+            ansatz.parameters,
+            interpret=self._get_interpret(2),
+            output_shape=2,
+            quantum_instance=quantum_instance,
+        )
 
-        super().__init__(neural_network=neural_network,
-                         loss=loss,
-                         one_hot=True,
-                         optimizer=optimizer,
-                         warm_start=warm_start)
+        super().__init__(
+            neural_network=neural_network,
+            loss=loss,
+            one_hot=True,
+            optimizer=optimizer,
+            warm_start=warm_start,
+        )
 
     @property
     def feature_map(self) -> QuantumCircuit:
-        """ Returns the used feature map."""
+        """Returns the used feature map."""
         return self._feature_map
 
     @property
     def ansatz(self) -> QuantumCircuit:
-        """ Returns the used ansatz."""
+        """Returns the used ansatz."""
         return self._ansatz
 
     @property
     def circuit(self) -> QuantumCircuit:
-        """ Returns the underlying quantum circuit."""
+        """Returns the underlying quantum circuit."""
         return self._circuit
 
     @property
     def num_qubits(self) -> int:
-        """ Returns the number of qubits used by ansatz and feature map."""
+        """Returns the number of qubits used by ansatz and feature map."""
         return self.circuit.num_qubits
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
@@ -143,11 +156,13 @@ class VQC(NeuralNetworkClassifier):
             self: returns a trained classifier.
         """
         num_classes = len(np.unique(y, axis=0))
-        cast(CircuitQNN, self._neural_network).set_interpret(self._get_interpret(num_classes),
-                                                             num_classes)
+        cast(CircuitQNN, self._neural_network).set_interpret(
+            self._get_interpret(num_classes), num_classes
+        )
         return super().fit(X, y)
 
     def _get_interpret(self, num_classes):
         def parity(x, num_classes=num_classes):
-            return '{:b}'.format(x).count('1') % num_classes
+            return "{:b}".format(x).count("1") % num_classes
+
         return parity

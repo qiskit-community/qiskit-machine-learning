@@ -27,8 +27,14 @@ class SamplingNeuralNetwork(NeuralNetwork):
     machine learning module that generate samples instead of (expected) values.
     """
 
-    def __init__(self, num_inputs: int, num_weights: int, sparse: bool, sampling: bool,
-                 output_shape: Union[int, Tuple[int, ...]]) -> None:
+    def __init__(
+        self,
+        num_inputs: int,
+        num_weights: int,
+        sparse: bool,
+        sampling: bool,
+        output_shape: Union[int, Tuple[int, ...]],
+    ) -> None:
         """
 
         Args:
@@ -55,8 +61,9 @@ class SamplingNeuralNetwork(NeuralNetwork):
         """
         return self._sampling
 
-    def _forward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                 ) -> Union[np.ndarray, SparseArray]:
+    def _forward(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> Union[np.ndarray, SparseArray]:
         """Forward pass of the network. Returns an array of samples or the probabilities, depending
         on the setting. Format depends on the set interpret function.
         """
@@ -65,9 +72,12 @@ class SamplingNeuralNetwork(NeuralNetwork):
         else:
             return self._probabilities(input_data, weights)
 
-    def _backward(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                  ) -> Tuple[Optional[Union[np.ndarray, SparseArray]],
-                             Optional[Union[np.ndarray, SparseArray]]]:
+    def _backward(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> Tuple[
+        Optional[Union[np.ndarray, SparseArray]],
+        Optional[Union[np.ndarray, SparseArray]],
+    ]:
         """Backward pass of the network. Returns (None, None) in case of samples and the
         corresponding here probability gradients otherwise.
         """
@@ -76,8 +86,11 @@ class SamplingNeuralNetwork(NeuralNetwork):
         else:
             return self._probability_gradients(input_data, weights)
 
-    def sample(self, input_data: Union[List[float], np.ndarray, float],
-               weights: Union[List[float], np.ndarray, float]) -> np.ndarray:
+    def sample(
+        self,
+        input_data: Union[List[float], np.ndarray, float],
+        weights: Union[List[float], np.ndarray, float],
+    ) -> np.ndarray:
         """Samples from the network. Returns an array of samples. Format depends on the set
         interpret function.
 
@@ -95,14 +108,17 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._validate_forward_output(output_data, shape)
 
     @abstractmethod
-    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                ) -> np.ndarray:
+    def _sample(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> np.ndarray:
         """Returns samples from the network."""
         raise NotImplementedError
 
-    def probabilities(self, input_data: Union[List[float], np.ndarray, float],
-                      weights: Union[List[float], np.ndarray, float]
-                      ) -> Union[np.ndarray, SparseArray]:
+    def probabilities(
+        self,
+        input_data: Union[List[float], np.ndarray, float],
+        weights: Union[List[float], np.ndarray, float],
+    ) -> Union[np.ndarray, SparseArray]:
         """Histogram (as dict) of the samples from the network. Returns an array of samples. Format
         depends on the set interpret function.
 
@@ -120,15 +136,17 @@ class SamplingNeuralNetwork(NeuralNetwork):
         return self._validate_forward_output(output_data, shape)
 
     @abstractmethod
-    def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                       ) -> Union[np.ndarray, SparseArray]:
+    def _probabilities(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> Union[np.ndarray, SparseArray]:
         """Returns the sample probabilities."""
         raise NotImplementedError
 
-    def probability_gradients(self, input_data: Optional[Union[List[float], np.ndarray, float]],
-                              weights: Optional[Union[List[float], np.ndarray, float]]
-                              ) -> Tuple[Union[np.ndarray, SparseArray],
-                                         Union[np.ndarray, SparseArray]]:
+    def probability_gradients(
+        self,
+        input_data: Optional[Union[List[float], np.ndarray, float]],
+        weights: Optional[Union[List[float], np.ndarray, float]],
+    ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
         """Probability gradients of histogram resulting from the network. Format depends on the set
         interpret function. Shape is (input_grad, weights_grad), where each grad has one dict for
         each parameter and each dict contains as value the derivative of the probability of
@@ -145,14 +163,15 @@ class SamplingNeuralNetwork(NeuralNetwork):
         input_, shape = self._validate_input(input_data)
         weights_ = self._validate_weights(weights)
         input_grad, weight_grad = self._probability_gradients(input_, weights_)
-        input_grad_reshaped, weight_grad_reshaped = \
-            self._validate_backward_output(input_grad, weight_grad, shape)
+        input_grad_reshaped, weight_grad_reshaped = self._validate_backward_output(
+            input_grad, weight_grad, shape
+        )
 
         return input_grad_reshaped, weight_grad_reshaped
 
     @abstractmethod
-    def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                               ) -> Tuple[Union[np.ndarray, SparseArray],
-                                          Union[np.ndarray, SparseArray]]:
+    def _probability_gradients(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
         """Returns the probability gradients."""
         raise NotImplementedError

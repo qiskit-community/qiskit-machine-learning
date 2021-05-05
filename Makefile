@@ -46,7 +46,10 @@ mypy:
 	mypy qiskit_machine_learning test tools
 
 style:
-	pycodestyle qiskit_machine_learning test tools
+	black --check qiskit_machine_learning test tools
+
+black:
+	black qiskit_machine_learning test tools
 
 test:
 	python -m unittest discover -v test

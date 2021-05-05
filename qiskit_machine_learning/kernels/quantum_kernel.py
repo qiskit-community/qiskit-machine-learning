@@ -47,12 +47,13 @@ class QuantumKernel:
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    def __init__(self,
-                 feature_map: Optional[QuantumCircuit] = None,
-                 enforce_psd: bool = True,
-                 batch_size: int = 1000,
-                 quantum_instance: Optional[
-                     Union[QuantumInstance, BaseBackend, Backend]] = None) -> None:
+    def __init__(
+        self,
+        feature_map: Optional[QuantumCircuit] = None,
+        enforce_psd: bool = True,
+        batch_size: int = 1000,
+        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+    ) -> None:
         """
         Args:
             feature_map: Parameterized circuit to be used as the feature map. If None is given,
@@ -69,31 +70,36 @@ class QuantumKernel:
 
     @property
     def feature_map(self) -> QuantumCircuit:
-        """ Returns feature map """
+        """Returns feature map"""
         return self._feature_map
 
     @feature_map.setter
     def feature_map(self, feature_map: QuantumCircuit):
-        """ Sets feature map """
+        """Sets feature map"""
         self._feature_map = feature_map
 
     @property
     def quantum_instance(self) -> QuantumInstance:
-        """ Returns quantum instance """
+        """Returns quantum instance"""
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(self, quantum_instance: Union[Backend,
-                                                       BaseBackend, QuantumInstance]) -> None:
-        """ Sets quantum instance """
+    def quantum_instance(
+        self, quantum_instance: Union[Backend, BaseBackend, QuantumInstance]
+    ) -> None:
+        """Sets quantum instance"""
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             self._quantum_instance = QuantumInstance(quantum_instance)
         else:
             self._quantum_instance = quantum_instance
 
-    def construct_circuit(self, x: ParameterVector, y: ParameterVector = None,
-                          measurement: bool = True,
-                          is_statevector_sim: bool = False) -> QuantumCircuit:
+    def construct_circuit(
+        self,
+        x: ParameterVector,
+        y: ParameterVector = None,
+        measurement: bool = True,
+        is_statevector_sim: bool = False,
+    ) -> QuantumCircuit:
         r"""
         Construct inner product circuit for given datapoints and feature map.
 
@@ -116,12 +122,14 @@ class QuantumKernel:
         """
 
         if len(x) != self._feature_map.num_parameters:
-            raise ValueError("x and class feature map incompatible dimensions.\n" +
-                             "x has %s dimensions, but feature map has %s." %
-                             (len(x), self._feature_map.num_parameters))
+            raise ValueError(
+                "x and class feature map incompatible dimensions.\n"
+                + "x has %s dimensions, but feature map has %s."
+                % (len(x), self._feature_map.num_parameters)
+            )
 
-        q = QuantumRegister(self._feature_map.num_qubits, 'q')
-        c = ClassicalRegister(self._feature_map.num_qubits, 'c')
+        q = QuantumRegister(self._feature_map.num_qubits, "q")
+        c = ClassicalRegister(self._feature_map.num_qubits, "c")
         qc = QuantumCircuit(q, c)
 
         x_dict = dict(zip(self._feature_map.parameters, x))
@@ -130,9 +138,11 @@ class QuantumKernel:
 
         if not is_statevector_sim:
             if y is not None and len(y) != self._feature_map.num_parameters:
-                raise ValueError("y and class feature map incompatible dimensions.\n" +
-                                 "y has %s dimensions, but feature map has %s." %
-                                 (len(y), self._feature_map.num_parameters))
+                raise ValueError(
+                    "y and class feature map incompatible dimensions.\n"
+                    + "y has %s dimensions, but feature map has %s."
+                    % (len(y), self._feature_map.num_parameters)
+                )
 
             if y is None:
                 y = x
@@ -189,7 +199,8 @@ class QuantumKernel:
         """
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
-                "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel.")
+                "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel."
+            )
         if isinstance(self._quantum_instance, (BaseBackend, Backend)):
             self._quantum_instance = QuantumInstance(self._quantum_instance)
 
@@ -211,23 +222,28 @@ class QuantumKernel:
             y_vec = np.reshape(y_vec, (-1, 2))
 
         if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
-            raise ValueError("x_vec and y_vec have incompatible dimensions.\n" +
-                             "x_vec has %s dimensions, but y_vec has %s." %
-                             (x_vec.shape[1], y_vec.shape[1]))
+            raise ValueError(
+                "x_vec and y_vec have incompatible dimensions.\n"
+                + "x_vec has %s dimensions, but y_vec has %s."
+                % (x_vec.shape[1], y_vec.shape[1])
+            )
 
         if x_vec.shape[1] != self._feature_map.num_parameters:
             try:
                 self._feature_map.num_qubits = x_vec.shape[1]
             except AttributeError:
                 raise ValueError(
-                    "x_vec and class feature map have incompatible dimensions.\n" +
-                    "x_vec has %s dimensions, but feature map has %s." %
-                    (x_vec.shape[1], self._feature_map.num_parameters)) from AttributeError
+                    "x_vec and class feature map have incompatible dimensions.\n"
+                    + "x_vec has %s dimensions, but feature map has %s."
+                    % (x_vec.shape[1], self._feature_map.num_parameters)
+                ) from AttributeError
 
         if y_vec is not None and y_vec.shape[1] != self._feature_map.num_parameters:
-            raise ValueError("y_vec and class feature map have incompatible dimensions.\n" +
-                             "y_vec has %s dimensions, but feature map has %s." %
-                             (y_vec.shape[1], self._feature_map.num_parameters))
+            raise ValueError(
+                "y_vec and class feature map have incompatible dimensions.\n"
+                + "y_vec has %s dimensions, but feature map has %s."
+                % (y_vec.shape[1], self._feature_map.num_parameters)
+            )
 
         # determine if calculating self inner product
         is_symmetric = True
@@ -253,7 +269,7 @@ class QuantumKernel:
 
         is_statevector_sim = self._quantum_instance.is_statevector
         measurement = not is_statevector_sim
-        measurement_basis = '0' * self._feature_map.num_qubits
+        measurement_basis = "0" * self._feature_map.num_qubits
 
         # calculate kernel
         if is_statevector_sim:  # using state vector simulator
@@ -262,20 +278,32 @@ class QuantumKernel:
             else:  # not symmetric
                 to_be_computed_data = np.concatenate((x_vec, y_vec))
 
-            feature_map_params = ParameterVector('par_x', self._feature_map.num_parameters)
+            feature_map_params = ParameterVector(
+                "par_x", self._feature_map.num_parameters
+            )
             parameterized_circuit = self.construct_circuit(
-                feature_map_params, feature_map_params,
-                measurement=measurement, is_statevector_sim=is_statevector_sim)
-            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
-            circuits = [parameterized_circuit.assign_parameters({feature_map_params: x})
-                        for x in to_be_computed_data]
+                feature_map_params,
+                feature_map_params,
+                measurement=measurement,
+                is_statevector_sim=is_statevector_sim,
+            )
+            parameterized_circuit = self._quantum_instance.transpile(
+                parameterized_circuit
+            )[0]
+            circuits = [
+                parameterized_circuit.assign_parameters({feature_map_params: x})
+                for x in to_be_computed_data
+            ]
 
             results = self._quantum_instance.execute(circuits)
 
             offset = 0 if is_symmetric else len(x_vec)
-            matrix_elements = [self._compute_overlap(idx, results,
-                                                     is_statevector_sim, measurement_basis)
-                               for idx in list(zip(mus, nus + offset))]
+            matrix_elements = [
+                self._compute_overlap(
+                    idx, results, is_statevector_sim, measurement_basis
+                )
+                for idx in list(zip(mus, nus + offset))
+            ]
 
             for i, j, value in zip(mus, nus, matrix_elements):
                 kernel[i, j] = value
@@ -283,12 +311,21 @@ class QuantumKernel:
                     kernel[j, i] = kernel[i, j]
 
         else:  # not using state vector simulator
-            feature_map_params_x = ParameterVector('par_x', self._feature_map.num_parameters)
-            feature_map_params_y = ParameterVector('par_y', self._feature_map.num_parameters)
+            feature_map_params_x = ParameterVector(
+                "par_x", self._feature_map.num_parameters
+            )
+            feature_map_params_y = ParameterVector(
+                "par_y", self._feature_map.num_parameters
+            )
             parameterized_circuit = self.construct_circuit(
-                feature_map_params_x, feature_map_params_y,
-                measurement=measurement, is_statevector_sim=is_statevector_sim)
-            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
+                feature_map_params_x,
+                feature_map_params_y,
+                measurement=measurement,
+                is_statevector_sim=is_statevector_sim,
+            )
+            parameterized_circuit = self._quantum_instance.transpile(
+                parameterized_circuit
+            )[0]
 
             for idx in range(0, len(mus), self._batch_size):
                 to_be_computed_data_pair = []
@@ -302,15 +339,21 @@ class QuantumKernel:
                         to_be_computed_data_pair.append((x_i, y_j))
                         to_be_computed_index.append((i, j))
 
-                circuits = [parameterized_circuit.assign_parameters({feature_map_params_x: x,
-                                                                     feature_map_params_y: y})
-                            for x, y in to_be_computed_data_pair]
+                circuits = [
+                    parameterized_circuit.assign_parameters(
+                        {feature_map_params_x: x, feature_map_params_y: y}
+                    )
+                    for x, y in to_be_computed_data_pair
+                ]
 
                 results = self._quantum_instance.execute(circuits)
 
-                matrix_elements = [self._compute_overlap(circuit, results,
-                                                         is_statevector_sim, measurement_basis)
-                                   for circuit in range(len(circuits))]
+                matrix_elements = [
+                    self._compute_overlap(
+                        circuit, results, is_statevector_sim, measurement_basis
+                    )
+                    for circuit in range(len(circuits))
+                ]
 
                 for (i, j), value in zip(to_be_computed_index, matrix_elements):
                     kernel[i, j] = value

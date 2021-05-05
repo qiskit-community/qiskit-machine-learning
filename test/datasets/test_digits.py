@@ -25,23 +25,22 @@ class TestDigits(QiskitMachineLearningTestCase):
     def test_digits(self):
         """Digits test."""
 
-        input_file = self.get_resource_path('digits_ref.json',
-                                            'datasets')
+        input_file = self.get_resource_path("digits_ref.json", "datasets")
         with open(input_file) as file:
             ref_data = json.load(file)
 
         training_features, training_labels, test_features, test_labels = digits(
-            training_size=20,
-            test_size=10,
-            n=2,
-            plot_data=False)
+            training_size=20, test_size=10, n=2, plot_data=False
+        )
 
-        np.testing.assert_almost_equal(ref_data["training_features"], training_features, 4)
+        np.testing.assert_almost_equal(
+            ref_data["training_features"], training_features, 4
+        )
         np.testing.assert_almost_equal(ref_data["training_labels"], training_labels, 4)
 
         np.testing.assert_almost_equal(ref_data["test_features"], test_features, 3)
         np.testing.assert_almost_equal(ref_data["test_labels"], test_labels, 4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

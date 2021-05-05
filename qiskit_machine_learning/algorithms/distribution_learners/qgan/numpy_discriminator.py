@@ -60,11 +60,17 @@ class DiscriminatorNet:
             activ_function_curr = layer["activation"]
             layer_input_size = layer["input_dim"]
             layer_output_size = layer["output_dim"]
-            params_layer = algorithm_globals.random.random(layer_output_size * layer_input_size)
+            params_layer = algorithm_globals.random.random(
+                layer_output_size * layer_input_size
+            )
             if activ_function_curr == "leaky_relu":
-                params_layer = (params_layer * 2 - np.ones(np.shape(params_layer))) * 0.7
+                params_layer = (
+                    params_layer * 2 - np.ones(np.shape(params_layer))
+                ) * 0.7
             elif activ_function_curr == "sigmoid":
-                params_layer = (params_layer * 2 - np.ones(np.shape(params_layer))) * 0.2
+                params_layer = (
+                    params_layer * 2 - np.ones(np.shape(params_layer))
+                ) * 0.2
             else:
                 params_layer = params_layer * 2 - np.ones(np.shape(params_layer))
             self.parameters = np.append(self.parameters, params_layer)
@@ -86,8 +92,9 @@ class DiscriminatorNet:
             return sig
 
         def leaky_relu(z, slope=0.2):
-            return np.maximum(
-                np.zeros(np.shape(z)), z) + slope * np.minimum(np.zeros(np.shape(z)), z)
+            return np.maximum(np.zeros(np.shape(z)), z) + slope * np.minimum(
+                np.zeros(np.shape(z)), z
+            )
 
         def single_layer_forward_propagation(x_old, w_new, activation="leaky_relu"):
             z_curr = np.dot(w_new, x_old)
@@ -97,7 +104,7 @@ class DiscriminatorNet:
             elif activation == "sigmoid":
                 activation_func = sigmoid
             else:
-                raise Exception('Non-supported activation function')
+                raise Exception("Non-supported activation function")
 
             return activation_func(z_curr), z_curr
 
@@ -116,7 +123,9 @@ class DiscriminatorNet:
             w_curr = self.parameters[pointer:pointer_next]
             w_curr = np.reshape(w_curr, (layer_output_size, layer_input_size))
             pointer = pointer_next
-            x_new, z_curr = single_layer_forward_propagation(x_old, w_curr, activ_function_curr)
+            x_new, z_curr = single_layer_forward_propagation(
+                x_old, w_curr, activ_function_curr
+            )
 
             self.memory["a" + str(idx)] = x_old
             self.memory["z" + str(layer_idx)] = z_curr
@@ -148,15 +157,16 @@ class DiscriminatorNet:
                         dz[i, j] = dz[i, j] * slope
             return dz
 
-        def single_layer_backward_propagation(da_curr,
-                                              w_curr, z_curr, a_prev, activation="leaky_relu"):
+        def single_layer_backward_propagation(
+            da_curr, w_curr, z_curr, a_prev, activation="leaky_relu"
+        ):
             # m = a_prev.shape[1]
             if activation == "leaky_relu":
                 backward_activation_func = leaky_relu_backward
             elif activation == "sigmoid":
                 backward_activation_func = sigmoid_backward
             else:
-                raise Exception('Non-supported activation function')
+                raise Exception("Non-supported activation function")
 
             dz_curr = backward_activation_func(da_curr, z_curr)
             dw_curr = np.dot(dz_curr, a_prev.T)
@@ -168,13 +178,19 @@ class DiscriminatorNet:
         m = y.shape[1]
         y = y.reshape(np.shape(x))
         if weights is not None:
-            da_prev = - np.multiply(
+            da_prev = -np.multiply(
                 weights,
                 np.divide(y, np.maximum(np.ones(np.shape(x)) * 1e-4, x))
-                - np.divide(1 - y, np.maximum(np.ones(np.shape(x)) * 1e-4, 1 - x)))
+                - np.divide(1 - y, np.maximum(np.ones(np.shape(x)) * 1e-4, 1 - x)),
+            )
         else:
-            da_prev = - (np.divide(y, np.maximum(np.ones(np.shape(x)) * 1e-4, x))
-                         - np.divide(1 - y, np.maximum(np.ones(np.shape(x)) * 1e-4, 1 - x))) / m
+            da_prev = (
+                -(
+                    np.divide(y, np.maximum(np.ones(np.shape(x)) * 1e-4, x))
+                    - np.divide(1 - y, np.maximum(np.ones(np.shape(x)) * 1e-4, 1 - x))
+                )
+                / m
+            )
 
         pointer = 0
 
@@ -197,9 +213,9 @@ class DiscriminatorNet:
             w_curr = np.reshape(w_curr, (layer_output_size, layer_input_size))
             pointer = pointer_prev
 
-            da_prev, dw_curr = single_layer_backward_propagation(da_curr,
-                                                                 np.array(w_curr), z_curr, a_prev,
-                                                                 activ_function_curr)
+            da_prev, dw_curr = single_layer_backward_propagation(
+                da_curr, np.array(w_curr), z_curr, a_prev, activ_function_curr
+            )
 
             grads_values = np.append([dw_curr], grads_values)
 
@@ -221,9 +237,16 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         self._n_features = n_features
         self._n_out = n_out
         self._discriminator = DiscriminatorNet(self._n_features, self._n_out)
-        self._optimizer = ADAM(maxiter=1, tol=1e-6, lr=1e-3, beta_1=0.7, beta_2=0.99,
-                               noise_factor=1e-4,
-                               eps=1e-6, amsgrad=True)
+        self._optimizer = ADAM(
+            maxiter=1,
+            tol=1e-6,
+            lr=1e-3,
+            beta_1=0.7,
+            beta_2=0.99,
+            noise_factor=1e-4,
+            eps=1e-6,
+            amsgrad=True,
+        )
 
         self._ret = {}  # type: Dict[str, Any]
 
@@ -243,12 +266,18 @@ class NumPyDiscriminator(DiscriminativeNetwork):
             snapshot_dir (str): directory path for saving the model
         """
         # save self._discriminator.params_values
-        np.save(os.path.join(snapshot_dir, 'np_discriminator_architecture.csv'),
-                self._discriminator.architecture)
-        np.save(os.path.join(snapshot_dir,
-                             'np_discriminator_memory.csv'), self._discriminator.memory)
-        np.save(os.path.join(snapshot_dir,
-                             'np_discriminator_params.csv'), self._discriminator.parameters)
+        np.save(
+            os.path.join(snapshot_dir, "np_discriminator_architecture.csv"),
+            self._discriminator.architecture,
+        )
+        np.save(
+            os.path.join(snapshot_dir, "np_discriminator_memory.csv"),
+            self._discriminator.memory,
+        )
+        np.save(
+            os.path.join(snapshot_dir, "np_discriminator_params.csv"),
+            self._discriminator.parameters,
+        )
         self._optimizer.save_params(snapshot_dir)
 
     def load_model(self, load_dir):
@@ -258,12 +287,15 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         Args:
             load_dir (str): file with stored pytorch discriminator model to be loaded
         """
-        self._discriminator.architecture = \
-            np.load(os.path.join(load_dir, 'np_discriminator_architecture.csv'))
-        self._discriminator.memory = np.load(os.path.join(load_dir,
-                                                          'np_discriminator_memory.csv'))
-        self._discriminator.parameters = np.load(os.path.join(load_dir,
-                                                              'np_discriminator_params.csv'))
+        self._discriminator.architecture = np.load(
+            os.path.join(load_dir, "np_discriminator_architecture.csv")
+        )
+        self._discriminator.memory = np.load(
+            os.path.join(load_dir, "np_discriminator_memory.csv")
+        )
+        self._discriminator.parameters = np.load(
+            os.path.join(load_dir, "np_discriminator_params.csv")
+        )
         self._optimizer.load_params(load_dir)
 
     @property
@@ -280,7 +312,9 @@ class NumPyDiscriminator(DiscriminativeNetwork):
     def discriminator_net(self, net):
         self._discriminator = net
 
-    def get_label(self, x, detach=False):  # pylint: disable=arguments-differ,unused-argument
+    def get_label(
+        self, x, detach=False
+    ):  # pylint: disable=arguments-differ,unused-argument
         """
         Get data sample labels, i.e. true or fake.
 
@@ -305,22 +339,34 @@ class NumPyDiscriminator(DiscriminativeNetwork):
 
         Returns:
             float: loss function
-       """
+        """
         if weights is not None:
             # Use weights as scaling factors for the samples and compute the sum
-            return (-1) * np.dot(np.multiply(y,
-                                             np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
-                                 + np.multiply(np.ones(np.shape(y)) - y,
-                                               np.log(np.maximum(np.ones(np.shape(x)) * 1e-4,
-                                                                 np.ones(np.shape(x)) - x))),
-                                 weights)
+            return (-1) * np.dot(
+                np.multiply(y, np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
+                + np.multiply(
+                    np.ones(np.shape(y)) - y,
+                    np.log(
+                        np.maximum(
+                            np.ones(np.shape(x)) * 1e-4, np.ones(np.shape(x)) - x
+                        )
+                    ),
+                ),
+                weights,
+            )
         else:
             # Compute the mean
-            return (-1) * np.mean(np.multiply(y,
-                                              np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
-                                  + np.multiply(np.ones(np.shape(y)) - y,
-                                                np.log(np.maximum(np.ones(np.shape(x)) * 1e-4,
-                                                                  np.ones(np.shape(x)) - x))))
+            return (-1) * np.mean(
+                np.multiply(y, np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
+                + np.multiply(
+                    np.ones(np.shape(y)) - y,
+                    np.log(
+                        np.maximum(
+                            np.ones(np.shape(x)) * 1e-4, np.ones(np.shape(x)) - x
+                        )
+                    ),
+                )
+            )
 
     def _get_objective_function(self, data, weights):
         """
@@ -342,10 +388,13 @@ class NumPyDiscriminator(DiscriminativeNetwork):
             self._discriminator.parameters = params
             # Train on Real Data
             prediction_real = self.get_label(real_batch)
-            loss_real = self.loss(prediction_real, np.ones(np.shape(prediction_real)), real_prob)
+            loss_real = self.loss(
+                prediction_real, np.ones(np.shape(prediction_real)), real_prob
+            )
             prediction_fake = self.get_label(generated_batch)
-            loss_fake = self.loss(prediction_fake,
-                                  np.zeros(np.shape(prediction_fake)), generated_prob)
+            loss_fake = self.loss(
+                prediction_fake, np.zeros(np.shape(prediction_fake)), generated_prob
+            )
             return 0.5 * (loss_real[0] + loss_fake[0])
 
         return objective_function
@@ -369,17 +418,22 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         def gradient_function(params):
             self._discriminator.parameters = params
             prediction_real = self.get_label(real_batch)
-            grad_real = self._discriminator.backward(prediction_real,
-                                                     np.ones(np.shape(prediction_real)), real_prob)
+            grad_real = self._discriminator.backward(
+                prediction_real, np.ones(np.shape(prediction_real)), real_prob
+            )
             prediction_generated = self.get_label(generated_batch)
-            grad_generated = self._discriminator.backward(prediction_generated, np.zeros(
-                np.shape(prediction_generated)), generated_prob)
+            grad_generated = self._discriminator.backward(
+                prediction_generated,
+                np.zeros(np.shape(prediction_generated)),
+                generated_prob,
+            )
             return np.add(grad_real, grad_generated)
 
         return gradient_function
 
-    def train(self, data, weights, penalty=False,
-              quantum_instance=None, shots=None) -> Dict[str, Any]:
+    def train(
+        self, data, weights, penalty=False, quantum_instance=None, shots=None
+    ) -> Dict[str, Any]:
         """
         Perform one training step w.r.t to the discriminator's parameters
 
@@ -403,13 +457,14 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         self._optimizer._t = 0
         objective = self._get_objective_function(data, weights)
         gradient = self._get_gradient_function(data, weights)
-        self._discriminator.parameters, loss, _ = \
-            self._optimizer.optimize(num_vars=len(self._discriminator.parameters),
-                                     objective_function=objective,
-                                     initial_point=np.array(self._discriminator.parameters),
-                                     gradient_function=gradient)
+        self._discriminator.parameters, loss, _ = self._optimizer.optimize(
+            num_vars=len(self._discriminator.parameters),
+            objective_function=objective,
+            initial_point=np.array(self._discriminator.parameters),
+            gradient_function=gradient,
+        )
 
-        self._ret['loss'] = loss
-        self._ret['params'] = self._discriminator.parameters
+        self._ret["loss"] = loss
+        self._ret["params"] = self._discriminator.parameters
 
         return self._ret

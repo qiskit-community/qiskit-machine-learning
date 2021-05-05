@@ -60,23 +60,26 @@ Distribution Learners
 
 from .classifiers import QSVC, VQC, NeuralNetworkClassifier
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
-from .distribution_learners import (DiscriminativeNetwork,
-                                    GenerativeNetwork,
-                                    NumPyDiscriminator,
-                                    PyTorchDiscriminator,
-                                    QuantumGenerator, QGAN)
+from .distribution_learners import (
+    DiscriminativeNetwork,
+    GenerativeNetwork,
+    NumPyDiscriminator,
+    PyTorchDiscriminator,
+    QuantumGenerator,
+    QGAN,
+)
 
 __all__ = [
-    'QSVC',
-    'NeuralNetworkClassifier',
-    'VQC',
-    'QSVR',
-    'NeuralNetworkRegressor',
-    'VQR',
-    'DiscriminativeNetwork',
-    'GenerativeNetwork',
-    'NumPyDiscriminator',
-    'PyTorchDiscriminator',
-    'QuantumGenerator',
-    'QGAN',
+    "QSVC",
+    "NeuralNetworkClassifier",
+    "VQC",
+    "QSVR",
+    "NeuralNetworkRegressor",
+    "VQR",
+    "DiscriminativeNetwork",
+    "GenerativeNetwork",
+    "NumPyDiscriminator",
+    "PyTorchDiscriminator",
+    "QuantumGenerator",
+    "QGAN",
 ]

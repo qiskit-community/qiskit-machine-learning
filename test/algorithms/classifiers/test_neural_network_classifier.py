@@ -37,39 +37,41 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # specify quantum instances
         self.random_seed = 12345
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
-                                                   seed_simulator=self.random_seed,
-                                                   seed_transpiler=self.random_seed)
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100,
-                                                     seed_simulator=self.random_seed,
-                                                     seed_transpiler=self.random_seed)
+        self.sv_quantum_instance = QuantumInstance(
+            Aer.get_backend("statevector_simulator"),
+            seed_simulator=self.random_seed,
+            seed_transpiler=self.random_seed,
+        )
+        self.qasm_quantum_instance = QuantumInstance(
+            Aer.get_backend("qasm_simulator"),
+            shots=100,
+            seed_simulator=self.random_seed,
+            seed_transpiler=self.random_seed,
+        )
         np.random.seed(self.random_seed)
 
     @data(
         # optimizer, loss, quantum instance
-        ('cobyla', 'l1', 'statevector'),
-        ('cobyla', 'l1', 'qasm'),
-
-        ('cobyla', 'l2', 'statevector'),
-        ('cobyla', 'l2', 'qasm'),
-
-        ('bfgs', 'l1', 'statevector'),
-        ('bfgs', 'l1', 'qasm'),
-
-        ('bfgs', 'l2', 'statevector'),
-        ('bfgs', 'l2', 'qasm'),
+        ("cobyla", "l1", "statevector"),
+        ("cobyla", "l1", "qasm"),
+        ("cobyla", "l2", "statevector"),
+        ("cobyla", "l2", "qasm"),
+        ("bfgs", "l1", "statevector"),
+        ("bfgs", "l1", "qasm"),
+        ("bfgs", "l2", "statevector"),
+        ("bfgs", "l2", "qasm"),
     )
     def test_classifier_with_opflow_qnn(self, config):
-        """ Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
+        """Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
 
         opt, loss, q_i = config
 
-        if q_i == 'statevector':
+        if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
 
-        if opt == 'bfgs':
+        if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         else:
             optimizer = COBYLA(maxiter=25)
@@ -94,29 +96,26 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, quantum instance
-        ('cobyla', 'l1', 'statevector'),
-        ('cobyla', 'l1', 'qasm'),
-
-        ('cobyla', 'l2', 'statevector'),
-        ('cobyla', 'l2', 'qasm'),
-
-        ('bfgs', 'l1', 'statevector'),
-        ('bfgs', 'l1', 'qasm'),
-
-        ('bfgs', 'l2', 'statevector'),
-        ('bfgs', 'l2', 'qasm'),
+        ("cobyla", "l1", "statevector"),
+        ("cobyla", "l1", "qasm"),
+        ("cobyla", "l2", "statevector"),
+        ("cobyla", "l2", "qasm"),
+        ("bfgs", "l1", "statevector"),
+        ("bfgs", "l1", "qasm"),
+        ("bfgs", "l2", "statevector"),
+        ("bfgs", "l2", "qasm"),
     )
     def test_classifier_with_circuit_qnn(self, config):
-        """ Test Neural Network Classifier with Circuit QNN."""
+        """Test Neural Network Classifier with Circuit QNN."""
 
         opt, loss, q_i = config
 
-        if q_i == 'statevector':
+        if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
 
-        if opt == 'bfgs':
+        if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         else:
             optimizer = COBYLA(maxiter=25)
@@ -132,15 +131,18 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct qnn
         def parity(x):
-            return '{:b}'.format(x).count('1') % 2
+            return "{:b}".format(x).count("1") % 2
 
         output_shape = 2
-        qnn = CircuitQNN(qc, input_params=feature_map.parameters,
-                         weight_params=ansatz.parameters,
-                         sparse=False,
-                         interpret=parity,
-                         output_shape=output_shape,
-                         quantum_instance=quantum_instance)
+        qnn = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            sparse=False,
+            interpret=parity,
+            output_shape=output_shape,
+            quantum_instance=quantum_instance,
+        )
 
         # construct classifier
         classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
@@ -159,23 +161,22 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, quantum instance
-        ('cobyla', 'statevector'),
-        ('cobyla', 'qasm'),
-
-        ('bfgs', 'statevector'),
-        ('bfgs', 'qasm'),
+        ("cobyla", "statevector"),
+        ("cobyla", "qasm"),
+        ("bfgs", "statevector"),
+        ("bfgs", "qasm"),
     )
     def test_classifier_with_circuit_qnn_and_cross_entropy(self, config):
-        """ Test Neural Network Classifier with Circuit QNN and Cross Entropy loss."""
+        """Test Neural Network Classifier with Circuit QNN and Cross Entropy loss."""
 
         opt, q_i = config
 
-        if q_i == 'statevector':
+        if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
 
-        if opt == 'bfgs':
+        if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         else:
             optimizer = COBYLA(maxiter=25)
@@ -193,18 +194,23 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct qnn
         def parity(x):
-            return '{:b}'.format(x).count('1') % 2
+            return "{:b}".format(x).count("1") % 2
 
         output_shape = 2
-        qnn = CircuitQNN(qc, input_params=feature_map.parameters,
-                         weight_params=ansatz.parameters,
-                         sparse=False,
-                         interpret=parity,
-                         output_shape=output_shape,
-                         quantum_instance=quantum_instance)
+        qnn = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            sparse=False,
+            interpret=parity,
+            output_shape=output_shape,
+            quantum_instance=quantum_instance,
+        )
 
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss, one_hot=True)
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, one_hot=True
+        )
 
         # construct data
         num_samples = 5
@@ -220,5 +226,5 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         self.assertGreater(score, 0.5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

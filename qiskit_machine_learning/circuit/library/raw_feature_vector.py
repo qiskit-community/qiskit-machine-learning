@@ -15,9 +15,7 @@
 from typing import Optional
 import numpy as np
 from qiskit.exceptions import QiskitError
-from qiskit.circuit import (
-    QuantumRegister, QuantumCircuit, ParameterVector, Instruction
-)
+from qiskit.circuit import QuantumRegister, QuantumCircuit, ParameterVector, Instruction
 from qiskit.circuit.library import BlueprintCircuit
 
 
@@ -62,7 +60,7 @@ class RawFeatureVector(BlueprintCircuit):
         # q_1: ┤1                                              ├
         #      └───────────────────────────────────────────────┘
 
-        """
+    """
 
     def __init__(self, feature_dimension: Optional[int]) -> None:
         """
@@ -73,7 +71,7 @@ class RawFeatureVector(BlueprintCircuit):
         super().__init__()
 
         self._num_qubits = None
-        self._ordered_parameters = ParameterVector('x')
+        self._ordered_parameters = ParameterVector("x")
 
         if feature_dimension:
             self.feature_dimension = feature_dimension
@@ -94,7 +92,9 @@ class RawFeatureVector(BlueprintCircuit):
             self._ordered_parameters.resize(self.feature_dimension)
         elif len(self._ordered_parameters) != self.feature_dimension:
             if raise_on_failure:
-                raise ValueError('Mismatching number of parameters and feature dimension.')
+                raise ValueError(
+                    "Mismatching number of parameters and feature dimension."
+                )
             return False
         return True
 
@@ -118,7 +118,7 @@ class RawFeatureVector(BlueprintCircuit):
             # invalidate the circuit
             self._invalidate()
             self._num_qubits = num_qubits
-            self.add_register(QuantumRegister(self.num_qubits, 'q'))
+            self.add_register(QuantumRegister(self.num_qubits, "q"))
 
     @property
     def feature_dimension(self) -> int:
@@ -141,7 +141,7 @@ class RawFeatureVector(BlueprintCircuit):
         """
         num_qubits = np.log2(feature_dimension)
         if int(num_qubits) != num_qubits:
-            raise ValueError('feature_dimension must be a power of 2!')
+            raise ValueError("feature_dimension must be a power of 2!")
 
         if self._num_qubits is None or num_qubits != self._num_qubits:
             self._invalidate()
@@ -158,9 +158,9 @@ class ParameterizedInitialize(Instruction):
     def __init__(self, amplitudes):
         num_qubits = np.log2(len(amplitudes))
         if int(num_qubits) != num_qubits:
-            raise ValueError('feature_dimension must be a power of 2!')
+            raise ValueError("feature_dimension must be a power of 2!")
 
-        super().__init__('ParameterizedInitialize', int(num_qubits), 0, amplitudes)
+        super().__init__("ParameterizedInitialize", int(num_qubits), 0, amplitudes)
 
     def _define(self):
         # cast ParameterExpressions that are fully bound to numbers
@@ -169,7 +169,9 @@ class ParameterizedInitialize(Instruction):
             if len(param.parameters) == 0:
                 cleaned_params.append(complex(param))
             else:
-                raise QiskitError('Cannot define a ParameterizedInitialize with unbound parameters')
+                raise QiskitError(
+                    "Cannot define a ParameterizedInitialize with unbound parameters"
+                )
 
         # normalize
         normalized = np.array(cleaned_params) / np.linalg.norm(cleaned_params)
