@@ -1,3 +1,0 @@
-fixes:
-  - |
-    Fix the dimensions of the gradient in the quantum generator for the qGAN training.
