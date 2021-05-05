@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Now ``NeuralNetworkClassifier`` extends ``ClassifierMixin`` and ``NeuralNetworkRegressor``
+    extends ``RegressorMixin`` from Scikit-Learn and rely on their methods for score calculation.
+    This also adds an ability to pass sample weights as an optional parameter
+    to the score methods.
