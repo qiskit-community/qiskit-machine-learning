@@ -218,7 +218,7 @@ class QuantumGenerator(GenerativeNetwork):
                 self._optimizer = optimizer
             else:
                 raise QiskitMachineLearningError(
-                    "Please provide an Optimizer object to use" "as the generator optimizer."
+                    "Please provide an Optimizer object to use as the generator optimizer."
                 )
         else:
             self._optimizer = ADAM(

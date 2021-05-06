@@ -193,7 +193,7 @@ class QGAN:
         """
         if quantum_instance is None and self.quantum_instance is None:
             raise QiskitMachineLearningError(
-                "A QuantumInstance or Backend " "must be supplied to run the quantum algorithm."
+                "A QuantumInstance or Backend must be supplied to run the quantum algorithm."
             )
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             self.set_backend(quantum_instance, **kwargs)
