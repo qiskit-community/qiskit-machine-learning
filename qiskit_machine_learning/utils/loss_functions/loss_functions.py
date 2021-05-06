@@ -42,8 +42,7 @@ class Loss(ABC):
         target = np.array(target)
         if predict.shape != target.shape:
             raise QiskitMachineLearningError(
-                f"Shapes don't match, predict: {predict.shape}, "
-                f"target: {target.shape}!"
+                f"Shapes don't match, predict: {predict.shape}, " f"target: {target.shape}!"
             )
         return predict, target
 
@@ -59,9 +58,7 @@ class L1Loss(Loss):
         elif len(predict.shape) <= 1:
             return np.linalg.norm(predict - target, ord=1)
         elif len(predict.shape) > 1:
-            return np.linalg.norm(
-                predict - target, ord=1, axis=tuple(range(1, len(predict.shape)))
-            )
+            return np.linalg.norm(predict - target, ord=1, axis=tuple(range(1, len(predict.shape))))
         else:
             raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
 

@@ -111,15 +111,11 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         # test backward pass
         result = qnn.backward(input_data, weights)
         if qnn.input_gradients:
-            self.assertEqual(
-                result[0].shape, (batch_size, *qnn.output_shape, qnn.num_inputs)
-            )
+            self.assertEqual(result[0].shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
         else:
             self.assertIsNone(result[0])
 
-        self.assertEqual(
-            result[1].shape, (batch_size, *qnn.output_shape, qnn.num_weights)
-        )
+        self.assertEqual(result[1].shape, (batch_size, *qnn.output_shape, qnn.num_weights))
 
 
 if __name__ == "__main__":

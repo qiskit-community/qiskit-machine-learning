@@ -34,22 +34,14 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         for t_r in range(training_size + test_size):
             for feat in range(n):
                 if randomized_vector1[feat] == 0:
-                    sample_a[t_r][feat] = algorithm_globals.random.normal(
-                        -1 / 2, sigma, None
-                    )
+                    sample_a[t_r][feat] = algorithm_globals.random.normal(-1 / 2, sigma, None)
                 elif randomized_vector1[feat] == 1:
-                    sample_a[t_r][feat] = algorithm_globals.random.normal(
-                        1 / 2, sigma, None
-                    )
+                    sample_a[t_r][feat] = algorithm_globals.random.normal(1 / 2, sigma, None)
 
                 if randomized_vector2[feat] == 0:
-                    sample_b[t_r][feat] = algorithm_globals.random.normal(
-                        -1 / 2, sigma, None
-                    )
+                    sample_b[t_r][feat] = algorithm_globals.random.normal(-1 / 2, sigma, None)
                 elif randomized_vector2[feat] == 1:
-                    sample_b[t_r][feat] = algorithm_globals.random.normal(
-                        1 / 2, sigma, None
-                    )
+                    sample_b[t_r][feat] = algorithm_globals.random.normal(1 / 2, sigma, None)
 
         sample_train = [sample_a, sample_b]
         for lindex in range(training_size + test_size):
@@ -63,9 +55,7 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
             for k, key in enumerate(class_labels)
         }
         test_input = {
-            key: (sample_train[label_train == k, :])[
-                training_size : (training_size + test_size)
-            ]
+            key: (sample_train[label_train == k, :])[training_size : (training_size + test_size)]
             for k, key in enumerate(class_labels)
         }
 
@@ -158,9 +148,7 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         for lindex in range(training_size + test_size):
             label_train[training_size + test_size + lindex] = 1
         for lindex in range(training_size + test_size):
-            label_train[
-                training_size + test_size + training_size + test_size + lindex
-            ] = 2
+            label_train[training_size + test_size + training_size + test_size + lindex] = 2
         label_train = label_train.astype(int)
         sample_train = np.reshape(sample_train, (3 * (training_size + test_size), n))
         training_input = {
@@ -168,9 +156,7 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
             for k, key in enumerate(class_labels)
         }
         test_input = {
-            key: (sample_train[label_train == k, :])[
-                training_size : (training_size + test_size)
-            ]
+            key: (sample_train[label_train == k, :])[training_size : (training_size + test_size)]
             for k, key in enumerate(class_labels)
         }
 

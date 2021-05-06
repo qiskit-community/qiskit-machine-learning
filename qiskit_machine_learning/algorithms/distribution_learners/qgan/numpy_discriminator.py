@@ -60,17 +60,11 @@ class DiscriminatorNet:
             activ_function_curr = layer["activation"]
             layer_input_size = layer["input_dim"]
             layer_output_size = layer["output_dim"]
-            params_layer = algorithm_globals.random.random(
-                layer_output_size * layer_input_size
-            )
+            params_layer = algorithm_globals.random.random(layer_output_size * layer_input_size)
             if activ_function_curr == "leaky_relu":
-                params_layer = (
-                    params_layer * 2 - np.ones(np.shape(params_layer))
-                ) * 0.7
+                params_layer = (params_layer * 2 - np.ones(np.shape(params_layer))) * 0.7
             elif activ_function_curr == "sigmoid":
-                params_layer = (
-                    params_layer * 2 - np.ones(np.shape(params_layer))
-                ) * 0.2
+                params_layer = (params_layer * 2 - np.ones(np.shape(params_layer))) * 0.2
             else:
                 params_layer = params_layer * 2 - np.ones(np.shape(params_layer))
             self.parameters = np.append(self.parameters, params_layer)
@@ -123,9 +117,7 @@ class DiscriminatorNet:
             w_curr = self.parameters[pointer:pointer_next]
             w_curr = np.reshape(w_curr, (layer_output_size, layer_input_size))
             pointer = pointer_next
-            x_new, z_curr = single_layer_forward_propagation(
-                x_old, w_curr, activ_function_curr
-            )
+            x_new, z_curr = single_layer_forward_propagation(x_old, w_curr, activ_function_curr)
 
             self.memory["a" + str(idx)] = x_old
             self.memory["z" + str(layer_idx)] = z_curr
@@ -290,9 +282,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         self._discriminator.architecture = np.load(
             os.path.join(load_dir, "np_discriminator_architecture.csv")
         )
-        self._discriminator.memory = np.load(
-            os.path.join(load_dir, "np_discriminator_memory.csv")
-        )
+        self._discriminator.memory = np.load(os.path.join(load_dir, "np_discriminator_memory.csv"))
         self._discriminator.parameters = np.load(
             os.path.join(load_dir, "np_discriminator_params.csv")
         )
@@ -312,9 +302,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
     def discriminator_net(self, net):
         self._discriminator = net
 
-    def get_label(
-        self, x, detach=False
-    ):  # pylint: disable=arguments-differ,unused-argument
+    def get_label(self, x, detach=False):  # pylint: disable=arguments-differ,unused-argument
         """
         Get data sample labels, i.e. true or fake.
 
@@ -346,11 +334,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
                 np.multiply(y, np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
                 + np.multiply(
                     np.ones(np.shape(y)) - y,
-                    np.log(
-                        np.maximum(
-                            np.ones(np.shape(x)) * 1e-4, np.ones(np.shape(x)) - x
-                        )
-                    ),
+                    np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, np.ones(np.shape(x)) - x)),
                 ),
                 weights,
             )
@@ -360,11 +344,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
                 np.multiply(y, np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, x)))
                 + np.multiply(
                     np.ones(np.shape(y)) - y,
-                    np.log(
-                        np.maximum(
-                            np.ones(np.shape(x)) * 1e-4, np.ones(np.shape(x)) - x
-                        )
-                    ),
+                    np.log(np.maximum(np.ones(np.shape(x)) * 1e-4, np.ones(np.shape(x)) - x)),
                 )
             )
 
@@ -388,9 +368,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
             self._discriminator.parameters = params
             # Train on Real Data
             prediction_real = self.get_label(real_batch)
-            loss_real = self.loss(
-                prediction_real, np.ones(np.shape(prediction_real)), real_prob
-            )
+            loss_real = self.loss(prediction_real, np.ones(np.shape(prediction_real)), real_prob)
             prediction_fake = self.get_label(generated_batch)
             loss_fake = self.loss(
                 prediction_fake, np.zeros(np.shape(prediction_fake)), generated_prob

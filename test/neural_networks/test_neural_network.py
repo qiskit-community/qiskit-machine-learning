@@ -108,9 +108,7 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
         batch_size = self._get_batch_size(input_data)
         network = _NeuralNetwork(*config)
 
-        input_grad, weights_grad = network.backward(
-            input_data, np.zeros(network.num_weights)
-        )
+        input_grad, weights_grad = network.backward(input_data, np.zeros(network.num_weights))
 
         if network.num_inputs > 0:
             self.assertEqual(

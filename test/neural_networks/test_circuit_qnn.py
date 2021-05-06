@@ -199,9 +199,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
-                self.assertEqual(
-                    input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs)
-                )
+                self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
                 self.assertEqual(
                     weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
                 )
@@ -252,9 +250,9 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 diff = input_grad_ - grad
             else:
                 grad = (f_1 - f_2) / (2 * eps)
-                input_grad_ = input_grad.reshape((batch_size, -1, qnn.num_inputs))[
-                    :, :, k
-                ].reshape(grad.shape)
+                input_grad_ = input_grad.reshape((batch_size, -1, qnn.num_inputs))[:, :, k].reshape(
+                    grad.shape
+                )
                 diff = input_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 

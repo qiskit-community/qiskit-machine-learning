@@ -179,7 +179,7 @@ class QGAN:
     def run(
         self,
         quantum_instance: Optional[Union[QuantumInstance, Backend, BaseBackend]] = None,
-        **kwargs
+        **kwargs,
     ) -> Dict:
         """Execute the algorithm with selected backend.
         Args:
@@ -193,8 +193,7 @@ class QGAN:
         """
         if quantum_instance is None and self.quantum_instance is None:
             raise QiskitMachineLearningError(
-                "A QuantumInstance or Backend "
-                "must be supplied to run the quantum algorithm."
+                "A QuantumInstance or Backend must be supplied to run the quantum algorithm."
             )
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             self.set_backend(quantum_instance, **kwargs)
@@ -386,9 +385,7 @@ class QGAN:
                                         items in the truncated data set
         """
         if self._snapshot_dir is not None:
-            with open(
-                os.path.join(self._snapshot_dir, "output.csv"), mode="w"
-            ) as csv_file:
+            with open(os.path.join(self._snapshot_dir, "output.csv"), mode="w") as csv_file:
                 fieldnames = [
                     "epoch",
                     "loss_discriminator",
@@ -424,9 +421,7 @@ class QGAN:
 
                 # 2. Train Generator
                 self._generator.discriminator = self._discriminator
-                ret_g = self._generator.train(
-                    self._quantum_instance, shots=self._batch_size
-                )
+                ret_g = self._generator.train(self._quantum_instance, shots=self._batch_size)
                 g_loss_min = ret_g["loss"]
 
             self._d_loss.append(np.around(float(d_loss_min), 4))
@@ -465,9 +460,7 @@ class QGAN:
         Raises:
             QiskitMachineLearningError: invalid backend
         """
-        if self._quantum_instance.backend_name == (
-            "unitary_simulator" or "clifford_simulator"
-        ):
+        if self._quantum_instance.backend_name == ("unitary_simulator" or "clifford_simulator"):
             raise QiskitMachineLearningError(
                 "Chosen backend not supported - "
                 "Set backend either to statevector_simulator, qasm_simulator"

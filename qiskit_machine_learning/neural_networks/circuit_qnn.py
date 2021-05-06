@@ -101,9 +101,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         )
 
         # prepare sampler
-        self._sampler = CircuitSampler(
-            self._quantum_instance, param_qobj=False, caching="all"
-        )
+        self._sampler = CircuitSampler(self._quantum_instance, param_qobj=False, caching="all")
 
         self._original_circuit = circuit
         # use given gradient or default
@@ -121,17 +119,11 @@ class CircuitQNN(SamplingNeuralNetwork):
                 params = self._input_params + self._weight_params
             else:
                 params = self._weight_params
-            self._gradient_circuit = self._gradient.convert(
-                StateFn(grad_circuit), params
-            )
+            self._gradient_circuit = self._gradient.convert(StateFn(grad_circuit), params)
         except (ValueError, TypeError, OpflowError, QiskitError):
-            logger.warning(
-                "Cannot compute gradient operator! Continuing without gradients!"
-            )
+            logger.warning("Cannot compute gradient operator! Continuing without gradients!")
 
-    def _compute_output_shape(
-        self, interpret, output_shape, sampling
-    ) -> Tuple[int, ...]:
+    def _compute_output_shape(self, interpret, output_shape, sampling) -> Tuple[int, ...]:
         """Validate and compute the output shape."""
 
         # this definition is required by mypy
@@ -210,17 +202,13 @@ class CircuitQNN(SamplingNeuralNetwork):
         output _shape does not have to be set and is inferred from the interpret function.
         Otherwise, the output_shape needs to be given."""
         self._interpret = interpret if interpret else lambda x: x
-        self._output_shape = self._compute_output_shape(
-            interpret, output_shape, self._sampling
-        )
+        self._output_shape = self._compute_output_shape(interpret, output_shape, self._sampling)
 
     def _sample(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> np.ndarray:
         if self._quantum_instance.is_statevector:
-            raise QiskitMachineLearningError(
-                "Sampling does not work with statevector simulator!"
-            )
+            raise QiskitMachineLearningError("Sampling does not work with statevector simulator!")
 
         # evaluate operator
         orig_memory = self._quantum_instance.backend_options.get("memory")
@@ -231,14 +219,10 @@ class CircuitQNN(SamplingNeuralNetwork):
         rows = input_data.shape[0]
         for i in range(rows):
             param_values = {
-                input_param: input_data[i, j]
-                for j, input_param in enumerate(self._input_params)
+                input_param: input_data[i, j] for j, input_param in enumerate(self._input_params)
             }
             param_values.update(
-                {
-                    weight_param: weights[j]
-                    for j, weight_param in enumerate(self._weight_params)
-                }
+                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
@@ -263,14 +247,10 @@ class CircuitQNN(SamplingNeuralNetwork):
         rows = input_data.shape[0]
         for i in range(rows):
             param_values = {
-                input_param: input_data[i, j]
-                for j, input_param in enumerate(self._input_params)
+                input_param: input_data[i, j] for j, input_param in enumerate(self._input_params)
             }
             param_values.update(
-                {
-                    weight_param: weights[j]
-                    for j, weight_param in enumerate(self._weight_params)
-                }
+                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
@@ -321,14 +301,10 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         for row in range(rows):
             param_values = {
-                input_param: input_data[row, j]
-                for j, input_param in enumerate(self._input_params)
+                input_param: input_data[row, j] for j, input_param in enumerate(self._input_params)
             }
             param_values.update(
-                {
-                    weight_param: weights[j]
-                    for j, weight_param in enumerate(self._weight_params)
-                }
+                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
             )
 
             # TODO: additional "bind_parameters" should not be necessary,

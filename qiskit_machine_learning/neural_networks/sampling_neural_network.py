@@ -74,10 +74,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
 
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[
-        Optional[Union[np.ndarray, SparseArray]],
-        Optional[Union[np.ndarray, SparseArray]],
-    ]:
+    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
         """Backward pass of the network. Returns (None, None) in case of samples and the
         corresponding here probability gradients otherwise.
         """

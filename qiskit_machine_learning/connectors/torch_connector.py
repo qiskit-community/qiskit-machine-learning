@@ -139,9 +139,7 @@ class TorchConnector(Module):
                 )
 
             # evaluate QNN gradient
-            input_grad, weights_grad = neural_network.backward(
-                input_data.numpy(), weights.numpy()
-            )
+            input_grad, weights_grad = neural_network.backward(input_data.numpy(), weights.numpy())
             if input_grad is not None:
                 if np.prod(input_grad.shape) == 0:
                     input_grad = None
@@ -151,17 +149,13 @@ class TorchConnector(Module):
                     # cast to dense here, since PyTorch does not support sparse output yet.
                     # this should only happen if the network returns sparse output but the
                     # connector is configured to return dense output.
-                    input_grad = (
-                        input_grad.to_dense()
-                    )  # this should be eventually removed
+                    input_grad = input_grad.to_dense()  # this should be eventually removed
                     input_grad = input_grad.to(grad_output.dtype)
                 else:
                     input_grad = Tensor(input_grad).to(grad_output.dtype)
 
                 if len(grad_output.shape) == 2:
-                    input_grad = grad_output.transpose(0, 1) @ input_grad.transpose(
-                        0, 1
-                    )
+                    input_grad = grad_output.transpose(0, 1) @ input_grad.transpose(0, 1)
                 else:
                     input_grad = grad_output @ input_grad  # TODO: validate
 
@@ -169,24 +163,18 @@ class TorchConnector(Module):
                 if np.prod(weights_grad.shape) == 0:
                     weights_grad = None
                 elif neural_network.sparse:
-                    weights_grad = sparse_coo_tensor(
-                        weights_grad.coords, weights_grad.data
-                    )
+                    weights_grad = sparse_coo_tensor(weights_grad.coords, weights_grad.data)
 
                     # cast to dense here, since PyTorch does not support sparse output yet.
                     # this should only happen if the network returns sparse output but the
                     # connector is configured to return dense output.
-                    weights_grad = (
-                        weights_grad.to_dense()
-                    )  # this should be eventually removed
+                    weights_grad = weights_grad.to_dense()  # this should be eventually removed
                     weights_grad = weights_grad.to(grad_output.dtype)
                 else:
                     weights_grad = Tensor(weights_grad).to(grad_output.dtype)
 
                 if len(grad_output.shape) == 2:
-                    weights_grad = grad_output.transpose(0, 1) @ weights_grad.transpose(
-                        0, 1
-                    )
+                    weights_grad = grad_output.transpose(0, 1) @ weights_grad.transpose(0, 1)
                 else:
                     weights_grad = grad_output @ weights_grad
 

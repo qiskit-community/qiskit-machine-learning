@@ -45,9 +45,7 @@ class NeuralNetwork(ABC):
             QiskitMachineLearningError: Invalid parameter values.
         """
         if num_inputs < 0:
-            raise QiskitMachineLearningError(
-                f"Number of inputs cannot be negative: {num_inputs}!"
-            )
+            raise QiskitMachineLearningError(f"Number of inputs cannot be negative: {num_inputs}!")
         self._num_inputs = num_inputs
 
         if num_weights < 0:
@@ -139,9 +137,7 @@ class NeuralNetwork(ABC):
         self, output_data: np.ndarray, original_shape: Tuple[int, ...]
     ) -> np.ndarray:
         if original_shape and len(original_shape) >= 2:
-            output_data = output_data.reshape(
-                (*original_shape[:-1], *self._output_shape)
-            )
+            output_data = output_data.reshape((*original_shape[:-1], *self._output_shape))
 
         return output_data
 
@@ -192,10 +188,7 @@ class NeuralNetwork(ABC):
         self,
         input_data: Optional[Union[List[float], np.ndarray, float]],
         weights: Optional[Union[List[float], np.ndarray, float]],
-    ) -> Tuple[
-        Optional[Union[np.ndarray, SparseArray]],
-        Optional[Union[np.ndarray, SparseArray]],
-    ]:
+    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
         """Backward pass of the network.
 
         Args:
@@ -221,8 +214,5 @@ class NeuralNetwork(ABC):
     @abstractmethod
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[
-        Optional[Union[np.ndarray, SparseArray]],
-        Optional[Union[np.ndarray, SparseArray]],
-    ]:
+    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
         raise NotImplementedError

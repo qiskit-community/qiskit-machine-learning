@@ -68,9 +68,7 @@ def discretize_and_truncate(
     """
     # Truncate the data
     if np.ndim(min_max_bin_centers) == 1:
-        min_max_bin_centers = np.reshape(
-            min_max_bin_centers, (1, len(min_max_bin_centers))
-        )
+        min_max_bin_centers = np.reshape(min_max_bin_centers, (1, len(min_max_bin_centers)))
 
     data = data.reshape((len(data), len(num_qubits)))
     temp = []
@@ -129,9 +127,7 @@ def discretize_and_truncate(
 
     if return_prob:
         if np.ndim(data) > 1:
-            prob_data = np.zeros(
-                int(np.prod(np.power(np.ones(len(data[0])) * 2, num_qubits)))
-            )
+            prob_data = np.zeros(int(np.prod(np.power(np.ones(len(data[0])) * 2, num_qubits))))
         else:
             prob_data = np.zeros(int(np.prod(np.power(np.array([2]), num_qubits))))
         for data_element in data:

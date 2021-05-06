@@ -92,9 +92,7 @@ class RawFeatureVector(BlueprintCircuit):
             self._ordered_parameters.resize(self.feature_dimension)
         elif len(self._ordered_parameters) != self.feature_dimension:
             if raise_on_failure:
-                raise ValueError(
-                    "Mismatching number of parameters and feature dimension."
-                )
+                raise ValueError("Mismatching number of parameters and feature dimension.")
             return False
         return True
 
@@ -169,9 +167,7 @@ class ParameterizedInitialize(Instruction):
             if len(param.parameters) == 0:
                 cleaned_params.append(complex(param))
             else:
-                raise QiskitError(
-                    "Cannot define a ParameterizedInitialize with unbound parameters"
-                )
+                raise QiskitError("Cannot define a ParameterizedInitialize with unbound parameters")
 
         # normalize
         normalized = np.array(cleaned_params) / np.linalg.norm(cleaned_params)
