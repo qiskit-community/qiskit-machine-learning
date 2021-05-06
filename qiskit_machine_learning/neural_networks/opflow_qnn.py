@@ -100,9 +100,7 @@ class OpflowQNN(NeuralNetwork):
 
             self._gradient_operator = gradient.convert(self._operator, params)
         except (ValueError, TypeError, OpflowError, QiskitError):
-            logger.warning(
-                "Cannot compute gradient operator! Continuing without gradients!"
-            )
+            logger.warning("Cannot compute gradient operator! Continuing without gradients!")
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
@@ -148,14 +146,9 @@ class OpflowQNN(NeuralNetwork):
     ) -> Union[np.ndarray, SparseArray]:
         # combine parameter dictionary
         # take i-th column as values for the i-th param in a batch
-        param_values = {
-            p: input_data[:, i].tolist() for i, p in enumerate(self._input_params)
-        }
+        param_values = {p: input_data[:, i].tolist() for i, p in enumerate(self._input_params)}
         param_values.update(
-            {
-                p: [weights[i]] * input_data.shape[0]
-                for i, p in enumerate(self._weight_params)
-            }
+            {p: [weights[i]] * input_data.shape[0] for i, p in enumerate(self._weight_params)}
         )
 
         # evaluate operator
@@ -170,10 +163,7 @@ class OpflowQNN(NeuralNetwork):
 
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[
-        Optional[Union[np.ndarray, SparseArray]],
-        Optional[Union[np.ndarray, SparseArray]],
-    ]:
+    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
 
         # check whether gradient circuit could be constructed
         if self._gradient_operator is None:
@@ -190,18 +180,12 @@ class OpflowQNN(NeuralNetwork):
 
         for row in range(batch_size):
             # take i-th column as values for the i-th param in a batch
-            param_values = {
-                p: input_data[row, j] for j, p in enumerate(self._input_params)
-            }
-            param_values.update(
-                {p: weights[j] for j, p in enumerate(self._weight_params)}
-            )
+            param_values = {p: input_data[row, j] for j, p in enumerate(self._input_params)}
+            param_values.update({p: weights[j] for j, p in enumerate(self._weight_params)})
 
             # evaluate gradient over all parameters
             if self._circuit_sampler:
-                grad = self._circuit_sampler.convert(
-                    self._gradient_operator, param_values
-                )
+                grad = self._circuit_sampler.convert(self._gradient_operator, param_values)
                 # TODO: this should not be necessary and is a bug!
                 grad = grad.bind_parameters(param_values)
                 grad = np.real(grad.eval())

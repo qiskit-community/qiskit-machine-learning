@@ -32,9 +32,7 @@ class CopyrightChecker:
 
     @staticmethod
     def _exception_to_string(excp: Exception) -> str:
-        stack = traceback.extract_stack()[:-3] + traceback.extract_tb(
-            excp.__traceback__
-        )
+        stack = traceback.extract_stack()[:-3] + traceback.extract_tb(excp.__traceback__)
         pretty = traceback.format_list(stack)
         return "".join(pretty) + "\n  {} {}".format(excp.__class__, excp)
 
@@ -53,9 +51,7 @@ class CopyrightChecker:
         year = CopyrightChecker._get_year_from_date(out_str)
         return year, err_str
 
-    def _process_file_last_year(
-        self, relative_path: str
-    ) -> Tuple[int, Union[None, str]]:
+    def _process_file_last_year(self, relative_path: str) -> Tuple[int, Union[None, str]]:
         # construct minimal environment
         env = {}
         for k in ["SYSTEMROOT", "PATH"]:
@@ -195,9 +191,7 @@ def check_path(path):
 
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser(description="Check Copyright Tool")
-    PARSER.add_argument(
-        "-path", type=check_path, metavar="path", help="Root path of project."
-    )
+    PARSER.add_argument("-path", type=check_path, metavar="path", help="Root path of project.")
 
     ARGS = PARSER.parse_args()
     if not ARGS.path:
@@ -206,10 +200,6 @@ if __name__ == "__main__":
     ARGS.path = os.path.abspath(os.path.realpath(os.path.expanduser(ARGS.path)))
     INVALID_UTF8, INVALID_YEAR, HAS_HEADER = CopyrightChecker(ARGS.path).check()
     print("{} files have utf8 headers.".format(INVALID_UTF8))
-    print(
-        "{} of {} files with copyright header have wrong years.".format(
-            INVALID_YEAR, HAS_HEADER
-        )
-    )
+    print("{} of {} files with copyright header have wrong years.".format(INVALID_YEAR, HAS_HEADER))
 
     sys.exit(os.EX_OK if INVALID_UTF8 == 0 and INVALID_YEAR == 0 else os.EX_SOFTWARE)

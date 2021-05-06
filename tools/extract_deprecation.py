@@ -82,9 +82,7 @@ def _check_file(path) -> str:
 
 
 if __name__ == "__main__":
-    PARSER = argparse.ArgumentParser(
-        description="Qiskit Extract Deprecation Messages Tool"
-    )
+    PARSER = argparse.ArgumentParser(description="Qiskit Extract Deprecation Messages Tool")
     PARSER.add_argument(
         "-file", type=_check_file, required=True, metavar="file", help="Input file."
     )

@@ -45,9 +45,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
         # Load data samples from log-normal distribution with mean=1 and standard deviation=1
         m_u = 1
         sigma = 1
-        self._real_data = algorithm_globals.random.lognormal(
-            mean=m_u, sigma=sigma, size=n_v
-        )
+        self._real_data = algorithm_globals.random.lognormal(mean=m_u, sigma=sigma, size=n_v)
         # Set upper and lower data values as list of k
         # min/max data values [[min_0,max_0],...,[min_k-1,max_k-1]]
         self._bounds = [0.0, 3.0]
@@ -94,12 +92,8 @@ class TestQGAN(QiskitMachineLearningTestCase):
         """Test sample generation."""
         self.qgan.set_generator(generator_circuit=self.generator_circuit)
 
-        _, weights_statevector = self.qgan._generator.get_output(
-            self.qi_statevector, shots=100
-        )
-        samples_qasm, weights_qasm = self.qgan._generator.get_output(
-            self.qi_qasm, shots=100
-        )
+        _, weights_statevector = self.qgan._generator.get_output(self.qi_statevector, shots=100)
+        samples_qasm, weights_qasm = self.qgan._generator.get_output(self.qi_qasm, shots=100)
         samples_qasm, weights_qasm = zip(*sorted(zip(samples_qasm, weights_qasm)))
         for i, weight_q in enumerate(weights_qasm):
             self.assertAlmostEqual(weight_q, weights_statevector[i], delta=0.1)
@@ -112,9 +106,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
         )
         trained_statevector = self.qgan.run(self.qi_statevector)
         trained_qasm = self.qgan.run(self.qi_qasm)
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     def test_qgan_training_cobyla(self):
         """Test QGAN training."""
@@ -124,9 +116,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
         )
         trained_statevector = self.qgan.run(self.qi_statevector)
         trained_qasm = self.qgan.run(self.qi_qasm)
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     def test_qgan_training(self):
         """Test QGAN training."""
@@ -136,9 +126,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
 
         trained_statevector = self.qgan.run(self.qi_statevector)
         trained_qasm = self.qgan.run(self.qi_qasm)
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     @requires_extra_library
     def test_qgan_training_run_algo_torch(self):
@@ -174,9 +162,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
                 seed_transpiler=algorithm_globals.random_seed,
             )
         )
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     @requires_extra_library
     def test_qgan_training_run_algo_torch_multivariate(self):
@@ -219,9 +205,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
                 seed_transpiler=algorithm_globals.random_seed,
             )
         )
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     def test_qgan_training_run_algo_numpy(self):
         """Test QGAN training using a NumPy discriminator."""
@@ -256,9 +240,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
                 seed_transpiler=algorithm_globals.random_seed,
             )
         )
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     def test_qgan_save_model(self):
         """Test the QGAN functionality to store the current model."""
@@ -294,9 +276,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
                     seed_transpiler=algorithm_globals.random_seed,
                 )
             )
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     def test_qgan_training_run_algo_numpy_multivariate(self):
         """Test QGAN training using a NumPy discriminator, for multivariate distributions."""
@@ -338,9 +318,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
                 seed_transpiler=algorithm_globals.random_seed,
             )
         )
-        self.assertAlmostEqual(
-            trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     @data("qasm", "sv")
     def test_qgan_training_analytic_gradients(self, backend: str):
@@ -355,13 +333,9 @@ class TestQGAN(QiskitMachineLearningTestCase):
             q_inst = self.qi_statevector
         self.qgan.set_generator(self.generator_circuit)
         numeric_results = self.qgan.run(q_inst)
-        self.qgan.set_generator(
-            self.generator_circuit, generator_gradient=Gradient("param_shift")
-        )
+        self.qgan.set_generator(self.generator_circuit, generator_gradient=Gradient("param_shift"))
         analytic_results = self.qgan.run(q_inst)
-        self.assertAlmostEqual(
-            numeric_results["rel_entr"], analytic_results["rel_entr"], delta=0.1
-        )
+        self.assertAlmostEqual(numeric_results["rel_entr"], analytic_results["rel_entr"], delta=0.1)
 
 
 if __name__ == "__main__":

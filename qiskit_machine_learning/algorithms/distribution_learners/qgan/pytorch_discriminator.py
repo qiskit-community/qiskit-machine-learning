@@ -65,9 +65,7 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         self._discriminator = DiscriminatorNet(self._n_features, self._n_out)
         # optimizer: torch.optim.Optimizer or None, Optimizer initialized w.r.t
         # discriminator network parameters.
-        self._optimizer = optim.Adam(
-            self._discriminator.parameters(), lr=1e-5, amsgrad=True
-        )
+        self._optimizer = optim.Adam(self._discriminator.parameters(), lr=1e-5, amsgrad=True)
 
         self._ret = {}  # type: Dict[str, Any]
 
@@ -179,9 +177,9 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         z = Variable(x + delta_, requires_grad=True)
         o_l = self.get_label(z)
         # pylint: disable=no-member
-        d_g = torch.autograd.grad(
-            o_l, z, grad_outputs=torch.ones(o_l.size()), create_graph=True
-        )[0].view(z.size(0), -1)
+        d_g = torch.autograd.grad(o_l, z, grad_outputs=torch.ones(o_l.size()), create_graph=True)[
+            0
+        ].view(z.size(0), -1)
 
         return lambda_ * ((d_g.norm(p=2, dim=1) - k) ** 2).mean()
 
@@ -229,15 +227,11 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         prediction_real = self.get_label(real_batch)
 
         # Calculate error and back propagate
-        error_real = self.loss(
-            prediction_real, torch.ones(len(prediction_real), 1), real_prob
-        )
+        error_real = self.loss(prediction_real, torch.ones(len(prediction_real), 1), real_prob)
         error_real.backward()
 
         # Train on Generated Data
-        generated_batch = np.reshape(
-            generated_batch, (len(generated_batch), self._n_features)
-        )
+        generated_batch = np.reshape(generated_batch, (len(generated_batch), self._n_features))
         generated_prob = np.reshape(generated_prob, (len(generated_prob), 1))
         generated_prob = torch.tensor(generated_prob, dtype=torch.float32)
         prediction_fake = self.get_label(generated_batch)

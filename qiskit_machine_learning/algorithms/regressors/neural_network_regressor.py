@@ -160,9 +160,9 @@ class NeuralNetworkRegressor(RegressorMixin):
                     # TODO: do batch eval
                     _, weight_prob_grad = self._neural_network.backward(x, w)
                     for i in range(num_classes):
-                        grad += weight_prob_grad[0, i, :].reshape(
-                            grad.shape
-                        ) * self._loss(i, y_target)
+                        grad += weight_prob_grad[0, i, :].reshape(grad.shape) * self._loss(
+                            i, y_target
+                        )
                 return grad
 
         if self._warm_start and self._fit_result is not None:
@@ -191,9 +191,7 @@ class NeuralNetworkRegressor(RegressorMixin):
         """
 
         if self._fit_result is None:
-            raise QiskitMachineLearningError(
-                "Model needs to be fit to some training data first!"
-            )
+            raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
 
         # TODO: proper handling of batching
         return self._neural_network.forward(X, self._fit_result[0])

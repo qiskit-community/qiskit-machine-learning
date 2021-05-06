@@ -175,10 +175,7 @@ class NeuralNetworkClassifier(ClassifierMixin):
                         # TODO: do batch eval
                         y_predict = self._neural_network.forward(x, w)
                         _, weight_prob_grad = self._neural_network.backward(x, w)
-                        grad += (
-                            self._loss.gradient(y_predict[0], y_target)
-                            @ weight_prob_grad[0, :]
-                        )
+                        grad += self._loss.gradient(y_predict[0], y_target) @ weight_prob_grad[0, :]
                     return grad
 
             else:
@@ -198,9 +195,9 @@ class NeuralNetworkClassifier(ClassifierMixin):
                         # TODO: do batch eval
                         _, weight_prob_grad = self._neural_network.backward(x, w)
                         for i in range(num_classes):
-                            grad += weight_prob_grad[0, i, :].reshape(
-                                grad.shape
-                            ) * self._loss(i, y_target)
+                            grad += weight_prob_grad[0, i, :].reshape(grad.shape) * self._loss(
+                                i, y_target
+                            )
                     return grad
 
         if self._warm_start and self._fit_result is not None:
@@ -228,9 +225,7 @@ class NeuralNetworkClassifier(ClassifierMixin):
             The predicted classes.
         """
         if self._fit_result is None:
-            raise QiskitMachineLearningError(
-                "Model needs to be fit to some training data first!"
-            )
+            raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
         if self._neural_network.output_shape == (1,):
             predict = np.sign(self._neural_network.forward(X, self._fit_result[0]))
         else:

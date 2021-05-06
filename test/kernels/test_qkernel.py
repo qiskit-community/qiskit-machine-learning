@@ -54,9 +54,7 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
         )
         self.label_train = np.asarray([0, 0, 1, 1])
 
-        self.sample_test = np.asarray(
-            [[2.199114860, 5.15221195], [0.50265482, 0.06283185]]
-        )
+        self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
 
     def test_callable(self):
@@ -126,9 +124,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
             ]
         )
 
-        self.sample_test = np.asarray(
-            [[3.83274304, 2.45044227], [3.89557489, 0.31415927]]
-        )
+        self.sample_test = np.asarray([[3.83274304, 2.45044227], [3.89557489, 0.31415927]])
 
         self.sample_feature_dim = np.asarray([[1, 2, 3], [4, 5, 6]])
         self.sample_more_dim = np.asarray([[[0, 0], [1, 1]]])
@@ -192,9 +188,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
     def test_qasm_symmetric(self):
         """Test symmetric matrix evaluation using qasm simulator"""
-        qkclass = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.qasm_simulator
-        )
+        qkclass = QuantumKernel(feature_map=self.feature_map, quantum_instance=self.qasm_simulator)
 
         kernel = qkclass.evaluate(x_vec=self.sample_train)
 
@@ -202,9 +196,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
     def test_qasm_unsymmetric(self):
         """Test unsymmetric matrix evaluation using qasm simulator"""
-        qkclass = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.qasm_simulator
-        )
+        qkclass = QuantumKernel(feature_map=self.feature_map, quantum_instance=self.qasm_simulator)
 
         kernel = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_test)
 
@@ -218,9 +210,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         kernel = qkclass.evaluate(x_vec=self.sample_train)
 
-        np.testing.assert_allclose(
-            kernel, self.ref_kernel_train["statevector"], rtol=1e-4
-        )
+        np.testing.assert_allclose(kernel, self.ref_kernel_train["statevector"], rtol=1e-4)
 
     def test_sv_unsymmetric(self):
         """Test unsymmetric matrix evaluation using state vector simulator"""
@@ -230,9 +220,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         kernel = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_test)
 
-        np.testing.assert_allclose(
-            kernel, self.ref_kernel_test["statevector"], rtol=1e-4
-        )
+        np.testing.assert_allclose(kernel, self.ref_kernel_test["statevector"], rtol=1e-4)
 
     def test_qasm_nopsd(self):
         """Test symmetric matrix qasm sample no positive semi-definite enforcement"""
@@ -244,21 +232,15 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         kernel = qkclass.evaluate(x_vec=self.sample_train)
 
-        np.testing.assert_allclose(
-            kernel, self.ref_kernel_train["qasm_sample"], rtol=1e-4
-        )
+        np.testing.assert_allclose(kernel, self.ref_kernel_train["qasm_sample"], rtol=1e-4)
 
     def test_qasm_psd(self):
         """Test symmetric matrix positive semi-definite enforcement qasm sample"""
-        qkclass = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.qasm_sample
-        )
+        qkclass = QuantumKernel(feature_map=self.feature_map, quantum_instance=self.qasm_sample)
 
         kernel = qkclass.evaluate(x_vec=self.sample_train)
 
-        np.testing.assert_allclose(
-            kernel, self.ref_kernel_train["qasm_sample_psd"], rtol=1e-4
-        )
+        np.testing.assert_allclose(kernel, self.ref_kernel_train["qasm_sample_psd"], rtol=1e-4)
 
     def test_x_one_dim(self):
         """Test one x_vec dimension"""
@@ -288,9 +270,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         kernel = qkclass.evaluate(x_vec=self.sample_train[0], y_vec=self.sample_test[0])
 
-        np.testing.assert_allclose(
-            kernel, self.ref_kernel_test["one_xy_dim"], rtol=1e-4
-        )
+        np.testing.assert_allclose(kernel, self.ref_kernel_test["one_xy_dim"], rtol=1e-4)
 
     def test_no_backend(self):
         """Test no backend provided"""
@@ -301,27 +281,21 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
     def test_x_more_dim(self):
         """Test incorrect x_vec dimension"""
-        qkclass = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.qasm_simulator
-        )
+        qkclass = QuantumKernel(feature_map=self.feature_map, quantum_instance=self.qasm_simulator)
 
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_more_dim)
 
     def test_y_more_dim(self):
         """Test incorrect y_vec dimension"""
-        qkclass = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.qasm_simulator
-        )
+        qkclass = QuantumKernel(feature_map=self.feature_map, quantum_instance=self.qasm_simulator)
 
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_more_dim)
 
     def test_y_feature_dim(self):
         """Test incorrect y_vec feature dimension"""
-        qkclass = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.qasm_simulator
-        )
+        qkclass = QuantumKernel(feature_map=self.feature_map, quantum_instance=self.qasm_simulator)
 
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_feature_dim)

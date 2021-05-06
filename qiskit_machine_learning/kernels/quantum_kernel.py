@@ -224,8 +224,7 @@ class QuantumKernel:
         if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
             raise ValueError(
                 "x_vec and y_vec have incompatible dimensions.\n"
-                + "x_vec has %s dimensions, but y_vec has %s."
-                % (x_vec.shape[1], y_vec.shape[1])
+                + "x_vec has %s dimensions, but y_vec has %s." % (x_vec.shape[1], y_vec.shape[1])
             )
 
         if x_vec.shape[1] != self._feature_map.num_parameters:
@@ -278,18 +277,14 @@ class QuantumKernel:
             else:  # not symmetric
                 to_be_computed_data = np.concatenate((x_vec, y_vec))
 
-            feature_map_params = ParameterVector(
-                "par_x", self._feature_map.num_parameters
-            )
+            feature_map_params = ParameterVector("par_x", self._feature_map.num_parameters)
             parameterized_circuit = self.construct_circuit(
                 feature_map_params,
                 feature_map_params,
                 measurement=measurement,
                 is_statevector_sim=is_statevector_sim,
             )
-            parameterized_circuit = self._quantum_instance.transpile(
-                parameterized_circuit
-            )[0]
+            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
             circuits = [
                 parameterized_circuit.assign_parameters({feature_map_params: x})
                 for x in to_be_computed_data
@@ -299,9 +294,7 @@ class QuantumKernel:
 
             offset = 0 if is_symmetric else len(x_vec)
             matrix_elements = [
-                self._compute_overlap(
-                    idx, results, is_statevector_sim, measurement_basis
-                )
+                self._compute_overlap(idx, results, is_statevector_sim, measurement_basis)
                 for idx in list(zip(mus, nus + offset))
             ]
 
@@ -311,21 +304,15 @@ class QuantumKernel:
                     kernel[j, i] = kernel[i, j]
 
         else:  # not using state vector simulator
-            feature_map_params_x = ParameterVector(
-                "par_x", self._feature_map.num_parameters
-            )
-            feature_map_params_y = ParameterVector(
-                "par_y", self._feature_map.num_parameters
-            )
+            feature_map_params_x = ParameterVector("par_x", self._feature_map.num_parameters)
+            feature_map_params_y = ParameterVector("par_y", self._feature_map.num_parameters)
             parameterized_circuit = self.construct_circuit(
                 feature_map_params_x,
                 feature_map_params_y,
                 measurement=measurement,
                 is_statevector_sim=is_statevector_sim,
             )
-            parameterized_circuit = self._quantum_instance.transpile(
-                parameterized_circuit
-            )[0]
+            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
 
             for idx in range(0, len(mus), self._batch_size):
                 to_be_computed_data_pair = []
@@ -349,9 +336,7 @@ class QuantumKernel:
                 results = self._quantum_instance.execute(circuits)
 
                 matrix_elements = [
-                    self._compute_overlap(
-                        circuit, results, is_statevector_sim, measurement_basis
-                    )
+                    self._compute_overlap(circuit, results, is_statevector_sim, measurement_basis)
                     for circuit in range(len(circuits))
                 ]
 

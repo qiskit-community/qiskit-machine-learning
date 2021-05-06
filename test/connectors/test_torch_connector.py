@@ -57,9 +57,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         self.sv_quantum_instance = QuantumInstance(StatevectorSimulator())
         self.qasm_quantum_instance = QuantumInstance(AerSimulator(), shots=100)
 
-    def validate_output_shape(
-        self, model: TorchConnector, test_data: List[Tensor]
-    ) -> None:
+    def validate_output_shape(self, model: TorchConnector, test_data: List[Tensor]) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
         applies the list of test input data to both, and asserts that they have the same
         output shape.
@@ -84,9 +82,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         # create benchmark model
         in_dim = model.neural_network.num_inputs
         if len(model.neural_network.output_shape) != 1:
-            raise QiskitMachineLearningError(
-                "Function only works for one dimensional output"
-            )
+            raise QiskitMachineLearningError("Function only works for one dimensional output")
         out_dim = model.neural_network.output_shape[0]
         linear = Linear(in_dim, out_dim)
 
@@ -126,12 +122,8 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
         input_data = (
-            torch.randn(
-                model.neural_network.num_inputs, dtype=torch.double, requires_grad=True
-            ),
-            torch.randn(
-                model.neural_network.num_weights, dtype=torch.double, requires_grad=True
-            ),
+            torch.randn(model.neural_network.num_inputs, dtype=torch.double, requires_grad=True),
+            torch.randn(model.neural_network.num_weights, dtype=torch.double, requires_grad=True),
             model.neural_network,
             False,
         )
@@ -482,9 +474,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         x = np.random.rand(num_samples, num_inputs)
 
         # set up QNN
-        qnn = TwoLayerQNN(
-            num_qubits=num_inputs, quantum_instance=self.sv_quantum_instance
-        )
+        qnn = TwoLayerQNN(num_qubits=num_inputs, quantum_instance=self.sv_quantum_instance)
 
         # set up PyTorch module
         initial_weights = np.random.rand(qnn.num_weights)

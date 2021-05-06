@@ -46,9 +46,7 @@ def ad_hoc_data(
     sample_a = [[0 for x in range(n)] for y in range(training_size + test_size)]
     sample_b = [[0 for x in range(n)] for y in range(training_size + test_size)]
 
-    sample_total = [
-        [[0 for x in range(count)] for y in range(count)] for z in range(count)
-    ]
+    sample_total = [[[0 for x in range(count)] for y in range(count)] for z in range(count)]
 
     # interactions = np.transpose(np.array([[1, 0], [0, 1], [1, 1]]))
 
@@ -162,9 +160,7 @@ def ad_hoc_data(
             for k, key in enumerate(class_labels)
         }
         test_input = {
-            key: (sample_train[label_train == k, :])[
-                training_size : (training_size + test_size)
-            ]
+            key: (sample_train[label_train == k, :])[training_size : (training_size + test_size)]
             for k, key in enumerate(class_labels)
         }
 
@@ -200,20 +196,12 @@ def ad_hoc_data(
                         x_1 * np.kron(np.kron(z_m, j_m), j_m)
                         + x_2 * np.kron(np.kron(j_m, z_m), j_m)
                         + x_3 * np.kron(np.kron(j_m, j_m), z_m)
-                        + (np.pi - x_1)
-                        * (np.pi - x_2)
-                        * np.kron(np.kron(z_m, z_m), j_m)
-                        + (np.pi - x_2)
-                        * (np.pi - x_3)
-                        * np.kron(np.kron(j_m, z_m), z_m)
-                        + (np.pi - x_1)
-                        * (np.pi - x_3)
-                        * np.kron(np.kron(z_m, j_m), z_m)
+                        + (np.pi - x_1) * (np.pi - x_2) * np.kron(np.kron(z_m, z_m), j_m)
+                        + (np.pi - x_2) * (np.pi - x_3) * np.kron(np.kron(j_m, z_m), z_m)
+                        + (np.pi - x_1) * (np.pi - x_3) * np.kron(np.kron(z_m, j_m), z_m)
                     )
                     u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
-                    psi = (
-                        np.asmatrix(u_u) * h_3 * np.asmatrix(u_u) * np.transpose(psi_0)
-                    )
+                    psi = np.asmatrix(u_u) * h_3 * np.asmatrix(u_u) * np.transpose(psi_0)
                     temp = np.real(psi.getH() * m_m * psi).item()
                     if temp > gap:
                         sample_total[n_1][n_2][n_3] = +1
@@ -265,9 +253,7 @@ def ad_hoc_data(
             for k, key in enumerate(class_labels)
         }
         test_input = {
-            key: (sample_train[label_train == k, :])[
-                training_size : (training_size + test_size)
-            ]
+            key: (sample_train[label_train == k, :])[training_size : (training_size + test_size)]
             for k, key in enumerate(class_labels)
         }
 
@@ -376,8 +362,5 @@ def sample_ad_hoc_data(sample_total, test_size, n):
         label_train[test_size + lindex] = 1
     label_train = label_train.astype(int)
     sample_train = np.reshape(sample_train, (2 * test_size, n))
-    test_input = {
-        key: (sample_train[label_train == k, :])[:]
-        for k, key in enumerate(class_labels)
-    }
+    test_input = {key: (sample_train[label_train == k, :])[:] for k, key in enumerate(class_labels)}
     return test_input

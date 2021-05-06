@@ -40,9 +40,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         self.sv_quantum_instance = QuantumInstance(StatevectorSimulator())
         self.qasm_quantum_instance = QuantumInstance(AerSimulator(shots=100))
 
-    def validate_output_shape(
-        self, qnn: OpflowQNN, test_data: List[np.ndarray]
-    ) -> None:
+    def validate_output_shape(self, qnn: OpflowQNN, test_data: List[np.ndarray]) -> None:
         """
         Asserts that the opflow qnn returns results of the correct output shape.
 

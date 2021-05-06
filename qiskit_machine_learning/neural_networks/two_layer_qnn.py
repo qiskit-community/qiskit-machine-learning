@@ -67,26 +67,20 @@ class TwoLayerQNN(OpflowQNN):
             num_qubits_ = num_qubits
             if feature_map:
                 if feature_map.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError(
-                        "Incompatible num_qubits and feature_map!"
-                    )
+                    raise QiskitMachineLearningError("Incompatible num_qubits and feature_map!")
                 feature_map_ = feature_map
             else:
                 feature_map_ = ZZFeatureMap(num_qubits)
             if ansatz:
                 if ansatz.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError(
-                        "Incompatible num_qubits and ansatz!"
-                    )
+                    raise QiskitMachineLearningError("Incompatible num_qubits and ansatz!")
                 ansatz_ = ansatz
             else:
                 ansatz_ = RealAmplitudes(num_qubits)
         else:
             if feature_map and ansatz:
                 if feature_map.num_qubits != ansatz.num_qubits:
-                    raise QiskitMachineLearningError(
-                        "Incompatible feature_map and ansatz!"
-                    )
+                    raise QiskitMachineLearningError("Incompatible feature_map and ansatz!")
                 feature_map_ = feature_map
                 ansatz_ = ansatz
                 num_qubits_ = feature_map.num_qubits
@@ -118,9 +112,7 @@ class TwoLayerQNN(OpflowQNN):
         # combine all to operator
         operator = ~StateFn(self.observable) @ StateFn(self._circuit)
 
-        super().__init__(
-            operator, input_params, weight_params, quantum_instance=quantum_instance
-        )
+        super().__init__(operator, input_params, weight_params, quantum_instance=quantum_instance)
 
     @property
     def feature_map(self) -> QuantumCircuit:

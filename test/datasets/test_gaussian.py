@@ -30,9 +30,7 @@ class TestGaussian(QiskitMachineLearningTestCase):
         np.testing.assert_array_equal(training_features.shape, (40, 2))
         np.testing.assert_array_equal(training_labels.shape, (40, 2))
 
-        np.testing.assert_array_equal(
-            np.sum(training_labels, axis=0), np.array([20, 20])
-        )
+        np.testing.assert_array_equal(np.sum(training_labels, axis=0), np.array([20, 20]))
         np.testing.assert_array_equal(np.sum(training_labels, axis=1), np.ones(40))
 
         np.testing.assert_array_equal(test_features.shape, (20, 2))

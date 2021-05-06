@@ -80,22 +80,17 @@ class QuantumGenerator(GenerativeNetwork):
         if generator_circuit is None:
             circuit = QuantumCircuit(sum(num_qubits))
             circuit.h(circuit.qubits)
-            ansatz = TwoLocal(
-                sum(num_qubits), "ry", "cz", reps=1, entanglement="circular"
-            )
+            ansatz = TwoLocal(sum(num_qubits), "ry", "cz", reps=1, entanglement="circular")
             circuit.compose(ansatz, inplace=True)
 
             # Set generator circuit
             self.generator_circuit = circuit
 
-        self._free_parameters = sorted(
-            self.generator_circuit.parameters, key=lambda p: p.name
-        )
+        self._free_parameters = sorted(self.generator_circuit.parameters, key=lambda p: p.name)
 
         if init_params is None:
             init_params = (
-                algorithm_globals.random.random(self.generator_circuit.num_parameters)
-                * 2e-2
+                algorithm_globals.random.random(self.generator_circuit.num_parameters) * 2e-2
             )
 
         self._bound_parameters = init_params
@@ -223,8 +218,7 @@ class QuantumGenerator(GenerativeNetwork):
                 self._optimizer = optimizer
             else:
                 raise QiskitMachineLearningError(
-                    "Please provide an Optimizer object to use"
-                    "as the generator optimizer."
+                    "Please provide an Optimizer object to use" "as the generator optimizer."
                 )
         else:
             self._optimizer = ADAM(
@@ -391,9 +385,7 @@ class QuantumGenerator(GenerativeNetwork):
 
         return objective_function
 
-    def _convert_to_gradient_function(
-        self, gradient_object, quantum_instance, discriminator
-    ):
+    def _convert_to_gradient_function(self, gradient_object, quantum_instance, discriminator):
         """
         Convert to gradient function
 
@@ -427,12 +419,8 @@ class QuantumGenerator(GenerativeNetwork):
             prediction_generated = discriminator.get_label(generated_data, detach=True)
             op = ~CircuitStateFn(primitive=self.generator_circuit)
             grad_object = gradient_object.convert(operator=op, params=free_params)
-            value_dict = {
-                free_params[i]: current_point[i] for i in range(len(free_params))
-            }
-            analytical_gradients = np.array(
-                grad_object.assign_parameters(value_dict).eval()
-            )
+            value_dict = {free_params[i]: current_point[i] for i in range(len(free_params))}
+            analytical_gradients = np.array(grad_object.assign_parameters(value_dict).eval())
             loss_gradients = self.loss(
                 prediction_generated, np.transpose(analytical_gradients)
             ).real
