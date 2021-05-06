@@ -37,39 +37,42 @@ class Loss(ABC):
     @abstractmethod
     def evaluate(self, predict: np.ndarray, target: np.ndarray):
         """
-         Args:
+        An abstract method for evaluating the loss function
+
+        Args:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
 
-         An abstract method for evaluating the loss function
-         """
+        Raise:
+         QiskitMachineLearningError: the shape of predict is incorrect
+        """
         raise NotImplementedError
 
     @abstractmethod
     def gradient(self, predict: np.ndarray, target: np.ndarray):
         """
-         Args:
+        An abstract method for computing the gradient
+
+        Args:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
-
-         An abstract method for computing the gradient
-         """
+        """
         raise NotImplementedError
 
     @staticmethod
     def _validate(predict: np.ndarray, target: np.ndarray):
         """
-         Args:
+        Args:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
 
-         Raise:
+        Raise:
             QiskitMachineLearningError: shapes of predict and target do not match
 
-         Returns:
+        Returns:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
-         """
+        """
 
         predict = np.array(predict)
         target = np.array(target)
@@ -85,18 +88,10 @@ class L1Loss(Loss):
         This class computes the L1 loss: sum |target - predict|
     """
 
-    def evaluate(self, predict: np.ndarray, target: np.ndarray):
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-             Args:
-                predict: a numpy array of predicted values using the model
-                target: a numpy array of the true values
-
-             Returns:
-                 a float value of the loss function
-
-             Raise:
-             QiskitMachineLearningError: the shape of predict is incorrect
-
+        Returns:
+             a float value of the loss function
         """
         predict, target = self._validate(predict, target)
 
@@ -109,12 +104,8 @@ class L1Loss(Loss):
         else:
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
-    def gradient(self, predict: np.ndarray, target: np.ndarray):
-        """
-         Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
-
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
+         """
          Returns:
              a float value of the gradient
          """
@@ -130,17 +121,10 @@ class L2Loss(Loss):
         This class computes the L2 loss: sum (target - predict)^2
     """
 
-    def evaluate(self, predict: np.ndarray, target: np.ndarray):
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-             Args:
-                predict: a numpy array of predicted values using the model
-                target: a numpy array of the true values
-
-             Returns:
-                 a float value of the loss function
-
-             Raise:
-             QiskitMachineLearningError: the shape of predict is incorrect
+         Returns:
+             a float value of the loss function
 
         """
         predict, target = self._validate(predict, target)
@@ -152,15 +136,11 @@ class L2Loss(Loss):
         else:
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
-    def gradient(self, predict: np.ndarray, target: np.ndarray):
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-         Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
-
-         Returns:
+        Returns:
              a float value of the gradient
-         """
+        """
         predict, target = self._validate(predict, target)
 
         return 2 * (predict - target)
@@ -172,29 +152,19 @@ class CrossEntropyLoss(Loss):
         This class computes the cross entropy loss: -sum target * log(predict)
     """
 
-    def evaluate(self, predict: np.ndarray, target: np.ndarray):
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-             Args:
-                predict: a numpy array of predicted values using the model
-                target: a numpy array of the true values
-
-             Returns:
-                 a float value of the loss function
+        Returns:
+             a float value of the loss function
 
         """
         predict, target = self._validate(predict, target)
 
         return -np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))])
 
-    def gradient(self, predict: np.ndarray, target: np.ndarray):
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-        Assume softmax is used, and target vector may or may not be one-hot encoding
-
-        Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
-
-         Returns:
+        Returns:
              a float value of the gradient
 
         """
@@ -211,18 +181,10 @@ class CrossEntropySigmoidLoss(Loss):
     This is used for binary classification.
     """
 
-    def evaluate(self, predict: np.ndarray, target: np.ndarray):
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-             Args:
-                predict: a numpy array of predicted values using the model
-                target: a numpy array of the true values
-
-             Returns:
-                 a float value of the loss function
-
-             Raise:
-             QiskitMachineLearningError: Sigmoid Cross Entropy is used for binary classification!
-
+        Returns:
+             a float value of the loss function
         """
         predict, target = self._validate(predict, target)
 
@@ -233,13 +195,9 @@ class CrossEntropySigmoidLoss(Loss):
         x = CrossEntropyLoss()
         return 1. / (1. + np.exp(-x.evaluate(predict, target)))
 
-    def gradient(self, predict: np.ndarray, target: np.ndarray):
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-        Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
-
-         Returns:
+        Returns:
              a float value of the gradient
 
         """
