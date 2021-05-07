@@ -21,9 +21,12 @@ from ...exceptions import QiskitMachineLearningError
 class Loss(ABC):
     """
     Abstract base class for computing Loss.
+
+    Raise:
+        QiskitMachineLearningError: shapes of predict and target do not match
     """
 
-    def __call__(self, predict: np.ndarray, target: np.ndarray):
+    def __call__(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
         Args:
             predict: a numpy array of predicted values using the model
@@ -42,9 +45,6 @@ class Loss(ABC):
         Args:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
-
-        Raise:
-         QiskitMachineLearningError: the shape of predict is incorrect
         """
         raise NotImplementedError
 
@@ -65,9 +65,6 @@ class Loss(ABC):
         Args:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
-
-        Raise:
-            QiskitMachineLearningError: shapes of predict and target do not match
 
         Returns:
             predict: a numpy array of predicted values using the model
@@ -120,6 +117,7 @@ class L2Loss(Loss):
     """
     L2Loss:
         This class computes the L2 loss: sum (target - predict)^2
+
     """
 
     def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
@@ -156,11 +154,10 @@ class CrossEntropyLoss(Loss):
         """
         Returns:
              a float value of the loss function
-
         """
         predict, target = self._validate(predict, target)
 
-        return -np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))])
+        return np.float64(-np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))]))
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
@@ -199,7 +196,6 @@ class CrossEntropySigmoidLoss(Loss):
         """
         Returns:
              a float value of the gradient
-
         """
         predict, target = self._validate(predict, target)
 
