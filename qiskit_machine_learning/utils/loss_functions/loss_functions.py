@@ -22,8 +22,6 @@ class Loss(ABC):
     """
     Abstract base class for computing Loss.
 
-    Raise:
-        QiskitMachineLearningError: shapes of predict and target do not match
     """
 
     def __call__(self, predict: np.ndarray, target: np.ndarray) -> float:
@@ -45,6 +43,9 @@ class Loss(ABC):
         Args:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match
         """
         raise NotImplementedError
 
@@ -157,7 +158,7 @@ class CrossEntropyLoss(Loss):
         """
         predict, target = self._validate(predict, target)
 
-        return np.float64(-np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))]))
+        return np.float(-np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))]))
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
