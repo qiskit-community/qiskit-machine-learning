@@ -57,6 +57,9 @@ class Loss(ABC):
         Args:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match.
         """
         raise NotImplementedError
 
@@ -70,13 +73,16 @@ class Loss(ABC):
         Returns:
             predict: a numpy array of predicted values using the model
             target: a numpy array of the true values
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match.
         """
 
         predict = np.array(predict)
         target = np.array(target)
         if predict.shape != target.shape:
             raise QiskitMachineLearningError(
-                f"Shapes don't match, predict: {predict.shape}, " f"target: {target.shape}!"
+                f"Shapes don't match, predict: {predict.shape}, target: {target.shape}!"
             )
         return predict, target
 
@@ -88,13 +94,6 @@ class L1Loss(Loss):
     """
 
     def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-             a float value of the loss function
-
-        Raises:
-            QiskitMachineLearningError: shapes of predict and target do not match
-        """
         predict, target = self._validate(predict, target)
 
         if len(predict.shape) == 0:
@@ -107,11 +106,6 @@ class L1Loss(Loss):
             raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-            a float value of the gradient
-        """
-
         predict, target = self._validate(predict, target)
 
         return np.sign(predict - target)
@@ -125,13 +119,6 @@ class L2Loss(Loss):
     """
 
     def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-            a float value of the loss function
-
-        Raises:
-            QiskitMachineLearningError: shapes of predict and target do not match
-        """
         predict, target = self._validate(predict, target)
 
         if len(predict.shape) <= 1:
@@ -142,10 +129,6 @@ class L2Loss(Loss):
             raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-             a float value of the gradient
-        """
         predict, target = self._validate(predict, target)
 
         return 2 * (predict - target)
@@ -158,22 +141,11 @@ class CrossEntropyLoss(Loss):
     """
 
     def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-             a float value of the loss function
-
-        Raises:
-            QiskitMachineLearningError: shapes of predict and target do not match
-        """
         predict, target = self._validate(predict, target)
 
-        return np.float(-np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))]))
+        return float(-np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))]))
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-             a float value of the gradient
-        """
         predict, target = self._validate(predict, target)
 
         return predict * np.sum(target) - target
@@ -188,13 +160,6 @@ class CrossEntropySigmoidLoss(Loss):
     """
 
     def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-             a float value of the loss function
-
-        Raises:
-            QiskitMachineLearningError: shapes of predict and target do not match
-        """
         predict, target = self._validate(predict, target)
 
         if len(set(target)) != 2:
@@ -206,10 +171,6 @@ class CrossEntropySigmoidLoss(Loss):
         return 1.0 / (1.0 + np.exp(-x.evaluate(predict, target)))
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
-        """
-        Returns:
-             a float value of the gradient
-        """
         predict, target = self._validate(predict, target)
 
         return target * (1.0 / (1.0 + np.exp(-predict)) - 1) + (1 - target) * (
