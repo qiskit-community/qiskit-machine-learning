@@ -159,6 +159,61 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
 
+    def test_classifier_directly(self):
+        """Test Neural Network Classifier with Circuit QNN."""
+
+        opt, loss, q_i = ("bfgs", "l2", "statevector")
+
+        if q_i == "statevector":
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        if opt == "bfgs":
+            optimizer = L_BFGS_B(maxiter=5)
+        else:
+            optimizer = COBYLA(maxiter=25)
+
+        num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
+
+        # construct circuit
+        qc = QuantumCircuit(num_inputs)
+        qc.append(feature_map, range(2))
+        qc.append(ansatz, range(2))
+
+        # construct qnn
+        def parity(x):
+            return "{:b}".format(x).count("1") % 2
+
+        output_shape = 2
+        qnn = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            sparse=False,
+            interpret=parity,
+            output_shape=output_shape,
+            quantum_instance=quantum_instance,
+        )
+
+        # construct classifier
+        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
+
+        # construct data
+        num_samples = 5
+        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+        y = 1.0 * (np.sum(X, axis=1) <= 1)
+
+        # fit to data
+        classifier.fit(X, y)
+
+        # score
+        score = classifier.score(X, y)
+        self.assertGreater(score, 0.5)
+
+
     @data(
         # optimizer, quantum instance
         ("cobyla", "statevector"),

@@ -17,7 +17,7 @@ import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
 from sklearn.base import ClassifierMixin
 
-from ..trainable_model import SingleObjectiveFunction, OneHotFunction, ClassifierFunction
+from ..trainable_model import BinaryObjectiveFunction, OneHotObjectiveFunction, MultiClassObjectiveFunction
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
 from ...utils.loss_functions import (
@@ -138,8 +138,8 @@ class NeuralNetworkClassifier(ClassifierMixin):
                 raise QiskitMachineLearningError(
                     f"Current settings only applicable to binary classification! Got labels: {y}"
                 )
-
-            function = SingleObjectiveFunction(X, y, self._neural_network, self._loss)
+            # binary classification
+            function = BinaryObjectiveFunction(X, y, self._neural_network, self._loss)
 
             # def objective(w):
             #
@@ -164,7 +164,7 @@ class NeuralNetworkClassifier(ClassifierMixin):
         else:
 
             if self._one_hot:
-                function = OneHotFunction(X, y, self._neural_network, self._loss)
+                function = OneHotObjectiveFunction(X, y, self._neural_network, self._loss)
                 # def objective(w):
                 #     val = 0.0
                 #     probs = self._neural_network.forward(X, w)
@@ -182,7 +182,7 @@ class NeuralNetworkClassifier(ClassifierMixin):
                 #     return grad
 
             else:
-                function = ClassifierFunction(X, y, self._neural_network, self._loss)
+                function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
                 # def objective(w):
                 #     val = 0.0
                 #     probs = self._neural_network.forward(X, w)
