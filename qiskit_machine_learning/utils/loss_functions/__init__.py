@@ -41,12 +41,12 @@ Loss Functions
 
 """
 
-from .loss_functions import Loss, L1Loss, L2Loss, CrossEntropyLoss, CrossEntropySigmoidLoss
+from .loss_functions import (
+    Loss,
+    L1Loss,
+    L2Loss,
+    CrossEntropyLoss,
+    CrossEntropySigmoidLoss,
+)
 
-__all__ = [
-    'Loss',
-    'L1Loss',
-    'L2Loss',
-    'CrossEntropyLoss',
-    'CrossEntropySigmoidLoss'
-]
+__all__ = ["Loss", "L1Loss", "L2Loss", "CrossEntropyLoss", "CrossEntropySigmoidLoss"]

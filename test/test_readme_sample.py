@@ -25,10 +25,10 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
     """Test sample code from readme"""
 
     def test_readme_sample(self):
-        """ readme sample test """
+        """readme sample test"""
         # pylint: disable=import-outside-toplevel,redefined-builtin
         def print(*args):
-            """ overloads print to log values """
+            """overloads print to log values"""
             if args:
                 self.log.debug(args[0], *args[1:])
 
@@ -52,28 +52,32 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
 
         # training features, training labels, test features, test labels as np.array,
         # one hot encoding for labels
-        training_features, training_labels, test_features, test_labels = \
-            wine(training_size=training_size, test_size=test_size, n=feature_dim)
+        training_features, training_labels, test_features, test_labels = wine(
+            training_size=training_size, test_size=test_size, n=feature_dim
+        )
 
         feature_map = RawFeatureVector(feature_dimension=feature_dim)
-        ansatz = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
-        vqc = VQC(feature_map=feature_map,
-                  ansatz=ansatz,
-                  optimizer=COBYLA(maxiter=100),
-                  quantum_instance=QuantumInstance(BasicAer.get_backend('statevector_simulator'),
-                                                   shots=1024,
-                                                   seed_simulator=seed,
-                                                   seed_transpiler=seed)
-                  )
+        ansatz = TwoLocal(feature_map.num_qubits, ["ry", "rz"], "cz", reps=3)
+        vqc = VQC(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=COBYLA(maxiter=100),
+            quantum_instance=QuantumInstance(
+                BasicAer.get_backend("statevector_simulator"),
+                shots=1024,
+                seed_simulator=seed,
+                seed_transpiler=seed,
+            ),
+        )
         vqc.fit(training_features, training_labels)
 
         score = vqc.score(test_features, test_labels)
-        print('Testing accuracy: {:0.2f}'.format(score))
+        print("Testing accuracy: {:0.2f}".format(score))
 
         # ----------------------------------------------------------------------
 
         self.assertGreater(score, 0.8)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

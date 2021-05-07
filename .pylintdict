@@ -31,7 +31,7 @@ getter
 getters
 hashable
 hoc
-th
+init
 innerproduct
 kwargs
 langle
@@ -77,6 +77,7 @@ rangle
 readme
 regressor
 regressors
+scikit
 scipy
 semidefinite
 setter
@@ -95,6 +96,7 @@ svr
 sx
 sy
 tbd
+th
 toctree
 transpile
 univariate

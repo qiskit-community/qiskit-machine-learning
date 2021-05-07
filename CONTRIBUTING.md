@@ -33,6 +33,10 @@ please ensure that:
    make style 
    ```
    from the root of the Machine Learning repository clone for lint and style conformance checks.
+
+   If your code fails the local style checks (specifically the black
+   code formatting check) you can use `make black` to automatically
+   fix update the code formatting.
    
    For unit testing please see [Testing](#testing) section below.
    

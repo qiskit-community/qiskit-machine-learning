@@ -39,18 +39,24 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         num_qubits = 2
         feature_map = ZZFeatureMap(num_qubits)
         ansatz = RealAmplitudes(num_qubits, reps=1)
-        self.qnn = TwoLayerQNN(num_qubits, feature_map=feature_map,
-                               ansatz=ansatz, quantum_instance=quantum_instance)
+        self.qnn = TwoLayerQNN(
+            num_qubits,
+            feature_map=feature_map,
+            ansatz=ansatz,
+            quantum_instance=quantum_instance,
+        )
 
-        self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map,
-                                     ansatz=ansatz)
+        self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map, ansatz=ansatz)
 
     @data(
-        "qi",
-        "no_qi"
+        ("qi", True),
+        ("no_qi", True),
+        ("qi", False),
+        ("no_qi", False),
     )
-    def test_qnn_simple_new(self, qnn_type: str):
+    def test_qnn_simple_new(self, config):
         """Simple Opflow QNN Test for a specified neural network."""
+        qnn_type, input_grad_required = config
 
         input_data = np.zeros(self.qnn.num_inputs)
         weights = np.zeros(self.qnn.num_weights)
@@ -59,45 +65,58 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
             qnn = self.qnn
         else:
             qnn = self.qnn_no_qi
+        qnn.input_gradients = input_grad_required
 
         # test forward pass
         result = qnn.forward(input_data, weights)
-        self.assertEqual(result.shape, (1, *self.qnn.output_shape))
+        self.assertEqual(result.shape, (1, *qnn.output_shape))
 
         # test backward pass
-        result = self.qnn.backward(input_data, weights)
+        result = qnn.backward(input_data, weights)
         # batch dimension of 1
-        self.assertEqual(result[0].shape, (1, *self.qnn.output_shape, self.qnn.num_inputs))
-        self.assertEqual(result[1].shape, (1, *self.qnn.output_shape, self.qnn.num_weights))
+        if qnn.input_gradients:
+            self.assertEqual(result[0].shape, (1, *qnn.output_shape, qnn.num_inputs))
+        else:
+            self.assertIsNone(result[0])
+
+        self.assertEqual(result[1].shape, (1, *qnn.output_shape, qnn.num_weights))
 
     @data(
-        "qi",
-        "no_qi"
+        ("qi", True),
+        ("no_qi", True),
+        ("qi", False),
+        ("no_qi", False),
     )
-    def _test_qnn_batch(self, qnn_type: str):
+    def _test_qnn_batch(self, config):
         """Batched Opflow QNN Test for the specified network."""
+        qnn_type, input_grad_required = config
+
         batch_size = 10
 
-        input_data = np.arange(batch_size * self.qnn.num_inputs)\
-            .reshape((batch_size, self.qnn.num_inputs))
+        input_data = np.arange(batch_size * self.qnn.num_inputs).reshape(
+            (batch_size, self.qnn.num_inputs)
+        )
         weights = np.zeros(self.qnn.num_weights)
 
         if qnn_type == "qi":
             qnn = self.qnn
         else:
             qnn = self.qnn_no_qi
+        qnn.input_gradients = input_grad_required
 
         # test forward pass
         result = qnn.forward(input_data, weights)
-        self.assertEqual(result.shape, (batch_size, *self.qnn.output_shape))
+        self.assertEqual(result.shape, (batch_size, *qnn.output_shape))
 
         # test backward pass
-        result = self.qnn.backward(input_data, weights)
-        self.assertEqual(result[0].shape,
-                         (batch_size, *self.qnn.output_shape, self.qnn.num_inputs))
-        self.assertEqual(result[1].shape,
-                         (batch_size, *self.qnn.output_shape, self.qnn.num_weights))
+        result = qnn.backward(input_data, weights)
+        if qnn.input_gradients:
+            self.assertEqual(result[0].shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
+        else:
+            self.assertIsNone(result[0])
+
+        self.assertEqual(result[1].shape, (batch_size, *qnn.output_shape, qnn.num_weights))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
