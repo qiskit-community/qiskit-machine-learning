@@ -77,8 +77,9 @@ class Loss(ABC):
         predict = np.array(predict)
         target = np.array(target)
         if predict.shape != target.shape:
-            raise QiskitMachineLearningError(f"Shapes don't match, predict: {predict.shape}, "
-                                             f"target: {target.shape}!")
+            raise QiskitMachineLearningError(
+                f"Shapes don't match, predict: {predict.shape}, " f"target: {target.shape}!"
+            )
         return predict, target
 
 
@@ -102,7 +103,7 @@ class L1Loss(Loss):
         elif len(predict.shape) > 1:
             return np.linalg.norm(predict - target, ord=1, axis=tuple(range(1, len(predict.shape))))
         else:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+            raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
@@ -123,8 +124,8 @@ class L2Loss(Loss):
 
     def evaluate(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
-         Returns:
-             a float value of the loss function
+        Returns:
+            a float value of the loss function
         """
         predict, target = self._validate(predict, target)
 
@@ -133,7 +134,7 @@ class L2Loss(Loss):
         elif len(predict.shape) > 1:
             return np.linalg.norm(predict - target, axis=len(predict.shape) - 1) ** 2
         else:
-            raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
+            raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
@@ -188,10 +189,11 @@ class CrossEntropySigmoidLoss(Loss):
 
         if len(set(target)) != 2:
             raise QiskitMachineLearningError(
-                'Sigmoid Cross Entropy is used for binary classification!')
+                "Sigmoid Cross Entropy is used for binary classification!"
+            )
 
         x = CrossEntropyLoss()
-        return 1. / (1. + np.exp(-x.evaluate(predict, target)))
+        return 1.0 / (1.0 + np.exp(-x.evaluate(predict, target)))
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
         """
@@ -201,5 +203,6 @@ class CrossEntropySigmoidLoss(Loss):
         """
         predict, target = self._validate(predict, target)
 
-        return target * (1. / (1. + np.exp(-predict)) - 1) + (1 - target) * (
-                1. / (1. + np.exp(-predict)))
+        return target * (1.0 / (1.0 + np.exp(-predict)) - 1) + (1 - target) * (
+            1.0 / (1.0 + np.exp(-predict))
+        )
