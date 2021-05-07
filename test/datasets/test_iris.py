@@ -25,16 +25,13 @@ class TestIris(QiskitMachineLearningTestCase):
     def test_iris(self):
         """Iris test."""
 
-        input_file = self.get_resource_path('iris_ref.json',
-                                            'datasets')
+        input_file = self.get_resource_path("iris_ref.json", "datasets")
         with open(input_file) as file:
             ref_data = json.load(file)
 
         training_features, training_labels, test_features, test_labels = iris(
-            training_size=20,
-            test_size=3,
-            n=2,
-            plot_data=False)
+            training_size=20, test_size=3, n=2, plot_data=False
+        )
 
         np.testing.assert_almost_equal(ref_data["training_features"], training_features)
         np.testing.assert_almost_equal(ref_data["training_labels"], training_labels)
@@ -43,5 +40,5 @@ class TestIris(QiskitMachineLearningTestCase):
         np.testing.assert_almost_equal(ref_data["test_labels"], test_labels)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

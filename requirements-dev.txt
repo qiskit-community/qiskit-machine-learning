@@ -1,6 +1,6 @@
 coverage>=4.4.0
 matplotlib>=2.1
-pycodestyle
+black==21.4b2
 pylint>=2.7.1
 pylintfileheader>=0.0.2
 pylatexenc>=1.4

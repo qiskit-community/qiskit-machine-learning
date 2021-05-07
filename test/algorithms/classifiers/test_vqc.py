@@ -35,33 +35,37 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         # specify quantum instances
         self.random_seed = 12345
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
-                                                   seed_simulator=self.random_seed,
-                                                   seed_transpiler=self.random_seed)
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100,
-                                                     seed_simulator=self.random_seed,
-                                                     seed_transpiler=self.random_seed)
+        self.sv_quantum_instance = QuantumInstance(
+            Aer.get_backend("statevector_simulator"),
+            seed_simulator=self.random_seed,
+            seed_transpiler=self.random_seed,
+        )
+        self.qasm_quantum_instance = QuantumInstance(
+            Aer.get_backend("qasm_simulator"),
+            shots=100,
+            seed_simulator=self.random_seed,
+            seed_transpiler=self.random_seed,
+        )
         np.random.seed(self.random_seed)
 
     @data(
         # optimizer, quantum instance
-        ('cobyla', 'statevector'),
-        ('cobyla', 'qasm'),
-
-        ('bfgs', 'statevector'),
-        ('bfgs', 'qasm'),
+        ("cobyla", "statevector"),
+        ("cobyla", "qasm"),
+        ("bfgs", "statevector"),
+        ("bfgs", "qasm"),
     )
     def test_vqc(self, config):
-        """ Test VQC."""
+        """Test VQC."""
 
         opt, q_i = config
 
-        if q_i == 'statevector':
+        if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
 
-        if opt == 'bfgs':
+        if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         else:
             optimizer = COBYLA(maxiter=25)
@@ -71,10 +75,12 @@ class TestVQC(QiskitMachineLearningTestCase):
         ansatz = RealAmplitudes(num_inputs, reps=1)
 
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = VQC(feature_map=feature_map,
-                         ansatz=ansatz,
-                         optimizer=optimizer,
-                         quantum_instance=quantum_instance)
+        classifier = VQC(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            quantum_instance=quantum_instance,
+        )
 
         # construct data
         num_samples = 5
@@ -93,5 +99,5 @@ class TestVQC(QiskitMachineLearningTestCase):
         self.assertGreater(score, 0.5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

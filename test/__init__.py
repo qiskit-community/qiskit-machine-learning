@@ -12,10 +12,9 @@
 
 """ ML test packages """
 
-from .machine_learning_test_case import (QiskitMachineLearningTestCase,
-                                         requires_extra_library)
+from .machine_learning_test_case import (
+    QiskitMachineLearningTestCase,
+    requires_extra_library,
+)
 
-__all__ = [
-    'QiskitMachineLearningTestCase',
-    'requires_extra_library'
-]
+__all__ = ["QiskitMachineLearningTestCase", "requires_extra_library"]

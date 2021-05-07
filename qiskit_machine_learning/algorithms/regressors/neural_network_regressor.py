@@ -13,22 +13,35 @@
 """ Neural network regressor """
 
 from typing import Union
-import numpy as np
 
+import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
+from sklearn.base import RegressorMixin
+
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
-                                     CrossEntropySigmoidLoss)
+from ...utils.loss_functions import (
+    Loss,
+    L1Loss,
+    L2Loss,
+    CrossEntropyLoss,
+    CrossEntropySigmoidLoss,
+)
 
 
-class NeuralNetworkRegressor:
-    """ Quantum neural network regressor"""
+class NeuralNetworkRegressor(RegressorMixin):
+    """Quantum neural network regressor. Implements Scikit-Learn compatible methods for
+    regression and extends ``RegressorMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
+    for more details.
+    """
 
-    def __init__(self, neural_network: NeuralNetwork,
-                 loss: Union[str, Loss] = 'l2',
-                 optimizer: Optimizer = None,
-                 warm_start: bool = False):
+    def __init__(
+        self,
+        neural_network: NeuralNetwork,
+        loss: Union[str, Loss] = "l2",
+        optimizer: Optimizer = None,
+        warm_start: bool = False,
+    ):
         """
         Args:
             neural_network: An instance of an quantum neural network. If the neural network has a
@@ -52,20 +65,20 @@ class NeuralNetworkRegressor:
         """
         self._neural_network = neural_network
         if len(neural_network.output_shape) > 1:
-            raise QiskitMachineLearningError('Invalid neural network output shape!')
+            raise QiskitMachineLearningError("Invalid neural network output shape!")
         if isinstance(loss, Loss):
             self._loss = loss
         else:
-            if loss.lower() == 'l1':
+            if loss.lower() == "l1":
                 self._loss = L1Loss()
-            elif loss.lower() == 'l2':
+            elif loss.lower() == "l2":
                 self._loss = L2Loss()
-            elif loss.lower() == 'cross_entropy':
+            elif loss.lower() == "cross_entropy":
                 self._loss = CrossEntropyLoss()
-            elif loss.lower() == 'cross_entropy_sigmoid':
+            elif loss.lower() == "cross_entropy_sigmoid":
                 self._loss = CrossEntropySigmoidLoss()
             else:
-                raise QiskitMachineLearningError(f'Unknown loss {loss}!')
+                raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
         self._optimizer = optimizer
         self._warm_start = warm_start
@@ -73,22 +86,22 @@ class NeuralNetworkRegressor:
 
     @property
     def neural_network(self):
-        """ Returns the underlying neural network."""
+        """Returns the underlying neural network."""
         return self._neural_network
 
     @property
     def loss(self):
-        """ Returns the underlying neural network."""
+        """Returns the underlying neural network."""
         return self._loss
 
     @property
     def warm_start(self) -> bool:
-        """ Returns the warm start flag."""
+        """Returns the warm start flag."""
         return self._warm_start
 
     @warm_start.setter
     def warm_start(self, warm_start: bool) -> None:
-        """ Sets the warm start flag."""
+        """Sets the warm start flag."""
         self._warm_start = warm_start
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
@@ -147,8 +160,9 @@ class NeuralNetworkRegressor:
                     # TODO: do batch eval
                     _, weight_prob_grad = self._neural_network.backward(x, w)
                     for i in range(num_classes):
-                        grad += weight_prob_grad[
-                                0, i, :].reshape(grad.shape) * self._loss(i, y_target)
+                        grad += weight_prob_grad[0, i, :].reshape(grad.shape) * self._loss(
+                            i, y_target
+                        )
                 return grad
 
         if self._warm_start and self._fit_result is not None:
@@ -156,8 +170,12 @@ class NeuralNetworkRegressor:
         else:
             initial_point = np.random.rand(self._neural_network.num_weights)
 
-        self._fit_result = self._optimizer.optimize(self._neural_network.num_weights, objective,
-                                                    objective_grad, initial_point=initial_point)
+        self._fit_result = self._optimizer.optimize(
+            self._neural_network.num_weights,
+            objective,
+            objective_grad,
+            initial_point=initial_point,
+        )
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
@@ -173,33 +191,7 @@ class NeuralNetworkRegressor:
         """
 
         if self._fit_result is None:
-            raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
+            raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
 
         # TODO: proper handling of batching
         return self._neural_network.forward(X, self._fit_result[0])
-
-    def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
-        """
-        Return R-squared on the given test data and targeted values.
-
-        Args:
-            X: Test samples.
-            y: True target values given `X`.
-        Raises:
-            QiskitMachineLearningError: Model needs to be fit to some training data first
-        Returns:
-            R-squared value.
-        """
-        if self._fit_result is None:
-            raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
-
-        predict = self.predict(X)
-
-        # Compute R2 for score
-        ss_res = sum(map(lambda k: (k[0] - k[1]) ** 2, zip(y, predict)))
-        ss_tot = sum([(k - np.mean(y)) ** 2 for k in y])
-        score = 1 - (ss_res / ss_tot)
-        if len(np.array(score).shape) > 0:
-            return score[0]
-        else:
-            return score

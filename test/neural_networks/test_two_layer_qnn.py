@@ -39,11 +39,14 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         num_qubits = 2
         feature_map = ZZFeatureMap(num_qubits)
         ansatz = RealAmplitudes(num_qubits, reps=1)
-        self.qnn = TwoLayerQNN(num_qubits, feature_map=feature_map,
-                               ansatz=ansatz, quantum_instance=quantum_instance)
+        self.qnn = TwoLayerQNN(
+            num_qubits,
+            feature_map=feature_map,
+            ansatz=ansatz,
+            quantum_instance=quantum_instance,
+        )
 
-        self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map,
-                                     ansatz=ansatz)
+        self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map, ansatz=ansatz)
 
     @data(
         ("qi", True),
@@ -90,8 +93,9 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
 
         batch_size = 10
 
-        input_data = np.arange(batch_size * self.qnn.num_inputs)\
-            .reshape((batch_size, self.qnn.num_inputs))
+        input_data = np.arange(batch_size * self.qnn.num_inputs).reshape(
+            (batch_size, self.qnn.num_inputs)
+        )
         weights = np.zeros(self.qnn.num_weights)
 
         if qnn_type == "qi":
@@ -107,14 +111,12 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         # test backward pass
         result = qnn.backward(input_data, weights)
         if qnn.input_gradients:
-            self.assertEqual(result[0].shape,
-                             (batch_size, *qnn.output_shape, qnn.num_inputs))
+            self.assertEqual(result[0].shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
         else:
             self.assertIsNone(result[0])
 
-        self.assertEqual(result[1].shape,
-                         (batch_size, *qnn.output_shape, qnn.num_weights))
+        self.assertEqual(result[1].shape, (batch_size, *qnn.output_shape, qnn.num_weights))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
