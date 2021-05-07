@@ -20,10 +20,10 @@ from .quantum_generator import QuantumGenerator
 from .qgan import QGAN
 
 __all__ = [
-    'DiscriminativeNetwork',
-    'GenerativeNetwork',
-    'NumPyDiscriminator',
-    'PyTorchDiscriminator',
-    'QuantumGenerator',
-    'QGAN',
+    "DiscriminativeNetwork",
+    "GenerativeNetwork",
+    "NumPyDiscriminator",
+    "PyTorchDiscriminator",
+    "QuantumGenerator",
+    "QGAN",
 ]

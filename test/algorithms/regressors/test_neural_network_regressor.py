@@ -27,17 +27,23 @@ from qiskit_machine_learning.neural_networks import TwoLayerQNN
 @ddt
 class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
     """Test Neural Network Regressor."""
+
     def setUp(self):
         super().setUp()
 
         # specify quantum instances
         self.random_seed = 12345
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
-                                                   seed_simulator=self.random_seed,
-                                                   seed_transpiler=self.random_seed)
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100,
-                                                     seed_simulator=self.random_seed,
-                                                     seed_transpiler=self.random_seed)
+        self.sv_quantum_instance = QuantumInstance(
+            Aer.get_backend("statevector_simulator"),
+            seed_simulator=self.random_seed,
+            seed_transpiler=self.random_seed,
+        )
+        self.qasm_quantum_instance = QuantumInstance(
+            Aer.get_backend("qasm_simulator"),
+            shots=100,
+            seed_simulator=self.random_seed,
+            seed_transpiler=self.random_seed,
+        )
         np.random.seed(self.random_seed)
 
         num_samples = 20
@@ -50,45 +56,45 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, quantum instance
-        ('cobyla', 'statevector'),
-        ('cobyla', 'qasm'),
-
-        ('bfgs', 'statevector'),
-        ('bfgs', 'qasm'),
+        ("cobyla", "statevector"),
+        ("cobyla", "qasm"),
+        ("bfgs", "statevector"),
+        ("bfgs", "qasm"),
     )
     def test_regressor_with_opflow_qnn(self, config):
-        """ Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
+        """Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
         opt, q_i = config
 
         num_qubits = 1
         # construct simple feature map
-        param_x = Parameter('x')
-        feature_map = QuantumCircuit(num_qubits, name='fm')
+        param_x = Parameter("x")
+        feature_map = QuantumCircuit(num_qubits, name="fm")
         feature_map.ry(param_x, 0)
 
         # construct simple feature map
-        param_y = Parameter('y')
-        var_form = QuantumCircuit(num_qubits, name='vf')
+        param_y = Parameter("y")
+        var_form = QuantumCircuit(num_qubits, name="vf")
         var_form.ry(param_y, 0)
 
-        if q_i == 'statevector':
+        if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
 
-        if opt == 'bfgs':
+        if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         else:
             optimizer = COBYLA(maxiter=25)
 
         # construct QNN
-        regression_opflow_qnn = TwoLayerQNN(num_qubits, feature_map, var_form,
-                                            quantum_instance=quantum_instance)
+        regression_opflow_qnn = TwoLayerQNN(
+            num_qubits, feature_map, var_form, quantum_instance=quantum_instance
+        )
 
         # construct the regressor from the neural network
-        regressor = NeuralNetworkRegressor(neural_network=regression_opflow_qnn,
-                                           loss='l2',
-                                           optimizer=optimizer)
+        regressor = NeuralNetworkRegressor(
+            neural_network=regression_opflow_qnn, loss="l2", optimizer=optimizer
+        )
 
         # fit to data
         regressor.fit(self.X, self.y)

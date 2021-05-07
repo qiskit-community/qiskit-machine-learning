@@ -19,8 +19,14 @@ import numpy as np
 from sklearn import preprocessing
 
 
-def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_grid_elements=False,
-                            return_prob=False, prob_non_zero=True):
+def discretize_and_truncate(
+    data,
+    min_max_bin_centers,
+    num_qubits,
+    return_data_grid_elements=False,
+    return_prob=False,
+    prob_non_zero=True,
+):
     """
     Discretize & truncate classical data to enable digital encoding in qubit registers
     whereby the data grid is ``[[grid elements dim 0], ..., [grid elements dim k]]``.
@@ -69,11 +75,13 @@ def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_g
     for i, data_sample in enumerate(data):
         append = True
         for j, entry in enumerate(data_sample):
-            if entry < min_max_bin_centers[j, 0] - .5 / (2 ** num_qubits[j] - 1) *\
-                    (min_max_bin_centers[j, 1] - min_max_bin_centers[j, 0]):
+            if entry < min_max_bin_centers[j, 0] - 0.5 / (2 ** num_qubits[j] - 1) * (
+                min_max_bin_centers[j, 1] - min_max_bin_centers[j, 0]
+            ):
                 append = False
-            if entry > min_max_bin_centers[j, 1] + .5 / (2 ** num_qubits[j] - 1) *\
-                    (min_max_bin_centers[j, 1] - min_max_bin_centers[j, 0]):
+            if entry > min_max_bin_centers[j, 1] + 0.5 / (2 ** num_qubits[j] - 1) * (
+                min_max_bin_centers[j, 1] - min_max_bin_centers[j, 0]
+            ):
                 append = False
         if append:
             temp.append(list(data_sample))
@@ -83,12 +91,14 @@ def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_g
     for j, prec in enumerate(num_qubits):
         data_row = data[:, j]  # dim j of all data samples
         # prepare element grid for dim j
-        elements_current_dim = np.linspace(min_max_bin_centers[j, 0], min_max_bin_centers[j, 1],
-                                           (2 ** prec))
+        elements_current_dim = np.linspace(
+            min_max_bin_centers[j, 0], min_max_bin_centers[j, 1], (2 ** prec)
+        )
         # find index for data sample in grid
         index_grid = np.searchsorted(
             elements_current_dim,
-            data_row - (elements_current_dim[1] - elements_current_dim[0]) * 0.5)
+            data_row - (elements_current_dim[1] - elements_current_dim[0]) * 0.5,
+        )
         for k, index in enumerate(index_grid):
             data[k, j] = elements_current_dim[index]
         if j == 0:
@@ -141,10 +151,9 @@ def discretize_and_truncate(data, min_max_bin_centers, num_qubits, return_data_g
             return data, data_grid
 
 
-def features_and_labels_transform(dataset: Dict[str, np.ndarray],
-                                  class_labels: List[str],
-                                  one_hot: bool = True
-                                  ) -> Tuple[np.ndarray, np.ndarray]:
+def features_and_labels_transform(
+    dataset: Dict[str, np.ndarray], class_labels: List[str], one_hot: bool = True
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Converts a dataset into arrays of features and labels.
 

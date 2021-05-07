@@ -54,9 +54,9 @@ from .sampling_neural_network import SamplingNeuralNetwork
 from .two_layer_qnn import TwoLayerQNN
 
 __all__ = [
-    'NeuralNetwork',
-    'OpflowQNN',
-    'TwoLayerQNN',
-    'SamplingNeuralNetwork',
-    'CircuitQNN'
+    "NeuralNetwork",
+    "OpflowQNN",
+    "TwoLayerQNN",
+    "SamplingNeuralNetwork",
+    "CircuitQNN",
 ]

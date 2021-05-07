@@ -34,16 +34,18 @@ logger = logging.getLogger(__name__)
 class CircuitQNN(SamplingNeuralNetwork):
     """A Sampling Neural Network based on a given quantum circuit."""
 
-    def __init__(self, circuit: QuantumCircuit,
-                 input_params: Optional[List[Parameter]] = None,
-                 weight_params: Optional[List[Parameter]] = None,
-                 sparse: bool = False,
-                 sampling: bool = False,
-                 interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]] = None,
-                 output_shape: Union[int, Tuple[int, ...]] = None,
-                 gradient: Gradient = None,
-                 quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None
-                 ) -> None:
+    def __init__(
+        self,
+        circuit: QuantumCircuit,
+        input_params: Optional[List[Parameter]] = None,
+        weight_params: Optional[List[Parameter]] = None,
+        sparse: bool = False,
+        sampling: bool = False,
+        interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]] = None,
+        output_shape: Union[int, Tuple[int, ...]] = None,
+        gradient: Gradient = None,
+        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+    ) -> None:
         """Initializes the Circuit Quantum Neural Network.
 
         Args:
@@ -90,11 +92,16 @@ class CircuitQNN(SamplingNeuralNetwork):
         output_shape_ = self._compute_output_shape(interpret, output_shape, sampling)
 
         # init super class
-        super().__init__(len(self._input_params), len(self._weight_params), sparse_, sampling,
-                         output_shape_)
+        super().__init__(
+            len(self._input_params),
+            len(self._weight_params),
+            sparse_,
+            sampling,
+            output_shape_,
+        )
 
         # prepare sampler
-        self._sampler = CircuitSampler(self._quantum_instance, param_qobj=False, caching='all')
+        self._sampler = CircuitSampler(self._quantum_instance, param_qobj=False, caching="all")
 
         self._original_circuit = circuit
         # use given gradient or default
@@ -114,7 +121,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 params = self._weight_params
             self._gradient_circuit = self._gradient.convert(StateFn(grad_circuit), params)
         except (ValueError, TypeError, OpflowError, QiskitError):
-            logger.warning('Cannot compute gradient operator! Continuing without gradients!')
+            logger.warning("Cannot compute gradient operator! Continuing without gradients!")
 
     def _compute_output_shape(self, interpret, output_shape, sampling) -> Tuple[int, ...]:
         """Validate and compute the output shape."""
@@ -133,7 +140,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             if interpret:
                 if output_shape is None:
                     raise QiskitMachineLearningError(
-                        'No output shape given, but required in case of custom interpret!')
+                        "No output shape given, but required in case of custom interpret!"
+                    )
                 if isinstance(output_shape, Integral):
                     output_shape = int(output_shape)
                     output_shape_ = (output_shape,)
@@ -190,34 +198,37 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._construct_gradient_circuit()
 
     def set_interpret(self, interpret, output_shape=None):
-        """ Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
+        """Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
         output _shape does not have to be set and is inferred from the interpret function.
         Otherwise, the output_shape needs to be given."""
         self._interpret = interpret if interpret else lambda x: x
         self._output_shape = self._compute_output_shape(interpret, output_shape, self._sampling)
 
-    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                ) -> np.ndarray:
+    def _sample(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> np.ndarray:
         if self._quantum_instance.is_statevector:
-            raise QiskitMachineLearningError('Sampling does not work with statevector simulator!')
+            raise QiskitMachineLearningError("Sampling does not work with statevector simulator!")
 
         # evaluate operator
-        orig_memory = self._quantum_instance.backend_options.get('memory')
-        self._quantum_instance.backend_options['memory'] = True
+        orig_memory = self._quantum_instance.backend_options.get("memory")
+        self._quantum_instance.backend_options["memory"] = True
 
         circuits = []
         # iterate over rows, each row is an element of a batch
         rows = input_data.shape[0]
         for i in range(rows):
-            param_values = {input_param: input_data[i, j]
-                            for j, input_param in enumerate(self._input_params)}
-            param_values.update({weight_param: weights[j]
-                                 for j, weight_param in enumerate(self._weight_params)})
+            param_values = {
+                input_param: input_data[i, j] for j, input_param in enumerate(self._input_params)
+            }
+            param_values.update(
+                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
+            )
             circuits.append(self._circuit.bind_parameters(param_values))
 
         result = self._quantum_instance.execute(circuits)
         # set the memory setting back
-        self._quantum_instance.backend_options['memory'] = orig_memory
+        self._quantum_instance.backend_options["memory"] = orig_memory
 
         # return samples
         samples = np.zeros((rows, *self._output_shape))
@@ -228,16 +239,19 @@ class CircuitQNN(SamplingNeuralNetwork):
                 samples[i, j, :] = self._interpret(int(b, 2))
         return samples
 
-    def _probabilities(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                       ) -> Union[np.ndarray, SparseArray]:
+    def _probabilities(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> Union[np.ndarray, SparseArray]:
         # evaluate operator
         circuits = []
         rows = input_data.shape[0]
         for i in range(rows):
-            param_values = {input_param: input_data[i, j]
-                            for j, input_param in enumerate(self._input_params)}
-            param_values.update({weight_param: weights[j]
-                                 for j, weight_param in enumerate(self._weight_params)})
+            param_values = {
+                input_param: input_data[i, j] for j, input_param in enumerate(self._input_params)
+            }
+            param_values.update(
+                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
+            )
             circuits.append(self._circuit.bind_parameters(param_values))
 
         result = self._quantum_instance.execute(circuits)
@@ -264,9 +278,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         else:
             return prob
 
-    def _probability_gradients(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                               ) -> Tuple[Union[np.ndarray, SparseArray],
-                                          Union[np.ndarray, SparseArray]]:
+    def _probability_gradients(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
 
         # check whether gradient circuit could be constructed
         if self._gradient_circuit is None:
@@ -275,7 +289,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         rows = input_data.shape[0]
 
         # initialize empty gradients
-        input_grad = None       # by default we don't have data gradients
+        input_grad = None  # by default we don't have data gradients
         if self._sparse:
             if self._input_gradients:
                 input_grad = DOK((rows, *self._output_shape, self._num_inputs))
@@ -286,15 +300,20 @@ class CircuitQNN(SamplingNeuralNetwork):
             weights_grad = np.zeros((rows, *self._output_shape, self._num_weights))
 
         for row in range(rows):
-            param_values = {input_param: input_data[row, j]
-                            for j, input_param in enumerate(self._input_params)}
-            param_values.update({weight_param: weights[j]
-                                 for j, weight_param in enumerate(self._weight_params)})
+            param_values = {
+                input_param: input_data[row, j] for j, input_param in enumerate(self._input_params)
+            }
+            param_values.update(
+                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
+            )
 
             # TODO: additional "bind_parameters" should not be necessary,
             #  seems like a bug to be fixed
-            grad = self._sampler.convert(self._gradient_circuit, param_values
-                                         ).bind_parameters(param_values).eval()
+            grad = (
+                self._sampler.convert(self._gradient_circuit, param_values)
+                .bind_parameters(param_values)
+                .eval()
+            )
 
             # construct gradients
             if self._input_gradients:

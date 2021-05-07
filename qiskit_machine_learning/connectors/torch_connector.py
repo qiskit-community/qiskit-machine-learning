@@ -29,43 +29,49 @@ try:
     from torch.autograd import Function
     from torch.nn import Module, Parameter as TorchParam
 except ImportError:
+
     class Function:  # type: ignore
-        """ Empty Function class
-            Replacement if torch.autograd.Function is not present.
+        """Empty Function class
+        Replacement if torch.autograd.Function is not present.
         """
+
         pass
 
     class Tensor:  # type: ignore
-        """ Empty Tensor class
-            Replacement if torch.Tensor is not present.
+        """Empty Tensor class
+        Replacement if torch.Tensor is not present.
         """
+
         pass
 
     class Module:  # type: ignore
-        """ Empty Module class
-            Replacement if torch.nn.Module is not present.
-            Always fails to initialize
+        """Empty Module class
+        Replacement if torch.nn.Module is not present.
+        Always fails to initialize
         """
 
         def __init__(self) -> None:
             raise MissingOptionalLibraryError(
-                    libname='Pytorch',
-                    name='TorchConnector',
-                    pip_install="pip install 'qiskit-machine-learning[torch]'")
+                libname="Pytorch",
+                name="TorchConnector",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            )
 
 
 class TorchConnector(Module):
-    """ Connects Qiskit (Quantum) Neural Network to PyTorch."""
+    """Connects Qiskit (Quantum) Neural Network to PyTorch."""
 
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
         @staticmethod
-        def forward(ctx: Any,  # type: ignore
-                    input_data: Tensor,
-                    weights: Tensor,
-                    neural_network: NeuralNetwork,
-                    sparse: bool) -> Tensor:
-            """ Forward pass computation.
+        def forward(  # type: ignore
+            ctx: Any,
+            input_data: Tensor,
+            weights: Tensor,
+            neural_network: NeuralNetwork,
+            sparse: bool,
+        ) -> Tensor:
+            """Forward pass computation.
             Args:
                 ctx: The context to be passed to the backward pass.
                 input_data: The input data.
@@ -83,15 +89,16 @@ class TorchConnector(Module):
             # validate input shape
             if input_data.shape[-1] != neural_network.num_inputs:
                 raise QiskitMachineLearningError(
-                    f'Invalid input dimension! Received {input_data.shape} and ' +
-                    f'expected input compatible to {neural_network.num_inputs}')
+                    f"Invalid input dimension! Received {input_data.shape} and "
+                    + f"expected input compatible to {neural_network.num_inputs}"
+                )
 
             ctx.neural_network = neural_network
             ctx.sparse = sparse
             ctx.save_for_backward(input_data, weights)
             result = neural_network.forward(input_data.numpy(), weights.numpy())
             if neural_network.sparse and sparse:
-                result = cast(COO, cast(SparseArray, result).asformat('coo'))
+                result = cast(COO, cast(SparseArray, result).asformat("coo"))
                 result_tensor = sparse_coo_tensor(result.coords, result.data)
             else:
                 result_tensor = Tensor(result)
@@ -105,9 +112,8 @@ class TorchConnector(Module):
             return result_tensor
 
         @staticmethod
-        def backward(ctx: Any,  # type: ignore
-                     grad_output: Tensor) -> Tuple:
-            """ Backward pass computation.
+        def backward(ctx: Any, grad_output: Tensor) -> Tuple:  # type: ignore
+            """Backward pass computation.
             Args:
                 ctx: context
                 grad_output: previous gradient
@@ -128,8 +134,9 @@ class TorchConnector(Module):
             # validate input shape
             if input_data.shape[-1] != neural_network.num_inputs:
                 raise QiskitMachineLearningError(
-                    f'Invalid input dimension! Received {input_data.shape} and ' +
-                    f' expected input compatible to {neural_network.num_inputs}')
+                    f"Invalid input dimension! Received {input_data.shape} and "
+                    + f" expected input compatible to {neural_network.num_inputs}"
+                )
 
             # evaluate QNN gradient
             input_grad, weights_grad = neural_network.backward(input_data.numpy(), weights.numpy())
@@ -174,9 +181,12 @@ class TorchConnector(Module):
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
             return input_grad, weights_grad, None, None
 
-    def __init__(self, neural_network: NeuralNetwork,
-                 initial_weights: Optional[Union[np.ndarray, Tensor]] = None,
-                 sparse: Optional[bool] = None):
+    def __init__(
+        self,
+        neural_network: NeuralNetwork,
+        initial_weights: Optional[Union[np.ndarray, Tensor]] = None,
+        sparse: Optional[bool] = None,
+    ):
         """Initializes the TorchConnector.
 
         Args:
@@ -205,17 +215,17 @@ class TorchConnector(Module):
 
     @property
     def neural_network(self):
-        """ Returns the underlying neural network."""
+        """Returns the underlying neural network."""
         return self._neural_network
 
     @property
     def weights(self):
-        """ Returns the weights of the underlying network."""
+        """Returns the weights of the underlying network."""
         return self._weights
 
     @property
     def sparse(self):
-        """ Returns whether this connector returns sparse output or not."""
+        """Returns whether this connector returns sparse output or not."""
         return self._sparse
 
     def forward(self, input_data: Optional[Tensor] = None) -> Tensor:
@@ -226,5 +236,6 @@ class TorchConnector(Module):
             Result of forward pass of this model.
         """
         input_ = input_data if input_data is not None else Tensor([])
-        return TorchConnector._TorchNNFunction.apply(input_, self._weights,
-                                                     self._neural_network, self._sparse)
+        return TorchConnector._TorchNNFunction.apply(
+            input_, self._weights, self._neural_network, self._sparse
+        )

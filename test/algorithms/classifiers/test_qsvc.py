@@ -27,34 +27,40 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 
 class TestQSVC(QiskitMachineLearningTestCase):
-    """ Test QSVC Algorithm """
+    """Test QSVC Algorithm"""
 
     def setUp(self):
         super().setUp()
 
         self.random_seed = 10598
 
-        self.statevector_simulator = QuantumInstance(BasicAer.get_backend('statevector_simulator'),
-                                                     shots=1,
-                                                     seed_simulator=self.random_seed,
-                                                     seed_transpiler=self.random_seed)
+        self.statevector_simulator = QuantumInstance(
+            BasicAer.get_backend("statevector_simulator"),
+            shots=1,
+            seed_simulator=self.random_seed,
+            seed_transpiler=self.random_seed,
+        )
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
 
-        self.sample_train = np.asarray([[3.07876080, 1.75929189],
-                                        [6.03185789, 5.27787566],
-                                        [6.22035345, 2.70176968],
-                                        [0.18849556, 2.82743339]])
+        self.sample_train = np.asarray(
+            [
+                [3.07876080, 1.75929189],
+                [6.03185789, 5.27787566],
+                [6.22035345, 2.70176968],
+                [0.18849556, 2.82743339],
+            ]
+        )
         self.label_train = np.asarray([0, 0, 1, 1])
 
-        self.sample_test = np.asarray([[2.199114860, 5.15221195],
-                                       [0.50265482, 0.06283185]])
+        self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
 
     def test_qsvc(self):
-        """ Test QSVC """
-        qkernel = QuantumKernel(feature_map=self.feature_map,
-                                quantum_instance=self.statevector_simulator)
+        """Test QSVC"""
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
 
         qsvc = QSVC(quantum_kernel=qkernel)
         qsvc.fit(self.sample_train, self.label_train)
@@ -63,7 +69,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 0.5)
 
     def test_empty_kernel(self):
-        """ Test QSVC with empty QuantumKernel """
+        """Test QSVC with empty QuantumKernel"""
         qkernel = QuantumKernel()
         qsvc = QSVC(quantum_kernel=qkernel)
 
@@ -71,9 +77,10 @@ class TestQSVC(QiskitMachineLearningTestCase):
             _ = qsvc.fit(self.sample_train, self.label_train)
 
     def test_change_kernel(self):
-        """ Test QSVC with QuantumKernel later """
-        qkernel = QuantumKernel(feature_map=self.feature_map,
-                                quantum_instance=self.statevector_simulator)
+        """Test QSVC with QuantumKernel later"""
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
 
         qsvc = QSVC()
         qsvc.quantum_kernel = qkernel
@@ -83,9 +90,10 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 0.5)
 
     def test_qsvc_parameters(self):
-        """ Test QSVC with extra constructor parameters """
-        qkernel = QuantumKernel(feature_map=self.feature_map,
-                                quantum_instance=self.statevector_simulator)
+        """Test QSVC with extra constructor parameters"""
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
 
         qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
         qsvc.fit(self.sample_train, self.label_train)
@@ -94,5 +102,5 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 0.5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

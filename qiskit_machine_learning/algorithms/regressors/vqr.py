@@ -26,15 +26,17 @@ from ...utils.loss_functions import Loss
 class VQR(NeuralNetworkRegressor):
     """Quantum neural network regressor using TwoLayerQNN"""
 
-    def __init__(self,
-                 num_qubits: int = None,
-                 feature_map: QuantumCircuit = None,
-                 ansatz: QuantumCircuit = None,
-                 observable: Union[QuantumCircuit, OperatorBase] = None,
-                 loss: Union[str, Loss] = 'l2',
-                 optimizer: Optimizer = None,
-                 warm_start: bool = False,
-                 quantum_instance: QuantumInstance = None) -> None:
+    def __init__(
+        self,
+        num_qubits: int = None,
+        feature_map: QuantumCircuit = None,
+        ansatz: QuantumCircuit = None,
+        observable: Union[QuantumCircuit, OperatorBase] = None,
+        loss: Union[str, Loss] = "l2",
+        optimizer: Optimizer = None,
+        warm_start: bool = False,
+        quantum_instance: QuantumInstance = None,
+    ) -> None:
         r"""
         Args:
             num_qubits: The number of qubits to be used. If None, and neither feature_map nor
@@ -54,28 +56,32 @@ class VQR(NeuralNetworkRegressor):
         """
 
         # construct QNN
-        neural_network = TwoLayerQNN(num_qubits=num_qubits,
-                                     feature_map=feature_map,
-                                     ansatz=ansatz,
-                                     observable=observable,
-                                     quantum_instance=quantum_instance)
+        neural_network = TwoLayerQNN(
+            num_qubits=num_qubits,
+            feature_map=feature_map,
+            ansatz=ansatz,
+            observable=observable,
+            quantum_instance=quantum_instance,
+        )
 
-        super().__init__(neural_network=neural_network,
-                         loss=loss,
-                         optimizer=optimizer,
-                         warm_start=warm_start)
+        super().__init__(
+            neural_network=neural_network,
+            loss=loss,
+            optimizer=optimizer,
+            warm_start=warm_start,
+        )
 
     @property
     def feature_map(self) -> QuantumCircuit:
-        """ Returns the used feature map."""
+        """Returns the used feature map."""
         return cast(TwoLayerQNN, super().neural_network).feature_map
 
     @property
     def ansatz(self) -> QuantumCircuit:
-        """ Returns the used ansatz."""
+        """Returns the used ansatz."""
         return cast(TwoLayerQNN, super().neural_network).ansatz
 
     @property
     def num_qubits(self) -> int:
-        """ Returns the number of qubits used by ansatz and feature map."""
+        """Returns the number of qubits used by ansatz and feature map."""
         return cast(TwoLayerQNN, super().neural_network).num_qubits

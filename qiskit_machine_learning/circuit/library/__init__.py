@@ -33,5 +33,5 @@ Feature Maps
 from .raw_feature_vector import RawFeatureVector
 
 __all__ = [
-    'RawFeatureVector',
+    "RawFeatureVector",
 ]

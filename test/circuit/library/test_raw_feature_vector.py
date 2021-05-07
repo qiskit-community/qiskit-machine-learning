@@ -37,15 +37,15 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         circuit = RawFeatureVector(4)
 
-        with self.subTest('check number of qubits'):
+        with self.subTest("check number of qubits"):
             self.assertEqual(circuit.num_qubits, 2)
 
-        with self.subTest('check parameters'):
+        with self.subTest("check parameters"):
             self.assertEqual(len(circuit.parameters), 4)
 
-        with self.subTest('check unrolling fails'):
+        with self.subTest("check unrolling fails"):
             with self.assertRaises(QiskitError):
-                _ = transpile(circuit, basis_gates=['u', 'cx'], optimization_level=0)
+                _ = transpile(circuit, basis_gates=["u", "cx"], optimization_level=0)
 
     def test_fully_bound(self):
         """Test fully binding the circuit works."""
@@ -68,15 +68,15 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         circuit = RawFeatureVector(4)
         params = circuit.parameters
 
-        with self.subTest('single numeric value'):
+        with self.subTest("single numeric value"):
             circuit.assign_parameters({params[0]: 0.2}, inplace=True)
             self.assertEqual(len(circuit.parameters), 3)
 
-        with self.subTest('bound to another parameter'):
+        with self.subTest("bound to another parameter"):
             circuit.assign_parameters({params[1]: params[2]}, inplace=True)
             self.assertEqual(len(circuit.parameters), 2)
 
-        with self.subTest('test now fully bound circuit'):
+        with self.subTest("test now fully bound circuit"):
             bound = circuit.assign_parameters({params[2]: 0.4, params[3]: 0.8})
             ref = QuantumCircuit(2)
             ref.initialize([0.2, 0.4, 0.4, 0.8], ref.qubits)
@@ -88,9 +88,11 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         # specify quantum instance and random seed
         random_seed = 12345
-        quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
-                                           seed_simulator=random_seed,
-                                           seed_transpiler=random_seed)
+        quantum_instance = QuantumInstance(
+            Aer.get_backend("statevector_simulator"),
+            seed_simulator=random_seed,
+            seed_transpiler=random_seed,
+        )
         np.random.seed(random_seed)
 
         # construct data
@@ -104,10 +106,12 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
 
-        vqc = VQC(feature_map=feature_map,
-                  ansatz=RealAmplitudes(feature_map.num_qubits, reps=1),
-                  optimizer=COBYLA(maxiter=10),
-                  quantum_instance=quantum_instance)
+        vqc = VQC(
+            feature_map=feature_map,
+            ansatz=RealAmplitudes(feature_map.num_qubits, reps=1),
+            optimizer=COBYLA(maxiter=10),
+            quantum_instance=quantum_instance,
+        )
 
         vqc.fit(X, y)
         score = vqc.score(X, y)
@@ -123,8 +127,8 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         bound = circuit.bind_parameters([1, 0, 0, 0])
 
-        self.assertTrue(Statevector.from_label('00').equiv(bound))
+        self.assertTrue(Statevector.from_label("00").equiv(bound))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
