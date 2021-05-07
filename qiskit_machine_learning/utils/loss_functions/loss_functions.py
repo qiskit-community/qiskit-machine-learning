@@ -91,6 +91,9 @@ class L1Loss(Loss):
         """
         Returns:
              a float value of the loss function
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match
         """
         predict, target = self._validate(predict, target)
 
@@ -125,6 +128,9 @@ class L2Loss(Loss):
         """
         Returns:
             a float value of the loss function
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match
         """
         predict, target = self._validate(predict, target)
 
@@ -155,6 +161,9 @@ class CrossEntropyLoss(Loss):
         """
         Returns:
              a float value of the loss function
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match
         """
         predict, target = self._validate(predict, target)
 
@@ -182,6 +191,9 @@ class CrossEntropySigmoidLoss(Loss):
         """
         Returns:
              a float value of the loss function
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match
         """
         predict, target = self._validate(predict, target)
 
