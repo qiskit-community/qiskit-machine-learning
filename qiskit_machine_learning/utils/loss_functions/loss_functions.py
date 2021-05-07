@@ -105,10 +105,10 @@ class L1Loss(Loss):
             raise QiskitMachineLearningError(f'Invalid shape {predict.shape}!')
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> float:
-         """
-         Returns:
-             a float value of the gradient
-         """
+        """
+        Returns:
+            a float value of the gradient
+        """
 
         predict, target = self._validate(predict, target)
 
@@ -125,7 +125,6 @@ class L2Loss(Loss):
         """
          Returns:
              a float value of the loss function
-
         """
         predict, target = self._validate(predict, target)
 
@@ -166,7 +165,6 @@ class CrossEntropyLoss(Loss):
         """
         Returns:
              a float value of the gradient
-
         """
         predict, target = self._validate(predict, target)
 
