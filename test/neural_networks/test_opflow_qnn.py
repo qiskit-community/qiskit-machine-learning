@@ -238,6 +238,27 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         # test model
         self.validate_output_shape(qnn, test_data)
 
+    def test_composed_op(self):
+        qc = QuantumCircuit(1)
+        param = Parameter("param")
+        qc.rz(param, 0)
+
+        H1 = PauliSumOp.from_list([('Z', 1.0)])
+        H2 = PauliSumOp.from_list([('Z', 1.0)])
+
+        H = ListOp([H1, H2])
+        op = ~StateFn(H) @ StateFn(qc)
+
+        # initialize QNN
+        qnn = OpflowQNN(op, [], [param])
+
+        # create random data and weights for testing
+        data = np.random.rand(2, qnn.num_inputs)
+        weights = np.random.rand(qnn.num_weights)
+
+        qnn.forward(data, weights)
+        qnn.backward(data, weights)
+
 
 if __name__ == "__main__":
     unittest.main()
