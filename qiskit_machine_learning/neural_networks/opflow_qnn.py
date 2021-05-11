@@ -17,8 +17,20 @@ from typing import List, Optional, Union, Tuple
 
 import numpy as np
 from qiskit.circuit import Parameter
+<<<<<<< HEAD
 from qiskit.opflow import Gradient, CircuitSampler, ListOp, OperatorBase, ExpectationBase, \
     OpflowError
+=======
+from qiskit.opflow import (
+    Gradient,
+    CircuitSampler,
+    ListOp,
+    OperatorBase,
+    ExpectationBase,
+    OpflowError,
+    ComposedOp,
+)
+>>>>>>> c115b45... Fix `_get_output_shape_from_op` if a `ComposedOp` is passed as an operator to `OpflowQNN` (#93)
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
@@ -82,7 +94,10 @@ class OpflowQNN(NeuralNetwork):
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
-        # TODO: should eventually be moved to opflow
+        # TODO: the whole method should eventually be moved to opflow and rewritten in a better way.
+        # if the operator is a composed one, then we only need to look at the first element of it.
+        if isinstance(op, ComposedOp):
+            return self._get_output_shape_from_op(op.oplist[0].primitive)
         # this "if" statement is on purpose, to prevent sub-classes.
         # pylint:disable=unidiomatic-typecheck
         if type(op) == ListOp:
