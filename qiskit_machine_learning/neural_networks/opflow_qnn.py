@@ -17,10 +17,6 @@ from typing import List, Optional, Union, Tuple
 
 import numpy as np
 from qiskit.circuit import Parameter
-<<<<<<< HEAD
-from qiskit.opflow import Gradient, CircuitSampler, ListOp, OperatorBase, ExpectationBase, \
-    OpflowError
-=======
 from qiskit.opflow import (
     Gradient,
     CircuitSampler,
@@ -30,7 +26,6 @@ from qiskit.opflow import (
     OpflowError,
     ComposedOp,
 )
->>>>>>> c115b45... Fix `_get_output_shape_from_op` if a `ComposedOp` is passed as an operator to `OpflowQNN` (#93)
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
