@@ -76,7 +76,7 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
 
         # ----------------------------------------------------------------------
 
-        self.assertGreater(score, 0.8)
+        self.assertGreater(score, 0.7)
 
 
 if __name__ == "__main__":
