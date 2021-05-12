@@ -36,7 +36,6 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-
         # specify "run configuration"
         self.quantum_instance_sv = QuantumInstance(StatevectorSimulator())
         self.quantum_instance_qasm = QuantumInstance(AerSimulator(shots=100))
@@ -104,6 +103,26 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         return qnn
 
     @data(
+        (True, True, True, 0, 1)
+    )
+    def test_no_qi(self, config):
+        sparse, sampling, statevector, interpret_id, batch_size = config
+        qnn = CircuitQNN(
+            self.qc,
+            self.input_params,
+            self.weight_params,
+            sparse=sparse,
+            sampling=sampling,
+            interpret=None,
+            output_shape=None,
+            quantum_instance=None,
+        )
+        with self.assertRaises(QiskitMachineLearningError):
+            qnn._sample(input_data=None, weights=None)
+        with self.assertRaises(QiskitMachineLearningError):
+            qnn._probabilities(input_data=None, weights=None)
+
+    @data(
         # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d), batch_size
         (True, True, True, 0, 1),
         (True, True, True, 0, 2),
@@ -159,7 +178,6 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # get configuration
         sparse, sampling, statevector, interpret_id, batch_size = config
-
         # get QNN
         qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
         input_data = np.zeros((batch_size, qnn.num_inputs))

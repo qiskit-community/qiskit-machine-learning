@@ -111,6 +111,7 @@ class OpflowQNN(NeuralNetwork):
     def quantum_instance(self, quantum_instance) -> None:
         """Sets the quantum instance to evaluate the circuit."""
         self._quantum_instance = quantum_instance
+        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
@@ -173,7 +174,7 @@ class OpflowQNN(NeuralNetwork):
 
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
+    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]], ]:
 
         # check whether gradient circuit could be constructed
         if self._gradient_operator is None:

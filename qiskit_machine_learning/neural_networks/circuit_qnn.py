@@ -73,11 +73,10 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             quantum_instance = QuantumInstance(quantum_instance)
-        if quantum_instance:
-            self._quantum_instance = quantum_instance
+        self._quantum_instance = quantum_instance
+        if quantum_instance is not None:
             self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching="all")
         else:
-            self._quantum_instance = None
             self._sampler = None
 
         self._input_params = list(input_params or [])
@@ -88,7 +87,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         # copy circuit and add measurements in case non are given
         # TODO: need to be able to handle partial measurements! (partial trace...)
         self._circuit = circuit.copy()
-        if self._quantum_instance.is_statevector:
+        if self._quantum_instance is not None and self._quantum_instance.is_statevector:
             if self._circuit.num_clbits > 0:
                 self._circuit.remove_final_measurements()
         elif self._circuit.num_clbits == 0:
@@ -130,9 +129,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # this definition is required by mypy
         output_shape_: Tuple[int, ...] = (-1,)
-        if sampling:
-            if not self._quantum_instance:
-                raise QiskitMachineLearningError("Sampling requires a quantum instance!")
+        if sampling and self._quantum_instance is not None:
             num_samples = self._quantum_instance.run_config.shots
             ret = self._interpret(0)  # infer shape from function
             result = np.array(ret)
@@ -176,11 +173,13 @@ class CircuitQNN(SamplingNeuralNetwork):
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(self, quantum_instance) -> None:
+    def quantum_instance(self, quantum_instance: Union[QuantumInstance,
+                                                       BaseBackend, Backend]) -> None:
         """Sets the quantum instance to evaluate the circuit and make sure circuit has
         measurements or not depending on the type of backend used.
         """
         self._quantum_instance = quantum_instance
+        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
 
         # add measurements in case non are given
         if quantum_instance.is_statevector:
@@ -208,9 +207,12 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._interpret = interpret if interpret else lambda x: x
         self._output_shape = self._compute_output_shape(interpret, output_shape, self._sampling)
 
-    def _sample(
-        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> np.ndarray:
+    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+                ) -> np.ndarray:
+
+        if self._quantum_instance is None:
+            raise QiskitMachineLearningError("Requires a quantum instance!")
+
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError("Sampling does not work with statevector simulator!")
 
@@ -247,7 +249,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Union[np.ndarray, SparseArray]:
 
-        if not self._quantum_instance:
+        if self._quantum_instance is None:
             raise QiskitMachineLearningError(
                 "Evaluation of probabilities requires a quantum instance!"
             )
@@ -290,6 +292,10 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probability_gradients(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
+
+        if self._quantum_instance is None:
+            raise QiskitMachineLearningError(
+                'Probability gradients requires a quantum instance!')
 
         # check whether gradient circuit could be constructed
         if self._gradient_circuit is None:
