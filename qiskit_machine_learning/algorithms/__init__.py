@@ -84,7 +84,7 @@ from .objective_functions import (
     ObjectiveFunction,
     BinaryObjectiveFunction,
     MultiClassObjectiveFunction,
-    OneHotObjectiveFunction
+    OneHotObjectiveFunction,
 )
 from .classifiers import QSVC, VQC, NeuralNetworkClassifier
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
