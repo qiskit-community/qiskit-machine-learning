@@ -31,7 +31,7 @@ except ImportError:
         pass
 
 from qiskit import QuantumCircuit
-from qiskit.providers.aer import QasmSimulator, StatevectorSimulator
+from qiskit.providers.aer import AerSimulator, StatevectorSimulator
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
 from qiskit.utils import QuantumInstance, algorithm_globals
@@ -50,10 +50,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.seed = 12345
         # specify quantum instances
-<<<<<<< HEAD
-        self.sv_quantum_instance = QuantumInstance(StatevectorSimulator())
-        self.qasm_quantum_instance = QuantumInstance(QasmSimulator(), shots=100)
-=======
         self.sv_quantum_instance = QuantumInstance(
             StatevectorSimulator(),
             seed_simulator=algorithm_globals.seed,
@@ -71,7 +67,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             torch.manual_seed(algorithm_globals.seed)
         except ImportError:
             pass
->>>>>>> 41a16e6... Add seed to test torch connector, change accuracy readme test (#88)
 
     def validate_output_shape(self, model: TorchConnector, test_data: List[Tensor]) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
@@ -137,15 +132,11 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         try:
             import torch
         except ImportError as ex:
-<<<<<<< HEAD
-            self.skipTest('pytorch not installed, skipping test: {}'.format(str(ex)))
-=======
             raise MissingOptionalLibraryError(
                 libname="Pytorch",
                 name="TorchConnector",
                 pip_install="pip install 'qiskit-machine-learning[torch]'",
             ) from ex
->>>>>>> 41a16e6... Add seed to test torch connector, change accuracy readme test (#88)
 
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
