@@ -81,7 +81,7 @@ be classified.
 ### Further examples
 
 Learning path notebooks may be found in the
-[Machine Learning tutorials](https://qiskit.org/documentation/tutorials/machine_learning/index.html) section
+[Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials) section
 of the documentation and are a great place to start.
 
 ----------------------------------------------------------------------------------------------------
