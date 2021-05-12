@@ -81,8 +81,12 @@ class ObjectiveFunction:
         Returns:
             The result of the neural network.
         """
+        # we compare weights and input data by identifier to make it faster.
+        # input data is added to the comparison for safety reasons only,
+        # comparison of weights should be enough.
         data_id = str(id(weights)) + str(id(self._X))
         if data_id != self._last_forward_id:
+            # compute forward and cache the results for re-use in backward
             self._last_forward = self._neural_network.forward(self._X, weights)
             self._last_forward_id = data_id
         return self._last_forward
