@@ -23,7 +23,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector
@@ -87,18 +87,19 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         """Test using the circuit the a single VQC iteration works."""
 
         # specify quantum instance and random seed
-        random_seed = 12345
+        algorithm_globals.random_seed = 12345
         quantum_instance = QuantumInstance(
-            Aer.get_backend("statevector_simulator"),
-            seed_simulator=random_seed,
-            seed_transpiler=random_seed,
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
-        np.random.seed(random_seed)
 
         # construct data
         num_samples = 10
         num_inputs = 4
-        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
+            (num_samples, num_inputs)
+        )
         y = 1.0 * (np.sum(X, axis=1) <= 2)
         while len(np.unique(y, axis=0)) == 1:
             y = 1.0 * (np.sum(X, axis=1) <= 2)
