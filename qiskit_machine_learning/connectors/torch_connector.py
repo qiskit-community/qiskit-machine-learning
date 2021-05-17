@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
-
+import warnings
 from typing import Tuple, Any, Optional, cast, Union
 import logging
 import numpy as np
@@ -220,6 +220,18 @@ class TorchConnector(Module):
 
     @property
     def weights(self):
+        """Returns the weights of the underlying network."""
+        warnings.warn(
+            "The 'weights' property is deprecated as of 0.2.0 "
+            "and will be removed no sooner than 3 months after the release. "
+            "You should use the 'weight' property instead.",
+            DeprecationWarning,
+        )
+
+        return self._weights
+
+    @property
+    def weight(self):
         """Returns the weights of the underlying network."""
         return self._weights
 
