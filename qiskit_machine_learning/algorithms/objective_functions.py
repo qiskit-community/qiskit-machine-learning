@@ -131,10 +131,18 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
         num_classes = self._neural_network.output_shape[0]
         grad = np.zeros((1, self._neural_network.num_weights))
         # TODO: do batch eval instead of zip()
-        for x, y_target in zip(self._X, self._y):
-            _, weight_prob_grad = self._neural_network.backward(x, weights)
+        # for x, y_target in zip(self._X, self._y):
+        #     _, weight_prob_grad = self._neural_network.backward(x, weights)
+        #     for i in range(num_classes):
+        #         grad += weight_prob_grad[0, i, :].reshape(grad.shape) * self._loss(i, y_target)
+
+        _, weight_prob_grad = self._neural_network.backward(self._X, weights)
+        for batch_index in range(len(self._X)):
             for i in range(num_classes):
-                grad += weight_prob_grad[0, i, :].reshape(grad.shape) * self._loss(i, y_target)
+                grad += weight_prob_grad[batch_index, i, :].reshape(grad.shape) * self._loss(
+                    i, self._y[batch_index]
+                )
+
         return grad
 
 
@@ -156,7 +164,14 @@ class OneHotObjectiveFunction(ObjectiveFunction):
         grad = np.zeros(self._neural_network.num_weights)
         y_predict = self._neural_network_forward(weights)
         # TODO: do batch eval for backward instead of zip()
-        for i, (x, y_target) in enumerate(zip(self._X, self._y)):
-            _, weight_prob_grad = self._neural_network.backward(x, weights)
-            grad += self._loss.gradient(y_predict[i], y_target) @ weight_prob_grad[0, :]
+        # for i, (x, y_target) in enumerate(zip(self._X, self._y)):
+        #     _, weight_prob_grad = self._neural_network.backward(x, weights)
+        #     grad += self._loss.gradient(y_predict[i], y_target) @ weight_prob_grad[0, :]
+
+        _, weight_prob_grad = self._neural_network.backward(self._X, weights)
+        for batch_index in range(len(self._X)):
+            grad += (
+                self._loss.gradient(y_predict[batch_index], self._y[batch_index])
+                @ weight_prob_grad[batch_index, :]
+            )
         return grad
