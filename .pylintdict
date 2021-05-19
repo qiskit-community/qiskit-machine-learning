@@ -86,6 +86,7 @@ setters
 sigmoid
 sklearn
 softmax
+sparsearray
 statevector
 statevectors
 stdout
