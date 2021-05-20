@@ -15,6 +15,27 @@ Algorithms (:mod:`qiskit_machine_learning.algorithms`)
 
 .. currentmodule:: qiskit_machine_learning.algorithms
 
+Machine Learning Base Classes
+=============================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   TrainableModel
+   ObjectiveFunction
+
+Machine Learning Objective Functions
+====================================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   BinaryObjectiveFunction
+   MultiClassObjectiveFunction
+   OneHotObjectiveFunction
+
 Algorithms
 ==========
 
@@ -58,6 +79,13 @@ Distribution Learners
 
 """
 
+from .trainable_model import TrainableModel
+from .objective_functions import (
+    ObjectiveFunction,
+    BinaryObjectiveFunction,
+    MultiClassObjectiveFunction,
+    OneHotObjectiveFunction,
+)
 from .classifiers import QSVC, VQC, NeuralNetworkClassifier
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
 from .distribution_learners import (
@@ -70,6 +98,11 @@ from .distribution_learners import (
 )
 
 __all__ = [
+    "TrainableModel",
+    "ObjectiveFunction",
+    "BinaryObjectiveFunction",
+    "MultiClassObjectiveFunction",
+    "OneHotObjectiveFunction",
     "QSVC",
     "NeuralNetworkClassifier",
     "VQC",

@@ -29,7 +29,18 @@ from qiskit.opflow import (
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
-from sparse import SparseArray
+
+try:
+    from sparse import SparseArray
+except ImportError:
+
+    class SparseArray:  # type: ignore
+        """Empty SparseArray class
+        Replacement if sparse.SparseArray is not present.
+        """
+
+        pass
+
 
 from .neural_network import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError, QiskitError
