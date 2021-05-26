@@ -13,8 +13,9 @@
 """ Loss utilities """
 
 from abc import ABC, abstractmethod
-import numpy as np
 from typing import Union
+import numpy as np
+
 
 from ...exceptions import QiskitMachineLearningError
 
