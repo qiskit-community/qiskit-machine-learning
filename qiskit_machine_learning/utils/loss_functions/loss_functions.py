@@ -184,11 +184,6 @@ class CrossEntropySigmoidLoss(Loss):
 
         predict, target = self._validate(predict, target)
 
-        #if len(set(target)) != 2:
-        #    raise QiskitMachineLearningError(
-        #        "Sigmoid Cross Entropy is used for binary classification!"
-        #    )
-
         x = CrossEntropyLoss()
         return 1.0 / (1.0 + np.exp(-x.evaluate(predict, target)))
 
