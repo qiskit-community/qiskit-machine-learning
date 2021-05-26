@@ -110,6 +110,9 @@ exclude_patterns = ['_build', '**.ipynb_checkpoints']
 nbsphinx_thumbnails = {
 }
 
+spelling_word_list_filename = "../.pylintdict"
+spelling_filters = ["lowercase_filter.LowercaseFilter"]
+
 # -----------------------------------------------------------------------------
 # Autosummary
 # -----------------------------------------------------------------------------
@@ -172,7 +175,7 @@ modindex_common_prefix = ['qiskit_machine_learning.']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-  #
+#
 html_theme = "qiskit_sphinx_theme"
 
 html_theme_path = ['.', qiskit_sphinx_theme.get_html_theme_path()]
