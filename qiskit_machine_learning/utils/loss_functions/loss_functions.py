@@ -13,7 +13,7 @@
 """ Loss utilities """
 
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Union, Tuple
 import numpy as np
 
 
@@ -38,7 +38,7 @@ class Loss(ABC):
         return self.evaluate(predict, target)
 
     @abstractmethod
-    def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]):
+    def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
         """
         An abstract method for evaluating the loss function
 
@@ -52,7 +52,7 @@ class Loss(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]):
+    def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
         """
         An abstract method for computing the gradient
 
@@ -66,7 +66,7 @@ class Loss(ABC):
         raise NotImplementedError
 
     @staticmethod
-    def _validate(predict: Union[int, np.ndarray], target: Union[int, np.ndarray]):
+    def _validate(predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
         """
         Args:
             predict: a numpy array of predicted values using the model
@@ -92,7 +92,7 @@ class Loss(ABC):
 class L1Loss(Loss):
     """
     L1Loss:
-        This class computes the L1 loss: sum |target - predict|
+    This class computes the L1 loss: sum |target - predict|
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
@@ -120,7 +120,7 @@ class L1Loss(Loss):
 class L2Loss(Loss):
     """
     L2Loss:
-        This class computes the L2 loss: sum (target - predict)^2
+    This class computes the L2 loss: sum (target - predict)^2
 
     """
 
@@ -147,7 +147,7 @@ class L2Loss(Loss):
 class CrossEntropyLoss(Loss):
     """
     CrossEntropyLoss:
-        This class computes the cross entropy loss: -sum target * log(predict)
+    This class computes the cross entropy loss: -sum target * log(predict)
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
@@ -168,7 +168,7 @@ class CrossEntropyLoss(Loss):
 class CrossEntropySigmoidLoss(Loss):
     """
     CrossEntropySigmoidLoss:
-        This class computes the cross entropy sigmoid loss.
+    This class computes the cross entropy sigmoid loss.
 
     This is used for binary classification.
     """
