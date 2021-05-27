@@ -96,11 +96,10 @@ class L1Loss(Loss):
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        predict = np.array(predict)
-        target = np.array(target)
-
         predict, target = self._validate(predict, target)
 
+        predict = np.array(predict)
+        target = np.array(target)
         if len(predict.shape) == 0:
             return np.abs(predict - target)
         elif len(predict.shape) <= 1:
@@ -111,10 +110,9 @@ class L1Loss(Loss):
             raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
 
     def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+        predict, target = self._validate(predict, target)
         predict = np.array(predict)
         target = np.array(target)
-
-        predict, target = self._validate(predict, target)
 
         return np.sign(predict - target)
 
@@ -127,10 +125,9 @@ class L2Loss(Loss):
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+        predict, target = self._validate(predict, target)
         predict = np.array(predict)
         target = np.array(target)
-
-        predict, target = self._validate(predict, target)
 
         if len(predict.shape) <= 1:
             return np.linalg.norm(predict - target) ** 2
@@ -140,9 +137,9 @@ class L2Loss(Loss):
             raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
 
     def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+        predict, target = self._validate(predict, target)
         predict = np.array(predict)
         target = np.array(target)
-        predict, target = self._validate(predict, target)
 
         return 2 * (predict - target)
 
@@ -154,18 +151,16 @@ class CrossEntropyLoss(Loss):
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+        predict, target = self._validate(predict, target)
         predict = np.array(predict)
         target = np.array(target)
-
-        predict, target = self._validate(predict, target)
 
         return float(-np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))]))
 
     def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+        predict, target = self._validate(predict, target)
         predict = np.array(predict)
         target = np.array(target)
-
-        predict, target = self._validate(predict, target)
 
         return predict * np.sum(target) - target
 
@@ -179,19 +174,17 @@ class CrossEntropySigmoidLoss(Loss):
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+        predict, target = self._validate(predict, target)
         predict = np.array(predict)
         target = np.array(target)
-
-        predict, target = self._validate(predict, target)
 
         x = CrossEntropyLoss()
         return 1.0 / (1.0 + np.exp(-x.evaluate(predict, target)))
 
     def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+        predict, target = self._validate(predict, target)
         predict = np.array(predict)
         target = np.array(target)
-
-        predict, target = self._validate(predict, target)
 
         return target * (1.0 / (1.0 + np.exp(-predict)) - 1) + (1 - target) * (
             1.0 / (1.0 + np.exp(-predict))
