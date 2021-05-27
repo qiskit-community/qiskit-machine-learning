@@ -66,7 +66,9 @@ class Loss(ABC):
         raise NotImplementedError
 
     @staticmethod
-    def _validate(predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+    def _validate(
+        predict: Union[int, np.ndarray], target: Union[int, np.ndarray]
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Args:
             predict: a numpy array of predicted values using the model
