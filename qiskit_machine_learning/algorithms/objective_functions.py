@@ -104,11 +104,15 @@ class BinaryObjectiveFunction(ObjectiveFunction):
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
         output = self._neural_network_forward(weights)
-        _, weights_grad = self._neural_network.backward(self._X, weights)
+        _, weight_grad = self._neural_network.backward(self._X, weights)
 
         grad = np.zeros((1, self._neural_network.num_weights))
-        for i in range(len(self._X)):
-            grad += self._loss.gradient(output[i][0], self._y[i]) * weights_grad[i]
+        # we reshape _y since the output has the shape (N, 1) and _y has (N,)
+        loss_gradient = self._loss.gradient(output, self._y.reshape(-1, 1))
+
+        num_outputs = self._neural_network.output_shape[0]
+        for i in range(num_outputs):
+            grad += loss_gradient[:, i] @ weight_grad[:, i, :]
 
         return grad
 
@@ -120,28 +124,24 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
     """
 
     def objective(self, weights: np.ndarray) -> float:
-        val = 0.0
         probs = self._neural_network_forward(weights)
-        for i in range(len(self._X)):
-            for y_predict, prob in enumerate(probs[i]):
-                val += prob * self._loss(y_predict, self._y[i])
+
+        num_outputs = self._neural_network.output_shape[0]
+        val = 0.0
+        num_samples = self._X.shape[0]
+        for i in range(num_outputs):
+            val += probs[:, i] @ self._loss(np.full(num_samples, i), self._y)
+
         return val
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
-        num_classes = self._neural_network.output_shape[0]
-        grad = np.zeros((1, self._neural_network.num_weights))
-        # TODO: do batch eval instead of zip()
-        # for x, y_target in zip(self._X, self._y):
-        #     _, weight_prob_grad = self._neural_network.backward(x, weights)
-        #     for i in range(num_classes):
-        #         grad += weight_prob_grad[0, i, :].reshape(grad.shape) * self._loss(i, y_target)
-
         _, weight_prob_grad = self._neural_network.backward(self._X, weights)
-        for batch_index in range(len(self._X)):
-            for i in range(num_classes):
-                grad += weight_prob_grad[batch_index, i, :].reshape(grad.shape) * self._loss(
-                    i, self._y[batch_index]
-                )
+
+        grad = np.zeros((1, self._neural_network.num_weights))
+        num_samples = self._X.shape[0]
+        num_outputs = self._neural_network.output_shape[0]
+        for i in range(num_outputs):
+            grad += weight_prob_grad[:, i, :].T @ self._loss(np.full(num_samples, i), self._y)
 
         return grad
 
@@ -153,25 +153,19 @@ class OneHotObjectiveFunction(ObjectiveFunction):
     """
 
     def objective(self, weights: np.ndarray) -> float:
-        val = 0.0
         probs = self._neural_network_forward(weights)
-        # TODO: do batch eval
-        for i in range(len(self._X)):
-            val += self._loss(probs[i], self._y[i])
+        val = np.sum(self._loss(probs, self._y))
+
         return val
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
-        grad = np.zeros(self._neural_network.num_weights)
         y_predict = self._neural_network_forward(weights)
-        # TODO: do batch eval for backward instead of zip()
-        # for i, (x, y_target) in enumerate(zip(self._X, self._y)):
-        #     _, weight_prob_grad = self._neural_network.backward(x, weights)
-        #     grad += self._loss.gradient(y_predict[i], y_target) @ weight_prob_grad[0, :]
-
         _, weight_prob_grad = self._neural_network.backward(self._X, weights)
-        for batch_index in range(len(self._X)):
-            grad += (
-                self._loss.gradient(y_predict[batch_index], self._y[batch_index])
-                @ weight_prob_grad[batch_index, :]
-            )
+
+        grad = np.zeros(self._neural_network.num_weights)
+        num_outputs = self._neural_network.output_shape[0]
+        loss_gradient = self._loss.gradient(y_predict, self._y)
+        for i in range(num_outputs):
+            grad += loss_gradient[:, i] @ weight_prob_grad[:, i, :]
+
         return grad
