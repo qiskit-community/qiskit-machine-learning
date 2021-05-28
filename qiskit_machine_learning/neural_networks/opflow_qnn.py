@@ -24,6 +24,7 @@ from qiskit.opflow import (
     OperatorBase,
     ExpectationBase,
     OpflowError,
+    ComposedOp,
 )
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
@@ -118,7 +119,10 @@ class OpflowQNN(NeuralNetwork):
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
-        # TODO: should eventually be moved to opflow
+        # TODO: the whole method should eventually be moved to opflow and rewritten in a better way.
+        # if the operator is a composed one, then we only need to look at the first element of it.
+        if isinstance(op, ComposedOp):
+            return self._get_output_shape_from_op(op.oplist[0].primitive)
         # this "if" statement is on purpose, to prevent sub-classes.
         # pylint:disable=unidiomatic-typecheck
         if type(op) == ListOp:
