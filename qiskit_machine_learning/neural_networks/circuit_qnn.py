@@ -189,8 +189,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(self, quantum_instance: Optional[Union[QuantumInstance,
-                                                                BaseBackend, Backend]]) -> None:
+    def quantum_instance(
+        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
+    ) -> None:
         """Sets the quantum instance to evaluate the circuit and make sure circuit has
         measurements or not depending on the type of backend used.
         """
@@ -225,8 +226,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._interpret = interpret if interpret else lambda x: x
         self._output_shape = self._compute_output_shape(interpret, output_shape, self._sampling)
 
-    def _sample(self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-                ) -> np.ndarray:
+    def _sample(
+        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+    ) -> np.ndarray:
 
         if self._quantum_instance is None:
             raise QiskitMachineLearningError("Requires a quantum instance!")
@@ -318,8 +320,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
 
         if self._quantum_instance is None:
-            raise QiskitMachineLearningError(
-                'Probability gradients requires a quantum instance!')
+            raise QiskitMachineLearningError("Probability gradients requires a quantum instance!")
 
         # check whether gradient circuit could be constructed
         if self._gradient_circuit is None:
