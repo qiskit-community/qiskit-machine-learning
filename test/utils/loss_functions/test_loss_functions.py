@@ -11,14 +11,12 @@
 # that they have been altered from the originals.
 
 """Tests of loss functions."""
+from test import QiskitMachineLearningTestCase, requires_extra_library
 
-from test import QiskitMachineLearningTestCase
+from qiskit.exceptions import MissingOptionalLibraryError
 
 import numpy as np
-import torch
 from ddt import ddt, data
-from torch.nn import L1Loss as TL1Loss
-from torch.nn import MSELoss as TL2Loss
 
 from qiskit_machine_learning.utils.loss_functions import L1Loss, L2Loss, CrossEntropyLoss
 
@@ -36,8 +34,20 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
         ((5,), (5,), "l2"),
         ((5, 2), (5,), "l2"),
     )
+    @requires_extra_library
     def test_l1_l2_loss(self, config):
         """Tests L1 and L2 loss functions on different input types."""
+        try:
+            import torch
+            from torch.nn import L1Loss as TL1Loss
+            from torch.nn import MSELoss as TL2Loss
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="Pytorch",
+                name="TestLossFunctions",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            ) from ex
+
         input_shape, loss_shape, loss_function = config
         qpredict = np.random.rand(*input_shape) if input_shape else np.random.rand()
         qtarget = np.random.rand(*input_shape) if input_shape else np.random.rand()
