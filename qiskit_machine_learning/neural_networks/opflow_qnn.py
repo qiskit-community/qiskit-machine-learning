@@ -108,10 +108,13 @@ class OpflowQNN(NeuralNetwork):
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(self, quantum_instance) -> None:
+    def quantum_instance(self, quantum_instance:
+                         Optional[Union[QuantumInstance, BaseBackend, Backend]]) -> None:
         """Sets the quantum instance to evaluate the circuit."""
         self._quantum_instance = quantum_instance
-        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
+        if quantum_instance is not None:
+            self._sampler = CircuitSampler(quantum_instance, param_qobj=is_aer_provider(
+                self._quantum_instance.backend), caching='all')
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""

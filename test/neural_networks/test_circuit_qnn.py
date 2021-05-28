@@ -102,17 +102,14 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         )
         return qnn
 
-    @data(
-        (True, True, True, 0, 1)
-    )
-    def test_no_qi(self, config):
-        sparse, sampling, statevector, interpret_id, batch_size = config
+    def test_no_qi(self):
+        """Test that no quantum instance raises exception"""
         qnn = CircuitQNN(
             self.qc,
             self.input_params,
             self.weight_params,
-            sparse=sparse,
-            sampling=sampling,
+            sparse=True,
+            sampling=True,
             interpret=None,
             output_shape=None,
             quantum_instance=None,

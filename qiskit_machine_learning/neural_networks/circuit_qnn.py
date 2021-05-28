@@ -173,20 +173,22 @@ class CircuitQNN(SamplingNeuralNetwork):
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(self, quantum_instance: Union[QuantumInstance,
-                                                       BaseBackend, Backend]) -> None:
+    def quantum_instance(self, quantum_instance: Optional[Union[QuantumInstance,
+                                                                BaseBackend, Backend]]) -> None:
         """Sets the quantum instance to evaluate the circuit and make sure circuit has
         measurements or not depending on the type of backend used.
         """
         self._quantum_instance = quantum_instance
-        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching='all')
-
-        # add measurements in case non are given
-        if quantum_instance.is_statevector:
-            if len(self._circuit.clbits) > 0:
-                self._circuit.remove_final_measurements()
-        elif len(self._circuit.clbits) == 0:
-            self._circuit.measure_all()
+        if quantum_instance is not None:
+            self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching="all")
+            # add measurements in case non are given
+            if quantum_instance.is_statevector:
+                if len(self._circuit.clbits) > 0:
+                    self._circuit.remove_final_measurements()
+                elif len(self._circuit.clbits) == 0:
+                    self._circuit.measure_all()
+        else:
+            self._sampler = None
 
     @property
     def input_gradients(self) -> bool:
