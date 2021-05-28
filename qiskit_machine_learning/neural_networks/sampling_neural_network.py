@@ -16,7 +16,18 @@ from abc import abstractmethod
 from typing import Tuple, Union, List, Optional
 
 import numpy as np
-from sparse import SparseArray
+
+try:
+    from sparse import SparseArray
+except ImportError:
+
+    class SparseArray:  # type: ignore
+        """Empty SparseArray class
+        Replacement if sparse.SparseArray is not present.
+        """
+
+        pass
+
 
 from .neural_network import NeuralNetwork
 

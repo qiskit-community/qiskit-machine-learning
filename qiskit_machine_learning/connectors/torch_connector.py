@@ -17,7 +17,12 @@ import logging
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
 
-from sparse import SparseArray, COO
+try:
+    from sparse import SparseArray, COO
+
+    _HAS_SPARSE = True
+except ImportError:
+    _HAS_SPARSE = False
 
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
@@ -84,6 +89,7 @@ class TorchConnector(Module):
 
             Raises:
                 QiskitMachineLearningError: Invalid input data.
+                MissingOptionalLibraryError: sparse not installed.
             """
 
             # validate input shape
@@ -98,6 +104,12 @@ class TorchConnector(Module):
             ctx.save_for_backward(input_data, weights)
             result = neural_network.forward(input_data.numpy(), weights.numpy())
             if neural_network.sparse and sparse:
+                if not _HAS_SPARSE:
+                    raise MissingOptionalLibraryError(
+                        libname="sparse",
+                        name="COO",
+                        pip_install="pip install 'qiskit-machine-learning[sparse]'",
+                    )
                 result = cast(COO, cast(SparseArray, result).asformat("coo"))
                 result_tensor = sparse_coo_tensor(result.coords, result.data)
             else:

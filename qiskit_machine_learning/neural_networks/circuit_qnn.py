@@ -16,7 +16,22 @@ from numbers import Integral
 from typing import Tuple, Union, List, Callable, Optional, cast, Iterable
 
 import numpy as np
-from sparse import SparseArray, DOK
+
+try:
+    from sparse import SparseArray, DOK
+
+    _HAS_SPARSE = True
+except ImportError:
+    _HAS_SPARSE = False
+
+    class SparseArray:  # type: ignore
+        """Empty SparseArray class
+        Replacement if sparse.SparseArray is not present.
+        """
+
+        pass
+
+
 from scipy.sparse import coo_matrix
 
 from qiskit import QuantumCircuit
@@ -24,6 +39,7 @@ from qiskit.circuit import Parameter
 from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
+from qiskit.exceptions import MissingOptionalLibraryError
 
 from .sampling_neural_network import SamplingNeuralNetwork
 from ..exceptions import QiskitMachineLearningError, QiskitError
@@ -270,6 +286,12 @@ class CircuitQNN(SamplingNeuralNetwork):
         result = self._quantum_instance.execute(circuits)
         # initialize probabilities
         if self._sparse:
+            if not _HAS_SPARSE:
+                raise MissingOptionalLibraryError(
+                    libname="sparse",
+                    name="DOK",
+                    pip_install="pip install 'qiskit-machine-learning[sparse]'",
+                )
             prob = DOK((rows, *self._output_shape))
         else:
             prob = np.zeros((rows, *self._output_shape))
@@ -308,6 +330,12 @@ class CircuitQNN(SamplingNeuralNetwork):
         # initialize empty gradients
         input_grad = None  # by default we don't have data gradients
         if self._sparse:
+            if not _HAS_SPARSE:
+                raise MissingOptionalLibraryError(
+                    libname="sparse",
+                    name="DOK",
+                    pip_install="pip install 'qiskit-machine-learning[sparse]'",
+                )
             if self._input_gradients:
                 input_grad = DOK((rows, *self._output_shape, self._num_inputs))
             weights_grad = DOK((rows, *self._output_shape, self._num_weights))

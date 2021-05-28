@@ -62,6 +62,7 @@ setuptools.setup(
     python_requires=">=3.6",
     extras_require={
         'torch': ["torch"],
+        'sparse': ["sparse"],
     },
     zip_safe=False
 )

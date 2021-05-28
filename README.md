@@ -29,9 +29,11 @@ To do this follow the instructions in the
 ### Optional Installs
 
 * **PyTorch**, may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
-  package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). PyTorch
-  being installed will enable the neural networks `PyTorchDiscriminator` component to be used with
-  the QGAN algorithm.
+  package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). When PyTorch
+  is installed, the `TorchConnector` facilitates its use of quantum computed networks.
+
+* **Sparse**, may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
+  package. Sparse being installed will enable the usage of sparse arrays/tensors.
 
 ### Creating Your First Machine Learning Programming Experiment in Qiskit
 
@@ -81,7 +83,7 @@ be classified.
 ### Further examples
 
 Learning path notebooks may be found in the
-[Machine Learning tutorials](https://qiskit.org/documentation/tutorials/machine_learning/index.html) section
+[Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials) section
 of the documentation and are a great place to start.
 
 ----------------------------------------------------------------------------------------------------

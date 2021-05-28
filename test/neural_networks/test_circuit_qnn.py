@@ -14,17 +14,17 @@
 
 import unittest
 
-from test import QiskitMachineLearningTestCase
+from test import QiskitMachineLearningTestCase, requires_extra_library
 
 from ddt import ddt, data
 
 import numpy as np
-from sparse import SparseArray
 
 from qiskit.providers.aer import AerSimulator, StatevectorSimulator
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance
+from qiskit.exceptions import MissingOptionalLibraryError
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
@@ -170,8 +170,17 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, False, False, 2, 1),
         (False, False, False, 2, 2),
     )
+    @requires_extra_library
     def test_circuit_qnn(self, config):
         """Circuit QNN Test."""
+        try:
+            from sparse import SparseArray
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="sparse",
+                name="SparseArray",
+                pip_install="pip install 'qiskit-machine-learning[sparse]'",
+            ) from ex
 
         # get configuration
         sparse, sampling, statevector, interpret_id, batch_size = config
@@ -234,6 +243,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, False, True, 2, 1),
         (False, False, True, 2, 2),
     )
+    @requires_extra_library
     def test_circuit_qnn_gradient(self, config):
         """Circuit QNN Gradient Test."""
 

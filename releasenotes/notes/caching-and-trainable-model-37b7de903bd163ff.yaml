@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    A base class ``TrainableModel`` is introduced for machine learning models. This class follows
+    Scikit-Learn principles and makes the quantum machine learning compatible with classical
+    models. Both ``NeuralNetworkClassifier`` and ``NeuralNetworkRegressor`` extend this class.
+    A base class ``ObjectiveFunction`` is introduced for objective functions optimized by machine
+    learning models. There are three objective functions introduced that are used by ML models:
+    ``BinaryObjectiveFunction``, ``MultiClassObjectiveFunction``, and ``OneHotObjectiveFunction``.
+    These functions are used internally by the models.
+
