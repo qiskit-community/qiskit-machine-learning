@@ -26,6 +26,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.append(os.path.abspath('.'))
 
 """
 Sphinx documentation builder
@@ -33,6 +34,10 @@ Sphinx documentation builder
 
 import qiskit_sphinx_theme
 import qiskit_machine_learning
+from custom_directives import (IncludeDirective, GalleryItemDirective,
+                               CustomGalleryItemDirective, CustomCalloutItemDirective,
+                               CustomCardItemDirective)
+
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
 os.environ['QISKIT_DOCS'] = 'TRUE'
@@ -86,7 +91,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.extlinks',
-    'sphinx_tabs.tabs',
+    'sphinx_panels',
     'jupyter_sphinx',
     'sphinx_autodoc_typehints',
     'reno.sphinxext',
@@ -104,6 +109,9 @@ nbsphinx_widgets_path = ''
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 nbsphinx_thumbnails = {
 }
+
+spelling_word_list_filename = "../.pylintdict"
+spelling_filters = ["lowercase_filter.LowercaseFilter"]
 
 # -----------------------------------------------------------------------------
 # Autosummary
@@ -167,7 +175,7 @@ modindex_common_prefix = ['qiskit_machine_learning.']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-  #
+#
 html_theme = "qiskit_sphinx_theme"
 
 html_theme_path = ['.', qiskit_sphinx_theme.get_html_theme_path()]
@@ -192,3 +200,13 @@ html_theme_options = {
 intersphinx_mapping = {
     'sklearn': ('https://scikit-learn.org/stable', None),
 }
+
+# -- Extension configuration -------------------------------------------------
+
+
+def setup(app):
+    app.add_directive('includenodoc', IncludeDirective)
+    app.add_directive('galleryitem', GalleryItemDirective)
+    app.add_directive('customgalleryitem', CustomGalleryItemDirective)
+    app.add_directive('customcarditem', CustomCardItemDirective)
+    app.add_directive('customcalloutitem', CustomCalloutItemDirective)
