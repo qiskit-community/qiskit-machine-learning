@@ -18,7 +18,7 @@ from qiskit.exceptions import MissingOptionalLibraryError
 import numpy as np
 from ddt import ddt, data
 
-from qiskit_machine_learning.utils.loss_functions import L1Loss, L2Loss, CrossEntropyLoss
+from qiskit_machine_learning.utils.loss_functions import L1Loss, L2Loss
 
 
 @ddt
@@ -79,27 +79,3 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
         # comparison
         np.testing.assert_almost_equal(qloss_sum, tloss_sum.detach().numpy())
         np.testing.assert_almost_equal(qgrad, tgrad)
-
-    # def test_cross_entropy_loss(self):
-    #     input_shape, loss_shape = (5, 2), (5, 1)
-    #     qpredict = np.random.rand(*input_shape) if input_shape else np.random.rand()
-    #     qtarget = np.random.rand(*input_shape) if input_shape else np.random.rand()
-    #     tpredict = torch.tensor(qpredict, requires_grad=True)
-    #     ttarget = torch.tensor(qtarget, requires_grad=True)
-    #
-    #     # quantum loss
-    #     loss = CrossEntropyLoss()
-    #     qloss = loss(qpredict, qtarget)
-    #
-    #     np.testing.assert_equal(qloss.shape, loss_shape)
-    #     qloss_sum = np.sum(loss(qpredict, qtarget))
-    #     qgrad = loss.gradient(qpredict, qtarget)
-    #
-    #     # pytorch loss
-    #     loss = TCrossEntropyLoss(reduction="none")
-    #     tloss_sum = loss(tpredict, ttarget).sum()
-    #     tloss_sum.backward()
-    #     tgrad = tpredict.grad.detach().numpy()
-    #
-    #     np.testing.assert_almost_equal(qloss_sum, tloss_sum.detach().numpy())
-    #     np.testing.assert_almost_equal(qgrad, tgrad)

@@ -81,7 +81,6 @@ class L2Loss(Loss):
         return 2 * (predict - target)
 
 
-# todo: vectorize
 class CrossEntropyLoss(Loss):
     """CrossEntropyLoss"""
 
@@ -91,12 +90,11 @@ class CrossEntropyLoss(Loss):
             predict = predict.reshape(1, -1)
             target = target.reshape(1, -1)
 
-        # predict is a vector of probabilities, target is one hot encoded vector.
-        num_samples = predict.shape[0]
-        num_classes = predict.shape[1]
-        val = np.zeros((num_samples, 1))
-        for i in range(num_samples):
-            val[i, :] = -np.sum([target[i, j] * np.log2(predict[i, j]) for j in range(num_classes)])
+        # multiply target and log(predict) matrices row by row and sum up each row
+        # into a single float, so the output is of shape(N,), where N number or samples.
+        # then reshape
+        val = -np.einsum("ij,ij->i", target, np.log2(predict)).reshape(-1, 1)
+
         return val
 
     def gradient(self, predict, target):
@@ -107,15 +105,13 @@ class CrossEntropyLoss(Loss):
             predict = predict.reshape(1, -1)
             target = target.reshape(1, -1)
 
-        num_samples = predict.shape[0]
-        num_classes = predict.shape[1]
-        grad = np.zeros((num_samples, num_classes))
-        for i in range(num_samples):
-            grad[i, :] = predict[i, :] * np.sum(target[i, :]) - target[i, :]
+        # sum up target along rows, then multiply predict by this sum element wise,
+        # then subtract target
+        grad = np.einsum("ij,i->ij", predict, np.sum(target, axis=1)) - target
+
         return grad
 
 
-# todo: is not used and to be vectorized
 class CrossEntropySigmoidLoss(Loss):
     """This is used for binary classification"""
 
