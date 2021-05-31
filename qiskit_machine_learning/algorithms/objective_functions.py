@@ -16,7 +16,18 @@ from abc import abstractmethod
 from typing import Optional, Union
 
 import numpy as np
-from sparse import SparseArray
+
+try:
+    from sparse import SparseArray
+except ImportError:
+
+    class SparseArray:  # type: ignore
+        """Empty SparseArray class
+        Replacement if sparse.SparseArray is not present.
+        """
+
+        pass
+
 
 from qiskit_machine_learning.neural_networks import NeuralNetwork
 from qiskit_machine_learning.utils.loss_functions import Loss
