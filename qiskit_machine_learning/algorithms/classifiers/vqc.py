@@ -39,6 +39,7 @@ class VQC(NeuralNetworkClassifier):
         warm_start: bool = False,
         quantum_instance: QuantumInstance = None,
         input_gradients: bool = False,
+        initial_point: np.ndarray = None,
     ) -> None:
         """
         Args:
@@ -52,6 +53,7 @@ class VQC(NeuralNetworkClassifier):
             input_gradients: Returns whether gradients with respect to input data are computed by
                 this neural network in the ``backward`` method or not. By default such gradients
                 are not computed.
+            initial_point: Initial point for the optimizer to start from.
 
         Raises:
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
@@ -121,6 +123,7 @@ class VQC(NeuralNetworkClassifier):
             one_hot=True,
             optimizer=optimizer,
             warm_start=warm_start,
+            initial_point=initial_point,
         )
 
     @property
