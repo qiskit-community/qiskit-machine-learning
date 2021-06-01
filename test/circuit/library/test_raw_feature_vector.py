@@ -82,12 +82,11 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
             ref.initialize([0.2, 0.4, 0.4, 0.8], ref.qubits)
             self.assertEqual(bound.decompose(), ref)
 
-    # TODO: currently fails due to the way the RawFeatureVector handles parameters
     def test_usage_in_vqc(self):
         """Test using the circuit the a single VQC iteration works."""
 
         # specify quantum instance and random seed
-        algorithm_globals.random_seed = 12345
+        algorithm_globals.random_seed = 123
         quantum_instance = QuantumInstance(
             Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
