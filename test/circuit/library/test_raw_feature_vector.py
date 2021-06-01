@@ -86,7 +86,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         """Test using the circuit the a single VQC iteration works."""
 
         # specify quantum instance and random seed
-        algorithm_globals.random_seed = 123
+        algorithm_globals.random_seed = 12345
         quantum_instance = QuantumInstance(
             Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
