@@ -38,6 +38,7 @@ class VQC(NeuralNetworkClassifier):
         optimizer: Optimizer = None,
         warm_start: bool = False,
         quantum_instance: QuantumInstance = None,
+        initial_point: np.ndarray = None,
     ) -> None:
         """
         Args:
@@ -48,6 +49,7 @@ class VQC(NeuralNetworkClassifier):
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
+            initial_point: Initial point for the optimizer to start from.
 
         Raises:
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
@@ -116,6 +118,7 @@ class VQC(NeuralNetworkClassifier):
             one_hot=True,
             optimizer=optimizer,
             warm_start=warm_start,
+            initial_point=initial_point,
         )
 
     @property

@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Added a parameter ``initial_point`` to the neural network classifiers and regressors.
+    This an array that is passed to an optimizer as an initial point to start from.

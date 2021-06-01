@@ -206,9 +206,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             output_shape=output_shape,
             quantum_instance=quantum_instance,
         )
-
+        # classification may fail sometimes, so let's fix initial point
+        initial_point = np.array([0.5] * ansatz.num_parameters)
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss, one_hot=True)
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, one_hot=True, initial_point=initial_point
+        )
 
         # construct data
         num_samples = 5
