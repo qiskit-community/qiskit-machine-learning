@@ -72,6 +72,8 @@ class TestVQC(QiskitMachineLearningTestCase):
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, reps=1)
+        # fix the initial point
+        initial_point = np.array([0.5] * ansatz.num_parameters)
 
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
         classifier = VQC(
@@ -79,6 +81,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             ansatz=ansatz,
             optimizer=optimizer,
             quantum_instance=quantum_instance,
+            initial_point=initial_point,
         )
 
         # construct data
