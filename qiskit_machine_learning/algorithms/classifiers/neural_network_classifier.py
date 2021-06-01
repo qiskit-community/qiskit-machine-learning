@@ -42,6 +42,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         one_hot: bool = False,
         optimizer: Optimizer = None,
         warm_start: bool = False,
+        initial_point: np.ndarray = None,
     ):
         """
         Args:
@@ -66,11 +67,12 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 This option is ignored in case of a one-dimensional output.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
+            initial_point: Initial point for the optimizer to start from.
 
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        super().__init__(neural_network, loss, optimizer, warm_start)
+        super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
         self._one_hot = one_hot
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
@@ -88,16 +90,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             else:
                 function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
 
-        if self._warm_start and self._fit_result is not None:
-            initial_point = self._fit_result[0]
-        else:
-            initial_point = np.random.rand(self._neural_network.num_weights)
-
         self._fit_result = self._optimizer.optimize(
             self._neural_network.num_weights,
             function.objective,
             function.gradient,
-            initial_point=initial_point,
+            initial_point=self._choose_initial_point(),
         )
         return self
 
