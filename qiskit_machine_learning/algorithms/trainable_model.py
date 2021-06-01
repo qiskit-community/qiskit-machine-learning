@@ -37,6 +37,7 @@ class TrainableModel:
         loss: Union[str, Loss] = "l2",
         optimizer: Optimizer = None,
         warm_start: bool = False,
+        initial_point: np.ndarray = None,
     ):
         """
         Args:
@@ -55,6 +56,7 @@ class TrainableModel:
                 'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
+            initial_point: Initial point for the optimizer to start from.
 
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
@@ -80,6 +82,7 @@ class TrainableModel:
         self._optimizer = optimizer
         self._warm_start = warm_start
         self._fit_result = None
+        self._initial_point = initial_point
 
     @property
     def neural_network(self):
@@ -105,6 +108,16 @@ class TrainableModel:
     def warm_start(self, warm_start: bool) -> None:
         """Sets the warm start flag."""
         self._warm_start = warm_start
+
+    @property
+    def initial_point(self) -> np.ndarray:
+        """Returns current initial point"""
+        return self._initial_point
+
+    @initial_point.setter
+    def initial_point(self, initial_point: np.ndarray) -> None:
+        """Sets the initial point"""
+        self._initial_point = initial_point
 
     @abstractmethod
     # pylint: disable=invalid-name
@@ -158,3 +171,17 @@ class TrainableModel:
             a float score of the model.
         """
         raise NotImplementedError
+
+    def _choose_initial_point(self) -> np.ndarray:
+        """Choose an initial point for the optimizer. If warm start is set and the model is
+        already trained then use a fit result as an initial point. If initial point is passed,
+        then use this value, otherwise pick a random location.
+
+        Returns:
+            An array as an initial point
+        """
+        if self._warm_start and self._fit_result is not None:
+            self._initial_point = self._fit_result[0]
+        elif self._initial_point is None:
+            self._initial_point = np.random.rand(self._neural_network.num_weights)
+        return self._initial_point
