@@ -45,6 +45,7 @@ class NeuralNetwork(ABC):
         num_weights: int,
         sparse: bool,
         output_shape: Union[int, Tuple[int, ...]],
+        input_gradients: bool = False,
     ) -> None:
         """Initializes the Neural Network.
         Args:
@@ -52,6 +53,9 @@ class NeuralNetwork(ABC):
             num_weights: The number of trainable weights.
             sparse: Determines whether the output is a sparse array or not.
             output_shape: The shape of the output.
+            input_gradients: Returns whether gradients with respect to input data are computed by
+                this neural network in the ``backward`` method or not. By default such gradients
+                are not computed.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
@@ -75,7 +79,7 @@ class NeuralNetwork(ABC):
             )
         self._output_shape = output_shape
 
-        self._input_gradients = False
+        self._input_gradients = input_gradients
 
     @property
     def num_inputs(self) -> int:

@@ -61,6 +61,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         output_shape: Union[int, Tuple[int, ...]] = None,
         gradient: Gradient = None,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        input_gradients: bool = False,
     ) -> None:
         """Initializes the Circuit Quantum Neural Network.
 
@@ -82,6 +83,9 @@ class CircuitQNN(SamplingNeuralNetwork):
                 automatically determined in case of sampling==True.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits.
+            input_gradients: Returns whether gradients with respect to input data are computed by
+                this neural network in the ``backward`` method or not. By default such gradients
+                are not computed.
 
         Raises:
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
@@ -94,6 +98,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
+        self._input_gradients = input_gradients
         sparse_ = False if sampling else sparse
 
         # copy circuit and add measurements in case non are given
@@ -114,6 +119,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             sparse_,
             sampling,
             output_shape_,
+            self._input_gradients,
         )
 
         # prepare sampler

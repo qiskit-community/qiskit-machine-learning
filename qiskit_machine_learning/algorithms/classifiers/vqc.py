@@ -38,6 +38,7 @@ class VQC(NeuralNetworkClassifier):
         optimizer: Optimizer = None,
         warm_start: bool = False,
         quantum_instance: QuantumInstance = None,
+        input_gradients: bool = False,
     ) -> None:
         """
         Args:
@@ -48,6 +49,9 @@ class VQC(NeuralNetworkClassifier):
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
+            input_gradients: Returns whether gradients with respect to input data are computed by
+                this neural network in the ``backward`` method or not. By default such gradients
+                are not computed.
 
         Raises:
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
@@ -108,6 +112,7 @@ class VQC(NeuralNetworkClassifier):
             interpret=self._get_interpret(2),
             output_shape=2,
             quantum_instance=quantum_instance,
+            input_gradients=input_gradients,
         )
 
         super().__init__(

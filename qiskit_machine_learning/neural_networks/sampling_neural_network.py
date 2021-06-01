@@ -45,6 +45,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
         sparse: bool,
         sampling: bool,
         output_shape: Union[int, Tuple[int, ...]],
+        input_gradients: bool = False,
     ) -> None:
         """
 
@@ -57,11 +58,14 @@ class SamplingNeuralNetwork(NeuralNetwork):
                 the backward pass returns the probability gradients, while it returns (None, None)
                 in the case of samples.
             output_shape: The shape of the output.
+            input_gradients: Returns whether gradients with respect to input data are computed by
+                this neural network in the ``backward`` method or not. By default such gradients
+                are not computed.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
         self._sampling = sampling
-        super().__init__(num_inputs, num_weights, sparse, output_shape)
+        super().__init__(num_inputs, num_weights, sparse, output_shape, input_gradients)
 
     @property
     def sampling(self) -> bool:
