@@ -105,12 +105,16 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         y = np.array([y, 1 - y]).transpose()
 
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
+        ansatz = RealAmplitudes(feature_map.num_qubits, reps=1)
+        # classification may fail sometimes, so let's fix initial point
+        initial_point = np.array([0.5] * ansatz.num_parameters)
 
         vqc = VQC(
             feature_map=feature_map,
-            ansatz=RealAmplitudes(feature_map.num_qubits, reps=1),
+            ansatz=ansatz,
             optimizer=COBYLA(maxiter=10),
             quantum_instance=quantum_instance,
+            initial_point=initial_point,
         )
 
         vqc.fit(X, y)
