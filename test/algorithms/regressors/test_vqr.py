@@ -21,7 +21,7 @@ from ddt import data, ddt
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import VQR
 
 
@@ -33,19 +33,18 @@ class TestVQR(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.random_seed = 12345
+        algorithm_globals.random_seed = 12345
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("statevector_simulator"),
-            seed_simulator=self.random_seed,
-            seed_transpiler=self.random_seed,
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("qasm_simulator"),
+            Aer.get_backend("aer_simulator"),
             shots=100,
-            seed_simulator=self.random_seed,
-            seed_transpiler=self.random_seed,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
-        np.random.seed(self.random_seed)
 
         num_samples = 20
         eps = 0.2
