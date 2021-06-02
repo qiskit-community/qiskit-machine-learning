@@ -19,7 +19,7 @@ import numpy as np
 
 from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import QSVR
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.kernels import QuantumKernel
@@ -31,13 +31,13 @@ class TestQSVR(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
 
-        self.random_seed = 10598
+        algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(
             BasicAer.get_backend("statevector_simulator"),
             shots=1,
-            seed_simulator=self.random_seed,
-            seed_transpiler=self.random_seed,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)

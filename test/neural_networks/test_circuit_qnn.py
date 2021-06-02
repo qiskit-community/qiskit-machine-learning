@@ -20,10 +20,11 @@ from ddt import ddt, data
 
 import numpy as np
 
-from qiskit.providers.aer import AerSimulator, StatevectorSimulator
+from qiskit import Aer
+from qiskit.providers.aer import AerSimulator
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -36,9 +37,19 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        algorithm_globals.random_seed = 12345
         # specify "run configuration"
-        self.quantum_instance_sv = QuantumInstance(StatevectorSimulator())
-        self.quantum_instance_qasm = QuantumInstance(AerSimulator(shots=100))
+        self.quantum_instance_sv = QuantumInstance(
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+        self.quantum_instance_qasm = QuantumInstance(
+            AerSimulator(),
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
 
         # define feature map and ansatz
         num_qubits = 2
@@ -184,6 +195,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # get configuration
         sparse, sampling, statevector, interpret_id, batch_size = config
+
         # get QNN
         qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
         input_data = np.zeros((batch_size, qnn.num_inputs))
