@@ -21,7 +21,7 @@ from ddt import ddt, data
 from qiskit import Aer
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 
@@ -34,19 +34,18 @@ class TestVQC(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.random_seed = 12345
+        algorithm_globals.random_seed = 12345
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("statevector_simulator"),
-            seed_simulator=self.random_seed,
-            seed_transpiler=self.random_seed,
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("qasm_simulator"),
+            Aer.get_backend("aer_simulator"),
             shots=100,
-            seed_simulator=self.random_seed,
-            seed_transpiler=self.random_seed,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
-        np.random.seed(self.random_seed)
 
     @data(
         # optimizer, quantum instance
@@ -73,6 +72,8 @@ class TestVQC(QiskitMachineLearningTestCase):
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, reps=1)
+        # fix the initial point
+        initial_point = np.array([0.5] * ansatz.num_parameters)
 
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
         classifier = VQC(
@@ -80,14 +81,16 @@ class TestVQC(QiskitMachineLearningTestCase):
             ansatz=ansatz,
             optimizer=optimizer,
             quantum_instance=quantum_instance,
+            initial_point=initial_point,
         )
 
         # construct data
         num_samples = 5
-        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+        # pylint: disable=invalid-name
+        X = algorithm_globals.random.random((num_samples, num_inputs))
         y = 1.0 * (np.sum(X, axis=1) <= 1)
         while len(np.unique(y)) == 1:
-            X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+            X = algorithm_globals.random.random((num_samples, num_inputs))
             y = 1.0 * (np.sum(X, axis=1) <= 1)
         y = np.array([y, 1 - y]).transpose()  # VQC requires one-hot encoded input
 
