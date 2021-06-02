@@ -66,6 +66,7 @@ class VQR(NeuralNetworkRegressor):
             ansatz=ansatz,
             observable=observable,
             quantum_instance=quantum_instance,
+            input_gradients=False,
         )
 
         super().__init__(
