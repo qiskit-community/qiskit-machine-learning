@@ -33,8 +33,8 @@ except ImportError:
         pass
 
 
-from qiskit import QuantumCircuit
-from qiskit.providers.aer import AerSimulator, StatevectorSimulator
+from qiskit import QuantumCircuit, Aer
+from qiskit.providers.aer import AerSimulator
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
 from qiskit.utils import QuantumInstance, algorithm_globals
@@ -51,23 +51,23 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        algorithm_globals.seed = 12345
+        algorithm_globals.random_seed = 12345
         # specify quantum instances
         self.sv_quantum_instance = QuantumInstance(
-            StatevectorSimulator(),
-            seed_simulator=algorithm_globals.seed,
-            seed_transpiler=algorithm_globals.seed,
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
             AerSimulator(),
             shots=100,
-            seed_simulator=algorithm_globals.seed,
-            seed_transpiler=algorithm_globals.seed,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
         )
         try:
             import torch
 
-            torch.manual_seed(algorithm_globals.seed)
+            torch.manual_seed(algorithm_globals.random_seed)
         except ImportError:
             pass
 
