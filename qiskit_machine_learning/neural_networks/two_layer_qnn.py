@@ -51,10 +51,7 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
-            input_gradients: Returns whether gradients with respect to input data are computed by
-                this neural network in the ``backward`` method or not. By default such gradients
-                are not computed.
-
+            input_gradients: Determines whether to compute gradients with respect to input data.
         Raises:
             QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
         """

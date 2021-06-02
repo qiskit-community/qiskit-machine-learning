@@ -83,10 +83,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 automatically determined in case of sampling==True.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits.
-            input_gradients: Returns whether gradients with respect to input data are computed by
-                this neural network in the ``backward`` method or not. By default such gradients
-                are not computed.
-
+            input_gradients: Determines whether to compute gradients with respect to input data.
         Raises:
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """

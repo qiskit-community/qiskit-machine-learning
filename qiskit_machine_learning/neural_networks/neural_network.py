@@ -53,9 +53,7 @@ class NeuralNetwork(ABC):
             num_weights: The number of trainable weights.
             sparse: Determines whether the output is a sparse array or not.
             output_shape: The shape of the output.
-            input_gradients: Returns whether gradients with respect to input data are computed by
-                this neural network in the ``backward`` method or not. By default such gradients
-                are not computed.
+            input_gradients: Determines whether to compute gradients with respect to input data.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """

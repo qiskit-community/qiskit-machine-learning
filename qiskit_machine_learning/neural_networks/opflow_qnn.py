@@ -70,9 +70,7 @@ class OpflowQNN(NeuralNetwork):
             exp_val: The Expected Value converter to be used for the operator.
             gradient: The Gradient converter to be used for the operator's backward pass.
             quantum_instance: The quantum instance to evaluate the network.
-            input_gradients: Returns whether gradients with respect to input data are computed by
-                this neural network in the ``backward`` method or not. By default such gradients
-                are not computed.
+            input_gradients: Determines whether to compute gradients with respect to input data.
         """
         self._input_params = list(input_params) or []
         self._weight_params = list(weight_params) or []

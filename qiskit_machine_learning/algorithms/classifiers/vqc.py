@@ -50,11 +50,8 @@ class VQC(NeuralNetworkClassifier):
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
-            input_gradients: Returns whether gradients with respect to input data are computed by
-                this neural network in the ``backward`` method or not. By default such gradients
-                are not computed.
+            input_gradients: Determines whether to compute gradients with respect to input data.
             initial_point: Initial point for the optimizer to start from.
-
         Raises:
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
                 ansatz to be given.

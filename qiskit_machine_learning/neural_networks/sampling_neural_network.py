@@ -58,9 +58,7 @@ class SamplingNeuralNetwork(NeuralNetwork):
                 the backward pass returns the probability gradients, while it returns (None, None)
                 in the case of samples.
             output_shape: The shape of the output.
-            input_gradients: Returns whether gradients with respect to input data are computed by
-                this neural network in the ``backward`` method or not. By default such gradients
-                are not computed.
+            input_gradients: Determines whether to compute gradients with respect to input data.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
