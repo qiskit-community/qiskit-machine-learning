@@ -72,8 +72,8 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         # construct simple feature map
         param_y = Parameter("y")
-        var_form = QuantumCircuit(num_qubits, name="vf")
-        var_form.ry(param_y, 0)
+        ansatz = QuantumCircuit(num_qubits, name="vf")
+        ansatz.ry(param_y, 0)
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
@@ -87,12 +87,17 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         # construct QNN
         regression_opflow_qnn = TwoLayerQNN(
-            num_qubits, feature_map, var_form, quantum_instance=quantum_instance
+            num_qubits, feature_map, ansatz, quantum_instance=quantum_instance
         )
+
+        initial_point = np.zeros(ansatz.num_parameters)
 
         # construct the regressor from the neural network
         regressor = NeuralNetworkRegressor(
-            neural_network=regression_opflow_qnn, loss="l2", optimizer=optimizer
+            neural_network=regression_opflow_qnn,
+            loss="l2",
+            optimizer=optimizer,
+            initial_point=initial_point,
         )
 
         # fit to data
