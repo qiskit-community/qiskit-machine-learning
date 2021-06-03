@@ -31,7 +31,7 @@ class GenerativeNetwork(ABC):
         super().__init__()
         self._num_parameters = 0
         self._num_qubits = 0
-        self._bounds = list()
+        self._bounds = []
 
     @property
     @abstractmethod
