@@ -78,8 +78,11 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         num_inputs = 2
         ansatz = RealAmplitudes(num_inputs, reps=1)
         qnn = TwoLayerQNN(num_inputs, ansatz=ansatz, quantum_instance=quantum_instance)
+        initial_point = np.array([0.5] * ansatz.num_parameters)
 
-        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+        )
 
         # construct data
         num_samples = 5
@@ -144,9 +147,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             output_shape=output_shape,
             quantum_instance=quantum_instance,
         )
+        initial_point = np.array([0.5] * ansatz.num_parameters)
 
         # construct classifier
-        classifier = NeuralNetworkClassifier(qnn, optimizer=optimizer, loss=loss)
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+        )
 
         # construct data
         num_samples = 5
