@@ -90,8 +90,11 @@ class TestVQR(QiskitMachineLearningTestCase):
             param_y = Parameter("y")
             ansatz = QuantumCircuit(num_qubits, name="vf")
             ansatz.ry(param_y, 0)
+            initial_point = np.zeros(ansatz.num_parameters)
         else:
             ansatz = None
+            # we know it will be RealAmplitudes
+            initial_point = np.zeros(4)
 
         # construct regressor
         regressor = VQR(
@@ -99,6 +102,7 @@ class TestVQR(QiskitMachineLearningTestCase):
             ansatz=ansatz,
             optimizer=optimizer,
             quantum_instance=quantum_instance,
+            initial_point=initial_point,
         )
 
         # fit to data
