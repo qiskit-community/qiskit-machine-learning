@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    The constructor of ``NeuralNetwork``, and all classes that inherit from it, has a new parameter
+    ``input_gradients`` which defaults to False. Previously this parameter could only be set using
+    the setter method. Note that ``TorchConnector`` previously set ``input_gradients`` of the
+    ``NeuralNetwork`` it was instantiated with to ``True``. This is not longer the case. So if you
+    use ``TorchConnector`` and want to compute the gradients w.r.t. the input, make sure you set
+    ``input_gradients=True`` on the ``NeuralNetwork`` before passing it to ``TorchConnector``.

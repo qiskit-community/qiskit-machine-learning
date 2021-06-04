@@ -174,7 +174,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         ansatz.ry(param_y, 0)
 
         # construct QNN with statevector simulator
-        qnn = TwoLayerQNN(1, feature_map, ansatz, quantum_instance=quantum_instance)
+        qnn = TwoLayerQNN(
+            1, feature_map, ansatz, quantum_instance=quantum_instance, input_gradients=True
+        )
         model = TorchConnector(qnn)
 
         test_data = [
@@ -200,7 +202,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             quantum_instance = self.qasm_quantum_instance
 
         # construct QNN
-        qnn = TwoLayerQNN(2, quantum_instance=quantum_instance)
+        qnn = TwoLayerQNN(2, quantum_instance=quantum_instance, input_gradients=True)
         model = TorchConnector(qnn)
 
         test_data = [
@@ -261,6 +263,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             [params_1[0], params_2[0]],
             [params_1[1], params_2[1]],
             quantum_instance=quantum_instance,
+            input_gradients=True,
         )
         model = TorchConnector(qnn)
 
@@ -317,6 +320,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             interpret=interpret,
             output_shape=output_shape,
             quantum_instance=quantum_instance,
+            input_gradients=True,
         )
         model = TorchConnector(qnn)
 
@@ -373,6 +377,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             interpret=interpret,
             output_shape=output_shape,
             quantum_instance=quantum_instance,
+            input_gradients=True,
         )
         model = TorchConnector(qnn)
 
@@ -430,6 +435,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             interpret=interpret,
             output_shape=output_shape,
             quantum_instance=quantum_instance,
+            input_gradients=True,
         )
         model = TorchConnector(qnn)
 
@@ -475,6 +481,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             interpret=interpret,
             output_shape=None,
             quantum_instance=self.qasm_quantum_instance,
+            input_gradients=True,
         )
         model = TorchConnector(qnn)
 
@@ -496,7 +503,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         x = np.random.rand(num_samples, num_inputs)
 
         # set up QNN
-        qnn = TwoLayerQNN(num_qubits=num_inputs, quantum_instance=self.sv_quantum_instance)
+        qnn = TwoLayerQNN(
+            num_qubits=num_inputs,
+            quantum_instance=self.sv_quantum_instance,
+        )
 
         # set up PyTorch module
         initial_weights = np.random.rand(qnn.num_weights)
