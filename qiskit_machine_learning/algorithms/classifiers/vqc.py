@@ -50,7 +50,6 @@ class VQC(NeuralNetworkClassifier):
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-
         Raises:
             QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
                 ansatz to be given.
@@ -110,6 +109,7 @@ class VQC(NeuralNetworkClassifier):
             interpret=self._get_interpret(2),
             output_shape=2,
             quantum_instance=quantum_instance,
+            input_gradients=False,
         )
 
         super().__init__(
