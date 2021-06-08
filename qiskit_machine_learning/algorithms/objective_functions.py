@@ -123,6 +123,9 @@ class BinaryObjectiveFunction(ObjectiveFunction):
 
         num_outputs = self._neural_network.output_shape[0]
         for i in range(num_outputs):
+            # for each output we compute a dot product(matmul) of loss gradient for this output
+            # and weights for this output.
+            # we do this across all samples in one go assuming that num samples >> num outputs.
             grad += loss_gradient[:, i] @ weight_grad[:, i, :]
 
         return grad
@@ -141,6 +144,10 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
         val = 0.0
         num_samples = self._X.shape[0]
         for i in range(num_outputs):
+            # for each output we compute a dot product of probabilities of this output and a loss
+            # vector.
+            # loss vector is a loss of a particular output value(value of i) versus true labels.
+            # we do this across all samples.
             val += probs[:, i] @ self._loss(np.full(num_samples, i), self._y)
 
         return val
@@ -152,6 +159,8 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
         num_samples = self._X.shape[0]
         num_outputs = self._neural_network.output_shape[0]
         for i in range(num_outputs):
+            # similar to what is in the objective, but we compute a matrix multiplication of
+            # weight probability gradients and a loss vector.
             grad += weight_prob_grad[:, i, :].T @ self._loss(np.full(num_samples, i), self._y)
 
         return grad
@@ -177,6 +186,8 @@ class OneHotObjectiveFunction(ObjectiveFunction):
         num_outputs = self._neural_network.output_shape[0]
         loss_gradient = self._loss.gradient(y_predict, self._y)
         for i in range(num_outputs):
+            # a dot product(matmul) of loss gradient and weight probability gradient across all
+            # samples for an outout.
             grad += loss_gradient[:, i] @ weight_prob_grad[:, i, :]
 
         return grad
