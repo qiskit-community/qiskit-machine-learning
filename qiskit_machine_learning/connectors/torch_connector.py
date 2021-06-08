@@ -223,12 +223,12 @@ class TorchConnector(Module):
             self._weights.data = Tensor(initial_weights)
 
     @property
-    def neural_network(self):
+    def neural_network(self) -> NeuralNetwork:
         """Returns the underlying neural network."""
         return self._neural_network
 
     @property
-    def weights(self):
+    def weights(self) -> Tensor:
         """Returns the weights of the underlying network."""
         warnings.warn(
             "The 'weights' property is deprecated as of 0.2.0 "
@@ -240,12 +240,12 @@ class TorchConnector(Module):
         return self._weights
 
     @property
-    def weight(self):
+    def weight(self) -> Tensor:
         """Returns the weights of the underlying network."""
         return self._weights
 
     @property
-    def sparse(self):
+    def sparse(self) -> Optional[bool]:
         """Returns whether this connector returns sparse output or not."""
         return self._sparse
 
