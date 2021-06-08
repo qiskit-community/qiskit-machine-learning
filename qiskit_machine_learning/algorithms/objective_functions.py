@@ -187,7 +187,7 @@ class OneHotObjectiveFunction(ObjectiveFunction):
         loss_gradient = self._loss.gradient(y_predict, self._y)
         for i in range(num_outputs):
             # a dot product(matmul) of loss gradient and weight probability gradient across all
-            # samples for an outout.
+            # samples for an output.
             grad += loss_gradient[:, i] @ weight_prob_grad[:, i, :]
 
         return grad
