@@ -38,6 +38,7 @@ class TwoLayerQNN(OpflowQNN):
         observable: Optional[OperatorBase] = None,
         exp_val: Optional[ExpectationBase] = None,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        input_gradients: bool = False,
     ):
         r"""Initializes the Two Layer Quantum Neural Network.
 
@@ -50,7 +51,7 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
-
+            input_gradients: Determines whether to compute gradients with respect to input data.
         Raises:
             QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
         """
@@ -112,7 +113,13 @@ class TwoLayerQNN(OpflowQNN):
         # combine all to operator
         operator = ~StateFn(self.observable) @ StateFn(self._circuit)
 
-        super().__init__(operator, input_params, weight_params, quantum_instance=quantum_instance)
+        super().__init__(
+            operator,
+            input_params,
+            weight_params,
+            quantum_instance=quantum_instance,
+            input_gradients=input_gradients,
+        )
 
     @property
     def feature_map(self) -> QuantumCircuit:

@@ -59,6 +59,7 @@ class OpflowQNN(NeuralNetwork):
         exp_val: Optional[ExpectationBase] = None,
         gradient: Optional[Gradient] = None,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        input_gradients: bool = False,
     ):
         """Initializes the Opflow Quantum Neural Network.
 
@@ -69,6 +70,7 @@ class OpflowQNN(NeuralNetwork):
             exp_val: The Expected Value converter to be used for the operator.
             gradient: The Gradient converter to be used for the operator's backward pass.
             quantum_instance: The quantum instance to evaluate the network.
+            input_gradients: Determines whether to compute gradients with respect to input data.
         """
         self._input_params = list(input_params) or []
         self._weight_params = list(weight_params) or []
@@ -90,7 +92,7 @@ class OpflowQNN(NeuralNetwork):
         self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
         self._gradient = gradient
-        self._input_gradients = False
+        self._input_gradients = input_gradients
         self._construct_gradient_operator()
 
         output_shape = self._get_output_shape_from_op(operator)
@@ -99,6 +101,7 @@ class OpflowQNN(NeuralNetwork):
             len(self._weight_params),
             sparse=False,
             output_shape=output_shape,
+            input_gradients=input_gradients,
         )
 
     def _construct_gradient_operator(self):

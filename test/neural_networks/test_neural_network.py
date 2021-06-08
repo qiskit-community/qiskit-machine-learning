@@ -134,6 +134,9 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
         network.input_gradients = True
         self.assertTrue(network.input_gradients)
 
+        network = _NeuralNetwork(1, 1, True, 1, True)
+        self.assertTrue(network.input_gradients)
+
 
 if __name__ == "__main__":
     unittest.main()

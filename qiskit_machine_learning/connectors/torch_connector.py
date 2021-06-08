@@ -215,9 +215,6 @@ class TorchConnector(Module):
         super().__init__()
         self._neural_network = neural_network
 
-        # turn on input gradients if they are off by default
-        self._neural_network.input_gradients = True
-
         self._sparse = sparse
         self._weights = TorchParam(Tensor(neural_network.num_weights))
         if initial_weights is None:
