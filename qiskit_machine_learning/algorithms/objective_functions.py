@@ -126,10 +126,12 @@ class BinaryObjectiveFunction(ObjectiveFunction):
         loss_gradient = self._loss.gradient(output, self._y.reshape(-1, 1))
 
         num_outputs = self._neural_network.output_shape[0]
+        # we iterate over outputs, this should be a reasonable number
+        # comparing to a number of samples.
         for i in range(num_outputs):
             # for each output we compute a dot product(matmul) of loss gradient for this output
             # and weights for this output.
-            # we do this across all samples in one go assuming that num samples >> num outputs.
+            # we do this across all samples in one go.
             grad += loss_gradient[:, i] @ weight_grad[:, i, :]
 
         return grad
