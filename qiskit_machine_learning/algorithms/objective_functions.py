@@ -108,17 +108,21 @@ class BinaryObjectiveFunction(ObjectiveFunction):
     e.g. classes of ``-1`` and ``+1``."""
 
     def objective(self, weights: np.ndarray) -> float:
+        # predict is of shape (N, 1), where N is a number of samples
         predict = self._neural_network_forward(weights)
         target = np.array(self._y).reshape(predict.shape)
         value = np.sum(self._loss(predict, target))
         return value
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
+        # output is of shape (N, 1), where N is a number of samples
         output = self._neural_network_forward(weights)
+        # weight grad is of shape (N, 1, num_weights)
         _, weight_grad = self._neural_network.backward(self._X, weights)
 
         grad = np.zeros((1, self._neural_network.num_weights))
         # we reshape _y since the output has the shape (N, 1) and _y has (N,)
+        # loss_gradient is of shape (N, 1)
         loss_gradient = self._loss.gradient(output, self._y.reshape(-1, 1))
 
         num_outputs = self._neural_network.output_shape[0]
@@ -138,6 +142,7 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
     """
 
     def objective(self, weights: np.ndarray) -> float:
+        # probabilities is of shape (N, num_outputs)
         probs = self._neural_network_forward(weights)
 
         num_outputs = self._neural_network.output_shape[0]
@@ -153,6 +158,7 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
         return val
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
+        # weight probability gradient is of shape (N, num_outputs, num_weights)
         _, weight_prob_grad = self._neural_network.backward(self._X, weights)
 
         grad = np.zeros((1, self._neural_network.num_weights))
@@ -173,17 +179,21 @@ class OneHotObjectiveFunction(ObjectiveFunction):
     """
 
     def objective(self, weights: np.ndarray) -> float:
+        # probabilities is of shape (N, num_outputs)
         probs = self._neural_network_forward(weights)
         val = np.sum(self._loss(probs, self._y))
 
         return val
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
+        # predict is of shape (N, num_outputs)
         y_predict = self._neural_network_forward(weights)
+        # weight probability gradient is of shape (N, num_outputs, num_weights)
         _, weight_prob_grad = self._neural_network.backward(self._X, weights)
 
         grad = np.zeros(self._neural_network.num_weights)
         num_outputs = self._neural_network.output_shape[0]
+        # loss gradient is of shape (N, num_output)
         loss_gradient = self._loss.gradient(y_predict, self._y)
         for i in range(num_outputs):
             # a dot product(matmul) of loss gradient and weight probability gradient across all
