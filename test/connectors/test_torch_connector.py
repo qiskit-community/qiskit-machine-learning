@@ -631,6 +631,12 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             np.linalg.norm(sum_of_individual_gradients - batch_gradients), 0.0, places=4
         )
 
+        self.assertAlmostEqual(
+            sum_of_individual_losses.detach().numpy(),
+            batch_loss.detach().numpy(),
+            places=4,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
