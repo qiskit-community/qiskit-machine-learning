@@ -169,6 +169,11 @@ class TorchConnector(Module):
                     input_grad = input_grad.to(grad_output.dtype)
                 else:
                     input_grad = Tensor(input_grad).to(grad_output.dtype)
+
+                # Takes gradients from previous layer in backward pass (i.e. later layer in forward
+                # pass) j for each observation i in the batch. Multiplies this with the gradient
+                # from this point on backwards with respect to each input k. Sums over all i and
+                # j to get total gradient of output w.r.t. each input k.
                 input_grad = einsum("ij,ijk->k", grad_output, input_grad)
 
             if weights_grad is not None:
@@ -184,6 +189,11 @@ class TorchConnector(Module):
                     weights_grad = weights_grad.to(grad_output.dtype)
                 else:
                     weights_grad = Tensor(weights_grad).to(grad_output.dtype)
+
+                # Takes gradients from previous layer in backward pass (i.e. later layer in forward
+                # pass) j for each observation i in the batch. Multiplies this with the gradient
+                # from this point on backwards with respect to each parameter k. Sums over all i and
+                # j to get total gradient of output w.r.t. each parameter k.
                 weights_grad = einsum("ij,ijk->k", grad_output, weights_grad)
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
