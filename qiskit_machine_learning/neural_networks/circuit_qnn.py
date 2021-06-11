@@ -87,29 +87,18 @@ class CircuitQNN(SamplingNeuralNetwork):
         Raises:
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
         """
+        # copy circuit and add measurements in case non are given
+        # TODO: need to be able to handle partial measurements! (partial trace...)
+        self._circuit = circuit.copy()
 
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
-            quantum_instance = QuantumInstance(quantum_instance)
-        self._quantum_instance = quantum_instance
-        if quantum_instance is not None:
-            self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching="all")
-        else:
-            self._sampler = None
+        # call quantum instance setter
+        self.quantum_instance = quantum_instance
 
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
         self._input_gradients = input_gradients
         sparse_ = False if sampling else sparse
-
-        # copy circuit and add measurements in case non are given
-        # TODO: need to be able to handle partial measurements! (partial trace...)
-        self._circuit = circuit.copy()
-        if self._quantum_instance is not None and self._quantum_instance.is_statevector:
-            if self._circuit.num_clbits > 0:
-                self._circuit.remove_final_measurements()
-        elif self._circuit.num_clbits == 0:
-            self._circuit.measure_all()
 
         output_shape_ = self._compute_output_shape(interpret, output_shape, sampling)
 
@@ -200,13 +189,15 @@ class CircuitQNN(SamplingNeuralNetwork):
         """
         self._quantum_instance = quantum_instance
         if quantum_instance is not None:
+            if isinstance(quantum_instance, (BaseBackend, Backend)):
+                quantum_instance = QuantumInstance(quantum_instance)
             self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching="all")
             # add measurements in case non are given
             if quantum_instance.is_statevector:
                 if len(self._circuit.clbits) > 0:
                     self._circuit.remove_final_measurements()
-                elif len(self._circuit.clbits) == 0:
-                    self._circuit.measure_all()
+            elif len(self._circuit.clbits) == 0:
+                self._circuit.measure_all()
         else:
             self._sampler = None
 
