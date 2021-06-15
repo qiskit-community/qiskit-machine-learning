@@ -115,7 +115,12 @@ class BinaryObjectiveFunction(ObjectiveFunction):
         return value
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
-        # output is of shape (N, 1), where N is a number of samples
+        # check that we have supported output shape
+        num_outputs = self._neural_network.output_shape[0]
+        if num_outputs != 1:
+            raise ValueError(f"Number of outputs is expected to be 1, got {num_outputs}")
+
+        # output must be of shape (N, 1), where N is a number of samples
         output = self._neural_network_forward(weights)
         # weight grad is of shape (N, 1, num_weights)
         _, weight_grad = self._neural_network.backward(self._X, weights)
@@ -125,14 +130,9 @@ class BinaryObjectiveFunction(ObjectiveFunction):
         # loss_gradient is of shape (N, 1)
         loss_gradient = self._loss.gradient(output, self._y.reshape(-1, 1))
 
-        num_outputs = self._neural_network.output_shape[0]
-        # we iterate over outputs, this should be a reasonable number
-        # comparing to a number of samples.
-        for i in range(num_outputs):
-            # for each output we compute a dot product(matmul) of loss gradient for this output
-            # and weights for this output.
-            # we do this across all samples in one go.
-            grad += loss_gradient[:, i] @ weight_grad[:, i, :]
+        # for the output we compute a dot product(matmul) of loss gradient for this output
+        # and weights for this output.
+        grad += loss_gradient[:, 0] @ weight_grad[:, 0, :]
 
         return grad
 
