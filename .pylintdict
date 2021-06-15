@@ -18,6 +18,7 @@ cbit
 chuang
 clbit
 clbits
+codec
 config
 contravariance
 creg
@@ -140,6 +141,7 @@ softmax
 sparsearray
 statevector
 statevectors
+stdlib
 stdout
 str
 subcircuits

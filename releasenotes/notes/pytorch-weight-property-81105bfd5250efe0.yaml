@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    The ``weights`` property in ``TorchConnector`` is deprecated in favor of
+    the ``weight`` property which is PyTorch compatible. By default, PyTorch
+    layers expose ``weight`` properties to get access to the computed weights.
