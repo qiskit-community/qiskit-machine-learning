@@ -13,9 +13,8 @@
 """ Loss utilities """
 
 from abc import ABC, abstractmethod
-from typing import Union, Tuple
-import numpy as np
 
+import numpy as np
 
 from ...exceptions import QiskitMachineLearningError
 
@@ -23,7 +22,6 @@ from ...exceptions import QiskitMachineLearningError
 class Loss(ABC):
     """
     Abstract base class for computing Loss.
-
     """
 
     def __call__(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
@@ -52,26 +50,22 @@ class Loss(ABC):
         raise NotImplementedError
 
     @staticmethod
-    def _validate(predict: np.ndarray, target: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def _validate_shapes(predict: np.ndarray, target: np.ndarray) -> None:
         """
+        Validates that shapes of both parameters are identical.
+
         Args:
             predict: an array of predicted values using the model
             target: an array of the true values
-
-        Returns:
-            A tuple of predicted values and true values converted to numpy arrays.
 
         Raises:
             QiskitMachineLearningError: shapes of predict and target do not match.
         """
 
-        predict = np.asarray(predict)
-        target = np.asarray(target)
         if predict.shape != target.shape:
             raise QiskitMachineLearningError(
                 f"Shapes don't match, predict: {predict.shape}, target: {target.shape}!"
             )
-        return predict, target
 
     @abstractmethod
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
@@ -95,29 +89,30 @@ class Loss(ABC):
 
 
 class L1Loss(Loss):
-    """
+    r"""
     This class computes the L1 loss for each sample as:
 
     .. math::
-        \text{L1Loss}(predict, target) = \sum_{i=0}^{N_{\text{elements}}} \left| predict_i - target_i \right|.
+        \text{L1Loss}(predict, target) = \sum_{i=0}^{N_{\text{elements}}} \left| predict_i -
+        target_i \right|.
     """
 
-    def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        predict, target = self._validate(predict, target)
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        self._validate_shapes(predict, target)
 
         if len(predict.shape) <= 1:
             return np.abs(predict - target)
         else:
             return np.linalg.norm(predict - target, ord=1, axis=tuple(range(1, len(predict.shape))))
 
-    def gradient(self, predict, target):
-        predict, target = self._validate(predict, target)
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        self._validate_shapes(predict, target)
 
         return np.sign(predict - target)
 
 
 class L2Loss(Loss):
-    """
+    r"""
     This class computes the L2 loss for each sample as:
 
     .. math::
@@ -125,30 +120,31 @@ class L2Loss(Loss):
 
     """
 
-    def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        predict, target = self._validate(predict, target)
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        self._validate_shapes(predict, target)
 
         if len(predict.shape) <= 1:
             return (predict - target) ** 2
         else:
             return np.linalg.norm(predict - target, axis=tuple(range(1, len(predict.shape)))) ** 2
 
-    def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        predict, target = self._validate(predict, target)
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        self._validate_shapes(predict, target)
 
         return 2 * (predict - target)
 
 
 class CrossEntropyLoss(Loss):
-    """
-    This class computes the cross entropy loss for each sample as: -sum target * log(predict)
+    r"""
+    This class computes the cross entropy loss for each sample as:
 
     .. math::
-        \text{CrossEntropyLoss}(predict, target) = -\sum_{i=0}^{N_{\text{classes}}} target_i * log(predict_i).
+        \text{CrossEntropyLoss}(predict, target) = -\sum_{i=0}^{N_{\text{classes}}}
+        target_i * log(predict_i).
     """
 
-    def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        predict, target = self._validate(predict, target)
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        self._validate_shapes(predict, target)
         if len(predict.shape) == 1:
             predict = predict.reshape(1, -1)
             target = target.reshape(1, -1)
@@ -160,10 +156,10 @@ class CrossEntropyLoss(Loss):
 
         return val
 
-    def gradient(self, predict, target):
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
         """Assume softmax is used, and target vector may or may not be one-hot encoding"""
 
-        predict, target = self._validate(predict, target)
+        self._validate_shapes(predict, target)
         if len(predict.shape) == 1:
             predict = predict.reshape(1, -1)
             target = target.reshape(1, -1)
@@ -177,13 +173,11 @@ class CrossEntropyLoss(Loss):
 
 class CrossEntropySigmoidLoss(Loss):
     """
-    This class computes the cross entropy sigmoid loss.
-
-    This is used for binary classification.
+    This class computes the cross entropy sigmoid loss and should be used for binary classification.
     """
 
-    def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        predict, target = self._validate(predict, target)
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        self._validate_shapes(predict, target)
 
         if len(set(target)) != 2:
             raise QiskitMachineLearningError(
@@ -193,8 +187,8 @@ class CrossEntropySigmoidLoss(Loss):
         x = CrossEntropyLoss()
         return 1.0 / (1.0 + np.exp(-x.evaluate(predict, target)))
 
-    def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        predict, target = self._validate(predict, target)
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        self._validate_shapes(predict, target)
 
         return target * (1.0 / (1.0 + np.exp(-predict)) - 1) + (1 - target) * (
             1.0 / (1.0 + np.exp(-predict))
