@@ -26,57 +26,40 @@ class Loss(ABC):
 
     """
 
-    def __call__(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+    def __call__(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
         """
-        Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
-
-        Returns:
-            a float value of the loss function
+        This method calls the ``evaluate`` method. This is a convenient method to compute loss.
         """
         return self.evaluate(predict, target)
 
     @abstractmethod
-    def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
+    def evaluate(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
         """
-        An abstract method for evaluating the loss function
+        An abstract method for evaluating the loss function. Inputs are expected in a shape
+        of ``(N, *)``. Where ``N`` is a number of samples. Loss is computed for each sample
+        individually.
 
         Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
+            predict: an array of predicted values using the model.
+            target: an array of the true values.
+
+        Returns:
+            An array with values of the loss function of the shape ``(N, 1)``.
 
         Raises:
             QiskitMachineLearningError: shapes of predict and target do not match
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def gradient(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
-        """
-        An abstract method for computing the gradient
-
-        Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
-
-        Raises:
-            QiskitMachineLearningError: shapes of predict and target do not match.
-        """
-        raise NotImplementedError
-
     @staticmethod
-    def _validate(
-        predict: Union[int, np.ndarray], target: Union[int, np.ndarray]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _validate(predict: np.ndarray, target: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Args:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
+            predict: an array of predicted values using the model
+            target: an array of the true values
 
         Returns:
-            predict: a numpy array of predicted values using the model
-            target: a numpy array of the true values
+            A tuple of predicted values and true values converted to numpy arrays.
 
         Raises:
             QiskitMachineLearningError: shapes of predict and target do not match.
@@ -90,11 +73,33 @@ class Loss(ABC):
             )
         return predict, target
 
+    @abstractmethod
+    def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
+        """
+        An abstract method for computing the gradient. Inputs are expected in a shape
+        of ``(N, *)``. Where ``N`` is a number of samples. Gradient is computed for each sample
+        individually.
+
+        Args:
+            predict: an array of predicted values using the model.
+            target: an array of the true values.
+
+        Returns:
+            An array with gradient values of the shape ``(N, *)``. The output shape depends on
+            the loss function.
+
+        Raises:
+            QiskitMachineLearningError: shapes of predict and target do not match.
+        """
+        raise NotImplementedError
+
 
 class L1Loss(Loss):
     """
-    L1Loss:
-    This class computes the L1 loss: sum |target - predict|
+    This class computes the L1 loss for each sample as:
+
+    .. math::
+        \text{L1Loss}(predict, target) = \sum_{i=0}^{N_{\text{elements}}} \left| predict_i - target_i \right|.
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
@@ -121,8 +126,10 @@ class L1Loss(Loss):
 
 class L2Loss(Loss):
     """
-    L2Loss:
-    This class computes the L2 loss: sum (target - predict)^2
+    This class computes the L2 loss for each sample as:
+
+    .. math::
+        \text{L2Loss}(predict, target) = \sum_{i=0}^{N_{\text{elements}}} (predict_i - target_i)^2.
 
     """
 
@@ -148,8 +155,10 @@ class L2Loss(Loss):
 
 class CrossEntropyLoss(Loss):
     """
-    CrossEntropyLoss:
-    This class computes the cross entropy loss: -sum target * log(predict)
+    This class computes the cross entropy loss for each sample as: -sum target * log(predict)
+
+    .. math::
+        \text{CrossEntropyLoss}(predict, target) = -\sum_{i=0}^{N_{\text{classes}}} target_i * log(predict_i).
     """
 
     def evaluate(self, predict: Union[int, np.ndarray], target: Union[int, np.ndarray]) -> float:
@@ -169,7 +178,6 @@ class CrossEntropyLoss(Loss):
 
 class CrossEntropySigmoidLoss(Loss):
     """
-    CrossEntropySigmoidLoss:
     This class computes the cross entropy sigmoid loss.
 
     This is used for binary classification.
