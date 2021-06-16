@@ -66,6 +66,7 @@ kwargs
 langle
 macos
 makefile
+matmul
 maxiter
 mcrx
 mcry
@@ -143,6 +144,7 @@ statevector
 statevectors
 stdlib
 stdout
+stdlib
 str
 subcircuits
 submodules
