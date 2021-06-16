@@ -27,10 +27,8 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
 
     @data(
         # input shape, loss shape
-        (None, (), "l1"),
         ((5,), (5,), "l1"),
         ((5, 2), (5,), "l1"),
-        (None, (), "l2"),
         ((5,), (5,), "l2"),
         ((5, 2), (5,), "l2"),
     )
