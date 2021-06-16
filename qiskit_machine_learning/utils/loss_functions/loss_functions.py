@@ -93,6 +93,7 @@ class L1Loss(Loss):
     This class computes the L1 loss for each sample as:
 
     .. math::
+
         \text{L1Loss}(predict, target) = \sum_{i=0}^{N_{\text{elements}}} \left| predict_i -
         target_i \right|.
     """
@@ -116,6 +117,7 @@ class L2Loss(Loss):
     This class computes the L2 loss for each sample as:
 
     .. math::
+
         \text{L2Loss}(predict, target) = \sum_{i=0}^{N_{\text{elements}}} (predict_i - target_i)^2.
 
     """
@@ -139,6 +141,7 @@ class CrossEntropyLoss(Loss):
     This class computes the cross entropy loss for each sample as:
 
     .. math::
+
         \text{CrossEntropyLoss}(predict, target) = -\sum_{i=0}^{N_{\text{classes}}}
         target_i * log(predict_i).
     """
