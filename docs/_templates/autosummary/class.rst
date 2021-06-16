@@ -8,6 +8,7 @@
 .. currentmodule:: {{ module }}
 
 .. autoclass:: {{ objname }}
+   :show-inheritance:
    :no-members:
    :no-inherited-members:
    :no-special-members:
@@ -20,9 +21,11 @@
    .. autosummary::
       :toctree: ../stubs/
    {% for item in all_attributes %}
-      {%- if not item.startswith('_') %}
-      {{ name }}.{{ item }}
-      {%- endif -%}
+      {%- if item not in inherited_members %}
+        {%- if not item.startswith('_') %}
+            ~{{ name }}.{{ item }}
+        {%- endif -%}
+      {%- endif %}
    {%- endfor %}
    {% endif %}
    {% endblock %}
@@ -35,14 +38,11 @@
    .. autosummary::
       :toctree: ../stubs/
    {% for item in all_methods %}
-      {%- if not item.startswith('_') or item in ['__call__', '__mul__', '__getitem__', '__len__'] %}
-      {{ name }}.{{ item }}
-      {%- endif -%}
-   {%- endfor %}
-   {% for item in inherited_members %}
-      {%- if item in ['__call__', '__mul__', '__getitem__', '__len__'] %}
-      {{ name }}.{{ item }}
-      {%- endif -%}
+      {%- if item not in inherited_members %}
+        {%- if not item.startswith('_') or item in ['__call__', '__mul__', '__getitem__', '__len__'] %}
+            ~{{ name }}.{{ item }}
+        {%- endif -%}
+      {%- endif %}
    {%- endfor %}
 
    {% endif %}

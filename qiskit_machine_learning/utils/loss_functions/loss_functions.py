@@ -38,11 +38,11 @@ class Loss(ABC):
 
     @staticmethod
     def _validate(predict, target):
-        predict = np.array(predict)
-        target = np.array(target)
+        predict = np.asarray(predict)
+        target = np.asarray(target)
         if predict.shape != target.shape:
             raise QiskitMachineLearningError(
-                f"Shapes don't match, predict: {predict.shape}, " f"target: {target.shape}!"
+                f"Shapes don't match, predict: {predict.shape}, target: {target.shape}!"
             )
         return predict, target
 
@@ -53,14 +53,10 @@ class L1Loss(Loss):
     def evaluate(self, predict, target):
         predict, target = self._validate(predict, target)
 
-        if len(predict.shape) == 0:
+        if len(predict.shape) <= 1:
             return np.abs(predict - target)
-        elif len(predict.shape) <= 1:
-            return np.linalg.norm(predict - target, ord=1)
-        elif len(predict.shape) > 1:
-            return np.linalg.norm(predict - target, ord=1, axis=tuple(range(1, len(predict.shape))))
         else:
-            raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
+            return np.linalg.norm(predict - target, ord=1, axis=tuple(range(1, len(predict.shape))))
 
     def gradient(self, predict, target):
         predict, target = self._validate(predict, target)
@@ -75,11 +71,9 @@ class L2Loss(Loss):
         predict, target = self._validate(predict, target)
 
         if len(predict.shape) <= 1:
-            return np.linalg.norm(predict - target) ** 2
-        elif len(predict.shape) > 1:
-            return np.linalg.norm(predict - target, axis=len(predict.shape) - 1) ** 2
+            return (predict - target) ** 2
         else:
-            raise QiskitMachineLearningError(f"Invalid shape {predict.shape}!")
+            return np.linalg.norm(predict - target, axis=tuple(range(1, len(predict.shape)))) ** 2
 
     def gradient(self, predict, target):
         predict, target = self._validate(predict, target)
@@ -92,14 +86,30 @@ class CrossEntropyLoss(Loss):
 
     def evaluate(self, predict, target):
         predict, target = self._validate(predict, target)
+        if len(predict.shape) == 1:
+            predict = predict.reshape(1, -1)
+            target = target.reshape(1, -1)
 
-        return -np.sum([target[i] * np.log2(predict[i]) for i in range(len(predict))])
+        # multiply target and log(predict) matrices row by row and sum up each row
+        # into a single float, so the output is of shape(N,), where N number or samples.
+        # then reshape
+        val = -np.einsum("ij,ij->i", target, np.log2(predict)).reshape(-1, 1)
+
+        return val
 
     def gradient(self, predict, target):
         """Assume softmax is used, and target vector may or may not be one-hot encoding"""
-        predict, target = self._validate(predict, target)
 
-        return predict * np.sum(target) - target
+        predict, target = self._validate(predict, target)
+        if len(predict.shape) == 1:
+            predict = predict.reshape(1, -1)
+            target = target.reshape(1, -1)
+
+        # sum up target along rows, then multiply predict by this sum element wise,
+        # then subtract target
+        grad = np.einsum("ij,i->ij", predict, np.sum(target, axis=1)) - target
+
+        return grad
 
 
 class CrossEntropySigmoidLoss(Loss):
