@@ -111,8 +111,8 @@ class BinaryObjectiveFunction(ObjectiveFunction):
         # predict is of shape (N, 1), where N is a number of samples
         predict = self._neural_network_forward(weights)
         target = np.array(self._y).reshape(predict.shape)
-        value = np.sum(self._loss(predict, target))
-        return value
+        # float(...) is for mypy compliance
+        return float(np.sum(self._loss(predict, target)))
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
         # check that we have supported output shape
@@ -125,14 +125,15 @@ class BinaryObjectiveFunction(ObjectiveFunction):
         # weight grad is of shape (N, 1, num_weights)
         _, weight_grad = self._neural_network.backward(self._X, weights)
 
-        grad = np.zeros((1, self._neural_network.num_weights))
         # we reshape _y since the output has the shape (N, 1) and _y has (N,)
         # loss_gradient is of shape (N, 1)
         loss_gradient = self._loss.gradient(output, self._y.reshape(-1, 1))
 
         # for the output we compute a dot product(matmul) of loss gradient for this output
         # and weights for this output.
-        grad += loss_gradient[:, 0] @ weight_grad[:, 0, :]
+        grad = loss_gradient[:, 0] @ weight_grad[:, 0, :]
+        # we keep the shape of (1, num_weights)
+        grad = grad.reshape(1, -1)
 
         return grad
 
@@ -183,9 +184,8 @@ class OneHotObjectiveFunction(ObjectiveFunction):
     def objective(self, weights: np.ndarray) -> float:
         # probabilities is of shape (N, num_outputs)
         probs = self._neural_network_forward(weights)
-        val = np.sum(self._loss(probs, self._y))
-
-        return val
+        # float(...) is for mypy compliance
+        return float(np.sum(self._loss(probs, self._y)))
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
         # predict is of shape (N, num_outputs)

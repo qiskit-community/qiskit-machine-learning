@@ -11,9 +11,8 @@
 # that they have been altered from the originals.
 
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
-import warnings
+
 from typing import Tuple, Any, Optional, cast, Union
-import logging
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
 
@@ -26,8 +25,7 @@ except ImportError:
 
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
-
-logger = logging.getLogger(__name__)
+from ..deprecation import deprecate_property
 
 try:
     from torch import Tensor, sparse_coo_tensor, einsum
@@ -233,17 +231,14 @@ class TorchConnector(Module):
         """Returns the underlying neural network."""
         return self._neural_network
 
-    @property
+    # Bug in mypy, if property decorator is used with another one
+    # https://github.com/python/mypy/issues/1362
+
+    @property  # type: ignore
+    @deprecate_property("0.2.0", new_name="weight")
     def weights(self) -> Tensor:
         """Returns the weights of the underlying network."""
-        warnings.warn(
-            "The 'weights' property is deprecated as of 0.2.0 "
-            "and will be removed no sooner than 3 months after the release. "
-            "You should use the 'weight' property instead.",
-            DeprecationWarning,
-        )
-
-        return self._weights
+        return self.weight
 
     @property
     def weight(self) -> Tensor:

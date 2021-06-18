@@ -19,13 +19,10 @@ https://towardsdatascience.com/lets-code-a-neural-network-in-plain-numpy-ae7e744
 
 from typing import Dict, Any
 import os
-import logging
 import numpy as np
 from qiskit.utils import algorithm_globals
 from qiskit.algorithms.optimizers import ADAM
 from .discriminative_network import DiscriminativeNetwork
-
-logger = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name

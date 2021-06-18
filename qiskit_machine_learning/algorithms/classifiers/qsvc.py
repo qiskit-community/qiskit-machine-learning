@@ -11,15 +11,12 @@
 # that they have been altered from the originals.
 
 """Quantum Support Vector Classifier"""
-import logging
 
 from typing import Optional
 
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
-
-logger = logging.getLogger(__name__)
 
 
 class QSVC(SVC):
