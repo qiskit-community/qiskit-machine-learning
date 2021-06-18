@@ -13,6 +13,7 @@
 """Test Torch Connector."""
 
 import unittest
+import warnings
 from typing import List
 
 from test import QiskitMachineLearningTestCase, requires_extra_library
@@ -189,6 +190,27 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             Tensor([[1], [2]]),
             Tensor([[[1], [2]], [[3], [4]]]),
         ]
+
+        # Test weights property deprecation
+        if q_i == "sv":
+            # emit deprecation the first time it is used
+            with warnings.catch_warnings(record=True) as c_m:
+                warnings.simplefilter("always")
+                _ = model.weights
+                msg = str(c_m[0].message)
+                msg_ref = (
+                    "The weights property is deprecated as of version 0.2.0 and "
+                    "will be removed no sooner than 3 months after the release. "
+                    "Instead use the weight property."
+                )
+                self.assertEqual(msg, msg_ref)
+                self.assertTrue("test_torch_connector.py" in c_m[0].filename, c_m[0].filename)
+
+            # trying again should not emit deprecation
+            with warnings.catch_warnings(record=True) as c_m:
+                warnings.simplefilter("always")
+                _ = model.weights
+                self.assertListEqual(c_m, [])
 
         # test model
         self.validate_output_shape(model, test_data)
@@ -517,10 +539,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         model = TorchConnector(qnn, initial_weights=initial_weights)
 
         # test single gradient
-        w = model.weights.detach().numpy()
+        w = model.weight.detach().numpy()
         res_qnn = qnn.forward(x[0, :], w)
 
-        # construct finite difference gradient for weights
+        # construct finite difference gradient for weight
         eps = 1e-4
         grad = np.zeros(w.shape)
         for k in range(len(w)):
@@ -541,7 +563,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             np.linalg.norm(res_model.detach().numpy() - res_qnn[0]), 0.0, places=4
         )
         res_model.backward()
-        grad_model = model.weights.grad
+        grad_model = model.weight.grad
         self.assertAlmostEqual(
             np.linalg.norm(grad_model.detach().numpy() - grad_qnn), 0.0, places=4
         )
@@ -567,7 +589,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         batch_res_model = sum(model(Tensor(x)))
         batch_res_model.backward()
         self.assertAlmostEqual(
-            np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]),
+            np.linalg.norm(model.weight.grad.numpy() - batch_grad.transpose()[0]),
             0.0,
             places=4,
         )
@@ -619,13 +641,13 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             sum_of_individual_losses += f_loss(output, y_i)
         optimizer.zero_grad()
         sum_of_individual_losses.backward()
-        sum_of_individual_gradients = deepcopy(model.weights.grad)
+        sum_of_individual_gradients = deepcopy(model.weight.grad)
 
         output = model(x)
         batch_loss = f_loss(output, y)
         optimizer.zero_grad()
         batch_loss.backward()
-        batch_gradients = deepcopy(model.weights.grad)
+        batch_gradients = deepcopy(model.weight.grad)
 
         self.assertAlmostEqual(
             np.linalg.norm(sum_of_individual_gradients - batch_gradients), 0.0, places=4

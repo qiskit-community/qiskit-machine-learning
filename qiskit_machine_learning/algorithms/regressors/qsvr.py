@@ -11,15 +11,12 @@
 # that they have been altered from the originals.
 
 """Quantum Support Vector Regressor"""
-import logging
 
 from typing import Optional
 
 from sklearn.svm import SVR
 
 from ...kernels.quantum_kernel import QuantumKernel
-
-logger = logging.getLogger(__name__)
 
 
 class QSVR(SVR):

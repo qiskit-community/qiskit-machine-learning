@@ -16,13 +16,10 @@ PyTorch Discriminator Neural Network
 
 from typing import Dict, Any, Iterable, Optional, Sequence, cast
 import os
-import logging
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.utils import QuantumInstance
 from .discriminative_network import DiscriminativeNetwork
-
-logger = logging.getLogger(__name__)
 
 try:
     import torch
