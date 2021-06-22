@@ -596,7 +596,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
     @data(
         # output_shape, interpret
-        (1, None),
+        (4, None),
         (2, lambda x: "{:b}".format(x).count("1") % 2),
     )
     @requires_extra_library
@@ -658,6 +658,56 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             batch_loss.detach().numpy(),
             places=4,
         )
+
+    @data(
+        # interpret, output_shape, sparse, quantum_instance
+        (None, 1, False, "sv"),
+        (None, 1, True, "sv"),
+        (None, 1, False, "quasm"),
+        (None, 1, True, "quasm"),
+    )
+    @requires_extra_library
+    def test_warning1_circuit_qnn(self, config):
+        """Torch Connector + Circuit QNN with no sampling and input/output shape 1/1 ."""
+
+        interpret, output_shape, sparse, q_i = config
+        if q_i == "sv":
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        qc = QuantumCircuit(1)
+
+        # construct simple feature map
+        param_x = Parameter("x")
+        qc.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter("y")
+        qc.ry(param_y, 0)
+
+        # check warning when output_shape defined without interpret
+        if interpret is None and output_shape is not None:
+            with self.assertLogs(level="WARNING") as cm:
+                qnn = CircuitQNN(
+                    qc,
+                    [param_x],
+                    [param_y],
+                    sparse=sparse,
+                    sampling=False,
+                    interpret=interpret,
+                    output_shape=output_shape,
+                    quantum_instance=quantum_instance,
+                    input_gradients=True,
+                )
+                self.assertEqual(
+                    cm.output,
+                    [
+                        "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:No "
+                        "interpret function given, custom output_shape will be overridden by "
+                        "default output_shape: 2^num_qubits."
+                    ],
+                )
 
 
 if __name__ == "__main__":
