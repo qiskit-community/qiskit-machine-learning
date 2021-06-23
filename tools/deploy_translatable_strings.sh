@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2019.
+# (C) Copyright IBM 2018, 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,13 +16,12 @@
 
 # Non-travis variables used by this script.
 SOURCE_REPOSITORY="git@github.com:Qiskit/qiskit-machine-learning.git"
-SOURCE_DOC_DIR="docs/_build/html"
-SOURCE_DIR=`$PWD/machine-learning/`
+SOURCE_DIR=`pwd`
 SOURCE_LANG='en'
+DOC_DIR_PO="docs/locale/"
 
 TARGET_REPOSITORY="git@github.com:qiskit-community/qiskit-translations.git"
 TARGET_BRANCH_PO="master"
-DOC_DIR_PO="docs/locale/experiments"
 
 echo "show current dir: "
 pwd
@@ -55,32 +54,30 @@ git config user.name "Qiskit (Experiments) Autodeploy"
 git config user.email "qiskit@qiskit.org"
 
 echo "git rm -rf for the translation po files"
-git rm -rf --ignore-unmatch $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/*.po \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidoc \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/theme \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/_*
+git rm -rf --ignore-unmatch $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/*.po \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/api \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/apidoc \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/theme \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/_*
 
 # Remove api/ and apidoc/ to avoid confusion while translating
-rm -rf $SOURCE_DIR/$DOC_DIR_PO/en/LC_MESSAGES/api/ \
-    $SOURCE_DIR/$DOC_DIR_PO/en/LC_MESSAGES/apidoc/ \
-    $SOURCE_DIR/$DOC_DIR_PO/en/LC_MESSAGES/stubs/ \
-    $SOURCE_DIR/$DOC_DIR_PO/en/LC_MESSAGES/theme/
+rm -rf $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api/ \
+    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidoc/ \
+    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/stubs/ \
+    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/theme/
 
 # Copy the new rendered files and add them to the commit.
 echo "copy directory"
-cp -r $SOURCE_DIR/$DOC_DIR_PO/ docs/
-cp $SOURCE_DIR/setup.py .
-cp $SOURCE_DIR/requirements-dev.txt .
+cp -r $SOURCE_DIR/$DOC_DIR_PO/ $DOC_DIR_PO/SOURCE_LANG/machine-learning/docs
+cp $SOURCE_DIR/setup.py $DOC_DIR_PO/SOURCE_LANG/machine-learning
+cp $SOURCE_DIR/requirements-dev.txt $DOC_DIR_PO/SOURCE_LANG/machine-learning
 
 # git checkout translationDocs
 echo "add to po files to target dir"
 git add $DOC_DIR_PO
-git add setup.py
-git add requirements-dev.txt
 
 # Commit and push the changes.
-git commit -m "[Qiskit Experiments] Automated documentation update to add .po files" -m "skip ci" -m "Commit: $GITHUB_SHA" -m "Github Actions Run: https://github.com/Qiskit/qiskit/runs/$GITHUB_RUN_NUMBER"
+git commit -m "[Qiskit Machine Learning] Automated documentation update to add .po files" -m "skip ci" -m "Commit: $GITHUB_SHA" -m "Github Actions Run: https://github.com/Qiskit/qiskit/runs/$GITHUB_RUN_NUMBER"
 echo "git push"
 git push --quiet origin $TARGET_BRANCH_PO
 echo "********** End of pushing po to working repo! *************"
