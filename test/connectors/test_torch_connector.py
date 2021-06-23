@@ -756,5 +756,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                     "by default output_shape."
                 ],
             )
+
+
 if __name__ == "__main__":
     unittest.main()
