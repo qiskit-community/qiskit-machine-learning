@@ -18,10 +18,11 @@
 SOURCE_REPOSITORY="git@github.com:Qiskit/qiskit-machine-learning.git"
 SOURCE_DIR=`pwd`
 SOURCE_LANG='en'
-DOC_DIR_PO="docs/locale/"
 
 TARGET_REPOSITORY="git@github.com:qiskit-community/qiskit-translations.git"
 TARGET_BRANCH_PO="master"
+
+DOC_DIR_PO="docs/locale/"
 
 echo "show current dir: "
 pwd
@@ -54,11 +55,11 @@ git config user.name "Qiskit (Machine Learning) Autodeploy"
 git config user.email "qiskit@qiskit.org"
 
 echo "git rm -rf for the translation po files"
-git rm -rf --ignore-unmatch $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/*.po \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/api \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/apidoc \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/theme \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/machine-learning/_*
+git rm -rf --ignore-unmatch $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/*.po \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidoc \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/theme \
+    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/_*
 
 # Remove api/ and apidoc/ to avoid confusion while translating
 rm -rf $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api/ \
@@ -68,9 +69,9 @@ rm -rf $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api/ \
 
 # Copy the new rendered files and add them to the commit.
 echo "copy directory"
-cp -r $SOURCE_DIR/$DOC_DIR_PO/ $DOC_DIR_PO/SOURCE_LANG/machine-learning/docs
-cp $SOURCE_DIR/setup.py $DOC_DIR_PO/SOURCE_LANG/machine-learning
-cp $SOURCE_DIR/requirements-dev.txt $DOC_DIR_PO/SOURCE_LANG/machine-learning
+cp -r $SOURCE_DIR/$DOC_DIR_PO/ machine-learning/docs
+cp $SOURCE_DIR/setup.py machine-learning/.
+cp $SOURCE_DIR/requirements-dev.txt machine-learning/.
 
 # git checkout translationDocs
 echo "add to po files to target dir"
