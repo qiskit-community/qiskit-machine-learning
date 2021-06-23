@@ -687,28 +687,74 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         qc.ry(param_y, 0)
 
         # check warning when output_shape defined without interpret
-        if interpret is None and output_shape is not None:
-            with self.assertLogs(level="WARNING") as cm:
-                qnn = CircuitQNN(
-                    qc,
-                    [param_x],
-                    [param_y],
-                    sparse=sparse,
-                    sampling=False,
-                    interpret=interpret,
-                    output_shape=output_shape,
-                    quantum_instance=quantum_instance,
-                    input_gradients=True,
-                )
-                self.assertEqual(
-                    cm.output,
-                    [
-                        "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:No "
-                        "interpret function given, custom output_shape will be overridden by "
-                        "default output_shape: 2^num_qubits."
-                    ],
-                )
+        with self.assertLogs(level="WARNING") as w_1:
+            CircuitQNN(
+                qc,
+                [param_x],
+                [param_y],
+                sparse=sparse,
+                sampling=False,
+                interpret=interpret,
+                output_shape=output_shape,
+                quantum_instance=quantum_instance,
+                input_gradients=True,
+            )
+            self.assertEqual(
+                w_1.output,
+                [
+                    "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:No "
+                    "interpret function given, custom output_shape will be overridden by "
+                    "default output_shape: 2^num_qubits."
+                ],
+            )
 
+    @data(
+        # interpret, output_shape, sparse, quantum_instance
+        (None, 1, False, "sv"),
+        (None, 1, True, "sv"),
+        (None, 1, False, "quasm"),
+        (None, 1, True, "quasm"),
+    )
+    @requires_extra_library
+    def test_warning2_circuit_qnn(self, config):
+        """Torch Connector + Circuit QNN with sampling and input/output shape 1/1 ."""
 
+        interpret, output_shape, sparse, q_i = config
+        if q_i == "sv":
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        qc = QuantumCircuit(1)
+
+        # construct simple feature map
+        param_x = Parameter("x")
+        qc.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter("y")
+        qc.ry(param_y, 0)
+
+        # check warning when output_shape defined without interpret
+        with self.assertLogs(level="WARNING") as w_2:
+            CircuitQNN(
+                qc,
+                [param_x],
+                [param_y],
+                sparse=sparse,
+                sampling=True,
+                interpret=interpret,
+                output_shape=output_shape,
+                quantum_instance=quantum_instance,
+                input_gradients=True,
+            )
+            self.assertEqual(
+                w_2.output,
+                [
+                    "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:Custom output_shape "
+                    "cannot be defined when sampling is True, custom output_shape will be overridden "
+                    "by default output_shape."
+                ],
+            )
 if __name__ == "__main__":
     unittest.main()

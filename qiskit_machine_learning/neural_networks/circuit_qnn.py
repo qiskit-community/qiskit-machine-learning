@@ -151,8 +151,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             if output_shape is not None:
                 # Warn user that output_shape parameter will be ignored
                 logger.warning(
-                    "Custom output_shape cannot be defined when sampling is True, custom output_shape will be "
-                    "overridden by default output_shape."
+                    "Custom output_shape cannot be defined when sampling is True, custom "
+                    "output_shape will be overridden by default output_shape."
                 )
 
             num_samples = self._quantum_instance.run_config.shots
@@ -177,8 +177,8 @@ class CircuitQNN(SamplingNeuralNetwork):
                 if output_shape is not None:
                     # Warn user that output_shape parameter will be ignored
                     logger.warning(
-                        "No interpret function given, custom output_shape will be overridden by default output_shape: "
-                        "2^num_qubits."
+                        "No interpret function given, custom output_shape will be overridden "
+                        "by default output_shape: 2^num_qubits."
                     )
                 output_shape_ = (2 ** self._circuit.num_qubits,)
         return output_shape_
