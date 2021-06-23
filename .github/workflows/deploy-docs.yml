@@ -61,13 +61,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -U virtualenv setuptools wheel tox
-        pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision
-        sudo apt-get install graphviz pandoc
+        pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision tox
+        sudo apt-get install -y graphviz pandoc
     - name: Build and publish
       env:
         encrypted_deploy_po_branch_key: ${{ secrets.encrypted_deploy_po_branch_key }}
         encrypted_deploy_po_branch_iv: ${{ secrets.encrypted_deploy_po_branch_iv }}
+        QISKIT_PARALLEL: False
         QISKIT_DOCS_BUILD_TUTORIALS: 'always'
       run: |
         tools/deploy_translatable_strings.sh
