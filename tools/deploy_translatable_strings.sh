@@ -50,7 +50,7 @@ echo "git clone for working repo"
 git clone --depth 1 $TARGET_REPOSITORY temp --single-branch --branch $TARGET_BRANCH_PO
 pushd temp
 
-git config user.name "Qiskit (Experiments) Autodeploy"
+git config user.name "Qiskit (Machine Learning) Autodeploy"
 git config user.email "qiskit@qiskit.org"
 
 echo "git rm -rf for the translation po files"
