@@ -108,18 +108,32 @@ class BinaryObjectiveFunction(ObjectiveFunction):
     e.g. classes of ``-1`` and ``+1``."""
 
     def objective(self, weights: np.ndarray) -> float:
+        # predict is of shape (N, 1), where N is a number of samples
         predict = self._neural_network_forward(weights)
         target = np.array(self._y).reshape(predict.shape)
-        value = np.sum(self._loss(predict, target))
-        return value
+        # float(...) is for mypy compliance
+        return float(np.sum(self._loss(predict, target)))
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
-        output = self._neural_network_forward(weights)
-        _, weights_grad = self._neural_network.backward(self._X, weights)
+        # check that we have supported output shape
+        num_outputs = self._neural_network.output_shape[0]
+        if num_outputs != 1:
+            raise ValueError(f"Number of outputs is expected to be 1, got {num_outputs}")
 
-        grad = np.zeros((1, self._neural_network.num_weights))
-        for i in range(len(self._X)):
-            grad += self._loss.gradient(output[i][0], self._y[i]) * weights_grad[i]
+        # output must be of shape (N, 1), where N is a number of samples
+        output = self._neural_network_forward(weights)
+        # weight grad is of shape (N, 1, num_weights)
+        _, weight_grad = self._neural_network.backward(self._X, weights)
+
+        # we reshape _y since the output has the shape (N, 1) and _y has (N,)
+        # loss_gradient is of shape (N, 1)
+        loss_gradient = self._loss.gradient(output, self._y.reshape(-1, 1))
+
+        # for the output we compute a dot product(matmul) of loss gradient for this output
+        # and weights for this output.
+        grad = loss_gradient[:, 0] @ weight_grad[:, 0, :]
+        # we keep the shape of (1, num_weights)
+        grad = grad.reshape(1, -1)
 
         return grad
 
@@ -131,21 +145,33 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
     """
 
     def objective(self, weights: np.ndarray) -> float:
-        val = 0.0
+        # probabilities is of shape (N, num_outputs)
         probs = self._neural_network_forward(weights)
-        for i in range(len(self._X)):
-            for y_predict, prob in enumerate(probs[i]):
-                val += prob * self._loss(y_predict, self._y[i])
+
+        num_outputs = self._neural_network.output_shape[0]
+        val = 0.0
+        num_samples = self._X.shape[0]
+        for i in range(num_outputs):
+            # for each output we compute a dot product of probabilities of this output and a loss
+            # vector.
+            # loss vector is a loss of a particular output value(value of i) versus true labels.
+            # we do this across all samples.
+            val += probs[:, i] @ self._loss(np.full(num_samples, i), self._y)
+
         return val
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
-        num_classes = self._neural_network.output_shape[0]
+        # weight probability gradient is of shape (N, num_outputs, num_weights)
+        _, weight_prob_grad = self._neural_network.backward(self._X, weights)
+
         grad = np.zeros((1, self._neural_network.num_weights))
-        # TODO: do batch eval instead of zip()
-        for x, y_target in zip(self._X, self._y):
-            _, weight_prob_grad = self._neural_network.backward(x, weights)
-            for i in range(num_classes):
-                grad += weight_prob_grad[0, i, :].reshape(grad.shape) * self._loss(i, y_target)
+        num_samples = self._X.shape[0]
+        num_outputs = self._neural_network.output_shape[0]
+        for i in range(num_outputs):
+            # similar to what is in the objective, but we compute a matrix multiplication of
+            # weight probability gradients and a loss vector.
+            grad += weight_prob_grad[:, i, :].T @ self._loss(np.full(num_samples, i), self._y)
+
         return grad
 
 
@@ -156,18 +182,24 @@ class OneHotObjectiveFunction(ObjectiveFunction):
     """
 
     def objective(self, weights: np.ndarray) -> float:
-        val = 0.0
+        # probabilities is of shape (N, num_outputs)
         probs = self._neural_network_forward(weights)
-        # TODO: do batch eval
-        for i in range(len(self._X)):
-            val += self._loss(probs[i], self._y[i])
-        return val
+        # float(...) is for mypy compliance
+        return float(np.sum(self._loss(probs, self._y)))
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
-        grad = np.zeros(self._neural_network.num_weights)
+        # predict is of shape (N, num_outputs)
         y_predict = self._neural_network_forward(weights)
-        # TODO: do batch eval for backward instead of zip()
-        for i, (x, y_target) in enumerate(zip(self._X, self._y)):
-            _, weight_prob_grad = self._neural_network.backward(x, weights)
-            grad += self._loss.gradient(y_predict[i], y_target) @ weight_prob_grad[0, :]
+        # weight probability gradient is of shape (N, num_outputs, num_weights)
+        _, weight_prob_grad = self._neural_network.backward(self._X, weights)
+
+        grad = np.zeros(self._neural_network.num_weights)
+        num_outputs = self._neural_network.output_shape[0]
+        # loss gradient is of shape (N, num_output)
+        loss_gradient = self._loss.gradient(y_predict, self._y)
+        for i in range(num_outputs):
+            # a dot product(matmul) of loss gradient and weight probability gradient across all
+            # samples for an output.
+            grad += loss_gradient[:, i] @ weight_prob_grad[:, i, :]
+
         return grad

@@ -13,16 +13,20 @@
 """Test Torch Connector."""
 
 import unittest
+import warnings
 from typing import List
 
 from test import QiskitMachineLearningTestCase, requires_extra_library
 
+from copy import deepcopy
 import numpy as np
 
 from ddt import ddt, data
 
 try:
     from torch import Tensor
+    from torch.nn import MSELoss
+    from torch.optim import SGD
 except ImportError:
 
     class Tensor:  # type: ignore
@@ -37,6 +41,7 @@ from qiskit import QuantumCircuit, Aer
 from qiskit.providers.aer import AerSimulator
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit import Parameter
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
 
@@ -185,6 +190,27 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             Tensor([[1], [2]]),
             Tensor([[[1], [2]], [[3], [4]]]),
         ]
+
+        # Test weights property deprecation
+        if q_i == "sv":
+            # emit deprecation the first time it is used
+            with warnings.catch_warnings(record=True) as c_m:
+                warnings.simplefilter("always")
+                _ = model.weights
+                msg = str(c_m[0].message)
+                msg_ref = (
+                    "The weights property is deprecated as of version 0.2.0 and "
+                    "will be removed no sooner than 3 months after the release. "
+                    "Instead use the weight property."
+                )
+                self.assertEqual(msg, msg_ref)
+                self.assertTrue("test_torch_connector.py" in c_m[0].filename, c_m[0].filename)
+
+            # trying again should not emit deprecation
+            with warnings.catch_warnings(record=True) as c_m:
+                warnings.simplefilter("always")
+                _ = model.weights
+                self.assertListEqual(c_m, [])
 
         # test model
         self.validate_output_shape(model, test_data)
@@ -494,7 +520,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 self.assertEqual(shape, (len(x), *qnn.output_shape))
 
     @requires_extra_library
-    def test_batch_gradients(self):
+    def test_opflow_qnn_batch_gradients(self):
         """Test backward pass for batch input."""
 
         # construct random data set
@@ -513,10 +539,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         model = TorchConnector(qnn, initial_weights=initial_weights)
 
         # test single gradient
-        w = model.weights.detach().numpy()
+        w = model.weight.detach().numpy()
         res_qnn = qnn.forward(x[0, :], w)
 
-        # construct finite difference gradient for weights
+        # construct finite difference gradient for weight
         eps = 1e-4
         grad = np.zeros(w.shape)
         for k in range(len(w)):
@@ -537,7 +563,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             np.linalg.norm(res_model.detach().numpy() - res_qnn[0]), 0.0, places=4
         )
         res_model.backward()
-        grad_model = model.weights.grad
+        grad_model = model.weight.grad
         self.assertAlmostEqual(
             np.linalg.norm(grad_model.detach().numpy() - grad_qnn), 0.0, places=4
         )
@@ -563,8 +589,73 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         batch_res_model = sum(model(Tensor(x)))
         batch_res_model.backward()
         self.assertAlmostEqual(
-            np.linalg.norm(model.weights.grad.numpy() - batch_grad.transpose()[0]),
+            np.linalg.norm(model.weight.grad.numpy() - batch_grad.transpose()[0]),
             0.0,
+            places=4,
+        )
+
+    @data(
+        # output_shape, interpret
+        (1, None),
+        (2, lambda x: "{:b}".format(x).count("1") % 2),
+    )
+    @requires_extra_library
+    def test_circuit_qnn_batch_gradients(self, config):
+        """Test batch gradient computation of CircuitQNN gives the same result as the sum of
+        individual gradients."""
+
+        output_shape, interpret = config
+        num_inputs = 2
+
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, entanglement="linear", reps=1)
+
+        qc = QuantumCircuit(num_inputs)
+        qc.append(feature_map, range(num_inputs))
+        qc.append(ansatz, range(num_inputs))
+
+        qnn = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            interpret=interpret,
+            output_shape=output_shape,
+            quantum_instance=self.sv_quantum_instance,
+        )
+
+        # set up PyTorch module
+        initial_weights = np.array([0.1] * qnn.num_weights)
+        model = TorchConnector(qnn, initial_weights)
+
+        # random data set
+        x = Tensor(np.random.rand(5, 2))
+        y = Tensor(np.random.rand(5, output_shape))
+
+        # define optimizer and loss
+        optimizer = SGD(model.parameters(), lr=0.1)
+        f_loss = MSELoss(reduction="sum")
+
+        sum_of_individual_losses = 0.0
+        for x_i, y_i in zip(x, y):
+            output = model(x_i)
+            sum_of_individual_losses += f_loss(output, y_i)
+        optimizer.zero_grad()
+        sum_of_individual_losses.backward()
+        sum_of_individual_gradients = deepcopy(model.weight.grad)
+
+        output = model(x)
+        batch_loss = f_loss(output, y)
+        optimizer.zero_grad()
+        batch_loss.backward()
+        batch_gradients = deepcopy(model.weight.grad)
+
+        self.assertAlmostEqual(
+            np.linalg.norm(sum_of_individual_gradients - batch_gradients), 0.0, places=4
+        )
+
+        self.assertAlmostEqual(
+            sum_of_individual_losses.detach().numpy(),
+            batch_loss.detach().numpy(),
             places=4,
         )
 

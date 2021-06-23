@@ -13,7 +13,6 @@
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 
 from typing import Tuple, Any, Optional, cast, Union
-import logging
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
 
@@ -26,11 +25,10 @@ except ImportError:
 
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
-
-logger = logging.getLogger(__name__)
+from ..deprecation import deprecate_property
 
 try:
-    from torch import Tensor, sparse_coo_tensor
+    from torch import Tensor, sparse_coo_tensor, einsum
     from torch.autograd import Function
     from torch.nn import Module, Parameter as TorchParam
 except ImportError:
@@ -150,6 +148,10 @@ class TorchConnector(Module):
                     + f" expected input compatible to {neural_network.num_inputs}"
                 )
 
+            # Ensure same shape for single observations and batch mode
+            if len(grad_output.shape) == 1:
+                grad_output = grad_output.view(1, -1)
+
             # evaluate QNN gradient
             input_grad, weights_grad = neural_network.backward(input_data.numpy(), weights.numpy())
             if input_grad is not None:
@@ -166,10 +168,11 @@ class TorchConnector(Module):
                 else:
                     input_grad = Tensor(input_grad).to(grad_output.dtype)
 
-                if len(grad_output.shape) == 2:
-                    input_grad = grad_output.transpose(0, 1) @ input_grad.transpose(0, 1)
-                else:
-                    input_grad = grad_output @ input_grad  # TODO: validate
+                # Takes gradients from previous layer in backward pass (i.e. later layer in forward
+                # pass) j for each observation i in the batch. Multiplies this with the gradient
+                # from this point on backwards with respect to each input k. Sums over all i and
+                # j to get total gradient of output w.r.t. each input k.
+                input_grad = einsum("ij,ijk->k", grad_output, input_grad)
 
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
@@ -185,10 +188,11 @@ class TorchConnector(Module):
                 else:
                     weights_grad = Tensor(weights_grad).to(grad_output.dtype)
 
-                if len(grad_output.shape) == 2:
-                    weights_grad = grad_output.transpose(0, 1) @ weights_grad.transpose(0, 1)
-                else:
-                    weights_grad = grad_output @ weights_grad
+                # Takes gradients from previous layer in backward pass (i.e. later layer in forward
+                # pass) j for each observation i in the batch. Multiplies this with the gradient
+                # from this point on backwards with respect to each parameter k. Sums over all i and
+                # j to get total gradient of output w.r.t. each parameter k.
+                weights_grad = einsum("ij,ijk->k", grad_output, weights_grad)
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
             return input_grad, weights_grad, None, None
@@ -223,17 +227,26 @@ class TorchConnector(Module):
             self._weights.data = Tensor(initial_weights)
 
     @property
-    def neural_network(self):
+    def neural_network(self) -> NeuralNetwork:
         """Returns the underlying neural network."""
         return self._neural_network
 
+    # Bug in mypy, if property decorator is used with another one
+    # https://github.com/python/mypy/issues/1362
+
+    @property  # type: ignore
+    @deprecate_property("0.2.0", new_name="weight")
+    def weights(self) -> Tensor:
+        """Returns the weights of the underlying network."""
+        return self.weight
+
     @property
-    def weights(self):
+    def weight(self) -> Tensor:
         """Returns the weights of the underlying network."""
         return self._weights
 
     @property
-    def sparse(self):
+    def sparse(self) -> Optional[bool]:
         """Returns whether this connector returns sparse output or not."""
         return self._sparse
 

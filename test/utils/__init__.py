@@ -9,20 +9,3 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-"""
-Utilities (:mod:`qiskit_machine_learning.utils`)
-========================================================================
-A collection of utilities provided by Qiskit Machine Learning.
-
-.. currentmodule:: qiskit_machine_learning.utils
-
-Utilities
-==========
-
-.. autosummary::
-   :toctree:
-
-   loss_functions
-
-"""
