@@ -703,17 +703,17 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 w_1.output,
                 [
                     "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:No "
-                    "interpret function given, custom output_shape will be overridden by "
-                    "default output_shape: 2^num_qubits."
+                    "interpret function given, output_shape will be automatically "
+                    "determined as 2^num_qubits."
                 ],
             )
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
-        (None, 1, False, "sv"),
-        (None, 1, True, "sv"),
         (None, 1, False, "quasm"),
         (None, 1, True, "quasm"),
+        (lambda x: np.sum(x) % 2, 2, True, "quasm"),
+        (lambda x: np.sum(x) % 2, 2, False, "quasm"),
     )
     @requires_extra_library
     def test_warning2_circuit_qnn(self, config):
@@ -725,7 +725,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         else:
             quantum_instance = self.qasm_quantum_instance
 
-        qc = QuantumCircuit(1)
+        qc = QuantumCircuit(2)
 
         # construct simple feature map
         param_x = Parameter("x")
@@ -735,7 +735,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         param_y = Parameter("y")
         qc.ry(param_y, 0)
 
-        # check warning when output_shape defined without interpret
+        # check warning when sampling true
         with self.assertLogs(level="WARNING") as w_2:
             CircuitQNN(
                 qc,
@@ -748,12 +748,13 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 quantum_instance=quantum_instance,
                 input_gradients=True,
             )
+
             self.assertEqual(
                 w_2.output,
                 [
-                    "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:Custom output_shape "
-                    "cannot be defined when sampling is True, custom output_shape will be overridden "
-                    "by default output_shape."
+                    "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:"
+                    "In sampling mode, output_shape will be automatically inferred  "
+                    "from the number of samples and interpret function, if provided."
                 ],
             )
 
