@@ -15,7 +15,7 @@ from abc import abstractmethod
 from typing import Union, Optional
 
 import numpy as np
-from qiskit.algorithms.optimizers import Optimizer,SLSQP
+from qiskit.algorithms.optimizers import Optimizer, SLSQP
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
