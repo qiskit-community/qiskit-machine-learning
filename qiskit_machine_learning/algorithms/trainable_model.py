@@ -15,7 +15,7 @@ from abc import abstractmethod
 from typing import Union, Optional
 
 import numpy as np
-from qiskit.algorithms.optimizers import Optimizer
+from qiskit.algorithms.optimizers import Optimizer,SLSQP
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
@@ -35,7 +35,7 @@ class TrainableModel:
         self,
         neural_network: NeuralNetwork,
         loss: Union[str, Loss] = "l2",
-        optimizer: Optimizer = None,
+        optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
     ):
@@ -55,6 +55,7 @@ class TrainableModel:
                 Can be given either as a string for 'l1', 'l2', 'cross_entropy',
                 'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
             optimizer: An instance of an optimizer to be used in training.
+            Default is SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
 
@@ -79,6 +80,8 @@ class TrainableModel:
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
+        if optimizer is None:
+            optimizer = SLSQP()
         self._optimizer = optimizer
         self._warm_start = warm_start
         self._fit_result = None

@@ -40,7 +40,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         neural_network: NeuralNetwork,
         loss: Union[str, Loss] = "l2",
         one_hot: bool = False,
-        optimizer: Optimizer = None,
+        optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
     ):
