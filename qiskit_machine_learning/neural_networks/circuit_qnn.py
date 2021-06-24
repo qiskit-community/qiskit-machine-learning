@@ -77,15 +77,22 @@ class CircuitQNN(SamplingNeuralNetwork):
                 dense return array independent of the other settings.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
-                sparse) output array. If this is used, the output shape of the output needs to be
-                given as a separate argument.
-            output_shape: The output shape of the custom interpretation. The output shape is
-                automatically determined in case of sampling==True.
+                sparse) output array. If this is used, and sampling==False, the output shape of
+                the output needs to be given as a separate argument.
+            output_shape: The output shape of the custom interpretation, only used in the case
+                where an interpret function is provided and sampling==False. Note that in the
+                remaining cases, the output shape is automatically inferred by: `2^num_qubits` if
+                sampling==False and interpret==None, `(num_samples,1)` if sampling==True and
+                interpret==None, and `(num_samples,interpret_shape)` if sampling==True and an
+                interpret function is provided.
             gradient: The gradient converter to be used for the probability gradients.
-            quantum_instance: The quantum instance to evaluate the circuits.
+            quantum_instance: The quantum instance to evaluate the circuits. Note that
+                if sampling==True, 'statevector_simulator' is not a valid backend for the
+                quantum instance.
             input_gradients: Determines whether to compute gradients with respect to input data.
         Raises:
             QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
+
         """
         # TODO: need to handle case without a quantum instance
         if isinstance(quantum_instance, (BaseBackend, Backend)):
@@ -151,8 +158,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             if output_shape is not None:
                 # Warn user that output_shape parameter will be ignored
                 logger.warning(
-                    "Custom output_shape cannot be defined when sampling is True, custom "
-                    "output_shape will be overridden by default output_shape."
+                    "In sampling mode, output_shape will be automatically inferred  "
+                    "from the number of samples and interpret function, if provided."
                 )
 
             num_samples = self._quantum_instance.run_config.shots
@@ -177,9 +184,10 @@ class CircuitQNN(SamplingNeuralNetwork):
                 if output_shape is not None:
                     # Warn user that output_shape parameter will be ignored
                     logger.warning(
-                        "No interpret function given, custom output_shape will be overridden "
-                        "by default output_shape: 2^num_qubits."
+                        "No interpret function given, output_shape will be automatically "
+                        "determined as 2^num_qubits."
                     )
+
                 output_shape_ = (2 ** self._circuit.num_qubits,)
         return output_shape_
 
