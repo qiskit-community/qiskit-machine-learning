@@ -18,7 +18,6 @@ from typing import Union, Optional
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
 
-# from qiskit_machine_learning.deprecation import deprecate_arguments
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
 from qiskit_machine_learning.utils.loss_functions import (
@@ -81,13 +80,13 @@ class TrainableModel:
                 self._loss = CrossEntropySigmoidLoss()
             elif loss == "l1":
                 self._loss = L1Loss()
-                warnings.warn('The loss function argument, "l1", is deprecated as of 0.2.0, '
+                warnings.warn('The loss function argument value, "l1", is deprecated as of 0.2.0, '
                               'and will be removed no earlier than 3 months after that '
                               'release date. You should use "absolute_error" instead ',
                               DeprecationWarning, stacklevel=3)
             elif loss == "l2":
                 self._loss = L2Loss()
-                warnings.warn('The loss function argument, "l2", is deprecated as of 0.2.0, '
+                warnings.warn('The loss function argument value, "l2", is deprecated as of 0.2.0, '
                               'and will be removed no earlier than 3 months after that '
                               'release date. You should use "squared_error" instead. ',
                               DeprecationWarning, stacklevel=3)
