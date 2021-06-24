@@ -30,7 +30,7 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
         ((5,), (5,), "absolute_error"),
         ((5, 2), (5,), "absolute_error"),
         ((5,), (5,), "squared_error"),
-        ((5, 2), (5,), "l2"),
+        ((5, 2), (5,), "squared_error"),
     )
     @requires_extra_library
     def test_l1_l2_loss(self, config):
