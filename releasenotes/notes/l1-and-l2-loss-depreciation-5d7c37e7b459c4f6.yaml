@@ -1,0 +1,11 @@
+---
+deprecations:
+  - |
+    The valid values passed to the loss argument of the ``TrainableModel`` constructor were partialy
+    deprecated (i.e. ``loss='l1'`` is replaced with ``loss='absolute_error'`` and ``loss='l2'`` is 
+    replaced with ``loss='squared_error'``). This affects instantiations of classes like the
+    ``NeuralNetworkClassifier``. This change was made to reduce confusion that stems from using
+    lowercase 'l' character which can be mistake for a numeric '1' or capital 'I'. You should
+    update you model instantiations by replacing 'l1' with 'absolute_error' and 'l2' with 
+    'squared_error'.
+    
