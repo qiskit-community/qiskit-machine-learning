@@ -27,10 +27,10 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
 
     @data(
         # input shape, loss shape
-        ((5,), (5,), "l1"),
-        ((5, 2), (5,), "l1"),
-        ((5,), (5,), "l2"),
-        ((5, 2), (5,), "l2"),
+        ((5,), (5,), "absolute_error"),
+        ((5, 2), (5,), "absolute_error"),
+        ((5,), (5,), "squared_error"),
+        ((5, 2), (5,), "squared_error"),
     )
     @requires_extra_library
     def test_l1_l2_loss(self, config):
@@ -53,11 +53,11 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
         ttarget = torch.tensor(qtarget, requires_grad=True)  # pylint:disable=not-callable
 
         # quantum loss
-        if loss_function == "l1":
+        if loss_function == "absolute_error":
             q_loss_fun = L1Loss()
             # pytorch loss
             t_loss_fun = TL1Loss(reduction="none")
-        elif loss_function == "l2":
+        elif loss_function == "squared_error":
             q_loss_fun = L2Loss()
             t_loss_fun = TL2Loss(reduction="none")
         else:
