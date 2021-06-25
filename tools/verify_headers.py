@@ -82,17 +82,19 @@ def validate_header(file_path):
 
 
 def _main():
-    default_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    default_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "qiskit_machine_learning"
+    )
     parser = argparse.ArgumentParser(description="Check file headers.")
     parser.add_argument(
         "paths",
         type=str,
         nargs="*",
         default=[default_path],
-        help="Paths to scan by default uses ../. from the script",
+        help="Paths to scan by default uses ../qiskit_machine_learning from the script",
     )
     args = parser.parse_args()
-    files = discover_files(args.paths, exclude_folders=["docs"])
+    files = discover_files(args.paths, exclude_folders=[])
     with multiprocessing.Pool() as pool:
         res = pool.map(validate_header, files)
     failed_files = [x for x in res if x[1] is False]
