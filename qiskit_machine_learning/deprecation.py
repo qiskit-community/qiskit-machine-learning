@@ -15,7 +15,7 @@
 from abc import abstractmethod
 import warnings
 import functools
-from typing import NamedTuple, Optional, Callable, Dict, Set
+from typing import NamedTuple, Optional, Callable, Dict, Set, cast
 from enum import Enum, EnumMeta
 
 
@@ -76,7 +76,7 @@ class DeprecatedType(Enum):
     PROPERTY = "property"
 
 
-class _DeprecatedObject(NamedTuple):
+class _DeprecatedTypeName(NamedTuple):
     version: str
     old_type: DeprecatedType
     old_name: str
@@ -85,7 +85,23 @@ class _DeprecatedObject(NamedTuple):
     additional_msg: str
 
 
-_DEPRECATED_OBJECTS: Set[_DeprecatedObject] = set()
+class _DeprecatedArgument(NamedTuple):
+    version: str
+    func_name: str
+    old_arg: str
+    new_arg: str
+    additional_msg: str
+
+
+class _DeprecatedValue(NamedTuple):
+    version: str
+    argument: str
+    old_value: str
+    new_value: str
+    additional_msg: str
+
+
+_DEPRECATED_OBJECTS: Set[NamedTuple] = set()
 
 
 def warn_deprecated(
@@ -102,24 +118,25 @@ def warn_deprecated(
         version: Version to be used
         old_type: Old type to be used
         old_name: Old name to be used
-        new_type: New type to be used
+        new_type: New type to be used, if None, old_type is used instead.
         new_name: New name to be used
         additional_msg: any additional message
         stack_level: stack level
     """
     # skip if it was already added
-    obj = _DeprecatedObject(version, old_type, old_name, new_type, new_name, additional_msg)
+    obj = _DeprecatedTypeName(version, old_type, old_name, new_type, new_name, additional_msg)
     if obj in _DEPRECATED_OBJECTS:
         return
 
-    _DEPRECATED_OBJECTS.add(obj)
+    _DEPRECATED_OBJECTS.add(cast(NamedTuple, obj))
 
     msg = (
         f"The {old_name} {old_type.value} is deprecated as of version {version} "
         "and will be removed no sooner than 3 months after the release"
     )
-    if new_type is not None and new_name:
-        msg += f". Instead use the {new_name} {new_type.value}"
+    if new_name:
+        type_str = new_type.value if new_type is not None else old_type.value
+        msg += f". Instead use the {new_name} {type_str}"
     if additional_msg:
         msg += f" {additional_msg}"
     msg += "."
@@ -156,16 +173,21 @@ def _rename_kwargs(version, func_name, kwargs, kwarg_map, additional_msg, stack_
                     "{} received both {} and {} (deprecated).".format(func_name, new_arg, old_arg)
                 )
 
-            msg = (
-                f"{func_name}: the {old_arg} {DeprecatedType.ARGUMENT.value} is deprecated "
-                f"as of version {version} and will be removed no sooner "
-                "than 3 months after the release. Instead use the "
-                f"{new_arg} {DeprecatedType.ARGUMENT.value}"
-            )
-            if additional_msg:
-                msg += f" {additional_msg}"
-            msg += "."
-            warnings.warn(msg, DeprecationWarning, stacklevel=stack_level)
+            # skip if it was already added
+            obj = _DeprecatedArgument(version, func_name, old_arg, new_arg, additional_msg)
+            if obj not in _DEPRECATED_OBJECTS:
+                _DEPRECATED_OBJECTS.add(obj)
+
+                msg = (
+                    f"{func_name}: the {old_arg} {DeprecatedType.ARGUMENT.value} is deprecated "
+                    f"as of version {version} and will be removed no sooner "
+                    "than 3 months after the release. Instead use the "
+                    f"{new_arg} {DeprecatedType.ARGUMENT.value}"
+                )
+                if additional_msg:
+                    msg += f" {additional_msg}"
+                msg += "."
+                warnings.warn(msg, DeprecationWarning, stacklevel=stack_level)
             kwargs[new_arg] = kwargs.pop(old_arg)
 
 
@@ -200,6 +222,61 @@ def deprecate_arguments(
     return decorator
 
 
+def _check_values(version, kwargs, kwarg_map, additional_msg, stack_level):
+    for arg, values_map in kwarg_map.items():
+        if arg in kwargs:
+            old_value = kwargs[arg]
+            if old_value in values_map:
+                new_value = values_map[old_value]
+
+                # skip if it was already added
+                obj = _DeprecatedValue(version, arg, old_value, new_value, additional_msg)
+                if obj in _DEPRECATED_OBJECTS:
+                    continue
+
+                _DEPRECATED_OBJECTS.add(obj)
+
+                msg = (
+                    f'The {arg} {DeprecatedType.ARGUMENT.value} value "{old_value}" is deprecated '
+                    f"as of version {version} and will be removed no sooner "
+                    "than 3 months after the release. Instead use the "
+                    f'"{new_value}" value'
+                )
+                if additional_msg:
+                    msg += f" {additional_msg}"
+                msg += "."
+                warnings.warn(msg, DeprecationWarning, stacklevel=stack_level)
+
+
+def deprecate_values(
+    version: str,
+    kwarg_map: Dict[str, Dict[str, str]],
+    additional_msg: Optional[str] = None,
+    stack_level: int = 3,
+) -> Callable:
+    """Decorator to alias deprecated default values and warn upon use.
+    Args:
+        version: Version to be used
+        kwarg_map: Args dictionary with argument and map of old, new values
+        additional_msg: any additional message
+        stack_level: stack level
+
+    Returns:
+        The decorated function
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if kwargs:
+                _check_values(version, kwargs, kwarg_map, additional_msg, stack_level)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 def _deprecate_object(
     version: str,
     old_type: DeprecatedType,
@@ -208,11 +285,11 @@ def _deprecate_object(
     additional_msg: str,
     stack_level: int,
 ) -> Callable:
-    """Decorator that prints deprecated message for an instance method
+    """Decorator that prints deprecated message
     Args:
         version: Version to be used
         old_type: New type to be used
-        new_type: New type to be used
+        new_type: New type to be used, if None, old_type is used instead.
         new_name: New name to be used
         additional_msg: any additional message
         stack_level: stack level
