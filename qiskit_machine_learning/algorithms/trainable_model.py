@@ -26,15 +26,19 @@ from qiskit_machine_learning.utils.loss_functions import (
     CrossEntropyLoss,
     CrossEntropySigmoidLoss,
 )
+from qiskit_machine_learning.deprecation import deprecate_values
 
 
 class TrainableModel:
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
 
+    @deprecate_values(
+        "0.2.0", {"loss": {"l1": "absolute_error", "l2": "squared_error"}}, stack_level=4
+    )
     def __init__(
         self,
         neural_network: NeuralNetwork,
-        loss: Union[str, Loss] = "l2",
+        loss: Union[str, Loss] = "squared_error",
         optimizer: Optimizer = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
@@ -51,9 +55,10 @@ class TrainableModel:
                 as one sample and the loss function is applied to the whole vector. Otherwise, each
                 entry of the probability vector is considered as an individual sample and the loss
                 function is applied to the index and weighted with the corresponding probability.
-            loss: A target loss function to be used in training. Default is `l2`, i.e. L2 loss.
-                Can be given either as a string for 'l1', 'l2', 'cross_entropy',
-                'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
+            loss: A target loss function to be used in training. Default is `squared_error`,
+                i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
+                'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
+                implementing the Loss interface.
             optimizer: An instance of an optimizer to be used in training.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
@@ -68,14 +73,18 @@ class TrainableModel:
             self._loss = loss
         else:
             loss = loss.lower()
-            if loss == "l1":
+            if loss == "absolute_error":
                 self._loss = L1Loss()
-            elif loss == "l2":
+            elif loss == "squared_error":
                 self._loss = L2Loss()
             elif loss == "cross_entropy":
                 self._loss = CrossEntropyLoss()
             elif loss == "cross_entropy_sigmoid":
                 self._loss = CrossEntropySigmoidLoss()
+            elif loss == "l1":
+                self._loss = L1Loss()
+            elif loss == "l2":
+                self._loss = L2Loss()
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
