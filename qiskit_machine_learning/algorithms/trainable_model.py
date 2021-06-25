@@ -11,7 +11,6 @@
 # that they have been altered from the originals.
 """A base ML model with a Scikit-Learn like interface."""
 
-import warnings
 from abc import abstractmethod
 from typing import Union, Optional
 
@@ -27,11 +26,15 @@ from qiskit_machine_learning.utils.loss_functions import (
     CrossEntropyLoss,
     CrossEntropySigmoidLoss,
 )
+from qiskit_machine_learning.deprecation import deprecate_values
 
 
 class TrainableModel:
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
 
+    @deprecate_values(
+        "0.2.0", {"loss": {"l1": "absolute_error", "l2": "squared_error"}}, stack_level=4
+    )
     def __init__(
         self,
         neural_network: NeuralNetwork,
@@ -80,22 +83,8 @@ class TrainableModel:
                 self._loss = CrossEntropySigmoidLoss()
             elif loss == "l1":
                 self._loss = L1Loss()
-                warnings.warn(
-                    'The loss function argument value, "l1", is deprecated as of 0.2.0, '
-                    "and will be removed no earlier than 3 months after that "
-                    'release date. You should use "absolute_error" instead ',
-                    DeprecationWarning,
-                    stacklevel=3,
-                )
             elif loss == "l2":
                 self._loss = L2Loss()
-                warnings.warn(
-                    'The loss function argument value, "l2", is deprecated as of 0.2.0, '
-                    "and will be removed no earlier than 3 months after that "
-                    'release date. You should use "squared_error" instead. ',
-                    DeprecationWarning,
-                    stacklevel=3,
-                )
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
