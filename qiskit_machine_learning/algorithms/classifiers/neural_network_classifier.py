@@ -56,8 +56,8 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 as one sample and the loss function is applied to the whole vector. Otherwise, each
                 entry of the probability vector is considered as an individual sample and the loss
                 function is applied to the index and weighted with the corresponding probability.
-            loss: A target loss function to be used in training. Default is `squared_error`, 
-                i.e. L2 loss. Can be given either as a string for 'asbolute_error' (i.e. L1 Loss),
+            loss: A target loss function to be used in training. Default is `squared_error`,
+                i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
                 'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
                 implementing the Loss interface.
             one_hot: Determines in the case of a multi-dimensional result of the

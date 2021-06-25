@@ -52,8 +52,8 @@ class TrainableModel:
                 as one sample and the loss function is applied to the whole vector. Otherwise, each
                 entry of the probability vector is considered as an individual sample and the loss
                 function is applied to the index and weighted with the corresponding probability.
-            loss: A target loss function to be used in training. Default is `squared_error`, 
-                i.e. L2 loss. Can be given either as a string for 'asbolute_error' (i.e. L1 Loss),
+            loss: A target loss function to be used in training. Default is `squared_error`,
+                i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
                 'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
                 implementing the Loss interface.
             optimizer: An instance of an optimizer to be used in training.
@@ -80,16 +80,22 @@ class TrainableModel:
                 self._loss = CrossEntropySigmoidLoss()
             elif loss == "l1":
                 self._loss = L1Loss()
-                warnings.warn('The loss function argument value, "l1", is deprecated as of 0.2.0, '
-                              'and will be removed no earlier than 3 months after that '
-                              'release date. You should use "absolute_error" instead ',
-                              DeprecationWarning, stacklevel=3)
+                warnings.warn(
+                    'The loss function argument value, "l1", is deprecated as of 0.2.0, '
+                    "and will be removed no earlier than 3 months after that "
+                    'release date. You should use "absolute_error" instead ',
+                    DeprecationWarning,
+                    stacklevel=3,
+                )
             elif loss == "l2":
                 self._loss = L2Loss()
-                warnings.warn('The loss function argument value, "l2", is deprecated as of 0.2.0, '
-                              'and will be removed no earlier than 3 months after that '
-                              'release date. You should use "squared_error" instead. ',
-                              DeprecationWarning, stacklevel=3)
+                warnings.warn(
+                    'The loss function argument value, "l2", is deprecated as of 0.2.0, '
+                    "and will be removed no earlier than 3 months after that "
+                    'release date. You should use "squared_error" instead. ',
+                    DeprecationWarning,
+                    stacklevel=3,
+                )
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
