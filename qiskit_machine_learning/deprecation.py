@@ -15,6 +15,7 @@
 from abc import abstractmethod
 import warnings
 import functools
+import inspect
 from typing import NamedTuple, Optional, Callable, Dict, Set, cast
 from enum import Enum, EnumMeta
 
@@ -87,7 +88,7 @@ class _DeprecatedTypeName(NamedTuple):
 
 class _DeprecatedArgument(NamedTuple):
     version: str
-    func_name: str
+    func_qualname: str
     old_arg: str
     new_arg: str
     additional_msg: str
@@ -95,6 +96,7 @@ class _DeprecatedArgument(NamedTuple):
 
 class _DeprecatedValue(NamedTuple):
     version: str
+    func_qualname: str
     argument: str
     old_value: str
     new_value: str
@@ -165,7 +167,7 @@ def warn_deprecated_same_type_name(
     )
 
 
-def _rename_kwargs(version, func_name, kwargs, kwarg_map, additional_msg, stack_level):
+def _rename_kwargs(version, qualname, func_name, kwargs, kwarg_map, additional_msg, stack_level):
     for old_arg, new_arg in kwarg_map.items():
         if old_arg in kwargs:
             if new_arg in kwargs:
@@ -174,7 +176,7 @@ def _rename_kwargs(version, func_name, kwargs, kwarg_map, additional_msg, stack_
                 )
 
             # skip if it was already added
-            obj = _DeprecatedArgument(version, func_name, old_arg, new_arg, additional_msg)
+            obj = _DeprecatedArgument(version, qualname, old_arg, new_arg, additional_msg)
             if obj not in _DEPRECATED_OBJECTS:
                 _DEPRECATED_OBJECTS.add(obj)
 
@@ -213,7 +215,13 @@ def deprecate_arguments(
         def wrapper(*args, **kwargs):
             if kwargs:
                 _rename_kwargs(
-                    version, func.__name__, kwargs, kwarg_map, additional_msg, stack_level
+                    version,
+                    func.__qualname__,
+                    func.__name__,
+                    kwargs,
+                    kwarg_map,
+                    additional_msg,
+                    stack_level,
                 )
             return func(*args, **kwargs)
 
@@ -222,30 +230,36 @@ def deprecate_arguments(
     return decorator
 
 
-def _check_values(version, kwargs, kwarg_map, additional_msg, stack_level):
-    for arg, values_map in kwarg_map.items():
-        if arg in kwargs:
+def _check_values(version, qualname, args, kwargs, kwarg_map, additional_msg, stack_level):
+    for arg, value_dict in kwarg_map.items():
+        index = value_dict["index"]
+        values_map = value_dict["values"]
+        old_value = None
+        if args and 0 < index < len(args):
+            old_value = args[index]
+        if kwargs and arg in kwargs:
             old_value = kwargs[arg]
-            if old_value in values_map:
-                new_value = values_map[old_value]
 
-                # skip if it was already added
-                obj = _DeprecatedValue(version, arg, old_value, new_value, additional_msg)
-                if obj in _DEPRECATED_OBJECTS:
-                    continue
+        if old_value in values_map:
+            new_value = values_map[old_value]
 
-                _DEPRECATED_OBJECTS.add(obj)
+            # skip if it was already added
+            obj = _DeprecatedValue(version, qualname, arg, old_value, new_value, additional_msg)
+            if obj in _DEPRECATED_OBJECTS:
+                continue
 
-                msg = (
-                    f'The {arg} {DeprecatedType.ARGUMENT.value} value "{old_value}" is deprecated '
-                    f"as of version {version} and will be removed no sooner "
-                    "than 3 months after the release. Instead use the "
-                    f'"{new_value}" value'
-                )
-                if additional_msg:
-                    msg += f" {additional_msg}"
-                msg += "."
-                warnings.warn(msg, DeprecationWarning, stacklevel=stack_level)
+            _DEPRECATED_OBJECTS.add(obj)
+
+            msg = (
+                f'The {arg} {DeprecatedType.ARGUMENT.value} value "{old_value}" is deprecated '
+                f"as of version {version} and will be removed no sooner "
+                "than 3 months after the release. Instead use the "
+                f'"{new_value}" value'
+            )
+            if additional_msg:
+                msg += f" {additional_msg}"
+            msg += "."
+            warnings.warn(msg, DeprecationWarning, stacklevel=stack_level)
 
 
 def deprecate_values(
@@ -268,8 +282,23 @@ def deprecate_values(
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            if kwargs:
-                _check_values(version, kwargs, kwarg_map, additional_msg, stack_level)
+            if args or kwargs:
+                parameter_names = list(inspect.signature(func).parameters.keys())
+                new_kwarg_map = {}
+                for name, values_map in kwarg_map.items():
+                    new_kwarg_map[name] = {
+                        "index": parameter_names.index(name),
+                        "values": values_map,
+                    }
+                _check_values(
+                    version,
+                    func.__qualname__,
+                    args,
+                    kwargs,
+                    new_kwarg_map,
+                    additional_msg,
+                    stack_level,
+                )
             return func(*args, **kwargs)
 
         return wrapper

@@ -58,6 +58,8 @@ html
 init
 inlier
 inplace
+instantiation
+instantiations
 isometry
 iten
 iterable

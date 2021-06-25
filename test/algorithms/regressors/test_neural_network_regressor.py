@@ -95,7 +95,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         # construct the regressor from the neural network
         regressor = NeuralNetworkRegressor(
             neural_network=regression_opflow_qnn,
-            loss="l2",
+            loss="squared_error",
             optimizer=optimizer,
             initial_point=initial_point,
         )

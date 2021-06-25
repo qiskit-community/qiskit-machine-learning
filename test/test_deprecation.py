@@ -96,6 +96,12 @@ class DeprecatedClass3:
         self.value = arg1
         self.loss = loss
 
+    @deprecate_values("0.2.0", {"loss": {"l1": "absolute_error", "l2": "squared_error"}})
+    def method1(self, arg1: int, loss: str = "squared_error") -> None:
+        """method 1"""
+        self.value = arg1
+        self.loss = loss
+
 
 class TestClass:
     """Test class with deprecation"""
@@ -297,6 +303,25 @@ class TestDeprecation(QiskitMachineLearningTestCase):
         with warnings.catch_warnings(record=True) as c_m:
             warnings.simplefilter("always")
             obj = DeprecatedClass3(10, loss=loss)
+            self.assertEqual(obj.value, 10)
+            self.assertListEqual(c_m, [])
+
+        # emit deprecation the first time it is used
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            obj = DeprecatedClass3(5, loss=loss)
+            obj.method1(10, loss)
+            self.assertEqual(obj.value, 10)
+            msg = str(c_m[0].message)
+            self.assertEqual(msg, msg_ref)
+            self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
+            self.assertEqual(self._get_line_from_str("obj.method1(10, loss)"), c_m[0].lineno)
+
+        # trying again should not emit deprecation
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            obj = DeprecatedClass3(5, loss=loss)
+            obj.method1(10, loss)
             self.assertEqual(obj.value, 10)
             self.assertListEqual(c_m, [])
 
