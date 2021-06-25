@@ -23,7 +23,7 @@ import re
 pep263 = re.compile(r"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
-def discover_files(code_paths):
+def discover_files(code_paths, exclude_folders):
     """Find all .py, .pyx, .pxd files in a list of trees"""
     out_paths = []
     for path in code_paths:
@@ -32,6 +32,9 @@ def discover_files(code_paths):
         else:
             for directory in os.walk(path):
                 dir_path = directory[0]
+                for folder in exclude_folders:
+                    if folder in directory[1]:
+                        directory[1].remove(folder)
                 for subfile in directory[2]:
                     if (
                         subfile.endswith(".py")
@@ -79,19 +82,17 @@ def validate_header(file_path):
 
 
 def _main():
-    default_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "qiskit_machine_learning"
-    )
+    default_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     parser = argparse.ArgumentParser(description="Check file headers.")
     parser.add_argument(
         "paths",
         type=str,
         nargs="*",
         default=[default_path],
-        help="Paths to scan by default uses ../qiskit_machine_learning from the script",
+        help="Paths to scan by default uses ../. from the script",
     )
     args = parser.parse_args()
-    files = discover_files(args.paths)
+    files = discover_files(args.paths, exclude_folders=["docs"])
     with multiprocessing.Pool() as pool:
         res = pool.map(validate_header, files)
     failed_files = [x for x in res if x[1] is False]
