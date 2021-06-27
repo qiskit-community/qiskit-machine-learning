@@ -62,7 +62,7 @@ except ImportError:
 
 
 class TorchConnector(Module):
-    """Connects Qiskit (Quantum) Neural Network to PyTorch."""
+    """Connects a Qiskit (Quantum) Neural Network to PyTorch."""
 
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
@@ -203,8 +203,7 @@ class TorchConnector(Module):
         initial_weights: Optional[Union[np.ndarray, Tensor]] = None,
         sparse: Optional[bool] = None,
     ):
-        """Initializes the TorchConnector.
-
+        """
         Args:
             neural_network: The neural network to be connected to PyTorch.
             initial_weights: The initial weights to start training the network. If this is None,
@@ -237,7 +236,12 @@ class TorchConnector(Module):
     @property  # type: ignore
     @deprecate_property("0.2.0", new_name="weight")
     def weights(self) -> Tensor:
-        """Returns the weights of the underlying network."""
+        """
+        .. deprecated:: 0.2.0
+           Use :meth:`weight` instead.
+
+        Returns the weights of the underlying network.
+        """
         return self.weight
 
     @property
@@ -252,8 +256,10 @@ class TorchConnector(Module):
 
     def forward(self, input_data: Optional[Tensor] = None) -> Tensor:
         """Forward pass.
+
         Args:
             input_data: data to be evaluated.
+
         Returns:
             Result of forward pass of this model.
         """
