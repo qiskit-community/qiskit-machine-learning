@@ -59,6 +59,8 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         ("cobyla", "qasm"),
         ("bfgs", "statevector"),
         ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
     )
     def test_regressor_with_opflow_qnn(self, config):
         """Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
@@ -82,8 +84,10 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         # construct QNN
         regression_opflow_qnn = TwoLayerQNN(
@@ -93,12 +97,19 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         initial_point = np.zeros(ansatz.num_parameters)
 
         # construct the regressor from the neural network
-        regressor = NeuralNetworkRegressor(
-            neural_network=regression_opflow_qnn,
-            loss="squared_error",
-            optimizer=optimizer,
-            initial_point=initial_point,
-        )
+        if optimizer is None:
+            regressor = NeuralNetworkRegressor(
+                neural_network=regression_opflow_qnn,
+                loss="squared_error",
+                initial_point=initial_point,
+            )
+        else:
+            regressor = NeuralNetworkRegressor(
+                neural_network=regression_opflow_qnn,
+                loss="squared_error",
+                optimizer=optimizer,
+                initial_point=initial_point,
+            )
 
         # fit to data
         regressor.fit(self.X, self.y)

@@ -59,6 +59,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         ("bfgs", "absolute_error", "qasm"),
         ("bfgs", "squared_error", "statevector"),
         ("bfgs", "squared_error", "qasm"),
+        (None, "absolute_error", "statevector"),
+        (None, "absolute_error", "qasm"),
+        (None, "squared_error", "statevector"),
+        (None, "squared_error", "qasm"),
     )
     def test_classifier_with_opflow_qnn(self, config):
         """Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
@@ -72,17 +76,22 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         num_inputs = 2
         ansatz = RealAmplitudes(num_inputs, reps=1)
         qnn = TwoLayerQNN(num_inputs, ansatz=ansatz, quantum_instance=quantum_instance)
         initial_point = np.array([0.5] * ansatz.num_parameters)
 
-        classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
-        )
+        if optimizer is None:
+            classifier = NeuralNetworkClassifier(qnn, loss=loss, initial_point=initial_point)
+        else:
+            classifier = NeuralNetworkClassifier(
+                qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+            )
 
         # construct data
         num_samples = 5
@@ -108,6 +117,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         ("bfgs", "absolute_error", "qasm"),
         ("bfgs", "squared_error", "statevector"),
         ("bfgs", "squared_error", "qasm"),
+        (None, "absolute_error", "statevector"),
+        (None, "absolute_error", "qasm"),
+        (None, "squared_error", "statevector"),
+        (None, "squared_error", "qasm"),
     )
     def test_classifier_with_circuit_qnn(self, config):
         """Test Neural Network Classifier with Circuit QNN."""
@@ -121,8 +134,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
@@ -150,9 +165,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         initial_point = np.array([0.5] * ansatz.num_parameters)
 
         # construct classifier
-        classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
-        )
+        if optimizer is None:
+            classifier = NeuralNetworkClassifier(qnn, loss=loss, initial_point=initial_point)
+        else:
+            classifier = NeuralNetworkClassifier(
+                qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+            )
 
         # construct data
         num_samples = 5
@@ -174,6 +192,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         ("cobyla", "qasm"),
         ("bfgs", "statevector"),
         ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
     )
     def test_classifier_with_circuit_qnn_and_cross_entropy(self, config):
         """Test Neural Network Classifier with Circuit QNN and Cross Entropy loss."""
@@ -187,8 +207,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         loss = CrossEntropyLoss()
 
@@ -218,9 +240,14 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # classification may fail sometimes, so let's fix initial point
         initial_point = np.array([0.5] * ansatz.num_parameters)
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, one_hot=True, initial_point=initial_point
-        )
+        if optimizer is None:
+            classifier = NeuralNetworkClassifier(
+                qnn, loss=loss, one_hot=True, initial_point=initial_point
+            )
+        else:
+            classifier = NeuralNetworkClassifier(
+                qnn, optimizer=optimizer, loss=loss, one_hot=True, initial_point=initial_point
+            )
 
         # construct data
         num_samples = 5

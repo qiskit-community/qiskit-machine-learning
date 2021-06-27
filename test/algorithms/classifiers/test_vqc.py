@@ -53,6 +53,8 @@ class TestVQC(QiskitMachineLearningTestCase):
         ("cobyla", "qasm"),
         ("bfgs", "statevector"),
         ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
     )
     def test_vqc(self, config):
         """Test VQC."""
@@ -66,8 +68,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
@@ -76,13 +80,21 @@ class TestVQC(QiskitMachineLearningTestCase):
         initial_point = np.array([0.5] * ansatz.num_parameters)
 
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = VQC(
-            feature_map=feature_map,
-            ansatz=ansatz,
-            optimizer=optimizer,
-            quantum_instance=quantum_instance,
-            initial_point=initial_point,
-        )
+        if optimizer is None:
+            classifier = VQC(
+                feature_map=feature_map,
+                ansatz=ansatz,
+                quantum_instance=quantum_instance,
+                initial_point=initial_point,
+            )
+        else:
+            classifier = VQC(
+                feature_map=feature_map,
+                ansatz=ansatz,
+                optimizer=optimizer,
+                quantum_instance=quantum_instance,
+                initial_point=initial_point,
+            )
 
         # construct data
         num_samples = 5
