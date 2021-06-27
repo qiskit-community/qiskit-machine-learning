@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network regressor."""
 
-from typing import Union, cast
+from typing import Union, Optional, cast
 
 import numpy as np
 
@@ -35,7 +35,7 @@ class VQR(NeuralNetworkRegressor):
         ansatz: QuantumCircuit = None,
         observable: Union[QuantumCircuit, OperatorBase] = None,
         loss: Union[str, Loss] = "squared_error",
-        optimizer: Optimizer = None,
+        optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         quantum_instance: QuantumInstance = None,
         initial_point: np.ndarray = None,
@@ -51,7 +51,7 @@ class VQR(NeuralNetworkRegressor):
             observable: The observable to be measured in the underlying TwoLayerQNN. If  None, use
                 the default from the TwoLayerQNN, i.e., `Z^{\otimes num_qubits}`.
             loss: A target loss function to be used in training. Default is squared error.
-            optimizer: An instance of an optimizer to be used in training.
+            optimizer: An instance of an optimizer to be used in training. Default is SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
 

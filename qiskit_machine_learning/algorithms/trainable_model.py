@@ -59,8 +59,7 @@ class TrainableModel:
                 i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
                 'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
                 implementing the Loss interface.
-            optimizer: An instance of an optimizer to be used in training.
-            Default is SLSQP.
+            optimizer: An instance of an optimizer to be used in training. Default is SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
 
