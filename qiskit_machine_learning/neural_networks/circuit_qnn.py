@@ -63,8 +63,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
         input_gradients: bool = False,
     ) -> None:
-        """Initializes the Circuit Quantum Neural Network.
-
+        """
         Args:
             circuit: The parametrized quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
