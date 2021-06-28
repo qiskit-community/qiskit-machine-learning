@@ -38,7 +38,6 @@ echo "Setup ssh keys"
 pwd
 set -e
 # Add qiskit-translations push key to ssh-agent
-# TODO: Update me!
 openssl enc -aes-256-cbc -d -in ../tools/github_poBranch_update_key.enc -out github_poBranch_deploy_key -K $encrypted_deploy_po_branch_key -iv $encrypted_deploy_po_branch_iv
 chmod 600 github_poBranch_deploy_key
 eval $(ssh-agent -s)
@@ -75,7 +74,7 @@ cp $SOURCE_DIR/requirements-dev.txt machine-learning/.
 
 # git checkout translationDocs
 echo "add to po files to target dir"
-git add $DOC_DIR_PO
+git add machine-learning/
 
 # Commit and push the changes.
 git commit -m "[Qiskit Machine Learning] Automated documentation update to add .po files" -m "skip ci" -m "Commit: $GITHUB_SHA" -m "Github Actions Run: https://github.com/Qiskit/qiskit/runs/$GITHUB_RUN_NUMBER"
