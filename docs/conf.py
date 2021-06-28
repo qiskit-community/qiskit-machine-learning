@@ -208,3 +208,4 @@ def setup(app):
     app.add_directive('customgalleryitem', CustomGalleryItemDirective)
     app.add_directive('customcarditem', CustomCardItemDirective)
     app.add_directive('customcalloutitem', CustomCalloutItemDirective)
+    app.setup_extension('versionutils')
