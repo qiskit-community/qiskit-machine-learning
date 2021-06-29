@@ -86,12 +86,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         qnn = TwoLayerQNN(num_inputs, ansatz=ansatz, quantum_instance=quantum_instance)
         initial_point = np.array([0.5] * ansatz.num_parameters)
 
-        if optimizer is None:
-            classifier = NeuralNetworkClassifier(qnn, loss=loss, initial_point=initial_point)
-        else:
-            classifier = NeuralNetworkClassifier(
-                qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
-            )
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+        )
 
         # construct data
         num_samples = 5
@@ -165,12 +162,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         initial_point = np.array([0.5] * ansatz.num_parameters)
 
         # construct classifier
-        if optimizer is None:
-            classifier = NeuralNetworkClassifier(qnn, loss=loss, initial_point=initial_point)
-        else:
-            classifier = NeuralNetworkClassifier(
-                qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
-            )
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+        )
 
         # construct data
         num_samples = 5
@@ -240,14 +234,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # classification may fail sometimes, so let's fix initial point
         initial_point = np.array([0.5] * ansatz.num_parameters)
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        if optimizer is None:
-            classifier = NeuralNetworkClassifier(
-                qnn, loss=loss, one_hot=True, initial_point=initial_point
-            )
-        else:
-            classifier = NeuralNetworkClassifier(
-                qnn, optimizer=optimizer, loss=loss, one_hot=True, initial_point=initial_point
-            )
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, one_hot=True, initial_point=initial_point
+        )
 
         # construct data
         num_samples = 5
