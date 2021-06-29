@@ -32,7 +32,7 @@ pushd docs
 # Extract document's translatable messages into pot files
 # https://sphinx-intl.readthedocs.io/en/master/quickstart.html
 echo "Extract document's translatable messages into pot files and generate po files"
-tox -egettext -- -D language=$SOURCE_LANG
+tox -egettext -- -D language=$SOURCE_LANG -D content_prefix=documentation/machine-learning
 
 echo "Setup ssh keys"
 pwd
