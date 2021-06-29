@@ -32,7 +32,7 @@ pushd docs
 # Extract document's translatable messages into pot files
 # https://sphinx-intl.readthedocs.io/en/master/quickstart.html
 echo "Extract document's translatable messages into pot files and generate po files"
-tox -egettext -- -D language=$SOURCE_LANG
+tox -egettext -- -D language=$SOURCE_LANG -D content_prefix=documentation/machine-learning
 
 echo "Setup ssh keys"
 pwd
@@ -54,11 +54,11 @@ git config user.name "Qiskit (Machine Learning) Autodeploy"
 git config user.email "qiskit@qiskit.org"
 
 echo "git rm -rf for the translation po files"
-git rm -rf --ignore-unmatch $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/*.po \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidoc \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/theme \
-    $DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/_*
+git rm -rf --ignore-unmatch machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/*.po \
+    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api \
+    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidoc \
+    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/theme \
+    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/_*
 
 # Remove api/ and apidoc/ to avoid confusion while translating
 rm -rf $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api/ \
