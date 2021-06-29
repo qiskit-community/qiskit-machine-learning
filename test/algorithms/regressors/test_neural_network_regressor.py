@@ -97,19 +97,12 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         initial_point = np.zeros(ansatz.num_parameters)
 
         # construct the regressor from the neural network
-        if optimizer is None:
-            regressor = NeuralNetworkRegressor(
-                neural_network=regression_opflow_qnn,
-                loss="squared_error",
-                initial_point=initial_point,
-            )
-        else:
-            regressor = NeuralNetworkRegressor(
-                neural_network=regression_opflow_qnn,
-                loss="squared_error",
-                optimizer=optimizer,
-                initial_point=initial_point,
-            )
+        regressor = NeuralNetworkRegressor(
+            neural_network=regression_opflow_qnn,
+            loss="squared_error",
+            optimizer=optimizer,
+            initial_point=initial_point,
+        )
 
         # fit to data
         regressor.fit(self.X, self.y)
