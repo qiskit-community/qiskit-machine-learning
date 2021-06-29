@@ -51,7 +51,7 @@ class VQR(NeuralNetworkRegressor):
             observable: The observable to be measured in the underlying TwoLayerQNN. If  None, use
                 the default from the TwoLayerQNN, i.e., `Z^{\otimes num_qubits}`.
             loss: A target loss function to be used in training. Default is squared error.
-            optimizer: An instance of an optimizer to be used in training. Default is SLSQP.
+            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
 

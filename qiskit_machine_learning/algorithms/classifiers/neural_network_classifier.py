@@ -66,7 +66,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 as a set of individual predictions with occurrence probabilities (the index would be
                 the prediction and the value the corresponding frequency, e.g. for absolute/squared
                 loss). This option is ignored in case of a one-dimensional output.
-            optimizer: An instance of an optimizer to be used in training. Default is SLSQP.
+            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
 
