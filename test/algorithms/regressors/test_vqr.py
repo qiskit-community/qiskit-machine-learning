@@ -103,21 +103,13 @@ class TestVQR(QiskitMachineLearningTestCase):
             initial_point = np.zeros(4)
 
         # construct regressor
-        if optimizer is None:
-            regressor = VQR(
-                feature_map=feature_map,
-                ansatz=ansatz,
-                quantum_instance=quantum_instance,
-                initial_point=initial_point,
-            )
-        else:
-            regressor = VQR(
-                feature_map=feature_map,
-                ansatz=ansatz,
-                optimizer=optimizer,
-                quantum_instance=quantum_instance,
-                initial_point=initial_point,
-            )
+        regressor = VQR(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            quantum_instance=quantum_instance,
+            initial_point=initial_point,
+        )
 
         # fit to data
         regressor.fit(self.X, self.y)
