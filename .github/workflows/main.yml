@@ -46,7 +46,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx nbsphinx sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization]
+          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision
           sudo apt-get -y install pandoc graphviz
           sudo apt-get -y install python3-enchant
           sudo apt-get -y install hunspell-en-us
@@ -173,7 +173,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx nbsphinx sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision
+          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision
           sudo apt-get install -y pandoc graphviz
         shell: bash
       - name: Run Machine Learning Tutorials
