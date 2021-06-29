@@ -80,21 +80,13 @@ class TestVQC(QiskitMachineLearningTestCase):
         initial_point = np.array([0.5] * ansatz.num_parameters)
 
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        if optimizer is None:
-            classifier = VQC(
-                feature_map=feature_map,
-                ansatz=ansatz,
-                quantum_instance=quantum_instance,
-                initial_point=initial_point,
-            )
-        else:
-            classifier = VQC(
-                feature_map=feature_map,
-                ansatz=ansatz,
-                optimizer=optimizer,
-                quantum_instance=quantum_instance,
-                initial_point=initial_point,
-            )
+        classifier = VQC(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            quantum_instance=quantum_instance,
+            initial_point=initial_point,
+        )
 
         # construct data
         num_samples = 5
