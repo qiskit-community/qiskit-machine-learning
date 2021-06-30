@@ -45,7 +45,9 @@ jobs:
           QISKIT_PARALLEL: False
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
-          make html SPHINXOPTS=-W
+          pushd docs
+          sphinx-build -W -b html -D content_prefix=documentation/machine-learning . _build/html/
+          popd
           tools/deploy_documentation.sh
         shell: bash
   deploy-translatable-strings:
