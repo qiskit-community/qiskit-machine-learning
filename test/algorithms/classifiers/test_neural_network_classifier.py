@@ -51,14 +51,18 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, quantum instance
-        ("cobyla", "l1", "statevector"),
-        ("cobyla", "l1", "qasm"),
-        ("cobyla", "l2", "statevector"),
-        ("cobyla", "l2", "qasm"),
-        ("bfgs", "l1", "statevector"),
-        ("bfgs", "l1", "qasm"),
-        ("bfgs", "l2", "statevector"),
-        ("bfgs", "l2", "qasm"),
+        ("cobyla", "absolute_error", "statevector"),
+        ("cobyla", "absolute_error", "qasm"),
+        ("cobyla", "squared_error", "statevector"),
+        ("cobyla", "squared_error", "qasm"),
+        ("bfgs", "absolute_error", "statevector"),
+        ("bfgs", "absolute_error", "qasm"),
+        ("bfgs", "squared_error", "statevector"),
+        ("bfgs", "squared_error", "qasm"),
+        (None, "absolute_error", "statevector"),
+        (None, "absolute_error", "qasm"),
+        (None, "squared_error", "statevector"),
+        (None, "squared_error", "qasm"),
     )
     def test_classifier_with_opflow_qnn(self, config):
         """Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
@@ -72,8 +76,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         num_inputs = 2
         ansatz = RealAmplitudes(num_inputs, reps=1)
@@ -100,14 +106,18 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, quantum instance
-        ("cobyla", "l1", "statevector"),
-        ("cobyla", "l1", "qasm"),
-        ("cobyla", "l2", "statevector"),
-        ("cobyla", "l2", "qasm"),
-        ("bfgs", "l1", "statevector"),
-        ("bfgs", "l1", "qasm"),
-        ("bfgs", "l2", "statevector"),
-        ("bfgs", "l2", "qasm"),
+        ("cobyla", "absolute_error", "statevector"),
+        ("cobyla", "absolute_error", "qasm"),
+        ("cobyla", "squared_error", "statevector"),
+        ("cobyla", "squared_error", "qasm"),
+        ("bfgs", "absolute_error", "statevector"),
+        ("bfgs", "absolute_error", "qasm"),
+        ("bfgs", "squared_error", "statevector"),
+        ("bfgs", "squared_error", "qasm"),
+        (None, "absolute_error", "statevector"),
+        (None, "absolute_error", "qasm"),
+        (None, "squared_error", "statevector"),
+        (None, "squared_error", "qasm"),
     )
     def test_classifier_with_circuit_qnn(self, config):
         """Test Neural Network Classifier with Circuit QNN."""
@@ -121,8 +131,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
@@ -174,6 +186,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         ("cobyla", "qasm"),
         ("bfgs", "statevector"),
         ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
     )
     def test_classifier_with_circuit_qnn_and_cross_entropy(self, config):
         """Test Neural Network Classifier with Circuit QNN and Cross Entropy loss."""
@@ -187,8 +201,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         loss = CrossEntropyLoss()
 

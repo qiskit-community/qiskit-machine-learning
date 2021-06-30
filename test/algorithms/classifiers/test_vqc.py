@@ -53,6 +53,8 @@ class TestVQC(QiskitMachineLearningTestCase):
         ("cobyla", "qasm"),
         ("bfgs", "statevector"),
         ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
     )
     def test_vqc(self, config):
         """Test VQC."""
@@ -66,8 +68,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
