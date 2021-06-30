@@ -16,6 +16,7 @@ from typing import Union, Optional
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
 from sklearn.base import ClassifierMixin
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 from ..objective_functions import (
     BinaryObjectiveFunction,
@@ -74,8 +75,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         """
         super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
         self._one_hot = one_hot
+        self._target_encoder = None  # encodes the target data if categorical
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
+        y = self._convert_categorical(y)
+
         # mypy definition
         function: ObjectiveFunction = None
         if self._neural_network.output_shape == (1,):
@@ -118,4 +122,35 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def score(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
     ) -> float:
+        y = self._convert_categorical(y)
         return ClassifierMixin.score(self, X, y, sample_weight)
+
+
+    def _convert_categorical(self, y: np.ndarray) -> np.ndarray:
+        """Converts categorical target data using label or one-hot encoding."""
+        y = np.array(y)
+
+        # Test if data is numeric
+        try:
+            y.astype(float)
+        except ValueError as e:
+            # Non-numeric data is assumed to be cartegorical
+            is_categorical = True
+            y = y.reshape(-1,1)
+        else:
+            is_categorical = False
+        
+        if is_categorical and self._one_hot:
+            if not self._target_encoder:
+                self._target_encoder = OneHotEncoder()
+                self._target_encoder.fit(y)
+            y = self._target_encoder.transform(y)
+        elif is_categorical and not self._one_hot:
+            if not self._target_encoder:
+                self._target_encoder = LabelEncoder()
+                self._target_encoder.fit(y)
+            y = self._target_encoder.transform(y)
+        
+        if not isinstance(y, np.ndarray):
+            y = np.array(y.todense())
+        return y
