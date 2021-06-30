@@ -90,7 +90,7 @@ class Loss(ABC):
 
 class L1Loss(Loss):
     r"""
-    This class computes the L1 loss for each sample as:
+    This class computes the L1 loss (i.e. absolute error) for each sample as:
 
     .. math::
 
@@ -114,7 +114,7 @@ class L1Loss(Loss):
 
 class L2Loss(Loss):
     r"""
-    This class computes the L2 loss for each sample as:
+    This class computes the L2 loss (i.e. squared error) for each sample as:
 
     .. math::
 

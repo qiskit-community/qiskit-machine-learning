@@ -21,6 +21,9 @@ to a discriminative or generative task.
 Neural Networks may be used, for example, with the
 :class:`~qiskit_machine_learning.algorithms.QGAN` algorithm.
 
+See also the :class:`~qiskit_machine_learning.connectors.TorchConnector` that allows the
+use of these neural networks in code written to `PyTorch <https://pytorch.org/>`_.
+
 .. currentmodule:: qiskit_machine_learning.neural_networks
 
 Neural Network Base Classes
@@ -31,6 +34,7 @@ Neural Network Base Classes
    :nosignatures:
 
    NeuralNetwork
+   SamplingNeuralNetwork
 
 Neural Networks
 ===============
@@ -39,10 +43,8 @@ Neural Networks
    :toctree: ../stubs/
    :nosignatures:
 
-   NeuralNetwork
    OpflowQNN
    TwoLayerQNN
-   SamplingNeuralNetwork
    CircuitQNN
 
 """

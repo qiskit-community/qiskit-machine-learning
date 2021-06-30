@@ -22,6 +22,8 @@ from typing import Tuple, Optional
 from test import QiskitMachineLearningTestCase
 from ddt import data, ddt
 from qiskit_machine_learning.deprecation import (
+    DeprecatedEnum,
+    DeprecatedEnumMeta,
     DeprecatedType,
     warn_deprecated,
     warn_deprecated_same_type_name,
@@ -29,9 +31,23 @@ from qiskit_machine_learning.deprecation import (
     deprecate_property,
     deprecate_method,
     deprecate_arguments,
+    deprecate_values,
 )
 
 # pylint: disable=bad-docstring-quotes
+
+
+class EnumTest(DeprecatedEnum, metaclass=DeprecatedEnumMeta):
+    """Enumeration Test"""
+
+    ONE = "one"
+    TWO = "two"
+
+    def deprecate(self):
+        """show deprecate message"""
+        warn_deprecated(
+            "0.2.0", DeprecatedType.ENUM, self.__class__.__name__, new_name="NewEnum", stack_level=3
+        )
 
 
 @deprecate_function("0.1.1", DeprecatedType.CLASS, "some_class", "and more information")
@@ -59,6 +75,7 @@ class DeprecatedClass1:
         warn_deprecated(
             "0.3.0", DeprecatedType.CLASS, "DeprecatedClass1", DeprecatedType.CLASS, "NewClass"
         )
+        self.value = 10
 
 
 class DeprecatedClass2:
@@ -68,6 +85,22 @@ class DeprecatedClass2:
         warn_deprecated_same_type_name(
             "0.3.0", DeprecatedType.CLASS, "DeprecatedClass2", "from package test2"
         )
+        self.value = 10
+
+
+class DeprecatedClass3:
+    """Deprecated Test class 3"""
+
+    @deprecate_values("0.2.0", {"loss": {"l1": "absolute_error", "l2": "squared_error"}})
+    def __init__(self, arg1: int, loss: str = "squared_error") -> None:
+        self.value = arg1
+        self.loss = loss
+
+    @deprecate_values("0.2.0", {"loss": {"l1": "absolute_error", "l2": "squared_error"}})
+    def method1(self, arg1: int, loss: str = "squared_error") -> None:
+        """method 1"""
+        self.value = arg1
+        self.loss = loss
 
 
 class TestClass:
@@ -125,6 +158,30 @@ class TestDeprecation(QiskitMachineLearningTestCase):
                 return idx + 1
         return -1
 
+    def test_enum_deprecation(self):
+        """test enumeration deprecation"""
+
+        msg_ref = (
+            "The EnumTest enum is deprecated as of version 0.2.0 "
+            "and will be removed no sooner than 3 months after the release. "
+            "Instead use the NewEnum enum."
+        )
+
+        # emit deprecation the first time it is used
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            _ = EnumTest.ONE
+            msg = str(c_m[0].message)
+            self.assertEqual(msg, msg_ref)
+            self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
+            self.assertEqual(self._get_line_from_str("EnumTest.ONE"), c_m[0].lineno)
+
+        # trying again should not emit deprecation
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            _ = EnumTest.TWO
+            self.assertListEqual(c_m, [])
+
     @data(
         (
             "func1",
@@ -171,7 +228,8 @@ class TestDeprecation(QiskitMachineLearningTestCase):
         # emit deprecation the first time it is used
         with warnings.catch_warnings(record=True) as c_m:
             warnings.simplefilter("always")
-            DeprecatedClass1()
+            obj = DeprecatedClass1()
+            self.assertEqual(obj.value, 10)
             msg = str(c_m[0].message)
             self.assertEqual(msg, msg_ref)
             self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
@@ -180,7 +238,8 @@ class TestDeprecation(QiskitMachineLearningTestCase):
         # trying again should not emit deprecation
         with warnings.catch_warnings(record=True) as c_m:
             warnings.simplefilter("always")
-            DeprecatedClass1()
+            obj = DeprecatedClass1()
+            self.assertEqual(obj.value, 10)
             self.assertListEqual(c_m, [])
 
     def test_class_deprecation2(self):
@@ -195,7 +254,8 @@ class TestDeprecation(QiskitMachineLearningTestCase):
         # emit deprecation the first time it is used
         with warnings.catch_warnings(record=True) as c_m:
             warnings.simplefilter("always")
-            DeprecatedClass2()
+            obj = DeprecatedClass2()
+            self.assertEqual(obj.value, 10)
             msg = str(c_m[0].message)
             self.assertEqual(msg, msg_ref)
             self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
@@ -204,7 +264,65 @@ class TestDeprecation(QiskitMachineLearningTestCase):
         # trying again should not emit deprecation
         with warnings.catch_warnings(record=True) as c_m:
             warnings.simplefilter("always")
-            DeprecatedClass2()
+            obj = DeprecatedClass2()
+            self.assertEqual(obj.value, 10)
+            self.assertListEqual(c_m, [])
+
+    @data(
+        (
+            "l1",
+            'The loss argument value "l1" is deprecated as of version 0.2.0 '
+            "and will be removed no sooner than 3 months after the release. "
+            'Instead use the "absolute_error" value.',
+        ),
+        (
+            "l2",
+            'The loss argument value "l2" is deprecated as of version 0.2.0 '
+            "and will be removed no sooner than 3 months after the release. "
+            'Instead use the "squared_error" value.',
+        ),
+    )
+    def test_values_deprecation(self, config):
+        """test values deprecation"""
+
+        loss, msg_ref = config
+
+        # emit deprecation the first time it is used
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            obj = DeprecatedClass3(10, loss=loss)
+            self.assertEqual(obj.value, 10)
+            msg = str(c_m[0].message)
+            self.assertEqual(msg, msg_ref)
+            self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
+            self.assertEqual(
+                self._get_line_from_str("DeprecatedClass3(10, loss=loss)"), c_m[0].lineno
+            )
+
+        # trying again should not emit deprecation
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            obj = DeprecatedClass3(10, loss=loss)
+            self.assertEqual(obj.value, 10)
+            self.assertListEqual(c_m, [])
+
+        # emit deprecation the first time it is used
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            obj = DeprecatedClass3(5, loss=loss)
+            obj.method1(10, loss)
+            self.assertEqual(obj.value, 10)
+            msg = str(c_m[0].message)
+            self.assertEqual(msg, msg_ref)
+            self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
+            self.assertEqual(self._get_line_from_str("obj.method1(10, loss)"), c_m[0].lineno)
+
+        # trying again should not emit deprecation
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            obj = DeprecatedClass3(5, loss=loss)
+            obj.method1(10, loss)
+            self.assertEqual(obj.value, 10)
             self.assertListEqual(c_m, [])
 
     @data(
@@ -262,6 +380,12 @@ class TestDeprecation(QiskitMachineLearningTestCase):
             self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
             self.assertEqual(self._get_line_from_str('func3(old_arg="hello")'), c_m[0].lineno)
 
+        # trying again should not emit deprecation
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            self.assertEqual(("hello", None), func3(old_arg="hello"))
+            self.assertListEqual(c_m, [])
+
     def test_method_arguments_deprecation(self):
         """test method arguments deprecation"""
 
@@ -283,6 +407,12 @@ class TestDeprecation(QiskitMachineLearningTestCase):
             self.assertEqual(msg, msg_ref)
             self.assertTrue("test_deprecation.py" in c_m[0].filename, c_m[0].filename)
             self.assertEqual(self._get_line_from_str('obj.method3(old_arg="hello")'), c_m[0].lineno)
+
+        # trying again should not emit deprecation
+        with warnings.catch_warnings(record=True) as c_m:
+            warnings.simplefilter("always")
+            self.assertEqual(("hello", None), obj.method3(old_arg="hello"))
+            self.assertListEqual(c_m, [])
 
     def test_property_deprecation(self):
         """test property deprecation"""
