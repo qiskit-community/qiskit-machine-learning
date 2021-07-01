@@ -74,7 +74,10 @@ class OpflowQNN(NeuralNetwork):
         self._input_params = list(input_params) or []
         self._weight_params = list(weight_params) or []
 
-        self.quantum_instance = quantum_instance
+        self._quantum_instance = None
+        self._circuit_sampler = None
+        if quantum_instance is not None:
+            self.quantum_instance = quantum_instance
 
         self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
@@ -111,20 +114,17 @@ class OpflowQNN(NeuralNetwork):
 
     @quantum_instance.setter
     def quantum_instance(
-        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
+        self, quantum_instance: Union[QuantumInstance, BaseBackend, Backend]
     ) -> None:
         """Sets the quantum instance to evaluate the circuit."""
+        if isinstance(quantum_instance, (BaseBackend, Backend)):
+            quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
-        if quantum_instance is not None:
-            if isinstance(quantum_instance, (BaseBackend, Backend)):
-                quantum_instance = QuantumInstance(quantum_instance)
-            self._circuit_sampler = CircuitSampler(
-                quantum_instance,
-                param_qobj=is_aer_provider(self._quantum_instance.backend),
-                caching="all",
-            )
-        else:
-            self._circuit_sampler = None
+        self._circuit_sampler = CircuitSampler(
+            quantum_instance,
+            param_qobj=is_aer_provider(self._quantum_instance.backend),
+            caching="all",
+        )
 
     def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
@@ -190,7 +190,7 @@ class OpflowQNN(NeuralNetwork):
 
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
+    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]], ]:
 
         # check whether gradient circuit could be constructed
         if self._gradient_operator is None:
