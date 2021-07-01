@@ -63,7 +63,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
         input_gradients: bool = False,
     ) -> None:
-        """Initializes the Circuit Quantum Neural Network.
+        """
 
         Args:
             circuit: The parametrized quantum circuit that generates the samples of this network.
@@ -72,20 +72,27 @@ class CircuitQNN(SamplingNeuralNetwork):
             sparse: Returns whether the output is sparse or not.
             sampling: Determines whether the network returns a batch of samples or (possibly
                 sparse) array of probabilities in its forward pass. In case of probabilities,
-                the backward pass returns the probability gradients, while it returns (None, None)
-                in the case of samples. Note that sampling==True will always result in a
-                dense return array independent of the other settings.
+                the backward pass returns the probability gradients, while it returns
+                ``(None, None)`` in the case of samples. Note that ``sampling==True`` will always
+                result in a dense return array independent of the other settings.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If this is used, the output shape of the output needs to be
                 given as a separate argument.
-            output_shape: The output shape of the custom interpretation. The output shape is
-                automatically determined in case of sampling==True.
+            output_shape: The output shape of the custom interpretation, only used in the case
+                where an interpret function is provided and ``sampling==False``. Note that in the
+                remaining cases, the output shape is automatically inferred by: ``2^num_qubits`` if
+                ``sampling==False`` and ``interpret==None``, ``(num_samples,1)``
+                if ``sampling==True`` and ``interpret==None``, and
+                ``(num_samples, interpret_shape)`` if ``sampling==True`` and an interpret function
+                is provided.
             gradient: The gradient converter to be used for the probability gradients.
-            quantum_instance: The quantum instance to evaluate the circuits.
+            quantum_instance: The quantum instance to evaluate the circuits. Note that
+                if ``sampling==True``, 'statevector_simulator' is not a valid backend for the
+                quantum instance.
             input_gradients: Determines whether to compute gradients with respect to input data.
         Raises:
-            QiskitMachineLearningError: if `interpret` is passed without `output_shape`.
+            QiskitMachineLearningError: if ``interpret`` is passed without ``output_shape``.
         """
         # copy circuit and add measurements in case non are given
         # TODO: need to be able to handle partial measurements! (partial trace...)
