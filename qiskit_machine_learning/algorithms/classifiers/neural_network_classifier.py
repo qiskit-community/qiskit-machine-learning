@@ -66,7 +66,8 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
                 as a set of individual predictions with occurrence probabilities (the index would be
                 the prediction and the value the corresponding frequency, e.g. for absolute/squared
-                loss). This option is ignored in case of a one-dimensional output.
+                loss). In case of a one-dimensional categorical output, this option determines how
+                to encode the target data.
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
@@ -126,7 +127,6 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         y = self._convert_categorical(y)
         return ClassifierMixin.score(self, X, y, sample_weight)
 
-
     def _convert_categorical(self, y: np.ndarray) -> np.ndarray:
         """Converts categorical target data using label or one-hot encoding."""
         y = np.array(y)
@@ -134,13 +134,13 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         # Test if data is numeric
         try:
             y.astype(float)
-        except ValueError as e:
-            # Non-numeric data is assumed to be cartegorical
+        except ValueError:
+            # nonnumeric data is assumed to be cartegorical
             is_categorical = True
-            y = y.reshape(-1,1)
+            y = y.reshape(-1, 1)
         else:
             is_categorical = False
-        
+
         if is_categorical and self._one_hot:
             if not self._target_encoder:
                 self._target_encoder = OneHotEncoder()
@@ -151,7 +151,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 self._target_encoder = LabelEncoder()
                 self._target_encoder.fit(y)
             y = self._target_encoder.transform(y)
-        
+
         if not isinstance(y, np.ndarray):
             y = np.array(y.todense())
         return y
