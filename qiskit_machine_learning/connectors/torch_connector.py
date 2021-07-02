@@ -206,7 +206,10 @@ class TorchConnector(Module):
         """Initializes the TorchConnector.
 
         Args:
-            neural_network: The neural network to be connected to PyTorch.
+            neural_network: The neural network to be connected to PyTorch. Remember
+                    that ``input_gradients``  must be set to ``True`` in the neural network
+                    initialization before passing it to the ``TorchConnector`` for the gradient
+                    computations to work properly during training.
             initial_weights: The initial weights to start training the network. If this is None,
                 the initial weights are chosen uniformly at random from [-1, 1].
             sparse: Whether this connector should return sparse output or not. If sparse is set
