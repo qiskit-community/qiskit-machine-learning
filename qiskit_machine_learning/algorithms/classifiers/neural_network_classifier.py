@@ -135,7 +135,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         try:
             y.astype(float)
         except ValueError:
-            # nonnumeric data is assumed to be cartegorical
+            # non-numeric data is assumed to be categorical
             is_categorical = True
             y = y.reshape(-1, 1)
         else:
