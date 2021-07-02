@@ -35,7 +35,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision
+          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] 'torchvision==0.9.1'
           sudo apt-get install -y pandoc graphviz
         shell: bash
       - name: Build and publish
@@ -63,7 +63,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision tox
+        pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] 'torchvision==0.9.1' tox
         sudo apt-get install -y graphviz pandoc
     - name: Build and publish
       env:
