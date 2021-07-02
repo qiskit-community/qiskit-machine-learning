@@ -69,13 +69,8 @@ class NeuralNetwork(ABC):
 
         self._sparse = sparse
 
-        if isinstance(output_shape, int):
-            output_shape = (output_shape,)
-        if not np.all([s > 0 for s in output_shape]):
-            raise QiskitMachineLearningError(
-                f"Invalid output shape, all components must be > 0, but got: {output_shape}."
-            )
-        self._output_shape = output_shape
+        output_shape_ = self._validate_output_shape(output_shape)
+        self._output_shape = output_shape_
 
         self._input_gradients = input_gradients
 
@@ -137,6 +132,15 @@ class NeuralNetwork(ABC):
             input_ = input_.reshape((np.product(input_.shape[:-1]), -1))
 
         return input_, shape
+
+    def _validate_output_shape(self, output_shape):
+        if isinstance(output_shape, int):
+            output_shape = (output_shape,)
+        if not np.all([s > 0 for s in output_shape]):
+            raise QiskitMachineLearningError(
+                f"Invalid output shape, all components must be > 0, but got: {output_shape}."
+            )
+        return output_shape
 
     def _validate_weights(
         self, weights: Optional[Union[List[float], np.ndarray, float]]

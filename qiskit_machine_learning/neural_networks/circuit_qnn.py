@@ -64,7 +64,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         input_gradients: bool = False,
     ) -> None:
         """
-
         Args:
             circuit: The parametrized quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
@@ -77,8 +76,8 @@ class CircuitQNN(SamplingNeuralNetwork):
                 result in a dense return array independent of the other settings.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
-                sparse) output array. If this is used, the output shape of the output needs to be
-                given as a separate argument.
+                sparse) output array. If this is used, and ``sampling==False``, the output shape of
+                the output needs to be given as a separate argument.
             output_shape: The output shape of the custom interpretation, only used in the case
                 where an interpret function is provided and ``sampling==False``. Note that in the
                 remaining cases, the output shape is automatically inferred by: ``2^num_qubits`` if
@@ -98,17 +97,19 @@ class CircuitQNN(SamplingNeuralNetwork):
         # TODO: need to be able to handle partial measurements! (partial trace...)
         self._circuit = circuit.copy()
 
-        # call quantum instance setter
-        self._quantum_instance = None
-        self._sampler = None
-        if quantum_instance is not None:
-            self.quantum_instance = quantum_instance
-
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
         self._interpret = interpret if interpret else lambda x: x
         self._input_gradients = input_gradients
         sparse_ = False if sampling else sparse
+        self._output_shape = output_shape
+        self._sampling = sampling
+
+        # call quantum instance setter
+        self._quantum_instance = None
+        self._sampler = None
+        if quantum_instance is not None:
+            self.quantum_instance = quantum_instance
 
         output_shape_ = self._compute_output_shape(interpret, output_shape, sampling)
 
@@ -207,6 +208,11 @@ class CircuitQNN(SamplingNeuralNetwork):
                 self._circuit.remove_final_measurements()
         elif len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
+        if self._output_shape is not None:
+            output_shape_ = self._compute_output_shape(
+                self._interpret, self._output_shape, self._sampling
+            )
+            self._output_shape = self._validate_output_shape(output_shape_)
 
     @property
     def input_gradients(self) -> bool:

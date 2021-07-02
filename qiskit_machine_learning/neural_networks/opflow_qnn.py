@@ -190,7 +190,7 @@ class OpflowQNN(NeuralNetwork):
 
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]], ]:
+    ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
 
         # check whether gradient circuit could be constructed
         if self._gradient_operator is None:
