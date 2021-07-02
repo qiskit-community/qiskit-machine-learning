@@ -88,9 +88,11 @@ class CircuitQNN(SamplingNeuralNetwork):
                 is provided.
             gradient: The gradient converter to be used for the probability gradients.
             quantum_instance: The quantum instance to evaluate the circuits. Note that
-                if ``sampling==True``, 'statevector_simulator' is not a valid backend for the
+                if ``sampling==True``, a statevector simulator is not a valid backend for the
                 quantum instance.
             input_gradients: Determines whether to compute gradients with respect to input data.
+                Note that this parameter is ``False`` by default, and must be explicitly set to
+                ``True`` for a proper gradient computation when using ``TorchConnector``.
         Raises:
             QiskitMachineLearningError: if ``interpret`` is passed without ``output_shape``.
 
