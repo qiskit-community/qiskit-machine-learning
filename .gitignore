@@ -86,6 +86,7 @@ instance/
 */_build/
 docs/api/*
 docs/stubs/*
+docs/tutorials/data
 
 # PyBuilder
 target/

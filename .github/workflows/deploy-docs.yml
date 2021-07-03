@@ -35,7 +35,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision
+          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] 'torchvision<0.10.0'
           sudo apt-get install -y pandoc graphviz
         shell: bash
       - name: Build and publish
@@ -45,9 +45,7 @@ jobs:
           QISKIT_PARALLEL: False
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
-          pushd docs
-          sphinx-build -W -b html -D content_prefix=documentation/machine-learning . _build/html/
-          popd
+          make html SPHINXOPTS=-W
           tools/deploy_documentation.sh
         shell: bash
   deploy-translatable-strings:
@@ -63,7 +61,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] torchvision tox
+        pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] 'torchvision<0.10.0' tox
         sudo apt-get install -y graphviz pandoc
     - name: Build and publish
       env:
