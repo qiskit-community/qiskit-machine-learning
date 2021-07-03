@@ -33,7 +33,7 @@ default_language = 'en'
 
 def setup(app):
     app.connect('config-inited', _extend_html_context)
-    app.add_config_value('content_prefix', '', '')
+    app.add_config_value('content_prefix', 'documentation/machine-learning', '')
     app.add_config_value('translations', True, 'html')
 
 
