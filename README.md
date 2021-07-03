@@ -1,6 +1,6 @@
 # Qiskit Machine Learning
 
-[![License](https://img.shields.io/github/license/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)[![Build Status](https://github.com/Qiskit/qiskit-machine-learning/workflows/Machine%20Learning%20Unit%20Tests/badge.svg?branch=master)](https://github.com/Qiskit/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amaster+event%3Apush)[![](https://img.shields.io/github/release/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://github.com/Qiskit/qiskit-machine-learning/releases)[![](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg?style=popout-square)](https://pypi.org/project/qiskit-machine-learning/)[![Coverage Status](https://coveralls.io/repos/github/Qiskit/qiskit-machine-learning/badge.svg?branch=master)](https://coveralls.io/github/Qiskit/qiskit-machine-learning?branch=master)
+[![License](https://img.shields.io/github/license/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)[![Build Status](https://github.com/Qiskit/qiskit-machine-learning/workflows/Machine%20Learning%20Unit%20Tests/badge.svg?branch=main)](https://github.com/Qiskit/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)[![](https://img.shields.io/github/release/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://github.com/Qiskit/qiskit-machine-learning/releases)[![](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg?style=popout-square)](https://pypi.org/project/qiskit-machine-learning/)[![Coverage Status](https://coveralls.io/repos/github/Qiskit/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/Qiskit/qiskit-machine-learning?branch=main)
 
 The Machine Learning package simply contains sample datasets at present. It has some
 classification algorithms such as QSVM and VQC (Variational Quantum Classifier), where this data
@@ -29,9 +29,11 @@ To do this follow the instructions in the
 ### Optional Installs
 
 * **PyTorch**, may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
-  package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). PyTorch
-  being installed will enable the neural networks `PyTorchDiscriminator` component to be used with
-  the QGAN algorithm.
+  package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). When PyTorch
+  is installed, the `TorchConnector` facilitates its use of quantum computed networks.
+
+* **Sparse**, may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
+  package. Sparse being installed will enable the usage of sparse arrays/tensors.
 
 ### Creating Your First Machine Learning Programming Experiment in Qiskit
 
@@ -81,7 +83,7 @@ be classified.
 ### Further examples
 
 Learning path notebooks may be found in the
-[Machine Learning tutorials](https://qiskit.org/documentation/tutorials/machine_learning/index.html) section
+[Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials) section
 of the documentation and are a great place to start.
 
 ----------------------------------------------------------------------------------------------------
@@ -98,13 +100,6 @@ We use [GitHub issues](https://github.com/Qiskit/qiskit-machine-learning/issues)
 and for discussion and simple questions.
 For questions that are more suited for a forum, we use the **Qiskit** tag in [Stack Overflow](https://stackoverflow.com/questions/tagged/qiskit).
 
-## Next Steps
-
-Now you're set up and ready to check out some of the other examples from the
-[Qiskit Tutorials](https://github.com/Qiskit/qiskit-tutorials)
-repository, that are used for the IBM Quantum Experience.
-
-
 ## Authors and Citation
 
 Machine Learning was inspired, authored and brought about by the collective work of a team of researchers.
@@ -115,7 +110,7 @@ If you use Qiskit, please cite as per the provided
 [BibTeX file](https://github.com/Qiskit/qiskit/blob/master/Qiskit.bib).
 
 Please note that if you do not like the way your name is cited in the BibTex file then consult
-the information found in the [.mailmap](https://github.com/Qiskit/qiskit-machine-learning/blob/master/.mailmap)
+the information found in the [.mailmap](https://github.com/Qiskit/qiskit-machine-learning/blob/main/.mailmap)
 file.
 
 ## License

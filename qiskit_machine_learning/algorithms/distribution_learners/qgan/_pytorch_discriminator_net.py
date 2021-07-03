@@ -25,9 +25,10 @@ try:
 except ImportError:
     if logger.isEnabledFor(logging.INFO):
         EXC = MissingOptionalLibraryError(
-            libname='Pytorch',
-            name='DiscriminatorNet',
-            pip_install="pip install 'qiskit-machine-learning[torch]'")
+            libname="Pytorch",
+            name="DiscriminatorNet",
+            pip_install="pip install 'qiskit-machine-learning[torch]'",
+        )
         logger.info(str(EXC))
 
 # torch 1.6.0 fixed a mypy error about not applying contravariance rules
@@ -64,10 +65,7 @@ class DiscriminatorNet(torch.nn.Module):  # pylint: disable=abstract-method
             nn.Linear(512, 256),
             nn.LeakyReLU(0.2),
         )
-        self.out = nn.Sequential(
-            nn.Linear(256, n_out),
-            nn.Sigmoid()
-        )
+        self.out = nn.Sequential(nn.Linear(256, n_out), nn.Sigmoid())
 
     def forward(self, x):  # pylint: disable=arguments-differ
         """

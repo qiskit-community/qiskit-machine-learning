@@ -11,7 +11,9 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network regressor."""
 
-from typing import Union, cast
+from typing import Union, Optional, cast
+
+import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import Optimizer
@@ -26,15 +28,18 @@ from ...utils.loss_functions import Loss
 class VQR(NeuralNetworkRegressor):
     """Quantum neural network regressor using TwoLayerQNN"""
 
-    def __init__(self,
-                 num_qubits: int = None,
-                 feature_map: QuantumCircuit = None,
-                 ansatz: QuantumCircuit = None,
-                 observable: Union[QuantumCircuit, OperatorBase] = None,
-                 loss: Union[str, Loss] = 'l2',
-                 optimizer: Optimizer = None,
-                 warm_start: bool = False,
-                 quantum_instance: QuantumInstance = None) -> None:
+    def __init__(
+        self,
+        num_qubits: int = None,
+        feature_map: QuantumCircuit = None,
+        ansatz: QuantumCircuit = None,
+        observable: Union[QuantumCircuit, OperatorBase] = None,
+        loss: Union[str, Loss] = "squared_error",
+        optimizer: Optional[Optimizer] = None,
+        warm_start: bool = False,
+        quantum_instance: QuantumInstance = None,
+        initial_point: np.ndarray = None,
+    ) -> None:
         r"""
         Args:
             num_qubits: The number of qubits to be used. If None, and neither feature_map nor
@@ -45,37 +50,44 @@ class VQR(NeuralNetworkRegressor):
                 RealAmplitudes, i.e., the default of the TwoLayerQNN.
             observable: The observable to be measured in the underlying TwoLayerQNN. If  None, use
                 the default from the TwoLayerQNN, i.e., `Z^{\otimes num_qubits}`.
-            loss: A target loss function to be used in training. Default is L2.
-            optimizer: An instance of an optimizer to be used in training.
+            loss: A target loss function to be used in training. Default is squared error.
+            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
+            initial_point: Initial point for the optimizer to start from.
 
         Raises:
             QiskitMachineLearningError: Neither num_qubits, nor feature_map, nor ansatz given.
         """
 
         # construct QNN
-        neural_network = TwoLayerQNN(num_qubits=num_qubits,
-                                     feature_map=feature_map,
-                                     ansatz=ansatz,
-                                     observable=observable,
-                                     quantum_instance=quantum_instance)
+        neural_network = TwoLayerQNN(
+            num_qubits=num_qubits,
+            feature_map=feature_map,
+            ansatz=ansatz,
+            observable=observable,
+            quantum_instance=quantum_instance,
+            input_gradients=False,
+        )
 
-        super().__init__(neural_network=neural_network,
-                         loss=loss,
-                         optimizer=optimizer,
-                         warm_start=warm_start)
+        super().__init__(
+            neural_network=neural_network,
+            loss=loss,
+            optimizer=optimizer,
+            warm_start=warm_start,
+            initial_point=initial_point,
+        )
 
     @property
     def feature_map(self) -> QuantumCircuit:
-        """ Returns the used feature map."""
+        """Returns the used feature map."""
         return cast(TwoLayerQNN, super().neural_network).feature_map
 
     @property
     def ansatz(self) -> QuantumCircuit:
-        """ Returns the used ansatz."""
+        """Returns the used ansatz."""
         return cast(TwoLayerQNN, super().neural_network).ansatz
 
     @property
     def num_qubits(self) -> int:
-        """ Returns the number of qubits used by ansatz and feature map."""
+        """Returns the number of qubits used by ansatz and feature map."""
         return cast(TwoLayerQNN, super().neural_network).num_qubits

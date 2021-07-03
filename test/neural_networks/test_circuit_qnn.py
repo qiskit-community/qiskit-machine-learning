@@ -14,17 +14,18 @@
 
 import unittest
 
-from test import QiskitMachineLearningTestCase
+from test import QiskitMachineLearningTestCase, requires_extra_library
 
 from ddt import ddt, data
 
 import numpy as np
-from sparse import SparseArray
 
-from qiskit.providers.aer import AerSimulator, StatevectorSimulator
+from qiskit import Aer
+from qiskit.providers.aer import AerSimulator
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.exceptions import MissingOptionalLibraryError
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
@@ -36,10 +37,19 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-
+        algorithm_globals.random_seed = 12345
         # specify "run configuration"
-        self.quantum_instance_sv = QuantumInstance(StatevectorSimulator())
-        self.quantum_instance_qasm = QuantumInstance(AerSimulator(shots=100))
+        self.quantum_instance_sv = QuantumInstance(
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+        self.quantum_instance_qasm = QuantumInstance(
+            AerSimulator(),
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
 
         # define feature map and ansatz
         num_qubits = 2
@@ -57,7 +67,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # define interpret functions
         def interpret_1d(x):
-            return sum([s == '1' for s in '{0:0b}'.format(x)]) % 2
+            return sum([s == "1" for s in "{0:0b}".format(x)]) % 2
 
         self.interpret_1d = interpret_1d
         self.output_shape_1d = 2  # takes values in {0, 1}
@@ -66,10 +76,13 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             return np.array([self.interpret_1d(x), 2 * self.interpret_1d(x)])
 
         self.interpret_2d = interpret_2d
-        self.output_shape_2d = (2, 3)  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
+        self.output_shape_2d = (
+            2,
+            3,
+        )  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
     def get_qnn(self, sparse, sampling, statevector, interpret_id):
-        """ Construct QNN from configuration. """
+        """Construct QNN from configuration."""
 
         # get quantum instance
         if statevector:
@@ -88,10 +101,16 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             output_shape = self.output_shape_2d
 
         # construct QNN
-        qnn = CircuitQNN(self.qc, self.input_params, self.weight_params,
-                         sparse=sparse, sampling=sampling,
-                         interpret=interpret, output_shape=output_shape,
-                         quantum_instance=quantum_instance)
+        qnn = CircuitQNN(
+            self.qc,
+            self.input_params,
+            self.weight_params,
+            sparse=sparse,
+            sampling=sampling,
+            interpret=interpret,
+            output_shape=output_shape,
+            quantum_instance=quantum_instance,
+        )
         return qnn
 
     @data(
@@ -102,58 +121,60 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (True, True, True, 1, 2),
         (True, True, True, 2, 1),
         (True, True, True, 2, 2),
-
         (True, True, False, 0, 1),
         (True, True, False, 0, 2),
         (True, True, False, 1, 1),
         (True, True, False, 1, 2),
         (True, True, False, 2, 1),
         (True, True, False, 2, 2),
-
         (True, False, True, 0, 1),
         (True, False, True, 0, 2),
         (True, False, True, 1, 1),
         (True, False, True, 1, 2),
         (True, False, True, 2, 1),
         (True, False, True, 2, 2),
-
         (True, False, False, 0, 1),
         (True, False, False, 0, 2),
         (True, False, False, 1, 1),
         (True, False, False, 1, 2),
         (True, False, False, 2, 1),
         (True, False, False, 2, 2),
-
         (False, True, True, 0, 1),
         (False, True, True, 0, 2),
         (False, True, True, 1, 1),
         (False, True, True, 1, 2),
         (False, True, True, 2, 1),
         (False, True, True, 2, 2),
-
         (False, True, False, 0, 1),
         (False, True, False, 0, 2),
         (False, True, False, 1, 1),
         (False, True, False, 1, 2),
         (False, True, False, 2, 1),
         (False, True, False, 2, 2),
-
         (False, False, True, 0, 1),
         (False, False, True, 0, 2),
         (False, False, True, 1, 1),
         (False, False, True, 1, 2),
         (False, False, True, 2, 1),
         (False, False, True, 2, 2),
-
         (False, False, False, 0, 1),
         (False, False, False, 0, 2),
         (False, False, False, 1, 1),
         (False, False, False, 1, 2),
         (False, False, False, 2, 1),
-        (False, False, False, 2, 2)
+        (False, False, False, 2, 2),
     )
+    @requires_extra_library
     def test_circuit_qnn(self, config):
         """Circuit QNN Test."""
+        try:
+            from sparse import SparseArray
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="sparse",
+                name="SparseArray",
+                pip_install="pip install 'qiskit-machine-learning[sparse]'",
+            ) from ex
 
         # get configuration
         sparse, sampling, statevector, interpret_id, batch_size = config
@@ -185,9 +206,22 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
+                self.assertIsNone(input_grad)
+                self.assertEqual(
+                    weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
+                )
+
+            # verify that input gradients are None if turned off
+            qnn.input_gradients = True
+            input_grad, weights_grad = qnn.backward(input_data, weights)
+            if sampling:
+                self.assertIsNone(input_grad)
+                self.assertIsNone(weights_grad)
+            else:
                 self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
-                self.assertEqual(weights_grad.shape, (batch_size,
-                                                      *qnn.output_shape, qnn.num_weights))
+                self.assertEqual(
+                    weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
+                )
 
     @data(
         # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d), batch_size
@@ -197,14 +231,14 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (True, False, True, 1, 2),
         (True, False, True, 2, 1),
         (True, False, True, 2, 2),
-
         (False, False, True, 0, 1),
         (False, False, True, 0, 2),
         (False, False, True, 1, 1),
         (False, False, True, 1, 2),
         (False, False, True, 2, 1),
-        (False, False, True, 2, 2)
+        (False, False, True, 2, 2),
     )
+    @requires_extra_library
     def test_circuit_qnn_gradient(self, config):
         """Circuit QNN Gradient Test."""
 
@@ -213,6 +247,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # get QNN
         qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
+        qnn.input_gradients = True
         input_data = np.ones((batch_size, qnn.num_inputs))
         weights = np.ones(qnn.num_weights)
         input_grad, weights_grad = qnn.backward(input_data, weights)
@@ -227,13 +262,17 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             f_2 = qnn.forward(input_data - delta, weights)
             if sparse:
                 grad = (f_1.todense() - f_2.todense()) / (2 * eps)
-                input_grad_ = input_grad.todense().reshape(
-                    (batch_size, -1, qnn.num_inputs))[:, :, k].reshape(grad.shape)
+                input_grad_ = (
+                    input_grad.todense()
+                    .reshape((batch_size, -1, qnn.num_inputs))[:, :, k]
+                    .reshape(grad.shape)
+                )
                 diff = input_grad_ - grad
             else:
                 grad = (f_1 - f_2) / (2 * eps)
-                input_grad_ = input_grad.reshape(
-                    (batch_size, -1, qnn.num_inputs))[:, :, k].reshape(grad.shape)
+                input_grad_ = input_grad.reshape((batch_size, -1, qnn.num_inputs))[:, :, k].reshape(
+                    grad.shape
+                )
                 diff = input_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
@@ -247,16 +286,20 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             f_2 = qnn.forward(input_data, weights - delta)
             if sparse:
                 grad = (f_1.todense() - f_2.todense()) / (2 * eps)
-                weights_grad_ = weights_grad.todense().reshape(
-                    (batch_size, -1, qnn.num_weights))[:, :, k].reshape(grad.shape)
+                weights_grad_ = (
+                    weights_grad.todense()
+                    .reshape((batch_size, -1, qnn.num_weights))[:, :, k]
+                    .reshape(grad.shape)
+                )
                 diff = weights_grad_ - grad
             else:
                 grad = (f_1 - f_2) / (2 * eps)
-                weights_grad_ = weights_grad.reshape(
-                    (batch_size, -1, qnn.num_weights))[:, :, k].reshape(grad.shape)
+                weights_grad_ = weights_grad.reshape((batch_size, -1, qnn.num_weights))[
+                    :, :, k
+                ].reshape(grad.shape)
                 diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

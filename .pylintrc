@@ -23,9 +23,6 @@ persistent=yes
 # usually to register additional checkers.
 load-plugins=pylint.extensions.docparams, # enable checking of docstring args
     pylint.extensions.docstyle,  # basic docstring style checks
-    pylintfileheader  # Check license comments
-
-file-header=(?:(?:#[^\n]*)?\n)*# This code is part of Qiskit.\n#\n# \(C\) Copyright IBM [0-9, -]*.\n#\n# This code is licensed under the Apache License, Version 2.0. You may\n# obtain a copy of this license in the LICENSE.txt file in the root directory\n# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.\n#\n# Any modifications or derivative works of this code must retain this\n# copyright notice, and modified files need to carry a notice indicating\n# that they have been altered from the originals.\n
 
 # Use multiple processes to speed up Pylint.
 jobs=1
@@ -74,7 +71,8 @@ disable=no-self-use,        # disabled as it is too verbose
     unnecessary-pass,   # allow for methods with just "pass", for clarity
     no-else-return,     # relax "elif" after a clause with a return
     docstring-first-line-empty, # relax docstring style
-    import-outside-toplevel
+    import-outside-toplevel,
+    bad-continuation, bad-whitespace # differences of opinion with black
 
 
 
@@ -215,7 +213,7 @@ max-nested-blocks=5
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=105
 
 # Regexp for a line that is allowed to be longer than the limit.
 ignore-long-lines=^\s*(# )?<?https?://\S+>?$

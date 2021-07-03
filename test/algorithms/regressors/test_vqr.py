@@ -21,7 +21,7 @@ from ddt import data, ddt
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import VQR
 
 
@@ -33,14 +33,18 @@ class TestVQR(QiskitMachineLearningTestCase):
         super().setUp()
 
         # specify quantum instances
-        self.random_seed = 12345
-        self.sv_quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
-                                                   seed_simulator=self.random_seed,
-                                                   seed_transpiler=self.random_seed)
-        self.qasm_quantum_instance = QuantumInstance(Aer.get_backend('qasm_simulator'), shots=100,
-                                                     seed_simulator=self.random_seed,
-                                                     seed_transpiler=self.random_seed)
-        np.random.seed(self.random_seed)
+        algorithm_globals.random_seed = 12345
+        self.sv_quantum_instance = QuantumInstance(
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+        self.qasm_quantum_instance = QuantumInstance(
+            Aer.get_backend("aer_simulator"),
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
 
         num_samples = 20
         eps = 0.2
@@ -52,51 +56,60 @@ class TestVQR(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, quantum instance
-        ('cobyla', 'statevector', True),
-        ('cobyla', 'qasm', True),
-
-        ('bfgs', 'statevector', True),
-        ('bfgs', 'qasm', True),
-
-        ('cobyla', 'statevector', False),
-        ('cobyla', 'qasm', False),
-
-        ('bfgs', 'statevector', False),
-        ('bfgs', 'qasm', False),
+        ("cobyla", "statevector", True),
+        ("cobyla", "qasm", True),
+        ("cobyla", "statevector", False),
+        ("cobyla", "qasm", False),
+        ("bfgs", "statevector", True),
+        ("bfgs", "qasm", True),
+        ("bfgs", "statevector", False),
+        ("bfgs", "qasm", False),
+        (None, "statevector", True),
+        (None, "qasm", True),
+        (None, "statevector", False),
+        (None, "qasm", False),
     )
     def test_vqr(self, config):
-        """ Test VQR."""
+        """Test VQR."""
 
         opt, q_i, has_ansatz = config
 
-        if q_i == 'statevector':
+        if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
         else:
             quantum_instance = self.qasm_quantum_instance
 
-        if opt == 'bfgs':
+        if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
-        else:
+        elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
 
         num_qubits = 1
         # construct simple feature map
-        param_x = Parameter('x')
-        feature_map = QuantumCircuit(num_qubits, name='fm')
+        param_x = Parameter("x")
+        feature_map = QuantumCircuit(num_qubits, name="fm")
         feature_map.ry(param_x, 0)
 
         if has_ansatz:
-            param_y = Parameter('y')
-            ansatz = QuantumCircuit(num_qubits, name='vf')
+            param_y = Parameter("y")
+            ansatz = QuantumCircuit(num_qubits, name="vf")
             ansatz.ry(param_y, 0)
+            initial_point = np.zeros(ansatz.num_parameters)
         else:
             ansatz = None
+            # we know it will be RealAmplitudes
+            initial_point = np.zeros(4)
 
         # construct regressor
-        regressor = VQR(feature_map=feature_map,
-                        ansatz=ansatz,
-                        optimizer=optimizer,
-                        quantum_instance=quantum_instance)
+        regressor = VQR(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            quantum_instance=quantum_instance,
+            initial_point=initial_point,
+        )
 
         # fit to data
         regressor.fit(self.X, self.y)
@@ -106,5 +119,5 @@ class TestVQR(QiskitMachineLearningTestCase):
         self.assertGreater(score, 0.5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

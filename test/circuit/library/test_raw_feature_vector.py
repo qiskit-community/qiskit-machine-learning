@@ -23,7 +23,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector
@@ -37,15 +37,15 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         circuit = RawFeatureVector(4)
 
-        with self.subTest('check number of qubits'):
+        with self.subTest("check number of qubits"):
             self.assertEqual(circuit.num_qubits, 2)
 
-        with self.subTest('check parameters'):
+        with self.subTest("check parameters"):
             self.assertEqual(len(circuit.parameters), 4)
 
-        with self.subTest('check unrolling fails'):
+        with self.subTest("check unrolling fails"):
             with self.assertRaises(QiskitError):
-                _ = transpile(circuit, basis_gates=['u', 'cx'], optimization_level=0)
+                _ = transpile(circuit, basis_gates=["u", "cx"], optimization_level=0)
 
     def test_fully_bound(self):
         """Test fully binding the circuit works."""
@@ -68,46 +68,54 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         circuit = RawFeatureVector(4)
         params = circuit.parameters
 
-        with self.subTest('single numeric value'):
+        with self.subTest("single numeric value"):
             circuit.assign_parameters({params[0]: 0.2}, inplace=True)
             self.assertEqual(len(circuit.parameters), 3)
 
-        with self.subTest('bound to another parameter'):
+        with self.subTest("bound to another parameter"):
             circuit.assign_parameters({params[1]: params[2]}, inplace=True)
             self.assertEqual(len(circuit.parameters), 2)
 
-        with self.subTest('test now fully bound circuit'):
+        with self.subTest("test now fully bound circuit"):
             bound = circuit.assign_parameters({params[2]: 0.4, params[3]: 0.8})
             ref = QuantumCircuit(2)
             ref.initialize([0.2, 0.4, 0.4, 0.8], ref.qubits)
             self.assertEqual(bound.decompose(), ref)
 
-    # TODO: currently fails due to the way the RawFeatureVector handles parameters
     def test_usage_in_vqc(self):
         """Test using the circuit the a single VQC iteration works."""
 
         # specify quantum instance and random seed
-        random_seed = 12345
-        quantum_instance = QuantumInstance(Aer.get_backend('statevector_simulator'),
-                                           seed_simulator=random_seed,
-                                           seed_transpiler=random_seed)
-        np.random.seed(random_seed)
+        algorithm_globals.random_seed = 12345
+        quantum_instance = QuantumInstance(
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
 
         # construct data
         num_samples = 10
         num_inputs = 4
-        X = np.random.rand(num_samples, num_inputs)  # pylint: disable=invalid-name
+        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
+            (num_samples, num_inputs)
+        )
         y = 1.0 * (np.sum(X, axis=1) <= 2)
         while len(np.unique(y, axis=0)) == 1:
             y = 1.0 * (np.sum(X, axis=1) <= 2)
         y = np.array([y, 1 - y]).transpose()
 
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
+        ansatz = RealAmplitudes(feature_map.num_qubits, reps=1)
+        # classification may fail sometimes, so let's fix initial point
+        initial_point = np.array([0.5] * ansatz.num_parameters)
 
-        vqc = VQC(feature_map=feature_map,
-                  ansatz=RealAmplitudes(feature_map.num_qubits, reps=1),
-                  optimizer=COBYLA(maxiter=10),
-                  quantum_instance=quantum_instance)
+        vqc = VQC(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=COBYLA(maxiter=10),
+            quantum_instance=quantum_instance,
+            initial_point=initial_point,
+        )
 
         vqc.fit(X, y)
         score = vqc.score(X, y)
@@ -123,8 +131,8 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         bound = circuit.bind_parameters([1, 0, 0, 0])
 
-        self.assertTrue(Statevector.from_label('00').equiv(bound))
+        self.assertTrue(Statevector.from_label("00").equiv(bound))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
