@@ -136,22 +136,13 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             y.astype(float)
         except ValueError:
             # non-numeric data is assumed to be categorical
-            is_categorical = True
             y = y.reshape(-1, 1)
-        else:
-            is_categorical = False
-
-        if is_categorical and self._one_hot:
-            if not self._target_encoder:
-                self._target_encoder = OneHotEncoder()
-                self._target_encoder.fit(y)
-            y = self._target_encoder.transform(y)
-        elif is_categorical and not self._one_hot:
-            if not self._target_encoder:
-                self._target_encoder = LabelEncoder()
+            if self._target_encoder is None:
+                self._target_encoder = OneHotEncoder() if self._one_hot else LabelEncoder()
                 self._target_encoder.fit(y)
             y = self._target_encoder.transform(y)
 
-        if not isinstance(y, np.ndarray):
-            y = np.array(y.todense())
+            if not isinstance(y, np.ndarray):
+                y = np.array(y.todense())
+
         return y
