@@ -58,6 +58,8 @@ html
 init
 inlier
 inplace
+instantiation
+instantiations
 isometry
 iten
 iterable
@@ -108,7 +110,9 @@ precomputes
 precomputing
 priori
 ps
+py
 pytorch
+pxd
 qae
 qarg
 qargs

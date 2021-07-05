@@ -1,0 +1,13 @@
+---
+features:
+  - |
+    The ``optimizer`` argument for the classes ``NeuralNetworkClassifier`` and 
+    ``NeuralNetworkRegressor``, both of which extends the ``TrainableModel`` 
+    class, is made optional with the default value being ``SLSQP()``. The same
+    is true for the classes ``VQC`` and ``VQR`` as they inherit from 
+    ``NeuralNetworkClassifier`` and ``NeuralNetworkRegressor`` respectively.   
+fixes:
+  - |
+    This fixes the exception that occurs when no ``optimizer`` argument is
+    passed to ``NeuralNetworkClassifier`` and ``NeuralNetworkRegressor``. 
+

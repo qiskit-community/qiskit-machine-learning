@@ -61,8 +61,7 @@ class OpflowQNN(NeuralNetwork):
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
         input_gradients: bool = False,
     ):
-        """Initializes the Opflow Quantum Neural Network.
-
+        """
         Args:
             operator: The parametrized operator that represents the neural network.
             input_params: The operator parameters that correspond to the input of the network.

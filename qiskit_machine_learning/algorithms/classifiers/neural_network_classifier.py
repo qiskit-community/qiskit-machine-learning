@@ -38,9 +38,9 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def __init__(
         self,
         neural_network: NeuralNetwork,
-        loss: Union[str, Loss] = "l2",
+        loss: Union[str, Loss] = "squared_error",
         one_hot: bool = False,
-        optimizer: Optimizer = None,
+        optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
     ):
@@ -56,16 +56,17 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 as one sample and the loss function is applied to the whole vector. Otherwise, each
                 entry of the probability vector is considered as an individual sample and the loss
                 function is applied to the index and weighted with the corresponding probability.
-            loss: A target loss function to be used in training. Default is `l2`, i.e. L2 loss.
-                Can be given either as a string for 'l1', 'l2', 'cross_entropy',
-                'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
+            loss: A target loss function to be used in training. Default is `squared_error`,
+                i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
+                'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
+                implementing the Loss interface.
             one_hot: Determines in the case of a multi-dimensional result of the
                 neural_network how to interpret the result. If True it is interpreted as a single
                 one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
                 as a set of individual predictions with occurrence probabilities (the index would be
-                the prediction and the value the corresponding frequency, e.g. for L1/L2 loss).
-                This option is ignored in case of a one-dimensional output.
-            optimizer: An instance of an optimizer to be used in training.
+                the prediction and the value the corresponding frequency, e.g. for absolute/squared
+                loss). This option is ignored in case of a one-dimensional output.
+            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
 

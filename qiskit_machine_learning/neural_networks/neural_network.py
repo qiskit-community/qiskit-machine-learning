@@ -47,7 +47,7 @@ class NeuralNetwork(ABC):
         output_shape: Union[int, Tuple[int, ...]],
         input_gradients: bool = False,
     ) -> None:
-        """Initializes the Neural Network.
+        """
         Args:
             num_inputs: The number of input features.
             num_weights: The number of trainable weights.
