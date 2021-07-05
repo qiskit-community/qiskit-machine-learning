@@ -174,8 +174,6 @@ class TorchConnector(Module):
                 # from this point on backwards with respect to each input k. Sums over all i and
                 # j to get total gradient of output w.r.t. each input k.
                 input_grad = einsum("ij,ijk->ik", grad_output, input_grad)
-                # fix for input_grad dimension mismatch for batch/non-batch
-                # input_grad = input_grad.view(1, -1)
 
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
