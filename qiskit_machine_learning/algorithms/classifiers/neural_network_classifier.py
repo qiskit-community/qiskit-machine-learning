@@ -78,7 +78,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
         self._one_hot = one_hot
         # encodes the target data if categorical
-        self._target_encoder: Optional[Union[OneHotEncoder, LabelEncoder]]: = None 
+        self._target_encoder: Optional[Union[OneHotEncoder, LabelEncoder]] = None 
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
         y = self._convert_categorical(y)
