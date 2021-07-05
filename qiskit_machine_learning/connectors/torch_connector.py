@@ -119,6 +119,7 @@ class TorchConnector(Module):
             # convention.
             if len(input_data.shape) == 1:
                 result_tensor = result_tensor[0]
+
             return result_tensor
 
         @staticmethod
@@ -174,8 +175,7 @@ class TorchConnector(Module):
                 # j to get total gradient of output w.r.t. each input k.
                 input_grad = einsum("ij,ijk->k", grad_output, input_grad)
                 # fix for input_grad dimension mismatch
-                if len(input_grad) == 1:
-                    input_grad = input_grad.view(1, -1)
+                input_grad = input_grad.view(1, -1)
 
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
