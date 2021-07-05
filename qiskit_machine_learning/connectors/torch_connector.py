@@ -176,6 +176,7 @@ class TorchConnector(Module):
                 input_grad = einsum("ij,ijk->k", grad_output, input_grad)
                 # fix for input_grad dimension mismatch for batch/non-batch
                 input_grad = input_grad.view(1, -1)
+                input_grad = input_grad.tile((input_data.shape[0], 1))
 
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
