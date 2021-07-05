@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-from typing import Union, cast
+from typing import Union, Optional, cast
 import numpy as np
 
 from qiskit import QuantumCircuit
@@ -35,7 +35,7 @@ class VQC(NeuralNetworkClassifier):
         feature_map: QuantumCircuit = None,
         ansatz: QuantumCircuit = None,
         loss: Union[str, Loss] = "cross_entropy",
-        optimizer: Optimizer = None,
+        optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         quantum_instance: QuantumInstance = None,
         initial_point: np.ndarray = None,
@@ -47,7 +47,7 @@ class VQC(NeuralNetworkClassifier):
             feature_map: The feature map for underlying CircuitQNN. If None, use ZZFeatureMap.
             ansatz: The ansatz for the underlying CircuitQNN. If None, use RealAmplitudes.
             loss: A target loss function to be used in training. Default is cross entropy.
-            optimizer: An instance of an optimizer to be used in training.
+            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
         Raises:

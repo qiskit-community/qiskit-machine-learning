@@ -40,8 +40,7 @@ class TwoLayerQNN(OpflowQNN):
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
         input_gradients: bool = False,
     ):
-        r"""Initializes the Two Layer Quantum Neural Network.
-
+        r"""
         Args:
             num_qubits: The number of qubits to represent the network, if None and neither the
                 feature_map not the ansatz are given, raise exception.
