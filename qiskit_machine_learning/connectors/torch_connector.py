@@ -148,7 +148,7 @@ class TorchConnector(Module):
                     + f" expected input compatible to {neural_network.num_inputs}"
                 )
 
-            # Ensure same shape for single observations and batch mode
+            # ensure same shape for single observations and batch mode
             if len(grad_output.shape) == 1:
                 grad_output = grad_output.view(1, -1)
 
@@ -167,6 +167,10 @@ class TorchConnector(Module):
                     input_grad = input_grad.to(grad_output.dtype)
                 else:
                     input_grad = Tensor(input_grad).to(grad_output.dtype)
+                    # fix for input_grad dimension mismatch for single observations (ensure
+                    # same shape for single observations and batch mode)
+                    if len(input_grad) == 1:
+                        input_grad = input_grad.view(1, -1)
 
                 # Takes gradients from previous layer in backward pass (i.e. later layer in forward
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
