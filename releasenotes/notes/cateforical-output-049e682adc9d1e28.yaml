@@ -3,6 +3,6 @@ features:
   - |
     Classification models (i.e. models that extend the ``NeuralNetworkClassifier`` class like VQC)
     can now handle categorical target data in methods like ``fit()`` and ``score()``. Categorical
-    data is inferred from the presence of non-numerical data and is automatically encoded using
+    data is inferred from the presence of string type data and is automatically encoded using
     either one-hot or integer encodings. Encoder type is determined by the ``one_hot`` argument
     supplied when instantiating the model.

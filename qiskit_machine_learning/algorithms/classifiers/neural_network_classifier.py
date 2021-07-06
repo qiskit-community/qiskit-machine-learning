@@ -67,7 +67,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 as a set of individual predictions with occurrence probabilities (the index would be
                 the prediction and the value the corresponding frequency, e.g. for absolute/squared
                 loss). In case of a one-dimensional categorical output, this option determines how
-                to encode the target data.
+                to encode the target data (i.e. one-hot or integer encoding).
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
@@ -78,10 +78,10 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
         self._one_hot = one_hot
         # encodes the target data if categorical
-        self._target_encoder: Optional[Union[OneHotEncoder, LabelEncoder]] = None
+        self._target_encoder = OneHotEncoder() if one_hot else LabelEncoder()
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
-        y = self._convert_categorical(y)
+        y = self._fit_and_encode_categorical(y)
 
         # mypy definition
         function: ObjectiveFunction = None
@@ -125,22 +125,31 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def score(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
     ) -> float:
-        y = self._convert_categorical(y)
+        y = self._encode_categorical(y)
         return ClassifierMixin.score(self, X, y, sample_weight)
 
-    def _convert_categorical(self, y: np.ndarray) -> np.ndarray:
+    def _fit_and_encode_categorical(self, y: np.ndarray) -> np.ndarray:
+        """Fits label or one-hot encoder and converts categorical target data."""
+        y = np.array(y)
+
+        if isinstance(y[0], str):
+            # string data is assumed to be categorical
+            y = y.reshape(-1, 1)
+            self._target_encoder.fit(y)
+            y = self._target_encoder.transform(y)
+
+            if not isinstance(y, np.ndarray):
+                y = np.array(y.todense())
+
+        return y
+
+    def _encode_categorical(self, y: np.ndarray) -> np.ndarray:
         """Converts categorical target data using label or one-hot encoding."""
         y = np.array(y)
 
-        # Test if data is numeric
-        try:
-            y.astype(float)
-        except ValueError:
-            # non-numeric data is assumed to be categorical
+        if isinstance(y[0], str):
+            # string data is assumed to be categorical
             y = y.reshape(-1, 1)
-            if self._target_encoder is None:
-                self._target_encoder = OneHotEncoder() if self._one_hot else LabelEncoder()
-                self._target_encoder.fit(y)
             y = self._target_encoder.transform(y)
 
             if not isinstance(y, np.ndarray):
