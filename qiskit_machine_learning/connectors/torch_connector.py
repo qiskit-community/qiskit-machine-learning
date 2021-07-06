@@ -173,7 +173,7 @@ class TorchConnector(Module):
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
                 # from this point on backwards with respect to each input k. Sums over all j
                 # to get total gradient of output w.r.t. each input k and batch index i.
-                # This operation should preserve the batch dimension to be able to do backprop in
+                # This operation should preserve the batch dimension to be able to do back-prop in
                 # a batched manner.
                 input_grad = einsum("ij,ijk->ik", grad_output, input_grad)
 
