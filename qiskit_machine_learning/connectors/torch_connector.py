@@ -171,8 +171,10 @@ class TorchConnector(Module):
 
                 # Takes gradients from previous layer in backward pass (i.e. later layer in forward
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
-                # from this point on backwards with respect to each input k. Sums over all i and
-                # j to get total gradient of output w.r.t. each input k.
+                # from this point on backwards with respect to each input k. Sums over all j
+                # to get total gradient of output w.r.t. each input k and batch index i.
+                # This operation should preserve the batch dimension to be able to do backprop in
+                # a batched manner.
                 input_grad = einsum("ij,ijk->ik", grad_output, input_grad)
 
             if weights_grad is not None:
@@ -193,6 +195,7 @@ class TorchConnector(Module):
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
                 # from this point on backwards with respect to each parameter k. Sums over all i and
                 # j to get total gradient of output w.r.t. each parameter k.
+                # The weights' dimension is independent of the batch size.
                 weights_grad = einsum("ij,ijk->k", grad_output, weights_grad)
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
