@@ -130,7 +130,6 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
     def _fit_and_encode_categorical(self, y: np.ndarray) -> np.ndarray:
         """Fits label or one-hot encoder and converts categorical target data."""
-        y = np.array(y)
 
         if isinstance(y[0], str):
             # string data is assumed to be categorical
@@ -142,7 +141,6 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
     def _encode_categorical(self, y: np.ndarray) -> np.ndarray:
         """Converts categorical target data using label or one-hot encoding."""
-        y = np.array(y)
 
         if isinstance(y[0], str):
             # string data is assumed to be categorical
