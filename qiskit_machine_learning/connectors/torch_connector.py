@@ -119,6 +119,7 @@ class TorchConnector(Module):
             # convention.
             if len(input_data.shape) == 1:
                 result_tensor = result_tensor[0]
+
             return result_tensor
 
         @staticmethod
@@ -148,7 +149,7 @@ class TorchConnector(Module):
                     + f" expected input compatible to {neural_network.num_inputs}"
                 )
 
-            # Ensure same shape for single observations and batch mode
+            # ensure same shape for single observations and batch mode
             if len(grad_output.shape) == 1:
                 grad_output = grad_output.view(1, -1)
 
@@ -170,9 +171,11 @@ class TorchConnector(Module):
 
                 # Takes gradients from previous layer in backward pass (i.e. later layer in forward
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
-                # from this point on backwards with respect to each input k. Sums over all i and
-                # j to get total gradient of output w.r.t. each input k.
-                input_grad = einsum("ij,ijk->k", grad_output, input_grad)
+                # from this point on backwards with respect to each input k. Sums over all j
+                # to get total gradient of output w.r.t. each input k and batch index i.
+                # This operation should preserve the batch dimension to be able to do back-prop in
+                # a batched manner.
+                input_grad = einsum("ij,ijk->ik", grad_output, input_grad)
 
             if weights_grad is not None:
                 if np.prod(weights_grad.shape) == 0:
@@ -192,6 +195,7 @@ class TorchConnector(Module):
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
                 # from this point on backwards with respect to each parameter k. Sums over all i and
                 # j to get total gradient of output w.r.t. each parameter k.
+                # The weights' dimension is independent of the batch size.
                 weights_grad = einsum("ij,ijk->k", grad_output, weights_grad)
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
@@ -205,7 +209,10 @@ class TorchConnector(Module):
     ):
         """
         Args:
-            neural_network: The neural network to be connected to PyTorch.
+            neural_network: The neural network to be connected to PyTorch. Remember
+                    that ``input_gradients``  must be set to ``True`` in the neural network
+                    initialization before passing it to the ``TorchConnector`` for the gradient
+                    computations to work properly during training.
             initial_weights: The initial weights to start training the network. If this is None,
                 the initial weights are chosen uniformly at random from [-1, 1].
             sparse: Whether this connector should return sparse output or not. If sparse is set

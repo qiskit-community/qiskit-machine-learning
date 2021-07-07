@@ -51,6 +51,8 @@ class TwoLayerQNN(OpflowQNN):
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
             input_gradients: Determines whether to compute gradients with respect to input data.
+                Note that this parameter is ``False`` by default, and must be explicitly set to
+                ``True`` for a proper gradient computation when using ``TorchConnector``.
         Raises:
             QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
         """
