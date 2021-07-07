@@ -317,31 +317,31 @@ class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
         """Test inner product"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, self.y)
-        self.assertEqual(qc.decompose().size(), 16)
+        self.assertEqual(qc.decompose().size(), 4)
 
     def test_selfinnerproduct(self):
         """Test self inner product"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x)
-        self.assertEqual(qc.decompose().size(), 16)
+        self.assertEqual(qc.decompose().size(), 4)
 
     def test_innerproduct_nomeasurement(self):
         """Test inner product no measurement"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, self.y, measurement=False)
-        self.assertEqual(qc.decompose().size(), 14)
+        self.assertEqual(qc.decompose().size(), 2)
 
     def test_selfinnerprodect_nomeasurement(self):
         """Test self inner product no measurement"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, measurement=False)
-        self.assertEqual(qc.decompose().size(), 14)
+        self.assertEqual(qc.decompose().size(), 2)
 
     def test_statevector(self):
         """Test state vector simulator"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, is_statevector_sim=True)
-        self.assertEqual(qc.decompose().size(), 7)
+        self.assertEqual(qc.decompose().size(), 1)
 
     def test_xdim(self):
         """Test incorrect x dimension"""
