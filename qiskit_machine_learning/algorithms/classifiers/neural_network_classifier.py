@@ -78,7 +78,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
         self._one_hot = one_hot
         # encodes the target data if categorical
-        self._target_encoder = OneHotEncoder() if one_hot else LabelEncoder()
+        self._target_encoder = OneHotEncoder(sparse=False) if one_hot else LabelEncoder()
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
         y = self._fit_and_encode_categorical(y)
@@ -138,9 +138,6 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             self._target_encoder.fit(y)
             y = self._target_encoder.transform(y)
 
-            if not isinstance(y, np.ndarray):
-                y = np.array(y.todense())
-
         return y
 
     def _encode_categorical(self, y: np.ndarray) -> np.ndarray:
@@ -151,8 +148,5 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             # string data is assumed to be categorical
             y = y.reshape(-1, 1)
             y = self._target_encoder.transform(y)
-
-            if not isinstance(y, np.ndarray):
-                y = np.array(y.todense())
 
         return y
