@@ -70,6 +70,8 @@ class OpflowQNN(NeuralNetwork):
             gradient: The Gradient converter to be used for the operator's backward pass.
             quantum_instance: The quantum instance to evaluate the network.
             input_gradients: Determines whether to compute gradients with respect to input data.
+                Note that this parameter is ``False`` by default, and must be explicitly set to
+                ``True`` for a proper gradient computation when using ``TorchConnector``.
         """
         self._input_params = list(input_params) or []
         self._weight_params = list(weight_params) or []
