@@ -16,7 +16,7 @@ from abc import abstractmethod
 import warnings
 import functools
 import inspect
-from typing import NamedTuple, Optional, Callable, Dict, Set, cast
+from typing import NamedTuple, Optional, Callable, Dict, Set, cast, Any
 from enum import Enum, EnumMeta
 
 
@@ -264,7 +264,7 @@ def _check_values(version, qualname, args, kwargs, kwarg_map, additional_msg, st
 
 def deprecate_values(
     version: str,
-    kwarg_map: Dict[str, Dict[str, str]],
+    kwarg_map: Dict[str, Dict[Any, Any]],
     additional_msg: Optional[str] = None,
     stack_level: int = 3,
 ) -> Callable:
