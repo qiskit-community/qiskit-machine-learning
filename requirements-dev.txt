@@ -18,8 +18,4 @@ mypy>=0.780
 mypy-extensions>=0.4.3
 nbsphinx
 qiskit_sphinx_theme
-<<<<<<< HEAD
-networkx>=2.2
-=======
 networkx>=2.2,<2.6
->>>>>>> d692da2 (Pin networkx (#154))
