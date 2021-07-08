@@ -12,11 +12,10 @@
 """A base ML model with a Scikit-Learn like interface."""
 
 from abc import abstractmethod
-from typing import Union, Optional, Callable, List
+from typing import Union, Optional, Callable
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer, SLSQP
-from .objective_functions import ObjectiveFunction
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
@@ -28,6 +27,8 @@ from qiskit_machine_learning.utils.loss_functions import (
     CrossEntropySigmoidLoss,
 )
 from qiskit_machine_learning.deprecation import deprecate_values
+
+from .objective_functions import ObjectiveFunction
 
 
 class TrainableModel:
@@ -225,12 +226,9 @@ class TrainableModel:
         """
 
         def objective(weights):
-            
             objective_value = function.objective(weights)
-
             if callback is not None:
                 callback(weights, objective_value)
-            
             return objective_value
 
         return objective
