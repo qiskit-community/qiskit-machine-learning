@@ -12,10 +12,11 @@
 """A base ML model with a Scikit-Learn like interface."""
 
 from abc import abstractmethod
-from typing import Union, Optional
+from typing import Union, Optional, Callable, List
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer, SLSQP
+from .objective_functions import ObjectiveFunction
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
@@ -196,3 +197,40 @@ class TrainableModel:
         elif self._initial_point is None:
             self._initial_point = np.random.rand(self._neural_network.num_weights)
         return self._initial_point
+
+    def get_objective(
+        self,
+        function: ObjectiveFunction,
+        callback: Optional[Callable[[np.ndarray, float], None]] = None,
+    ) -> Callable:
+        """Returns a function to evaluates the objective at given weights.
+
+        This is the objective function to be passed to the optimizer that is used for evaluation.
+
+        Args:
+            function: The objective function whose objective is to be evaluated.
+            callback: a callable that can access the intermediate data during the optimization.
+                Two parameter values are passed to the callback as follows during each evaluation
+                by the optimizer for its current set of parameters as it works towards the minimum.
+                These are: the weights for the objective function, and the computed objective value.
+
+
+        Returns:
+            objective of the hamiltonian of each parameter, and, optionally, the expectation
+            converter.
+
+        Raises:
+            RuntimeError: If the circuit is not parameterized (i.e. has 0 free parameters).
+
+        """
+
+        def objective(weights):
+            
+            objective_value = function.objective(weights)
+
+            if callback is not None:
+                callback(weights, objective_value)
+            
+            return objective_value
+
+        return objective

@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-from typing import Union, Optional
+from typing import Union, Optional, Callable, List
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
@@ -43,6 +43,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
+        callback: Optional[Callable[[np.ndarray, float], None]] = None,
     ):
         """
         Args:
@@ -69,12 +70,16 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-
+            callback: a callback that can access the intermediate data during the optimization.
+                Two parameter values are passed to the callback as follows during each evaluation
+                by the optimizer for its current set of parameters as it works towards the minimum.
+                These are: the weights for the objective function, and the computed objective value.
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
         super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
         self._one_hot = one_hot
+        self._callback = callback
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
         # mypy definition
@@ -91,9 +96,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             else:
                 function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
 
+        objective = self.get_objective(function, self._callback)
+
         self._fit_result = self._optimizer.optimize(
             self._neural_network.num_weights,
-            function.objective,
+            objective,
             function.gradient,
             initial_point=self._choose_initial_point(),
         )
