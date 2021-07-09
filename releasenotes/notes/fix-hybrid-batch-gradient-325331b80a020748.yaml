@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    `TorchConnector` now returns the correct input gradient dimensions during the backward pass in hybrid nn training. 
