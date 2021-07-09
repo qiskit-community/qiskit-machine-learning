@@ -225,10 +225,10 @@ class TrainableModel:
 
         """
 
-        def objective(weights):
-            objective_value = function.objective(weights)
+        def objective(objective_weights):
+            objective_value = function.objective(objective_weights)
             if callback is not None:
-                callback(weights, objective_value)
+                callback(objective_weights, objective_value)
             return objective_value
 
         return objective

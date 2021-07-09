@@ -51,23 +51,35 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, quantum instance
-        ("cobyla", "absolute_error", "statevector"),
-        ("cobyla", "absolute_error", "qasm"),
-        ("cobyla", "squared_error", "statevector"),
-        ("cobyla", "squared_error", "qasm"),
-        ("bfgs", "absolute_error", "statevector"),
-        ("bfgs", "absolute_error", "qasm"),
-        ("bfgs", "squared_error", "statevector"),
-        ("bfgs", "squared_error", "qasm"),
-        (None, "absolute_error", "statevector"),
-        (None, "absolute_error", "qasm"),
-        (None, "squared_error", "statevector"),
-        (None, "squared_error", "qasm"),
+        ("cobyla", "absolute_error", "statevector", False),
+        ("cobyla", "absolute_error", "qasm", False),
+        ("cobyla", "squared_error", "statevector", False),
+        ("cobyla", "squared_error", "qasm", False),
+        ("bfgs", "absolute_error", "statevector", False),
+        ("bfgs", "absolute_error", "qasm", False),
+        ("bfgs", "squared_error", "statevector", False),
+        ("bfgs", "squared_error", "qasm", False),
+        (None, "absolute_error", "statevector", False),
+        (None, "absolute_error", "qasm", False),
+        (None, "squared_error", "statevector", False),
+        (None, "squared_error", "qasm", False),
+        ("cobyla", "absolute_error", "statevector", True),
+        ("cobyla", "absolute_error", "qasm", True),
+        ("cobyla", "squared_error", "statevector", True),
+        ("cobyla", "squared_error", "qasm", True),
+        ("bfgs", "absolute_error", "statevector", True),
+        ("bfgs", "absolute_error", "qasm", True),
+        ("bfgs", "squared_error", "statevector", True),
+        ("bfgs", "squared_error", "qasm", True),
+        (None, "absolute_error", "statevector", True),
+        (None, "absolute_error", "qasm", True),
+        (None, "squared_error", "statevector", True),
+        (None, "squared_error", "qasm", True),
     )
     def test_classifier_with_opflow_qnn(self, config):
         """Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
 
-        opt, loss, q_i = config
+        opt, loss, q_i, cb_flag = config
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
@@ -81,13 +93,23 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         else:
             optimizer = None
 
+        if cb_flag is True:
+            history = {"weights": [], "values": []}
+
+            def callback(objective_weights, objective_value):
+                history["weights"].append(objective_weights)
+                history["values"].append(objective_value)
+
+        else:
+            callback = None
+
         num_inputs = 2
         ansatz = RealAmplitudes(num_inputs, reps=1)
         qnn = TwoLayerQNN(num_inputs, ansatz=ansatz, quantum_instance=quantum_instance)
         initial_point = np.array([0.5] * ansatz.num_parameters)
 
         classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point, callback=callback
         )
 
         # construct data
@@ -104,25 +126,43 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
 
+        # callback
+        if callback is not None:
+            self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            for weights in history["weights"]:
+                self.assertTrue(all(isinstance(weight, float) for weight in weights))
+
     @data(
         # optimizer, loss, quantum instance
-        ("cobyla", "absolute_error", "statevector"),
-        ("cobyla", "absolute_error", "qasm"),
-        ("cobyla", "squared_error", "statevector"),
-        ("cobyla", "squared_error", "qasm"),
-        ("bfgs", "absolute_error", "statevector"),
-        ("bfgs", "absolute_error", "qasm"),
-        ("bfgs", "squared_error", "statevector"),
-        ("bfgs", "squared_error", "qasm"),
-        (None, "absolute_error", "statevector"),
-        (None, "absolute_error", "qasm"),
-        (None, "squared_error", "statevector"),
-        (None, "squared_error", "qasm"),
+        ("cobyla", "absolute_error", "statevector", False),
+        ("cobyla", "absolute_error", "qasm", False),
+        ("cobyla", "squared_error", "statevector", False),
+        ("cobyla", "squared_error", "qasm", False),
+        ("bfgs", "absolute_error", "statevector", False),
+        ("bfgs", "absolute_error", "qasm", False),
+        ("bfgs", "squared_error", "statevector", False),
+        ("bfgs", "squared_error", "qasm", False),
+        (None, "absolute_error", "statevector", False),
+        (None, "absolute_error", "qasm", False),
+        (None, "squared_error", "statevector", False),
+        (None, "squared_error", "qasm", False),
+        ("cobyla", "absolute_error", "statevector", True),
+        ("cobyla", "absolute_error", "qasm", True),
+        ("cobyla", "squared_error", "statevector", True),
+        ("cobyla", "squared_error", "qasm", True),
+        ("bfgs", "absolute_error", "statevector", True),
+        ("bfgs", "absolute_error", "qasm", True),
+        ("bfgs", "squared_error", "statevector", True),
+        ("bfgs", "squared_error", "qasm", True),
+        (None, "absolute_error", "statevector", True),
+        (None, "absolute_error", "qasm", True),
+        (None, "squared_error", "statevector", True),
+        (None, "squared_error", "qasm", True),
     )
     def test_classifier_with_circuit_qnn(self, config):
         """Test Neural Network Classifier with Circuit QNN."""
 
-        opt, loss, q_i = config
+        opt, loss, q_i, cb_flag = config
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
@@ -135,6 +175,16 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             optimizer = COBYLA(maxiter=25)
         else:
             optimizer = None
+
+        if cb_flag is True:
+            history = {"weights": [], "values": []}
+
+            def callback(objective_weights, objective_value):
+                history["weights"].append(objective_weights)
+                history["values"].append(objective_value)
+
+        else:
+            callback = None
 
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
@@ -163,7 +213,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct classifier
         classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point
+            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point, callback=callback
         )
 
         # construct data
@@ -179,6 +229,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # score
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
+
+        # callback
+        if callback is not None:
+            self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            for weights in history["weights"]:
+                self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
     @data(
         # optimizer, quantum instance
