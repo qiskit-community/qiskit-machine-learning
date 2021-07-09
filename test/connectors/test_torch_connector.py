@@ -661,7 +661,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
     @requires_extra_library
     def test_opflow_qnn_hybrid_batch_gradients(self):
-        """Test gradient backprop for batch input in hybrid opflow qnn."""
+        """Test gradient back-prop for batch input in hybrid opflow qnn."""
 
         try:
             from torch import cat
@@ -680,7 +680,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         qnn = TwoLayerQNN(
             num_qubits=num_inputs,
             quantum_instance=self.sv_quantum_instance,
-            input_gradients=True  # for hybrid qnn
+            input_gradients=True,  # for hybrid qnn
         )
 
         # set up dummy hybrid PyTorch module
@@ -688,7 +688,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             def __init__(self):
                 super().__init__()
                 self.fc1 = Linear(4, 2)
-                self.qnn = TorchConnector(qnn, np.array([0.1] * qnn.num_weights))  # Apply torch connector
+                self.qnn = TorchConnector(
+                    qnn, np.array([0.1] * qnn.num_weights)
+                )  # Apply torch connector
                 self.fc2 = Linear(1, 1)  # 1-dimensional output from QNN
 
             def forward(self, x):
@@ -752,7 +754,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
     )
     @requires_extra_library
     def test_circuit_qnn_hybrid_batch_gradients(self, config):
-        """Test gradient backprop for batch input in hybrid circuit qnn."""
+        """Test gradient back-prop for batch input in hybrid circuit qnn."""
 
         try:
             from torch import cat
@@ -790,7 +792,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             def __init__(self):
                 super().__init__()
                 self.fc1 = Linear(4, 2)
-                self.qnn = TorchConnector(qnn, np.array([0.1] * qnn.num_weights))  # Apply torch connector
+                self.qnn = TorchConnector(
+                    qnn, np.array([0.1] * qnn.num_weights)
+                )  # Apply torch connector
                 self.fc2 = Linear(2, 1)  # 2-dimensional output from QNN
 
             def forward(self, x):
