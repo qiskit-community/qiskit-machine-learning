@@ -238,17 +238,17 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, quantum instance
-        ("cobyla", "statevector"),
-        ("cobyla", "qasm"),
-        ("bfgs", "statevector"),
-        ("bfgs", "qasm"),
-        (None, "statevector"),
-        (None, "qasm"),
+        ("cobyla", "statevector", False),
+        ("cobyla", "qasm", False),
+        ("bfgs", "statevector", False),
+        ("bfgs", "qasm", False),
+        (None, "statevector", False),
+        (None, "qasm", False),
     )
     def test_classifier_with_circuit_qnn_and_cross_entropy(self, config):
         """Test Neural Network Classifier with Circuit QNN and Cross Entropy loss."""
 
-        opt, q_i = config
+        opt, q_i, cb_flag = config
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
@@ -261,6 +261,16 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             optimizer = COBYLA(maxiter=25)
         else:
             optimizer = None
+
+        if cb_flag is True:
+            history = {"weights": [], "values": []}
+
+            def callback(objective_weights, objective_value):
+                history["weights"].append(objective_weights)
+                history["values"].append(objective_value)
+
+        else:
+            callback = None
 
         loss = CrossEntropyLoss()
 
@@ -291,7 +301,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         initial_point = np.array([0.5] * ansatz.num_parameters)
         # construct classifier - note: CrossEntropy requires eval_probabilities=True!
         classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, one_hot=True, initial_point=initial_point
+            qnn,
+            optimizer=optimizer,
+            loss=loss,
+            one_hot=True,
+            initial_point=initial_point,
+            callback=callback,
         )
 
         # construct data
@@ -308,6 +323,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # score
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
+
+        # callback
+        if callback is not None:
+            self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            for weights in history["weights"]:
+                self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
 
 if __name__ == "__main__":
