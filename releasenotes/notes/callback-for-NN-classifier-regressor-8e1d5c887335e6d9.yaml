@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    The classes ``NeuralNetworkClassifier`` and ``NeuralNetworkRegressor`` has a new optional argument ``callback`` 
+    with default value ``None``. If a ``Callable`` is passed as the value of ``callback`` instead, it will be used 
+    to access the intermediate data during the optimization. Two parameter values are passed to the callback during 
+    each evaluation: the weights for the objective function and the computed objective value.
+    A new method ``get_objective`` is added to the class ``TrainableModel``, which is the parent class of 
+    ``NeuralNetworkClassifier`` and ``NeuralNetworkRegressor``, which invokes the ``ObjectiveFunction.objective``
+    and ``callback`` to return a custom ``objective`` function for the optimization.
+    
