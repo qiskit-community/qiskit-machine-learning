@@ -224,11 +224,11 @@ class TrainableModel:
             RuntimeError: If the circuit is not parameterized (i.e. has 0 free parameters).
 
         """
-
+        if callback is None:
+            return function
         def objective(objective_weights):
             objective_value = function.objective(objective_weights)
-            if callback is not None:
-                callback(objective_weights, objective_value)
+            callback(objective_weights, objective_value)
             return objective_value
 
         return objective
