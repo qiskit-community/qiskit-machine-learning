@@ -685,6 +685,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # set up dummy hybrid PyTorch module
         class Net(Module):
+            """Pytorch nn module"""
             def __init__(self):
                 super().__init__()
                 self.fc1 = Linear(4, 2)
@@ -694,6 +695,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 self.fc2 = Linear(1, 1)  # 1-dimensional output from QNN
 
             def forward(self, x):
+                """Forward pass"""
                 x = F.relu(self.fc1(x))
                 x = self.qnn(x)  # apply QNN
                 x = self.fc2(x)
@@ -789,6 +791,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # set up dummy hybrid PyTorch module
         class Net(Module):
+            """Pytorch nn module"""
             def __init__(self):
                 super().__init__()
                 self.fc1 = Linear(4, 2)
@@ -798,6 +801,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 self.fc2 = Linear(2, 1)  # 2-dimensional output from QNN
 
             def forward(self, x):
+                """Forward pass"""
                 x = F.relu(self.fc1(x))
                 x = self.qnn(x)  # apply QNN
                 x = self.fc2(x)
