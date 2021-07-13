@@ -49,6 +49,7 @@ jobs:
           tools/deploy_documentation.sh
         shell: bash
   deploy-translatable-strings:
+    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["manoelmarques","mtreinish","stefan-woerner","woodsp-ibm"]', github.actor) }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
