@@ -70,10 +70,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-            callback: a callback that can access the intermediate data during the optimization.
-                Two parameter values are passed to the callback as follows during each evaluation
-                by the optimizer for its current set of parameters as it works towards the minimum.
-                These are: the weights for the objective function, and the computed objective value.
+            callback: a reference to a user's callback function that has two parameters and 
+                returns ``None``. The callback can access intermediate data during training. 
+                On each iteration an optimizer invokes the callback and passes current weights 
+                as an array and a computed value as a float of the objective function being 
+                optimized. This allows to track how well optimization / training process is going on. 
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
