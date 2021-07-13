@@ -1,7 +1,7 @@
 ---
 features:
   - |
-    The class ``TrainableModel``, and hence its subclasses ``NeuralNetworkClassifier``, ``NeuralNetworkRegressor``, ``VQR``, 
+    The class ``TrainableModel``, and its sub-classes ``NeuralNetworkClassifier``, ``NeuralNetworkRegressor``, ``VQR``, 
     ``VQC``, have a new optional argument ``callback``. It is a reference to a user's callback function that can access 
     the intermediate training data to track the optimization process. The default value is ``Nonee`` and returns ``None``.
     The callback function takes in two parameters: the weights for the objective function and the computed objective value.
