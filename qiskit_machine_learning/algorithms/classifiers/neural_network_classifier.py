@@ -81,7 +81,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         self._target_encoder = OneHotEncoder(sparse=False) if one_hot else LabelEncoder()
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
-        y = self._fit_and_encode_categorical(y)
+        y = self._fit_and_encode_labels(y)
 
         # mypy definition
         function: ObjectiveFunction = None
@@ -125,26 +125,26 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def score(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
     ) -> float:
-        y = self._encode_categorical(y)
+        y = self._encode_labels(y)
         return ClassifierMixin.score(self, X, y, sample_weight)
 
-    def _fit_and_encode_categorical(self, y: np.ndarray) -> np.ndarray:
+    def _fit_and_encode_labels(self, y: np.ndarray) -> np.ndarray:
         """Fits label or one-hot encoder and converts categorical target data."""
 
         if isinstance(y[0], str):
             # string data is assumed to be categorical
-            y = y.reshape(-1, 1)
+            y = y.reshape(-1, 1) if self._one_hot else y  # reshape labels for encoder
             self._target_encoder.fit(y)
             y = self._target_encoder.transform(y)
 
         return y
 
-    def _encode_categorical(self, y: np.ndarray) -> np.ndarray:
+    def _encode_labels(self, y: np.ndarray) -> np.ndarray:
         """Converts categorical target data using label or one-hot encoding."""
 
         if isinstance(y[0], str):
             # string data is assumed to be categorical
-            y = y.reshape(-1, 1)
+            y = y.reshape(-1, 1) if self._one_hot else y  # reshape labels for encoder
             y = self._target_encoder.transform(y)
 
         return y
