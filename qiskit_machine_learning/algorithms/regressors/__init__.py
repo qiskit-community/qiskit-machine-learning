@@ -16,8 +16,4 @@ from .qsvr import QSVR
 from .neural_network_regressor import NeuralNetworkRegressor
 from .vqr import VQR
 
-__all__ = [
-    'QSVR',
-    'VQR',
-    'NeuralNetworkRegressor'
-]
+__all__ = ["QSVR", "VQR", "NeuralNetworkRegressor"]

@@ -11,15 +11,12 @@
 # that they have been altered from the originals.
 
 """Quantum Support Vector Classifier"""
-import logging
 
 from typing import Optional
 
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
-
-logger = logging.getLogger(__name__)
 
 
 class QSVC(SVC):
@@ -40,8 +37,7 @@ class QSVC(SVC):
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, *args,
-                 quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for classification.
@@ -55,11 +51,11 @@ class QSVC(SVC):
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
-        """ Returns quantum kernel """
+        """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
-        """ Sets quantum kernel """
+        """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate

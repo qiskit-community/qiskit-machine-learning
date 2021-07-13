@@ -30,14 +30,17 @@ class TwoLayerQNN(OpflowQNN):
     and an observable.
     """
 
-    def __init__(self, num_qubits: int = None,
-                 feature_map: QuantumCircuit = None,
-                 ansatz: QuantumCircuit = None,
-                 observable: Optional[OperatorBase] = None,
-                 exp_val: Optional[ExpectationBase] = None,
-                 quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None):
-        r"""Initializes the Two Layer Quantum Neural Network.
-
+    def __init__(
+        self,
+        num_qubits: int = None,
+        feature_map: QuantumCircuit = None,
+        ansatz: QuantumCircuit = None,
+        observable: Optional[OperatorBase] = None,
+        exp_val: Optional[ExpectationBase] = None,
+        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        input_gradients: bool = False,
+    ):
+        r"""
         Args:
             num_qubits: The number of qubits to represent the network, if None and neither the
                 feature_map not the ansatz are given, raise exception.
@@ -47,7 +50,9 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
-
+            input_gradients: Determines whether to compute gradients with respect to input data.
+                Note that this parameter is ``False`` by default, and must be explicitly set to
+                ``True`` for a proper gradient computation when using ``TorchConnector``.
         Raises:
             QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
         """
@@ -55,7 +60,8 @@ class TwoLayerQNN(OpflowQNN):
         # check num_qubits, feature_map, and ansatz
         if num_qubits is None and feature_map is None and ansatz is None:
             raise QiskitMachineLearningError(
-                'Need at least one of num_qubits, feature_map, or ansatz!')
+                "Need at least one of num_qubits, feature_map, or ansatz!"
+            )
         num_qubits_: int = None
         feature_map_: QuantumCircuit = None
         ansatz_: QuantumCircuit = None
@@ -63,20 +69,20 @@ class TwoLayerQNN(OpflowQNN):
             num_qubits_ = num_qubits
             if feature_map:
                 if feature_map.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError('Incompatible num_qubits and feature_map!')
+                    raise QiskitMachineLearningError("Incompatible num_qubits and feature_map!")
                 feature_map_ = feature_map
             else:
                 feature_map_ = ZZFeatureMap(num_qubits)
             if ansatz:
                 if ansatz.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError('Incompatible num_qubits and ansatz!')
+                    raise QiskitMachineLearningError("Incompatible num_qubits and ansatz!")
                 ansatz_ = ansatz
             else:
                 ansatz_ = RealAmplitudes(num_qubits)
         else:
             if feature_map and ansatz:
                 if feature_map.num_qubits != ansatz.num_qubits:
-                    raise QiskitMachineLearningError('Incompatible feature_map and ansatz!')
+                    raise QiskitMachineLearningError("Incompatible feature_map and ansatz!")
                 feature_map_ = feature_map
                 ansatz_ = ansatz
                 num_qubits_ = feature_map.num_qubits
@@ -101,29 +107,37 @@ class TwoLayerQNN(OpflowQNN):
         self._circuit.append(self._ansatz, range(num_qubits_))
 
         # construct observable
-        self.observable = observable if observable else PauliSumOp.from_list([('Z'*num_qubits_, 1)])
+        self.observable = (
+            observable if observable else PauliSumOp.from_list([("Z" * num_qubits_, 1)])
+        )
 
         # combine all to operator
         operator = ~StateFn(self.observable) @ StateFn(self._circuit)
 
-        super().__init__(operator, input_params, weight_params, quantum_instance=quantum_instance)
+        super().__init__(
+            operator,
+            input_params,
+            weight_params,
+            quantum_instance=quantum_instance,
+            input_gradients=input_gradients,
+        )
 
     @property
     def feature_map(self) -> QuantumCircuit:
-        """ Returns the used feature map."""
+        """Returns the used feature map."""
         return self._feature_map
 
     @property
     def ansatz(self) -> QuantumCircuit:
-        """ Returns the used ansatz."""
+        """Returns the used ansatz."""
         return self._ansatz
 
     @property
     def circuit(self) -> QuantumCircuit:
-        """ Returns the underlying quantum circuit."""
+        """Returns the underlying quantum circuit."""
         return self._circuit
 
     @property
     def num_qubits(self) -> int:
-        """ Returns the number of qubits used by ansatz and feature map."""
+        """Returns the number of qubits used by ansatz and feature map."""
         return self._circuit.num_qubits

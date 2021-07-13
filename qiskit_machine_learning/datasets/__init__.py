@@ -42,11 +42,11 @@ from .iris import iris
 from .wine import wine
 
 __all__ = [
-    'ad_hoc_data',
-    'sample_ad_hoc_data',
-    'breast_cancer',
-    'digits',
-    'gaussian',
-    'iris',
-    'wine'
+    "ad_hoc_data",
+    "sample_ad_hoc_data",
+    "breast_cancer",
+    "digits",
+    "gaussian",
+    "iris",
+    "wine",
 ]

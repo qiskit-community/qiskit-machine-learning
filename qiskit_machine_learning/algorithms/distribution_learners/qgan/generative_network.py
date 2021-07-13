@@ -25,12 +25,13 @@ class GenerativeNetwork(ABC):
     This method should initialize the module, but
     raise an exception if a required component of the module is not available.
     """
+
     @abstractmethod
     def __init__(self):
         super().__init__()
         self._num_parameters = 0
         self._num_qubits = 0
-        self._bounds = list()
+        self._bounds = []
 
     @property
     @abstractmethod
@@ -44,10 +45,12 @@ class GenerativeNetwork(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_output(self,
-                   quantum_instance: QuantumInstance,
-                   params: Optional[np.ndarray] = None,
-                   shots: Optional[int] = None) -> Tuple[List, List]:
+    def get_output(
+        self,
+        quantum_instance: QuantumInstance,
+        params: Optional[np.ndarray] = None,
+        shots: Optional[int] = None,
+    ) -> Tuple[List, List]:
         """
         Apply quantum/classical neural network to given input and get the respective output
 

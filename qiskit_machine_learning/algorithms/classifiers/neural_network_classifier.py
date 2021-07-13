@@ -11,25 +11,39 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-from typing import Union
+from typing import Union, Optional
+
 import numpy as np
-
 from qiskit.algorithms.optimizers import Optimizer
+from sklearn.base import ClassifierMixin
 
+from ..objective_functions import (
+    BinaryObjectiveFunction,
+    OneHotObjectiveFunction,
+    MultiClassObjectiveFunction,
+    ObjectiveFunction,
+)
+from ..trainable_model import TrainableModel
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
-from ...utils.loss_functions import (Loss, L1Loss, L2Loss, CrossEntropyLoss,
-                                     CrossEntropySigmoidLoss)
+from ...utils.loss_functions import Loss
 
 
-class NeuralNetworkClassifier:
-    """Quantum neural network classifier."""
+class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
+    """Quantum neural network classifier. Implements Scikit-Learn compatible methods for
+    classification and extends ``ClassifierMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
+    for more details.
+    """
 
-    def __init__(self, neural_network: NeuralNetwork,
-                 loss: Union[str, Loss] = 'l2',
-                 one_hot: bool = False,
-                 optimizer: Optimizer = None,
-                 warm_start: bool = False):
+    def __init__(
+        self,
+        neural_network: NeuralNetwork,
+        loss: Union[str, Loss] = "squared_error",
+        one_hot: bool = False,
+        optimizer: Optional[Optimizer] = None,
+        warm_start: bool = False,
+        initial_point: np.ndarray = None,
+    ):
         """
         Args:
             neural_network: An instance of an quantum neural network. If the neural network has a
@@ -42,172 +56,52 @@ class NeuralNetworkClassifier:
                 as one sample and the loss function is applied to the whole vector. Otherwise, each
                 entry of the probability vector is considered as an individual sample and the loss
                 function is applied to the index and weighted with the corresponding probability.
-            loss: A target loss function to be used in training. Default is `l2`, i.e. L2 loss.
-                Can be given either as a string for 'l1', 'l2', 'cross_entropy',
-                'cross_entropy_sigmoid', or as a loss function implementing the Loss interface.
+            loss: A target loss function to be used in training. Default is `squared_error`,
+                i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
+                'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
+                implementing the Loss interface.
             one_hot: Determines in the case of a multi-dimensional result of the
                 neural_network how to interpret the result. If True it is interpreted as a single
                 one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
                 as a set of individual predictions with occurrence probabilities (the index would be
-                the prediction and the value the corresponding frequency, e.g. for L1/L2 loss).
-                This option is ignored in case of a one-dimensional output.
-            optimizer: An instance of an optimizer to be used in training.
+                the prediction and the value the corresponding frequency, e.g. for absolute/squared
+                loss). This option is ignored in case of a one-dimensional output.
+            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
+            initial_point: Initial point for the optimizer to start from.
 
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        self._neural_network = neural_network
-        if len(neural_network.output_shape) > 1:
-            raise QiskitMachineLearningError('Invalid neural network output shape!')
-        if isinstance(loss, Loss):
-            self._loss = loss
-        else:
-            if loss.lower() == 'l1':
-                self._loss = L1Loss()
-            elif loss.lower() == 'l2':
-                self._loss = L2Loss()
-            elif loss.lower() == 'cross_entropy':
-                self._loss = CrossEntropyLoss()
-            elif loss.lower() == 'cross_entropy_sigmoid':
-                self._loss = CrossEntropySigmoidLoss()
-            else:
-                raise QiskitMachineLearningError(f'Unknown loss {loss}!')
-
+        super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
         self._one_hot = one_hot
-        self._optimizer = optimizer
-        self._warm_start = warm_start
-        self._fit_result = None
-
-    @property
-    def neural_network(self):
-        """ Returns the underlying neural network."""
-        return self._neural_network
-
-    @property
-    def loss(self):
-        """ Returns the underlying neural network."""
-        return self._loss
-
-    @property
-    def one_hot(self):
-        """ Returns the underlying neural network."""
-        return self._one_hot
-
-    @property
-    def warm_start(self) -> bool:
-        """ Returns the warm start flag."""
-        return self._warm_start
-
-    @warm_start.setter
-    def warm_start(self, warm_start: bool) -> None:
-        """ Sets the warm start flag."""
-        self._warm_start = warm_start
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
-        """
-        Fit the model to data matrix X and target(s) y.
-
-        Args:
-            X: The input data.
-            y: The target values.
-
-        Returns:
-            self: returns a trained classifier.
-
-        Raises:
-            QiskitMachineLearningError: In case of invalid data (e.g. incompatible with network)
-        """
-
+        # mypy definition
+        function: ObjectiveFunction = None
         if self._neural_network.output_shape == (1,):
-
             if len(y.shape) != 1 or len(np.unique(y)) != 2:
                 raise QiskitMachineLearningError(
-                    f"Current settings only applicable to binary classification! Got labels: {y}")
-
-            def objective(w):
-
-                predict = self._neural_network.forward(X, w)
-                target = np.array(y).reshape(predict.shape)
-                value = np.sum(self._loss(predict, target))
-                return value
-
-            def objective_grad(w):
-
-                # TODO should store output from forward pass (implement loss interface?)
-                # TODO: need to be able to turn off input grads if not needed.
-                output = self._neural_network.forward(X, w)
-                _, weights_grad = self._neural_network.backward(X, w)
-
-                grad = np.zeros((1, self._neural_network.num_weights))
-                for i in range(len(X)):
-                    grad += self._loss.gradient(output[i][0], y[i]) * weights_grad[i]
-
-                return grad
-
+                    f"Current settings only applicable to binary classification! Got labels: {y}"
+                )
+            function = BinaryObjectiveFunction(X, y, self._neural_network, self._loss)
         else:
-
             if self._one_hot:
-
-                def objective(w):
-                    val = 0.0
-                    probs = self._neural_network.forward(X, w)
-                    for i in range(len(X)):
-                        val += self._loss(probs[i], y[i])
-                    return val
-
-                def objective_grad(w):
-                    grad = np.zeros(self._neural_network.num_weights)
-                    for x, y_target in zip(X, y):
-                        # TODO: do batch eval
-                        y_predict = self._neural_network.forward(x, w)
-                        _, weight_prob_grad = self._neural_network.backward(x, w)
-                        grad += self._loss.gradient(y_predict[0], y_target) @ weight_prob_grad[0, :]
-                    return grad
-
+                function = OneHotObjectiveFunction(X, y, self._neural_network, self._loss)
             else:
+                function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
 
-                def objective(w):
-                    val = 0.0
-                    probs = self._neural_network.forward(X, w)
-                    for i in range(len(X)):
-                        for y_predict, prob in enumerate(probs[i]):
-                            val += prob * self._loss(y_predict, y[i])
-                    return val
-
-                def objective_grad(w):
-                    num_classes = self._neural_network.output_shape[0]
-                    grad = np.zeros((1, self._neural_network.num_weights))
-                    for x, y_target in zip(X, y):
-                        # TODO: do batch eval
-                        _, weight_prob_grad = self._neural_network.backward(x, w)
-                        for i in range(num_classes):
-                            grad += weight_prob_grad[
-                                0, i, :].reshape(grad.shape) * self._loss(i, y_target)
-                    return grad
-
-        if self._warm_start and self._fit_result is not None:
-            initial_point = self._fit_result[0]
-        else:
-            initial_point = np.random.rand(self._neural_network.num_weights)
-
-        self._fit_result = self._optimizer.optimize(self._neural_network.num_weights, objective,
-                                                    objective_grad, initial_point=initial_point)
+        self._fit_result = self._optimizer.optimize(
+            self._neural_network.num_weights,
+            function.objective,
+            function.gradient,
+            initial_point=self._choose_initial_point(),
+        )
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
-        """
-        Predict using the network specified to the classifier.
-
-        Args:
-            X: The input data.
-        Raises:
-            QiskitMachineLearningError: Model needs to be fit to some training data first
-        Returns:
-            The predicted classes.
-        """
         if self._fit_result is None:
-            raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
+            raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
         if self._neural_network.output_shape == (1,):
             predict = np.sign(self._neural_network.forward(X, self._fit_result[0]))
         else:
@@ -221,23 +115,8 @@ class NeuralNetworkClassifier:
                 predict = predict_
         return predict
 
-    def score(self, X: np.ndarray, y: np.ndarray) -> int:  # pylint: disable=invalid-name
-        """
-        Return the mean accuracy on the given test data and labels.
-
-        Args:
-            X: Test samples.
-            y: True labels for `X`.
-        Raises:
-            QiskitMachineLearningError: Model needs to be fit to some training data first
-        Returns:
-            Mean accuracy of ``self.predict(X)`` wrt. `y`.
-        """
-        if self._fit_result is None:
-            raise QiskitMachineLearningError('Model needs to be fit to some training data first!')
-
-        predict = self.predict(X)
-        score = np.sum(predict == y.reshape(predict.shape)) / len(y)
-        if len(predict.shape) == 2:
-            score /= predict.shape[1]
-        return score
+    # pylint: disable=invalid-name
+    def score(
+        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
+    ) -> float:
+        return ClassifierMixin.score(self, X, y, sample_weight)

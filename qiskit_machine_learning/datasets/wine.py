@@ -24,12 +24,13 @@ from .dataset_helper import features_and_labels_transform
 
 
 def wine(training_size, test_size, n, plot_data=False, one_hot=True):
-    """ returns wine dataset """
-    class_labels = [r'A', r'B', r'C']
+    """returns wine dataset"""
+    class_labels = [r"A", r"B", r"C"]
 
     data, target = datasets.load_wine(return_X_y=True)
-    sample_train, sample_test, label_train, label_test = \
-        train_test_split(data, target, test_size=test_size, random_state=7)
+    sample_train, sample_test, label_train, label_test = train_test_split(
+        data, target, test_size=test_size, random_state=7
+    )
 
     # Now we standardize for gaussian around 0 with unit variance
     std_scale = StandardScaler().fit(sample_train)
@@ -47,29 +48,40 @@ def wine(training_size, test_size, n, plot_data=False, one_hot=True):
     sample_train = minmax_scale.transform(sample_train)
     sample_test = minmax_scale.transform(sample_test)
     # Pick training size number of samples from each distro
-    training_input = {key: (sample_train[label_train == k, :])[:training_size]
-                      for k, key in enumerate(class_labels)}
-    test_input = {key: (sample_test[label_test == k, :])[:test_size]
-                  for k, key in enumerate(class_labels)}
+    training_input = {
+        key: (sample_train[label_train == k, :])[:training_size]
+        for k, key in enumerate(class_labels)
+    }
+    test_input = {
+        key: (sample_test[label_test == k, :])[:test_size] for k, key in enumerate(class_labels)
+    }
 
     training_feature_array, training_label_array = features_and_labels_transform(
-        training_input, class_labels, one_hot)
+        training_input, class_labels, one_hot
+    )
     test_feature_array, test_label_array = features_and_labels_transform(
-        test_input, class_labels, one_hot)
+        test_input, class_labels, one_hot
+    )
 
     if plot_data:
         try:
             import matplotlib.pyplot as plt
         except ImportError as ex:
             raise MissingOptionalLibraryError(
-                libname='Matplotlib',
-                name='wine',
-                pip_install='pip install matplotlib') from ex
+                libname="Matplotlib", name="wine", pip_install="pip install matplotlib"
+            ) from ex
         for k in range(0, 3):
-            plt.scatter(sample_train[label_train == k, 0][:training_size],
-                        sample_train[label_train == k, 1][:training_size])
+            plt.scatter(
+                sample_train[label_train == k, 0][:training_size],
+                sample_train[label_train == k, 1][:training_size],
+            )
 
         plt.title("PCA dim. reduced Wine dataset")
         plt.show()
 
-    return training_feature_array, training_label_array, test_feature_array, test_label_array
+    return (
+        training_feature_array,
+        training_label_array,
+        test_feature_array,
+        test_label_array,
+    )

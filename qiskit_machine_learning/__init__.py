@@ -36,16 +36,15 @@ Submodules
 
    algorithms
    circuit.library
+   connectors
    datasets
    kernels
    neural_networks
+   utils
 
 """
 
 from .version import __version__
 from .exceptions import QiskitMachineLearningError
 
-__all__ = [
-    '__version__',
-    'QiskitMachineLearningError'
-]
+__all__ = ["__version__", "QiskitMachineLearningError"]
