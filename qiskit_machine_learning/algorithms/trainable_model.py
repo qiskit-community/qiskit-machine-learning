@@ -44,6 +44,7 @@ class TrainableModel:
         optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
+        callback: Optional[Callable[[np.ndarray, float], None]] = None,
     ):
         """
         Args:
@@ -64,7 +65,11 @@ class TrainableModel:
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-
+            callback: a reference to a user's callback function that has two parameters and
+                returns ``None``. The callback can access intermediate data during training.
+                On each iteration an optimizer invokes the callback and passes current weights
+                as an array and a computed value as a float of the objective function being
+                optimized. This allows to track how well optimization / training process is going on.
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
@@ -96,6 +101,7 @@ class TrainableModel:
         self._warm_start = warm_start
         self._fit_result = None
         self._initial_point = initial_point
+        self._callback = callback
 
     @property
     def neural_network(self):
@@ -199,37 +205,26 @@ class TrainableModel:
             self._initial_point = np.random.rand(self._neural_network.num_weights)
         return self._initial_point
 
-    def get_objective(
+    def _get_objective(
         self,
         function: ObjectiveFunction,
-        callback: Optional[Callable[[np.ndarray, float], None]] = None,
     ) -> Callable:
-        """Returns a function to evaluates the objective at given weights.
-
-        This is the objective function to be passed to the optimizer that is used for evaluation.
-
+        """
+        Wraps the given `ObjectiveFunction` to add callback calls, if `callback` is not None, along
+        with evaluating the objective value. Returned objective function is passed to
+        `Optimizer.optimize()`.
         Args:
             function: The objective function whose objective is to be evaluated.
-            callback: a callable that can access the intermediate data during the optimization.
-                Two parameter values are passed to the callback as follows during each evaluation
-                by the optimizer for its current set of parameters as it works towards the minimum.
-                These are: the weights for the objective function, and the computed objective value.
-
 
         Returns:
-            objective of the hamiltonian of each parameter, and, optionally, the expectation
-            converter.
-
-        Raises:
-            RuntimeError: If the circuit is not parameterized (i.e. has 0 free parameters).
-
+            Objective function to evaluate objective value and optionally invoke callback calls.
         """
-        if callback is None:
+        if self._callback is None:
             return function.objective
 
         def objective(objective_weights):
             objective_value = function.objective(objective_weights)
-            callback(objective_weights, objective_value)
+            self._callback(objective_weights, objective_value)
             return objective_value
 
         return objective

@@ -70,17 +70,16 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-            callback: a reference to a user's callback function that has two parameters and 
-                returns ``None``. The callback can access intermediate data during training. 
-                On each iteration an optimizer invokes the callback and passes current weights 
-                as an array and a computed value as a float of the objective function being 
-                optimized. This allows to track how well optimization / training process is going on. 
+            callback: a reference to a user's callback function that has two parameters and
+                returns ``None``. The callback can access intermediate data during training.
+                On each iteration an optimizer invokes the callback and passes current weights
+                as an array and a computed value as a float of the objective function being
+                optimized. This allows to track how well optimization / training process is going on.
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
+        super().__init__(neural_network, loss, optimizer, warm_start, initial_point, callback)
         self._one_hot = one_hot
-        self._callback = callback
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
         # mypy definition
@@ -97,7 +96,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             else:
                 function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
 
-        objective = self.get_objective(function, self._callback)
+        objective = self._get_objective(function)
 
         self._fit_result = self._optimizer.optimize(
             self._neural_network.num_weights,
