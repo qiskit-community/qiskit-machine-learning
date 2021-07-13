@@ -125,6 +125,6 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         # callback
         if callback is not None:
             self.assertTrue(all(isinstance(value, float) for value in history["values"]))
-            self.assertEqual(len(history["weights"]), regression_opflow_qnn.num_weights)
             for weights in history["weights"]:
+                self.assertEqual(len(weights), regression_opflow_qnn.num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
