@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network regressor."""
 
-from typing import Union, Optional, cast
+from typing import Union, Optional, Callable, cast
 
 import numpy as np
 
@@ -39,6 +39,7 @@ class VQR(NeuralNetworkRegressor):
         warm_start: bool = False,
         quantum_instance: QuantumInstance = None,
         initial_point: np.ndarray = None,
+        callback: Optional[Callable[[np.ndarray, float], None]] = None,
     ) -> None:
         r"""
         Args:
@@ -54,7 +55,11 @@ class VQR(NeuralNetworkRegressor):
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-
+            callback: a reference to a user's callback function that has two parameters and
+                returns ``None``. The callback can access intermediate data during training.
+                On each iteration an optimizer invokes the callback and passes current weights
+                as an array and a computed value as a float of the objective function being
+                optimized. This allows to track how well optimization / training process is going on.
         Raises:
             QiskitMachineLearningError: Neither num_qubits, nor feature_map, nor ansatz given.
         """
@@ -75,6 +80,7 @@ class VQR(NeuralNetworkRegressor):
             optimizer=optimizer,
             warm_start=warm_start,
             initial_point=initial_point,
+            callback=callback,
         )
 
     @property
