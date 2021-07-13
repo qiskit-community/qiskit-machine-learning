@@ -129,6 +129,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # callback
         if callback is not None:
             self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            self.assertEqual(len(history["weights"]), qnn.num_weights)
             for weights in history["weights"]:
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
@@ -233,6 +234,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # callback
         if callback is not None:
             self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            self.assertEqual(len(history["weights"]), qnn.num_weights)
             for weights in history["weights"]:
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
@@ -327,6 +329,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # callback
         if callback is not None:
             self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            self.assertEqual(len(history["weights"]), qnn.num_weights)
             for weights in history["weights"]:
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
