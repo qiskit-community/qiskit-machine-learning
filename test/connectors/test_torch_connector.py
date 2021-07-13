@@ -686,6 +686,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         # set up dummy hybrid PyTorch module
         class Net(Module):
             """Pytorch nn module."""
+
             def __init__(self):
                 super().__init__()
                 self.fc1 = Linear(4, 2)
@@ -792,6 +793,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         # set up dummy hybrid PyTorch module
         class Net(Module):
             """Pytorch nn module."""
+
             def __init__(self):
                 super().__init__()
                 self.fc1 = Linear(4, 2)
