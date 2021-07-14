@@ -39,9 +39,11 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
         else:
             function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
 
+        objective = self._get_objective(function)
+
         self._fit_result = self._optimizer.optimize(
             self._neural_network.num_weights,
-            function.objective,
+            objective,
             function.gradient,
             initial_point=self._choose_initial_point(),
         )
