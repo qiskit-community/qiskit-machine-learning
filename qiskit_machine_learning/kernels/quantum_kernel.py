@@ -48,7 +48,7 @@ class QuantumKernel:
         self,
         feature_map: Optional[QuantumCircuit] = None,
         enforce_psd: bool = True,
-        batch_size: int = 1000,
+        batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
     ) -> None:
         """
