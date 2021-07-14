@@ -25,6 +25,10 @@ on:
     # run every day at 1AM
     - cron: '0 1 * * *'
 
+concurrency:
+  group: ${{ github.repository }}-${{ github.ref }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   Checks:
     runs-on: ubuntu-latest
@@ -32,6 +36,13 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
+      - name: Print Concurrency Group
+        env:
+          CONCURRENCY_GROUP: ${{ github.repository }}-${{ github.ref }}-${{ github.head_ref }}
+        run: |
+          echo -e "\033[31;1;4mConcurrency Group\033[0m"
+          echo -e "$CONCURRENCY_GROUP\n"
+        shell: bash
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
