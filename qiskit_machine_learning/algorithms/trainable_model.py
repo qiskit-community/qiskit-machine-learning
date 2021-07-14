@@ -12,7 +12,7 @@
 """A base ML model with a Scikit-Learn like interface."""
 
 from abc import abstractmethod
-from typing import Union, Optional
+from typing import Union, Optional, Callable
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer, SLSQP
@@ -28,6 +28,8 @@ from qiskit_machine_learning.utils.loss_functions import (
 )
 from qiskit_machine_learning.deprecation import deprecate_values
 
+from .objective_functions import ObjectiveFunction
+
 
 class TrainableModel:
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
@@ -42,6 +44,7 @@ class TrainableModel:
         optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
+        callback: Optional[Callable[[np.ndarray, float], None]] = None,
     ):
         """
         Args:
@@ -62,7 +65,11 @@ class TrainableModel:
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-
+            callback: a reference to a user's callback function that has two parameters and
+                returns ``None``. The callback can access intermediate data during training.
+                On each iteration an optimizer invokes the callback and passes current weights
+                as an array and a computed value as a float of the objective function being
+                optimized. This allows to track how well optimization / training process is going on.
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
@@ -94,6 +101,7 @@ class TrainableModel:
         self._warm_start = warm_start
         self._fit_result = None
         self._initial_point = initial_point
+        self._callback = callback
 
     @property
     def neural_network(self):
@@ -196,3 +204,27 @@ class TrainableModel:
         elif self._initial_point is None:
             self._initial_point = np.random.rand(self._neural_network.num_weights)
         return self._initial_point
+
+    def _get_objective(
+        self,
+        function: ObjectiveFunction,
+    ) -> Callable:
+        """
+        Wraps the given `ObjectiveFunction` to add callback calls, if `callback` is not None, along
+        with evaluating the objective value. Returned objective function is passed to
+        `Optimizer.optimize()`.
+        Args:
+            function: The objective function whose objective is to be evaluated.
+
+        Returns:
+            Objective function to evaluate objective value and optionally invoke callback calls.
+        """
+        if self._callback is None:
+            return function.objective
+
+        def objective(objective_weights):
+            objective_value = function.objective(objective_weights)
+            self._callback(objective_weights, objective_value)
+            return objective_value
+
+        return objective
