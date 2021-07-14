@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    The class ``TrainableModel``, and its sub-classes ``NeuralNetworkClassifier``, ``NeuralNetworkRegressor``, ``VQR``, 
+    ``VQC``, have a new optional argument ``callback``. User can optionally provide a callback function that can access 
+    the intermediate training data to track the optimization process, else it defaults to ``None``. The callback function 
+    takes in two parameters: the weights for the objective function and the computed objective value. For each iteration
+    an optimizer invokes the callback and passes current weights and computed value of the objective function.
+    
