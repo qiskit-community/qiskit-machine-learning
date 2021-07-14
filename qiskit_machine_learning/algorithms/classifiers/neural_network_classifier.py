@@ -133,7 +133,10 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
         if isinstance(y[0], str):
             # string data is assumed to be categorical
-            y = y.reshape(-1, 1) if self._one_hot else y  # reshape labels for encoder
+
+            # OneHotEncoder expects data with shape (n_samples, n_features) but
+            # LabelEncoder expects shape (n_samples,) so set desired shape
+            y = y.reshape(-1, 1) if self._one_hot else y
             self._target_encoder.fit(y)
             y = self._target_encoder.transform(y)
 
@@ -144,7 +147,10 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
         if isinstance(y[0], str):
             # string data is assumed to be categorical
-            y = y.reshape(-1, 1) if self._one_hot else y  # reshape labels for encoder
+
+            # OneHotEncoder expects data with shape (n_samples, n_features) but
+            # LabelEncoder expects shape (n_samples,) so set desired shape
+            y = y.reshape(-1, 1) if self._one_hot else y
             y = self._target_encoder.transform(y)
 
         return y
