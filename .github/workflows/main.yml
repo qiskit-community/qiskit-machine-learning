@@ -82,35 +82,6 @@ jobs:
       - run:  make doctest
         if: ${{ !cancelled() }}
         shell: bash
-  Lint:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-libraries
-        with:
-          python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-main-dependencies
-        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
-      - uses: ./.github/actions/install-machine-learning
-      - run: make lint
-        if: ${{ !cancelled() }}
-        shell: bash
-      - run: make mypy
-        if: ${{ !cancelled() }}
-        shell: bash
-      - name: Run make lint latest version
-        run: |
-          pip install -U pylint
-          make lint
-        if: ${{ !cancelled() }}
-        shell: bash
   MachineLearning:
     runs-on: ubuntu-latest
     strategy:
@@ -126,12 +97,23 @@ jobs:
       - uses: ./.github/actions/install-main-dependencies
         if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
+      - run: make lint
+        shell: bash
+      - run: make mypy
+        if: ${{ !cancelled() }}
+        shell: bash
+      - name: Run make lint latest version
+        run: |
+          pip install -U pylint
+          make lint
+        shell: bash
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
         with:
           event-name: ${{ github.event_name }}
           run-slow: ${{ contains(github.event.pull_request.labels.*.name, 'run_slow') }}
           python-version: ${{ matrix.python-version }}
+        if: ${{ !cancelled() }}
       - name: Deprecation Messages
         run: |
           mkdir ./m${{ matrix.python-version }}
@@ -156,6 +138,7 @@ jobs:
               export QISKIT_TESTS="run_slow"
           fi
           stestr --test-path test run
+        if: ${{ !cancelled() }}
         shell: bash
   Tutorials:
     runs-on: ubuntu-latest
@@ -224,7 +207,7 @@ jobs:
           path: docs/_build/html/artifacts/tutorials.tar.gz
         if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
   Deprecation_Messages_and_Coverage:
-    needs: [Checks, Lint, MachineLearning, Tutorials]
+    needs: [MachineLearning]
     runs-on: ubuntu-latest
     strategy:
       matrix:
