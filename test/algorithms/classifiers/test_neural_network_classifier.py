@@ -333,6 +333,70 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                 self.assertEqual(len(weights), qnn.num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
+    @data(
+        # one-hot, loss
+        (True, "absolute_error"),
+        (True, "squared_error"),
+        (True, "cross_entropy"),
+        (False, "absolute_error"),
+        (False, "squared_error"),
+    )
+    def test_categorical_data(self, config):
+        """Test categorical labels using QNN"""
+
+        one_hot, loss = config
+
+        quantum_instance = self.sv_quantum_instance
+        optimizer = L_BFGS_B(maxiter=5)
+
+        num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
+
+        # construct circuit
+        qc = QuantumCircuit(num_inputs)
+        qc.append(feature_map, range(2))
+        qc.append(ansatz, range(2))
+
+        # construct qnn
+        def parity(x):
+            return "{:b}".format(x).count("1") % 2
+
+        output_shape = 2
+        qnn = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            sparse=False,
+            interpret=parity,
+            output_shape=output_shape,
+            quantum_instance=quantum_instance,
+        )
+        initial_point = np.array([0.5] * ansatz.num_parameters)
+
+        # construct classifier
+        classifier = NeuralNetworkClassifier(
+            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point, one_hot=one_hot
+        )
+
+        # construct data
+        num_samples = 5
+        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
+            (num_samples, num_inputs)
+        )
+        y = 1.0 * (np.sum(X, axis=1) <= 1)
+        y = y.astype(str)
+        # convert to categorical
+        y[y == "0.0"] = "A"
+        y[y == "1.0"] = "B"
+
+        # fit to data
+        classifier.fit(X, y)
+
+        # score
+        score = classifier.score(X, y)
+        self.assertGreater(score, 0.5)
+
 
 if __name__ == "__main__":
     unittest.main()
