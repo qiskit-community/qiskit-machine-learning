@@ -11,11 +11,12 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-from typing import Union, Optional
+from typing import Union, Optional, Callable
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer
 from sklearn.base import ClassifierMixin
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 from ..objective_functions import (
     BinaryObjectiveFunction,
@@ -43,6 +44,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         optimizer: Optional[Optimizer] = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
+        callback: Optional[Callable[[np.ndarray, float], None]] = None,
     ):
         """
         Args:
@@ -65,18 +67,27 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False
                 as a set of individual predictions with occurrence probabilities (the index would be
                 the prediction and the value the corresponding frequency, e.g. for absolute/squared
-                loss). This option is ignored in case of a one-dimensional output.
+                loss). In case of a one-dimensional categorical output, this option determines how
+                to encode the target data (i.e. one-hot or integer encoding).
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-
+            callback: a reference to a user's callback function that has two parameters and
+                returns ``None``. The callback can access intermediate data during training.
+                On each iteration an optimizer invokes the callback and passes current weights
+                as an array and a computed value as a float of the objective function being
+                optimized. This allows to track how well optimization / training process is going on.
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        super().__init__(neural_network, loss, optimizer, warm_start, initial_point)
+        super().__init__(neural_network, loss, optimizer, warm_start, initial_point, callback)
         self._one_hot = one_hot
+        # encodes the target data if categorical
+        self._target_encoder = OneHotEncoder(sparse=False) if one_hot else LabelEncoder()
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
+        y = self._fit_and_encode_labels(y)
+
         # mypy definition
         function: ObjectiveFunction = None
         if self._neural_network.output_shape == (1,):
@@ -91,9 +102,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             else:
                 function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
 
+        objective = self._get_objective(function)
+
         self._fit_result = self._optimizer.optimize(
             self._neural_network.num_weights,
-            function.objective,
+            objective,
             function.gradient,
             initial_point=self._choose_initial_point(),
         )
@@ -119,4 +132,32 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def score(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
     ) -> float:
+        y = self._encode_labels(y)
         return ClassifierMixin.score(self, X, y, sample_weight)
+
+    def _fit_and_encode_labels(self, y: np.ndarray) -> np.ndarray:
+        """Fits label or one-hot encoder and converts categorical target data."""
+
+        if isinstance(y[0], str):
+            # string data is assumed to be categorical
+
+            # OneHotEncoder expects data with shape (n_samples, n_features) but
+            # LabelEncoder expects shape (n_samples,) so set desired shape
+            y = y.reshape(-1, 1) if self._one_hot else y
+            self._target_encoder.fit(y)
+            y = self._target_encoder.transform(y)
+
+        return y
+
+    def _encode_labels(self, y: np.ndarray) -> np.ndarray:
+        """Converts categorical target data using label or one-hot encoding."""
+
+        if isinstance(y[0], str):
+            # string data is assumed to be categorical
+
+            # OneHotEncoder expects data with shape (n_samples, n_features) but
+            # LabelEncoder expects shape (n_samples,) so set desired shape
+            y = y.reshape(-1, 1) if self._one_hot else y
+            y = self._target_encoder.transform(y)
+
+        return y
