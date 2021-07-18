@@ -56,14 +56,17 @@ git config user.email "qiskit@qiskit.org"
 echo "git rm -rf for the translation po files"
 git rm -rf --ignore-unmatch machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/*.po \
     machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api \
-    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidoc \
+    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidocs \
+    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/stubs \
+    machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/release_notes.po \
     machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/theme \
     machine-learning/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/_*
 
 # Remove api/ and apidoc/ to avoid confusion while translating
 rm -rf $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/api/ \
-    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidoc/ \
-    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/stubs/ \
+    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/apidocs \
+    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/stubs \
+    $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/release_notes.po \
     $SOURCE_DIR/$DOC_DIR_PO/$SOURCE_LANG/LC_MESSAGES/theme/
 
 # Copy the new rendered files and add them to the commit.
@@ -71,6 +74,8 @@ echo "copy directory"
 cp -r $SOURCE_DIR/$DOC_DIR_PO/ machine-learning/docs
 cp $SOURCE_DIR/setup.py machine-learning/.
 cp $SOURCE_DIR/requirements-dev.txt machine-learning/.
+cp $SOURCE_DIR/requirements.txt machine-learning/.
+cp $SOURCE_DIR/qiskit_machine_learning/VERSION.txt machine-learning/qiskit_machine_learning/.
 
 # git checkout translationDocs
 echo "add to po files to target dir"

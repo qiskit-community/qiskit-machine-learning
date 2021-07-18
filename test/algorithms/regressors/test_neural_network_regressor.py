@@ -55,16 +55,16 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
     @data(
         # optimizer, loss, quantum instance
-        ("cobyla", "statevector"),
-        ("cobyla", "qasm"),
-        ("bfgs", "statevector"),
-        ("bfgs", "qasm"),
-        (None, "statevector"),
-        (None, "qasm"),
+        ("cobyla", "statevector", False),
+        ("cobyla", "qasm", False),
+        ("bfgs", "statevector", False),
+        ("bfgs", "qasm", False),
+        (None, "statevector", False),
+        (None, "qasm", False),
     )
     def test_regressor_with_opflow_qnn(self, config):
         """Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
-        opt, q_i = config
+        opt, q_i, cb_flag = config
 
         num_qubits = 1
         # construct simple feature map
@@ -89,6 +89,16 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         else:
             optimizer = None
 
+        if cb_flag is True:
+            history = {"weights": [], "values": []}
+
+            def callback(objective_weights, objective_value):
+                history["weights"].append(objective_weights)
+                history["values"].append(objective_value)
+
+        else:
+            callback = None
+
         # construct QNN
         regression_opflow_qnn = TwoLayerQNN(
             num_qubits, feature_map, ansatz, quantum_instance=quantum_instance
@@ -102,6 +112,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             loss="squared_error",
             optimizer=optimizer,
             initial_point=initial_point,
+            callback=callback,
         )
 
         # fit to data
@@ -110,3 +121,10 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         # score the result
         score = regressor.score(self.X, self.y)
         self.assertGreater(score, 0.5)
+
+        # callback
+        if callback is not None:
+            self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            for weights in history["weights"]:
+                self.assertEqual(len(weights), regression_opflow_qnn.num_weights)
+                self.assertTrue(all(isinstance(weight, float) for weight in weights))
