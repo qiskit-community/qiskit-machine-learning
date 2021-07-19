@@ -31,6 +31,7 @@ except ImportError:
 
         pass
 
+
 from qiskit import QuantumCircuit, Aer
 from qiskit.providers.aer import AerSimulator
 from qiskit.exceptions import MissingOptionalLibraryError
@@ -149,7 +150,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         )
         test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)  # type: ignore
         self.assertTrue(test)
-
 
     @requires_extra_library
     def test_opflow_qnn_hybrid_batch_gradients(self):
@@ -341,6 +341,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             batch_loss.detach().numpy(),
             places=4,
         )
+
 
 if __name__ == "__main__":
     unittest.main()
