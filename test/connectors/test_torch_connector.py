@@ -721,10 +721,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         sum_of_individual_losses.backward()
         sum_of_individual_gradients = 0.0
         for n, param in model.named_parameters():
-            name = n.split(".")
             # make sure gradient is not None
             self.assertFalse(param.grad is None)
-            if name[1] == "weight" or name[1] == "_weights":
+            if n.endswith(".weight"):
                 sum_of_individual_gradients += np.sum(param.grad.numpy())
 
         # loss and gradients with batch
@@ -734,10 +733,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         batch_loss.backward()
         batch_gradients = 0.0
         for n, param in model.named_parameters():
-            name = n.split(".")
             # make sure gradient is not None
             self.assertFalse(param.grad is None)
-            if name[1] == "weight" or name[1] == "_weights":
+            if n.endswith(".weight"):
                 batch_gradients += np.sum(param.grad.numpy())
 
         # making sure they are equivalent
