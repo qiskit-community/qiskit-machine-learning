@@ -226,7 +226,9 @@ class TorchConnector(Module):
         self._neural_network = neural_network
 
         self._sparse = sparse
-        self._weights = TorchParam(Tensor(neural_network.num_weights))
+        weight = TorchParam(Tensor(neural_network.num_weights))
+        self.register_parameter("weight", weight)
+        self._weights = weight
         if initial_weights is None:
             self._weights.data.uniform_(-1, 1)
         else:
