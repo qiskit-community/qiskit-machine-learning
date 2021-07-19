@@ -226,8 +226,11 @@ class TorchConnector(Module):
         self._neural_network = neural_network
 
         self._sparse = sparse
+
         weight = TorchParam(Tensor(neural_network.num_weights))
+        # register param. in graph following PyTorch naming convention
         self.register_parameter("weight", weight)
+        # keep private var. name "_weights" for compatibility, can be revised
         self._weights = weight
         if initial_weights is None:
             self._weights.data.uniform_(-1, 1)
