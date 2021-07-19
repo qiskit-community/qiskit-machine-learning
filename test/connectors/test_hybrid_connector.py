@@ -16,7 +16,7 @@ import unittest
 from typing import List
 from test import QiskitMachineLearningTestCase, requires_extra_library
 import numpy as np
-from ddt import ddt, data
+from ddt import ddt
 
 try:
     from torch import Tensor
