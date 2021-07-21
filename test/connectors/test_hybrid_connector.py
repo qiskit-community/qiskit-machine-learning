@@ -38,7 +38,6 @@ from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 
-from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN
 from qiskit_machine_learning.connectors import TorchConnector
 
