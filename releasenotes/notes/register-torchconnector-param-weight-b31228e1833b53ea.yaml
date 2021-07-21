@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    The QNN weight parameter in TorchConnector is now registered in the torch
+    DAG as ``weight``, instead of ``_weights``. This is consistent with the
+    PyTorch naming convention and the ``weight`` property used to get access
+    to the computed weights. 
