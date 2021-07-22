@@ -67,13 +67,14 @@ nbsphinx_prolog = """
     .. role:: raw-html(raw)
         :format: html
 
-    .. raw:: html
-
-        <br><br><br>
-
     .. note::
-        Run interactively in jupyter notebook.
-"""
+        This page was generated from `docs/{{ docname }}`__.
+
+        __"""
+
+vers = version.split(".")
+link_str = f" https://github.com/Qiskit/qiskit-machine-learning/blob/stable/{vers[0]}.{vers[1]}/docs/"
+nbsphinx_prolog += link_str + "{{ docname }}"
 
 # -- General configuration ---------------------------------------------------
 
