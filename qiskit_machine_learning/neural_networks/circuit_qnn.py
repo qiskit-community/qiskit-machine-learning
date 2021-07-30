@@ -220,16 +220,16 @@ class CircuitQNN(SamplingNeuralNetwork):
         return self._weight_params
 
     @property
-    def quantum_instance(self) -> QuantumInstance:
-        """Returns the quantum instance to evaluate the circuit."""
-        return self._quantum_instance
-
-    @property
     def interpret(self) -> Optional[Callable[[int], Union[int, Tuple[int, ...]]]]:
         """Returns interpret function to be used by the neural network.
         If no interpret function was passed at the construction time, then an identity function
         is used by this neural network and returned by this property."""
         return self._interpret
+
+    @property
+    def quantum_instance(self) -> QuantumInstance:
+        """Returns the quantum instance to evaluate the circuit."""
+        return self._quantum_instance
 
     @quantum_instance.setter
     def quantum_instance(
