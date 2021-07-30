@@ -75,19 +75,14 @@ class OpflowQNN(NeuralNetwork):
         """
         self._input_params = list(input_params) or []
         self._weight_params = list(weight_params) or []
-
-        self._quantum_instance = None
-        self._circuit_sampler = None
-        if quantum_instance is not None:
-            self.quantum_instance = quantum_instance
-
+        self._set_quantum_instance(quantum_instance)
         self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
         self._gradient = gradient
         self._input_gradients = input_gradients
         self._construct_gradient_operator()
 
-        output_shape = self._get_output_shape_from_op(operator)
+        output_shape = self._compute_output_shape(operator)
         super().__init__(
             len(self._input_params),
             len(self._weight_params),
@@ -109,37 +104,18 @@ class OpflowQNN(NeuralNetwork):
         except (ValueError, TypeError, OpflowError, QiskitError):
             logger.warning("Cannot compute gradient operator! Continuing without gradients!")
 
-    @property
-    def quantum_instance(self) -> QuantumInstance:
-        """Returns the quantum instance to evaluate the circuit."""
-        return self._quantum_instance
-
-    @quantum_instance.setter
-    def quantum_instance(
-        self, quantum_instance: Union[QuantumInstance, BaseBackend, Backend]
-    ) -> None:
-        """Sets the quantum instance to evaluate the circuit."""
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
-            quantum_instance = QuantumInstance(quantum_instance)
-        self._quantum_instance = quantum_instance
-        self._circuit_sampler = CircuitSampler(
-            quantum_instance,
-            param_qobj=is_aer_provider(self._quantum_instance.backend),
-            caching="all",
-        )
-
-    def _get_output_shape_from_op(self, op: OperatorBase) -> Tuple[int, ...]:
+    def _compute_output_shape(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
         # TODO: the whole method should eventually be moved to opflow and rewritten in a better way.
         # if the operator is a composed one, then we only need to look at the first element of it.
         if isinstance(op, ComposedOp):
-            return self._get_output_shape_from_op(op.oplist[0].primitive)
+            return self._compute_output_shape(op.oplist[0].primitive)
         # this "if" statement is on purpose, to prevent sub-classes.
         # pylint:disable=unidiomatic-typecheck
         if type(op) == ListOp:
             shapes = []
             for op_ in op.oplist:
-                shape_ = self._get_output_shape_from_op(op_)
+                shape_ = self._compute_output_shape(op_)
                 shapes += [shape_]
             if not np.all([shape == shapes[0] for shape in shapes]):
                 raise QiskitMachineLearningError(
@@ -169,6 +145,44 @@ class OpflowQNN(NeuralNetwork):
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
         self._construct_gradient_operator()
+
+    @property
+    def quantum_instance(self) -> QuantumInstance:
+        """Returns the quantum instance to evaluate the operator."""
+        return self._quantum_instance
+
+    @quantum_instance.setter
+    def quantum_instance(
+        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
+    ) -> None:
+        """Sets the quantum instance to evaluate the operator."""
+        self._set_quantum_instance(quantum_instance)
+
+    def _set_quantum_instance(
+        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
+    ) -> None:
+        """
+        Internal method to set a quantum instance and compute/initialize a sampler.
+
+        Args:
+            quantum_instance: A quantum instance to set.
+
+        Returns:
+            None.
+        """
+
+        if isinstance(quantum_instance, (BaseBackend, Backend)):
+            quantum_instance = QuantumInstance(quantum_instance)
+        self._quantum_instance = quantum_instance
+
+        if quantum_instance:
+            self._circuit_sampler = CircuitSampler(
+                self._quantum_instance,
+                param_qobj=is_aer_provider(self._quantum_instance.backend),
+                caching="all",
+            )
+        else:
+            self._circuit_sampler = None
 
     def _forward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]

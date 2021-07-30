@@ -94,34 +94,37 @@ class CircuitQNN(SamplingNeuralNetwork):
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
         Raises:
             QiskitMachineLearningError: if ``interpret`` is passed without ``output_shape``.
+
         """
+        self._input_params = list(input_params or [])
+        self._weight_params = list(weight_params or [])
+        self._input_gradients = input_gradients
+        sparse = False if sampling else sparse
+
         # copy circuit and add measurements in case non are given
         # TODO: need to be able to handle partial measurements! (partial trace...)
         self._circuit = circuit.copy()
+        # these original values may be re-used when a quantum instance is set,
+        # but initially it was None
+        self._original_output_shape = output_shape
+        # next line is required by pylint only
+        self._interpret = interpret
+        self._original_interpret = interpret
 
-        self._input_params = list(input_params or [])
-        self._weight_params = list(weight_params or [])
-        self._interpret = interpret if interpret else lambda x: x
-        self._input_gradients = input_gradients
-        sparse_ = False if sampling else sparse
-        self._output_shape = output_shape
+        # we need this property in _set_quantum_instance despite it is initialized
+        # in the super class later on, review of SamplingNN is required.
         self._sampling = sampling
 
-        # call quantum instance setter
-        self._quantum_instance = None
-        self._sampler = None
-        if quantum_instance is not None:
-            self.quantum_instance = quantum_instance
-
-        output_shape_ = self._compute_output_shape(interpret, output_shape, sampling)
+        # set quantum instance and derive target output_shape and interpret
+        self._set_quantum_instance(quantum_instance, output_shape, interpret)
 
         # init super class
         super().__init__(
             len(self._input_params),
             len(self._weight_params),
-            sparse_,
+            sparse,
             sampling,
-            output_shape_,
+            self._output_shape,
             self._input_gradients,
         )
 
@@ -135,6 +138,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _construct_gradient_circuit(self):
         self._gradient_circuit: QuantumCircuit = None
         try:
+            # todo: avoid copying the circuit
             grad_circuit = self._original_circuit.copy()
             grad_circuit.remove_final_measurements()  # ideally this would not be necessary
             if self._input_gradients:
@@ -147,17 +151,33 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     def _compute_output_shape(self, interpret, output_shape, sampling) -> Tuple[int, ...]:
         """Validate and compute the output shape."""
+        # a safety check cause we use quantum instance below
+        if self._quantum_instance is None:
+            raise QiskitMachineLearningError(
+                "A quantum instance is required to compute output shape!"
+            )
 
         # this definition is required by mypy
         output_shape_: Tuple[int, ...] = (-1,)
-        if sampling and self._quantum_instance is not None:
+        # todo: move sampling code to the super class
+        if sampling:
+            if output_shape is not None:
+                # Warn user that output_shape parameter will be ignored
+                logger.warning(
+                    "In sampling mode, output_shape will be automatically inferred "
+                    "from the number of samples and interpret function, if provided."
+                )
+
             num_samples = self._quantum_instance.run_config.shots
-            ret = self._interpret(0)  # infer shape from function
-            result = np.array(ret)
-            if len(result.shape) == 0:
-                output_shape_ = (num_samples, 1)
+            if interpret:
+                ret = interpret(0)  # infer shape from function
+                result = np.array(ret)
+                if len(result.shape) == 0:
+                    output_shape_ = (num_samples, 1)
+                else:
+                    output_shape_ = (num_samples, *result.shape)
             else:
-                output_shape_ = (num_samples, *result.shape)
+                output_shape_ = (num_samples, 1)
         else:
             if interpret:
                 if output_shape is None:
@@ -170,7 +190,18 @@ class CircuitQNN(SamplingNeuralNetwork):
                 else:
                     output_shape_ = output_shape
             else:
+                if output_shape is not None:
+                    # Warn user that output_shape parameter will be ignored
+                    logger.warning(
+                        "No interpret function given, output_shape will be automatically "
+                        "determined as 2^num_qubits."
+                    )
+
                 output_shape_ = (2 ** self._circuit.num_qubits,)
+
+        # final validation
+        output_shape_ = self._validate_output_shape(output_shape_)
+
         return output_shape_
 
     @property
@@ -193,28 +224,62 @@ class CircuitQNN(SamplingNeuralNetwork):
         """Returns the quantum instance to evaluate the circuit."""
         return self._quantum_instance
 
+    @property
+    def interpret(self) -> Optional[Callable[[int], Union[int, Tuple[int, ...]]]]:
+        """Returns interpret function to be used by the neural network.
+        If no interpret function was passed at the construction time, then an identity function
+        is used by this neural network and returned by this property."""
+        return self._interpret
+
     @quantum_instance.setter
     def quantum_instance(
-        self, quantum_instance: Union[QuantumInstance, BaseBackend, Backend]
+        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
     ) -> None:
         """Sets the quantum instance to evaluate the circuit and make sure circuit has
         measurements or not depending on the type of backend used.
         """
+        self._set_quantum_instance(
+            quantum_instance, self._original_output_shape, self._original_interpret
+        )
+
+    def _set_quantum_instance(
+        self,
+        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]],
+        output_shape: Union[int, Tuple[int, ...]],
+        interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]],
+    ) -> None:
+        """
+        Internal method to set a quantum instance and compute/initialize internal properties such
+        as an interpret function, output shape and a sampler.
+
+        Args:
+            quantum_instance: A quantum instance to set.
+            output_shape: An output shape of the custom interpretation.
+            interpret: A callable that maps the measured integer to another unsigned integer or
+                tuple of unsigned integers.
+
+        Returns:
+            None.
+        """
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
-        self._sampler = CircuitSampler(quantum_instance, param_qobj=False, caching="all")
-        # add measurements in case non are given
-        if quantum_instance.is_statevector:
-            if len(self._circuit.clbits) > 0:
-                self._circuit.remove_final_measurements()
-        elif len(self._circuit.clbits) == 0:
-            self._circuit.measure_all()
-        if self._output_shape is not None:
-            output_shape_ = self._compute_output_shape(
-                self._interpret, self._output_shape, self._sampling
-            )
-            self._output_shape = self._validate_output_shape(output_shape_)
+
+        if self._quantum_instance is not None:
+            # add measurements in case non are given
+            if self._quantum_instance.is_statevector:
+                if len(self._circuit.clbits) > 0:
+                    self._circuit.remove_final_measurements()
+            elif len(self._circuit.clbits) == 0:
+                self._circuit.measure_all()
+
+            # set interpret and compute output shape
+            self.set_interpret(interpret, output_shape)
+
+            # prepare sampler
+            self._sampler = CircuitSampler(self._quantum_instance, param_qobj=False, caching="all")
+        else:
+            self._output_shape = output_shape
 
     @property
     def input_gradients(self) -> bool:
@@ -232,15 +297,21 @@ class CircuitQNN(SamplingNeuralNetwork):
         """Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
         output _shape does not have to be set and is inferred from the interpret function.
         Otherwise, the output_shape needs to be given."""
-        self._interpret = interpret if interpret else lambda x: x
+
+        # save original values
+        self._original_output_shape = output_shape
+        self._original_interpret = interpret
+
+        # derive target values to be used in computations
         self._output_shape = self._compute_output_shape(interpret, output_shape, self._sampling)
+        self._interpret = interpret if interpret else lambda x: x
 
     def _sample(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> np.ndarray:
 
         if self._quantum_instance is None:
-            raise QiskitMachineLearningError("Requires a quantum instance!")
+            raise QiskitMachineLearningError("Sampling requires a quantum instance!")
 
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError("Sampling does not work with statevector simulator!")
@@ -282,6 +353,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             raise QiskitMachineLearningError(
                 "Evaluation of probabilities requires a quantum instance!"
             )
+
         # evaluate operator
         circuits = []
         rows = input_data.shape[0]
@@ -329,7 +401,9 @@ class CircuitQNN(SamplingNeuralNetwork):
     ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
 
         if self._quantum_instance is None:
-            raise QiskitMachineLearningError("Probability gradients requires a quantum instance!")
+            raise QiskitMachineLearningError(
+                "Evaluation of probability gradients requires a quantum instance!"
+            )
 
         # check whether gradient circuit could be constructed
         if self._gradient_circuit is None:
