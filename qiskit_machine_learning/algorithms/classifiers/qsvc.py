@@ -18,6 +18,7 @@ from sklearn.svm import SVC
 
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 
+from qiskit.utils import algorithm_globals
 
 class QSVC(SVC):
     r"""Quantum Support Vector Classifier.
@@ -47,7 +48,9 @@ class QSVC(SVC):
 
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+        super().__init__(kernel=self._quantum_kernel.evaluate,
+                         random_state=algorithm_globals.random_seed,
+                         *args, **kwargs)
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
