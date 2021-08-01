@@ -30,6 +30,11 @@ from qiskit_machine_learning.deprecation import deprecate_values
 
 from .objective_functions import ObjectiveFunction
 
+from qiskit.utils import algorithm_globals
+from numpy.random import MT19937
+
+from numpy.random import RandomState, SeedSequence
+
 
 class TrainableModel:
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
@@ -202,7 +207,8 @@ class TrainableModel:
         if self._warm_start and self._fit_result is not None:
             self._initial_point = self._fit_result[0]
         elif self._initial_point is None:
-            self._initial_point = np.random.rand(self._neural_network.num_weights)
+            rs = RandomState(MT19937(SeedSequence(algorithm_globals.random_seed)))
+            self._initial_point = rs.rand(self._neural_network.num_weights)
         return self._initial_point
 
     def _get_objective(
