@@ -16,6 +16,9 @@ from typing import Union, Optional, Callable
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer, SLSQP
+from qiskit.utils import algorithm_globals
+from numpy.random import MT19937
+from numpy.random import RandomState, SeedSequence
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
@@ -29,11 +32,6 @@ from qiskit_machine_learning.utils.loss_functions import (
 from qiskit_machine_learning.deprecation import deprecate_values
 
 from .objective_functions import ObjectiveFunction
-
-from qiskit.utils import algorithm_globals
-from numpy.random import MT19937
-
-from numpy.random import RandomState, SeedSequence
 
 
 class TrainableModel:
@@ -207,8 +205,8 @@ class TrainableModel:
         if self._warm_start and self._fit_result is not None:
             self._initial_point = self._fit_result[0]
         elif self._initial_point is None:
-            rs = RandomState(MT19937(SeedSequence(algorithm_globals.random_seed)))
-            self._initial_point = rs.rand(self._neural_network.num_weights)
+            rand_state = RandomState(MT19937(SeedSequence(algorithm_globals.random_seed)))
+            self._initial_point = rand_state.rand(self._neural_network.num_weights)
         return self._initial_point
 
     def _get_objective(
