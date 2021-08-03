@@ -169,7 +169,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 )
 
             num_samples = self._quantum_instance.run_config.shots
-            if interpret:
+            if interpret is not None:
                 ret = interpret(0)  # infer shape from function
                 result = np.array(ret)
                 if len(result.shape) == 0:
