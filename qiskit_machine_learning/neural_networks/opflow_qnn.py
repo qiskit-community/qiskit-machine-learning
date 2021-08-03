@@ -175,7 +175,7 @@ class OpflowQNN(NeuralNetwork):
             quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 
-        if quantum_instance:
+        if quantum_instance is not None:
             self._circuit_sampler = CircuitSampler(
                 self._quantum_instance,
                 param_qobj=is_aer_provider(self._quantum_instance.backend),
