@@ -304,7 +304,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         # derive target values to be used in computations
         self._output_shape = self._compute_output_shape(interpret, output_shape, self._sampling)
-        self._interpret = interpret if interpret else lambda x: x
+        self._interpret = interpret if interpret is not None else lambda x: x
 
     def _sample(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
