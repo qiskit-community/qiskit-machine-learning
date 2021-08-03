@@ -103,6 +103,9 @@ class RawFeatureVector(BlueprintCircuit):
         Returns:
             The number of qubits.
         """
+        # ensure that num_qubits is up-to-date
+        if self._num_qubits is None and len(self.qubits) > 0:
+            self._num_qubits = len(self.qubits)
         return self._num_qubits if self._num_qubits is not None else 0
 
     @num_qubits.setter
