@@ -179,7 +179,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             else:
                 output_shape_ = (num_samples, 1)
         else:
-            if interpret:
+            if interpret is not None:
                 if output_shape is None:
                     raise QiskitMachineLearningError(
                         "No output shape given, but required in case of custom interpret!"
@@ -293,10 +293,25 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._input_gradients = input_gradients
         self._construct_gradient_circuit()
 
-    def set_interpret(self, interpret, output_shape=None):
+    def set_interpret(
+        self,
+        interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]],
+        output_shape: Union[int, Tuple[int, ...]] = None,
+    ) -> None:
         """Change 'interpret' and corresponding 'output_shape'. If self.sampling==True, the
         output _shape does not have to be set and is inferred from the interpret function.
-        Otherwise, the output_shape needs to be given."""
+        Otherwise, the output_shape needs to be given.
+
+        Args:
+            interpret: A callable that maps the measured integer to another unsigned integer or
+                tuple of unsigned integers. See constructor for more details.
+            output_shape: The output shape of the custom interpretation, only used in the case
+                where an interpret function is provided and ``sampling==False``. See constructor
+                for more details.
+
+        Returns:
+            None.
+        """
 
         # save original values
         self._original_output_shape = output_shape
