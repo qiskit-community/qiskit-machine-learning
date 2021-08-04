@@ -16,7 +16,7 @@ from typing import Optional
 
 from sklearn.svm import SVC
 
-from qiskit.utils import algorithm_globals
+from qiskit.utils.algorithm_globals import algorithm_globals
 
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 
@@ -51,7 +51,9 @@ class QSVC(SVC):
 
         super().__init__(
             kernel=self._quantum_kernel.evaluate,
-            random_state=algorithm_globals.random_seed,
+            random_state=kwargs.get("random_state")
+            if "random_state" in kwargs
+            else algorithm_globals.random_seed,
             *args,
             **kwargs,
         )
