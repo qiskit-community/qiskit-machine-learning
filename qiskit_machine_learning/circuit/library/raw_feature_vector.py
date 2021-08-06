@@ -124,7 +124,6 @@ class RawFeatureVector(BlueprintCircuit):
             if num_qubits is not None and num_qubits > 0:
                 self.qregs = [QuantumRegister(num_qubits, name="q")]
 
-
     @property
     def feature_dimension(self) -> int:
         """Return the feature dimension.
