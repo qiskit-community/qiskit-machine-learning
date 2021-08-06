@@ -120,7 +120,7 @@ class RawFeatureVector(BlueprintCircuit):
         if self.num_qubits != num_qubits:
             # invalidate the circuit
             self._invalidate()
-            if num_qubits > 0:
+            if num_qubits is not None and num_qubits > 0:
                 self.qregs = [QuantumRegister(num_qubits, name="q")]
             else:
                 self.qregs: List[QuantumRegister] = []
