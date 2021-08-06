@@ -152,9 +152,6 @@ class RawFeatureVector(BlueprintCircuit):
             self._invalidate()
             self.num_qubits = int(num_qubits)
 
-    def _invalidate(self):
-        super()._invalidate()
-
 
 class ParameterizedInitialize(Instruction):
     """A normalized parameterized initialize instruction."""
