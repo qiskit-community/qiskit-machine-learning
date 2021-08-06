@@ -65,19 +65,24 @@ class RawFeatureVector(BlueprintCircuit):
     def __init__(self, feature_dimension: Optional[int]) -> None:
         """
         Args:
-            feature_dimension: The feature dimension and number of qubits.
+            feature_dimension: The feature dimension from which the number of
+                                qubits is inferred as ``n_qubits = log2(feature_dim)``
 
         """
         super().__init__()
 
-        self._num_qubits = None
         self._ordered_parameters = ParameterVector("x")
-
+        self.num_qubits = None
         if feature_dimension:
             self.feature_dimension = feature_dimension
 
     def _build(self):
         super()._build()
+        num_qubits = np.log2(len(self._ordered_parameters[:]))
+
+        if num_qubits != self.num_qubits:
+            self._invalidate()  # rebuild circuit
+            self.num_qubits = num_qubits
 
         placeholder = ParameterizedInitialize(self._ordered_parameters[:])
         self.append(placeholder, self.qubits)
@@ -103,10 +108,7 @@ class RawFeatureVector(BlueprintCircuit):
         Returns:
             The number of qubits.
         """
-        # ensure that num_qubits is up-to-date
-        if self._num_qubits is None and len(self.qubits) > 0:
-            self._num_qubits = len(self.qubits)
-        return self._num_qubits if self._num_qubits is not None else 0
+        return super().num_qubits
 
     @num_qubits.setter
     def num_qubits(self, num_qubits: int) -> None:
@@ -115,11 +117,13 @@ class RawFeatureVector(BlueprintCircuit):
         Args:
             The new number of qubits.
         """
-        if self._num_qubits != num_qubits:
+        if self.num_qubits != num_qubits:
             # invalidate the circuit
             self._invalidate()
-            self._num_qubits = num_qubits
-            self.add_register(QuantumRegister(self.num_qubits, "q"))
+            if num_qubits:
+                self.add_register(QuantumRegister(num_qubits, "q"))
+            else:
+                self.qregs = []
 
     @property
     def feature_dimension(self) -> int:
@@ -144,13 +148,12 @@ class RawFeatureVector(BlueprintCircuit):
         if int(num_qubits) != num_qubits:
             raise ValueError("feature_dimension must be a power of 2!")
 
-        if self._num_qubits is None or num_qubits != self._num_qubits:
+        if self.num_qubits is None or num_qubits != self.num_qubits:
             self._invalidate()
             self.num_qubits = int(num_qubits)
 
     def _invalidate(self):
         super()._invalidate()
-        self._num_qubits = None
 
 
 class ParameterizedInitialize(Instruction):
