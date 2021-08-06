@@ -12,7 +12,7 @@
 
 """The raw feature vector circuit."""
 
-from typing import Optional
+from typing import Optional, List
 import numpy as np
 from qiskit.exceptions import QiskitError
 from qiskit.circuit import QuantumRegister, QuantumCircuit, ParameterVector, Instruction
@@ -123,7 +123,7 @@ class RawFeatureVector(BlueprintCircuit):
             if num_qubits:
                 self.add_register(QuantumRegister(num_qubits, "q"))
             else:
-                self.qregs = []
+                self.qregs: List[QuantumRegister] = []
 
     @property
     def feature_dimension(self) -> int:
