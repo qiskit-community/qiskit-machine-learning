@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    This fix removes the `_num_qubits` variable of `RawFeatureVector`, which caused issues on the `copy()` and `bind_parameters()` methods.
+
