@@ -141,10 +141,6 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         self.assertTrue(Statevector.from_label("00").equiv(bound))
 
-        # make sure that the bound circuit is a successful copy of the original circuit
-        self.assertEqual(circuit.num_qubits, bound.num_qubits)
-        self.assertEqual(circuit.feature_dimension, bound.feature_dimension)
-
     def test_copy(self):
         """Test copy operation for ``RawFeatureVector``."""
 
