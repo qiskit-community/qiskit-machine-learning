@@ -267,7 +267,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._quantum_instance = quantum_instance
 
         if self._quantum_instance is not None:
-            # add measurements in case non are given
+            # add measurements in case none are given
             if self._quantum_instance.is_statevector:
                 if len(self._circuit.clbits) > 0:
                     self._circuit.remove_final_measurements()
