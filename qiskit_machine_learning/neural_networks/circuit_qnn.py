@@ -77,7 +77,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If this is used, and ``sampling==False``, the output shape of
-                the output needs to be given as a separate argument.
+                the output needs to be given as a separate argument. If no interpret function is
+                passed, then an identity function will used by this neural network.
             output_shape: The output shape of the custom interpretation, only used in the case
                 where an interpret function is provided and ``sampling==False``. Note that in the
                 remaining cases, the output shape is automatically inferred by: ``2^num_qubits`` if
@@ -221,9 +222,9 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     @property
     def interpret(self) -> Optional[Callable[[int], Union[int, Tuple[int, ...]]]]:
-        """Returns interpret function to be used by the neural network.
-        If no interpret function was passed at the construction time, then an identity function
-        is used by this neural network and returned by this property."""
+        """Returns interpret function to be used by the neural network. If it is not set in
+        the constructor or can not be implicitly derived (e.g. a quantum instance is not), then
+        ``None`` is returned."""
         return self._interpret
 
     @property
