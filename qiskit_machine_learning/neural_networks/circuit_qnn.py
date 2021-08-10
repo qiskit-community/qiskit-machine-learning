@@ -223,8 +223,8 @@ class CircuitQNN(SamplingNeuralNetwork):
     @property
     def interpret(self) -> Optional[Callable[[int], Union[int, Tuple[int, ...]]]]:
         """Returns interpret function to be used by the neural network. If it is not set in
-        the constructor or can not be implicitly derived (e.g. a quantum instance is not), then
-        ``None`` is returned."""
+        the constructor or can not be implicitly derived (e.g. a quantum instance is not provided),
+        then ``None`` is returned."""
         return self._interpret
 
     @property
