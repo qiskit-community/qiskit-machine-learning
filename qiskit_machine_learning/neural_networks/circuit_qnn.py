@@ -258,9 +258,6 @@ class CircuitQNN(SamplingNeuralNetwork):
             output_shape: An output shape of the custom interpretation.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers.
-
-        Returns:
-            None.
         """
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             quantum_instance = QuantumInstance(quantum_instance)
@@ -309,9 +306,6 @@ class CircuitQNN(SamplingNeuralNetwork):
             output_shape: The output shape of the custom interpretation, only used in the case
                 where an interpret function is provided and ``sampling==False``. See constructor
                 for more details.
-
-        Returns:
-            None.
         """
 
         # save original values

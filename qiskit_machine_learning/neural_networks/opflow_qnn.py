@@ -113,10 +113,7 @@ class OpflowQNN(NeuralNetwork):
         # this "if" statement is on purpose, to prevent sub-classes.
         # pylint:disable=unidiomatic-typecheck
         if type(op) == ListOp:
-            shapes = []
-            for op_ in op.oplist:
-                shape_ = self._compute_output_shape(op_)
-                shapes += [shape_]
+            shapes = [self._compute_output_shape(op_) for op_ in op.oplist]
             if not np.all([shape == shapes[0] for shape in shapes]):
                 raise QiskitMachineLearningError(
                     "Only supports ListOps with children that return the same shape."
