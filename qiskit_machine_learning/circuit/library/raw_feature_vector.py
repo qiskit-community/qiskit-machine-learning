@@ -78,6 +78,8 @@ class RawFeatureVector(BlueprintCircuit):
 
     def _build(self):
         super()._build()
+        # we use len(_ordered_parameters) instead of feature_dimension
+        # to avoid checking if feature_dimension is None.
         num_qubits = np.log2(len(self._ordered_parameters[:]))
 
         if num_qubits != self.num_qubits:
