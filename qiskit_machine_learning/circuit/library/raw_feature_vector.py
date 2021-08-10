@@ -73,7 +73,7 @@ class RawFeatureVector(BlueprintCircuit):
 
         self._ordered_parameters = ParameterVector("x")
         self.num_qubits = None
-        if feature_dimension:
+        if feature_dimension is not None:
             self.feature_dimension = feature_dimension
 
     def _build(self):
