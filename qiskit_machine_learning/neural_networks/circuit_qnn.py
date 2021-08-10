@@ -78,7 +78,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If this is used, and ``sampling==False``, the output shape of
                 the output needs to be given as a separate argument. If no interpret function is
-                passed, then an identity function will used by this neural network.
+                passed, then an identity function will be used by this neural network.
             output_shape: The output shape of the custom interpretation, only used in the case
                 where an interpret function is provided and ``sampling==False``. Note that in the
                 remaining cases, the output shape is automatically inferred by: ``2^num_qubits`` if
@@ -264,7 +264,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._quantum_instance = quantum_instance
 
         if self._quantum_instance is not None:
-            # add measurements in case non are given
+            # add measurements in case none are given
             if self._quantum_instance.is_statevector:
                 if len(self._circuit.clbits) > 0:
                     self._circuit.remove_final_measurements()
