@@ -55,7 +55,7 @@ class ParamQuantumKernel:
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
     ) -> None:
-        """
+        r"""
         Args:
             feature_map: Parameterized circuit to be used as the feature map. If None is given,
                 the `ZZFeatureMap` is used with two qubits.
