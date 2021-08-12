@@ -16,6 +16,7 @@ from typing import Union, Optional, Callable
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer, SLSQP
+from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
@@ -202,7 +203,7 @@ class TrainableModel:
         if self._warm_start and self._fit_result is not None:
             self._initial_point = self._fit_result[0]
         elif self._initial_point is None:
-            self._initial_point = np.random.rand(self._neural_network.num_weights)
+            self._initial_point = algorithm_globals.random.random(self._neural_network.num_weights)
         return self._initial_point
 
     def _get_objective(
