@@ -29,6 +29,9 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 
 from qiskit_machine_learning.neural_networks import OpflowQNN
 
+QASM = "qasm"
+STATEVECTOR = "sv"
+
 
 @ddt
 class TestOpflowQNN(QiskitMachineLearningTestCase):
@@ -95,15 +98,24 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
                 (*batch_shape, *qnn.output_shape, qnn.num_weights),
             )
 
-    @data(("sv", True), ("sv", False), ("qasm", True), ("qasm", False))
+    @data(
+        (STATEVECTOR, True),
+        (STATEVECTOR, False),
+        (QASM, True),
+        (QASM, False),
+        (None, True),
+        (None, False),
+    )
     def test_opflow_qnn_1_1(self, config):
         """Test Opflow QNN with input/output dimension 1/1."""
         q_i, input_grad_required = config
 
-        if q_i == "sv":
+        if q_i == STATEVECTOR:
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == QASM:
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         # specify how to evaluate expected values and gradients
         expval = PauliExpectation()
@@ -144,16 +156,30 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         # test model
         self.validate_output_shape(qnn, test_data)
 
-    @data(("sv", True), ("sv", False), ("qasm", True), ("qasm", False))
+        # test the qnn after we set a quantum instance
+        if quantum_instance is None:
+            qnn.quantum_instance = self.qasm_quantum_instance
+            self.validate_output_shape(qnn, test_data)
+
+    @data(
+        (STATEVECTOR, True),
+        (STATEVECTOR, False),
+        (QASM, True),
+        (QASM, False),
+        (None, True),
+        (None, False),
+    )
     def test_opflow_qnn_2_1(self, config):
         """Test Opflow QNN with input/output dimension 2/1."""
         q_i, input_grad_required = config
 
         # construct QNN
-        if q_i == "sv":
+        if q_i == STATEVECTOR:
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == QASM:
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         # specify how to evaluate expected values and gradients
         expval = PauliExpectation()
@@ -196,15 +222,29 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         # test model
         self.validate_output_shape(qnn, test_data)
 
-    @data(("sv", True), ("sv", False), ("qasm", True), ("qasm", False))
+        # test the qnn after we set a quantum instance
+        if quantum_instance is None:
+            qnn.quantum_instance = self.qasm_quantum_instance
+            self.validate_output_shape(qnn, test_data)
+
+    @data(
+        (STATEVECTOR, True),
+        (STATEVECTOR, False),
+        (QASM, True),
+        (QASM, False),
+        (None, True),
+        (None, False),
+    )
     def test_opflow_qnn_2_2(self, config):
         """Test Opflow QNN with input/output dimension 2/2."""
         q_i, input_grad_required = config
 
-        if q_i == "sv":
+        if q_i == STATEVECTOR:
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == QASM:
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         # construct parametrized circuit
         params_1 = [Parameter("input1"), Parameter("weight1")]
@@ -248,6 +288,11 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
 
         # test model
         self.validate_output_shape(qnn, test_data)
+
+        # test the qnn after we set a quantum instance
+        if quantum_instance is None:
+            qnn.quantum_instance = self.qasm_quantum_instance
+            self.validate_output_shape(qnn, test_data)
 
     def test_composed_op(self):
         """Tests OpflowQNN with ComposedOp as an operator."""
