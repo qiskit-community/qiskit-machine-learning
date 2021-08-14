@@ -12,10 +12,12 @@
 
 """Quantum Kernel Algorithm"""
 
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, List, Dict, Callable
 
 import time
 import numpy as np
+import warnings
+from functools import partial
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import ParameterVector
@@ -23,10 +25,11 @@ from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
 from qiskit.algorithms.variational_algorithm import VariationalResult
+from qiskit.algorithms.optimizers import SPSA
 from ..exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.kernels import QuantumKernel
 
-
-class ParamQuantumKernel:
+class ParamQuantumKernel(QuantumKernel):
     r"""Quantum Kernel.
 
     The general task of machine learning is to find and study patterns in data. For many
@@ -46,14 +49,13 @@ class ParamQuantumKernel:
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    def __init__(
-        self,
-        feature_map: Optional[QuantumCircuit] = None,
-        input_params: Optional[Union[ParameterVector, List]] = None,
-        free_params: Optional[Union[ParameterVector, List]] = None,
-        enforce_psd: bool = True,
-        batch_size: int = 900,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+    def __init__(self,
+                feature_map: Optional[QuantumCircuit] = None,
+                input_params: Optional[Union[ParameterVector, List]] = None,
+                free_params: Optional[Union[ParameterVector, List]] = None,
+                enforce_psd: bool = True,
+                batch_size: int = 900,
+                quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
     ) -> None:
         r"""
         Args:
@@ -80,19 +82,33 @@ class ParamQuantumKernel:
         assert len(set(input_params).intersection(set(free_params))) == 0
  
 
-        self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
-        self._unbound_feature_map = self._feature_map
-        self._input_params = input_params
+        self._unbound_feature_map = feature_map if feature_map else ZZFeatureMap(2)
+
+        if (free_params is None) or (len(free_params) == 0):
+            return super.__init__(feature_map,
+                                  enforce_psd,
+                                  batch_size,
+                                  quantum_instance)
         self._free_params = free_params
-        self._free_param_bindings = {param: np.nan for param in self._free_params}
-        self._enforce_psd = enforce_psd
-        self._batch_size = batch_size
-        self._quantum_instance = quantum_instance
+        self._input_params = input_params if input_params is not None \
+            else [p for p in feature_map.parameters if p not in self._free_params]
+
+        self._free_param_bindings = {param: param for param in self._free_params}
+
+        super().__init__(feature_map,
+                       enforce_psd,
+                       batch_size,
+                       quantum_instance)
 
     @property
     def feature_map(self) -> QuantumCircuit:
         """Returns feature map"""
-        return self._feature_map
+        return self._unbound_feature_map.assign_parameters(self._free_param_bindings)
+
+    @property
+    def unbound_feature_map(self) -> QuantumCircuit:
+        """Returns feature map"""
+        return self._unbound_feature_map
 
     @feature_map.setter
     def feature_map(self, feature_map: QuantumCircuit):
@@ -112,6 +128,8 @@ class ParamQuantumKernel:
     @free_param_bindings.setter
     def free_param_bindings(param_values):
         if isinstance(param_values, list):
+            # make sure the param values are the right length o.w. the
+            # ordering is arbitrary
             self._free_param_bindings = {param: param_values[i] 
                                         for i,param in enumerate(self._free_params)}
         elif isinstance(param_values, dict):
@@ -129,23 +147,67 @@ class ParamQuantumKernel:
 
 
     def bind_free_params(self, free_param_values):
-        assert len(free_param_values) == len(self._free_params)
-        param_binds = {param: free_param_values[i] for i, param in enumerate(self._free_params)}
-        self._free_param_bindings = param_binds
-        self._feature_map = self._unbound_feature_map.bind_parameters(param_binds)
 
+        if isinstance(free_param_values, dict):
+            self._free_param_bindings.update(free_param_values)
+        elif isinstance(free_param_values,(List, np.ndarray)):
+            assert len(free_param_values) == len(self._free_params)
+            param_binds = {param: free_param_values[i] for i, param in enumerate(self._free_params)}
+            self._free_param_bindings.update(param_binds)
+        
+    def align(params, x_vec=None, y_vec=None):
+        assert PQK is not None
+        assert x_vec is not None
+        assert y_vec is not None
+        
+        # check that params are the right dimension
+        self.bind_free_params(params)
+        K = self.evaluate(x_vec)
+        y = np.array(y_vec)
+        
+        # The -1 is here because qiskit 
+        # optimizers minimize by default
+        return -1 * y.T @ K @ y
+
+    def weighted_align(params, x_vec=None, y_vec=None):
+        assert PQK is not None
+        assert x_vec is not None
+        assert y_vec is not None
+        
+        # check that params are the right dimension
+        self.bind_free_params(params)
+        
+        qsvc = QSVC(quantum_kernel = self)
+        qsvc.fit(x_vec, y_vec)
+        score = qsvc.score(x_vec, y_vec)
+
+        # The dual coefficients are equal
+        # to the Lagrange multipliers, termwise
+        # multiplied by the corresponding datapoint's 
+        # label. 
+        a = qsvc.dual_coef_[0]
+        sv = qsvc.support_
+        K = self.evaluate(x_vec)[sv,:][:,sv]
+
+        # The -1 is here because qiskit 
+        # optimizers minimize by default
+        return -1 * a.T @ K @ a
 
     def train_kernel(self,
-                     objective_function = None,
-                     optimizer = None,
+                     objective_function = 'alignment',
+                     optimizer = SPSA(),
+                     x_vec=None,
+                     y_vec=None,
                      bounds = None,
                      initial_point = None,
                      gradient_fn = None):
 
         # objective_function(params) --> scalar
 
-        def obj_fun(param):
-            assert len(params) == len(self._free_params)
+        if isinstance(objective_function, str):
+            assert x_vec is not None and y is not None
+        elif isinstance(objective_function, Callable):
+            obj_fun = partial(objective_function, x_vec=x_vec, y_vec=y_vec)
 
         nparams = len(self._free_params)
         if initial_point is None:
@@ -153,10 +215,9 @@ class ParamQuantumKernel:
 
         start = time.time()
 
-
         #logger.info('Starting optimizer.\nbounds=%s\ninitial point=%s', bounds, initial_point)
         opt_params, opt_val, num_optimizer_evals = optimizer.optimize(nparams,
-                                                                      objective_function,
+                                                                      obj_fun,
                                                                       variable_bounds=bounds,
                                                                       initial_point=initial_point,
                                                                       gradient_function=gradient_fn)
@@ -202,6 +263,11 @@ class ParamQuantumKernel:
         """
 
         # TODO: if free_param_bindings not specified, throw and error
+
+        if np.array(list(self._free_param_bindings.values())).dtype == np.dtype('O'):
+            print(self._free_param_bindings)
+            raise ValueError("Feature Map contains unbound free parameters.")
+
         if np.any(np.isnan(list(self._free_param_bindings.values()))):
             raise ValueError("Feature Map contains unbound free parameters.")
 
@@ -372,6 +438,7 @@ class ParamQuantumKernel:
                 is_statevector_sim=is_statevector_sim,
             )
             parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
+            print(parameterized_circuit.parameters)
             circuits = [
                 parameterized_circuit.assign_parameters({feature_map_params: x})
                 for x in to_be_computed_data
