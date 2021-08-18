@@ -27,7 +27,11 @@ class RawFeatureVector(BlueprintCircuit):
     placeholder instruction that can only be synthesized/defined when all parameters are bound.
 
     In ML, this circuit can be used to load the training data into qubit amplitudes. It does not
-    apply an kernel transformation. (Therefore, it is a "raw" feature vector.)
+    apply an kernel transformation (therefore, it is a "raw" feature vector).
+
+    Since initialization is implemented via a ``QuantumCircuit.initialize()`` call, this circuit
+    can't be used with gradient based optimizers, one can see a warning that gradients can't be
+    computed.
 
     Examples:
 
