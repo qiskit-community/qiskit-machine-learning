@@ -165,10 +165,14 @@ class NeuralNetwork(ABC):
         weight_grad: np.ndarray,
         original_shape: Tuple[int, ...],
     ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
+        if np.prod(input_grad.shape) == 0:
+            input_grad = None
         if input_grad is not None and original_shape and len(original_shape) >= 2:
             input_grad = input_grad.reshape(
                 (*original_shape[:-1], *self._output_shape, self._num_inputs)
             )
+        if np.prod(weight_grad.shape) == 0:
+            weight_grad = None
         if weight_grad is not None and original_shape and len(original_shape) >= 2:
             weight_grad = weight_grad.reshape(
                 (*original_shape[:-1], *self._output_shape, self._num_weights)
