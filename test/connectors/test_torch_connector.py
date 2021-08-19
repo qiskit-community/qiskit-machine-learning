@@ -493,21 +493,25 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             Tensor([[[1], [2]], [[3], [4]]]),
         ]
 
-        qnn = CircuitQNN(circuit=qc,
-                         input_params=[param_y],
-                         sparse=False,
-                         quantum_instance=quantum_instance,
-                         input_gradients=True)
+        qnn = CircuitQNN(
+            circuit=qc,
+            input_params=[param_y],
+            sparse=False,
+            quantum_instance=quantum_instance,
+            input_gradients=True,
+        )
         model = TorchConnector(qnn)
 
         self.validate_output_shape(model, test_data)
         self.validate_backward_pass(model)
 
-        qnn = CircuitQNN(circuit=qc,
-                         weight_params=[param_y],
-                         sparse=False,
-                         quantum_instance=quantum_instance,
-                         input_gradients=True)
+        qnn = CircuitQNN(
+            circuit=qc,
+            weight_params=[param_y],
+            sparse=False,
+            quantum_instance=quantum_instance,
+            input_gradients=True,
+        )
         model = TorchConnector(qnn)
 
         self.validate_output_shape(model, test_data)
