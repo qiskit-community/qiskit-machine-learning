@@ -76,7 +76,6 @@ class RawFeatureVector(BlueprintCircuit):
         super().__init__()
 
         self._ordered_parameters = ParameterVector("x")
-        self.num_qubits = None
         if feature_dimension is not None:
             self.feature_dimension = feature_dimension
 
@@ -146,7 +145,7 @@ class RawFeatureVector(BlueprintCircuit):
         if int(num_qubits) != num_qubits:
             raise ValueError("feature_dimension must be a power of 2!")
 
-        if self.num_qubits is None or num_qubits != self.num_qubits:
+        if num_qubits != self.num_qubits:
             self._invalidate()
             self.num_qubits = int(num_qubits)
 
