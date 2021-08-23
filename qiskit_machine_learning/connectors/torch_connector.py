@@ -224,9 +224,18 @@ class TorchConnector(Module):
         """
         super().__init__()
         self._neural_network = neural_network
-
         self._sparse = sparse
-        self._weights = TorchParam(Tensor(neural_network.num_weights))
+
+        weight_param = TorchParam(Tensor(neural_network.num_weights))
+        # Register param. in graph following PyTorch naming convention
+        self.register_parameter("weight", weight_param)
+        # If `weight_param` is assigned to `self._weights` after registration,
+        # it will not be re-registered, and we can keep the private var. name
+        # "_weights" for compatibility. The alternative, doing:
+        # `self._weights = TorchParam(Tensor(neural_network.num_weights))`
+        # would register the parameter with the name "_weights".
+        self._weights = weight_param
+
         if initial_weights is None:
             self._weights.data.uniform_(-1, 1)
         else:

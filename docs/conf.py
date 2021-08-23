@@ -67,13 +67,14 @@ nbsphinx_prolog = """
     .. role:: raw-html(raw)
         :format: html
 
-    .. raw:: html
-
-        <br><br><br>
-
     .. note::
-        Run interactively in jupyter notebook.
-"""
+        This page was generated from `docs/{{ docname }}`__.
+
+        __"""
+
+vers = version.split(".")
+link_str = f" https://github.com/Qiskit/qiskit-machine-learning/blob/stable/{vers[0]}.{vers[1]}/docs/"
+nbsphinx_prolog += link_str + "{{ docname }}"
 
 # -- General configuration ---------------------------------------------------
 
@@ -205,6 +206,27 @@ intersphinx_mapping = {
     'sklearn': ('https://scikit-learn.org/stable', None),
 }
 
+import sphinx
+if sphinx.__version__ >= '4.1.0':
+    # Torch fails loading as Module base class on Sphinx >= 4.1.0
+    # Mock its imports in order to ignore it
+    autodoc_mock_imports = ["torch"]
+
+
+def autodoc_process_bases(app, name, obj, options, bases):
+    """
+    Now tha Torch is mocked, it needs a fake class in order to
+    to print its class name correctly in the base class list.
+    """
+    for idx, base in enumerate(bases):
+        base_str = str(base)
+        if base_str.startswith('torch.nn') and base_str.endswith('Module'):
+            class _MLMock:
+                pass
+
+            _MLMock.__name__ = base_str
+            bases[idx] = _MLMock
+
 # -- Extension configuration -------------------------------------------------
 
 
@@ -215,3 +237,6 @@ def setup(app):
     app.add_directive('customcarditem', CustomCardItemDirective)
     app.add_directive('customcalloutitem', CustomCalloutItemDirective)
     app.setup_extension('versionutils')
+    if sphinx.__version__ >= '4.1.0':
+        app.connect('autodoc-process-bases', autodoc_process_bases)
+

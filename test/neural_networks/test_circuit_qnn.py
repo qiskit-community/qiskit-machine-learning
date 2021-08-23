@@ -30,6 +30,10 @@ from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
 
+QASM = "qasm"
+
+STATEVECTOR = "statevector"
+
 
 @ddt
 class TestCircuitQNN(QiskitMachineLearningTestCase):
@@ -81,14 +85,16 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             3,
         )  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
-    def get_qnn(self, sparse, sampling, statevector, interpret_id):
+    def _get_qnn(self, sparse, sampling, quantum_instance_type, interpret_id):
         """Construct QNN from configuration."""
 
         # get quantum instance
-        if statevector:
+        if quantum_instance_type == STATEVECTOR:
             quantum_instance = self.quantum_instance_sv
-        else:
+        elif quantum_instance_type == QASM:
             quantum_instance = self.quantum_instance_qasm
+        else:
+            quantum_instance = None
 
         # get interpret setting
         interpret = None
@@ -113,60 +119,26 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         )
         return qnn
 
-    @data(
-        # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d), batch_size
-        (True, True, True, 0, 1),
-        (True, True, True, 0, 2),
-        (True, True, True, 1, 1),
-        (True, True, True, 1, 2),
-        (True, True, True, 2, 1),
-        (True, True, True, 2, 2),
-        (True, True, False, 0, 1),
-        (True, True, False, 0, 2),
-        (True, True, False, 1, 1),
-        (True, True, False, 1, 2),
-        (True, True, False, 2, 1),
-        (True, True, False, 2, 2),
-        (True, False, True, 0, 1),
-        (True, False, True, 0, 2),
-        (True, False, True, 1, 1),
-        (True, False, True, 1, 2),
-        (True, False, True, 2, 1),
-        (True, False, True, 2, 2),
-        (True, False, False, 0, 1),
-        (True, False, False, 0, 2),
-        (True, False, False, 1, 1),
-        (True, False, False, 1, 2),
-        (True, False, False, 2, 1),
-        (True, False, False, 2, 2),
-        (False, True, True, 0, 1),
-        (False, True, True, 0, 2),
-        (False, True, True, 1, 1),
-        (False, True, True, 1, 2),
-        (False, True, True, 2, 1),
-        (False, True, True, 2, 2),
-        (False, True, False, 0, 1),
-        (False, True, False, 0, 2),
-        (False, True, False, 1, 1),
-        (False, True, False, 1, 2),
-        (False, True, False, 2, 1),
-        (False, True, False, 2, 2),
-        (False, False, True, 0, 1),
-        (False, False, True, 0, 2),
-        (False, False, True, 1, 1),
-        (False, False, True, 1, 2),
-        (False, False, True, 2, 1),
-        (False, False, True, 2, 2),
-        (False, False, False, 0, 1),
-        (False, False, False, 0, 2),
-        (False, False, False, 1, 1),
-        (False, False, False, 1, 2),
-        (False, False, False, 2, 1),
-        (False, False, False, 2, 2),
-    )
-    @requires_extra_library
-    def test_circuit_qnn(self, config):
-        """Circuit QNN Test."""
+    def _verify_qnn(
+        self,
+        qnn: CircuitQNN,
+        quantum_instance_type: str,
+        batch_size: int,
+    ) -> None:
+        """
+        Verifies that a QNN functions correctly
+
+        Args:
+            qnn: a QNN to check
+            quantum_instance_type:
+            batch_size:
+
+        Returns:
+            None.
+
+        Raises:
+            MissingOptionalLibraryError: if ``sparse`` library is not installed.
+        """
         try:
             from sparse import SparseArray
         except ImportError as ex:
@@ -176,16 +148,11 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 pip_install="pip install 'qiskit-machine-learning[sparse]'",
             ) from ex
 
-        # get configuration
-        sparse, sampling, statevector, interpret_id, batch_size = config
-
-        # get QNN
-        qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
         input_data = np.zeros((batch_size, qnn.num_inputs))
         weights = np.zeros(qnn.num_weights)
 
         # if sampling and statevector, make sure it fails
-        if statevector and sampling:
+        if quantum_instance_type == STATEVECTOR and qnn.sampling:
             with self.assertRaises(QiskitMachineLearningError):
                 qnn.forward(input_data, weights)
         else:
@@ -193,7 +160,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             result = qnn.forward(input_data, weights)
 
             # make sure forward result is sparse if it should be
-            if sparse and not sampling:
+            if qnn.sparse and not qnn.sampling:
                 self.assertTrue(isinstance(result, SparseArray))
             else:
                 self.assertTrue(isinstance(result, np.ndarray))
@@ -202,7 +169,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             self.assertEqual(result.shape, (batch_size, *qnn.output_shape))
 
             input_grad, weights_grad = qnn.backward(input_data, weights)
-            if sampling:
+            if qnn.sampling:
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
@@ -214,7 +181,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             # verify that input gradients are None if turned off
             qnn.input_gradients = True
             input_grad, weights_grad = qnn.backward(input_data, weights)
-            if sampling:
+            if qnn.sampling:
                 self.assertIsNone(input_grad)
                 self.assertIsNone(weights_grad)
             else:
@@ -224,29 +191,90 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 )
 
     @data(
-        # sparse, sampling, statevector, interpret (0=no, 1=1d, 2=2d), batch_size
-        (True, False, True, 0, 1),
-        (True, False, True, 0, 2),
-        (True, False, True, 1, 1),
-        (True, False, True, 1, 2),
-        (True, False, True, 2, 1),
-        (True, False, True, 2, 2),
-        (False, False, True, 0, 1),
-        (False, False, True, 0, 2),
-        (False, False, True, 1, 1),
-        (False, False, True, 1, 2),
-        (False, False, True, 2, 1),
-        (False, False, True, 2, 2),
+        # sparse, sampling, quantum_instance_type, interpret (0=no, 1=1d, 2=2d), batch_size
+        (True, True, STATEVECTOR, 0, 1),
+        (True, True, STATEVECTOR, 0, 2),
+        (True, True, STATEVECTOR, 1, 1),
+        (True, True, STATEVECTOR, 1, 2),
+        (True, True, STATEVECTOR, 2, 1),
+        (True, True, STATEVECTOR, 2, 2),
+        (True, True, QASM, 0, 1),
+        (True, True, QASM, 0, 2),
+        (True, True, QASM, 1, 1),
+        (True, True, QASM, 1, 2),
+        (True, True, QASM, 2, 1),
+        (True, True, QASM, 2, 2),
+        (True, False, STATEVECTOR, 0, 1),
+        (True, False, STATEVECTOR, 0, 2),
+        (True, False, STATEVECTOR, 1, 1),
+        (True, False, STATEVECTOR, 1, 2),
+        (True, False, STATEVECTOR, 2, 1),
+        (True, False, STATEVECTOR, 2, 2),
+        (True, False, QASM, 0, 1),
+        (True, False, QASM, 0, 2),
+        (True, False, QASM, 1, 1),
+        (True, False, QASM, 1, 2),
+        (True, False, QASM, 2, 1),
+        (True, False, QASM, 2, 2),
+        (False, True, STATEVECTOR, 0, 1),
+        (False, True, STATEVECTOR, 0, 2),
+        (False, True, STATEVECTOR, 1, 1),
+        (False, True, STATEVECTOR, 1, 2),
+        (False, True, STATEVECTOR, 2, 1),
+        (False, True, STATEVECTOR, 2, 2),
+        (False, True, QASM, 0, 1),
+        (False, True, QASM, 0, 2),
+        (False, True, QASM, 1, 1),
+        (False, True, QASM, 1, 2),
+        (False, True, QASM, 2, 1),
+        (False, True, QASM, 2, 2),
+        (False, False, STATEVECTOR, 0, 1),
+        (False, False, STATEVECTOR, 0, 2),
+        (False, False, STATEVECTOR, 1, 1),
+        (False, False, STATEVECTOR, 1, 2),
+        (False, False, STATEVECTOR, 2, 1),
+        (False, False, STATEVECTOR, 2, 2),
+        (False, False, QASM, 0, 1),
+        (False, False, QASM, 0, 2),
+        (False, False, QASM, 1, 1),
+        (False, False, QASM, 1, 2),
+        (False, False, QASM, 2, 1),
+        (False, False, QASM, 2, 2),
+    )
+    @requires_extra_library
+    def test_circuit_qnn(self, config):
+        """Circuit QNN Test."""
+        # get configuration
+        sparse, sampling, quantum_instance_type, interpret_id, batch_size = config
+
+        # get QNN
+        qnn = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_id)
+        self._verify_qnn(qnn, quantum_instance_type, batch_size)
+
+    @data(
+        # sparse, sampling, quantum_instance_type, interpret (0=no, 1=1d, 2=2d), batch_size
+        (True, False, STATEVECTOR, 0, 1),
+        (True, False, STATEVECTOR, 0, 2),
+        (True, False, STATEVECTOR, 1, 1),
+        (True, False, STATEVECTOR, 1, 2),
+        (True, False, STATEVECTOR, 2, 1),
+        (True, False, STATEVECTOR, 2, 2),
+        (False, False, STATEVECTOR, 0, 1),
+        (False, False, STATEVECTOR, 0, 2),
+        (False, False, STATEVECTOR, 1, 1),
+        (False, False, STATEVECTOR, 1, 2),
+        (False, False, STATEVECTOR, 2, 1),
+        (False, False, STATEVECTOR, 2, 2),
     )
     @requires_extra_library
     def test_circuit_qnn_gradient(self, config):
         """Circuit QNN Gradient Test."""
 
         # get configuration
-        sparse, sampling, statevector, interpret_id, batch_size = config
+        sparse, sampling, quantum_instance_type, interpret_id, batch_size = config
 
         # get QNN
-        qnn = self.get_qnn(sparse, sampling, statevector, interpret_id)
+        qnn = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_id)
         qnn.input_gradients = True
         input_data = np.ones((batch_size, qnn.num_inputs))
         weights = np.ones(qnn.num_weights)
@@ -299,6 +327,90 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 ].reshape(grad.shape)
                 diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+
+    @data(
+        # sparse, sampling, quantum_instance_type, interpret (0=no, 1=1d, 2=2d), batch_size
+        (True, True, STATEVECTOR, 0, 1),
+        (True, True, STATEVECTOR, 0, 2),
+        (True, True, STATEVECTOR, 1, 1),
+        (True, True, STATEVECTOR, 1, 2),
+        (True, True, STATEVECTOR, 2, 1),
+        (True, True, STATEVECTOR, 2, 2),
+        (True, True, QASM, 0, 1),
+        (True, True, QASM, 0, 2),
+        (True, True, QASM, 1, 1),
+        (True, True, QASM, 1, 2),
+        (True, True, QASM, 2, 1),
+        (True, False, STATEVECTOR, 0, 1),
+        (True, False, STATEVECTOR, 0, 2),
+        (True, False, STATEVECTOR, 1, 1),
+        (True, False, STATEVECTOR, 1, 2),
+        (True, False, STATEVECTOR, 2, 1),
+        (True, False, STATEVECTOR, 2, 2),
+        (True, False, QASM, 0, 1),
+        (True, False, QASM, 0, 2),
+        (True, False, QASM, 1, 1),
+        (True, False, QASM, 1, 2),
+        (True, False, QASM, 2, 1),
+        (True, False, QASM, 2, 2),
+        (False, True, STATEVECTOR, 0, 1),
+        (False, True, STATEVECTOR, 0, 2),
+        (False, True, STATEVECTOR, 1, 1),
+        (False, True, STATEVECTOR, 1, 2),
+        (False, True, STATEVECTOR, 2, 1),
+        (False, True, STATEVECTOR, 2, 2),
+        (False, True, QASM, 0, 1),
+        (False, True, QASM, 0, 2),
+        (False, True, QASM, 1, 1),
+        (False, True, QASM, 1, 2),
+        (False, True, QASM, 2, 1),
+        (False, True, QASM, 2, 2),
+        (False, False, STATEVECTOR, 0, 1),
+        (False, False, STATEVECTOR, 0, 2),
+        (False, False, STATEVECTOR, 1, 1),
+        (False, False, STATEVECTOR, 1, 2),
+        (False, False, STATEVECTOR, 2, 1),
+        (False, False, STATEVECTOR, 2, 2),
+        (False, False, QASM, 0, 1),
+        (False, False, QASM, 0, 2),
+        (False, False, QASM, 1, 1),
+        (False, False, QASM, 1, 2),
+        (False, False, QASM, 2, 1),
+        (False, False, QASM, 2, 2),
+    )
+    @requires_extra_library
+    def test_no_quantum_instance(self, config):
+        """Circuit QNN Test with and without QuantumInstance."""
+        # get configuration
+        sparse, sampling, quantum_instance_type, interpret_id, batch_size = config
+
+        # get QNN with QuantumInstance
+        qnn_qi = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_id)
+
+        # get QNN without QuantumInstance
+        qnn_no_qi = self._get_qnn(sparse, sampling, None, interpret_id)
+
+        with self.assertRaises(QiskitMachineLearningError):
+            qnn_no_qi.sample(input_data=None, weights=None)
+
+        with self.assertRaises(QiskitMachineLearningError):
+            qnn_no_qi.probabilities(input_data=None, weights=None)
+
+        with self.assertRaises(QiskitMachineLearningError):
+            qnn_no_qi.probability_gradients(input_data=None, weights=None)
+
+        if quantum_instance_type == STATEVECTOR:
+            quantum_instance = self.quantum_instance_sv
+        elif quantum_instance_type == QASM:
+            quantum_instance = self.quantum_instance_qasm
+        else:
+            # must never happen
+            quantum_instance = None
+
+        qnn_no_qi.quantum_instance = quantum_instance
+
+        self.assertEqual(qnn_qi.output_shape, qnn_no_qi.output_shape)
+        self._verify_qnn(qnn_no_qi, quantum_instance_type, batch_size)
 
 
 if __name__ == "__main__":
