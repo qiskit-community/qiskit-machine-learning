@@ -45,6 +45,7 @@ jobs:
           QISKIT_PARALLEL: False
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
+          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
           make html SPHINXOPTS=-W
           tools/deploy_documentation.sh
         shell: bash
@@ -74,5 +75,6 @@ jobs:
         QISKIT_PARALLEL: False
         QISKIT_DOCS_BUILD_TUTORIALS: 'always'
       run: |
+        echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
         tools/deploy_translatable_strings.sh
       shell: bash
