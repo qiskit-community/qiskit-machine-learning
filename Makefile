@@ -61,16 +61,16 @@ test_ci:
 
 spell:
 	pylint -rn --disable=all --enable=spelling --spelling-dict=en_US --spelling-private-dict-file=.pylintdict qiskit_machine_learning test tools
-	make -C docs spell SPHINXOPTS=$(SPHINXOPTS)
+	sphinx-build -M spelling docs docs/_build -W $(SPHINXOPTS)
 
 copyright:
 	python tools/check_copyright.py
 
 html:
-	make -C docs html SPHINXOPTS=$(SPHINXOPTS)
+	sphinx-build -M html docs docs/_build $(SPHINXOPTS)
 
 doctest:
-	make -C docs doctest SPHINXOPTS=$(SPHINXOPTS)
+	sphinx-build -M doctest docs docs/_build $(SPHINXOPTS)
 
 clean_sphinx:
 	make -C docs clean
