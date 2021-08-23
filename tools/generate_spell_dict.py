@@ -66,7 +66,7 @@ class SpellDictGenerator:
             os.mkdir(self._build_dir)
             sphinx_dict_file = os.path.join(self._build_dir, SpellDictGenerator._SPHINX_DICT_FILE)
             # create empty dictionary file
-            with open(sphinx_dict_file, "w"):
+            with open(sphinx_dict_file, "w", encoding="utf8"):
                 pass
             sphinx_build(
                 [
@@ -163,7 +163,7 @@ class SpellDictGenerator:
         word_set = set(w.lower() for w in self._sphinx_words)
         word_set.update(w.lower() for w in self._pylint_words)
         words = sorted(word_set)
-        with open(self._output_file, "w") as out_file:
+        with open(self._output_file, "w", encoding="utf8") as out_file:
             out_file.writelines("%s\n" % word for word in words)
         return words
 
