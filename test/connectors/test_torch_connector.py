@@ -753,7 +753,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 w_2.output,
                 [
                     "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:"
-                    "In sampling mode, output_shape will be automatically inferred  "
+                    "In sampling mode, output_shape will be automatically inferred "
                     "from the number of samples and interpret function, if provided."
                 ],
             )
