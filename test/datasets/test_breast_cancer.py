@@ -26,7 +26,7 @@ class TestBreastCancer(QiskitMachineLearningTestCase):
         """Breast Cancer test."""
 
         input_file = self.get_resource_path("breast_cancer_ref.json", "datasets")
-        with open(input_file) as file:
+        with open(input_file, encoding="utf8") as file:
             ref_data = json.load(file)
 
         training_features, training_labels, test_features, test_labels = breast_cancer(

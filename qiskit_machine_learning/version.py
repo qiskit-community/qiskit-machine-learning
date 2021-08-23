@@ -59,7 +59,7 @@ def git_version():
     return git_revision
 
 
-with open(os.path.join(ROOT_DIR, "VERSION.txt"), "r") as version_file:
+with open(os.path.join(ROOT_DIR, "VERSION.txt"), "r", encoding="utf8") as version_file:
     VERSION = version_file.read().strip()
 
 

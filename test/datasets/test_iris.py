@@ -26,7 +26,7 @@ class TestIris(QiskitMachineLearningTestCase):
         """Iris test."""
 
         input_file = self.get_resource_path("iris_ref.json", "datasets")
-        with open(input_file) as file:
+        with open(input_file, encoding="utf8") as file:
             ref_data = json.load(file)
 
         training_features, training_labels, test_features, test_labels = iris(
