@@ -81,7 +81,6 @@ class ParamQuantumKernel(QuantumKernel):
         # free_params and input_params must be disjoint
         assert len(set(input_params).intersection(set(free_params))) == 0
  
-
         self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
         self._unbound_feature_map = self._feature_map
         if (free_params is None) or (len(free_params) == 0):
@@ -109,7 +108,6 @@ class ParamQuantumKernel(QuantumKernel):
     def unbound_feature_map(self) -> QuantumCircuit:
         """Returns feature map"""
         return self._unbound_feature_map
-
 
     @property
     def quantum_instance(self) -> QuantumInstance:
@@ -141,20 +139,26 @@ class ParamQuantumKernel(QuantumKernel):
         else:
             self._quantum_instance = quantum_instance
 
-
     def bind_free_params(self, free_param_values):
-
+        """Binds free param values to the feature map"""
         if isinstance(free_param_values, dict):
             self._free_param_bindings.update(free_param_values)
         elif isinstance(free_param_values,(List, np.ndarray)):
             assert len(free_param_values) == len(self._free_params)
-            param_binds = {param: free_param_values[i] for i, param in enumerate(self._free_params)}
+            param_binds = {param: free_param_values[i] \
+                           for i, param in enumerate(self._free_params)}
             self._free_param_bindings.update(param_binds)
 
         self._feature_map = self._unbound_feature_map.bind_parameters(self._free_param_bindings)
-    """  
-    def align(params, x_vec=None, y_vec=None):
-        assert PQK is not None
+     
+    def _alignment(self,
+                   params, 
+                   x_vec=None, 
+                   y_vec=None):
+        r"""
+        docstring
+        """
+
         assert x_vec is not None
         assert y_vec is not None
         
@@ -167,10 +171,17 @@ class ParamQuantumKernel(QuantumKernel):
         # optimizers minimize by default
         return -1 * y.T @ K @ y
 
-    def weighted_align(params, x_vec=None, y_vec=None):
-        assert PQK is not None
+    def _weighted_alignment(self, 
+                           params, 
+                           x_vec=None, 
+                           y_vec=None):
+        r"""
+        docstring
+        """
+
         assert x_vec is not None
         assert y_vec is not None
+        from qiskit_machine_learning.algorithms import QSVC    
         
         # check that params are the right dimension
         self.bind_free_params(params)
@@ -182,16 +193,37 @@ class ParamQuantumKernel(QuantumKernel):
         # The dual coefficients are equal
         # to the Lagrange multipliers, termwise
         # multiplied by the corresponding datapoint's 
-        # label. 
+        # label. Only nonzero coefficients are returned
         a = qsvc.dual_coef_[0]
+        
+        # Get the indices of our data which correspond to
+        # support vectors
         sv = qsvc.support_
+        
+        #Filter out entries for non-support vectors
         K = self.evaluate(x_vec)[sv,:][:,sv]
 
         # The -1 is here because qiskit 
         # optimizers minimize by default
-        return -1 * a.T @ K @ a
-    """
-    
+        return np.sum(np.abs(a)) - 1/2 * (a.T @ K @ a) + np.sum(a)
+
+    def _model_complexity(self, params, x_vec=None, y_vec=None):
+        r"""
+        docstring
+        """
+
+        assert x_vec is not None
+        assert y_vec is not None
+        
+        # check that params are the right dimension
+        self.bind_free_params(params)
+        K = self.evaluate(x_vec)
+        y = np.array(y_vec)
+        
+        # The -1 is here because qiskit 
+        # optimizers minimize by default
+        return -1 * y.T @ np.linalg.pinv(K) @ y
+
     def train_kernel(self,
                      objective_function = 'alignment',
                      optimizer = SPSA(),
@@ -204,11 +236,19 @@ class ParamQuantumKernel(QuantumKernel):
         # objective_function(params) --> scalar
 
         if isinstance(objective_function, str):
-            assert x_vec is not None and y is not None
+            assert x_vec is not None and y_vec is not None, "x_vec and y_vec must be supplied " \
+                   "if a pre-made objective function is chosen."
+            if objective_function == 'weighted_alignment':
+                obj_fun = partial(self._weighted_alignment, x_vec=x_vec, y_vec=y_vec)
+            elif objective_function == 'alignment':
+                obj_fun = partial(self._alignment, x_vec=x_vec, y_vec=y_vec)
+            elif objective_function == 'model_complexity':
+                obj_fun = partial(self._model_complexity, x_vec=x_vec, y_vec=y_vec)
+            else:
+                raise ValueError('{} is not a valid choice of objecive function'\
+                                 ''.format(objective_function))
         elif isinstance(objective_function, Callable):
-            pass
             obj_fun = objective_function
-            #obj_fun = partial(objective_function, x_vec=x_vec, y_vec=y_vec)
 
         nparams = len(self._free_params)
         if initial_point is None:
@@ -262,8 +302,6 @@ class ParamQuantumKernel(QuantumKernel):
             ValueError:
                 - x and/or y have incompatible dimension with feature map
         """
-
-        # TODO: if free_param_bindings not specified, throw and error
 
         # Enure no free parameters are bound to objects (such as other Parameter) objects
         if np.array(list(self._free_param_bindings.values())).dtype == np.dtype('O'):
