@@ -12,17 +12,29 @@
 
 name: 'Install Qiskit Machine Learning Main Dependencies'
 description: 'Installs Python dependencies from Main'
-
+inputs:
+  os:
+    description: 'OS'
+    required: true
 runs:
   using: "composite"
   steps:
     - name: Install Dependencies from Main
-      env:
-        DISABLE_CONAN: 1
       run: |
         pip install git+https://github.com/Qiskit/qiskit-terra
-        sudo apt-get -y install nlohmann-json3-dev
-        sudo apt-get -y install libspdlog-dev
-        sudo apt-get -y install libmuparserx-dev
-        pip install git+https://github.com/Qiskit/qiskit-aer
+        if [ "${{ inputs.os }}" == "ubuntu-latest" ]; then
+          export DISABLE_CONAN=1
+          sudo apt-get -y install nlohmann-json3-dev
+          sudo apt-get -y install libspdlog-dev
+          sudo apt-get -y install libmuparserx-dev
+        fi
+        if [ "${{ inputs.os }}" == "windows-latest" ]; then
+          git clone https://github.com/Qiskit/qiskit-aer.git /tmp/qiskit-aer
+          pushd /tmp/qiskit-aer
+          python setup.py bdist_wheel -- -G 'Visual Studio 16 2019'
+          pip install --find-links=dist qiskit-aer
+          popd
+        else
+          pip install git+https://github.com/Qiskit/qiskit-aer
+        fi
       shell: bash
