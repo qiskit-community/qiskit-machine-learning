@@ -196,4 +196,4 @@ if __name__ == "__main__":
     OBJ.generate_pylint_spell_words()
     OBJ.merge_sort_dict_to_output()
 
-    sys.exit(os.EX_OK)
+    sys.exit(0)

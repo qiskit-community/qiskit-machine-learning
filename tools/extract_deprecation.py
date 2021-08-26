@@ -95,4 +95,4 @@ if __name__ == "__main__":
     OBJ.save_to_output(True)
     OBJ.print_messages()
 
-    sys.exit(os.EX_OK)
+    sys.exit(0)
