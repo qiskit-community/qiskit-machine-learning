@@ -31,9 +31,10 @@ concurrency:
 
 jobs:
   Checks:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest]
         python-version: [3.7]
     steps:
       - name: Print Concurrency Group
@@ -49,10 +50,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-libraries
-        with:
-          python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-main-dependencies
+        with:
+          os: ${{ matrix.os }}
         if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
@@ -62,6 +62,7 @@ jobs:
           sudo apt-get -y install python3-enchant
           sudo apt-get -y install hunspell-en-us
           pip install pyenchant
+          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
         shell: bash
       - run:  pip check
         if: ${{ !cancelled() }}
@@ -94,18 +95,25 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
   MachineLearning:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
+        include:
+          - os: macos-latest
+            python-version: 3.8
+          - os: windows-latest
+            python-version: 3.8
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-libraries
       - uses: ./.github/actions/install-main-dependencies
+        with:
+          os: ${{ matrix.os }}
         if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - run: make lint
@@ -127,19 +135,19 @@ jobs:
         if: ${{ !cancelled() }}
       - name: Deprecation Messages
         run: |
-          mkdir ./m${{ matrix.python-version }}
-          python tools/extract_deprecation.py -file out.txt -output ./m${{ matrix.python-version }}/ml.dep
+          mkdir ./ci-artifact-data
+          python tools/extract_deprecation.py -file out.txt -output ./ci-artifact-data/ml.dep
         shell: bash
       - name: Coverage combine
         run: |
           coverage3 combine
-          mv .coverage ./m${{ matrix.python-version }}/ml.dat
+          mv .coverage ./ci-artifact-data/ml.dat
         if: ${{ matrix.python-version == 3.7 }}
         shell: bash
       - uses: actions/upload-artifact@v2
         with:
-          name: ml${{ matrix.python-version }}
-          path: ./m${{ matrix.python-version }}/*
+          name: ${{ matrix.os }}-${{ matrix.python-version }}
+          path: ./ci-artifact-data/*
       - name: Machine Learning Unit Tests without torch/sparse under Python ${{ matrix.python-version }}
         env:
           PYTHONWARNINGS: default
@@ -152,9 +160,10 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
   Tutorials:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest]
         python-version: [3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
@@ -163,10 +172,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/install-libraries
-        with:
-          python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-main-dependencies
+        with:
+          os: ${{ matrix.os }}
         if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
@@ -179,6 +187,7 @@ jobs:
           QISKIT_PARALLEL: False
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
+          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
           make html SPHINXOPTS=-W
           cd docs/_build/html
           mkdir artifacts
@@ -230,26 +239,34 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: actions/download-artifact@v2
         with:
-          name: ml3.6
+          name: ubuntu-latest-3.6
           path: /tmp/m36
       - uses: actions/download-artifact@v2
         with:
-          name: ml3.7
+          name: ubuntu-latest-3.7
           path: /tmp/m37
       - uses: actions/download-artifact@v2
         with:
-          name: ml3.8
+          name: ubuntu-latest-3.8
           path: /tmp/m38
       - uses: actions/download-artifact@v2
         with:
-          name: ml3.9
+          name: ubuntu-latest-3.9
           path: /tmp/m39
+      - uses: actions/download-artifact@v2
+        with:
+          name: macos-latest-3.8
+          path: /tmp/m38
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-latest-3.8
+          path: /tmp/w38
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/m36/ml.dep /tmp/m37/ml.dep /tmp/m38/ml.dep /tmp/m39/ml.dep || true
+          sort -f -u /tmp/m36/ml.dep /tmp/m37/ml.dep /tmp/m38/ml.dep /tmp/m39/ml.dep /tmp/m38/ml.dep /tmp/w38/ml.dep || true
         shell: bash
       - name: Coverage combine
         run: coverage3 combine /tmp/m37/ml.dat
