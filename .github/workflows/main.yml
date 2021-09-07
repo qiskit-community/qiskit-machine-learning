@@ -214,6 +214,9 @@ jobs:
           rm -rf docs/tutorials/*
           cp -R /tmp/qiskit-machine-learning-stable-$version/docs/tutorials/* docs/tutorials
           # run tutorials and zip results
+          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
+          # ignore unreleased/untagged notes
+          tools/ignore_untagged_notes.sh
           make html SPHINXOPTS=-W
           cd docs/_build/html
           mkdir artifacts
