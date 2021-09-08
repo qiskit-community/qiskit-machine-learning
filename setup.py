@@ -14,9 +14,7 @@ import setuptools
 import inspect
 import sys
 import os
-
-long_description = """Qiskit Machine Learning is a open-source library of quantum computing machine learning experiments.
- """
+import re
 
 with open('requirements.txt') as f:
     REQUIREMENTS = f.read().splitlines()
@@ -30,11 +28,21 @@ VERSION_PATH = os.path.join(os.path.dirname(__file__), "qiskit_machine_learning"
 with open(VERSION_PATH, "r") as version_file:
     VERSION = version_file.read().strip()
 
+# Read long description from README.
+README_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
+with open(README_PATH) as readme_file:
+    README = re.sub(
+        "<!--- long-description-skip-begin -->.*<!--- long-description-skip-end -->",
+        "",
+        readme_file.read(),
+        flags=re.S | re.M,
+    )
+
 setuptools.setup(
     name='qiskit-machine-learning',
     version=VERSION,
     description='Qiskit Machine Learning: A library of quantum computing machine learning experiments',
-    long_description=long_description,
+    long_description=README,
     long_description_content_type="text/markdown",
     url='https://github.com/Qiskit/qiskit-machine-learning',
     author='Qiskit Machine Learning Development Team',
