@@ -282,18 +282,16 @@ class QuantumKernel:
                 is_statevector_sim=is_statevector_sim,
             )
             parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
-            circuits = [
-                parameterized_circuit.assign_parameters({feature_map_params: x})
-                for x in to_be_computed_data
-            ]
-
             statevectors = []
 
-            for min_idx in range(0, len(circuits), self._batch_size):
-                max_idx = min(min_idx + self._batch_size, len(circuits))
-                num_circuits = max_idx - min_idx
-                results = self._quantum_instance.execute(circuits[min_idx : max_idx])
-                for j in range(num_circuits):
+            for min_idx in range(0, len(to_be_computed_data), self._batch_size):
+                max_idx = min(min_idx + self._batch_size, len(to_be_computed_data))
+                circuits = [
+                    parameterized_circuit.assign_parameters({feature_map_params: x})
+                    for x in to_be_computed_data[min_idx : max_idx]
+                ]
+                results = self._quantum_instance.execute(circuits)
+                for j in range(max_idx - min_idx):
                     statevectors.append(results.get_statevector(j))
 
             offset = 0 if is_symmetric else len(x_vec)
