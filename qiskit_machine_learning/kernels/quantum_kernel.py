@@ -159,7 +159,7 @@ class QuantumKernel:
         """
         if is_statevector_sim:
             # |<0|Psi^dagger(y) x Psi(x)|0>|^2, take the amplitude
-            v_a, v_b = [results.get_statevector(int(i)) for i in idx]
+            v_a, v_b = [results[int(i)] for i in idx]
             tmp = np.vdot(v_a, v_b)
             kernel_value = np.vdot(tmp, tmp).real  # pylint: disable=no-member
         else:
@@ -287,11 +287,18 @@ class QuantumKernel:
                 for x in to_be_computed_data
             ]
 
-            results = self._quantum_instance.execute(circuits)
+            statevectors = []
+
+            for min_idx in range(0, len(circuits), self._batch_size):
+                max_idx = min(min_idx + self._batch_size, len(circuits))
+                num_circuits = max_idx - min_idx
+                results = self._quantum_instance.execute(circuits[min_idx : max_idx])
+                for j in range(num_circuits):
+                    statevectors.append(results.get_statevector(j))
 
             offset = 0 if is_symmetric else len(x_vec)
             matrix_elements = [
-                self._compute_overlap(idx, results, is_statevector_sim, measurement_basis)
+                self._compute_overlap(idx, statevectors, is_statevector_sim, measurement_basis)
                 for idx in list(zip(mus, nus + offset))
             ]
 
