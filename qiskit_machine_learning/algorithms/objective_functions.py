@@ -54,7 +54,7 @@ class ObjectiveFunction:
         self._y = y
         self._neural_network = neural_network
         self._loss = loss
-        self._last_forward_id: Optional[str] = None
+        self._last_forward_weights: Optional[np.ndarray] = None
         self._last_forward: Optional[Union[np.ndarray, SparseArray]] = None
 
     @abstractmethod
@@ -92,14 +92,15 @@ class ObjectiveFunction:
         Returns:
             The result of the neural network.
         """
-        # we compare weights and input data by identifier to make it faster.
-        # input data is added to the comparison for safety reasons only,
-        # comparison of weights should be enough.
-        data_id = str(id(weights)) + str(id(self._X))
-        if data_id != self._last_forward_id:
+        # if we get the same weights, we don't compute the forward pass again.
+        if self._last_forward_weights is None or (
+            not np.all(np.isclose(weights, self._last_forward_weights))
+        ):
             # compute forward and cache the results for re-use in backward
             self._last_forward = self._neural_network.forward(self._X, weights)
-            self._last_forward_id = data_id
+            # a copy avoids keeping a reference to the same array, so we are sure we have
+            # different arrays on the next iteration.
+            self._last_forward_weights = np.copy(weights)
         return self._last_forward
 
 
