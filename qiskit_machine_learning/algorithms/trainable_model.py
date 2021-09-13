@@ -213,7 +213,7 @@ class TrainableModel:
         """
         Wraps the given `ObjectiveFunction` to add callback calls, if `callback` is not None, along
         with evaluating the objective value. Returned objective function is passed to
-        `Optimizer.optimize()`.
+        `Optimizer.minimize()`.
         Args:
             function: The objective function whose objective is to be evaluated.
 
