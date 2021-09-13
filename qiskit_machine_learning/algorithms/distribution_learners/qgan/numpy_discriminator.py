@@ -432,14 +432,13 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         self._optimizer._t = 0
         objective = self._get_objective_function(data, weights)
         gradient = self._get_gradient_function(data, weights)
-        self._discriminator.parameters, loss, _ = self._optimizer.optimize(
-            num_vars=len(self._discriminator.parameters),
-            objective_function=objective,
-            initial_point=np.array(self._discriminator.parameters),
-            gradient_function=gradient,
+        opt_result = self._optimizer.minimize(
+            fun=objective,
+            x0=np.array(self._discriminator.parameters),
+            jac=gradient,
         )
-
-        self._ret["loss"] = loss
+        self._discriminator.parameters = opt_result.x
+        self._ret["loss"] = opt_result.fun
         self._ret["params"] = self._discriminator.parameters
 
         return self._ret
