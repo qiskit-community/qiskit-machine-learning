@@ -165,6 +165,7 @@ toctree
 todo
 traceback
 transpilation
+transpiled
 uncompiled
 unitaries
 univariate
