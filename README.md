@@ -1,6 +1,6 @@
 # Qiskit Machine Learning
 
-[![License](https://img.shields.io/github/license/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)[![Build Status](https://github.com/Qiskit/qiskit-machine-learning/workflows/Machine%20Learning%20Unit%20Tests/badge.svg?branch=main)](https://github.com/Qiskit/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)[![](https://img.shields.io/github/release/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://github.com/Qiskit/qiskit-machine-learning/releases)[![](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg?style=popout-square)](https://pypi.org/project/qiskit-machine-learning/)[![Coverage Status](https://coveralls.io/repos/github/Qiskit/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/Qiskit/qiskit-machine-learning?branch=main)
+[![License](https://img.shields.io/github/license/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)<!--- long-description-skip-begin -->[![Build Status](https://github.com/Qiskit/qiskit-machine-learning/workflows/Machine%20Learning%20Unit%20Tests/badge.svg?branch=main)](https://github.com/Qiskit/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)[![](https://img.shields.io/github/release/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://github.com/Qiskit/qiskit-machine-learning/releases)[![](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg?style=popout-square)](https://pypi.org/project/qiskit-machine-learning/)[![Coverage Status](https://coveralls.io/repos/github/Qiskit/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/Qiskit/qiskit-machine-learning?branch=main)<!--- long-description-skip-end -->
 
 The Machine Learning package simply contains sample datasets at present. It has some
 classification algorithms such as QSVM and VQC (Variational Quantum Classifier), where this data
@@ -21,7 +21,7 @@ pip install qiskit-machine-learning
 If you want to work on the very latest work-in-progress versions, either to try features ahead of
 their official release or if you want to contribute to Machine Learning, then you can install from source.
 To do this follow the instructions in the
- [documentation](https://qiskit.org/documentation/contributing_to_qiskit.html#installing-from-source).
+ [documentation](https://qiskit.org/documentation/machine-learning/getting_started.html#installation).
 
 
 ----------------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ be classified.
 ### Further examples
 
 Learning path notebooks may be found in the
-[Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials) section
+[Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials/index.html) section
 of the documentation and are a great place to start.
 
 ----------------------------------------------------------------------------------------------------
@@ -91,8 +91,8 @@ of the documentation and are a great place to start.
 ## Contribution Guidelines
 
 If you'd like to contribute to Qiskit, please take a look at our
-[contribution guidelines](./CONTRIBUTING.md).
-This project adheres to Qiskit's [code of conduct](./CODE_OF_CONDUCT.md).
+[contribution guidelines](https://github.com/Qiskit/qiskit-machine-learning/blob/main/CONTRIBUTING.md).
+This project adheres to Qiskit's [code of conduct](https://github.com/Qiskit/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
 
 We use [GitHub issues](https://github.com/Qiskit/qiskit-machine-learning/issues) for tracking requests and bugs. Please
@@ -115,6 +115,4 @@ file.
 
 ## License
 
-This project uses the [Apache License 2.0](LICENSE.txt).
-
-
+This project uses the [Apache License 2.0](https://github.com/Qiskit/qiskit-machine-learning/blob/main/LICENSE.txt).

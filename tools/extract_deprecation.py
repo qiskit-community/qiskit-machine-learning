@@ -57,7 +57,7 @@ class DeprecationExtractor:
         if self._output_filename:
             # create file even if it is empty
             if self._messages or force_create:
-                with open(self._output_filename, "w") as file:
+                with open(self._output_filename, "w", encoding="utf8") as file:
                     if self._messages:
                         file.write("\n".join(self._messages))
                         return True
@@ -95,4 +95,4 @@ if __name__ == "__main__":
     OBJ.save_to_output(True)
     OBJ.print_messages()
 
-    sys.exit(os.EX_OK)
+    sys.exit(0)
