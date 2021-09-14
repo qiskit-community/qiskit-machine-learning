@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fix a bug, where :meth:`qiskit_machine_learning.circuit.library.RawFeatureVector.copy` didn't
+    copy all internal settings which could lead to issues with the copied circuit. As a consequence
+    :meth:`qiskit_machine_learning.circuit.library.RawFeatureVector.bind_parameters` is also fixed.

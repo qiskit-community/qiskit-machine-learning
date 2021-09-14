@@ -478,6 +478,34 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         if q_i == "sv":
             self.validate_backward_pass(model)
 
+    @requires_extra_library
+    def test_circuit_qnn_without_parameters(self):
+        """Tests CircuitQNN without parameters."""
+        quantum_instance = self.sv_quantum_instance
+        qc = QuantumCircuit(2)
+        param_y = Parameter("y")
+        qc.ry(param_y, range(2))
+
+        qnn = CircuitQNN(
+            circuit=qc,
+            input_params=[param_y],
+            sparse=False,
+            quantum_instance=quantum_instance,
+            input_gradients=True,
+        )
+        model = TorchConnector(qnn)
+        self.validate_backward_pass(model)
+
+        qnn = CircuitQNN(
+            circuit=qc,
+            weight_params=[param_y],
+            sparse=False,
+            quantum_instance=quantum_instance,
+            input_gradients=True,
+        )
+        model = TorchConnector(qnn)
+        self.validate_backward_pass(model)
+
     @data(
         # interpret
         (None),

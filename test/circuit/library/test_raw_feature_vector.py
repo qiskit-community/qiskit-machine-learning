@@ -62,6 +62,10 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         self.assertEqual(bound.decompose(), ref)
 
+        # make sure that the bound circuit is a successful copy of the original circuit
+        self.assertEqual(circuit.num_qubits, bound.num_qubits)
+        self.assertEqual(circuit.feature_dimension, bound.feature_dimension)
+
     def test_partially_bound(self):
         """Test partially binding the circuit works."""
 
@@ -81,6 +85,10 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
             ref = QuantumCircuit(2)
             ref.initialize([0.2, 0.4, 0.4, 0.8], ref.qubits)
             self.assertEqual(bound.decompose(), ref)
+
+            # make sure that the bound circuit is a successful copy of the original circuit
+            self.assertEqual(circuit.num_qubits, bound.num_qubits)
+            self.assertEqual(circuit.feature_dimension, bound.feature_dimension)
 
     def test_usage_in_vqc(self):
         """Test using the circuit the a single VQC iteration works."""
@@ -132,6 +140,16 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         bound = circuit.bind_parameters([1, 0, 0, 0])
 
         self.assertTrue(Statevector.from_label("00").equiv(bound))
+
+    def test_copy(self):
+        """Test copy operation for ``RawFeatureVector``."""
+
+        circuit = RawFeatureVector(8)
+        circuit_copy = circuit.copy()
+
+        # make sure that the copied circuit has the same number of qubits as the original one
+        self.assertEqual(circuit.num_qubits, circuit_copy.num_qubits)
+        self.assertEqual(circuit.feature_dimension, circuit_copy.feature_dimension)
 
 
 if __name__ == "__main__":
