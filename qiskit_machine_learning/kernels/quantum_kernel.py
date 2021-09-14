@@ -11,9 +11,10 @@
 # that they have been altered from the originals.
 
 """Quantum Kernel Algorithm"""
+
+from typing import Optional, Union, Sequence, Mapping
 import copy
 import numbers
-from typing import Optional, Union, Sequence, Mapping
 
 import numpy as np
 
@@ -125,7 +126,7 @@ class QuantumKernel:
         Bind all free parameters in the QuantumKernel feature map.
 
         Args:
-            values (iterable): [value1, value2, ...]
+            values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
 
         Return:
             None
@@ -165,6 +166,8 @@ class QuantumKernel:
             param_binds = {param: values[i] for i, param in enumerate(self._free_parameters)}
             if self._free_param_binds is None:
                 self._free_param_binds = param_binds
+            else:
+                self._free_param_binds.update(param_binds)
             self._feature_map = self._base_feature_map.assign_parameters(self._free_param_binds)
 
     @property
@@ -209,6 +212,7 @@ class QuantumKernel:
         if self._free_param_binds is None:
             unbound_free_params = None
         else:
+            # Get all free parameters not associated with numerical values
             unbound_free_params = [
                 val
                 for val in self._free_param_binds.values()
@@ -296,6 +300,7 @@ class QuantumKernel:
             QiskitMachineLearningError:
                 - A quantum instance or backend has not been provided
             ValueError:
+                - unbound free parameters in the feature map circuit
                 - x_vec and/or y_vec are not one or two dimensional arrays
                 - x_vec and y_vec have have incompatible dimensions
                 - x_vec and/or y_vec have incompatible dimension with feature map and
@@ -304,6 +309,7 @@ class QuantumKernel:
         if self._free_param_binds is None:
             unbound_free_params = None
         else:
+            # Get all free parameters not associated with numerical values
             unbound_free_params = [
                 val
                 for val in self._free_param_binds.values()
