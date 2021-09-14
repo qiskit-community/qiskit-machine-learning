@@ -88,6 +88,8 @@ class QuantumKernel:
         """Sets feature map"""
         self._feature_map = feature_map
         self._base_feature_map = copy.deepcopy(self._feature_map)
+        self._free_parameters = None
+        self._free_param_binds = None
 
     @property
     def base_feature_map(self) -> QuantumCircuit:
@@ -116,6 +118,7 @@ class QuantumKernel:
 
     @free_parameters.setter
     def free_parameters(self, free_params: Union[ParameterVector, Sequence[Parameter]]):
+        """Sets the free parameters"""
         self._free_param_binds = {free_params[i]: free_params[i] for i, _ in enumerate(free_params)}
         self._free_parameters = free_params
 
@@ -123,7 +126,7 @@ class QuantumKernel:
         self, values: Union[Mapping[Parameter, float], Sequence[float]]
     ) -> None:
         """
-        Bind all free parameters in the QuantumKernel feature map.
+        Bind free parameters in the QuantumKernel feature map.
 
         Args:
             values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
@@ -175,9 +178,20 @@ class QuantumKernel:
         """Return the current free parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._free_param_binds)
 
-    def bind_free_parameters(self, values: Sequence[float]) -> None:
+    def bind_free_parameters(
+        self, values: Union[Mapping[Parameter, float], Sequence[float]]
+    ) -> None:
         """
         Alternate function signature for assign_free_parameters
+
+        Args:
+            values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
+
+        Return:
+            None
+
+        Raises:
+            ValueError: Incompatible number of free parameters and values
         """
         self.assign_free_parameters(values)
 

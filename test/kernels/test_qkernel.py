@@ -391,7 +391,7 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
         qkclass = QuantumKernel(feature_map=self.feature_map)
 
         # Case where user assigns param values without specifying params
-        free_param_values = [np.pi / 2, np.pi / 2]
+        free_param_values = [np.pi / 2, np.pi / 4]
         with self.assertRaises(ValueError):
             qkclass.assign_free_parameters(free_param_values)
 
@@ -406,7 +406,7 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
         self.assertEqual(free_param_values, bound_free_param_vals)
 
         # Assign params to some new values, and also test the bind_free_parameters interface
-        free_param_values = [np.pi / 4, np.pi / 4]
+        free_param_values = [np.pi / 4, np.pi / 2]
         param_binds = dict(zip(self.free_parameters, free_param_values))
         qkclass.bind_free_parameters(param_binds)
 
