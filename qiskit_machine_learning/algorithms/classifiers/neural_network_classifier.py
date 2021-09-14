@@ -104,11 +104,10 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
         objective = self._get_objective(function)
 
-        self._fit_result = self._optimizer.optimize(
-            self._neural_network.num_weights,
-            objective,
-            function.gradient,
-            initial_point=self._choose_initial_point(),
+        self._fit_result = self._optimizer.minimize(
+            fun=objective,
+            x0=self._choose_initial_point(),
+            jac=function.gradient,
         )
         return self
 
@@ -116,9 +115,9 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         if self._fit_result is None:
             raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
         if self._neural_network.output_shape == (1,):
-            predict = np.sign(self._neural_network.forward(X, self._fit_result[0]))
+            predict = np.sign(self._neural_network.forward(X, self._fit_result.x))
         else:
-            forward = self._neural_network.forward(X, self._fit_result[0])
+            forward = self._neural_network.forward(X, self._fit_result.x)
             predict_ = np.argmax(forward, axis=1)
             if self._one_hot:
                 predict = np.zeros(forward.shape)
