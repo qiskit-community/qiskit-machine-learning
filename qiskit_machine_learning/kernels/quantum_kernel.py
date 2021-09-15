@@ -12,12 +12,14 @@
 
 """Quantum Kernel Algorithm"""
 
-from typing import Optional, Union
+from typing import Optional, Union, Sequence, Mapping
+import copy
+import numbers
 
 import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from qiskit.circuit import ParameterVector
+from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
@@ -50,6 +52,7 @@ class QuantumKernel:
         enforce_psd: bool = True,
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        free_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
         """
         Args:
@@ -59,11 +62,21 @@ class QuantumKernel:
                 Only enforced when not using the state vector simulator. Default True.
             batch_size: Number of circuits to batch together for computation. Default 1000.
             quantum_instance: Quantum Instance or Backend
+            free_parameters: Iterable containing Parameter objects which correspond to
+                free parameters (non-data-bound parameters) in the feature map circuit
         """
         self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
+        self._free_parameters = free_parameters
+        self._base_feature_map = copy.deepcopy(self._feature_map)
+        if free_parameters:
+            self._free_param_binds = {
+                free_parameters[i]: free_parameters[i] for i in range(len(free_parameters))
+            }
+        else:
+            self._free_param_binds = None
 
     @property
     def feature_map(self) -> QuantumCircuit:
@@ -74,6 +87,14 @@ class QuantumKernel:
     def feature_map(self, feature_map: QuantumCircuit):
         """Sets feature map"""
         self._feature_map = feature_map
+        self._base_feature_map = copy.deepcopy(self._feature_map)
+        self._free_parameters = None
+        self._free_param_binds = None
+
+    @property
+    def base_feature_map(self) -> QuantumCircuit:
+        """Returns unbound feature map"""
+        return copy.deepcopy(self._base_feature_map)
 
     @property
     def quantum_instance(self) -> QuantumInstance:
@@ -89,6 +110,87 @@ class QuantumKernel:
             self._quantum_instance = QuantumInstance(quantum_instance)
         else:
             self._quantum_instance = quantum_instance
+
+    @property
+    def free_parameters(self) -> Union[ParameterVector, Sequence[Parameter]]:
+        """Return the vector of free parameters."""
+        return self._free_parameters
+
+    @free_parameters.setter
+    def free_parameters(self, free_params: Union[ParameterVector, Sequence[Parameter]]):
+        """Sets the free parameters"""
+        self._free_param_binds = {free_params[i]: free_params[i] for i, _ in enumerate(free_params)}
+        self._free_parameters = free_params
+
+    def assign_free_parameters(
+        self, values: Union[Mapping[Parameter, float], Sequence[float]]
+    ) -> None:
+        """
+        Bind free parameters in the QuantumKernel feature map.
+
+        Args:
+            values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
+
+        Return:
+            None
+
+        Raises:
+            ValueError: Incompatible number of free parameters and values
+        """
+        if isinstance(values, dict):
+            if self._free_param_binds is None:
+                self._free_param_binds = values
+            else:
+                self._free_param_binds.update(values)
+            self._feature_map = self._base_feature_map.assign_parameters(self._free_param_binds)
+
+        else:
+            if self._free_parameters is None:
+                raise ValueError(
+                    """
+                    An iterable of free parameter values was given as input,
+                    but the number of parameter values ({}) does not match the
+                    number of free parameters tracked by the QuantumKernel (None).
+                    """.format(
+                        len(values)
+                    )
+                )
+            if len(values) != len(self._free_parameters):
+                raise ValueError(
+                    """
+                    An iterable of free parameter values was given as input,
+                    but the number of parameter values ({}) does not match the
+                    number of free parameters tracked by the QuantumKernel ({}).
+                    """.format(
+                        len(values), len(self._free_parameters)
+                    )
+                )
+
+            param_binds = {param: values[i] for i, param in enumerate(self._free_parameters)}
+            if self._free_param_binds is None:
+                self._free_param_binds = param_binds
+            else:
+                self._free_param_binds.update(param_binds)
+            self._feature_map = self._base_feature_map.assign_parameters(self._free_param_binds)
+
+    @property
+    def free_param_binds(self) -> Mapping[Parameter, float]:
+        """Return a copy of the current free parameter mappings for the feature map circuit."""
+        return copy.deepcopy(self._free_param_binds)
+
+    def bind_free_parameters(
+        self, values: Union[Mapping[Parameter, float], Sequence[float]]
+    ) -> None:
+        """
+        Alternate function signature for assign_free_parameters
+
+        Args:
+            values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
+
+        Return:
+            None
+        """
+        self.assign_free_parameters(values)
 
     def construct_circuit(
         self,
@@ -116,7 +218,27 @@ class QuantumKernel:
         Raises:
             ValueError:
                 - x and/or y have incompatible dimension with feature map
+                - unbound free parameters in the feature map circuit
         """
+        if self._free_param_binds is None:
+            unbound_free_params = None
+        else:
+            # Get all free parameters not associated with numerical values
+            unbound_free_params = [
+                val
+                for val in self._free_param_binds.values()
+                if not isinstance(val, numbers.Number)
+            ]
+        if unbound_free_params:
+            raise ValueError(
+                """
+                The feature map circuit contains unbound free parameters ({}).
+                All free parameters must be bound to numerical values before constructing
+                inner product circuit.
+                """.format(
+                    unbound_free_params
+                )
+            )
 
         if len(x) != self._feature_map.num_parameters:
             raise ValueError(
@@ -189,11 +311,31 @@ class QuantumKernel:
             QiskitMachineLearningError:
                 - A quantum instance or backend has not been provided
             ValueError:
+                - unbound free parameters in the feature map circuit
                 - x_vec and/or y_vec are not one or two dimensional arrays
                 - x_vec and y_vec have have incompatible dimensions
                 - x_vec and/or y_vec have incompatible dimension with feature map and
                     and feature map can not be modified to match.
         """
+        if self._free_param_binds is None:
+            unbound_free_params = None
+        else:
+            # Get all free parameters not associated with numerical values
+            unbound_free_params = [
+                val
+                for val in self._free_param_binds.values()
+                if not isinstance(val, numbers.Number)
+            ]
+        if unbound_free_params:
+            raise ValueError(
+                """
+                    The feature map circuit contains unbound free parameters ({}).
+                    All free parameters must be bound to numerical values before evaluating
+                    the kernel matrix.
+                    """.format(
+                    unbound_free_params
+                )
+            )
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
                 "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel."
