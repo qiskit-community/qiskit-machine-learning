@@ -41,11 +41,10 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
 
         objective = self._get_objective(function)
 
-        self._fit_result = self._optimizer.optimize(
-            self._neural_network.num_weights,
-            objective,
-            function.gradient,
-            initial_point=self._choose_initial_point(),
+        self._fit_result = self._optimizer.minimize(
+            fun=objective,
+            x0=self._choose_initial_point(),
+            jac=function.gradient,
         )
         return self
 
@@ -53,7 +52,7 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
         if self._fit_result is None:
             raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
 
-        return self._neural_network.forward(X, self._fit_result[0])
+        return self._neural_network.forward(X, self._fit_result.x)
 
     def score(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None

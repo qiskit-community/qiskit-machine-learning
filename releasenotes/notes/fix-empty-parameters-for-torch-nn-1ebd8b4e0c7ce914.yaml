@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fix a bug where ``TorchConnector`` failed on backward pass computation
+    due to empty parameters for inputs or weights. Validation added to
+    :meth:`qiskit_machine_learning.neural_networks.NeuralNetwork._validate_backward_output`.
