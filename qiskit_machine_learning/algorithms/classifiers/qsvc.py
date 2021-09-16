@@ -39,11 +39,10 @@ class QSVC(SVC):
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(self, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for classification.
-            *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
 
@@ -54,7 +53,6 @@ class QSVC(SVC):
 
         super().__init__(
             kernel=self._quantum_kernel.evaluate,
-            *args,
             **kwargs,
         )
 
