@@ -57,7 +57,7 @@ class QuantumKernel:
                 the `ZZFeatureMap` is used with two qubits.
             enforce_psd: Project to closest positive semidefinite matrix if x = y.
                 Only enforced when not using the state vector simulator. Default True.
-            batch_size: Number of circuits to batch together for computation. Default 1000.
+            batch_size: Number of circuits to batch together for computation. Default 900.
             quantum_instance: Quantum Instance or Backend
         """
         self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
