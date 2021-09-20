@@ -132,7 +132,7 @@ class QuantumKernel:
                 Dict {parameter: value, ...} or {parameter: parameter}:
                 The keys of the parameter dictionary must be Parameter instances in the
                 feature map circuit. The values of the dictionary should be either numeric
-                values {param:float} or copies of the param key. Passing a copy of the param
+                values {param:float} or copies of the param key {param:param}. Passing a copy of the param
                 key as a value causes that parameter to be ignored. This allows the circuit's
                 free parameters to be bound consecutively.
 
@@ -194,7 +194,7 @@ class QuantumKernel:
         """
         self.assign_free_parameters(values)
 
-    def _check_free_parameters_bound(self) -> None:
+    def _raise_on_unbound_free_parameters(self) -> None:
         """Ensure all free parameters in the feature map circuit are bound."""
         if self._free_param_binds is None:
             unbound_free_params = None
@@ -244,7 +244,7 @@ class QuantumKernel:
                 - unbound free parameters in the feature map circuit
         """
         # Ensure all free parameters have been bound in the feature map circuit.
-        self._check_free_parameters_bound()
+        self._raise_on_unbound_free_parameters()
 
         if len(x) != self._feature_map.num_parameters:
             raise ValueError(
@@ -324,7 +324,7 @@ class QuantumKernel:
                     and feature map can not be modified to match.
         """
         # Ensure all free parameters have been bound in the feature map circuit.
-        self._check_free_parameters_bound()
+        self._raise_on_unbound_free_parameters()
 
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
