@@ -214,7 +214,6 @@ class QuantumKernel:
                 """
                 )
 
-
     def construct_circuit(
         self,
         x: ParameterVector,
