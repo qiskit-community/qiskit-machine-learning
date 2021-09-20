@@ -120,10 +120,11 @@ class QuantumKernel:
         self._free_parameters = free_params
 
     def assign_free_parameters(
-        self, values: Union[Mapping[Parameter, float], Sequence[float]]
+        self, values: Union[Mapping[Parameter, ParameterValueType],
+                            Sequence[ParameterValueType]]
     ) -> None:
         """
-        Bind free parameters in the QuantumKernel feature map.
+        Assign free parameters in the QuantumKernel feature map.
 
         Args:
             values (dict or iterable):
