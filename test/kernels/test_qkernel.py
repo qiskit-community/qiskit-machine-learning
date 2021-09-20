@@ -375,6 +375,17 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.free_parameters = free_params
 
+    def test_bad_param_values(self):
+        """Test handling of bad free parameter assignments."""
+        # Instantiate a QuantumKernel but do not set the free_parameters field
+        qkclass = QuantumKernel(feature_map=self.feature_map)
+
+        # Try to set the free parameters using only values and ensure an
+        # error is raised.
+        free_param_values = [np.pi / 2, np.pi / 4]
+        with self.assertRaises(ValueError):
+            qkclass.assign_free_parameters(free_param_values)
+
     def test_free_parameters(self):
         """Test assigning free parameters"""
         # Ensure we can instantiate a QuantumKernel with free parameters
@@ -383,19 +394,15 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
 
         # Test iterative free parameter binding
         qkclass.assign_free_parameters({qkclass.free_parameters[0]: np.pi / 2})
-        self.assertEqual(len(qkclass.feature_map.parameters), 3)
+        self.assertEqual(qkclass.feature_map.num_parameters, 3)
         qkclass.assign_free_parameters({qkclass.free_parameters[1]: np.pi / 2})
-        self.assertEqual(len(qkclass.feature_map.parameters), 2)
+        self.assertEqual(qkclass.feature_map.num_parameters, 2)
 
         # Instantiate a QuantumKernel without specifying free parameters
         qkclass = QuantumKernel(feature_map=self.feature_map)
 
-        # Case where user assigns param values without specifying params
-        free_param_values = [np.pi / 2, np.pi / 4]
-        with self.assertRaises(ValueError):
-            qkclass.assign_free_parameters(free_param_values)
-
         # Bind free parameters to real values
+        free_param_values = [np.pi / 3, np.pi / 6]
         param_binds = dict(zip(self.free_parameters, free_param_values))
         qkclass.assign_free_parameters(param_binds)
 
@@ -416,8 +423,8 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
         ]
         self.assertEqual(free_param_values, bound_free_param_vals)
 
-        # Ensure base feature map still holds all parameters of input feature map
-        self.assertEqual(len(qkclass.base_feature_map.parameters), 4)
+        # Ensure unbound feature map still holds all parameters of input feature map
+        self.assertEqual(len(qkclass.unbound_feature_map.parameters), 4)
 
 
 if __name__ == "__main__":
