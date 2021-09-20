@@ -156,9 +156,7 @@ class TorchConnector(Module):
             # evaluate QNN gradient
             input_grad, weights_grad = neural_network.backward(input_data.numpy(), weights.numpy())
             if input_grad is not None:
-                if np.prod(input_grad.shape) == 0:
-                    input_grad = None
-                elif neural_network.sparse:
+                if neural_network.sparse:
                     input_grad = sparse_coo_tensor(input_grad.coords, input_grad.data)
 
                     # cast to dense here, since PyTorch does not support sparse output yet.
@@ -178,9 +176,7 @@ class TorchConnector(Module):
                 input_grad = einsum("ij,ijk->ik", grad_output, input_grad)
 
             if weights_grad is not None:
-                if np.prod(weights_grad.shape) == 0:
-                    weights_grad = None
-                elif neural_network.sparse:
+                if neural_network.sparse:
                     weights_grad = sparse_coo_tensor(weights_grad.coords, weights_grad.data)
 
                     # cast to dense here, since PyTorch does not support sparse output yet.
