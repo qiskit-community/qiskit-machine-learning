@@ -23,6 +23,7 @@ class QuantumKernelTrainer:
     ):
         """
         Args:
+            kernel: A QuantumKernel object to be tuned
             loss: A target loss function to be used in training. Default is `weighted_alignment`,
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SPSA.
             initial_point: Initial point for the optimizer to start from.
@@ -30,15 +31,23 @@ class QuantumKernelTrainer:
         Raises:
             QiskitMachineLearningError: unknown loss function
         """
-        loss = loss.lower()
-        if loss == "weighted_alignment":
-            self.loss = WeightedKernelAlignmentClassification()
+        # Set the loss function to a KernelLoss class (should hold an evaluate function)
+        if isinstance(loss, str):
+            loss = loss.lower()
+            if loss == "weighted_alignment":
+                self.loss = WeightedKernelAlignmentClassification()
+            else:
+                raise QiskitMachineLearningError(f"Unknown loss {loss}!")
+        elif callable(loss):
+            self.loss = loss
         else:
             raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
+        # Use SPSA as default optimizer
         if optimizer is None:
             optimizer = SPSA(maxiter=10, callback=[None] * 5)
         self.optimizer = optimizer
+
         self.initial_point = initial_point
 
     @property
