@@ -114,15 +114,16 @@ class QuantumKernel:
     def free_parameters(self, free_params: Union[ParameterVector, Sequence[Parameter]]):
         """Sets the free parameters"""
         if free_params:
-            self._free_param_binds = {free_params[i]: free_params[i] for i, _ in enumerate(free_params)}
+            self._free_param_binds = {
+                free_params[i]: free_params[i] for i, _ in enumerate(free_params)
+            }
         else:
             self._free_param_binds = None
 
         self._free_parameters = free_params
 
     def assign_free_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType],
-                            Sequence[ParameterValueType]]
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
         """
         Assign free parameters in the QuantumKernel feature map.
@@ -154,7 +155,7 @@ class QuantumKernel:
                     but the number of parameter values ({len(values)}) does not match the
                     number of free parameters tracked by the QuantumKernel (None).
                     """
-                    )
+                )
 
             if len(values) != len(self._free_parameters):
                 raise ValueError(
@@ -164,7 +165,7 @@ class QuantumKernel:
                     number of free parameters tracked by the QuantumKernel
                     ({len(self._free_parameters)}).
                     """
-                    )
+                )
 
             param_binds = {param: values[i] for i, param in enumerate(self._free_parameters)}
             values = param_binds
@@ -212,7 +213,7 @@ class QuantumKernel:
                 All free parameters must be bound to numerical values before constructing
                 inner product circuit.
                 """
-                )
+            )
 
     def construct_circuit(
         self,

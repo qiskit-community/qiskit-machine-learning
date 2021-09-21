@@ -51,6 +51,7 @@ Algorithms for data classification.
    NeuralNetworkClassifier
    VQC
 
+
 Regressors
 ++++++++++
 Quantum Support Vector Regressor.
@@ -77,6 +78,14 @@ Distribution Learners
    QuantumGenerator
    QGAN
 
+Kernel Trainers
++++++++++++++++
+
+.. autosummary::
+    :toctree: ../stubs/
+    :nosignatures:
+
+    QuantumKernelTrainer
 """
 
 from .trainable_model import TrainableModel
@@ -86,6 +95,7 @@ from .objective_functions import (
     MultiClassObjectiveFunction,
     OneHotObjectiveFunction,
 )
+from .kernel_trainers import QuantumKernelTrainer
 from .classifiers import QSVC, VQC, NeuralNetworkClassifier
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
 from .distribution_learners import (
@@ -106,6 +116,7 @@ __all__ = [
     "QSVC",
     "NeuralNetworkClassifier",
     "VQC",
+    "QuantumKernelTrainer",
     "QSVR",
     "NeuralNetworkRegressor",
     "VQR",
