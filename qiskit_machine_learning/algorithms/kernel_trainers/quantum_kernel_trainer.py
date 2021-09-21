@@ -7,7 +7,10 @@ from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit.utils.algorithm_globals import QiskitAlgorithmGlobals
-from qiskit_machine_learning.utils.loss_functions import KernelLoss, WeightedKernelAlignmentClassification
+from qiskit_machine_learning.utils.loss_functions import (
+    KernelLoss,
+    WeightedKernelAlignmentClassification,
+)
 
 
 class QuantumKernelTrainer:
