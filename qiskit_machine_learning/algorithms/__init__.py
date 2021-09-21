@@ -51,7 +51,6 @@ Algorithms for data classification.
    NeuralNetworkClassifier
    VQC
 
-
 Regressors
 ++++++++++
 Quantum Support Vector Regressor.

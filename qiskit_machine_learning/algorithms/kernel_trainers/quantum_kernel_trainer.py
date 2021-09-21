@@ -7,7 +7,7 @@ from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit.utils.algorithm_globals import QiskitAlgorithmGlobals
-from qiskit_machine_learning.utils.loss_functions import Loss, WeightedKernelAlignmentClassification
+from qiskit_machine_learning.utils.loss_functions import KernelLoss, WeightedKernelAlignmentClassification
 
 
 class QuantumKernelTrainer:
@@ -29,8 +29,7 @@ class QuantumKernelTrainer:
         """
         loss = loss.lower()
         if loss == "weighted_alignment":
-            loss_obj = WeightedKernelAlignmentClassification()
-            self.loss = loss_obj
+            self.loss = WeightedKernelAlignmentClassification()
         else:
             raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
@@ -45,7 +44,7 @@ class QuantumKernelTrainer:
         return self._loss
 
     @loss.setter
-    def loss(self, loss: Loss) -> None:
+    def loss(self, loss: KernelLoss) -> None:
         """Sets the loss."""
         self._loss = loss
 
