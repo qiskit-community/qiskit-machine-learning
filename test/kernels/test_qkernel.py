@@ -360,7 +360,7 @@ class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
 
 
 class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
-    """Test QuantumKernel free parameter support"""
+    """Test QuantumKernel user parameter support"""
 
     def setUp(self):
         super().setUp()
@@ -368,60 +368,60 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
         # Create an arbitrary 2-qubit feature map circuit
         circ1 = ZZFeatureMap(2)
         circ2 = ZZFeatureMap(2)
-        free_params = circ2.parameters
-        for i, _ in enumerate(free_params):
-            free_params[i]._name = "θ[{}]".format(i)
+        user_params = circ2.parameters
+        for i, _ in enumerate(user_params):
+            user_params[i]._name = "θ[{}]".format(i)
 
         self.feature_map = circ1.compose(circ2).compose(circ1)
-        self.free_parameters = free_params
+        self.user_parameters = user_params
 
     def test_bad_param_values(self):
-        """Test handling of bad free parameter assignments."""
-        # Instantiate a QuantumKernel but do not set the free_parameters field
+        """Test handling of bad parameter assignments."""
+        # Instantiate a QuantumKernel but do not set the user_parameters field
         qkclass = QuantumKernel(feature_map=self.feature_map)
 
-        # Try to set the free parameters using only values and ensure an
+        # Try to set the user parameters using only values and ensure an
         # error is raised.
-        free_param_values = [np.pi / 2, np.pi / 4]
+        user_param_values = [np.pi / 2, np.pi / 4]
         with self.assertRaises(ValueError):
-            qkclass.assign_free_parameters(free_param_values)
+            qkclass.assign_user_parameters(user_param_values)
 
-    def test_free_parameters(self):
-        """Test assigning free parameters"""
-        # Ensure we can instantiate a QuantumKernel with free parameters
-        qkclass = QuantumKernel(feature_map=self.feature_map, free_parameters=self.free_parameters)
-        self.assertEqual(qkclass.free_parameters, self.free_parameters)
+    def test_user_parameters(self):
+        """Test assigning user parameters"""
+        # Ensure we can instantiate a QuantumKernel with user parameters
+        qkclass = QuantumKernel(feature_map=self.feature_map, user_parameters=self.user_parameters)
+        self.assertEqual(qkclass.user_parameters, self.user_parameters)
 
-        # Test iterative free parameter binding
-        qkclass.assign_free_parameters({qkclass.free_parameters[0]: np.pi / 2})
+        # Test iterative user parameter binding
+        qkclass.assign_user_parameters({qkclass.user_parameters[0]: np.pi / 2})
         self.assertEqual(qkclass.feature_map.num_parameters, 3)
-        qkclass.assign_free_parameters({qkclass.free_parameters[1]: np.pi / 2})
+        qkclass.assign_user_parameters({qkclass.user_parameters[1]: np.pi / 2})
         self.assertEqual(qkclass.feature_map.num_parameters, 2)
 
-        # Instantiate a QuantumKernel without specifying free parameters
+        # Instantiate a QuantumKernel without specifying user parameters
         qkclass = QuantumKernel(feature_map=self.feature_map)
 
-        # Bind free parameters to real values
-        free_param_values = [np.pi / 3, np.pi / 6]
-        param_binds = dict(zip(self.free_parameters, free_param_values))
-        qkclass.assign_free_parameters(param_binds)
+        # Bind user parameters to real values
+        user_param_values = [np.pi / 3, np.pi / 6]
+        param_binds = dict(zip(self.user_parameters, user_param_values))
+        qkclass.assign_user_parameters(param_binds)
 
-        # Ensure the two free parameters were bound correctly
-        bound_free_param_vals = [
-            val for val in qkclass.free_param_binds.values() if isinstance(val, numbers.Number)
+        # Ensure the two user parameters were bound correctly
+        bound_user_param_vals = [
+            val for val in qkclass.user_param_binds.values() if isinstance(val, numbers.Number)
         ]
-        self.assertEqual(free_param_values, bound_free_param_vals)
+        self.assertEqual(user_param_values, bound_user_param_vals)
 
-        # Assign params to some new values, and also test the bind_free_parameters interface
-        free_param_values = [np.pi / 4, np.pi / 2]
-        param_binds = dict(zip(self.free_parameters, free_param_values))
-        qkclass.bind_free_parameters(param_binds)
+        # Assign params to some new values, and also test the bind_user_parameters interface
+        user_param_values = [np.pi / 4, np.pi / 2]
+        param_binds = dict(zip(self.user_parameters, user_param_values))
+        qkclass.bind_user_parameters(param_binds)
 
         # Ensure the old values are properly overwritten in the feature map
-        bound_free_param_vals = [
-            val for val in qkclass.free_param_binds.values() if isinstance(val, numbers.Number)
+        bound_user_param_vals = [
+            val for val in qkclass.user_param_binds.values() if isinstance(val, numbers.Number)
         ]
-        self.assertEqual(free_param_values, bound_free_param_vals)
+        self.assertEqual(user_param_values, bound_user_param_vals)
 
         # Ensure unbound feature map still holds all parameters of input feature map
         self.assertEqual(len(qkclass.unbound_feature_map.parameters), 4)
