@@ -109,7 +109,7 @@ class QuantumKernelTrainer:
             labels (numpy.ndarray): Nx1 array of +/-1 labels of the N training samples
 
         Returns:
-            dict: the results of kernel alignment
+            VariationalResult: the results of kernel alignment
         """
         # Bind inputs to objective function
         obj_func = partial(self.loss.evaluate, kernel=self.quantum_kernel, data=data, labels=labels)

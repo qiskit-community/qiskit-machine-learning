@@ -81,7 +81,7 @@ class QSVC(SVC):
             self._quantum_kernel = QuantumKernel(quantum_instance=backend)
 
         # If the input QuantumKernel has unbound user params, set the
-        # QuantumKernelTrainer field
+        # kernel_trainer field
         elif isinstance(quantum_kernel, QuantumKernel):
             self._quantum_kernel = quantum_kernel
             if quantum_kernel.unbound_user_parameters():
@@ -113,8 +113,8 @@ class QSVC(SVC):
         Wrapper method for SVC.fit which optimizes the quantum kernel's
         user parameters before fitting the SVC.
         """
-        if self._kernel_trainer:
-            results = self._kernel_trainer.fit_kernel(X, y)
+        if self.kernel_trainer:
+            results = self.kernel_trainer.fit_kernel(X, y)
             self.quantum_kernel.assign_user_parameters(results.optimal_parameters)
 
         super().fit(X=X, y=y, sample_weight=sample_weight)

@@ -118,7 +118,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 0.5)
 
     def test_unbound_user_params(self):
-        """Test QSVC with extra constructor parameters"""
+        """Test QSVC with user parameters"""
         fm, fp = generate_tunable_feature_map()
         qkernel = QuantumKernel(
             feature_map=fm,

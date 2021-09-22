@@ -258,20 +258,16 @@ class WeightedKernelAlignmentClassification(KernelLoss):
         # Bind learnable parameters
         kernel.assign_user_parameters(user_parameters)
 
-        # Train a quantum support vector classifier
+        # Train a support vector classifier.
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(data, labels)
 
-        # Get dual coefficients
+        # Retrieve the dual coefficients and support vectors
         ay = svc.dual_coef_[0]
-
-        # Get support vectors
         sv = svc.support_
 
-        # Get estimated kernel matrix
+        # Get estimated kernel matrix and calculate the loss
         K = kernel.evaluate(np.array(data))[sv, :][:, sv]
-
-        # Calculate loss
         loss = np.sum(np.abs(ay)) - (0.5 * (ay.T @ K @ ay))
 
         return loss
