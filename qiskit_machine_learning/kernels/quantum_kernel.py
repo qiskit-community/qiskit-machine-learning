@@ -201,25 +201,18 @@ class QuantumKernel:
         """
         self.assign_user_parameters(values)
 
-    def _raise_on_unbound_user_parameters(self) -> None:
-        """Ensure all user parameters in the feature map circuit are bound."""
-        if self._user_param_binds is None:
-            unbound_user_params = None
-        else:
+    def unbound_user_parameters(self) -> bool:
+        """Yield the unbound user parameters in the feature map circuit."""
+        unbound_user_params = []
+        if self._user_param_binds is not None:
             # Get all user parameters not associated with numerical values
             unbound_user_params = [
                 val
                 for val in self._user_param_binds.values()
                 if not isinstance(val, numbers.Number)
             ]
-        if unbound_user_params:
-            raise ValueError(
-                f"""
-                The feature map circuit contains unbound user parameters ({unbound_user_params}).
-                All user parameters must be bound to numerical values before constructing
-                inner product circuit.
-                """
-            )
+
+        return unbound_user_params
 
     def construct_circuit(
         self,
@@ -250,7 +243,15 @@ class QuantumKernel:
                 - unbound user parameters in the feature map circuit
         """
         # Ensure all user parameters have been bound in the feature map circuit.
-        self._raise_on_unbound_user_parameters()
+        unbound_params = self.unbound_user_parameters()
+        if unbound_params:
+            raise ValueError(
+                f"""
+                The feature map circuit contains unbound user parameters ({unbound_params}).
+                All user parameters must be bound to numerical values before constructing
+                inner product circuit.
+                """
+            )
 
         if len(x) != self._feature_map.num_parameters:
             raise ValueError(
@@ -330,7 +331,15 @@ class QuantumKernel:
                     and feature map can not be modified to match.
         """
         # Ensure all user parameters have been bound in the feature map circuit.
-        self._raise_on_unbound_user_parameters()
+        unbound_params = self.unbound_user_parameters()
+        if unbound_params:
+            raise ValueError(
+                f"""
+                The feature map circuit contains unbound user parameters ({unbound_params}).
+                All user parameters must be bound to numerical values before evaluating
+                the kernel matrix.
+                """
+            )
 
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
