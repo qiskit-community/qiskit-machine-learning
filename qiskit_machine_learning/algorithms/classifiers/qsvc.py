@@ -71,7 +71,7 @@ class QSVC(SVC):
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+    def quantum_kernel(self, quantum_kernel: Union[QuantumKernel, QuantumKernelTrainer]):
         """Sets quantum kernel"""
         backend = Aer.get_backend("qasm_simulator")
         self._kernel_trainer = None
