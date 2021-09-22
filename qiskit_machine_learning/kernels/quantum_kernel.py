@@ -194,8 +194,8 @@ class QuantumKernel:
         """
         self.assign_user_parameters(values)
 
-    def unbound_free_parameters(self) -> List[Parameter]:
-        """Return the unbound user parameters in the feature map circuit."""
+    def unbound_user_parameters(self) -> bool:
+        """Yield the unbound user parameters in the feature map circuit."""
         unbound_user_params = []
         if self._user_param_binds is not None:
             # Get all user parameters not associated with numerical values
