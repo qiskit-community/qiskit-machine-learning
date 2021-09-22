@@ -53,6 +53,9 @@ class QSVC(SVC):
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
+        # Class fields
+        self._quantum_kernel = None
+        self._kernel_trainer = None
 
         self.quantum_kernel = quantum_kernel
 
