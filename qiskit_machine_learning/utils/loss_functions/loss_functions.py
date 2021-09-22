@@ -98,7 +98,7 @@ class KernelLoss(ABC):
 
     def __call__(
         self,
-        free_parameters: np.ndarray,
+        user_parameters: np.ndarray,
         kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
@@ -106,17 +106,17 @@ class KernelLoss(ABC):
         """
         This method calls the ``evaluate`` method. This is a convenient method to compute loss.
         """
-        return self.evaluate(free_parameters, kernel, data, labels)
+        return self.evaluate(user_parameters, kernel, data, labels)
 
     @abstractmethod
     def evaluate(
-        self, free_parameters: np.ndarray, kernel: np.ndarray, data: np.ndarray, labels: np.ndarray
+        self, user_parameters: np.ndarray, kernel: np.ndarray, data: np.ndarray, labels: np.ndarray
     ) -> float:
         """
         An abstract method for evaluating the loss of a kernel function on a labeled dataset.
 
         Args:
-            free_parameters: an array of values to assign to the free params
+            user_parameters: an array of values to assign to the user params
             kernel: An NxN matrix representing the kernel function
                     N = # samples
             data: An NxM matrix containing the data
@@ -249,14 +249,14 @@ class WeightedKernelAlignmentClassification(KernelLoss):
 
     def evaluate(
         self,
-        free_parameters: Iterable[float],
+        user_parameters: Iterable[float],
         kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
 
         # Bind learnable parameters
-        kernel.assign_free_parameters(free_parameters)
+        kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier
         svc = SVC(kernel=kernel.evaluate)

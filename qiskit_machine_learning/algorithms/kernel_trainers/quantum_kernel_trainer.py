@@ -111,12 +111,12 @@ class QuantumKernelTrainer:
         # Bind inputs to objective function
         obj_func = partial(self.loss.evaluate, kernel=self.quantum_kernel, data=data, labels=labels)
 
-        # Randomly initialize our free parameters if no initial point was passed
+        # Randomly initialize our user parameters if no initial point was passed
         if not self.initial_point:
-            num_params = len(self.quantum_kernel.free_parameters)
+            num_params = len(self.quantum_kernel.user_parameters)
             self.initial_point = algorithm_globals.random.random(num_params)
 
-        self.quantum_kernel.assign_free_parameters(self.initial_point)
+        self.quantum_kernel.assign_user_parameters(self.initial_point)
 
         # Perform kernel alignment
         opt_params, opt_vals, num_optimizer_evals = self.optimizer.optimize(
@@ -127,6 +127,6 @@ class QuantumKernelTrainer:
         result.optimizer_evals = num_optimizer_evals
         result.optimal_value = opt_vals
         result.optimal_point = opt_params
-        result.optimal_parameters = dict(zip(self.quantum_kernel.free_parameters, opt_params))
+        result.optimal_parameters = dict(zip(self.quantum_kernel.user_parameters, opt_params))
 
         return result
