@@ -40,6 +40,7 @@ def generate_feature_map():
 
     return feature_map, free_parameters
 
+
 class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     """Test QuantumKernelTrainer Algorithm"""
 

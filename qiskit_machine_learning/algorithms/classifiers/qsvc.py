@@ -95,10 +95,11 @@ class QSVC(SVC):
 
         else:
             raise ValueError(
-            f"""
+                f"""
             Error setting quantum_kernel field. Expected type QuantumKernel or
             QuantumKernelTrainer. Got {quantum_kernel}.
             """
+            )
 
         # SVC kernel field just needs the 2D kernel matrix
         self.kernel = self._quantum_kernel.evaluate
