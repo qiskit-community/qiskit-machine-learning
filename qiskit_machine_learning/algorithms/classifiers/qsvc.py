@@ -74,21 +74,25 @@ class QSVC(SVC):
     def quantum_kernel(self, quantum_kernel: Union[QuantumKernel, QuantumKernelTrainer]):
         """Sets quantum kernel"""
         self._kernel_trainer = None
+
         # If no quantum kernel was passed, instantiate a default QuantumKernel
         if not quantum_kernel:
             backend = Aer.get_backend("qasm_simulator")
             self._quantum_kernel = QuantumKernel(quantum_instance=backend)
+
         # If the input QuantumKernel has unbound user params, set the
         # QuantumKernelTrainer field
         elif isinstance(quantum_kernel, QuantumKernel):
             self._quantum_kernel = quantum_kernel
             if quantum_kernel.unbound_user_parameters():
                 self._kernel_trainer = QuantumKernelTrainer(quantum_kernel)
+
         # If the input is a QuantumKernelTrainer, set the quantum_kernel and
         # kernel_trainer fields
         elif isinstance(quantum_kernel, QuantumKernelTrainer):
             self._quantum_kernel = quantum_kernel.quantum_kernel
             self._kernel_trainer = quantum_kernel
+
         else:
             raise ValueError(
             f"""
