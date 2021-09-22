@@ -1,0 +1,11 @@
+---
+fixes:
+  - |
+    In some configurations forward pass of a neural network may return the same value across
+    multiple calls even if different weights are passed. This behavior is confirmed with ``AQGD``
+    optimizer. This was due to a bug in the implementation of the objective functions. They cache
+    a value obtained at the forward pass to be re-used in the backward pass. Initially, this cache
+    was based on an identifier (a call of id() function) of the weights array. AQGD re-uses the
+    same array for weights: it updates the values keeping an instance of the array the same. This
+    caused to re-use the same forward pass value across all iteration. Now the forward pass cache
+    is based on actual values of weights instead of identifiers.
