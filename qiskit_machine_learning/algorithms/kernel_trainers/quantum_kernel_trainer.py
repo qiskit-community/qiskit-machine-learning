@@ -31,25 +31,15 @@ class QuantumKernelTrainer:
         Raises:
             QiskitMachineLearningError: unknown loss function
         """
+        # Class fields
+        self._quantum_kernel = None
+        self._loss = None
+        self._optimizer = None
+        self._initial_point = None
+
         self.quantum_kernel = quantum_kernel
-        # Set the loss function to a KernelLoss class (should hold an evaluate function)
-        if isinstance(loss, str):
-            loss = loss.lower()
-            if loss == "weighted_alignment":
-                self.loss = WeightedKernelAlignmentClassification()
-            else:
-                raise QiskitMachineLearningError(f"Unknown loss {loss}!")
-        elif callable(loss):
-            self.loss = loss
-        else:
-            raise QiskitMachineLearningError(f"Unknown loss {loss}!")
-
-        # Use SPSA as default optimizer
-        if optimizer is None:
-            self.optimizer = SPSA(maxiter=10)
-        else:
-            self.optimizer = optimizer
-
+        self.loss = loss
+        self.optimizer = optimizer
         self.initial_point = initial_point
 
     @property
@@ -70,7 +60,16 @@ class QuantumKernelTrainer:
     @loss.setter
     def loss(self, loss: KernelLoss) -> None:
         """Sets the loss."""
-        self._loss = loss
+        if isinstance(loss, str):
+            loss = loss.lower()
+            if loss == "weighted_alignment":
+                self._loss = WeightedKernelAlignmentClassification()
+            else:
+                raise QiskitMachineLearningError(f"Unknown loss {loss}!")
+        elif callable(loss):
+            self._loss = loss
+        else:
+            raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
     @property
     def optimizer(self) -> Optimizer:
@@ -80,7 +79,11 @@ class QuantumKernelTrainer:
     @optimizer.setter
     def optimizer(self, optimizer: Optimizer) -> None:
         """Sets the loss."""
-        self._optimizer = optimizer
+        # Use SPSA as default optimizer
+        if optimizer is None:
+            self._optimizer = SPSA(maxiter=10)
+        else:
+            self._optimizer = optimizer
 
     @property
     def initial_point(self) -> np.ndarray:
