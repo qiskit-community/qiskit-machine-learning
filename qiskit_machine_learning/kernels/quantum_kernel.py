@@ -120,31 +120,40 @@ class QuantumKernel:
             self._quantum_instance = quantum_instance
 
     @property
-    def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+    def user_parameters(self) -> Union[ParameterVector, Sequence[Parameter]]:
         """Return the vector of user parameters."""
         return self._user_parameters
 
     @user_parameters.setter
-    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
+    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]):
         """Sets the user parameters"""
-        self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
+        if user_params:
+            self._user_param_binds = {
+                user_params[i]: user_params[i] for i, _ in enumerate(user_params)
+            }
+        else:
+            self._user_param_binds = None
+
         self._user_parameters = user_params
 
     def assign_user_parameters(
-        self,
-        values: Union[
-            Mapping[Parameter, ParameterValueType], Sequence[Union[ParameterExpression, float]]
-        ],
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
         """
-        Assign user parameters in the ``QuantumKernel`` feature map.
+        Assign user parameters in the QuantumKernel feature map.
 
         Args:
-            values (dict or iterable): Either a dictionary or iterable specifying the new
-                parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
-                ``new_parameter``, where ``new_parameter`` can be a parameter object or a
-                numeric value. If an iterable, the elements are assigned to the existing parameters
-                in the order of ``QuantumKernel.user_parameters``.
+            values (dict or iterable):
+                Dict {parameter: value, ...} or {parameter: parameter}:
+                The keys of the parameter dictionary must be Parameter instances in the
+                feature map circuit. The values of the dictionary should be either numeric
+                values {param:float} or copies of the param key {param:param}. Passing a
+                copy of the param key as a value causes that parameter to be ignored.
+                This allows the circuit's user parameters to be bound consecutively.
+
+                Iterable [value0, value1, ..., valueN]:
+                If a list of real values is passed, the elements are assigned to the parameters
+                stored in the user_parameters field.
 
         Raises:
             ValueError: Incompatible number of user parameters and values
@@ -180,6 +189,7 @@ class QuantumKernel:
             self._user_param_binds = param_binds
         else:
             self._user_param_binds.update(param_binds)
+
         self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
 
     @property
@@ -190,9 +200,6 @@ class QuantumKernel:
     def bind_user_parameters(self, values: Sequence[float]) -> None:
         """
         Alternate function signature for ``assign_user_parameters``
-
-        Args:
-            values (iterable): [value1, value2, ...]
         """
         self.assign_user_parameters(values)
 
