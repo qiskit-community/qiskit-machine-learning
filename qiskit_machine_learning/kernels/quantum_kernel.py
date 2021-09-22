@@ -53,7 +53,7 @@ class QuantumKernel:
         enforce_psd: bool = True,
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
-        free_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
+        user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
         """
         Args:
@@ -63,14 +63,21 @@ class QuantumKernel:
                 Only enforced when not using the state vector simulator. Default True.
             batch_size: Number of circuits to batch together for computation. Default 1000.
             quantum_instance: Quantum Instance or Backend
-            free_parameters: Iterable containing Parameter objects which correspond to
-                free parameters (non-data-bound parameters) in the feature map circuit
+            user_parameters: Iterable containing Parameter objects which correspond to
+                tunable quantum gates on the feature map circuit. If users intend to tune
+                feature map parameters to find optimal values, this field should be set.
         """
-        self.feature_map = feature_map if feature_map else ZZFeatureMap(2)
+        # Class fields
+        self._feature_map = None
+        self._unbound_feature_map = None
+        self._user_parameters = None
+        self._user_param_binds = None
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
-        self.free_parameters = free_parameters
+
+        self.feature_map = feature_map if feature_map else ZZFeatureMap(2)
+        self.user_parameters = user_parameters
 
     @property
     def feature_map(self) -> QuantumCircuit:
@@ -82,8 +89,8 @@ class QuantumKernel:
         """Sets feature map"""
         self._feature_map = feature_map
         self._unbound_feature_map = copy.deepcopy(self._feature_map)
-        self._free_parameters = None
-        self._free_param_binds = None
+        self._user_parameters = None
+        self._user_param_binds = None
 
     @property
     def unbound_feature_map(self) -> QuantumCircuit:
@@ -106,85 +113,85 @@ class QuantumKernel:
             self._quantum_instance = quantum_instance
 
     @property
-    def free_parameters(self) -> Union[ParameterVector, Sequence[Parameter]]:
-        """Return the vector of free parameters."""
-        return self._free_parameters
+    def user_parameters(self) -> Union[ParameterVector, Sequence[Parameter]]:
+        """Return the vector of user parameters."""
+        return self._user_parameters
 
-    @free_parameters.setter
-    def free_parameters(self, free_params: Union[ParameterVector, Sequence[Parameter]]):
-        """Sets the free parameters"""
-        if free_params:
-            self._free_param_binds = {free_params[i]: free_params[i] for i, _ in enumerate(free_params)}
+    @user_parameters.setter
+    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]):
+        """Sets the user parameters"""
+        if user_params:
+            self._user_param_binds = {
+                user_params[i]: user_params[i] for i, _ in enumerate(user_params)
+            }
         else:
-            self._free_param_binds = None
+            self._user_param_binds = None
 
-        self._free_parameters = free_params
+        self._user_parameters = user_params
 
-    def assign_free_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType],
-                            Sequence[ParameterValueType]]
+    def assign_user_parameters(
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
         """
-        Assign free parameters in the QuantumKernel feature map.
+        Assign user parameters in the QuantumKernel feature map.
 
         Args:
             values (dict or iterable):
                 Dict {parameter: value, ...} or {parameter: parameter}:
                 The keys of the parameter dictionary must be Parameter instances in the
                 feature map circuit. The values of the dictionary should be either numeric
-                values {param:float} or copies of the param key {param:param}. Passing a copy of the param
-                key as a value causes that parameter to be ignored. This allows the circuit's
-                free parameters to be bound consecutively.
+                values {param:float} or copies of the param key {param:param}. Passing a
+                copy of the param key as a value causes that parameter to be ignored.
+                This allows the circuit's user parameters to be bound consecutively.
 
                 Iterable [value0, value1, ..., valueN]:
                 If a list of real values is passed, the elements are assigned to the parameters
-                stored in the free_parameters field.
+                stored in the user_parameters field.
 
         Return:
             None
 
         Raises:
-            ValueError: Incompatible number of free parameters and values
+            ValueError: Incompatible number of user parameters and values
         """
         if not isinstance(values, dict):
-            if self._free_parameters is None:
+            if self._user_parameters is None:
+                raise ValueError(
+                    """
+                    An iterable of user parameter values was given, but no user
+                    parameters were defined for the QuantumKernel.
+                    """
+                )
+
+            if len(values) != len(self._user_parameters):
                 raise ValueError(
                     f"""
-                    An iterable of free parameter values was given as input,
+                    An iterable of user parameter values was given as input,
                     but the number of parameter values ({len(values)}) does not match the
-                    number of free parameters tracked by the QuantumKernel (None).
+                    number of user parameters tracked by the QuantumKernel
+                    ({len(self._user_parameters)}).
                     """
-                    )
+                )
 
-            if len(values) != len(self._free_parameters):
-                raise ValueError(
-                    f"""
-                    An iterable of free parameter values was given as input,
-                    but the number of parameter values ({len(values)}) does not match the
-                    number of free parameters tracked by the QuantumKernel
-                    ({len(self._free_parameters)}).
-                    """
-                    )
-
-            param_binds = {param: values[i] for i, param in enumerate(self._free_parameters)}
+            param_binds = {param: values[i] for i, param in enumerate(self._user_parameters)}
             values = param_binds
 
-        if self._free_param_binds is None:
-            self._free_param_binds = values
+        if self._user_param_binds is None:
+            self._user_param_binds = values
         else:
-            self._free_param_binds.update(values)
-        self._feature_map = self._unbound_feature_map.assign_parameters(self._free_param_binds)
+            self._user_param_binds.update(values)
+        self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
 
     @property
-    def free_param_binds(self) -> Mapping[Parameter, float]:
-        """Return a copy of the current free parameter mappings for the feature map circuit."""
-        return copy.deepcopy(self._free_param_binds)
+    def user_param_binds(self) -> Mapping[Parameter, float]:
+        """Return a copy of the current user parameter mappings for the feature map circuit."""
+        return copy.deepcopy(self._user_param_binds)
 
-    def bind_free_parameters(
+    def bind_user_parameters(
         self, values: Union[Mapping[Parameter, float], Sequence[float]]
     ) -> None:
         """
-        Alternate function signature for assign_free_parameters
+        Alternate function signature for assign_user_parameters
 
         Args:
             values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
@@ -192,27 +199,27 @@ class QuantumKernel:
         Return:
             None
         """
-        self.assign_free_parameters(values)
+        self.assign_user_parameters(values)
 
-    def _raise_on_unbound_free_parameters(self) -> None:
-        """Ensure all free parameters in the feature map circuit are bound."""
-        if self._free_param_binds is None:
-            unbound_free_params = None
+    def _raise_on_unbound_user_parameters(self) -> None:
+        """Ensure all user parameters in the feature map circuit are bound."""
+        if self._user_param_binds is None:
+            unbound_user_params = None
         else:
-            # Get all free parameters not associated with numerical values
-            unbound_free_params = [
+            # Get all user parameters not associated with numerical values
+            unbound_user_params = [
                 val
-                for val in self._free_param_binds.values()
+                for val in self._user_param_binds.values()
                 if not isinstance(val, numbers.Number)
             ]
-        if unbound_free_params:
+        if unbound_user_params:
             raise ValueError(
                 f"""
-                The feature map circuit contains unbound free parameters ({unbound_free_params}).
-                All free parameters must be bound to numerical values before constructing
+                The feature map circuit contains unbound user parameters ({unbound_user_params}).
+                All user parameters must be bound to numerical values before constructing
                 inner product circuit.
                 """
-                )
+            )
 
     def construct_circuit(
         self,
@@ -240,10 +247,10 @@ class QuantumKernel:
         Raises:
             ValueError:
                 - x and/or y have incompatible dimension with feature map
-                - unbound free parameters in the feature map circuit
+                - unbound user parameters in the feature map circuit
         """
-        # Ensure all free parameters have been bound in the feature map circuit.
-        self._raise_on_unbound_free_parameters()
+        # Ensure all user parameters have been bound in the feature map circuit.
+        self._raise_on_unbound_user_parameters()
 
         if len(x) != self._feature_map.num_parameters:
             raise ValueError(
@@ -316,14 +323,14 @@ class QuantumKernel:
             QiskitMachineLearningError:
                 - A quantum instance or backend has not been provided
             ValueError:
-                - unbound free parameters in the feature map circuit
+                - unbound user parameters in the feature map circuit
                 - x_vec and/or y_vec are not one or two dimensional arrays
                 - x_vec and y_vec have have incompatible dimensions
                 - x_vec and/or y_vec have incompatible dimension with feature map and
                     and feature map can not be modified to match.
         """
-        # Ensure all free parameters have been bound in the feature map circuit.
-        self._raise_on_unbound_free_parameters()
+        # Ensure all user parameters have been bound in the feature map circuit.
+        self._raise_on_unbound_user_parameters()
 
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
