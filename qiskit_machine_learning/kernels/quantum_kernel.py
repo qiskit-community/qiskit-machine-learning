@@ -193,11 +193,13 @@ class QuantumKernel:
         self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
 
     @property
-    def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
+    def user_param_binds(self) -> Mapping[Parameter, float]:
         """Return a copy of the current user parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._user_param_binds)
 
-    def bind_user_parameters(self, values: Sequence[float]) -> None:
+    def bind_user_parameters(
+        self, values: Union[Mapping[Parameter, float], Sequence[float]]
+    ) -> None:
         """
         Alternate function signature for ``assign_user_parameters``
         """
