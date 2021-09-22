@@ -64,8 +64,8 @@ class QuantumKernel:
             batch_size: Number of circuits to batch together for computation. Default 1000.
             quantum_instance: Quantum Instance or Backend
             user_parameters: Iterable containing Parameter objects which correspond to
-                tunable quantum gates on the feature map circuit. If users intend to tune
-                feature map parameters to find optimal values, this field should be set.
+                 quantum gates on the feature map circuit which may be tuned. If users intend to
+                 tune feature map parameters to find optimal values, this field should be set.
         """
         # Class fields
         self._feature_map = None
@@ -201,7 +201,7 @@ class QuantumKernel:
         """
         self.assign_user_parameters(values)
 
-    def unbound_user_parameters(self) -> bool:
+    def unbound_user_parameters(self) -> List[Parameter]:
         """Yield the unbound user parameters in the feature map circuit."""
         unbound_user_params = []
         if self._user_param_binds is not None:
