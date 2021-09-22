@@ -150,78 +150,6 @@ class QuantumKernel:
                 in the order of ``QuantumKernel.user_parameters``.
         """
 
-    def user_parameters(self) -> Union[ParameterVector, Sequence[Parameter]]:
-        """Return the vector of user parameters."""
-        return self._user_parameters
-
-    @user_parameters.setter
-    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]):
-        """Sets the user parameters"""
-        if user_params:
-            self._user_param_binds = {
-                user_params[i]: user_params[i] for i, _ in enumerate(user_params)
-            }
-        else:
-            self._user_param_binds = None
-
-        self._user_parameters = user_params
-
-    def assign_user_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
-    ) -> None:
-        """
-        Assign user parameters in the QuantumKernel feature map.
-
-        Args:
-            values (dict or iterable):
-                Dict {parameter: value, ...} or {parameter: parameter}:
-                The keys of the parameter dictionary must be Parameter instances in the
-                feature map circuit. The values of the dictionary should be either numeric
-                values {param:float} or copies of the param key {param:param}. Passing a
-                copy of the param key as a value causes that parameter to be ignored.
-                This allows the circuit's user parameters to be bound consecutively.
-
-                Iterable [value0, value1, ..., valueN]:
-                If a list of real values is passed, the elements are assigned to the parameters
-                stored in the user_parameters field.
-
-        Raises:
-            ValueError: Incompatible number of user parameters and values
-        """
-        if self._user_parameters is None:
-            raise ValueError(
-                """
-                The number of parameter values ({len(values)}) does not
-                match the number of user parameters tracked by the QuantumKernel
-                (None).
-                """
-            )
-
-        if isinstance(values, dict):
-            unknown_parameters = list(set(values.keys()) - set(self._user_parameters))
-            if len(unknown_parameters) > 0:
-                raise ValueError(
-                    f"Cannot bind parameters ({unknown_parameters}) not tracked by the quantum kernel."
-                )
-            param_binds = values
-        else:
-            if len(values) != len(self._user_parameters):
-                raise ValueError(
-                    f"""
-                The number of parameter values ({len(values)}) does not
-                match the number of user parameters tracked by the QuantumKernel
-                ({len(self._user_parameters)}).
-                """
-                )
-            param_binds = {param: values[i] for i, param in enumerate(self._user_parameters)}
-
-        if self._user_param_binds is None:
-            self._user_param_binds = param_binds
-        else:
-            self._user_param_binds.update(param_binds)
-
-        self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
-
     @property
     def user_param_binds(self) -> Mapping[Parameter, float]:
         """Return a copy of the current user parameter mappings for the feature map circuit."""
@@ -252,7 +180,6 @@ class QuantumKernel:
             ]
 
         return unbound_user_params
-
 
     def construct_circuit(
         self,
