@@ -100,22 +100,18 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        self.backend = Aer.get_backend("qasm_simulator")
         self.feature_map, self.free_parameters = generate_feature_map()
         self.data, self.labels = generate_data()
         self.quantum_kernel = QuantumKernel(
-            feature_map=self.feature_map, free_parameters=self.free_parameters
+            feature_map=self.feature_map,
+            free_parameters=self.free_parameters,
+            quantum_instance=self.backend,
         )
 
     def test_qkt(self):
         """Test QKT"""
-        backend = Aer.get_backend("qasm_simulator")
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map,
-            free_parameters=self.free_parameters,
-            quantum_instance=backend,
-        )
-
-        qkt = QuantumKernelTrainer(kernel=qkernel)
+        qkt = QuantumKernelTrainer(self.quantum_kernel)
 
 
 if __name__ == "__main__":

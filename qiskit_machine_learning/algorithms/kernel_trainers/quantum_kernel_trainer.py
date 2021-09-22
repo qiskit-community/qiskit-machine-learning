@@ -6,7 +6,7 @@ import numpy as np
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
-from qiskit.utils.algorithm_globals import QiskitAlgorithmGlobals
+from qiskit.utils import algorithm_globals
 from qiskit_machine_learning.utils.loss_functions import (
     KernelLoss,
     WeightedKernelAlignmentClassification,
@@ -16,14 +16,14 @@ from qiskit_machine_learning.utils.loss_functions import (
 class QuantumKernelTrainer:
     def __init__(
         self,
-        kernel: QuantumKernel,
-        loss: Optional[Union[str, Loss]] = "weighted_alignment",
+        quantum_kernel: QuantumKernel,
+        loss: Optional[Union[str, KernelLoss]] = "weighted_alignment",
         optimizer: Optional[Optimizer] = None,
         initial_point: Optional[np.ndarray] = None,
     ):
         """
         Args:
-            kernel: A QuantumKernel object to be tuned
+            quantum_kernel: A QuantumKernel object to be tuned
             loss: A target loss function to be used in training. Default is `weighted_alignment`,
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SPSA.
             initial_point: Initial point for the optimizer to start from.
@@ -31,6 +31,7 @@ class QuantumKernelTrainer:
         Raises:
             QiskitMachineLearningError: unknown loss function
         """
+        self.quantum_kernel = quantum_kernel
         # Set the loss function to a KernelLoss class (should hold an evaluate function)
         if isinstance(loss, str):
             loss = loss.lower()
@@ -45,14 +46,25 @@ class QuantumKernelTrainer:
 
         # Use SPSA as default optimizer
         if optimizer is None:
-            optimizer = SPSA(maxiter=10, callback=[None] * 5)
-        self.optimizer = optimizer
+            self.optimizer = SPSA(maxiter=10)
+        else:
+            self.optimizer = optimizer
 
         self.initial_point = initial_point
 
     @property
+    def quantum_kernel(self):
+        """Returns the underlying quantum kernel."""
+        return self._quantum_kernel
+
+    @quantum_kernel.setter
+    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
+        """Sets the quantum kernel"""
+        self._quantum_kernel = quantum_kernel
+
+    @property
     def loss(self):
-        """Returns the underlying neural network."""
+        """Returns the underlying loss function."""
         return self._loss
 
     @loss.setter
@@ -97,26 +109,24 @@ class QuantumKernelTrainer:
             dict: the results of kernel alignment
         """
         # Bind inputs to objective function
-        obj_func = partial(self.loss.evaluate, self.kernel, data=data, labels=labels)
+        obj_func = partial(self.loss.evaluate, kernel=self.quantum_kernel, data=data, labels=labels)
 
         # Randomly initialize our free parameters if no initial point was passed
         if not self.initial_point:
-            num_params = len(self.kernel.free_parameters)
-            algo_globals = QiskitAlgorithmGlobals()
-            algo_globals.random_seed = 9195
-            self.initial_point = algo_globals.random.random(num_params)
+            num_params = len(self.quantum_kernel.free_parameters)
+            self.initial_point = algorithm_globals.random.random(num_params)
 
-        self.kernel.assign_free_parameters(self.initial_point)
+        self.quantum_kernel.assign_free_parameters(self.initial_point)
 
         # Perform kernel alignment
-        opt_params, opt_vals, num_optimizer_evals = optimizer.optimize(
+        opt_params, opt_vals, num_optimizer_evals = self.optimizer.optimize(
             1, obj_func, initial_point=self.initial_point
         )
         # Return kernel alignment results
         result = VariationalResult()
         result.optimizer_evals = num_optimizer_evals
-        result.optimal_value = opt_val
+        result.optimal_value = opt_vals
         result.optimal_point = opt_params
-        result.optimal_parameters = dict(zip(self.kernel.free_parameters, opt_params))
+        result.optimal_parameters = dict(zip(self.quantum_kernel.free_parameters, opt_params))
 
-        return result, callback
+        return result

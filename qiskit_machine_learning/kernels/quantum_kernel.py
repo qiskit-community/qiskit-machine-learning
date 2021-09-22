@@ -195,25 +195,20 @@ class QuantumKernel:
         """
         self.assign_free_parameters(values)
 
-    def _raise_on_unbound_free_parameters(self) -> None:
-        """Ensure all free parameters in the feature map circuit are bound."""
-        if self._free_param_binds is None:
-            unbound_free_params = None
-        else:
+    def unbound_free_parameters(self) -> bool:
+        """Report whether all free parameters in the feature map circuit are bound."""
+        unbound_params_flag = False
+        if self._free_param_binds is not None:
             # Get all free parameters not associated with numerical values
             unbound_free_params = [
                 val
                 for val in self._free_param_binds.values()
                 if not isinstance(val, numbers.Number)
             ]
-        if unbound_free_params:
-            raise ValueError(
-                f"""
-                The feature map circuit contains unbound free parameters ({unbound_free_params}).
-                All free parameters must be bound to numerical values before constructing
-                inner product circuit.
-                """
-            )
+            if unbound_free_params:
+                unbound_params_flag = True
+
+        return unbound_params_flag
 
     def construct_circuit(
         self,
@@ -244,7 +239,14 @@ class QuantumKernel:
                 - unbound free parameters in the feature map circuit
         """
         # Ensure all free parameters have been bound in the feature map circuit.
-        self._raise_on_unbound_free_parameters()
+        if self.unbound_free_parameters():
+            raise ValueError(
+                f"""
+                The feature map circuit contains unbound free parameters ({unbound_free_params}).
+                All free parameters must be bound to numerical values before constructing
+                inner product circuit.
+                """
+            )
 
         if len(x) != self._feature_map.num_parameters:
             raise ValueError(
@@ -324,7 +326,14 @@ class QuantumKernel:
                     and feature map can not be modified to match.
         """
         # Ensure all free parameters have been bound in the feature map circuit.
-        self._raise_on_unbound_free_parameters()
+        if self.unbound_free_parameters():
+            raise ValueError(
+                f"""
+                The feature map circuit contains unbound free parameters ({unbound_free_params}).
+                All free parameters must be bound to numerical values before constructing
+                inner product circuit.
+                """
+            )
 
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(

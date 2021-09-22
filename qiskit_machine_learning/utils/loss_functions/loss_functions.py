@@ -259,7 +259,7 @@ class WeightedKernelAlignmentClassification(KernelLoss):
         kernel.assign_free_parameters(free_parameters)
 
         # Train a quantum support vector classifier
-        svc = SVC(quantum_kernel=kernel)
+        svc = SVC(kernel=kernel.evaluate)
         svc.fit(data, labels)
 
         # Get dual coefficients

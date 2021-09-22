@@ -45,6 +45,7 @@ Loss Functions
 
 from .loss_functions import (
     Loss,
+    KernelLoss,
     L1Loss,
     L2Loss,
     CrossEntropyLoss,
@@ -54,6 +55,7 @@ from .loss_functions import (
 
 __all__ = [
     "Loss",
+    "KernelLoss",
     "L1Loss",
     "L2Loss",
     "CrossEntropyLoss",
