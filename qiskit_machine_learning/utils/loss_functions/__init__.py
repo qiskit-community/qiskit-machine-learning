@@ -26,6 +26,7 @@ Loss Function Base Class
    :nosignatures:
 
    Loss
+   KernelLoss
 
 Loss Functions
 ==============
@@ -38,15 +39,26 @@ Loss Functions
    L2Loss
    CrossEntropyLoss
    CrossEntropySigmoidLoss
+   WeightedKernelAlignmentClassification
 
 """
 
 from .loss_functions import (
     Loss,
+    KernelLoss,
     L1Loss,
     L2Loss,
     CrossEntropyLoss,
     CrossEntropySigmoidLoss,
+    WeightedKernelAlignmentClassification,
 )
 
-__all__ = ["Loss", "L1Loss", "L2Loss", "CrossEntropyLoss", "CrossEntropySigmoidLoss"]
+__all__ = [
+    "Loss",
+    "KernelLoss",
+    "L1Loss",
+    "L2Loss",
+    "CrossEntropyLoss",
+    "CrossEntropySigmoidLoss",
+    "WeightedKernelAlignmentClassification",
+]
