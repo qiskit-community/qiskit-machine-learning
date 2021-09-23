@@ -47,7 +47,14 @@ class QSVC(SVC):
 
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+        if "random_state" not in kwargs:
+            kwargs["random_state"] = algorithm_globals.random_seed
+
+        super().__init__(
+            kernel=self._quantum_kernel.evaluate,
+            *args,
+            **kwargs
+        )
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
