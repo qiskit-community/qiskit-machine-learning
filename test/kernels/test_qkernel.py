@@ -370,7 +370,7 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
         circ2 = ZZFeatureMap(2)
         user_params = circ2.parameters
         for i, _ in enumerate(user_params):
-            user_params[i]._name = "θ[{}]".format(i)
+            user_params[i]._name = f"θ[{i}]"
 
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.user_parameters = user_params
