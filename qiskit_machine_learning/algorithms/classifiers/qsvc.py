@@ -62,5 +62,31 @@ class QSVC(SVC):
     @quantum_kernel.setter
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """Sets quantum kernel"""
-        self._quantum_kernel = quantum_kernel
+        backend = Aer.get_backend("qasm_simulator")
+        self._kernel_trainer = None
+        if not quantum_kernel:
+            self._quantum_kernel = QuantumKernel(quantum_instance=backend)
+        elif isinstance(quantum_kernel, QuantumKernel):
+            self._quantum_kernel = quantum_kernel
+            if quantum_kernel.unbound_free_parameters():
+                self._kernel_trainer = QuantumKernelTrainer(quantum_kernel)
+        elif isinstance(quantum_kernel, QuantumKernelTrainer):
+            self._quantum_kernel = quantum_kernel.quantum_kernel
+            self._kernel_trainer = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
+
+    @property
+    def kernel_trainer(self) -> QuantumKernelTrainer:
+        """Returns quantum kernel trainer"""
+        return self._kernel_trainer
+
+    def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
+        """
+        Wrapper method for SVC.fit which optimizes the quantum kernel's
+        free parameters before fitting the SVC.
+        """
+        if self._kernel_trainer:
+            results = self._kernel_trainer.fit_kernel(X, y)
+            self.quantum_kernel.assign_free_parameters(results.optimal_parameters)
+
+        super().fit(X=X, y=y, sample_weight=sample_weight)

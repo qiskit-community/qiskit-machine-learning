@@ -26,6 +26,22 @@ from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 
+def generate_tunable_feature_map():
+    """
+    Create a 2 qubit circuit consisting of 2 free parameters and 2 data bound parameters.
+    """
+    data_block = ZZFeatureMap(2)
+    tunable_block = ZZFeatureMap(2)
+    free_parameters = tunable_block.parameters
+
+    for i in range(len(free_parameters)):
+        free_parameters[i]._name = f"θ[{i}]"
+
+    feature_map = data_block.compose(tunable_block).compose(data_block)
+
+    return feature_map, free_parameters
+
+
 class TestQSVC(QiskitMachineLearningTestCase):
     """Test QSVC Algorithm"""
 
@@ -96,6 +112,24 @@ class TestQSVC(QiskitMachineLearningTestCase):
         )
 
         qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
+        qsvc.fit(self.sample_train, self.label_train)
+        score = qsvc.score(self.sample_test, self.label_test)
+
+        self.assertEqual(score, 0.5)
+
+
+    def test_unbound_free_params(self):
+        """Test QSVC with extra constructor parameters"""
+        fm, fp = generate_tunable_feature_map()
+        qkernel = QuantumKernel(
+            feature_map=fm,
+            free_parameters=fp,
+            quantum_instance=BasicAer.get_backend("qasm_simulator"),
+        )
+
+        qkt = QuantumKernelTrainer(qkernel)
+
+        qsvc = QSVC(quantum_kernel=qkt)
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 
