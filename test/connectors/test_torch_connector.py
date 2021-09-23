@@ -625,7 +625,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
     @data(
         # output_shape, interpret
         (4, None),
-        (2, lambda x: "{:b}".format(x).count("1") % 2),
+        (2, lambda x: f"{x:b}".count("1") % 2),
     )
     @requires_extra_library
     def test_circuit_qnn_batch_gradients(self, config):

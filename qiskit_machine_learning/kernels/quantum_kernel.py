@@ -256,8 +256,7 @@ class QuantumKernel:
         if len(x) != self._feature_map.num_parameters:
             raise ValueError(
                 "x and class feature map incompatible dimensions.\n"
-                + "x has %s dimensions, but feature map has %s."
-                % (len(x), self._feature_map.num_parameters)
+                f"x has {len(x)} dimensions, but feature map has {self._feature_map.num_parameters}."
             )
 
         q = QuantumRegister(self._feature_map.num_qubits, "q")
@@ -272,8 +271,7 @@ class QuantumKernel:
             if y is not None and len(y) != self._feature_map.num_parameters:
                 raise ValueError(
                     "y and class feature map incompatible dimensions.\n"
-                    + "y has %s dimensions, but feature map has %s."
-                    % (len(y), self._feature_map.num_parameters)
+                    f"y has {len(y)} dimensions, but feature map has {self._feature_map.num_parameters}."
                 )
 
             if y is None:
@@ -368,7 +366,7 @@ class QuantumKernel:
         if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
             raise ValueError(
                 "x_vec and y_vec have incompatible dimensions.\n"
-                + "x_vec has %s dimensions, but y_vec has %s." % (x_vec.shape[1], y_vec.shape[1])
+                f"x_vec has {x_vec.shape[1]} dimensions, but y_vec has {y_vec.shape[1]}."
             )
 
         if x_vec.shape[1] != self._feature_map.num_parameters:
@@ -377,15 +375,15 @@ class QuantumKernel:
             except AttributeError:
                 raise ValueError(
                     "x_vec and class feature map have incompatible dimensions.\n"
-                    + "x_vec has %s dimensions, but feature map has %s."
-                    % (x_vec.shape[1], self._feature_map.num_parameters)
+                    f"x_vec has {x_vec.shape[1]} dimensions, "
+                    f"but feature map has {self._feature_map.num_parameters}."
                 ) from AttributeError
 
         if y_vec is not None and y_vec.shape[1] != self._feature_map.num_parameters:
             raise ValueError(
                 "y_vec and class feature map have incompatible dimensions.\n"
-                + "y_vec has %s dimensions, but feature map has %s."
-                % (y_vec.shape[1], self._feature_map.num_parameters)
+                f"y_vec has {y_vec.shape[1]} dimensions, but feature map "
+                f"has {self._feature_map.num_parameters}."
             )
 
         # determine if calculating self inner product

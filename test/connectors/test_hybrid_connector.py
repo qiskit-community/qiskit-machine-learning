@@ -173,7 +173,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 pip_install="pip install 'qiskit-machine-learning[torch]'",
             ) from ex
 
-        output_shape, interpret = 2, lambda x: "{:b}".format(x).count("1") % 2
+        output_shape, interpret = 2, lambda x: f"{x:b}".count("1") % 2
         num_inputs = 2
 
         feature_map = ZZFeatureMap(num_inputs)
