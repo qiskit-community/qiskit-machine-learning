@@ -76,7 +76,7 @@ class DeprecationExtractor:
 
 def _check_file(path) -> str:
     if not os.path.isfile(path):
-        raise argparse.ArgumentTypeError("file: '{}' doesn't exist.".format(path))
+        raise argparse.ArgumentTypeError(f"file: '{path}' doesn't exist.")
 
     return path
 

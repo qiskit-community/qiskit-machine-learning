@@ -198,7 +198,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct qnn
         def parity(x):
-            return "{:b}".format(x).count("1") % 2
+            return f"{x:b}".count("1") % 2
 
         output_shape = 2
         qnn = CircuitQNN(
@@ -287,7 +287,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct qnn
         def parity(x):
-            return "{:b}".format(x).count("1") % 2
+            return f"{x:b}".count("1") % 2
 
         output_shape = 2
         qnn = CircuitQNN(
@@ -360,7 +360,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct qnn
         def parity(x):
-            return "{:b}".format(x).count("1") % 2
+            return f"{x:b}".count("1") % 2
 
         output_shape = 2
         qnn = CircuitQNN(
