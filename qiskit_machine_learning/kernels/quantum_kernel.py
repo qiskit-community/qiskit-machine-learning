@@ -12,7 +12,7 @@
 
 """Quantum Kernel Algorithm"""
 
-from typing import Optional, Union, Sequence, Mapping
+from typing import Optional, Union, Sequence, Mapping, List
 import copy
 import numbers
 
