@@ -68,7 +68,7 @@ class QiskitMachineLearningTestCase(unittest.TestCase, ABC):
     def tearDown(self) -> None:
         elapsed = time.time() - self._started_at
         if elapsed > 5.0:
-            print("({:.2f}s)".format(round(elapsed, 2)), flush=True)
+            print(f"({round(elapsed, 2):.2f}s)", flush=True)
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -79,13 +79,11 @@ class QiskitMachineLearningTestCase(unittest.TestCase, ABC):
         # is set.
         if os.getenv("LOG_LEVEL"):
             # Set up formatter.
-            log_fmt = "{}.%(funcName)s:%(levelname)s:%(asctime)s:" " %(message)s".format(
-                cls.__name__
-            )
+            log_fmt = f"{cls.__name__}.%(funcName)s:%(levelname)s:%(asctime)s:" " %(message)s"
             formatter = logging.Formatter(log_fmt)
 
             # Set up the file handler.
-            log_file_name = "%s.log" % cls.moduleName
+            log_file_name = f"{cls.moduleName}.log"
             file_handler = logging.FileHandler(log_file_name)
             file_handler.setFormatter(formatter)
             cls.log.addHandler(file_handler)

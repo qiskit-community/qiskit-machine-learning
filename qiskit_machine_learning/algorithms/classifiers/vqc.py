@@ -167,6 +167,6 @@ class VQC(NeuralNetworkClassifier):
 
     def _get_interpret(self, num_classes):
         def parity(x, num_classes=num_classes):
-            return "{:b}".format(x).count("1") % num_classes
+            return f"{x:b}".count("1") % num_classes
 
         return parity
