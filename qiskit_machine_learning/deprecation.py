@@ -171,9 +171,7 @@ def _rename_kwargs(version, qualname, func_name, kwargs, kwarg_map, additional_m
     for old_arg, new_arg in kwarg_map.items():
         if old_arg in kwargs:
             if new_arg in kwargs:
-                raise TypeError(
-                    "{} received both {} and {} (deprecated).".format(func_name, new_arg, old_arg)
-                )
+                raise TypeError(f"{func_name} received both {new_arg} and {old_arg} (deprecated).")
 
             # skip if it was already added
             obj = _DeprecatedArgument(version, qualname, old_arg, new_arg, additional_msg)
