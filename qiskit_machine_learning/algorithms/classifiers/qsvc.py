@@ -14,11 +14,13 @@
 
 from typing import Optional
 
+import numpy as np
 from sklearn.svm import SVC
 
+from qiskit import Aer
 from qiskit.utils.algorithm_globals import algorithm_globals
-
-from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.algorithms.kernel_trainers import QuantumKernelTrainer
 
 
 class QSVC(SVC):
@@ -46,13 +48,15 @@ class QSVC(SVC):
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
+        self._quantum_kernel = None
+        self._kernel_trainer = None
 
-        self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
+        self.quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+        super().__init__(kernel=self.quantum_kernel.evaluate, *args, **kwargs)
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
@@ -62,13 +66,13 @@ class QSVC(SVC):
     @quantum_kernel.setter
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """Sets quantum kernel"""
-        backend = Aer.get_backend("qasm_simulator")
         self._kernel_trainer = None
         if not quantum_kernel:
+            backend = Aer.get_backend("qasm_simulator")
             self._quantum_kernel = QuantumKernel(quantum_instance=backend)
         elif isinstance(quantum_kernel, QuantumKernel):
             self._quantum_kernel = quantum_kernel
-            if quantum_kernel.unbound_free_parameters():
+            if quantum_kernel.unbound_user_parameters():
                 self._kernel_trainer = QuantumKernelTrainer(quantum_kernel)
         elif isinstance(quantum_kernel, QuantumKernelTrainer):
             self._quantum_kernel = quantum_kernel.quantum_kernel
@@ -83,10 +87,10 @@ class QSVC(SVC):
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
         """
         Wrapper method for SVC.fit which optimizes the quantum kernel's
-        free parameters before fitting the SVC.
+        user parameters before fitting the SVC.
         """
         if self._kernel_trainer:
             results = self._kernel_trainer.fit_kernel(X, y)
-            self.quantum_kernel.assign_free_parameters(results.optimal_parameters)
+            self.quantum_kernel.assign_user_parameters(results.optimal_parameters)
 
-        super().fit(X=X, y=y, sample_weight=sample_weight)
+        return super().fit(X=X, y=y, sample_weight=sample_weight)

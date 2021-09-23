@@ -13,9 +13,12 @@
 """ Loss utilities """
 
 from abc import ABC, abstractmethod
+from typing import Iterable
 
 import numpy as np
+from sklearn.svm import SVC
 
+from qiskit_machine_learning.kernels import QuantumKernel
 from ...exceptions import QiskitMachineLearningError
 
 
@@ -95,7 +98,7 @@ class KernelLoss(ABC):
 
     def __call__(
         self,
-        free_parameters: np.ndarray,
+        user_parameters: np.ndarray,
         kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
@@ -103,17 +106,21 @@ class KernelLoss(ABC):
         """
         This method calls the ``evaluate`` method. This is a convenient method to compute loss.
         """
-        return self.evaluate(free_parameters, kernel, data, labels)
+        return self.evaluate(user_parameters, kernel, data, labels)
 
     @abstractmethod
     def evaluate(
-        self, free_parameters: np.ndarray, kernel: np.ndarray, data: np.ndarray, labels: np.ndarray
+        self,
+        user_parameters: Iterable[float],
+        kernel: QuantumKernel,
+        data: np.ndarray,
+        labels: np.ndarray,
     ) -> float:
         """
         An abstract method for evaluating the loss of a kernel function on a labeled dataset.
 
         Args:
-            free_parameters: an array of values to assign to the free params
+            user_parameters: an array of values to assign to the user params
             kernel: An NxN matrix representing the kernel function
                     N = # samples
             data: An NxM matrix containing the data
@@ -239,36 +246,36 @@ class CrossEntropySigmoidLoss(Loss):
         )
 
 
-class WeightedKernelAlignmentClassification(KernelLoss):
+class SVCAlignment(KernelLoss):
     """
-    This class computes the weighted kernel alignment loss.
+    This class computes the weighted kernel alignment loss using SKLearn SVC class.
     """
 
     def evaluate(
         self,
-        free_parameters: Iterable[float],
+        user_parameters: Iterable[float],
         kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
 
         # Bind learnable parameters
-        kernel.assign_free_parameters(free_parameters)
+        kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(data, labels)
 
         # Get dual coefficients
-        ay = svc.dual_coef_[0]
+        dual_coefs = svc.dual_coef_[0]
 
         # Get support vectors
-        sv = svc.support_
+        support_vecs = svc.support_
 
         # Get estimated kernel matrix
-        K = kernel.evaluate(np.array(data))[sv, :][:, sv]
+        kmatrix = kernel.evaluate(np.array(data))[support_vecs, :][:, support_vecs]
 
         # Calculate loss
-        loss = np.sum(np.abs(ay)) - (0.5 * (ay.T @ K @ ay))
+        loss = np.sum(np.abs(dual_coefs)) - (0.5 * (dual_coefs.T @ kmatrix @ dual_coefs))
 
         return loss

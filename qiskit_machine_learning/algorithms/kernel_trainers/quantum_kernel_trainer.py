@@ -1,19 +1,50 @@
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2021.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
+"""Quantum Kernel Trainer"""
+
 from functools import partial
-from typing import Iterable, Union, Optional, Callable
+from typing import Union, Optional
 
 import numpy as np
 
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit.utils.algorithm_globals import algorithm_globals
 from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
-from qiskit.utils import algorithm_globals
-from qiskit_machine_learning.utils.loss_functions import (
-    KernelLoss,
-    WeightedKernelAlignmentClassification,
-)
+from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCAlignment
 
 
 class QuantumKernelTrainer:
+    """
+    Quantum Kernel Trainer.
+    This class provides utility to train QuantumKernel feature map parameters.
+
+    **Example**
+
+    .. code-block::
+        qkernel = QuantumKernel(
+            feature_map=...,
+            free_parameters=...,
+            quantum_instance=...
+        )
+
+        qkt = QuantumKernelTrainer(qkernel)
+
+        qsvc = QSVC(quantum_kernel=qkt)
+        qsvc.fit(X_train, y_train)
+        score = qsvc.score(X_test, y_test)
+    """
+
     def __init__(
         self,
         quantum_kernel: QuantumKernel,
@@ -29,20 +60,20 @@ class QuantumKernelTrainer:
             initial_point: Initial point for the optimizer to start from.
 
         Raises:
-            QiskitMachineLearningError: unknown loss function
+            ValueError: unknown loss function
         """
         self.quantum_kernel = quantum_kernel
         # Set the loss function to a KernelLoss class (should hold an evaluate function)
         if isinstance(loss, str):
             loss = loss.lower()
             if loss == "weighted_alignment":
-                self.loss = WeightedKernelAlignmentClassification()
+                self.loss = SVCAlignment()
             else:
-                raise QiskitMachineLearningError(f"Unknown loss {loss}!")
+                raise ValueError(f"Unknown loss {loss}!")
         elif callable(loss):
             self.loss = loss
         else:
-            raise QiskitMachineLearningError(f"Unknown loss {loss}!")
+            raise ValueError(f"Unknown loss {loss}!")
 
         # Use SPSA as default optimizer
         if optimizer is None:
@@ -111,12 +142,13 @@ class QuantumKernelTrainer:
         # Bind inputs to objective function
         obj_func = partial(self.loss.evaluate, kernel=self.quantum_kernel, data=data, labels=labels)
 
-        # Randomly initialize our free parameters if no initial point was passed
+        # Randomly initialize our user parameters if no initial point was passed
         if not self.initial_point:
-            num_params = len(self.quantum_kernel.free_parameters)
+            num_params = len(self.quantum_kernel.user_parameters)
+            algorithm_globals.random_seed = 1764
             self.initial_point = algorithm_globals.random.random(num_params)
 
-        self.quantum_kernel.assign_free_parameters(self.initial_point)
+        self.quantum_kernel.assign_user_parameters(self.initial_point)
 
         # Perform kernel alignment
         opt_params, opt_vals, num_optimizer_evals = self.optimizer.optimize(
@@ -127,6 +159,6 @@ class QuantumKernelTrainer:
         result.optimizer_evals = num_optimizer_evals
         result.optimal_value = opt_vals
         result.optimal_point = opt_params
-        result.optimal_parameters = dict(zip(self.quantum_kernel.free_parameters, opt_params))
+        result.optimal_parameters = dict(zip(self.quantum_kernel.user_parameters, opt_params))
 
         return result
