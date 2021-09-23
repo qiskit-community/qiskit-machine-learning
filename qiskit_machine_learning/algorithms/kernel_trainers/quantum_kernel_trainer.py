@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # This code is part of Qiskit.
 #
 # (C) Copyright IBM 2021.
@@ -112,7 +113,7 @@ class QuantumKernelTrainer:
 
     @property
     def initial_point(self) -> Optional[Sequence[float]]:
-        """Returns current initial point"""
+        """Returns initial point"""
         return self._initial_point
 
     @initial_point.setter
@@ -158,6 +159,7 @@ class QuantumKernelTrainer:
         result.optimal_point = opt_results.x
         result.optimal_parameters = dict(zip(quantum_kernel.user_parameters, opt_results.x))
 
+        # Ensure QuantumKernel is left in optimized state
         quantum_kernel.assign_user_parameters(result.optimal_parameters)
 
         return result

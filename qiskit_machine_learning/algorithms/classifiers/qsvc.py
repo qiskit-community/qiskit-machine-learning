@@ -148,3 +148,19 @@ class QSVC(SVC):
         names = SVC._get_param_names()
         names.remove("kernel")
         return sorted(names + ["quantum_kernel"])
+
+    @property
+    def kernel_trainer(self) -> QuantumKernelTrainer:
+        """Returns quantum kernel trainer"""
+        return self._kernel_trainer
+
+    def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
+        """
+        Wrapper method for SVC.fit which optimizes the quantum kernel's
+        free parameters before fitting the SVC.
+        """
+        if self._kernel_trainer:
+            results = self._kernel_trainer.fit_kernel(X, y)
+            self.quantum_kernel.assign_free_parameters(results.optimal_parameters)
+
+        super().fit(X=X, y=y, sample_weight=sample_weight)
