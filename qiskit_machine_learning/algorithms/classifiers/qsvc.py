@@ -13,6 +13,7 @@
 """Quantum Support Vector Classifier"""
 
 from typing import Optional
+import warnings
 
 from sklearn.svm import SVC
 
@@ -39,22 +40,31 @@ class QSVC(SVC):
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for classification.
+            *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
+
+        if (len(args)) != 0:
+            msg = (
+                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
+                f"will be removed no sooner than 3 months after the release. Instead use "
+                f"keyword arguments. Positional arguments are ignored and not passed to the superclass."
+            )
+            warnings.warn(msg, DeprecationWarning)
 
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
 
-        super().__init__(
-            kernel=self._quantum_kernel.evaluate,
-            **kwargs,
-        )
+        if (len(args)) != 0:
+            super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+        else:
+            super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
     def quantum_kernel(self) -> QuantumKernel:

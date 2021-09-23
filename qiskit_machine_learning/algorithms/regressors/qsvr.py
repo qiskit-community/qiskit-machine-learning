@@ -13,6 +13,7 @@
 """Quantum Support Vector Regressor"""
 
 from typing import Optional
+import warnings
 
 from sklearn.svm import SVR
 
@@ -37,16 +38,28 @@ class QSVR(SVR):
         qsvr.predict(sample_test)
     """
 
-    def __init__(self, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for regression.
+            *args: Variable length argument list to pass to SVR constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
         """
 
+        if (len(args)) != 0:
+            msg = (
+                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
+                f"will be removed no sooner than 3 months after the release. Instead use "
+                f"keyword arguments. Positional arguments are ignored and not passed to the superclass."
+            )
+            warnings.warn(msg, DeprecationWarning)
+
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
+        if (len(args)) != 0:
+            super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+        else:
+            super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
@@ -58,3 +71,4 @@ class QSVR(SVR):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
+ 
