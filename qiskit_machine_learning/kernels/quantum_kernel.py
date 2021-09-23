@@ -53,7 +53,7 @@ class QuantumKernel:
         enforce_psd: bool = True,
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
-        user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
+        user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None
     ) -> None:
         """
         Args:
@@ -85,7 +85,7 @@ class QuantumKernel:
         return self._feature_map
 
     @feature_map.setter
-    def feature_map(self, feature_map: QuantumCircuit):
+    def feature_map(self, feature_map: QuantumCircuit) -> None:
         """Sets feature map"""
         self._feature_map = feature_map
         self._unbound_feature_map = copy.deepcopy(self._feature_map)
@@ -118,7 +118,9 @@ class QuantumKernel:
         return self._user_parameters
 
     @user_parameters.setter
-    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]):
+    def user_parameters(
+        self, user_params: Union[ParameterVector, Sequence[Parameter]]
+    ) -> None:
         """Sets the user parameters"""
         if user_params:
             self._user_param_binds = {
@@ -286,7 +288,9 @@ class QuantumKernel:
                 qc.measure(q, c)
         return qc
 
-    def _compute_overlap(self, idx, results, is_statevector_sim, measurement_basis):
+    def _compute_overlap(
+        self, idx, results, is_statevector_sim, measurement_basis
+    ) -> float:
         """
         Helper function to compute overlap for given input.
         """
