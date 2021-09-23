@@ -1,0 +1,8 @@
+---
+issues:
+  - |
+    If positional arguments were passed into QSVR or QSVC and these classes were printed, an 	 exception was raised.
+fixes:
+  - |
+    Positional arguments in QSVR and QSVC are deprecated.
+

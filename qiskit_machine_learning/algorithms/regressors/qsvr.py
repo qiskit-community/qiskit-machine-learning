@@ -71,4 +71,3 @@ class QSVR(SVR):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
- 

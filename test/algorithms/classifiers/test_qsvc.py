@@ -113,6 +113,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qsvc = QSVC()
 
         print(qsvc)
-            
+
+
 if __name__ == "__main__":
     unittest.main()
