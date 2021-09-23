@@ -22,6 +22,7 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.utils import QuantumInstance, algorithm_globals
+
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import QSVC, QuantumKernelTrainer
@@ -45,18 +46,18 @@ def generate_tunable_feature_map():
 
 def generate_tunable_feature_map():
     """
-    Create a 2 qubit circuit consisting of 2 free parameters and 2 data bound parameters.
+    Create a 2 qubit circuit consisting of 2 user parameters and 2 data bound parameters.
     """
     data_block = ZZFeatureMap(2)
     tunable_block = ZZFeatureMap(2)
-    free_parameters = tunable_block.parameters
+    user_parameters = tunable_block.parameters
 
-    for i in range(len(free_parameters)):
-        free_parameters[i]._name = f"θ[{i}]"
+    for i, _ in enumerate(user_parameters):
+        user_parameters[i]._name = f"θ[{i}]"
 
     feature_map = data_block.compose(tunable_block).compose(data_block)
 
-    return feature_map, free_parameters
+    return feature_map, user_parameters
 
 
 class TestQSVC(QiskitMachineLearningTestCase):
@@ -162,12 +163,12 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 1.0)
 
 
-    def test_unbound_free_params(self):
+    def test_unbound_user_params(self):
         """Test QSVC with extra constructor parameters"""
-        fm, fp = generate_tunable_feature_map()
+        feat_map, free_params = generate_tunable_feature_map()
         qkernel = QuantumKernel(
-            feature_map=fm,
-            free_parameters=fp,
+            feature_map=feat_map,
+            user_parameters=free_params,
             quantum_instance=BasicAer.get_backend("qasm_simulator"),
         )
 

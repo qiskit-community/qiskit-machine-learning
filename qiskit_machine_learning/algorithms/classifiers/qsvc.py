@@ -15,7 +15,7 @@
 import warnings
 from typing import Optional, Sequence
 
-from qiskit.utils.algorithm_globals import algorithm_globals
+import numpy as np
 from sklearn.svm import SVC
 import numpy as np
 
@@ -54,39 +54,8 @@ class QSVC(SVC):
             kernel_trainer: ``QuantumKernelTrainer`` to be used for kernel optimization
             **kwargs: Arbitrary keyword arguments to pass to ``SVC`` constructor
         """
-        if (len(args)) != 0:
-            msg = (
-                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
-                f"will be removed no sooner than 3 months after the release. Instead use "
-                f"keyword arguments."
-            )
-            warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-        if "kernel" in kwargs:
-            msg = (
-                "'kernel' argument is not supported and will be discarded, "
-                "please use 'quantum_kernel' instead."
-            )
-            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
-            # if we don't delete, then this value clashes with our quantum kernel
-            del kwargs["kernel"]
-
-        # Class fields
         self._quantum_kernel = None
         self._kernel_trainer = None
-
-        if "kernel" in kwargs:
-            msg = (
-                "'kernel' argument is not supported and will be discarded, "
-                "please use 'quantum_kernel' instead."
-            )
-            warnings.warn(msg, UserWarning)
-            # if we don't delete, then this value clashes with our quantum_kernel
-            del kwargs["kernel"]
-
-        # Setters
-        self.quantum_kernel = quantum_kernel or QuantumKernel()
-        self.kernel_trainer = kernel_trainer
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
@@ -157,10 +126,10 @@ class QSVC(SVC):
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
         """
         Wrapper method for SVC.fit which optimizes the quantum kernel's
-        free parameters before fitting the SVC.
+        user parameters before fitting the SVC.
         """
         if self._kernel_trainer:
             results = self._kernel_trainer.fit_kernel(X, y)
-            self.quantum_kernel.assign_free_parameters(results.optimal_parameters)
+            self.quantum_kernel.assign_user_parameters(results.optimal_parameters)
 
-        super().fit(X=X, y=y, sample_weight=sample_weight)
+        return super().fit(X=X, y=y, sample_weight=sample_weight)
