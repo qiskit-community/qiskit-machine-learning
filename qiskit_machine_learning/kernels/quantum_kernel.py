@@ -144,7 +144,7 @@ class QuantumKernel:
                 copy of the param key as a value causes that parameter to be ignored.
                 This allows the circuit's user parameters to be bound consecutively.
 
-                Iterable [value0, value1, ..., valueN]:
+                Iterable [value_0, value_1, ..., value_N]:
                 If a list of real values is passed, the elements are assigned to the parameters
                 stored in the user_parameters field.
 
