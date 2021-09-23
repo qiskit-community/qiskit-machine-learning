@@ -72,7 +72,7 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
         vqc.fit(training_features, training_labels)
 
         score = vqc.score(test_features, test_labels)
-        print("Testing accuracy: {:0.2f}".format(score))
+        print(f"Testing accuracy: {score:0.2f}")
 
         # ----------------------------------------------------------------------
 

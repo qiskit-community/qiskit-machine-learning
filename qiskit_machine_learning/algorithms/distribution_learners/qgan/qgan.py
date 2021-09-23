@@ -403,7 +403,7 @@ class QGAN:
         if len(self._data) < self._batch_size:
             raise QiskitMachineLearningError(
                 "The batch size needs to be less than the "
-                "truncated data size of {}".format(len(self._data))
+                f"truncated data size of {len(self._data)}"
             )
 
         for e in range(self._num_epochs):

@@ -73,7 +73,6 @@ disable=no-self-use,        # disabled as it is too verbose
     docstring-first-line-empty, # relax docstring style
     import-outside-toplevel,
     bad-continuation, bad-whitespace, # differences of opinion with black
-    consider-using-f-string
 
 
 

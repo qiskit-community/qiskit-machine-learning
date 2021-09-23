@@ -71,7 +71,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # define interpret functions
         def interpret_1d(x):
-            return sum([s == "1" for s in "{0:0b}".format(x)]) % 2
+            return sum([s == "1" for s in f"{x:0b}"]) % 2
 
         self.interpret_1d = interpret_1d
         self.output_shape_1d = 2  # takes values in {0, 1}
