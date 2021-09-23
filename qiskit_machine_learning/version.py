@@ -40,9 +40,7 @@ def _minimal_ext_cmd(cmd):
         stdout, stderr = proc.communicate()
         if proc.returncode > 0:
             raise OSError(
-                "Command {} exited with code {}: {}".format(
-                    cmd, proc.returncode, stderr.strip().decode("ascii")
-                )
+                f"Command {cmd} exited with code {proc.returncode}: {stderr.strip().decode('ascii')}"
             )
         return stdout
 
