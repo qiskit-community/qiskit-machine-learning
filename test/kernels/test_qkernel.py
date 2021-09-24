@@ -375,56 +375,65 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.user_parameters = user_params
 
-    def test_bad_param_values(self):
-        """Test handling of bad parameter assignments."""
-        # Instantiate a QuantumKernel but do not set the user_parameters field
-        qkclass = QuantumKernel(feature_map=self.feature_map)
-
-        # Try to set the user parameters using only values and ensure an
-        # error is raised.
-        user_param_values = [np.pi / 2, np.pi / 4]
-        with self.assertRaises(ValueError):
-            qkclass.assign_user_parameters(user_param_values)
-
     def test_user_parameters(self):
-        """Test assigning user parameters"""
-        # Ensure we can instantiate a QuantumKernel with user parameters
-        qkclass = QuantumKernel(feature_map=self.feature_map, user_parameters=self.user_parameters)
-        self.assertEqual(qkclass.user_parameters, self.user_parameters)
+        """Test assigning/re-assigning user parameters"""
 
-        # Test iterative user parameter binding
-        qkclass.assign_user_parameters({qkclass.user_parameters[0]: np.pi / 2})
-        self.assertEqual(qkclass.feature_map.num_parameters, 3)
-        qkclass.assign_user_parameters({qkclass.user_parameters[1]: np.pi / 2})
-        self.assertEqual(qkclass.feature_map.num_parameters, 2)
+        with self.subTest("check basic instantiation"):
+            # Ensure we can instantiate a QuantumKernel with user parameters
+            qkclass = QuantumKernel(
+                feature_map=self.feature_map, user_parameters=self.user_parameters
+            )
+            self.assertEqual(qkclass.user_parameters, self.user_parameters)
+
+        with self.subTest("test invalid parameter assignment"):
+            # Instantiate a QuantumKernel but do not set the user_parameters field
+            qkclass = QuantumKernel(feature_map=self.feature_map)
+
+            # Try to set the user parameters using only values and ensure an
+            # error is raised.
+            user_param_values = [np.pi / 2, np.pi / 4]
+            with self.assertRaises(ValueError):
+                qkclass.assign_user_parameters(user_param_values)
+
+        with self.subTest("test iterative parameter binding"):
+            # Test iterative user parameter binding
+            qkclass = QuantumKernel(
+                feature_map=self.feature_map, user_parameters=self.user_parameters
+            )
+            qkclass.assign_user_parameters({qkclass.user_parameters[0]: np.pi / 2})
+            self.assertEqual(qkclass.feature_map.num_parameters, 3)
+            qkclass.assign_user_parameters({qkclass.user_parameters[1]: np.pi / 2})
+            self.assertEqual(qkclass.feature_map.num_parameters, 2)
 
         # Instantiate a QuantumKernel without specifying user parameters
         qkclass = QuantumKernel(feature_map=self.feature_map)
+        with self.subTest("test dictionary assignment"):
+            # Bind user parameters to real values
+            user_param_values = [np.pi / 3, np.pi / 6]
+            param_binds = dict(zip(self.user_parameters, user_param_values))
+            qkclass.assign_user_parameters(param_binds)
 
-        # Bind user parameters to real values
-        user_param_values = [np.pi / 3, np.pi / 6]
-        param_binds = dict(zip(self.user_parameters, user_param_values))
-        qkclass.assign_user_parameters(param_binds)
+            # Ensure the two user parameters were bound correctly
+            bound_user_param_vals = [
+                val for val in qkclass.user_param_binds.values() if isinstance(val, numbers.Number)
+            ]
+            self.assertEqual(user_param_values, bound_user_param_vals)
 
-        # Ensure the two user parameters were bound correctly
-        bound_user_param_vals = [
-            val for val in qkclass.user_param_binds.values() if isinstance(val, numbers.Number)
-        ]
-        self.assertEqual(user_param_values, bound_user_param_vals)
+        with self.subTest("test parameter re-assignment"):
+            # Assign params to some new values, and also test the bind_user_parameters interface
+            user_param_values = [np.pi / 4, np.pi / 2]
+            param_binds = dict(zip(self.user_parameters, user_param_values))
+            qkclass.bind_user_parameters(param_binds)
 
-        # Assign params to some new values, and also test the bind_user_parameters interface
-        user_param_values = [np.pi / 4, np.pi / 2]
-        param_binds = dict(zip(self.user_parameters, user_param_values))
-        qkclass.bind_user_parameters(param_binds)
+            # Ensure the old values are properly overwritten in the feature map
+            bound_user_param_vals = [
+                val for val in qkclass.user_param_binds.values() if isinstance(val, numbers.Number)
+            ]
+            self.assertEqual(user_param_values, bound_user_param_vals)
 
-        # Ensure the old values are properly overwritten in the feature map
-        bound_user_param_vals = [
-            val for val in qkclass.user_param_binds.values() if isinstance(val, numbers.Number)
-        ]
-        self.assertEqual(user_param_values, bound_user_param_vals)
-
-        # Ensure unbound feature map still holds all parameters of input feature map
-        self.assertEqual(len(qkclass.unbound_feature_map.parameters), 4)
+        with self.subTest("test unbound feature map"):
+            # Ensure unbound feature map still holds all parameters of input feature map
+            self.assertEqual(len(qkclass.unbound_feature_map.parameters), 4)
 
 
 if __name__ == "__main__":
