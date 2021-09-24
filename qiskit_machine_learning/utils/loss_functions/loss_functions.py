@@ -96,6 +96,11 @@ class KernelLoss(ABC):
     Abstract base class for computing Loss of a kernel function.
     """
 
+    def __init__(self, *args, **kwargs) -> None:
+        # Save classical optimizer args for use in loss evaluation
+        self.loss_args = args
+        self.loss_kwargs = kwargs
+
     def __call__(
         self,
         user_parameters: Sequence[float],

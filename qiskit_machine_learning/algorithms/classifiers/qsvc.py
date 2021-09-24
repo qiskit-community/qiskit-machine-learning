@@ -56,6 +56,7 @@ class QSVC(SVC):
         """
         self._quantum_kernel = None
         self._kernel_trainer = None
+        self.train_kernel = train_kernel
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed

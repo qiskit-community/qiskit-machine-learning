@@ -108,7 +108,10 @@ class QuantumKernelTrainer:
     @optimizer.setter
     def optimizer(self, optimizer: Optimizer) -> None:
         """Sets the loss."""
-        self._optimizer = optimizer
+        if optimizer is None:
+            self._optimizer = SPSA(maxiter=10)
+        else:
+            self._optimizer = optimizer
 
     @property
     def initial_point(self) -> Optional[Sequence[float]]:
@@ -160,5 +163,7 @@ class QuantumKernelTrainer:
 
         # Ensure QuantumKernel is left in optimized state
         quantum_kernel.assign_user_parameters(result.optimal_parameters)
+
+        self.quantum_kernel.assign_user_parameters(result.optimal_parameters)
 
         return result
