@@ -12,6 +12,7 @@
 
 """Quantum Support Vector Classifier"""
 
+import warnings
 from typing import Optional
 
 import numpy as np
@@ -41,7 +42,13 @@ class QSVC(SVC):
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        quantum_kernel: Optional[QuantumKernel] = None,
+        train_kernel: bool = False,
+        **kwargs,
+    ):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for classification.
@@ -50,6 +57,7 @@ class QSVC(SVC):
         """
         self._quantum_kernel = None
         self._kernel_trainer = None
+        self.train_kernel = train_kernel
 
         self.quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
@@ -67,17 +75,36 @@ class QSVC(SVC):
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """Sets quantum kernel"""
         self._kernel_trainer = None
+
         # If no qkernel passed, generate a default QuantumKernel
         if not quantum_kernel:
             backend = Aer.get_backend("qasm_simulator")
             self._quantum_kernel = QuantumKernel(quantum_instance=backend)
+
         # QuantumKernel passed
         elif isinstance(quantum_kernel, QuantumKernel):
             self._quantum_kernel = quantum_kernel
+
             # If there are unbound user parameters, instantiate a QKTrainer
-            if quantum_kernel.unbound_user_parameters():
+            unbound_params = quantum_kernel.unbound_user_parameters()
+            if unbound_params:
+                # If user has not specified they wish to train the kernel,
+                # provide a warning
+                if not self.train_kernel:
+                    warnings.warn(
+                        f"""
+                        Unbound user parameters were detected in the quantum
+                        kernel feature map ({unbound_params}). If these are
+                        not bound before calling QSVC.fit, a computationally
+                        expensive kernel training procedure will precede
+                        fitting the SVC.
+                        """,
+                        UserWarning,
+                    )
+
                 self._kernel_trainer = QuantumKernelTrainer(quantum_kernel)
-       # If a QKTrainer was passed, set the qkernel and kernel trainer fields
+
+        # If a QKTrainer was passed, set the qkernel and kernel trainer fields
         elif isinstance(quantum_kernel, QuantumKernelTrainer):
             self._quantum_kernel = quantum_kernel.quantum_kernel
             self._kernel_trainer = quantum_kernel

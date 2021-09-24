@@ -14,31 +14,31 @@
 
 import unittest
 
-from qiskit import QuantumCircuit, Aer
+import numpy as np
+
 from test import QiskitMachineLearningTestCase
-from qiskit.circuit import ParameterVector
+
+from qiskit import Aer
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import algorithm_globals
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.algorithms import QuantumKernelTrainer
-
-import numpy as np
+from qiskit_machine_learning.utils.loss_functions import SVCAlignment
 
 
 def generate_feature_map():
     """
-    Create a 2 qubit circuit consisting of 2 free parameters and 2 data bound parameters.
+    Create a 2 qubit circuit consisting of 2 user parameters and 2 data bound parameters.
     """
     data_block = ZZFeatureMap(2)
     tunable_block = ZZFeatureMap(2)
-    free_parameters = tunable_block.parameters
+    user_parameters = tunable_block.parameters
 
-    for i in range(len(free_parameters)):
-        free_parameters[i]._name = f"θ[{i}]"
+    for i, _ in enumerate(user_parameters):
+        user_parameters[i]._name = f"θ[{i}]"
 
     feature_map = data_block.compose(tunable_block).compose(data_block)
 
-    return feature_map, free_parameters
+    return feature_map, user_parameters
 
 
 class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
@@ -47,7 +47,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         self.backend = Aer.get_backend("qasm_simulator")
-        self.feature_map, self.free_parameters = generate_feature_map()
+        self.feature_map, self.user_parameters = generate_feature_map()
 
         self.sample_train = np.asarray(
             [
@@ -63,13 +63,26 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
         self.quantum_kernel = QuantumKernel(
             feature_map=self.feature_map,
-            free_parameters=self.free_parameters,
+            user_parameters=self.user_parameters,
             quantum_instance=self.backend,
         )
 
     def test_qkt(self):
         """Test QKT"""
-        qkt = QuantumKernelTrainer(self.quantum_kernel)
+        self.setUp()
+        with self.subTest("check default fit"):
+            qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
+            qkt.fit_kernel(self.sample_train, self.label_train)
+            # Ensure user parameters are bound to real values
+            self.assertFalse(qkt.quantum_kernel.unbound_user_parameters())
+
+        with self.subTest("check fith with params"):
+            self.setUp()
+            loss = SVCAlignment(C=0.8, gamma="auto")
+            qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, loss=loss)
+            result = qkt.fit_kernel(self.sample_train, self.label_train)
+            # Ensure user parameters are bound to real values
+            self.assertFalse(qkt.quantum_kernel.unbound_user_parameters())
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@
 """ Loss utilities """
 
 from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Sequence
 
 import numpy as np
 from sklearn.svm import SVC
@@ -96,9 +96,14 @@ class KernelLoss(ABC):
     Abstract base class for computing Loss of a kernel function.
     """
 
+    def __init__(self, *args, **kwargs) -> None:
+        # Save classical optimizer args for use in loss evaluation
+        self.loss_args = args
+        self.loss_kwargs = kwargs
+
     def __call__(
         self,
-        user_parameters: np.ndarray,
+        user_parameters: Sequence[float],
         kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
@@ -111,7 +116,7 @@ class KernelLoss(ABC):
     @abstractmethod
     def evaluate(
         self,
-        user_parameters: Iterable[float],
+        user_parameters: Sequence[float],
         kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
@@ -253,7 +258,7 @@ class SVCAlignment(KernelLoss):
 
     def evaluate(
         self,
-        user_parameters: Iterable[float],
+        user_parameters: Sequence[float],
         kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
@@ -263,7 +268,7 @@ class SVCAlignment(KernelLoss):
         kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier
-        svc = SVC(kernel=kernel.evaluate)
+        svc = SVC(kernel=kernel.evaluate, *self.loss_args, **self.loss_kwargs)
         svc.fit(data, labels)
 
         # Get dual coefficients
