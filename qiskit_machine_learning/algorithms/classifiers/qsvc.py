@@ -52,9 +52,9 @@ class QSVC(SVC):
             msg = (
                 f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
                 f"will be removed no sooner than 3 months after the release. Instead use "
-                f"keyword arguments. Positional arguments are ignored and not passed to the superclass."
+                f"keyword arguments."
             )
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 

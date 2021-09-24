@@ -102,17 +102,10 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 0.5)
 
     def test_args_warning(self):
-        """Test QSVC deprecation warning appears when *args passed in"""
-        qsvc = QSVC(1)
-
-        with self.assertWarns(DeprecationWarning):
-            print(qsvc)
-
-    def test_args_warning(self):
         """Test QSVC print works when no *args passed in"""
         qsvc = QSVC()
 
-        print(qsvc)
+        _ = str(qsvc)
 
 
 if __name__ == "__main__":

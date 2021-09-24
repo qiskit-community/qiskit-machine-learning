@@ -102,17 +102,10 @@ class TestQSVR(QiskitMachineLearningTestCase):
         self.assertAlmostEqual(score, 0.38365, places=4)
 
     def test_args_warning(self):
-        """Test QSVR deprecation warning appears when *args passed in"""
-        qsvr = QSVR(1)
-
-        with self.assertWarns(DeprecationWarning):
-            print(qsvr)
-
-    def test_args_warning(self):
         """Test QSVR print works when no *args passed in"""
         qsvr = QSVR()
 
-        print(qsvr)
+        _ = str(qsvr)
 
 
 if __name__ == "__main__":
