@@ -127,10 +127,10 @@ class KernelLoss(ABC):
 
         Args:
             user_parameters: an array of values to assign to the user params
-            kernel: An NxN matrix representing the kernel function
+            kernel: An N x N matrix representing the kernel function
                     N = # samples
-            data: An NxM matrix containing the data
-                    N = # samples, M = data dimensionality
+            data: An N x M matrix containing the data
+                    N = # samples, M = dimension of data
             labels: A length-N array containing the truth labels
 
         Returns:
@@ -265,7 +265,7 @@ class SVCAlignment(KernelLoss):
         labels: np.ndarray,
     ) -> float:
 
-        # Bind learnable parameters
+        # Bind training parameters
         kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier

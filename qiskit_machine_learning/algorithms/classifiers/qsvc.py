@@ -37,7 +37,7 @@ class QSVC(SVC):
 
     .. code-block::
 
-        qsvc = QSVC(quantum_kernel=qkernel)
+        qsvc = QSVC(quantum_kernel=quant_kernel)
         qsvc.fit(sample_train,label_train)
         qsvc.predict(sample_test)
     """
@@ -76,7 +76,7 @@ class QSVC(SVC):
         """Sets quantum kernel"""
         self._kernel_trainer = None
 
-        # If no qkernel passed, generate a default QuantumKernel
+        # If no quantum kernel passed, generate a default QuantumKernel
         if not quantum_kernel:
             backend = Aer.get_backend("qasm_simulator")
             self._quantum_kernel = QuantumKernel(quantum_instance=backend)
@@ -104,7 +104,7 @@ class QSVC(SVC):
 
                 self._kernel_trainer = QuantumKernelTrainer(quantum_kernel)
 
-        # If a QKTrainer was passed, set the qkernel and kernel trainer fields
+        # If a QKTrainer was passed, set the quantum_kernel and kernel trainer fields
         elif isinstance(quantum_kernel, QuantumKernelTrainer):
             self._quantum_kernel = quantum_kernel.quantum_kernel
             self._kernel_trainer = quantum_kernel

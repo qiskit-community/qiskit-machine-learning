@@ -33,15 +33,15 @@ class QuantumKernelTrainer:
 
     .. code-block::
 
-        qkernel = QuantumKernel(
+        quant_kernel = QuantumKernel(
             feature_map=...,
             free_parameters=...,
             quantum_instance=...
         )
 
-        qkt = QuantumKernelTrainer(qkernel)
+        qk_trainer = QuantumKernelTrainer(quant_kernel)
 
-        qsvc = QSVC(quantum_kernel=qkt)
+        qsvc = QSVC(quantum_kernel=qk_trainer)
         qsvc.fit(X_train, y_train)
         score = qsvc.score(X_test, y_test)
     """

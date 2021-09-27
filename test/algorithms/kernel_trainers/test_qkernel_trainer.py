@@ -68,7 +68,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         )
 
     def test_qkt(self):
-        """Test QKT"""
+        """Test QuantumKernelTrainer"""
         self.setUp()
         with self.subTest("check default fit"):
             qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
