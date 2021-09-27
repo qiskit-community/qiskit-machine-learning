@@ -20,7 +20,7 @@ from sklearn.svm import SVC
 
 from qiskit import Aer
 from qiskit.utils.algorithm_globals import algorithm_globals
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 from qiskit_machine_learning.algorithms.kernel_trainers import QuantumKernelTrainer
 
 

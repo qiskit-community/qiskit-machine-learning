@@ -147,7 +147,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
             # Cause all warnings to always be triggered.
             warnings.simplefilter("always")
-            qsvc = QSVC(quantum_kernel=qkernel, train_kernel=False)
+            _qsvc = QSVC(quantum_kernel=qkernel, train_kernel=False)
 
             # Ensure we only get one warning
             assert len(w) == 1

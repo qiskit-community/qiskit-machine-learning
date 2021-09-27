@@ -18,6 +18,7 @@ from typing import Sequence
 import numpy as np
 from sklearn.svm import SVC
 
+from qiskit.utils.algorithm_globals import algorithm_globals
 from qiskit_machine_learning.kernels import QuantumKernel
 from ...exceptions import QiskitMachineLearningError
 
@@ -268,7 +269,10 @@ class SVCAlignment(KernelLoss):
         kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier
-        svc = SVC(kernel=kernel.evaluate, *self.loss_args, **self.loss_kwargs)
+        rand_state = algorithm_globals.random.integers(75088)
+        svc = SVC(
+            kernel=kernel.evaluate, random_state=rand_state, *self.loss_args, **self.loss_kwargs
+        )
         svc.fit(data, labels)
 
         # Get dual coefficients

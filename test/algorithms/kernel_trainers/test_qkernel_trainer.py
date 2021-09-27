@@ -12,11 +12,11 @@
 
 """ Test QuantumKernelTrainer """
 
+from test import QiskitMachineLearningTestCase
+
 import unittest
 
 import numpy as np
-
-from test import QiskitMachineLearningTestCase
 
 from qiskit import Aer
 from qiskit.circuit.library import ZZFeatureMap
@@ -80,7 +80,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             self.setUp()
             loss = SVCAlignment(C=0.8, gamma="auto")
             qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, loss=loss)
-            result = qkt.fit_kernel(self.sample_train, self.label_train)
+            qkt.fit_kernel(self.sample_train, self.label_train)
             # Ensure user parameters are bound to real values
             self.assertFalse(qkt.quantum_kernel.unbound_user_parameters())
 
