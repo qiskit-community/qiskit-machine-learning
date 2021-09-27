@@ -19,6 +19,7 @@ from sklearn.svm import SVC
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
+
 class PegasosQSVC(SVC):
     r"""Quantum Pegasos Support Vector Classifier
     This class implements the algorithm developed in
@@ -56,24 +57,26 @@ class PegasosQSVC(SVC):
         # these are the parameters being fit and are needed for prediction
         self._fit_status = False
         self._alphas = None
-        self._X_train = None
+        self._x_train = None
         self._y_train = None
 
         # added to all kernel values  to include an implicit bias to the hyperplane
-        self._c = 1
+        self._kernel_offset = 1
 
-    def fit(self, X: np.ndarray, y: np.ndarray, K: Optional[np.ndarray] = None) -> None:
+    def fit(
+        self, X: np.ndarray, y: np.ndarray, precomputed_kernel: Optional[np.ndarray] = None
+    ) -> None:
         """Implementation of the kernalized Pegasos algorithm to fit the SVM
         Args:
             X: shape (x_samples, s), train features
             y: shape (x_samples) train labels
-            K: shape (x_samples, x_samples) optional pre computed kernel matrix
+            precomputed_kernel: shape (x_samples, x_samples) optional pre computed kernel matrix
 
         Raises:
             ValueError:
                 - X and/or y have the wrong shape
                 - X and y have incompatible dimensions
-                - Pre-computed kernel matrix K has the wrong shape and/or dimension
+                - Pre-computed kernel matrix precomputed_kernel has the wrong shape and/or dimension
                 - y contains incompatible labels
         """
         # check whether the data has the right format
@@ -85,17 +88,20 @@ class PegasosQSVC(SVC):
             raise ValueError("X and y have to contain the same number of samples")
         if not np.all(np.unique(y) == np.array([-1, 1])):
             raise ValueError("the labels in y have to be in {-1, +1}")
-        if (K is not None) and (not K.shape == (X.shape[0], X.shape[0])):
+        if (precomputed_kernel is not None) and (
+            not precomputed_kernel.shape == (X.shape[0], X.shape[0])
+        ):
             raise ValueError(
-                f"K has the wrong shape {K.shape}, it should be {(X.shape[0], X.shape[0])}"
+                f"precomputed_kernel has the wrong shape {precomputed_kernel.shape}, \
+                it should be {(X.shape[0], X.shape[0])}"
             )
 
-        self._X_train = X
+        self._x_train = X
         self._y_train = y
 
         # empty dictionaries to represent sparse arrays
         self._alphas = {}
-        K_dict = {}
+        kernel = {}
 
         t_0 = datetime.now()
         for step in range(1, self._num_steps + 1):
@@ -103,11 +109,65 @@ class PegasosQSVC(SVC):
 
             value = 0.0
             for j in self._alphas:  # only loop over the non zero alphas
-                if K is None:
-                    K_dict[(i, j)] = K_dict.get((i, j), self._quantum_kernel.evaluate(X[i], X[j]))
-                    value += self._alphas[j] * y[j] * (K_dict[(i, j)] + self._c)
+                if precomputed_kernel is None:
+                    kernel[(i, j)] = kernel.get((i, j), self._quantum_kernel.evaluate(X[i], X[j]))
+                    value += self._alphas[j] * y[j] * (kernel[(i, j)] + self._kernel_offset)
                 else:
-                    value += self._alphas[j] * y[j] * (K[i, j] + self._c)
+                    value += (
+                        self._alphas[j] * y[j] * (precomputed_kernel[i, j] + self._kernel_offset)
+                    )
+
+            if (y[i] * self.C / step) * value < 1:
+                self._alphas[i] = self._alphas.get(i, 0) + 1
+
+        self._fit_status = True
+
+        if self._verbose:
+            print(f"fit completed after {str(datetime.now() - t_0)[:-7]}")
+
+    def fit_precomputed(self, X: np.ndarray, y: np.ndarray, precomputed_kernel: np.ndarray) -> None:
+        """Implementation of the kernalized Pegasos algorithm to fit the SVM
+        Args:
+            precomputed_kernel: shape (x_samples, x_samples) pre computed kernel matrix
+            y: shape (x_samples) train labels
+
+        Raises:
+            ValueError:
+                - X and/or y have the wrong shape
+                - X and y have incompatible dimensions
+                - Pre-computed kernel matrix precomputed_kernel has the wrong shape and/or dimension
+                - y contains incompatible labels
+        """
+        # check whether the data has the right format
+        if np.ndim(X) != 2:
+            raise ValueError("X has to be a 2D array")
+        if np.ndim(y) != 1:
+            raise ValueError("y has to be a 1D array")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("X and y have to contain the same number of samples")
+        if not np.all(np.unique(y) == np.array([-1, 1])):
+            raise ValueError("the labels in y have to be in {-1, +1}")
+        if (precomputed_kernel is not None) and (
+            not precomputed_kernel.shape == (X.shape[0], X.shape[0])
+        ):
+            raise ValueError(
+                f"precomputed_kernel has the wrong shape {precomputed_kernel.shape}, \
+                it should be {(X.shape[0], X.shape[0])}"
+            )
+
+        self._x_train = X
+        self._y_train = y
+
+        # empty dictionary to represent sparse array
+        self._alphas = {}
+
+        t_0 = datetime.now()
+        for step in range(1, self._num_steps + 1):
+            i = np.random.randint(0, len(y))
+
+            value = 0.0
+            for j in self._alphas:  # only loop over the non zero alphas
+                value += self._alphas[j] * y[j] * (precomputed_kernel[i, j] + self._kernel_offset)
 
             if (y[i] * self.C / step) * value < 1:
                 self._alphas[i] = self._alphas.get(i, 0) + 1
@@ -138,7 +198,7 @@ class PegasosQSVC(SVC):
                 value += (
                     self._alphas[j]
                     * self._y_train[j]
-                    * (self._quantum_kernel.evaluate(X[i], X[j]) + self._c)
+                    * (self._quantum_kernel.evaluate(X[i], self._x_train[j]) + self._kernel_offset)
                 )
             y[i] = np.sign(value)
 
@@ -146,3 +206,65 @@ class PegasosQSVC(SVC):
             print(f"prediction completed after {str(datetime.now() - t_0)[:-7]}")
 
         return y
+
+    def _fit_internal(
+        self, X: np.ndarray, y: np.ndarray, precomputed_kernel: Optional[np.ndarray] = None
+    ) -> None:
+        """Implementation of the kernalized Pegasos algorithm to fit the SVM
+        Args:
+            X: shape (x_samples, s), train features
+            y: shape (x_samples) train labels
+            precomputed_kernel: shape (x_samples, x_samples) optional pre computed kernel matrix
+
+        Raises:
+            ValueError:
+                - X and/or y have the wrong shape
+                - X and y have incompatible dimensions
+                - Pre-computed kernel matrix precomputed_kernel has the wrong shape and/or dimension
+                - y contains incompatible labels
+        """
+        # check whether the data has the right format
+        if np.ndim(X) != 2:
+            raise ValueError("X has to be a 2D array")
+        if np.ndim(y) != 1:
+            raise ValueError("y has to be a 1D array")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("X and y have to contain the same number of samples")
+        if not np.all(np.unique(y) == np.array([-1, 1])):
+            raise ValueError("the labels in y have to be in {-1, +1}")
+        if (precomputed_kernel is not None) and (
+            not precomputed_kernel.shape == (X.shape[0], X.shape[0])
+        ):
+            raise ValueError(
+                f"precomputed_kernel has the wrong shape {precomputed_kernel.shape}, \
+                it should be {(X.shape[0], X.shape[0])}"
+            )
+
+        self._x_train = X
+        self._y_train = y
+
+        # empty dictionaries to represent sparse arrays
+        self._alphas = {}
+        kernel = {}
+
+        t_0 = datetime.now()
+        for step in range(1, self._num_steps + 1):
+            i = np.random.randint(0, len(y))
+
+            value = 0.0
+            for j in self._alphas:  # only loop over the non zero alphas
+                if precomputed_kernel is None:
+                    kernel[(i, j)] = kernel.get((i, j), self._quantum_kernel.evaluate(X[i], X[j]))
+                    value += self._alphas[j] * y[j] * (kernel[(i, j)] + self._kernel_offset)
+                else:
+                    value += (
+                        self._alphas[j] * y[j] * (precomputed_kernel[i, j] + self._kernel_offset)
+                    )
+
+            if (y[i] * self.C / step) * value < 1:
+                self._alphas[i] = self._alphas.get(i, 0) + 1
+
+        self._fit_status = True
+
+        if self._verbose:
+            print(f"fit completed after {str(datetime.now() - t_0)[:-7]}")
