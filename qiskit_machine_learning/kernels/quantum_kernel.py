@@ -120,12 +120,12 @@ class QuantumKernel:
     @user_parameters.setter
     def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
         """Sets the user parameters"""
-        if user_params:
+        if user_params is None:
+            self._user_param_binds = None
+        else:
             self._user_param_binds = {
                 user_params[i]: user_params[i] for i, _ in enumerate(user_params)
             }
-        else:
-            self._user_param_binds = None
 
         self._user_parameters = user_params
 
