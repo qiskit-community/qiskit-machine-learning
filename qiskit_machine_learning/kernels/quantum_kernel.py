@@ -135,7 +135,6 @@ class QuantumKernel:
         Assign user parameters in the QuantumKernel feature map.
 
         Args:
-<<<<<<< HEAD
             values (dict or iterable): Either a dictionary or iterable specifying the new
                 parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
                 ``new_parameter``, where ``new_parameter`` can be a parameter object or a
