@@ -113,7 +113,7 @@ class QuantumKernelTrainer:
     def optimizer(self, optimizer: Optimizer) -> None:
         """Sets the loss."""
         if optimizer is None:
-            self._optimizer = SPSA(maxiter=10)
+            self._optimizer = SPSA(maxiter=50)
         else:
             self._optimizer = optimizer
 
@@ -138,7 +138,7 @@ class QuantumKernelTrainer:
         Args:
             data (numpy.ndarray): NxD array of training data, where N is the
                               number of samples and D is the feature dimension
-            labels (numpy.ndarray): Nx1 array of +/-1 labels of the N training samples
+            labels (numpy.ndarray): N x 1 array of +/-1 labels of the N training samples
 
         Returns:
             dict: the results of kernel training
@@ -146,24 +146,26 @@ class QuantumKernelTrainer:
         # Bind inputs to objective function
         obj_func = partial(self.loss.evaluate, kernel=self.quantum_kernel, data=data, labels=labels)
 
+        # Number of parameters to tune
+        num_params = len(self.quantum_kernel.user_parameters)
+
         # Randomly initialize our user parameters if no initial point was passed
         if not self.initial_point:
-            num_params = len(self.quantum_kernel.user_parameters)
             self.initial_point = algorithm_globals.random.random(num_params)
 
-        self.quantum_kernel.assign_user_parameters(self.initial_point)
-
         # Perform kernel done
+        ignore = self.optimizer.is_initial_point_ignored
+        print(f"Is Ignored: {ignore}")
         opt_params, opt_vals, num_optimizer_evals = self.optimizer.optimize(
-            1, obj_func, initial_point=self.initial_point
+            num_params, obj_func, initial_point=self.initial_point
         )
         # Return kernel training results
         result = VariationalResult()
         result.optimizer_evals = num_optimizer_evals
         result.optimal_value = opt_vals
         result.optimal_point = opt_params
+        print(f"optimal value: {opt_vals}")
+        print(f"optimal point: {opt_params}")
         result.optimal_parameters = dict(zip(self.quantum_kernel.user_parameters, opt_params))
-
-        self.quantum_kernel.assign_user_parameters(result.optimal_parameters)
 
         return result

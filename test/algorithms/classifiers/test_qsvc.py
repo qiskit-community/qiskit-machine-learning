@@ -126,8 +126,8 @@ class TestQSVC(QiskitMachineLearningTestCase):
             user_parameters=free_params,
             quantum_instance=BasicAer.get_backend("qasm_simulator"),
         )
-
-        qkt = QuantumKernelTrainer(qkernel)
+        initial_point = [np.pi/2, np.pi/2]
+        qkt = QuantumKernelTrainer(qkernel, initial_point=initial_point)
 
         qsvc = QSVC(quantum_kernel=qkt)
         qsvc.fit(self.sample_train, self.label_train)
