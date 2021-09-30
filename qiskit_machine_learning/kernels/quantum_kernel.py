@@ -118,7 +118,7 @@ class QuantumKernel:
         return self._user_parameters
 
     @user_parameters.setter
-    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
+    def user_parameters(self, user_params: Optional[Union[ParameterVector, Sequence[Parameter]]]) -> None:
         """Sets the user parameters"""
         if user_params is None:
             self._user_param_binds = None
@@ -147,9 +147,6 @@ class QuantumKernel:
                 Iterable [value_0, value_1, ..., value_N]:
                 If a list of real values is passed, the elements are assigned to the parameters
                 stored in the user_parameters field.
-
-        Return:
-            None
 
         Raises:
             ValueError: Incompatible number of user parameters and values
@@ -195,9 +192,6 @@ class QuantumKernel:
 
         Args:
             values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
-
-        Return:
-            None
         """
         self.assign_user_parameters(values)
 
