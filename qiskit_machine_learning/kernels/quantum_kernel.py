@@ -118,7 +118,9 @@ class QuantumKernel:
         return self._user_parameters
 
     @user_parameters.setter
-    def user_parameters(self, user_params: Optional[Union[ParameterVector, Sequence[Parameter]]]) -> None:
+    def user_parameters(
+        self, user_params: Optional[Union[ParameterVector, Sequence[Parameter]]]
+    ) -> None:
         """Sets the user parameters"""
         if user_params is None:
             self._user_param_binds = None
