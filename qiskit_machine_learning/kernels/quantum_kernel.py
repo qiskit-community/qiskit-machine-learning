@@ -120,9 +120,7 @@ class QuantumKernel:
         return self._user_parameters
 
     @user_parameters.setter
-    def user_parameters(
-        self, user_params: Optional[Union[ParameterVector, Sequence[Parameter]]]
-    ) -> None:
+    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
         """Sets the user parameters"""
         self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
         self._user_parameters = user_params
@@ -184,14 +182,12 @@ class QuantumKernel:
         """Return a copy of the current user parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._user_param_binds)
 
-    def bind_user_parameters(
-        self, values: Union[Mapping[Parameter, float], Sequence[float]]
-    ) -> None:
+    def bind_user_parameters(self, values: Sequence[float]) -> None:
         """
         Alternate function signature for assign_user_parameters
 
         Args:
-            values (dict or iterable): {parameter: value, ...} or [value1, value2, ...]
+            values (iterable): [value1, value2, ...]
         """
         self.assign_user_parameters(values)
 
