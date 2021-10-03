@@ -13,7 +13,6 @@
 """ Test QSVC """
 
 import unittest
-import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -172,15 +171,16 @@ class TestQSVC(QiskitMachineLearningTestCase):
             user_parameters=free_params,
             quantum_instance=BasicAer.get_backend("qasm_simulator"),
         )
+        initial_point = [np.pi / 2, np.pi / 2]
+        qkt = QuantumKernelTrainer(initial_point=initial_point)
 
-        qkt = QuantumKernelTrainer(qkernel)
-
-        qsvc = QSVC(quantum_kernel=qkt)
+        qsvc = QSVC(quantum_kernel=qkernel, kernel_trainer=qkt)
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 
         self.assertEqual(score, 0.5)
 
+<<<<<<< HEAD
     def test_kernel_training_warning(self):
         """Test QSVC kernel training warning"""
         with warnings.catch_warnings(record=True) as w:

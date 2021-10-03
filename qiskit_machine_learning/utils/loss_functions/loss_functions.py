@@ -96,11 +96,6 @@ class KernelLoss(ABC):
     Abstract base class for computing Loss of a kernel function.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
-        # Save classical optimizer args for use in loss evaluation
-        self.loss_args = args
-        self.loss_kwargs = kwargs
-
     def __call__(
         self,
         user_parameters: Sequence[float],
@@ -253,9 +248,8 @@ class SVCAlignment(KernelLoss):
     This class computes the weighted kernel alignment loss using SKLearn ``SVC`` class.
     """
 
-    def __init__(self, regularization: float = 1.0, max_iter: int = -1):
-        # Class fields
-        self.regularization = regularization
+    def __init__(C: float = 1.0, max_iter: int = -1):
+        self.C = C
         self.max_iter = max_iter
 
     def evaluate(
@@ -269,7 +263,7 @@ class SVCAlignment(KernelLoss):
         kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier
-        svc = SVC(kernel=kernel.evaluate, C=self.regularization, max_iter=self.max_iter)
+        svc = SVC(kernel=kernel.evaluate, C=self.C, max_iter=self.max_iter)
         svc.fit(data, labels)
 
         # Get dual coefficients

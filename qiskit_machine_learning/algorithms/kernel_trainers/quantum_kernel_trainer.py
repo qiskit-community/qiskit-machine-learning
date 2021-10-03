@@ -18,7 +18,7 @@ from typing import Union, Optional, Sequence
 import numpy as np
 
 from qiskit.utils.algorithm_globals import algorithm_globals
-from qiskit.algorithms.optimizers import Optimizer, SPSA
+from qiskit.algorithms.optimizers import Optimizer, COBYLA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCAlignment
@@ -83,7 +83,7 @@ class QuantumKernelTrainer:
 
     @property
     def loss(self) -> KernelLoss:
-        """Returns the underlying loss function."""
+        """Returns the loss object."""
         return self._loss
 
     @loss.setter
@@ -108,10 +108,7 @@ class QuantumKernelTrainer:
     @optimizer.setter
     def optimizer(self, optimizer: Optimizer) -> None:
         """Sets the loss."""
-        if optimizer is None:
-            self._optimizer = SPSA(maxiter=10)
-        else:
-            self._optimizer = optimizer
+        self._optimizer = optimizer
 
     @property
     def initial_point(self) -> Optional[Sequence[float]]:
