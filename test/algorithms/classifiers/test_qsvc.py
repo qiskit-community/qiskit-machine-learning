@@ -133,7 +133,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 
-        self.assertEqual(score, 0.5)
+        self.assertGreaterEqual(score, 0.5)
 
 
 if __name__ == "__main__":

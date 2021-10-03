@@ -149,16 +149,13 @@ class QuantumKernelTrainer:
             self.initial_point = algorithm_globals.random.random(num_params)
 
         # Perform kernel optimization
-        result = self.optimizer.minimize(fun=obj_func, x0=self.initial_point)
-        opt_params = result.x
-        opt_vals = result.fun
-        num_optimizer_evals = result.nfev
+        opt_results = self.optimizer.minimize(fun=obj_func, x0=self.initial_point)
 
         # Return kernel training results
         result = VariationalResult()
-        result.optimizer_evals = num_optimizer_evals
-        result.optimal_value = opt_vals
-        result.optimal_point = opt_params
-        result.optimal_parameters = dict(zip(quantum_kernel.user_parameters, opt_params))
+        result.optimizer_evals = opt_results.nfev
+        result.optimal_value = opt_results.fun
+        result.optimal_point = opt_results.x
+        result.optimal_parameters = dict(zip(quantum_kernel.user_parameters, opt_results.x))
 
         return result

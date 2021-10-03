@@ -35,6 +35,7 @@ class QSVC(SVC):
     **Example**
 
     .. code-block::python
+
         qsvc = QSVC(quantum_kernel=quant_kernel)
         qsvc.fit(sample_train,label_train)
         qsvc.predict(sample_test)
@@ -61,7 +62,7 @@ class QSVC(SVC):
     ):
         r"""
         Args:
-            regularization: Regularization parameter. The strength of the regularization is
+            regularization: Regularization parameter. Same as `C` in sklearn. The strength of the regularization is
                         inversely proportional to regularization. Must be strictly positive. The penalty
                         is a squared l2 penalty.
             quantum_kernel: QuantumKernel to be used for classification.

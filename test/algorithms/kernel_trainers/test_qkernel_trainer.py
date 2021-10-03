@@ -79,7 +79,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             # Ensure user parameters are bound to real values
             self.assertFalse(self.quantum_kernel.unbound_user_parameters())
 
-        with self.subTest("check fith with params"):
+        with self.subTest("check fit with params"):
             self.setUp()
             loss = SVCAlignment(regularization=0.8, max_iter=20)
             qkt = QuantumKernelTrainer(loss=loss, optimizer=self.optimizer)
