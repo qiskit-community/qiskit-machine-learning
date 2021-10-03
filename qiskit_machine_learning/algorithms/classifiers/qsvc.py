@@ -62,9 +62,9 @@ class QSVC(SVC):
     ):
         r"""
         Args:
-            regularization: Regularization parameter. Same as `C` in sklearn. The strength of the regularization is
-                        inversely proportional to regularization. Must be strictly positive. The penalty
-                        is a squared l2 penalty.
+            regularization: Regularization parameter. Same as `C` in sklearn. The strength of the
+                        regularization is inversely proportional to regularization. Must be
+                        strictly positive. The penalty is a squared l2 penalty.
             quantum_kernel: QuantumKernel to be used for classification.
             kernel_trainer: QuantumKernelTrainer to be used for kernel optimization.
             degree: Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
