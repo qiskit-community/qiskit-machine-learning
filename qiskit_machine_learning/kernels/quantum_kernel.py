@@ -20,7 +20,7 @@ import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit.circuit.parameterexpression import ParameterValueType
+from qiskit.circuit.parameterexpression import ParameterExpression, ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
@@ -127,7 +127,10 @@ class QuantumKernel:
         self._user_parameters = user_params
 
     def assign_user_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self,
+        values: Union[
+            Mapping[Parameter, ParameterValueType], Sequence[Union[ParameterExpression, float]]
+        ],
     ) -> None:
         """
         Assign user parameters in the QuantumKernel feature map.

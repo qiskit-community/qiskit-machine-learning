@@ -35,7 +35,6 @@ class QSVC(SVC):
     **Example**
 
     .. code-block::python
-
         qsvc = QSVC(quantum_kernel=quant_kernel)
         qsvc.fit(sample_train,label_train)
         qsvc.predict(sample_test)
@@ -60,49 +59,50 @@ class QSVC(SVC):
         break_ties: Optional[bool] = False,
         random_state: Optional[int] = algorithm_globals.random_seed,
     ):
-        """
+        r"""
         Args:
             regularization: Regularization parameter. The strength of the regularization is
-                inversely proportional to regularization. Must be strictly positive. The penalty
-                is a squared l2 penalty.
+                        inversely proportional to regularization. Must be strictly positive. The penalty
+                        is a squared l2 penalty.
             quantum_kernel: QuantumKernel to be used for classification.
             kernel_trainer: QuantumKernelTrainer to be used for kernel optimization.
             degree: Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
             gamma {‘scale’, ‘auto’} or float: Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
-                * if gamma='scale' (default) is passed then it uses 1 / (n_features * X.var()) as
-                  value of gamma,
-                * if ‘auto’, uses 1 / n_features.
+                        * if gamma='scale' (default) is passed then it uses 1 / (n_features * X.var()) as
+                        value of gamma,
+                        * if ‘auto’, uses 1 / n_features.
             coef0: Independent term in kernel function. It is only significant in ‘poly’ and
-                ‘sigmoid’.
+                        ‘sigmoid’.
             shrinking: Whether to use the shrinking heuristic.
             probability: Whether to enable probability estimates. This must be enabled prior to
-                calling fit, will slow down that method as it internally uses 5-fold
-                cross-validation, and predict_proba may be inconsistent with predict.
+                        calling fit, will slow down that method as it internally uses 5-fold
+                        cross-validation, and predict_proba may be inconsistent with predict.
             tol: Tolerance for stopping criterion.
             cache_size: Specify the size of the kernel cache (in MB).
             class_weight (dict or 'balanced'): Set the parameter C of class i to class_weight[i]*C
-                for SVC. If not given, all classes are supposed to have weight one. The
-                “balanced” mode uses the values of y to automatically adjust weights inversely
-                proportional to class frequencies in the input data as
-                n_samples / (n_classes * np.bincount(y)).
+                        for SVC. If not given, all classes are supposed to have weight one. The
+                        “balanced” mode uses the values of y to automatically adjust weights inversely
+                        proportional to class frequencies in the input data as
+                        n_samples / (n_classes * np.bincount(y)).
             verbose: Enable verbose output. Note that this setting takes advantage of a per-process
-                runtime setting in libsvm that, if enabled, may not work properly in a
-                multithreaded context.
+                        runtime setting in libsvm that, if enabled, may not work properly in a
+                        multithreaded context.
             max_iter: Hard limit on iterations within solver, or -1 for no limit.
             decision_function_shape {'ovo', 'ovr'}: Whether to return a one-vs-rest (‘ovr’) decision
-                function of shape (n_samples, n_classes) as all other classifiers, or the
-                original one-vs-one (‘ovo’) decision function of libsvm which has shape
-                (n_samples, n_classes * (n_classes - 1) / 2). However, one-vs-one (‘ovo’) is
-                always used as multi-class strategy. The parameter is ignored for binary
-                classification.
+                        function of shape (n_samples, n_classes) as all other classifiers, or the
+                        original one-vs-one (‘ovo’) decision function of libsvm which has shape
+                        (n_samples, n_classes * (n_classes - 1) / 2). However, one-vs-one (‘ovo’) is
+                        always used as multi-class strategy. The parameter is ignored for binary
+                        classification.
             break_ties: If true, decision_function_shape='ovr', and number of classes > 2, predict will
-                break ties according to the confidence values of decision_function; otherwise
-                the first class among the tied classes is returned. Please note that breaking
-                ties comes at a relatively high computational cost compared to a simple predict.
+                        break ties according to the confidence values of decision_function; otherwise
+                        the first class among the tied classes is returned. Please note that breaking
+                        ties comes at a relatively high computational cost compared to a simple predict.
             random_state: Controls the pseudo random number generation for shuffling the data for
-                probability estimates. Ignored when probability is False. Pass an int for
-                reproducible output across multiple function calls.
+                        probability estimates. Ignored when probability is False. Pass an int for
+                        reproducible output across multiple function calls.
         """
+
         # Class fields
         self._quantum_kernel = None
         self._kernel_trainer = None
@@ -157,9 +157,10 @@ class QSVC(SVC):
     def fit(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[Sequence[float]] = None
     ) -> SVC:
-        """
+        r"""
         Wrapper method for SVC.fit which optimizes the quantum kernel's
         user parameters before fitting the SVC.
+
         Args:
             X: {array-like, sparse matrix} of shape (n_samples, n_features)
                 Training vector, where `n_samples` is the number of samples and
@@ -177,6 +178,7 @@ class QSVC(SVC):
         Raises:
             ValueError: Unbound user parameters on feature map
         """
+
         unbound_user_params = self._quantum_kernel.unbound_user_parameters()
         if (len(unbound_user_params) > 0) and (self._kernel_trainer is None):
             raise ValueError(
