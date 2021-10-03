@@ -12,7 +12,7 @@
 
 """Quantum Support Vector Classifier"""
 
-from typing import Optional, Union
+from typing import Optional, Union, Sequence
 
 import numpy as np
 from sklearn.svm import SVC
@@ -45,7 +45,7 @@ class QSVC(SVC):
         self,
         quantum_kernel: Optional[QuantumKernel] = None,
         kernel_trainer: Optional[QuantumKernelTrainer] = None,
-        C: Optional[float] = 1.0,
+        regularization: Optional[float] = 1.0,
         degree: Optional[int] = 3,
         gamma: Optional[Union[str, float]] = "scale",
         coef0: Optional[float] = 0.0,
@@ -62,8 +62,9 @@ class QSVC(SVC):
     ):
         """
         Args:
-            C: Regularization parameter. The strength of the regularization is inversely proportional
-                to C. Must be strictly positive. The penalty is a squared l2 penalty.
+            regularization: Regularization parameter. The strength of the regularization is
+                inversely proportional to regularization. Must be strictly positive. The penalty
+                is a squared l2 penalty.
             quantum_kernel: QuantumKernel to be used for classification.
             kernel_trainer: QuantumKernelTrainer to be used for kernel optimization.
             degree: Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
@@ -115,7 +116,7 @@ class QSVC(SVC):
         self.kernel_trainer = kernel_trainer
 
         super().__init__(
-            C=C,
+            C=regularization,
             kernel=self.quantum_kernel.evaluate,
             degree=degree,
             gamma=gamma,
@@ -153,7 +154,9 @@ class QSVC(SVC):
         """Returns quantum kernel trainer"""
         self._kernel_trainer = qk_trainer
 
-    def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
+    def fit(
+        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[Sequence[float]] = None
+    ) -> SVC:
         """
         Wrapper method for SVC.fit which optimizes the quantum kernel's
         user parameters before fitting the SVC.
@@ -167,6 +170,12 @@ class QSVC(SVC):
                 Array of weights that are assigned to individual
                 samples. If not provided,
                 then each sample is given unit weight.
+
+        Returns:
+            SVC: Returns instance of the trained classifier
+
+        Raises:
+            ValueError: Unbound user parameters on feature map
         """
         unbound_user_params = self._quantum_kernel.unbound_user_parameters()
         if (len(unbound_user_params) > 0) and (self._kernel_trainer is None):

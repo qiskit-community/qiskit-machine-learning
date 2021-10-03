@@ -111,7 +111,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
             feature_map=self.feature_map, quantum_instance=self.statevector_simulator
         )
 
-        qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
+        qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, regularization=0.5)
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 

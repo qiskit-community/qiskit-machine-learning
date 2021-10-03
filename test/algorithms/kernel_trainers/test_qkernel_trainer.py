@@ -78,7 +78,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
         with self.subTest("check fith with params"):
             self.setUp()
-            loss = SVCAlignment(C=0.8, gamma="auto")
+            loss = SVCAlignment(regularization=0.8, max_iter=20)
             qkt = QuantumKernelTrainer(loss=loss)
             qkt.fit_kernel(self.quantum_kernel, self.sample_train, self.label_train)
             # Ensure user parameters are bound to real values
