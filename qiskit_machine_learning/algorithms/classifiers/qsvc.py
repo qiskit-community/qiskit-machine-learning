@@ -50,10 +50,12 @@ class QSVC(SVC):
     ):
         r"""
         Args:
+<<<<<<< HEAD
             quantum_kernel:``QuantumKernel`` to be used for classification
             kernel_trainer: ``QuantumKernelTrainer`` to be used for kernel optimization
             **kwargs: Arbitrary keyword arguments to pass to ``SVC`` constructor
         """
+
         # Class fields
         self._quantum_kernel = None
         self._kernel_trainer = None
