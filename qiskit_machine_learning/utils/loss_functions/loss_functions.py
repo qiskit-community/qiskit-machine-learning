@@ -128,7 +128,7 @@ class KernelLoss(ABC):
             labels: A length-N array containing the truth labels
 
         Returns:
-            A loss value 
+            A loss value
         """
         raise NotImplementedError
 
@@ -249,6 +249,7 @@ class SVCAlignment(KernelLoss):
     """
 
     def __init__(C: float = 1.0, max_iter: int = -1):
+        # Class fields
         self.C = C
         self.max_iter = max_iter
 

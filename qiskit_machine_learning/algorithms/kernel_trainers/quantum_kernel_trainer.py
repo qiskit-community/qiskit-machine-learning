@@ -35,12 +35,18 @@ class QuantumKernelTrainer:
 
         quant_kernel = QuantumKernel(
             feature_map=...,
-            free_parameters=...,
+            user_parameters=...,
             quantum_instance=...
         )
 
-        qk_trainer = QuantumKernelTrainer(optimizer=...,
-                                        initial_point=...,
+        loss_func = ...
+        optimizer = ...
+        initial_point = ...
+
+        qk_trainer = QuantumKernelTrainer(
+                                        loss=loss_func,
+                                        optimizer=optimizer,
+                                        initial_point=initial_point,
                                         )
 
         qsvc = QSVC(quantum_kernel=quant_kernel,
@@ -53,7 +59,7 @@ class QuantumKernelTrainer:
         self,
         loss: Optional[Union[str, KernelLoss]] = "svc_alignment",
         optimizer: Optional[Optimizer] = None,
-        initial_point: Optional[np.ndarray] = None
+        initial_point: Optional[np.ndarray] = None,
     ):
         """
         Args:
