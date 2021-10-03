@@ -18,7 +18,7 @@ from typing import Union, Optional
 import numpy as np
 
 from qiskit.utils.algorithm_globals import algorithm_globals
-from qiskit.algorithms.optimizers import Optimizer, COBYLA
+from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCAlignment
@@ -64,7 +64,8 @@ class QuantumKernelTrainer:
         """
         Args:
             loss: A target loss function to be used in training. Default is `svc_alignment`.
-            optimizer: An instance of an optimizer to be used in training. Defaults to COBYLA.
+            optimizer: An instance of an optimizer to be used in training. Defaults to
+                gradient descent.
             initial_point: Initial point for the optimizer to start from.
 
         Raises:
@@ -76,9 +77,9 @@ class QuantumKernelTrainer:
         self._initial_point = None
 
         # Setters
-        self.loss = loss
-        self.optimizer = optimizer
         self.initial_point = initial_point
+        self.loss = loss if loss else "svc_alignment"
+        self.optimizer = optimizer if optimizer else SPSA()
 
     @property
     def loss(self):
@@ -107,10 +108,7 @@ class QuantumKernelTrainer:
     @optimizer.setter
     def optimizer(self, optimizer: Optimizer) -> None:
         """Sets the loss."""
-        if optimizer is None:
-            self._optimizer = COBYLA(maxiter=20)
-        else:
-            self._optimizer = optimizer
+        self._optimizer = optimizer
 
     @property
     def initial_point(self) -> np.ndarray:
@@ -152,7 +150,7 @@ class QuantumKernelTrainer:
 
         # Perform kernel optimization
         opt_params, opt_vals, num_optimizer_evals = self.optimizer.optimize(
-            num_params, obj_func, initial_point=self.initial_point
+            num_params, objective_function=obj_func, initial_point=self.initial_point
         )
         # Return kernel training results
         result = VariationalResult()

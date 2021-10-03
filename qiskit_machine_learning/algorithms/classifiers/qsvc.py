@@ -34,7 +34,7 @@ class QSVC(SVC):
 
     **Example**
 
-    .. code-block::
+    .. code-block::python
 
         qsvc = QSVC(quantum_kernel=quant_kernel)
         qsvc.fit(sample_train,label_train)
@@ -164,7 +164,7 @@ class QSVC(SVC):
             X: {array-like, sparse matrix} of shape (n_samples, n_features)
                 Training vector, where `n_samples` is the number of samples and
                 `n_features` is the number of features.
-            y : array-like of shape (n_samples,)
+            y: array-like of shape (n_samples,)
                 Target vector relative to X.
             sample_weight : array-like of shape (n_samples,), default=None
                 Array of weights that are assigned to individual

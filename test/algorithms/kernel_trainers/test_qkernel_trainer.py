@@ -20,6 +20,7 @@ import numpy as np
 
 from qiskit import Aer
 from qiskit.circuit.library import ZZFeatureMap
+from qiskit.algorithms.optimizers import COBYLA
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.algorithms import QuantumKernelTrainer
 from qiskit_machine_learning.utils.loss_functions import SVCAlignment
@@ -67,11 +68,13 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             quantum_instance=self.backend,
         )
 
+        self.optimizer = COBYLA(maxiter=25)
+
     def test_qkt(self):
         """Test QuantumKernelTrainer"""
         self.setUp()
         with self.subTest("check default fit"):
-            qkt = QuantumKernelTrainer()
+            qkt = QuantumKernelTrainer(optimizer=self.optimizer)
             qkt.fit_kernel(self.quantum_kernel, self.sample_train, self.label_train)
             # Ensure user parameters are bound to real values
             self.assertFalse(self.quantum_kernel.unbound_user_parameters())
@@ -79,7 +82,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         with self.subTest("check fith with params"):
             self.setUp()
             loss = SVCAlignment(regularization=0.8, max_iter=20)
-            qkt = QuantumKernelTrainer(loss=loss)
+            qkt = QuantumKernelTrainer(loss=loss, optimizer=self.optimizer)
             qkt.fit_kernel(self.quantum_kernel, self.sample_train, self.label_train)
             # Ensure user parameters are bound to real values
             self.assertFalse(self.quantum_kernel.unbound_user_parameters())
