@@ -414,6 +414,21 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
             # Ensure unbound feature map still holds all parameters of input feature map
             self.assertEqual(len(qkclass.unbound_feature_map.parameters), 4)
 
+        with self.subTest("test consecutive dict binding"):
+            # Unbind parameter values
+            user_param_values = self.user_parameters
+            qkclass.bind_user_parameters(user_param_values)
+
+            binding = {self.user_parameters[0]: np.pi / 3}
+            qkclass.assign_user_parameters(binding)
+            binding = {self.user_parameters[1]: np.pi / 6}
+            qkclass.bind_user_parameters(binding)
+
+            bind_vals = [np.pi / 3, np.pi / 6]
+            param_vals = list(qkclass.user_param_binds.values())
+
+            self.assertEqual(param_vals, bind_vals)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -126,15 +126,18 @@ class QuantumKernel:
 
         self._user_parameters = user_params
 
-    def assign_user_parameters(self, values: Sequence[ParameterValueType]) -> None:
+    def assign_user_parameters(
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+    ) -> None:
         """
         Assign user parameters in the QuantumKernel feature map.
 
         Args:
-            values:
-                Iterable [value_0, value_1, ..., value_N]:
-                Numerical elements to be assigned to the parameters
-                stored in the user_parameters field.
+            values (dict or iterable): Either a dictionary or iterable specifying the new
+                parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
+                ``new_parameter``, where ``new_parameter`` can be a parameter object or a
+                numeric value. If an iterable, the elements are assigned to the existing parameters
+                in the order of ``QuantumKernel.user_parameters``.
 
         Raises:
             ValueError: Incompatible number of user parameters and values
@@ -148,16 +151,23 @@ class QuantumKernel:
                 """
             )
 
-        if len(values) != len(self._user_parameters):
-            raise ValueError(
-                f"""
+        if isinstance(values, dict):
+            unknown_parameters = list(set(values.keys()) - set(self._user_parameters))
+            if len(unknown_parameters) > 0:
+                raise ValueError(
+                    f"Cannot bind parameters ({unknown_parameters}) not tracked by the quantum kernel."
+                )
+            param_binds = values
+        else:
+            if len(values) != len(self._user_parameters):
+                raise ValueError(
+                    f"""
                 The number of parameter values ({len(values)}) does not
                 match the number of user parameters tracked by the QuantumKernel
                 ({len(self._user_parameters)}).
                 """
-            )
-
-        param_binds = {param: values[i] for i, param in enumerate(self._user_parameters)}
+                )
+            param_binds = {param: values[i] for i, param in enumerate(self._user_parameters)}
 
         if self._user_param_binds is None:
             self._user_param_binds = param_binds
