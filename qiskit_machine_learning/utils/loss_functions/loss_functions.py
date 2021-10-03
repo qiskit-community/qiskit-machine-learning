@@ -128,10 +128,7 @@ class KernelLoss(ABC):
             labels: A length-N array containing the truth labels
 
         Returns:
-            A loss value
-
-        Raises:
-            QiskitMachineLearningError: shapes of predict and target do not match
+            A loss value 
         """
         raise NotImplementedError
 
