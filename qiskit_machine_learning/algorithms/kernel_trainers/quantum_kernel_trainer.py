@@ -18,7 +18,7 @@ from typing import Union, Optional
 import numpy as np
 
 from qiskit.utils.algorithm_globals import algorithm_globals
-from qiskit.algorithms.optimizers import Optimizer, SPSA
+from qiskit.algorithms.optimizers import Optimizer, COBYLA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCAlignment
@@ -39,51 +39,40 @@ class QuantumKernelTrainer:
             quantum_instance=...
         )
 
-        qk_trainer = QuantumKernelTrainer(quant_kernel)
+        qk_trainer = QuantumKernelTrainer(optimizer=...,
+                                        initial_point=...,
+                                        )
 
-        qsvc = QSVC(quantum_kernel=qk_trainer)
+        qsvc = QSVC(quantum_kernel=quant_kernel,
+                quant_kernel_trainer=qk_trainer)
         qsvc.fit(X_train, y_train)
         score = qsvc.score(X_test, y_test)
     """
 
     def __init__(
         self,
-        quantum_kernel: QuantumKernel,
         loss: Optional[Union[str, KernelLoss]] = "svc_alignment",
         optimizer: Optional[Optimizer] = None,
         initial_point: Optional[np.ndarray] = None,
     ):
         """
         Args:
-            quantum_kernel: A QuantumKernel object to be tuned
-            loss: A target loss function to be used in training. Default is `svc_alignment`,
-            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SPSA.
+            loss: A target loss function to be used in training. Default is `svc_alignment`.
+            optimizer: An instance of an optimizer to be used in training. Defaults to COBYLA.
             initial_point: Initial point for the optimizer to start from.
 
         Raises:
             ValueError: unknown loss function
         """
         # Class fields
-        self._quantum_kernel = None
         self._loss = None
         self._optimizer = None
         self._initial_point = None
 
         # Setters
-        self.quantum_kernel = quantum_kernel
         self.loss = loss
         self.optimizer = optimizer
         self.initial_point = initial_point
-
-    @property
-    def quantum_kernel(self):
-        """Returns the underlying quantum kernel."""
-        return self._quantum_kernel
-
-    @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
-        """Sets the quantum kernel"""
-        self._quantum_kernel = quantum_kernel
 
     @property
     def loss(self):
@@ -113,7 +102,7 @@ class QuantumKernelTrainer:
     def optimizer(self, optimizer: Optimizer) -> None:
         """Sets the loss."""
         if optimizer is None:
-            self._optimizer = SPSA(maxiter=50)
+            self._optimizer = COBYLA(maxiter=20)
         else:
             self._optimizer = optimizer
 
@@ -129,6 +118,7 @@ class QuantumKernelTrainer:
 
     def fit_kernel(
         self,
+        quantum_kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> VariationalResult:
@@ -136,6 +126,7 @@ class QuantumKernelTrainer:
         Train the quantum kernel by minimizing loss over the kernel parameters.
 
         Args:
+            quantum_kernel (QuantumKernel): QuantumKernel object to be optimized
             data (numpy.ndarray): NxD array of training data, where N is the
                               number of samples and D is the feature dimension
             labels (numpy.ndarray): N x 1 array of +/-1 labels of the N training samples
@@ -144,18 +135,16 @@ class QuantumKernelTrainer:
             dict: the results of kernel training
         """
         # Bind inputs to objective function
-        obj_func = partial(self.loss.evaluate, kernel=self.quantum_kernel, data=data, labels=labels)
+        obj_func = partial(self.loss.evaluate, kernel=quantum_kernel, data=data, labels=labels)
 
         # Number of parameters to tune
-        num_params = len(self.quantum_kernel.user_parameters)
+        num_params = len(quantum_kernel.user_parameters)
 
         # Randomly initialize our user parameters if no initial point was passed
         if not self.initial_point:
             self.initial_point = algorithm_globals.random.random(num_params)
 
-        # Perform kernel done
-        ignore = self.optimizer.is_initial_point_ignored
-        print(f"Is Ignored: {ignore}")
+        # Perform kernel optimization
         opt_params, opt_vals, num_optimizer_evals = self.optimizer.optimize(
             num_params, obj_func, initial_point=self.initial_point
         )
@@ -164,8 +153,6 @@ class QuantumKernelTrainer:
         result.optimizer_evals = num_optimizer_evals
         result.optimal_value = opt_vals
         result.optimal_point = opt_params
-        print(f"optimal value: {opt_vals}")
-        print(f"optimal point: {opt_params}")
-        result.optimal_parameters = dict(zip(self.quantum_kernel.user_parameters, opt_params))
+        result.optimal_parameters = dict(zip(quantum_kernel.user_parameters, opt_params))
 
         return result

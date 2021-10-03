@@ -18,7 +18,6 @@ from typing import Sequence
 import numpy as np
 from sklearn.svm import SVC
 
-from qiskit.utils.algorithm_globals import algorithm_globals
 from qiskit_machine_learning.kernels import QuantumKernel
 from ...exceptions import QiskitMachineLearningError
 
@@ -96,11 +95,6 @@ class KernelLoss(ABC):
     """
     Abstract base class for computing Loss of a kernel function.
     """
-
-    def __init__(self, *args, **kwargs) -> None:
-        # Save classical optimizer args for use in loss evaluation
-        self.loss_args = args
-        self.loss_kwargs = kwargs
 
     def __call__(
         self,
@@ -257,6 +251,10 @@ class SVCAlignment(KernelLoss):
     This class computes the weighted kernel alignment loss using SKLearn SVC class.
     """
 
+    def __init__(C: float = 1.0, max_iter: int = -1):
+        self.C = C
+        self.max_iter = max_iter
+
     def evaluate(
         self,
         user_parameters: Sequence[float],
@@ -264,25 +262,18 @@ class SVCAlignment(KernelLoss):
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
-        print(f"user parameters: {user_parameters}")
         # Bind training parameters
         kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier
-        kernel_matrix = kernel.evaluate(data, labels)
-        print(f"kernel:\n{kernel_matrix}")
-        svc = SVC(
-            kernel=kernel.evaluate, *self.loss_args, **self.loss_kwargs
-        )
+        svc = SVC(kernel=kernel.evaluate, C=self.C, max_iter=self.max_iter)
         svc.fit(data, labels)
 
         # Get dual coefficients
         dual_coefs = svc.dual_coef_[0]
-        print(f"dual coefs: {dual_coefs}")
 
         # Get support vectors
         support_vecs = svc.support_
-        print(f"support_vecs: {support_vecs}")
 
         # Get estimated kernel matrix
         kmatrix = kernel.evaluate(np.array(data))[support_vecs, :][:, support_vecs]

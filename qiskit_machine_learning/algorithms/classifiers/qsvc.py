@@ -12,8 +12,7 @@
 
 """Quantum Support Vector Classifier"""
 
-import warnings
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 from sklearn.svm import SVC
@@ -44,27 +43,94 @@ class QSVC(SVC):
 
     def __init__(
         self,
-        *args,
         quantum_kernel: Optional[QuantumKernel] = None,
-        train_kernel: bool = False,
-        **kwargs,
+        kernel_trainer: Optional[QuantumKernelTrainer] = None,
+        C: Optional[float] = 1.0,
+        degree: Optional[int] = 3,
+        gamma: Optional[Union[str, float]] = "scale",
+        coef0: Optional[float] = 0.0,
+        shrinking: Optional[bool] = True,
+        probability: Optional[bool] = False,
+        tol: Optional[float] = 1e-3,
+        cache_size: Optional[float] = 200,
+        class_weight: Optional[Union[dict, str]] = None,
+        verbose: Optional[bool] = False,
+        max_iter: Optional[int] = -1,
+        decision_function_shape: Optional[str] = "ovr",
+        break_ties: Optional[bool] = False,
+        random_state: Optional[int] = algorithm_globals.random_seed,
     ):
         """
         Args:
+            C: Regularization parameter. The strength of the regularization is inversely proportional
+                        to C. Must be strictly positive. The penalty is a squared l2 penalty.
             quantum_kernel: QuantumKernel to be used for classification.
-            *args: Variable length argument list to pass to SVC constructor.
-            **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
+            kernel_trainer: QuantumKernelTrainer to be used for kernel optimization.
+            degree: Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
+            gamma {‘scale’, ‘auto’} or float: Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
+                * if gamma='scale' (default) is passed then it uses 1 / (n_features * X.var()) as
+                  value of gamma,
+                * if ‘auto’, uses 1 / n_features.
+            coef0: Independent term in kernel function. It is only significant in ‘poly’ and
+                        ‘sigmoid’.
+            shrinking: Whether to use the shrinking heuristic.
+            probability: Whether to enable probability estimates. This must be enabled prior to
+                        calling fit, will slow down that method as it internally uses 5-fold
+                        cross-validation, and predict_proba may be inconsistent with predict.
+            tol: Tolerance for stopping criterion.
+            cache_size: Specify the size of the kernel cache (in MB).
+            class_weight (dict or 'balanced'): Set the parameter C of class i to class_weight[i]*C
+                        for SVC. If not given, all classes are supposed to have weight one. The
+                        “balanced” mode uses the values of y to automatically adjust weights inversely
+                        proportional to class frequencies in the input data as
+                        n_samples / (n_classes * np.bincount(y)).
+            verbose: Enable verbose output. Note that this setting takes advantage of a per-process
+                        runtime setting in libsvm that, if enabled, may not work properly in a
+                        multithreaded context.
+            max_iter: Hard limit on iterations within solver, or -1 for no limit.
+            decision_function_shape {'ovo', 'ovr'}: Whether to return a one-vs-rest (‘ovr’) decision
+                        function of shape (n_samples, n_classes) as all other classifiers, or the
+                        original one-vs-one (‘ovo’) decision function of libsvm which has shape
+                        (n_samples, n_classes * (n_classes - 1) / 2). However, one-vs-one (‘ovo’) is
+                        always used as multi-class strategy. The parameter is ignored for binary
+                        classification.
+            break_ties: If true, decision_function_shape='ovr', and number of classes > 2, predict will
+                        break ties according to the confidence values of decision_function; otherwise
+                        the first class among the tied classes is returned. Please note that breaking
+                        ties comes at a relatively high computational cost compared to a simple predict.
+            random_state: Controls the pseudo random number generation for shuffling the data for
+                        probability estimates. Ignored when probability is False. Pass an int for
+                        reproducible output across multiple function calls.
         """
+        # Class fields
         self._quantum_kernel = None
         self._kernel_trainer = None
-        self.train_kernel = train_kernel
 
-        self.quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
+        # Setters
+        self.quantum_kernel = (
+            quantum_kernel
+            if quantum_kernel
+            else QuantumKernel(quantum_instance=Aer.get_backend("statevector_simulator"))
+        )
+        self.kernel_trainer = kernel_trainer
 
-        if "random_state" not in kwargs:
-            kwargs["random_state"] = algorithm_globals.random_seed
-
-        super().__init__(kernel=self.quantum_kernel.evaluate, *args, **kwargs)
+        super().__init__(
+            C=C,
+            kernel=self.quantum_kernel.evaluate,
+            degree=degree,
+            gamma=gamma,
+            coef0=coef0,
+            shrinking=shrinking,
+            probability=probability,
+            tol=tol,
+            cache_size=cache_size,
+            class_weight=class_weight,
+            verbose=verbose,
+            max_iter=max_iter,
+            decision_function_shape=decision_function_shape,
+            break_ties=break_ties,
+            random_state=random_state,
+        )
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
@@ -74,54 +140,35 @@ class QSVC(SVC):
     @quantum_kernel.setter
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """Sets quantum kernel"""
-        self._kernel_trainer = None
-
-        # If no quantum kernel passed, generate a default QuantumKernel
-        if not quantum_kernel:
-            backend = Aer.get_backend("qasm_simulator")
-            self._quantum_kernel = QuantumKernel(quantum_instance=backend)
-
         # QuantumKernel passed
-        elif isinstance(quantum_kernel, QuantumKernel):
-            self._quantum_kernel = quantum_kernel
-
-            # If there are unbound user parameters, instantiate a QKTrainer
-            unbound_params = quantum_kernel.unbound_user_parameters()
-            if unbound_params:
-                # If user has not specified they wish to train the kernel,
-                # provide a warning
-                if not self.train_kernel:
-                    warnings.warn(
-                        f"""
-                        Unbound user parameters were detected in the quantum
-                        kernel feature map ({unbound_params}). If these are
-                        not bound before calling QSVC.fit, a computationally
-                        expensive kernel training procedure will precede
-                        fitting the SVC.
-                        """,
-                        UserWarning,
-                    )
-
-                self._kernel_trainer = QuantumKernelTrainer(quantum_kernel)
-
-        # If a QKTrainer was passed, set the quantum_kernel and kernel trainer fields
-        elif isinstance(quantum_kernel, QuantumKernelTrainer):
-            self._quantum_kernel = quantum_kernel.quantum_kernel
-            self._kernel_trainer = quantum_kernel
-        self.kernel = self._quantum_kernel.evaluate
+        self._quantum_kernel = quantum_kernel
 
     @property
     def kernel_trainer(self) -> QuantumKernelTrainer:
         """Returns quantum kernel trainer"""
         return self._kernel_trainer
 
+    @kernel_trainer.setter
+    def kernel_trainer(self, qk_trainer: QuantumKernelTrainer) -> None:
+        """Returns quantum kernel trainer"""
+        self._kernel_trainer = qk_trainer
+
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
         """
         Wrapper method for SVC.fit which optimizes the quantum kernel's
         user parameters before fitting the SVC.
         """
+        unbound_user_params = self._quantum_kernel.unbound_user_parameters()
+        if (len(unbound_user_params) > 0) and (self._kernel_trainer is None):
+            raise ValueError(
+                f"""
+            Cannot fit QSVC while feature map has unbound user parameters ({unbound_user_params}).
+            """
+            )
+
+        # Conduct kernel optimization, if required
         if self._kernel_trainer:
-            results = self._kernel_trainer.fit_kernel(X, y)
+            results = self._kernel_trainer.fit_kernel(self.quantum_kernel, X, y)
             self.quantum_kernel.assign_user_parameters(results.optimal_parameters)
 
         return super().fit(X=X, y=y, sample_weight=sample_weight)
