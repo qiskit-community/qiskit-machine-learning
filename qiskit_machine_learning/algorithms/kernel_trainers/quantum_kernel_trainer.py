@@ -79,7 +79,10 @@ class QuantumKernelTrainer:
         # Setters
         self.initial_point = initial_point
         self.loss = loss if loss else "svc_alignment"
-        self.optimizer = optimizer if optimizer else SPSA()
+        if optimizer is None:
+            self.optimizer = SPSA(maxiter=50)
+        else:
+            self.optimizer = optimizer
 
     @property
     def loss(self):
