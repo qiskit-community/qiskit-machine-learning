@@ -76,7 +76,7 @@ class QSVC(SVC):
             shrinking: Whether to use the shrinking heuristic.
             probability: Whether to enable probability estimates. This must be enabled prior to
                         calling fit, will slow down that method as it internally uses 5-fold
-                        cross-validation, and predict_proba may be inconsistent with predict.
+                        cross-validation, and `predict_proba` may be inconsistent with `predict`.
             tol: Tolerance for stopping criterion.
             cache_size: Specify the size of the kernel cache (in MB).
             class_weight (dict or 'balanced'): Set the parameter C of class i to class_weight[i]*C
