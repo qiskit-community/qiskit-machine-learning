@@ -60,6 +60,9 @@ class PegasosQSVC(SVC):
         self._alphas = None
         self._x_train = None
         self._y_train = None
+        self._label_dict = {}
+        self._label_pos = None
+        self._label_neg = None
 
         # added to all kernel values  to include an implicit bias to the hyperplane
         self._kernel_offset = 1
@@ -111,10 +114,13 @@ class PegasosQSVC(SVC):
             for j in self._alphas:  # only loop over the non zero alphas
                 value += (
                     self._alphas[j]
-                    * self._y_train[j]
+                    * self._label_dict[self._y_train[j]]
                     * (self._quantum_kernel.evaluate(X[i], self._x_train[j]) + self._kernel_offset)
                 )
-            y[i] = np.sign(value)
+            if value > 0:
+                y[i] = self._label_pos
+            else:
+                y[i] = self._label_neg
 
         if self._verbose:
             print(f"prediction completed after {str(datetime.now() - t_0)[:-7]}")
@@ -145,8 +151,8 @@ class PegasosQSVC(SVC):
             raise ValueError("y has to be a 1D array")
         if X.shape[0] != y.shape[0]:
             raise ValueError("X and y have to contain the same number of samples")
-        if not np.all(np.unique(y) == np.array([-1, 1])):
-            raise ValueError("the labels in y have to be in {-1, +1}")
+        if len(np.unique(y)) != 2:
+            raise ValueError("Only binary classification is supported")
         if (precomputed_kernel is not None) and (
             not precomputed_kernel.shape == (X.shape[0], X.shape[0])
         ):
@@ -155,6 +161,13 @@ class PegasosQSVC(SVC):
                 it should be {(X.shape[0], X.shape[0])}"
             )
 
+        # the algorithm works with labels in {+1, -1}
+        self._label_pos = np.unique(y)[0]
+        self._label_neg = np.unique(y)[1]
+        self._label_dict[self._label_pos] = +1
+        self._label_dict[self._label_neg] = -1
+
+        # the training data is later needed for prediction
         self._x_train = X
         self._y_train = y
 
@@ -170,16 +183,33 @@ class PegasosQSVC(SVC):
             for j in self._alphas:  # only loop over the non zero alphas
                 if precomputed_kernel is None:
                     kernel[(i, j)] = kernel.get((i, j), self._quantum_kernel.evaluate(X[i], X[j]))
-                    value += self._alphas[j] * y[j] * (kernel[(i, j)] + self._kernel_offset)
+                    value += (
+                        self._alphas[j]
+                        * self._label_dict[y[j]]
+                        * (kernel[(i, j)] + self._kernel_offset)
+                    )
                 else:
                     value += (
-                        self._alphas[j] * y[j] * (precomputed_kernel[i, j] + self._kernel_offset)
+                        self._alphas[j]
+                        * self._label_dict[y[j]]
+                        * (precomputed_kernel[i, j] + self._kernel_offset)
                     )
 
-            if (y[i] * self.C / step) * value < 1:
+            if (self._label_dict[y[i]] * self.C / step) * value < 1:
                 self._alphas[i] = self._alphas.get(i, 0) + 1
 
         self._fit_status = True
 
         if self._verbose:
             print(f"fit completed after {str(datetime.now() - t_0)[:-7]}")
+
+    @property
+    def quantum_kernel(self) -> QuantumKernel:
+        """Returns quantum kernel"""
+        return self._quantum_kernel
+
+    @quantum_kernel.setter
+    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+        """Sets quantum kernel"""
+        self._quantum_kernel = quantum_kernel
+
