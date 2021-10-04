@@ -64,6 +64,7 @@ isometry
 iten
 iterable
 jupyter
+kernelized
 kwarg
 kwargs
 langle
@@ -141,7 +142,9 @@ rz
 scikit
 scipy
 semidefinite
+shalev
 shende
+shwartz
 sigmoid
 sklearn
 softmax

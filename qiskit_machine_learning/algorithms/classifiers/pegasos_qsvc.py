@@ -28,10 +28,10 @@ class PegasosQSVC(SVC):
     **Example**
 
     .. code-block::
-        qkernel = QuantumKernel()
+        quantum_kernel = QuantumKernel()
 
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
-        pegasos_qsvc.fit(sample_train,label_train)
+        pegasos_qsvc = PegasosQSVC(quantum_kernel=quantum_kernel)
+        pegasos_qsvc.fit(sample_train, label_train)
         pegasos_qsvc.predict(sample_test)
 
     **References**
