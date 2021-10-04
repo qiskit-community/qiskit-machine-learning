@@ -47,7 +47,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        self.backend = Aer.get_backend("qasm_simulator")
+        self.backend = Aer.get_backend("statevector_simulator")
         self.feature_map, self.user_parameters = generate_feature_map()
 
         self.sample_train = np.asarray(

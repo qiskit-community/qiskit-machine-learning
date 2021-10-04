@@ -124,7 +124,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qkernel = QuantumKernel(
             feature_map=feat_map,
             user_parameters=free_params,
-            quantum_instance=BasicAer.get_backend("qasm_simulator"),
+            quantum_instance=BasicAer.get_backend("statevector_simulator"),
         )
         initial_point = [np.pi / 2, np.pi / 2]
         qkt = QuantumKernelTrainer(initial_point=initial_point, optimizer=COBYLA(maxiter=25))
@@ -133,7 +133,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 
-        self.assertGreaterEqual(score, 0.5)
+        self.assertEqual(score, 1.0)
 
 
 if __name__ == "__main__":
