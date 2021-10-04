@@ -49,7 +49,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         # number of qubits is equal to the number of features
         self.q = 2
         # number of steps performed during the training procedure
-        self.T = 100
+        self.tau = 100
 
         self.feature_map = ZFeatureMap(feature_dimension=self.q, reps=1)
 
@@ -68,7 +68,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             feature_map=self.feature_map, quantum_instance=self.statevector_simulator
         )
 
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=100)
+        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
         pegasos_qsvc.fit(self.sample_train, self.label_train)
         score = pegasos_qsvc.score(self.sample_test, self.label_test)
@@ -81,7 +81,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
 
         with self.assertRaises(QiskitMachineLearningError):
-            _ = pegasos_qsvc.fit(self.sample_train, self.label_train)
+            pegasos_qsvc.fit(self.sample_train, self.label_train)
 
     def test_change_kernel(self):
         """Test QSVC with QuantumKernel later"""
@@ -89,7 +89,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             feature_map=self.feature_map, quantum_instance=self.statevector_simulator
         )
 
-        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=100)
+        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau)
         pegasos_qsvc.quantum_kernel = qkernel
         pegasos_qsvc.fit(self.sample_train, self.label_train)
         score = pegasos_qsvc.score(self.sample_test, self.label_test)
@@ -102,7 +102,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             feature_map=self.feature_map, quantum_instance=self.statevector_simulator
         )
 
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=100)
+        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
         label_train_temp = self.label_train.copy()
         label_train_temp[self.label_train==0] = 2
