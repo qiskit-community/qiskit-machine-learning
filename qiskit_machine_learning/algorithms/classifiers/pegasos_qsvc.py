@@ -12,7 +12,7 @@
 
 """Quantum Pegasos Support Vector Classifier"""
 
-from typing import Optional
+from typing import Optional, Dict, Tuple
 from datetime import datetime
 import numpy as np
 from sklearn.svm import SVC
@@ -22,10 +22,11 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 class PegasosQSVC(SVC):
     r"""Quantum Pegasos Support Vector Classifier
-    This class implements the algorithm developed in [1] and includes some of the methods like ``fit`` and ``predict`` 
-    like in QSVC.
-    
+    This class implements the algorithm developed in [1] and includes some of the methods like
+    ``fit`` and ``predict`` like in QSVC.
+
     **Example**
+
     .. code-block::
         qkernel = QuantumKernel()
 
@@ -34,10 +35,9 @@ class PegasosQSVC(SVC):
         pegasos_qsvc.predict(sample_test)
 
     **References**
+        [1]: Shalev-Shwartz et al., Pegasos: Primal Estimated sub-GrAdient SOlver for SVM.
+            `Pegasos for SVM <https://home.ttic.edu/~nati/Publications/PegasosMPB.pdf>`_
 
-        [1] Shalev-Shwartz et al.,
-            'Pegasos: Primal Estimated sub-GrAdient SOlver for SVM'
-            https://home.ttic.edu/~nati/Publications/PegasosMPB.pdf
     """
 
     def __init__(
@@ -62,10 +62,10 @@ class PegasosQSVC(SVC):
 
         # these are the parameters being fit and are needed for prediction
         self._fit_status = False
-        self._alphas = None
-        self._x_train = None
-        self._y_train = None
-        self._label_dict = {}
+        self._alphas: Optional[Dict[int, int]] = None
+        self._x_train: Optional[np.ndarray] = None
+        self._y_train: Optional[np.ndarray] = None
+        self._label_dict: Optional[Dict[int, int]] = {}
         self._label_pos = None
         self._label_neg = None
 
@@ -182,7 +182,7 @@ class PegasosQSVC(SVC):
 
         # empty dictionaries to represent sparse arrays
         self._alphas = {}
-        kernel = {}
+        kernel: Dict[Tuple, np.ndarray] = {}
 
         t_0 = datetime.now()
         for step in range(1, self._num_steps + 1):

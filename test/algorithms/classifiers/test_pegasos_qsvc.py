@@ -53,7 +53,9 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         self.feature_map = ZFeatureMap(feature_dimension=self.q, reps=1)
 
-        sample, label = make_blobs(n_samples=20, n_features=2, centers=2, random_state=3, shuffle=True)
+        sample, label = make_blobs(
+            n_samples=20, n_features=2, centers=2, random_state=3, shuffle=True
+        )
         sample = MinMaxScaler(feature_range=(0, np.pi)).fit_transform(sample)
 
         # split into train and test set
@@ -105,18 +107,18 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
         label_train_temp = self.label_train.copy()
-        label_train_temp[self.label_train==0] = 2
-        label_train_temp[self.label_train==1] = 3
-
+        label_train_temp[self.label_train == 0] = 2
+        label_train_temp[self.label_train == 1] = 3
 
         label_test_temp = self.label_test.copy()
-        label_test_temp[self.label_test==0] = 2
-        label_test_temp[self.label_test==1] = 3
+        label_test_temp[self.label_test == 0] = 2
+        label_test_temp[self.label_test == 1] = 3
 
         pegasos_qsvc.fit(self.sample_train, label_train_temp)
         score = pegasos_qsvc.score(self.sample_test, label_test_temp)
 
         self.assertEqual(score, 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()
