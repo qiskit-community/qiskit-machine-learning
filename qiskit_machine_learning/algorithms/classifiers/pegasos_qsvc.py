@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 # This code is part of Qiskit.
 #
 # (C) Copyright IBM 2021.
@@ -67,6 +66,7 @@ class PegasosQSVC(SVC):
         # added to all kernel values  to include an implicit bias to the hyperplane
         self._kernel_offset = 1
 
+    # pylint: disable=invalid-name
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight: None = None) -> None:
         """Implementation of the kernalized Pegasos algorithm to fit the SVM
         Args:
@@ -83,6 +83,7 @@ class PegasosQSVC(SVC):
 
         self._fit_internal(X, y)
 
+    # pylint: disable=invalid-name
     def fit_precomputed(self, X: np.ndarray, y: np.ndarray, precomputed_kernel: np.ndarray) -> None:
         """Implementation of the kernalized Pegasos algorithm to fit the SVM using a precomputed kernel
         Args:
@@ -92,6 +93,7 @@ class PegasosQSVC(SVC):
         """
         self._fit_internal(X, y, precomputed_kernel)
 
+    # pylint: disable=invalid-name
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Perform classification on samples in X.
         Args:
@@ -127,6 +129,7 @@ class PegasosQSVC(SVC):
 
         return y
 
+    # pylint: disable=invalid-name
     def _fit_internal(
         self, X: np.ndarray, y: np.ndarray, precomputed_kernel: Optional[np.ndarray] = None
     ) -> None:
@@ -212,4 +215,3 @@ class PegasosQSVC(SVC):
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
-
