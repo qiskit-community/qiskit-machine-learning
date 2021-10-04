@@ -29,9 +29,9 @@ class PegasosQSVC(SVC):
     .. code-block::
         qkernel = QuantumKernel()
 
-        qpsvc = PegasosQSVC(quantum_kernel=qkernel)
-        qpsvc.fit(sample_train,label_train)
-        qpsvc.predict(sample_test)
+        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
+        pegasos_qsvc.fit(sample_train,label_train)
+        pegasos_qsvc.predict(sample_test)
     """
 
     def __init__(
@@ -68,7 +68,7 @@ class PegasosQSVC(SVC):
 
     # pylint: disable=invalid-name
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight: None = None) -> None:
-        """Implementation of the kernalized Pegasos algorithm to fit the SVM
+        """Implementation of the kernelized Pegasos algorithm to fit the QSVC
         Args:
             X: shape (x_samples, s), train features
             y: shape (x_samples) train labels
@@ -85,7 +85,7 @@ class PegasosQSVC(SVC):
 
     # pylint: disable=invalid-name
     def fit_precomputed(self, X: np.ndarray, y: np.ndarray, precomputed_kernel: np.ndarray) -> None:
-        """Implementation of the kernalized Pegasos algorithm to fit the SVM using a precomputed kernel
+        """Implementation of the kernelized Pegasos algorithm to fit the QSVC using a precomputed kernel
         Args:
             X: shape (x_samples, s), train features
             y: shape (x_samples) train labels
@@ -133,7 +133,7 @@ class PegasosQSVC(SVC):
     def _fit_internal(
         self, X: np.ndarray, y: np.ndarray, precomputed_kernel: Optional[np.ndarray] = None
     ) -> None:
-        """Helper function implementing the kernalized Pegasos algorithm to fit the SVM for both the
+        """Helper function implementing the kernelized Pegasos algorithm to fit the SVM for both the
         pre computed and non pre computed version.
         Args:
             X: shape (x_samples, s), train features
