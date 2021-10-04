@@ -2,10 +2,7 @@
 
 [![License](https://img.shields.io/github/license/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)<!--- long-description-skip-begin -->[![Build Status](https://github.com/Qiskit/qiskit-machine-learning/workflows/Machine%20Learning%20Unit%20Tests/badge.svg?branch=main)](https://github.com/Qiskit/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)[![](https://img.shields.io/github/release/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://github.com/Qiskit/qiskit-machine-learning/releases)[![](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg?style=popout-square)](https://pypi.org/project/qiskit-machine-learning/)[![Coverage Status](https://coveralls.io/repos/github/Qiskit/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/Qiskit/qiskit-machine-learning?branch=main)<!--- long-description-skip-end -->
 
-The Machine Learning package simply contains sample datasets at present. It has some
-classification algorithms such as QSVM and VQC (Variational Quantum Classifier), where this data
-can be used for experiments, and there is also QGAN (Quantum Generative Adversarial Network)
-algorithm.
+The Machine Learning package contains sample datasets, classification algorithms such as QSVMs(Quantum State Vector Machines), VQC (Variational Quantum CLassifier) where the datasets can be used for experiments apart from QGANs (Quantum Generative Adversarial Networks).
 
 ## Installation
 
@@ -28,9 +25,9 @@ To do this follow the instructions in the
 
 ### Optional Installs
 
-* **PyTorch**, may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
-  package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). When PyTorch
-  is installed, the `TorchConnector` facilitates its use of quantum computed networks.
+* **PyTorch**, may be installed either using the command `pip install 'qiskit-machine-learning[torch]'` to install the
+  package or one can refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). When PyTorch
+  is installed, the `TorchConnector` facilitates the use of quantum computed networks.
 
 * **Sparse**, may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
   package. Sparse being installed will enable the usage of sparse arrays/tensors.
@@ -39,7 +36,7 @@ To do this follow the instructions in the
 
 Now that Qiskit Machine Learning is installed, it's time to begin working with the Machine Learning module.
 Let's try an experiment using VQC (Variational Quantum Classifier) algorithm to
-train and test samples from a data set to see how accurately the test set can
+train and test samples from a dataset to see how accurately the test set can
 be classified.
 
 ```python
@@ -82,7 +79,7 @@ be classified.
 
 ### Further examples
 
-Learning path notebooks may be found in the
+The notebooks can be found in the
 [Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials/index.html) section
 of the documentation and are a great place to start.
 
