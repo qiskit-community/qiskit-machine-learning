@@ -109,11 +109,6 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qsvc = QSVC()
         _ = str(qsvc)
 
-    def test_to_string_with_positional_args(self):
-        """Test QSVC with positional arguments."""
-        with self.assertWarns(DeprecationWarning):
-            _ = QSVC(1)
-
     def test_with_kernel_parameter(self):
         """Test QSVC with the `kernel` argument."""
         with self.assertWarns(QiskitMachineLearningWarning):
