@@ -22,9 +22,9 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 class PegasosQSVC(SVC):
     r"""Quantum Pegasos Support Vector Classifier
-    This class implements the algorithm developed in
-    https://link.springer.com/content/pdf/10.1007/s10107-010-0420-4.pdf
-    and implements some of the methods like ``fit`` and ``predict`` like in QSVC.
+    This class implements the algorithm developed in [1] and includes some of the methods like ``fit`` and ``predict`` 
+    like in QSVC.
+    
     **Example**
     .. code-block::
         qkernel = QuantumKernel()
@@ -32,6 +32,12 @@ class PegasosQSVC(SVC):
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
         pegasos_qsvc.fit(sample_train,label_train)
         pegasos_qsvc.predict(sample_test)
+
+    **References**
+
+        [1] Shalev-Shwartz et al.,
+            'Pegasos: Primal Estimated sub-GrAdient SOlver for SVM'
+            https://home.ttic.edu/~nati/Publications/PegasosMPB.pdf
     """
 
     def __init__(
