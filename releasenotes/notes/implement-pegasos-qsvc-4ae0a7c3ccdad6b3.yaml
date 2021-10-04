@@ -4,18 +4,6 @@ features:
     Support Vector Classifier (QSVC) that is trained via the Pegasos algorithm from 
     https://home.ttic.edu/~nati/Publications/PegasosMPB.pdf instead of the dual optimization problem
     like in sklearn. This algorithm yields a training complexity that is independent of the size of
-    the training set (see the not published Master's Thesis "Comparing Quantum Neural Networks and
+    the training set (see the to be published Master's Thesis "Comparing Quantum Neural Networks and
     Quantum Support Vector Machines" by Arne Thomsen), such that the PegasosQSVC is expected to
     train faster than QSVC for sufficiently large training sets.
-
-  - |
-    Basic handling is like for QSVC, for example:
-
-      from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
-      from qiskit_machine_learning.algorithms.classifiers import PegasosQSVC
-
-      qkernel = QuantumKernel()
-
-      qpsvc = PegasosQSVC(quantum_kernel=qkernel)
-      qpsvc.fit(sample_train, label_train)
-      qpsvc.predict(sample_test)
