@@ -12,11 +12,12 @@
 
 """Quantum Support Vector Regressor"""
 
-from typing import Optional
 import warnings
+from typing import Optional
 
 from sklearn.svm import SVR
 
+from ...exceptions import QiskitMachineLearningWarning
 from ...kernels.quantum_kernel import QuantumKernel
 
 
@@ -45,7 +46,6 @@ class QSVR(SVR):
             *args: Variable length argument list to pass to SVR constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
         """
-
         if (len(args)) != 0:
             msg = (
                 f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
@@ -54,12 +54,18 @@ class QSVR(SVR):
             )
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
+        if "kernel" in kwargs:
+            msg = (
+                "'kernel' argument is not supported and will be discarded, "
+                "please use 'quantum_kernel' instead."
+            )
+            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
+            # if we don't delete, then this value clashes with our quantum kernel
+            del kwargs["kernel"]
+
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
-        if (len(args)) != 0:
-            super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
-        else:
-            super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
+        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
@@ -71,3 +77,10 @@ class QSVR(SVR):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
+
+    # we override this method to be able to pretty print this instance
+    @classmethod
+    def _get_param_names(cls):
+        names = SVR._get_param_names()
+        names.remove("kernel")
+        return sorted(names + ["quantum_kernel"])

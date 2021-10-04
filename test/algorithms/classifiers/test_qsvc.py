@@ -23,7 +23,10 @@ from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC
 from qiskit_machine_learning.kernels import QuantumKernel
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.exceptions import (
+    QiskitMachineLearningError,
+    QiskitMachineLearningWarning,
+)
 
 
 class TestQSVC(QiskitMachineLearningTestCase):
@@ -101,11 +104,20 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 0.5)
 
-    def test_args_warning(self):
+    def test_qsvc_to_string(self):
         """Test QSVC print works when no *args passed in"""
         qsvc = QSVC()
-
         _ = str(qsvc)
+
+    def test_to_string_with_positional_args(self):
+        """Test QSVC with positional arguments."""
+        with self.assertWarns(DeprecationWarning):
+            _ = QSVC(1)
+
+    def test_with_kernel_parameter(self):
+        """Test QSVC with the `kernel` argument."""
+        with self.assertWarns(QiskitMachineLearningWarning):
+            QSVC(kernel=1)
 
 
 if __name__ == "__main__":
