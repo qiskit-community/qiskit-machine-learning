@@ -75,6 +75,7 @@ cp -r $SOURCE_DIR/$DOC_DIR_PO/ machine-learning/docs
 cp $SOURCE_DIR/setup.py machine-learning/.
 cp $SOURCE_DIR/requirements-dev.txt machine-learning/.
 cp $SOURCE_DIR/requirements.txt machine-learning/.
+cp $SOURCE_DIR/README.md machine-learning/.
 cp $SOURCE_DIR/qiskit_machine_learning/VERSION.txt machine-learning/qiskit_machine_learning/.
 
 # git checkout translationDocs
