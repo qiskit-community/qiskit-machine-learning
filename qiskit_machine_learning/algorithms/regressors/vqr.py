@@ -54,7 +54,7 @@ class VQR(NeuralNetworkRegressor):
             loss: A target loss function to be used in training. Default is squared error.
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
-            quantum_instance: QuantumInstance to execute the circuit on.
+            quantum_instance: The quantum instance to execute circuits on.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and
                 returns ``None``. The callback can access intermediate data during training.
