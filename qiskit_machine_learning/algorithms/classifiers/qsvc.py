@@ -54,6 +54,22 @@ class QSVC(SVC):
             kernel_trainer: ``QuantumKernelTrainer`` to be used for kernel optimization
             **kwargs: Arbitrary keyword arguments to pass to ``SVC`` constructor
         """
+        if (len(args)) != 0:
+            msg = (
+                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
+                f"will be removed no sooner than 3 months after the release. Instead use "
+                f"keyword arguments."
+            )
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
+        if "kernel" in kwargs:
+            msg = (
+                "'kernel' argument is not supported and will be discarded, "
+                "please use 'quantum_kernel' instead."
+            )
+            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
+            # if we don't delete, then this value clashes with our quantum kernel
+            del kwargs["kernel"]
 
         # Class fields
         self._quantum_kernel = None
@@ -125,3 +141,10 @@ class QSVC(SVC):
             self._quantum_kernel.assign_user_parameters(results.optimal_parameters)
 
         return super().fit(X=X, y=y, sample_weight=sample_weight)
+
+    # we override this method to be able to pretty print this instance
+    @classmethod
+    def _get_param_names(cls):
+        names = SVC._get_param_names()
+        names.remove("kernel")
+        return sorted(names + ["quantum_kernel"])

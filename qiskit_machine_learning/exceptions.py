@@ -19,3 +19,16 @@ class QiskitMachineLearningError(QiskitError):
     """Class for errors returned by Qiskit's machine learning module."""
 
     pass
+
+
+class QiskitMachineLearningWarning(UserWarning):
+    """Class for warning returned by Qiskit's machine learning module."""
+
+    def __init__(self, *message):
+        """Set the error message."""
+        super().__init__(" ".join(message))
+        self.message = " ".join(message)
+
+    def __str__(self):
+        """Return the message."""
+        return repr(self.message)
