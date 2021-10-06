@@ -88,7 +88,12 @@ class QuantumKernel:
 
     @feature_map.setter
     def feature_map(self, feature_map: QuantumCircuit) -> None:
-        """Sets feature map"""
+        """
+        Sets feature map.
+
+        The unbound_feature_map will be automatically updated when this field is set,
+        and user_parameters and user_param_binds fields will be reset to None.
+        """
         self._feature_map = feature_map
         self._unbound_feature_map = copy.deepcopy(self._feature_map)
         self._user_parameters = None
@@ -115,7 +120,7 @@ class QuantumKernel:
             self._quantum_instance = quantum_instance
 
     @property
-    def user_parameters(self) -> Union[ParameterVector, Sequence[Parameter]]:
+    def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
         """Return the vector of user parameters."""
         return self._user_parameters
 
@@ -176,7 +181,7 @@ class QuantumKernel:
         self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
 
     @property
-    def user_param_binds(self) -> Mapping[Parameter, float]:
+    def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
         """Return a copy of the current user parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._user_param_binds)
 
