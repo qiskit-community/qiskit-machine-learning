@@ -63,9 +63,9 @@ class QuantumKernel:
                 Only enforced when not using the state vector simulator. Default True.
             batch_size: Number of circuits to batch together for computation. Default 1000.
             quantum_instance: Quantum Instance or Backend
-            user_parameters: Iterable containing Parameter objects which correspond to
-                quantum gates on the feature map circuit which may be tuned. If users intend to
-                tune feature map parameters to find optimal values, this field should be set.
+            user_parameters: Iterable containing ``Parameter`` objects which correspond to
+                 quantum gates on the feature map circuit which may be tuned. If users intend to
+                 tune feature map parameters to find optimal values, this field should be set.
         """
         # Class fields
         self._feature_map = None
@@ -91,8 +91,8 @@ class QuantumKernel:
         """
         Sets feature map.
 
-        The unbound_feature_map will be automatically updated when this field is set,
-        and user_parameters and user_param_binds fields will be reset to None.
+        The ``unbound_feature_map`` field will be automatically updated when this field is set,
+        and ``user_parameters`` and ``user_param_binds`` fields will be reset to ``None``.
         """
         self._feature_map = feature_map
         self._unbound_feature_map = copy.deepcopy(self._feature_map)
@@ -137,7 +137,7 @@ class QuantumKernel:
         ],
     ) -> None:
         """
-        Assign user parameters in the QuantumKernel feature map.
+        Assign user parameters in the ``QuantumKernel`` feature map.
 
         Args:
             values (dict or iterable): Either a dictionary or iterable specifying the new
@@ -189,7 +189,7 @@ class QuantumKernel:
 
     def bind_user_parameters(self, values: Sequence[float]) -> None:
         """
-        Alternate function signature for assign_user_parameters
+        Alternate function signature for ``assign_user_parameters``
 
         Args:
             values (iterable): [value1, value2, ...]
