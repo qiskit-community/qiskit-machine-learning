@@ -194,8 +194,8 @@ class QuantumKernel:
         """
         self.assign_user_parameters(values)
 
-    def unbound_user_parameters(self) -> List[Parameter]:
-        """Yield the unbound user parameters in the feature map circuit."""
+    def get_unbound_parameters(self) -> List[Parameter]:
+        """Returns a list of any unbound user parameters in the feature map circuit."""
         unbound_user_params = []
         if self._user_param_binds is not None:
             # Get all user parameters not associated with numerical values
@@ -236,7 +236,7 @@ class QuantumKernel:
                 - unbound user parameters in the feature map circuit
         """
         # Ensure all user parameters have been bound in the feature map circuit.
-        unbound_params = self.unbound_user_parameters()
+        unbound_params = self.get_unbound_parameters()
         if unbound_params:
             raise ValueError(
                 f"""
@@ -322,7 +322,7 @@ class QuantumKernel:
                     and feature map can not be modified to match.
         """
         # Ensure all user parameters have been bound in the feature map circuit.
-        unbound_params = self.unbound_user_parameters()
+        unbound_params = self.get_unbound_parameters()
         if unbound_params:
             raise ValueError(
                 f"""
