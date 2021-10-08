@@ -22,9 +22,9 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.utils import QuantumInstance, algorithm_globals
-from qiskit_machine_learning.algorithms import QSVC, QuantumKernelTrainer
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.algorithms import QSVC, QuantumKernelTrainer
 
 
 def generate_tunable_feature_map():
@@ -112,11 +112,21 @@ class TestQSVC(QiskitMachineLearningTestCase):
             feature_map=self.feature_map, quantum_instance=self.statevector_simulator
         )
 
-        qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, regularization=0.5)
+        qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 
         self.assertEqual(score, 0.5)
+
+    def test_qsvc_to_string(self):
+        """Test QSVC print works when no args passed in"""
+        qsvc = QSVC()
+        _ = str(qsvc)
+
+    #def test_with_kernel_parameter(self):
+        #"""Test QSVC with the `kernel` argument."""
+        #with self.assertWarns(QiskitMachineLearningWarning):
+            #QSVC(kernel=1)
 
     def test_unbound_user_params(self):
         """Test QSVC with extra constructor parameters"""

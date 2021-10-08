@@ -2,9 +2,5 @@
 features:
   - |
     Addition of a ``QuantumKernelTrainer`` object which may be used by kernel-based machine learning algorithms to perform
-    optimization of some ``QuantumKernel`` parameters before training the model.
-  - |
-    Addition of a new base class , ``KernelLoss``, in the ``loss_functions`` package.
-  - |
-    Addition of a new ``KernelLoss`` subclass, ``SVCAlignment``.
-
+    optimization of some ``QuantumKernel`` parameters before training the model. Addition of a new base class ,
+    ``KernelLoss``, in the ``loss_functions`` package. Addition of a new ``KernelLoss`` subclass, ``SVCAlignment``.

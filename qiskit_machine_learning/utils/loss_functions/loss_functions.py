@@ -121,10 +121,10 @@ class KernelLoss(ABC):
 
         Args:
             user_parameters: an array of values to assign to the user params
-            kernel: An N x N matrix representing the kernel function
-                    N = # samples
-            data: An N x M matrix containing the data
-                    N = # samples, M = dimension of data
+            kernel: An ``NxN`` matrix representing the kernel function
+                    ``N = # samples``
+            data: An ``NxM`` matrix containing the data
+                    ``N = # samples, M = dimension of data``
             labels: A length-N array containing the truth labels
 
         Returns:
@@ -245,7 +245,7 @@ class CrossEntropySigmoidLoss(Loss):
 
 class SVCAlignment(KernelLoss):
     """
-    This class computes the weighted kernel alignment loss using SKLearn SVC class.
+    This class computes the weighted kernel alignment loss using SKLearn ``SVC`` class.
     """
 
     def __init__(self, regularization: float = 1.0, max_iter: int = -1):

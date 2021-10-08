@@ -13,7 +13,7 @@
 """Quantum Kernel Trainer"""
 
 from functools import partial
-from typing import Union, Optional
+from typing import Union, Optional, Sequence
 
 import numpy as np
 
@@ -27,7 +27,7 @@ from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCAlignmen
 class QuantumKernelTrainer:
     """
     Quantum Kernel Trainer.
-    This class provides utility to train QuantumKernel feature map parameters.
+    This class provides utility to train ``QuantumKernel`` feature map parameters.
 
     **Example**
 
@@ -64,8 +64,8 @@ class QuantumKernelTrainer:
         """
         Args:
             loss: A target loss function to be used in training. Default is `svc_alignment`.
-            optimizer: An instance of an optimizer to be used in training. Defaults to
-                gradient descent.
+            optimizer: An instance of ``Optimizer`` to be used in training. Defaults to
+                ``SPSA``.
             initial_point: Initial point for the optimizer to start from.
 
         Raises:
@@ -78,14 +78,11 @@ class QuantumKernelTrainer:
 
         # Setters
         self.initial_point = initial_point
-        self.loss = loss if loss else "svc_alignment"
-        if optimizer is None:
-            self.optimizer = SPSA(maxiter=50)
-        else:
-            self.optimizer = optimizer
+        self.loss = loss or "svc_alignment"
+        self.optimizer = optimizer or SPSA()
 
     @property
-    def loss(self):
+    def loss(self) -> KernelLoss:
         """Returns the underlying loss function."""
         return self._loss
 
@@ -98,7 +95,7 @@ class QuantumKernelTrainer:
                 self._loss = SVCAlignment()
             else:
                 raise ValueError(f"Unknown loss {loss}!")
-        elif callable(loss):
+        elif isinstance(loss, KernelLoss):
             self._loss = loss
         else:
             raise ValueError(f"Unknown loss {loss}!")
@@ -114,12 +111,12 @@ class QuantumKernelTrainer:
         self._optimizer = optimizer
 
     @property
-    def initial_point(self) -> np.ndarray:
+    def initial_point(self) -> Optional[Sequence[float]]:
         """Returns current initial point"""
         return self._initial_point
 
     @initial_point.setter
-    def initial_point(self, initial_point: np.ndarray) -> None:
+    def initial_point(self, initial_point: Optional[Sequence[float]]) -> None:
         """Sets the initial point"""
         self._initial_point = initial_point
 
@@ -130,29 +127,29 @@ class QuantumKernelTrainer:
         labels: np.ndarray,
     ) -> VariationalResult:
         """
-        Train the quantum kernel by minimizing loss over the kernel parameters.
+        Train the QuantumKernel by minimizing loss over the kernel parameters.
 
         Args:
-            quantum_kernel (QuantumKernel): QuantumKernel object to be optimized
-            data (numpy.ndarray): NxD array of training data, where N is the
-                              number of samples and D is the feature dimension
-            labels (numpy.ndarray): N x 1 array of +/-1 labels of the N training samples
+            quantum_kernel (QuantumKernel): ``QuantumKernel`` object to be optimized
+            data (numpy.ndarray): ``NxD`` array of training data, where ``N`` is the
+                              number of samples and ``D`` is the feature dimension
+            labels (numpy.ndarray): ``Nx1`` array of +/-1 labels of the ``N`` training samples
 
         Returns:
             dict: the results of kernel training
         """
         # Bind inputs to objective function
-        obj_func = partial(self.loss.evaluate, kernel=quantum_kernel, data=data, labels=labels)
+        obj_func = partial(self._loss.evaluate, kernel=quantum_kernel, data=data, labels=labels)
 
         # Number of parameters to tune
         num_params = len(quantum_kernel.user_parameters)
 
         # Randomly initialize our user parameters if no initial point was passed
-        if not self.initial_point:
-            self.initial_point = algorithm_globals.random.random(num_params)
+        if not self._initial_point:
+            self._initial_point = algorithm_globals.random.random(num_params)
 
         # Perform kernel optimization
-        opt_results = self.optimizer.minimize(fun=obj_func, x0=self.initial_point)
+        opt_results = self._optimizer.minimize(fun=obj_func, x0=self._initial_point)
 
         # Return kernel training results
         result = VariationalResult()
@@ -160,5 +157,7 @@ class QuantumKernelTrainer:
         result.optimal_value = opt_results.fun
         result.optimal_point = opt_results.x
         result.optimal_parameters = dict(zip(quantum_kernel.user_parameters, opt_results.x))
+
+        quantum_kernel.assign_user_parameters(result.optimal_parameters)
 
         return result
