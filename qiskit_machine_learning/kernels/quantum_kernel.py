@@ -12,12 +12,15 @@
 
 """Quantum Kernel Algorithm"""
 
-from typing import Optional, Union
+from typing import Optional, Union, Sequence, Mapping, List
+import copy
+import numbers
 
 import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from qiskit.circuit import ParameterVector
+from qiskit.circuit import Parameter, ParameterVector
+from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
@@ -50,6 +53,7 @@ class QuantumKernel:
         enforce_psd: bool = True,
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
         """
         Args:
@@ -59,11 +63,23 @@ class QuantumKernel:
                 Only enforced when not using the state vector simulator. Default True.
             batch_size: Number of circuits to batch together for computation. Default 900.
             quantum_instance: Quantum Instance or Backend
+            user_parameters: Iterable containing ``Parameter`` objects which correspond to
+                 quantum gates on the feature map circuit which may be tuned. If users intend to
+                 tune feature map parameters to find optimal values, this field should be set.
         """
-        self._feature_map = feature_map if feature_map else ZZFeatureMap(2)
+        # Class fields
+        self._feature_map = None
+        self._unbound_feature_map = None
+        self._user_parameters = None
+        self._user_param_binds = None
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
+
+        # Setters
+        self.feature_map = feature_map if feature_map else ZZFeatureMap(2)
+        if user_parameters is not None:
+            self.user_parameters = user_parameters
 
     @property
     def feature_map(self) -> QuantumCircuit:
@@ -71,9 +87,22 @@ class QuantumKernel:
         return self._feature_map
 
     @feature_map.setter
-    def feature_map(self, feature_map: QuantumCircuit):
-        """Sets feature map"""
+    def feature_map(self, feature_map: QuantumCircuit) -> None:
+        """
+        Sets feature map.
+
+        The ``unbound_feature_map`` field will be automatically updated when this field is set,
+        and ``user_parameters`` and ``user_param_binds`` fields will be reset to ``None``.
+        """
         self._feature_map = feature_map
+        self._unbound_feature_map = copy.deepcopy(self._feature_map)
+        self._user_parameters = None
+        self._user_param_binds = None
+
+    @property
+    def unbound_feature_map(self) -> QuantumCircuit:
+        """Returns unbound feature map"""
+        return copy.deepcopy(self._unbound_feature_map)
 
     @property
     def quantum_instance(self) -> QuantumInstance:
@@ -89,6 +118,94 @@ class QuantumKernel:
             self._quantum_instance = QuantumInstance(quantum_instance)
         else:
             self._quantum_instance = quantum_instance
+
+    @property
+    def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+        """Return the vector of user parameters."""
+        return self._user_parameters
+
+    @user_parameters.setter
+    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
+        """Sets the user parameters"""
+        self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
+
+        self._user_parameters = user_params
+
+    def assign_user_parameters(
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+    ) -> None:
+        """
+        Assign user parameters in the ``QuantumKernel`` feature map.
+
+        Args:
+            values (dict or iterable): Either a dictionary or iterable specifying the new
+                parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
+                ``new_parameter``, where ``new_parameter`` can be a parameter object or a
+                numeric value. If an iterable, the elements are assigned to the existing parameters
+                in the order of ``QuantumKernel.user_parameters``.
+
+        Raises:
+            ValueError: Incompatible number of user parameters and values
+        """
+        if self._user_parameters is None:
+            raise ValueError(
+                """
+                The number of parameter values ({len(values)}) does not
+                match the number of user parameters tracked by the QuantumKernel
+                (None).
+                """
+            )
+
+        if isinstance(values, dict):
+            unknown_parameters = list(set(values.keys()) - set(self._user_parameters))
+            if len(unknown_parameters) > 0:
+                raise ValueError(
+                    f"Cannot bind parameters ({unknown_parameters}) not tracked by the quantum kernel."
+                )
+            param_binds = values
+        else:
+            if len(values) != len(self._user_parameters):
+                raise ValueError(
+                    f"""
+                The number of parameter values ({len(values)}) does not
+                match the number of user parameters tracked by the QuantumKernel
+                ({len(self._user_parameters)}).
+                """
+                )
+            param_binds = {param: values[i] for i, param in enumerate(self._user_parameters)}
+
+        if self._user_param_binds is None:
+            self._user_param_binds = param_binds
+        else:
+            self._user_param_binds.update(param_binds)
+        self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
+
+    @property
+    def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
+        """Return a copy of the current user parameter mappings for the feature map circuit."""
+        return copy.deepcopy(self._user_param_binds)
+
+    def bind_user_parameters(self, values: Sequence[float]) -> None:
+        """
+        Alternate function signature for ``assign_user_parameters``
+
+        Args:
+            values (iterable): [value1, value2, ...]
+        """
+        self.assign_user_parameters(values)
+
+    def get_unbound_parameters(self) -> List[Parameter]:
+        """Returns a list of any unbound user parameters in the feature map circuit."""
+        unbound_user_params = []
+        if self._user_param_binds is not None:
+            # Get all user parameters not associated with numerical values
+            unbound_user_params = [
+                val
+                for val in self._user_param_binds.values()
+                if not isinstance(val, numbers.Number)
+            ]
+
+        return unbound_user_params
 
     def construct_circuit(
         self,
@@ -116,7 +233,18 @@ class QuantumKernel:
         Raises:
             ValueError:
                 - x and/or y have incompatible dimension with feature map
+                - unbound user parameters in the feature map circuit
         """
+        # Ensure all user parameters have been bound in the feature map circuit.
+        unbound_params = self.get_unbound_parameters()
+        if unbound_params:
+            raise ValueError(
+                f"""
+                The feature map circuit contains unbound user parameters ({unbound_params}).
+                All user parameters must be bound to numerical values before constructing
+                inner product circuit.
+                """
+            )
 
         if len(x) != self._feature_map.num_parameters:
             raise ValueError(
@@ -151,7 +279,7 @@ class QuantumKernel:
                 qc.measure(q, c)
         return qc
 
-    def _compute_overlap(self, idx, results, is_statevector_sim, measurement_basis):
+    def _compute_overlap(self, idx, results, is_statevector_sim, measurement_basis) -> float:
         """
         Helper function to compute overlap for given input.
         """
@@ -187,11 +315,23 @@ class QuantumKernel:
             QiskitMachineLearningError:
                 - A quantum instance or backend has not been provided
             ValueError:
+                - unbound user parameters in the feature map circuit
                 - x_vec and/or y_vec are not one or two dimensional arrays
                 - x_vec and y_vec have have incompatible dimensions
                 - x_vec and/or y_vec have incompatible dimension with feature map and
                     and feature map can not be modified to match.
         """
+        # Ensure all user parameters have been bound in the feature map circuit.
+        unbound_params = self.get_unbound_parameters()
+        if unbound_params:
+            raise ValueError(
+                f"""
+                The feature map circuit contains unbound user parameters ({unbound_params}).
+                All user parameters must be bound to numerical values before evaluating
+                the kernel matrix.
+                """
+            )
+
         if self._quantum_instance is None:
             raise QiskitMachineLearningError(
                 "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel."
