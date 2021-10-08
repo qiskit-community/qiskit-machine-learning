@@ -161,6 +161,4 @@ class QuantumKernelTrainer:
         # Ensure QuantumKernel is left in optimized state
         quantum_kernel.assign_user_parameters(result.optimal_parameters)
 
-        self.quantum_kernel.assign_user_parameters(result.optimal_parameters)
-
         return result

@@ -22,26 +22,9 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.utils import QuantumInstance, algorithm_globals
-
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import QSVC, QuantumKernelTrainer
-
-
-def generate_tunable_feature_map():
-    """
-    Create a 2 qubit circuit consisting of 2 user parameters and 2 data bound parameters.
-    """
-    data_block = ZZFeatureMap(2)
-    tunable_block = ZZFeatureMap(2)
-    user_parameters = tunable_block.parameters
-
-    for i, _ in enumerate(user_parameters):
-        user_parameters[i]._name = f"θ[{i}]"
-
-    feature_map = data_block.compose(tunable_block).compose(data_block)
-
-    return feature_map, user_parameters
 
 
 def generate_tunable_feature_map():
@@ -151,24 +134,6 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qkernel = QuantumKernel(
             feature_map=feat_map,
             user_parameters=free_params,
-            quantum_instance=BasicAer.get_backend("statevector_simulator"),
-        )
-        initial_point = [np.pi / 2, np.pi / 2]
-        qkt = QuantumKernelTrainer(initial_point=initial_point, optimizer=COBYLA(maxiter=25))
-
-        qsvc = QSVC(quantum_kernel=qkernel, kernel_trainer=qkt)
-        qsvc.fit(self.sample_train, self.label_train)
-        score = qsvc.score(self.sample_test, self.label_test)
-
-        self.assertEqual(score, 1.0)
-
-
-    def test_unbound_user_params(self):
-        """Test QSVC with extra constructor parameters"""
-        feat_map, free_params = generate_tunable_feature_map()
-        qkernel = QuantumKernel(
-            feature_map=feat_map,
-            user_parameters=free_params,
             quantum_instance=BasicAer.get_backend("qasm_simulator"),
         )
         initial_point = [np.pi / 2, np.pi / 2]
@@ -179,27 +144,6 @@ class TestQSVC(QiskitMachineLearningTestCase):
         score = qsvc.score(self.sample_test, self.label_test)
 
         self.assertEqual(score, 0.5)
-
-<<<<<<< HEAD
-    def test_kernel_training_warning(self):
-        """Test QSVC kernel training warning"""
-        with warnings.catch_warnings(record=True) as w:
-            feat_map, free_params = generate_tunable_feature_map()
-            qkernel = QuantumKernel(
-                feature_map=feat_map,
-                user_parameters=free_params,
-                quantum_instance=BasicAer.get_backend("qasm_simulator"),
-            )
-
-            # Cause all warnings to always be triggered.
-            warnings.simplefilter("always")
-            qsvc = QSVC(quantum_kernel=qkernel, train_kernel=False)
-
-            # Ensure we only get one warning
-            assert len(w) == 1
-
-            # Ensure we got the correct UserWarning
-            assert issubclass(w[-1].category, UserWarning)
 
 
 if __name__ == "__main__":
