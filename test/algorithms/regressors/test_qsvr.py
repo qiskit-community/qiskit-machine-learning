@@ -21,7 +21,10 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import QSVR
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.exceptions import (
+    QiskitMachineLearningError,
+    QiskitMachineLearningWarning,
+)
 from qiskit_machine_learning.kernels import QuantumKernel
 
 
@@ -100,6 +103,16 @@ class TestQSVR(QiskitMachineLearningTestCase):
         score = qsvr.score(self.sample_test, self.label_test)
 
         self.assertAlmostEqual(score, 0.38365, places=4)
+
+    def test_qsvc_to_string(self):
+        """Test QSVR print works when no *args passed in"""
+        qsvr = QSVR()
+        _ = str(qsvr)
+
+    def test_with_kernel_parameter(self):
+        """Test QSVC with the `kernel` argument."""
+        with self.assertWarns(QiskitMachineLearningWarning):
+            QSVR(kernel=1)
 
 
 if __name__ == "__main__":

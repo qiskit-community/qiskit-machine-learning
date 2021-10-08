@@ -88,22 +88,68 @@
 
       <div class="main-menu">
         <ul>
-          <li>
-            <a href="{{ theme_variables.external_urls['docs'] }}">Qiskit Documentation</a>
+          <li {%- if pagename == 'getting_started' %} class="active"{% endif %}>
+            <a href="{{ pathto('getting_started') }}">Getting started</a>
           </li>
 
-          <li>
-            <a href="{{ theme_variables.external_urls['resources'] }}" target="_blank">Learning Resources</a>
-          </li>
-
-          <li>
-            <a href="{{ theme_variables.external_urls['slack'] }}" target="_blank">Slack Support</a>
-          </li>
-
-          <li>
+          <li {%- if pagename == 'tutorials' %} class="active"{% endif %}>
             <a href="{{ theme_variables.external_urls['tutorials'] }}" target="_blank">Tutorials</a>
           </li>
 
+          <li>
+            <a href="{{ theme_variables.external_urls['partners'] }}" target="_blank">Partners</a>
+          </li>
+
+          <li>
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-orange-arrow">
+                Applications
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="{{ theme_variables.external_urls['ml'] }}">
+                  <span class="dropdown-title">Machine learning</span>
+                  <p>QSVM, VQC (Variational Quantum Classifier), and QGAN (Quantum Generative
+                    Adversarial Network) algorithms.</p>
+                </a>
+                <a class="nav-dropdown-item" href="{{ theme_variables.external_urls['nature'] }}">
+                  <span class="dropdown-title">Nature</span>
+                  <p>Quantum applications in chemistry, physics, and biology.</p>
+                </a>
+                <a class="nav-dropdown-item" href="{{ theme_variables.external_urls['finance'] }}">
+                  <span class="dropdown-title">Finance</span>
+                  <p>Uncertainty components for stock/securities problems, Ising translators for
+                    portfolio optimizations and data providers to source real or random data.</p>
+                </a>
+                <a class="nav-dropdown-item" href="{{ theme_variables.external_urls['optim'] }}">
+                  <span class="dropdown-title">Optimization</span>
+                  <p>High-level optimization problems that are ready to
+                    run on simulators and real quantum devices</p>
+                </a>
+              </div>
+          </li>
+          <li>
+              <a href="{{ theme_variables.external_urls['experiments'] }}" target="_blank">Experiments</a>
+          </li>
+          <li>
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-orange-arrow">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="doc-dropdown-option nav-dropdown-item" href="{{ theme_variables.external_urls['slack'] }}">
+                  <span class="dropdown-title">Slack support</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="{{ theme_variables.external_urls['textbook'] }}">
+                  <span class="dropdown-title">Qiskit Textbook</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="{{ theme_variables.external_urls['events'] }}">
+                  <span class="dropdown-title">Qiskit events</span>
+                  <p></p>
+                </a>
+            </div>
+          </li>
           <li>
             <a href="{{ theme_variables.external_urls['github'] }}" target="_blank">Github</a>
           </li>
@@ -281,20 +327,50 @@
       <div class="main-menu">
         <ul>
           <li>
-            <a href="{{ theme_variables.external_urls['docs'] }}">Qiskit Documentation</a>
+            <a href="{{ pathto('getting_started') }}">Getting Started</a>
+          </li>
+          <li>
+            <a href="{{ theme_variables.external_urls['tutorials'] }}" target="_blank">Tutorials</a>
+          </li>
+          <li>
+            <a href="{{ theme_variables.external_urls['partners'] }}">Partners</a>
+          </li>
+          <br>
+          <li class="resources-mobile-menu-title">
+            Applications
+          </li>
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="{{ theme_variables.external_urls['ml'] }}">Machine learning</a>
+            </li>
+
+            <li>
+              <a href="{{ theme_variables.external_urls['nature'] }}">Nature</a>
+            </li>
+
+            <li>
+              <a href="{{ theme_variables.external_urls['finance'] }}">Finance</a>
+            </li>
+
+            <li>
+              <a href="{{ theme_variables.external_urls['optim'] }}">Optimization</a>
+            </li>
+          </ul>
+          <br>
+          <li>
+            <a href="{{ theme_variables.external_urls['experiments'] }}">Experiments</a>
+          </li>
+          <br>
+          <li class="resources-mobile-menu-title">
+            Resources
           </li>
 
-          <li>
-            <a href="{{ theme_variables.external_urls['resources'] }}" target="_blank">Learning Resources</a>
-          </li>
-
-          <li>
-            <a href="{{ theme_variables.external_urls['slack'] }}" target="_blank">Slack Support</a>
-          </li>
-
-          <li>
-            <a href="{{ theme_variables.external_urls['github'] }}" target="_blank">Github</a>
-          </li>
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="{{ theme_variables.external_urls['slack'] }}">Slack support</a>
+            </li>
+          </ul>
+          <br>
         </ul>
       </div>
     </div>

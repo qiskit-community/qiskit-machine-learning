@@ -12,12 +12,13 @@
 
 """Quantum Support Vector Classifier"""
 
+import warnings
 from typing import Optional
 
+from qiskit.utils.algorithm_globals import algorithm_globals
 from sklearn.svm import SVC
 
-from qiskit.utils.algorithm_globals import algorithm_globals
-
+from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 
 
@@ -46,6 +47,22 @@ class QSVC(SVC):
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
+        if (len(args)) != 0:
+            msg = (
+                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
+                f"will be removed no sooner than 3 months after the release. Instead use "
+                f"keyword arguments."
+            )
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
+        if "kernel" in kwargs:
+            msg = (
+                "'kernel' argument is not supported and will be discarded, "
+                "please use 'quantum_kernel' instead."
+            )
+            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
+            # if we don't delete, then this value clashes with our quantum kernel
+            del kwargs["kernel"]
 
         self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
 
@@ -64,3 +81,10 @@ class QSVC(SVC):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
+
+    # we override this method to be able to pretty print this instance
+    @classmethod
+    def _get_param_names(cls):
+        names = SVC._get_param_names()
+        names.remove("kernel")
+        return sorted(names + ["quantum_kernel"])
