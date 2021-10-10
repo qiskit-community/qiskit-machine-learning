@@ -10,7 +10,6 @@ autosummary
 backend
 backpropagation
 bergholm
-bincount
 bitstring
 bitstrings
 bool
@@ -68,7 +67,6 @@ jupyter
 kwarg
 kwargs
 langle
-libsvm
 macos
 makefile
 matmul
@@ -79,7 +77,6 @@ mcrz
 mpl
 multiclass
 multioutput
-multithreaded
 mxd
 mypy
 ndarray
@@ -131,14 +128,12 @@ qsvr
 qubit
 qubits
 rangle
-rbf
 readme
 regressor
 regressors
 regs
 rescale
 rhs
-runtime
 rx
 ry
 rz
@@ -168,7 +163,6 @@ tensored
 th
 toctree
 todo
-tol
 traceback
 transpilation
 uncompiled
