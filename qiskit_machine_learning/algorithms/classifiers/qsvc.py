@@ -37,7 +37,7 @@ class QSVC(SVC):
 
     .. code-block::python
 
-        qsvc = QSVC(quantum_kernel=quant_kernel)
+        qsvc = QSVC(quantum_kernel=quant_kernel, kernel_trainer=qkt)
         qsvc.fit(sample_train,label_train)
         qsvc.predict(sample_test)
     """
@@ -59,17 +59,17 @@ class QSVC(SVC):
         self._quantum_kernel = None
         self._kernel_trainer = None
 
-        #if "kernel" in kwargs:
-        #    msg = (
-        #        "'kernel' argument is not supported and will be discarded, "
-        #        "please use 'quantum_kernel' instead."
-        #    )
-        #    warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
-        #    # if we don't delete, then this value clashes with our quantum_kernel
-        #    del kwargs["kernel"]
+        if "kernel" in kwargs:
+            msg = (
+                "'kernel' argument is not supported and will be discarded, "
+                "please use 'quantum_kernel' instead."
+            )
+            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
+            # if we don't delete, then this value clashes with our quantum_kernel
+            del kwargs["kernel"]
 
         # Setters
-        self.quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
+        self.quantum_kernel = quantum_kernel or QuantumKernel()
         self.kernel_trainer = kernel_trainer
 
         if "random_state" not in kwargs:
