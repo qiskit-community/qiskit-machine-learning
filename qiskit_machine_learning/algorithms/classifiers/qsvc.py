@@ -59,6 +59,15 @@ class QSVC(SVC):
         self._quantum_kernel = None
         self._kernel_trainer = None
 
+        if "kernel" in kwargs:
+            msg = (
+                "'kernel' argument is not supported and will be discarded, "
+                "please use 'quantum_kernel' instead."
+            )
+            warnings.warn(msg, UserWarning)
+            # if we don't delete, then this value clashes with our quantum_kernel
+            del kwargs["kernel"]
+
         # Setters
         self.quantum_kernel = quantum_kernel or QuantumKernel()
         self.kernel_trainer = kernel_trainer
