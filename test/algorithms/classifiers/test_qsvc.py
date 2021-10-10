@@ -123,10 +123,10 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qsvc = QSVC()
         _ = str(qsvc)
 
-    #def test_with_kernel_parameter(self):
-        #"""Test QSVC with the `kernel` argument."""
-        #with self.assertWarns(QiskitMachineLearningWarning):
-            #QSVC(kernel=1)
+    def test_with_kernel_parameter(self):
+        """Test QSVC with the `kernel` argument."""
+        with self.assertWarns(UserWarning):
+            QSVC(kernel=1)
 
     def test_unbound_user_params(self):
         """Test QSVC with extra constructor parameters"""

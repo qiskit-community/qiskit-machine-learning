@@ -64,7 +64,7 @@ class QSVC(SVC):
                 "'kernel' argument is not supported and will be discarded, "
                 "please use 'quantum_kernel' instead."
             )
-            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
+            warnings.warn(msg, UserWarning)
             # if we don't delete, then this value clashes with our quantum_kernel
             del kwargs["kernel"]
 
