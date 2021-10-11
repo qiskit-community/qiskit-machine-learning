@@ -61,7 +61,7 @@ class QuantumKernel:
                 the `ZZFeatureMap` is used with two qubits.
             enforce_psd: Project to closest positive semidefinite matrix if x = y.
                 Only enforced when not using the state vector simulator. Default True.
-            batch_size: Number of circuits to batch together for computation. Default 1000.
+            batch_size: Number of circuits to batch together for computation. Default 900.
             quantum_instance: Quantum Instance or Backend
             user_parameters: Iterable containing ``Parameter`` objects which correspond to
                  quantum gates on the feature map circuit which may be tuned. If users intend to
@@ -285,7 +285,7 @@ class QuantumKernel:
         """
         if is_statevector_sim:
             # |<0|Psi^dagger(y) x Psi(x)|0>|^2, take the amplitude
-            v_a, v_b = [results.get_statevector(int(i)) for i in idx]
+            v_a, v_b = [results[int(i)] for i in idx]
             tmp = np.vdot(v_a, v_b)
             kernel_value = np.vdot(tmp, tmp).real  # pylint: disable=no-member
         else:
@@ -420,16 +420,21 @@ class QuantumKernel:
                 is_statevector_sim=is_statevector_sim,
             )
             parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
-            circuits = [
-                parameterized_circuit.assign_parameters({feature_map_params: x})
-                for x in to_be_computed_data
-            ]
+            statevectors = []
 
-            results = self._quantum_instance.execute(circuits)
+            for min_idx in range(0, len(to_be_computed_data), self._batch_size):
+                max_idx = min(min_idx + self._batch_size, len(to_be_computed_data))
+                circuits = [
+                    parameterized_circuit.assign_parameters({feature_map_params: x})
+                    for x in to_be_computed_data[min_idx:max_idx]
+                ]
+                results = self._quantum_instance.execute(circuits)
+                for j in range(max_idx - min_idx):
+                    statevectors.append(results.get_statevector(j))
 
             offset = 0 if is_symmetric else len(x_vec)
             matrix_elements = [
-                self._compute_overlap(idx, results, is_statevector_sim, measurement_basis)
+                self._compute_overlap(idx, statevectors, is_statevector_sim, measurement_basis)
                 for idx in list(zip(mus, nus + offset))
             ]
 
