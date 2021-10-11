@@ -64,8 +64,8 @@ class QuantumKernel:
             batch_size: Number of circuits to batch together for computation. Default 1000.
             quantum_instance: Quantum Instance or Backend
             user_parameters: Iterable containing Parameter objects which correspond to
-                 quantum gates on the feature map circuit which may be tuned. If users intend to
-                 tune feature map parameters to find optimal values, this field should be set.
+                quantum gates on the feature map circuit which may be tuned. If users intend to
+                tune feature map parameters to find optimal values, this field should be set.
         """
         # Class fields
         self._feature_map = None
@@ -123,7 +123,6 @@ class QuantumKernel:
     def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
         """Sets the user parameters"""
         self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
-
         self._user_parameters = user_params
 
     def assign_user_parameters(
@@ -136,6 +135,7 @@ class QuantumKernel:
         Assign user parameters in the QuantumKernel feature map.
 
         Args:
+<<<<<<< HEAD
             values (dict or iterable): Either a dictionary or iterable specifying the new
                 parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
                 ``new_parameter``, where ``new_parameter`` can be a parameter object or a
@@ -183,7 +183,9 @@ class QuantumKernel:
         """Return a copy of the current user parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._user_param_binds)
 
-    def bind_user_parameters(self, values: Sequence[float]) -> None:
+    def bind_user_parameters(
+        self, values: Union[Mapping[Parameter, float], Sequence[float]]
+    ) -> None:
         """
         Alternate function signature for assign_user_parameters
 
@@ -192,8 +194,8 @@ class QuantumKernel:
         """
         self.assign_user_parameters(values)
 
-    def unbound_user_parameters(self) -> List[Parameter]:
-        """Yield the unbound user parameters in the feature map circuit."""
+    def unbound_free_parameters(self) -> List[Parameter]:
+        """Return the unbound user parameters in the feature map circuit."""
         unbound_user_params = []
         if self._user_param_binds is not None:
             # Get all user parameters not associated with numerical values
@@ -233,7 +235,7 @@ class QuantumKernel:
                 - x and/or y have incompatible dimension with feature map
                 - unbound user parameters in the feature map circuit
         """
-        # Ensure all user parameters have been bound in the feature map circuit.
+        # Ensure all user parameters have been bound in the feature map circuit
         unbound_params = self.unbound_user_parameters()
         if unbound_params:
             raise ValueError(
