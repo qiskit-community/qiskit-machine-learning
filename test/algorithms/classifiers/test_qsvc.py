@@ -118,7 +118,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 0.5)
 
     def test_qsvc_to_string(self):
-        """Test QSVC print works when no args passed in"""
+        """Test QSVC print works when no *args passed in"""
         qsvc = QSVC()
         _ = str(qsvc)
 
