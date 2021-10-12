@@ -57,8 +57,8 @@ class QuantumKernelTrainer:
 
     def __init__(
         self,
-        loss: Optional[Union[str, KernelLoss]] = "svc_alignment",
-        optimizer: Optional[Optimizer] = None,
+        loss: Union[str, KernelLoss] = "svc_alignment",
+        optimizer: Optimizer = SPSA(),
         initial_point: Optional[Sequence[float]] = None,
     ):
         """
@@ -74,15 +74,14 @@ class QuantumKernelTrainer:
         # Class fields
         self._loss = None
         self._optimizer = None
-        self._initial_point = None
+        self._initial_point = initial_point
 
         # Setters
-        self.initial_point = initial_point
-        self.loss = loss if loss else "svc_alignment"
-        self.optimizer = optimizer or SPSA()
+        self.loss = loss
+        self.optimizer = optimizer
 
     @property
-    def loss(self) -> KernelLoss:
+    def loss(self) -> Union[str, KernelLoss]:
         """Returns the loss object."""
         return self._loss
 
@@ -144,9 +143,9 @@ class QuantumKernelTrainer:
         # Number of parameters to tune
         num_params = len(quantum_kernel.user_parameters)
 
-        # Randomly initialize our user parameters if no initial point was passed
-        if not self._initial_point:
-            self._initial_point = algorithm_globals.random.random(num_params)
+        # Randomly initialize the initial point if one was not passed
+        if self.initial_point is None:
+            self.initial_point = algorithm_globals.random.random(num_params)
 
         # Perform kernel optimization
         opt_results = self._optimizer.minimize(fun=obj_func, x0=self._initial_point)

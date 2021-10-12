@@ -81,8 +81,8 @@ class QSVC(SVC):
             del kwargs["kernel"]
 
         # Setters
-        self.quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
-        self.kernel_trainer = kernel_trainer
+        self._quantum_kernel = quantum_kernel or QuantumKernel()
+        self.kernel_trainer = kernel_trainer or QuantumKernelTrainer()
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
@@ -107,7 +107,7 @@ class QSVC(SVC):
         return self._kernel_trainer
 
     @kernel_trainer.setter
-    def kernel_trainer(self, qk_trainer: Optional[QuantumKernelTrainer]) -> None:
+    def kernel_trainer(self, qk_trainer: QuantumKernelTrainer) -> None:
         """Returns quantum kernel trainer"""
         self._kernel_trainer = qk_trainer
 
