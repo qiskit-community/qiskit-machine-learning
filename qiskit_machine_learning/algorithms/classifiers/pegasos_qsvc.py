@@ -73,7 +73,7 @@ class PegasosQSVC(SVC):
         self._kernel_offset = 1
 
     # pylint: disable=invalid-name
-    def fit(self, X: np.ndarray, y: np.ndarray, sample_weight: None = None) -> None:
+    def fit(self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> PegasosSVC:
         """Implementation of the kernelized Pegasos algorithm to fit the QSVC
         Args:
             X: shape (x_samples, s), train features
