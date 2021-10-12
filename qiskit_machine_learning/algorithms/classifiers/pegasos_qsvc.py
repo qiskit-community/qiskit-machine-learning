@@ -65,7 +65,7 @@ class PegasosQSVC(SVC):
         self._alphas: Optional[Dict[int, int]] = None
         self._x_train: Optional[np.ndarray] = None
         self._y_train: Optional[np.ndarray] = None
-        self._label_dict: Optional[Dict[int, int]] = {}
+        self._label_map: Optional[Dict[int, int]] = {}
         self._label_pos = None
         self._label_neg = None
 
@@ -131,7 +131,7 @@ class PegasosQSVC(SVC):
             for j in self._alphas:  # only loop over the non zero alphas
                 value += (
                     self._alphas[j]
-                    * self._label_dict[self._y_train[j]]
+                    * self._label_map[self._y_train[j]]
                     * (self._quantum_kernel.evaluate(X[i], self._x_train[j]) + self._kernel_offset)
                 )
             if value > 0:
@@ -181,8 +181,8 @@ class PegasosQSVC(SVC):
         # the algorithm works with labels in {+1, -1}
         self._label_pos = np.unique(y)[0]
         self._label_neg = np.unique(y)[1]
-        self._label_dict[self._label_pos] = +1
-        self._label_dict[self._label_neg] = -1
+        self._label_map[self._label_pos] = +1
+        self._label_map[self._label_neg] = -1
 
         # the training data is later needed for prediction
         self._x_train = X
@@ -202,17 +202,17 @@ class PegasosQSVC(SVC):
                     kernel[(i, j)] = kernel.get((i, j), self._quantum_kernel.evaluate(X[i], X[j]))
                     value += (
                         self._alphas[j]
-                        * self._label_dict[y[j]]
+                        * self._label_map[y[j]]
                         * (kernel[(i, j)] + self._kernel_offset)
                     )
                 else:
                     value += (
                         self._alphas[j]
-                        * self._label_dict[y[j]]
+                        * self._label_map[y[j]]
                         * (precomputed_kernel[i, j] + self._kernel_offset)
                     )
 
-            if (self._label_dict[y[i]] * self.C / step) * value < 1:
+            if (self._label_map[y[i]] * self.C / step) * value < 1:
                 self._alphas[i] = self._alphas.get(i, 0) + 1
 
         self._fit_status = True
