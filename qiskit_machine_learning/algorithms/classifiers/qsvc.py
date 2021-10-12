@@ -68,8 +68,8 @@ class QSVC(SVC):
             del kwargs["kernel"]
 
         # Class fields
-        self._quantum_kernel = None
-        self._kernel_trainer = None
+        self._quantum_kernel = quantum_kernel or QuantumKernel()
+        self.kernel_trainer = kernel_trainer or QuantumKernelTrainer()
 
         if "kernel" in kwargs:
             msg = (
@@ -79,10 +79,6 @@ class QSVC(SVC):
             warnings.warn(msg, UserWarning)
             # if we don't delete, then this value clashes with our quantum_kernel
             del kwargs["kernel"]
-
-        # Setters
-        self._quantum_kernel = quantum_kernel or QuantumKernel()
-        self.kernel_trainer = kernel_trainer or QuantumKernelTrainer()
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
