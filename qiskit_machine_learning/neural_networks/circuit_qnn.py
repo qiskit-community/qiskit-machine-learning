@@ -105,6 +105,8 @@ class CircuitQNN(SamplingNeuralNetwork):
         # copy circuit and add measurements in case non are given
         # TODO: need to be able to handle partial measurements! (partial trace...)
         self._circuit = circuit.copy()
+        # we have not transpiled the circuit yet
+        self._circuit_transpiled = False
         # these original values may be re-used when a quantum instance is set,
         # but initially it was None
         self._original_output_shape = output_shape
@@ -276,6 +278,20 @@ class CircuitQNN(SamplingNeuralNetwork):
 
             # prepare sampler
             self._sampler = CircuitSampler(self._quantum_instance, param_qobj=False, caching="all")
+
+            # transpile the QNN circuit
+            try:
+                self._circuit = self._quantum_instance.transpile(self._circuit)[0]
+                self._circuit_transpiled = True
+            except QiskitError as ex:
+                # likely it is caused by RawFeatureVector
+                logger.warning(
+                    "There was an exception transpiling the circuit provided and it is ignored. "
+                    "Please ensure your circuit can be transpiled, "
+                    "otherwise overall performance on the QNN may decrease.",
+                    exc_info=ex,
+                )
+                self._circuit_transpiled = False
         else:
             self._output_shape = output_shape
 
@@ -342,7 +358,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        result = self._quantum_instance.execute(circuits)
+        result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # set the memory setting back
         self._quantum_instance.backend_options["memory"] = orig_memory
 
@@ -376,7 +392,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        result = self._quantum_instance.execute(circuits)
+        result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # initialize probabilities
         if self._sparse:
             if not _HAS_SPARSE:
