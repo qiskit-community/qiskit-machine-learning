@@ -85,7 +85,7 @@ class PegasosQSVC(SVC):
                 - when a sample_weight which is not None is passed
         """
         if sample_weight is not None:
-            raise NotImplementedError("all samples have to be weighed equally")
+            raise NotImplementedError("Parameter 'sample_weight' is not supported. All samples have to be weighed equally")
 
         self._fit_internal(X, y)
 
