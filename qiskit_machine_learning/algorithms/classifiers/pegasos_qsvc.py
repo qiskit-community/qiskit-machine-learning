@@ -12,6 +12,7 @@
 
 """Quantum Pegasos Support Vector Classifier"""
 
+from __future__ import annotations
 from typing import Optional, Dict, Tuple
 from datetime import datetime
 import logging
@@ -194,18 +195,26 @@ class PegasosQSVC(SVC):
 
         t_0 = datetime.now()
         for step in range(1, self._num_steps + 1):
+            # for every step, a random datum is fixed
             i = np.random.randint(0, len(y))
 
+            # this value corresponds to a sum
             value = 0.0
-            for j in self._alphas:  # only loop over the non zero alphas
+            # only loop over the non zero alphas (preliminary support vectors)
+            for j in self._alphas:
                 if precomputed_kernel is None:
+                    # evaluate kernel function only for the fixed datum and the data with non zero alpha
                     kernel[(i, j)] = kernel.get((i, j), self._quantum_kernel.evaluate(X[i], X[j]))
                     value += (
+                        # alpha weights the contribution of the associated datum
                         self._alphas[j]
+                        # the class membership labels have to be in {-1, +1}
                         * self._label_map[y[j]]
+                        # the offset to the kernel function leads to an implicit bias term
                         * (kernel[(i, j)] + self._kernel_offset)
                     )
                 else:
+                    # analogous to the block following the if statement, but for a precomputed kernel
                     value += (
                         self._alphas[j]
                         * self._label_map[y[j]]
@@ -213,6 +222,7 @@ class PegasosQSVC(SVC):
                     )
 
             if (self._label_map[y[i]] * self.C / step) * value < 1:
+                # only way for a component of alpha to become non zero
                 self._alphas[i] = self._alphas.get(i, 0) + 1
 
         self._fit_status = True
