@@ -286,9 +286,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             except QiskitError as ex:
                 # likely it is caused by RawFeatureVector
                 logger.warning(
-                    "There was an exception transpiling the circuit provided and it is ignored. "
-                    "Please ensure your circuit can be transpiled, "
-                    "otherwise overall performance on the QNN may decrease.",
+                    "The supplied circuit could not be pre-transpiled for subsequent usages "
+                    "which may impact overall performance",
                     exc_info=ex,
                 )
                 self._circuit_transpiled = False
