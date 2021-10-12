@@ -72,13 +72,9 @@ class QuantumKernelTrainer:
             ValueError: unknown loss function
         """
         # Class fields
-        self._loss = None
-        self._optimizer = None
-        self._initial_point = initial_point
-
-        # Setters
         self.loss = loss
         self.optimizer = optimizer
+        self.initial_point = initial_point
 
     @property
     def loss(self) -> Union[str, KernelLoss]:
