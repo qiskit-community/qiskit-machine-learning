@@ -166,8 +166,8 @@ class PegasosQSVC(SVC):
             not precomputed_kernel.shape == (X.shape[0], X.shape[0])
         ):
             raise ValueError(
-                f"precomputed_kernel has the wrong shape {precomputed_kernel.shape}, \
-                it should be {(X.shape[0], X.shape[0])}"
+                f"Pre-computed kernel has the wrong shape {precomputed_kernel.shape}, "
+                "it should be {(X.shape[0], X.shape[0])}"
             )
 
         # the algorithm works with labels in {+1, -1}
