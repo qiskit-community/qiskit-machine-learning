@@ -47,7 +47,6 @@ class PegasosQSVC(SVC):
         quantum_kernel: Optional[QuantumKernel] = None,
         C: float = 1,
         num_steps: int = 1000,
-        verbose: bool = False,
     ) -> None:
         """
         Args:
@@ -88,6 +87,8 @@ class PegasosQSVC(SVC):
             raise NotImplementedError("Parameter 'sample_weight' is not supported. All samples have to be weighed equally")
 
         self._fit_internal(X, y)
+
+        return self
 
     # pylint: disable=invalid-name
     def fit_precomputed(self, X: np.ndarray, y: np.ndarray, precomputed_kernel: np.ndarray) -> None:
