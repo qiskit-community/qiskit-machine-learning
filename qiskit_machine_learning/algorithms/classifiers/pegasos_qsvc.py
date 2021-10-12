@@ -159,7 +159,7 @@ class PegasosQSVC(SVC):
         if np.ndim(y) != 1:
             raise ValueError("y has to be a 1D array")
         if X.shape[0] != y.shape[0]:
-            raise ValueError("X and y have to contain the same number of samples")
+            raise ValueError("'X' and 'y' have to contain the same number of samples")
         if len(np.unique(y)) != 2:
             raise ValueError("Only binary classification is supported")
         if (precomputed_kernel is not None) and (
