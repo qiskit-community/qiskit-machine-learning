@@ -15,10 +15,12 @@
 from typing import Optional, Dict, Tuple
 from datetime import datetime
 import numpy as np
+import logging
 from sklearn.svm import SVC
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
+logger = logging.getLogger(__name__)
 
 class PegasosQSVC(SVC):
     r"""Quantum Pegasos Support Vector Classifier
@@ -52,13 +54,11 @@ class PegasosQSVC(SVC):
             quantum_kernel: QuantumKernel to be used for classification.
             C: positive regularization parameter
             num_steps: number of steps in the Pegasos algorithm
-            verbose: whether the time taken for train and predict is printed
         """
         self._quantum_kernel = quantum_kernel if quantum_kernel is not None else QuantumKernel()
 
         super().__init__(C=C)
         self._num_steps = num_steps
-        self._verbose = verbose
 
         # these are the parameters being fit and are needed for prediction
         self._fit_status = False
@@ -130,8 +130,7 @@ class PegasosQSVC(SVC):
             else:
                 y[i] = self._label_neg
 
-        if self._verbose:
-            print(f"prediction completed after {str(datetime.now() - t_0)[:-7]}")
+        logger.debug(f"prediction completed after {str(datetime.now() - t_0)[:-7]}")
 
         return y
 
@@ -209,8 +208,7 @@ class PegasosQSVC(SVC):
 
         self._fit_status = True
 
-        if self._verbose:
-            print(f"fit completed after {str(datetime.now() - t_0)[:-7]}")
+        logger.debug(f"fit completed after {str(datetime.now() - t_0)[:-7]}")
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
