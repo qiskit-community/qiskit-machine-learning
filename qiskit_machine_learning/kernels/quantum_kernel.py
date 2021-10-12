@@ -20,7 +20,7 @@ import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit.circuit.parameterexpression import ParameterExpression, ParameterValueType
+from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
 from qiskit.utils import QuantumInstance
@@ -192,6 +192,19 @@ class QuantumKernel:
             values (iterable): [value1, value2, ...]
         """
         self.assign_user_parameters(values)
+
+    def unbound_user_parameters(self) -> List[Parameter]:
+        """Returns a list of any unbound user parameters in the feature map circuit."""
+        unbound_user_params = []
+        if self._user_param_binds is not None:
+            # Get all user parameters not associated with numerical values
+            unbound_user_params = [
+                val
+                for val in self._user_param_binds.values()
+                if not isinstance(val, numbers.Number)
+            ]
+
+        return unbound_user_params
 
     def construct_circuit(
         self,

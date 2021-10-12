@@ -19,7 +19,10 @@ from qiskit.utils.algorithm_globals import algorithm_globals
 from sklearn.svm import SVC
 import numpy as np
 
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.exceptions import (
+    QiskitMachineLearningError,
+    QiskitMachineLearningWarning,
+)
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 from qiskit_machine_learning.algorithms.kernel_trainers import QuantumKernelTrainer
 
@@ -54,13 +57,6 @@ class QSVC(SVC):
             kernel_trainer: ``QuantumKernelTrainer`` to be used for kernel optimization
             **kwargs: Arbitrary keyword arguments to pass to ``SVC`` constructor
         """
-        if (len(args)) != 0:
-            msg = (
-                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
-                f"will be removed no sooner than 3 months after the release. Instead use "
-                f"keyword arguments."
-            )
-            warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
         if "kernel" in kwargs:
             msg = (
