@@ -1,0 +1,14 @@
+---
+features:
+  - |
+    There's an additional transpilation step introduced in CircuitQNN that is executed when
+    a quantum instance is set. A circuit passed to ``CircuitQNN`` is transpiled and saved for
+    further re-use. So, every time when the circuit is executed it is already transpiled and
+    overall time of the forward pass is reduced.
+issues:
+  - |
+    When ``RawFeatureVector`` is used by a ``CircuitQNN``-based model a warning may be raised
+    saying that there was an exception transpiling the circuit. This is a known issue,
+    ``RawFeatureVector`` can't be transpiled until all parameters are bound and this is a reason
+     for this warning. In this case a circuit based on ``RawFeatureMap`` is used as is and
+    transpiled every time it is executed.
