@@ -81,7 +81,7 @@ class QSVC(SVC):
             del kwargs["kernel"]
 
         # Setters
-        self.quantum_kernel = quantum_kernel or QuantumKernel()
+        self.quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
         self.kernel_trainer = kernel_trainer
 
         if "random_state" not in kwargs:

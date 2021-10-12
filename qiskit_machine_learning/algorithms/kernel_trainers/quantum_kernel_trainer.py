@@ -59,7 +59,7 @@ class QuantumKernelTrainer:
         self,
         loss: Optional[Union[str, KernelLoss]] = "svc_alignment",
         optimizer: Optional[Optimizer] = None,
-        initial_point: Optional[np.ndarray] = None,
+        initial_point: Optional[Sequence[float]] = None,
     ):
         """
         Args:
@@ -78,7 +78,7 @@ class QuantumKernelTrainer:
 
         # Setters
         self.initial_point = initial_point
-        self.loss = loss or "svc_alignment"
+        self.loss = loss if loss else "svc_alignment"
         self.optimizer = optimizer or SPSA()
 
     @property
