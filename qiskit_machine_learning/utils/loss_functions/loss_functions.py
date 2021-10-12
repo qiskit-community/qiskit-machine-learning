@@ -248,9 +248,8 @@ class SVCAlignment(KernelLoss):
     This class computes the weighted kernel alignment loss using SKLearn ``SVC`` class.
     """
 
-    def __init__(C: float = 1.0, max_iter: int = -1):
-        self.C = C
-        self.max_iter = max_iter
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
 
     def evaluate(
         self,
@@ -263,7 +262,7 @@ class SVCAlignment(KernelLoss):
         kernel.assign_user_parameters(user_parameters)
 
         # Train a quantum support vector classifier
-        svc = SVC(kernel=kernel.evaluate, C=self.C, max_iter=self.max_iter)
+        svc = SVC(kernel=kernel.evaluate, **self.kwargs)
         svc.fit(data, labels)
 
         # Get dual coefficients

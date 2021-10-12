@@ -324,7 +324,7 @@ class QuantumKernel:
                     and feature map can not be modified to match.
         """
         # Ensure all user parameters have been bound in the feature map circuit.
-        unbound_params = self.get_unbound_parameters()
+        unbound_params = self.unbound_user_parameters()
         if unbound_params:
             raise ValueError(
                 f"""

@@ -18,7 +18,7 @@ from typing import Union, Optional, Sequence
 import numpy as np
 
 from qiskit.utils.algorithm_globals import algorithm_globals
-from qiskit.algorithms.optimizers import Optimizer, COBYLA
+from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCAlignment

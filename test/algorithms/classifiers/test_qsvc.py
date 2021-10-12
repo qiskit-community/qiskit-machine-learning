@@ -20,7 +20,6 @@ import numpy as np
 
 from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -134,9 +133,9 @@ class TestQSVC(QiskitMachineLearningTestCase):
         qkernel = QuantumKernel(
             feature_map=feat_map,
             user_parameters=free_params,
-            quantum_instance=BasicAer.get_backend("qasm_simulator"),
+            quantum_instance=BasicAer.get_backend("statevector_simulator"),
         )
-        initial_point = [np.pi / 2, np.pi / 2]
+        initial_point = [np.pi / 2, np.pi / 4]
         qkt = QuantumKernelTrainer(initial_point=initial_point)
 
         qsvc = QSVC(quantum_kernel=qkernel, kernel_trainer=qkt)
