@@ -14,13 +14,14 @@
 
 from typing import Optional, Dict, Tuple
 from datetime import datetime
-import numpy as np
 import logging
+import numpy as np
 from sklearn.svm import SVC
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 logger = logging.getLogger(__name__)
+
 
 class PegasosQSVC(SVC):
     r"""Quantum Pegasos Support Vector Classifier
@@ -72,19 +73,26 @@ class PegasosQSVC(SVC):
         self._kernel_offset = 1
 
     # pylint: disable=invalid-name
-    def fit(self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> PegasosSVC:
+    def fit(
+        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
+    ) -> PegasosQSVC:
         """Implementation of the kernelized Pegasos algorithm to fit the QSVC
         Args:
             X: shape (x_samples, s), train features
             y: shape (x_samples) train labels
             sample_weight: None
 
+        Returns:
+            self
+
         Raises:
             NotImplementedError:
                 - when a sample_weight which is not None is passed
         """
         if sample_weight is not None:
-            raise NotImplementedError("Parameter 'sample_weight' is not supported. All samples have to be weighed equally")
+            raise NotImplementedError(
+                "Parameter 'sample_weight' is not supported. All samples have to be weighed equally"
+            )
 
         self._fit_internal(X, y)
 
@@ -131,7 +139,7 @@ class PegasosQSVC(SVC):
             else:
                 y[i] = self._label_neg
 
-        logger.debug(f"prediction completed after {str(datetime.now() - t_0)[:-7]}")
+        logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
 
         return y
 
@@ -209,7 +217,7 @@ class PegasosQSVC(SVC):
 
         self._fit_status = True
 
-        logger.debug(f"fit completed after {str(datetime.now() - t_0)[:-7]}")
+        logger.debug("fit completed after %s", str(datetime.now() - t_0)[:-7])
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
