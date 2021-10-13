@@ -66,6 +66,12 @@ class CircuitQNN(SamplingNeuralNetwork):
         """
         Args:
             circuit: The parametrized quantum circuit that generates the samples of this network.
+                There will be an attempt to transpile this circuit and cache the transpiled circuit
+                for subsequent usages by the network. If for some reasons the circuit can't be
+                transpiled, e.g. it originates from
+                :class:`~qiskit_machine_learning.circuit.library.RawFeatureVector`, the circuit
+                will be transpiled every time it is required to be executed and only when all
+                parameters are bound. This may impact overall performance on the network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
             sparse: Returns whether the output is sparse or not.
@@ -283,13 +289,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             try:
                 self._circuit = self._quantum_instance.transpile(self._circuit)[0]
                 self._circuit_transpiled = True
-            except QiskitError as ex:
-                # likely it is caused by RawFeatureVector
-                logger.warning(
-                    "The supplied circuit could not be pre-transpiled for subsequent usages "
-                    "which may impact overall performance",
-                    exc_info=ex,
-                )
+            except QiskitError:
+                # likely it is caused by RawFeatureVector, we just ignore this error and
+                # transpile circuits when it is required.
                 self._circuit_transpiled = False
         else:
             self._output_shape = output_shape
