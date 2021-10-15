@@ -165,8 +165,10 @@ toctree
 todo
 traceback
 transpilation
+transpile
 transpiled
 uncompiled
+transpiling
 unitaries
 univariate
 unsymmetric
