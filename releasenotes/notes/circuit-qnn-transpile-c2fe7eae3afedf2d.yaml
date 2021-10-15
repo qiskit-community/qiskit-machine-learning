@@ -4,10 +4,7 @@ features:
     There's an additional transpilation step introduced in CircuitQNN that is invoked when
     a quantum instance is set. A circuit passed to ``CircuitQNN`` is transpiled and saved for
     subsequent usages. So, every time when the circuit is executed it is already transpiled and
-    overall time of the forward pass is reduced.
-
-issues:
-  - |
-    Due to implementation limitations of `RawFeatureVector` it can't be transpiled in advance, so
-    it is transpiled every time it is required to be executed and only when all parameters are
-    bound. This may impact overall performance on the network.
+    overall time of the forward pass is reduced. Due to implementation limitations of
+    ``RawFeatureVector`` it can't be transpiled in advance, so it is transpiled every time
+    it is required to be executed and only when all parameters are bound. This means overall
+    performance when ``RawFeatureVector`` is used stays the same.
