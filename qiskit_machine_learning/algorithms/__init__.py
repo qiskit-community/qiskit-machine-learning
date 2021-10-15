@@ -76,15 +76,6 @@ Distribution Learners
    PyTorchDiscriminator
    QuantumGenerator
    QGAN
-
-Kernel Trainers
-+++++++++++++++
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    QuantumKernelTrainer
 """
 
 from .trainable_model import TrainableModel
@@ -104,7 +95,6 @@ from .distribution_learners import (
     QuantumGenerator,
     QGAN,
 )
-from .kernel_trainers import QuantumKernelTrainer
 
 __all__ = [
     "TrainableModel",
@@ -124,5 +114,4 @@ __all__ = [
     "PyTorchDiscriminator",
     "QuantumGenerator",
     "QGAN",
-    "QuantumKernelTrainer",
 ]

@@ -22,8 +22,9 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
-from qiskit_machine_learning.algorithms import QSVC, QuantumKernelTrainer
+from qiskit_machine_learning.algorithms import QSVC
 
 
 def generate_tunable_feature_map():

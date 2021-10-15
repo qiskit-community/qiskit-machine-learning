@@ -18,8 +18,8 @@ by Qiskit Machine Learning.
 
 .. currentmodule:: qiskit_machine_learning.utils.loss_functions
 
-Loss Function Base Class
-========================
+Base Loss Classes
+=================
 
 .. autosummary::
    :toctree: ../stubs/
@@ -55,9 +55,11 @@ from .loss_functions import (
 
 __all__ = [
     "Loss",
+    "KernelLoss",
     "L1Loss",
     "L2Loss",
     "CrossEntropyLoss",
     "CrossEntropySigmoidLoss",
+    "KernelLoss",
     "SVCAlignment",
 ]

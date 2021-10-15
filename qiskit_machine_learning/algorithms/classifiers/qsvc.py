@@ -23,8 +23,8 @@ from qiskit_machine_learning.exceptions import (
     QiskitMachineLearningError,
     QiskitMachineLearningWarning,
 )
-from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
-from qiskit_machine_learning.algorithms.kernel_trainers import QuantumKernelTrainer
+from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
 
 
 class QSVC(SVC):
@@ -67,10 +67,6 @@ class QSVC(SVC):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
 
-        # Class fields
-        self._quantum_kernel = quantum_kernel or QuantumKernel()
-        self.kernel_trainer = kernel_trainer or QuantumKernelTrainer()
-
         if "kernel" in kwargs:
             msg = (
                 "'kernel' argument is not supported and will be discarded, "
@@ -83,6 +79,10 @@ class QSVC(SVC):
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
 
+        self._kernel_trainer = kernel_trainer
+        self.quantum_kernel = quantum_kernel or QuantumKernel()
+
+        # SVC constructor
         super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
@@ -91,7 +91,7 @@ class QSVC(SVC):
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
         """Sets quantum kernel"""
         # QuantumKernel passed
         self._quantum_kernel = quantum_kernel

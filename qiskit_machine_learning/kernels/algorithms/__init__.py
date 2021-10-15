@@ -9,3 +9,23 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
+"""
+Quantum Kernel Algorithms (:mod:`qiskit_machine_learning.kernels.algorithms`)
+
+.. currentmodule:: qiskit_machine_learning.kernels.algorithms
+
+Algorithms
+==========
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QuantumKernelTrainer
+
+"""
+
+from .quantum_kernel_trainer import QuantumKernelTrainer
+
+__all__ = ["QuantumKernelTrainer"]

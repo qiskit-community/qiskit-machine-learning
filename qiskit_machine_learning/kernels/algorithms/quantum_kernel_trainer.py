@@ -91,7 +91,7 @@ class QuantumKernelTrainer:
             else:
                 raise ValueError(f"Unknown loss {loss}!")
         elif isinstance(loss, KernelLoss):
-            self._loss = loss
+            self._loss = loss # type: ignore
         else:
             raise ValueError(f"Unknown loss {loss}!")
 
