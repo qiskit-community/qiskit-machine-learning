@@ -77,6 +77,25 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 1.0)
 
+    def test_precomputed_kernel(self):
+        """Test PegasosQSVC with a precomputed kernel matrix"""
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
+
+        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
+
+        # training
+        kernel_matrix_train = qkernel.evaluate(self.sample_train, self.sample_train)
+        pegasos_qsvc.fit(kernel_matrix_train, self.label_train)
+
+        # testing
+        kernel_matrix_test = qkernel.evaluate(self.sample_test, self.sample_train)
+        score = pegasos_qsvc.score(kernel_matrix_test, self.label_test)
+
+        self.assertEqual(score, 1.0)
+
+
     def test_empty_kernel(self):
         """Test PegasosQSVC with empty QuantumKernel"""
         qkernel = QuantumKernel()
