@@ -84,7 +84,7 @@ class PegasosQSVC(SVC):
             sample_weight: None
 
         Returns:
-            self
+            ``self``, a trained model.
 
         Raises:
             NotImplementedError:
