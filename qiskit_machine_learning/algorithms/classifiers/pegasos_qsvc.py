@@ -194,10 +194,10 @@ class PegasosQSVC(SVC):
 
         t_0 = datetime.now()
         for step in range(1, self._num_steps + 1):
-            # for every step, a random datum is fixed
+            # for every step, a random index (determining a random datum) is fixed
             i = np.random.randint(0, len(y))
 
-            # this value corresponds to a sum
+            # this value corresponds to a sum of kernel values weighted by their labels and alphas
             value = 0.0
             # only loop over the non zero alphas (preliminary support vectors)
             for j in self._alphas:
