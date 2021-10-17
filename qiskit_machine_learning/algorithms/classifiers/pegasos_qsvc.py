@@ -77,11 +77,11 @@ class PegasosQSVC(SVC):
     def fit(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
     ) -> PegasosQSVC:
-        """Implementation of the kernelized Pegasos algorithm to fit the QSVC
+        """Implementation of the kernelized Pegasos algorithm to fit the QSVC.
         Args:
-            X: shape (x_samples, s), train features
-            y: shape (x_samples) train labels
-            sample_weight: None
+            X: shape (x_samples, s), train features.
+            y: shape (x_samples), train labels.
+            sample_weight: this parameter is not supported, passing a value raises an error.
 
         Returns:
             ``self``, a trained model.
