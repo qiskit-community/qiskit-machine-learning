@@ -12,7 +12,6 @@
 
 """Quantum Pegasos Support Vector Classifier"""
 
-from __future__ import annotations
 from typing import Optional, Dict, Tuple
 from datetime import datetime
 import logging
@@ -76,7 +75,7 @@ class PegasosQSVC(SVC):
     # pylint: disable=invalid-name
     def fit(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
-    ) -> PegasosQSVC:
+    ) -> "PegasosQSVC":
         """Implementation of the kernelized Pegasos algorithm to fit the QSVC.
         Args:
             X: shape (x_samples, s), train features.
