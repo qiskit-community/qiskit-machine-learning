@@ -188,7 +188,7 @@ class PegasosQSVC(SVC):
             X: Train features. For a callable kernel shape (m_samples, n_features), for a precomputed
                kernel shape (m_samples, n_samples), where m denotes the set to be predicted and n the
                size of the training set. In that case, the kernel values in X have to be calculated
-               between the elements of the set to be predicted and the training set. 
+               with respect to the elements of the set to be predicted and the training set. 
 
         Returns:
             y_pred: Shape (n_samples), the predicted class labels for samples in X.
