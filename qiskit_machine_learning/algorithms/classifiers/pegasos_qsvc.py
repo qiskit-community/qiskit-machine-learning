@@ -64,8 +64,6 @@ class PegasosQSVC(SVC):
         if quantum_kernel is None:
             if not precomputed:
                 self._quantum_kernel = QuantumKernel()
-            else:
-                self._quantum_kernel = "precomputed"
         elif isinstance(quantum_kernel, QuantumKernel):
             if not precomputed:
                 self._quantum_kernel = quantum_kernel
@@ -92,7 +90,9 @@ class PegasosQSVC(SVC):
         self._kernel_offset = 1
 
     # pylint: disable=invalid-name
-    def fit(self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> None:
+    def fit(
+        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
+    ) -> "PegasosQSVC":
         """Implementation of the kernelized Pegasos algorithm to fit the QSVC.
         Args:
             X: Train features. For a callable kernel shape (n_samples, n_features), for a precomputed
@@ -188,7 +188,7 @@ class PegasosQSVC(SVC):
             X: Train features. For a callable kernel shape (m_samples, n_features), for a precomputed
                kernel shape (m_samples, n_samples), where m denotes the set to be predicted and n the
                size of the training set. In that case, the kernel values in X have to be calculated
-               with respect to the elements of the set to be predicted and the training set. 
+               with respect to the elements of the set to be predicted and the training set.
 
         Returns:
             y_pred: Shape (n_samples), the predicted class labels for samples in X.
