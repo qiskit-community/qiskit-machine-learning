@@ -13,13 +13,18 @@
 """Quantum Support Vector Classifier"""
 
 import warnings
-from typing import Optional
+from typing import Optional, Sequence
 
 from qiskit.utils.algorithm_globals import algorithm_globals
 from sklearn.svm import SVC
+import numpy as np
 
-from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
-from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
+from qiskit_machine_learning.exceptions import (
+    QiskitMachineLearningError,
+    QiskitMachineLearningWarning,
+)
+from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
 
 
 class QSVC(SVC):
@@ -33,27 +38,25 @@ class QSVC(SVC):
 
     **Example**
 
-    .. code-block::
+    .. code-block::python
 
-        qsvc = QSVC(quantum_kernel=qkernel)
+        qsvc = QSVC(quantum_kernel=quant_kernel, kernel_trainer=qkt)
         qsvc.fit(sample_train,label_train)
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
-        """
+    def __init__(
+        self,
+        quantum_kernel: Optional[QuantumKernel] = None,
+        kernel_trainer: Optional[QuantumKernelTrainer] = None,
+        **kwargs,
+    ):
+        r"""
         Args:
-            quantum_kernel: QuantumKernel to be used for classification.
-            *args: Variable length argument list to pass to SVC constructor.
-            **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
+            quantum_kernel:``QuantumKernel`` to be used for classification
+            kernel_trainer: ``QuantumKernelTrainer`` to be used for kernel optimization
+            **kwargs: Arbitrary keyword arguments to pass to ``SVC`` constructor
         """
-        if (len(args)) != 0:
-            msg = (
-                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
-                f"will be removed no sooner than 3 months after the release. Instead use "
-                f"keyword arguments."
-            )
-            warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
         if "kernel" in kwargs:
             msg = (
@@ -64,12 +67,18 @@ class QSVC(SVC):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
 
-        self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
-
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+        # Class Fields
+        self._quantum_kernel = None
+        self._kernel_trainer = kernel_trainer
+
+        # Setters
+        self.quantum_kernel = quantum_kernel or QuantumKernel()
+
+        # SVC constructor
+        super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
@@ -77,10 +86,48 @@ class QSVC(SVC):
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
         """Sets quantum kernel"""
+        # QuantumKernel passed
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
+
+    @property
+    def kernel_trainer(self) -> Optional[QuantumKernelTrainer]:
+        """Returns quantum kernel trainer"""
+        return self._kernel_trainer
+
+    @kernel_trainer.setter
+    def kernel_trainer(self, qk_trainer: Optional[QuantumKernelTrainer]) -> None:
+        """Returns quantum kernel trainer"""
+        self._kernel_trainer = qk_trainer
+
+    def fit(
+        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[Sequence[float]] = None
+    ) -> SVC:
+        # Ensure a backend was specified
+        if self._quantum_kernel.quantum_instance is None:
+            raise QiskitMachineLearningError(
+                """
+            Error fitting QSVC. No quantum instance was specified.
+            """
+            )
+
+        # Ensure there are no unbound user parameters
+        unbound_user_params = self._quantum_kernel.get_unbound_user_parameters()
+        if (len(unbound_user_params) > 0) and (self._kernel_trainer is None):
+            raise QiskitMachineLearningError(
+                f"""
+            Cannot fit QSVC while feature map has unbound user parameters ({unbound_user_params}).
+            """
+            )
+
+        # Conduct kernel optimization, if required
+        if self._kernel_trainer:
+            results = self._kernel_trainer.fit_kernel(self._quantum_kernel, X, y)
+            self._quantum_kernel.assign_user_parameters(results.optimal_parameters)
+
+        return super().fit(X=X, y=y, sample_weight=sample_weight)
 
     # we override this method to be able to pretty print this instance
     @classmethod
