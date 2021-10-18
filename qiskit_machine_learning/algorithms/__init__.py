@@ -76,6 +76,7 @@ Distribution Learners
    PyTorchDiscriminator
    QuantumGenerator
    QGAN
+
 """
 
 from .trainable_model import TrainableModel

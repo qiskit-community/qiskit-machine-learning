@@ -77,7 +77,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             qkt = QuantumKernelTrainer(optimizer=self.optimizer)
             qkt.fit_kernel(self.quantum_kernel, self.sample_train, self.label_train)
             # Ensure user parameters are bound to real values
-            self.assertFalse(self.quantum_kernel.unbound_user_parameters())
+            self.assertFalse(self.quantum_kernel.get_unbound_user_parameters())
 
         with self.subTest("check fit with params"):
             self.setUp()
@@ -85,7 +85,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             qkt = QuantumKernelTrainer(loss=loss)
             qkt.fit_kernel(self.quantum_kernel, self.sample_train, self.label_train)
             # Ensure user parameters are bound to real values
-            self.assertFalse(self.quantum_kernel.unbound_user_parameters())
+            self.assertFalse(self.quantum_kernel.get_unbound_user_parameters())
 
 
 if __name__ == "__main__":

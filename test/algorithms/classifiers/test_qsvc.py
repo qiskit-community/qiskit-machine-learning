@@ -22,26 +22,13 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms.optimizers import COBYLA
+from qiskit_machine_learning.algorithms import QSVC
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
-from qiskit_machine_learning.algorithms import QSVC
-
-
-def generate_tunable_feature_map():
-    """
-    Create a 2 qubit circuit consisting of 2 user parameters and 2 data bound parameters.
-    """
-    data_block = ZZFeatureMap(2)
-    tunable_block = ZZFeatureMap(2)
-    user_parameters = tunable_block.parameters
-
-    for i, _ in enumerate(user_parameters):
-        user_parameters[i]._name = f"θ[{i}]"
-
-    feature_map = data_block.compose(tunable_block).compose(data_block)
-
-    return feature_map, user_parameters
+from qiskit_machine_learning.exceptions import (
+    QiskitMachineLearningError,
+    QiskitMachineLearningWarning,
+)
 
 
 class TestQSVC(QiskitMachineLearningTestCase):
@@ -126,7 +113,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def test_with_kernel_parameter(self):
         """Test QSVC with the `kernel` argument."""
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(QiskitMachineLearningWarning):
             QSVC(kernel=1)
 
     def test_unbound_user_params(self):
@@ -145,6 +132,22 @@ class TestQSVC(QiskitMachineLearningTestCase):
         score = qsvc.score(self.sample_test, self.label_test)
 
         self.assertEqual(score, 1.0)
+
+
+def generate_tunable_feature_map():
+    """
+    Create a 2 qubit circuit consisting of 2 user parameters and 2 data bound parameters.
+    """
+    data_block = ZZFeatureMap(2)
+    tunable_block = ZZFeatureMap(2)
+    user_parameters = tunable_block.parameters
+
+    for i, _ in enumerate(user_parameters):
+        user_parameters[i]._name = f"θ[{i}]"
+
+    feature_map = data_block.compose(tunable_block).compose(data_block)
+
+    return feature_map, user_parameters
 
 
 if __name__ == "__main__":

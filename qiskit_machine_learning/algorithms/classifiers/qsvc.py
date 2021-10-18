@@ -67,19 +67,14 @@ class QSVC(SVC):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
 
-        if "kernel" in kwargs:
-            msg = (
-                "'kernel' argument is not supported and will be discarded, "
-                "please use 'quantum_kernel' instead."
-            )
-            warnings.warn(msg, UserWarning)
-            # if we don't delete, then this value clashes with our quantum_kernel
-            del kwargs["kernel"]
-
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
 
+        # Class Fields
+        self._quantum_kernel = None
         self._kernel_trainer = kernel_trainer
+
+        # Setters
         self.quantum_kernel = quantum_kernel or QuantumKernel()
 
         # SVC constructor
@@ -103,7 +98,7 @@ class QSVC(SVC):
         return self._kernel_trainer
 
     @kernel_trainer.setter
-    def kernel_trainer(self, qk_trainer: QuantumKernelTrainer) -> None:
+    def kernel_trainer(self, qk_trainer: Optional[QuantumKernelTrainer]) -> None:
         """Returns quantum kernel trainer"""
         self._kernel_trainer = qk_trainer
 
@@ -119,7 +114,7 @@ class QSVC(SVC):
             )
 
         # Ensure there are no unbound user parameters
-        unbound_user_params = self._quantum_kernel.unbound_user_parameters()
+        unbound_user_params = self._quantum_kernel.get_unbound_user_parameters()
         if (len(unbound_user_params) > 0) and (self._kernel_trainer is None):
             raise QiskitMachineLearningError(
                 f"""

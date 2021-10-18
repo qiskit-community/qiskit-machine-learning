@@ -49,8 +49,7 @@ class QuantumKernelTrainer:
                                         initial_point=initial_point,
                                         )
 
-        qsvc = QSVC(quantum_kernel=quant_kernel,
-                quant_kernel_trainer=qk_trainer)
+        qsvc = QSVC(quantum_kernel=quant_kernel, kernel_trainer=qk_trainer)
         qsvc.fit(X_train, y_train)
         score = qsvc.score(X_test, y_test)
     """
@@ -63,10 +62,13 @@ class QuantumKernelTrainer:
     ):
         """
         Args:
-            loss: A target loss function to be used in training. Default is `svc_alignment`.
+            loss (KernelLoss or str):
+                str: Loss functions available via string: {'svc_alignment: SVCAlignment())
+                KernelLoss: Any custom loss functions should extend the
+                            ``KernelLoss`` class
             optimizer: An instance of ``Optimizer`` to be used in training. Defaults to
                 ``SPSA``.
-            initial_point: Initial point for the optimizer to start from.
+            initial_point: Initial point from which the optimizer will begin.
 
         Raises:
             ValueError: unknown loss function
