@@ -396,7 +396,7 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
             with self.assertRaises(ValueError):
                 qkclass.assign_user_parameters(user_param_values)
 
-            self.assertEqual(qkclass.unbound_user_parameters(), qkclass.user_parameters)
+            self.assertEqual(qkclass.get_unbound_user_parameters(), qkclass.user_parameters)
 
         with self.subTest("test parameter assignment"):
             # Assign params to some new values, and also test the bind_user_parameters interface
@@ -409,7 +409,7 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
             ]
             self.assertEqual(user_param_values, bound_user_param_vals)
 
-            self.assertEqual(qkclass.unbound_user_parameters(), [])
+            self.assertEqual(qkclass.get_unbound_user_parameters(), [])
 
         with self.subTest("test unbound feature map"):
             # Ensure unbound feature map still holds all parameters of input feature map
