@@ -71,11 +71,8 @@ class QSVC(SVC):
             kwargs["random_state"] = algorithm_globals.random_seed
 
         # Class Fields
-        self._quantum_kernel = None
+        self._quantum_kernel = quantum_kernel or QuantumKernel()
         self._kernel_trainer = kernel_trainer
-
-        # Setters
-        self.quantum_kernel = quantum_kernel or QuantumKernel()
 
         # SVC constructor
         super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
