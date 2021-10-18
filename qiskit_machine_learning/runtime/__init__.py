@@ -23,14 +23,11 @@ algorithms and scripts in the cloud.
    :toctree: ../stubs/
    :nosignatures:
 
-   QKAProgram
-   QKAProgramResult
    QKAClient
    QKARuntimeResult
 
 """
 
-from .qka_program import QKAProgram, QKAProgramResult
 from .qka_client import QKAClient, QKARuntimeResult
 
-__all__ = ["QKAProgram", "QKAProgramResult", "QKAClient", "QKARuntimeResult"]
+__all__ = ["QKAClient", "QKARuntimeResult"]
