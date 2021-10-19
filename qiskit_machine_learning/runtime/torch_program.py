@@ -228,20 +228,21 @@ class TorchProgram:
         def wrapped_callback(*args):
             _, data = args  # first element is the job id
             # Publish results for callback
-            epoch_count = data[0]
-            training_avg_loss = data[1]
-            validating_avg_loss = data[2]
-            avg_fwd_time = data[3]
-            avg_bckwd_time = data[4]
-            epoch_time = data[5]
-            self._callback(
-                epoch_count,
-                training_avg_loss,
-                validating_avg_loss,
-                avg_fwd_time,
-                avg_bckwd_time,
-                epoch_time,
-            )
+            # epoch_count = data[0]
+            # training_avg_loss = data[1]
+            # validating_avg_loss = data[2]
+            # avg_fwd_time = data[3]
+            # avg_bckwd_time = data[4]
+            # epoch_time = data[5]
+            # self._callback(
+            #     epoch_count,
+            #     training_avg_loss,
+            #     validating_avg_loss,
+            #     avg_fwd_time,
+            #     avg_bckwd_time,
+            #     epoch_time,
+            # )
+            return self._callback(data)
 
         # if callback is set, return wrapped callback, else return None
         if self._callback:
@@ -341,8 +342,8 @@ class TorchProgram:
         # deserialize result
         torch_result = TorchProgramResult()
         torch_result.job_id = job.job_id()
-        torch_result.train_history = result.get("train_history")["train"]
-        torch_result.val_history = result.get("train_history")["val"]
+        torch_result.train_history = result.get("train_history", {}).get("train", None)
+        torch_result.val_history = result.get("train_history", {}).get("val", None)
         torch_result.model_state_dict = self.str_to_obj(result.get("model_state_dict"))
         torch_result.train_time = result.get("train_time")
         return torch_result
@@ -383,7 +384,7 @@ class TorchProgram:
 
         # send job to runtime and return result
         job = self.provider.runtime.run(
-            program_id="torch-inference",
+            program_id="torch-infer",
             inputs=inputs,
             options=options,
             callback=self._wrap_torch_callback(),
@@ -423,14 +424,12 @@ class TorchProgram:
         serial_model = self.obj_to_str(self._model)
 
         if score_func == "Classification":
-
-            def eval_classif(output, target):
-                pred = output.argmax(dim=1, keepdim=True)
-                correct = pred.eq(target.view_as(pred)).sum().item()
-                return correct
-
-            self._score_func = eval_classif
-
+            # The following function is used for the classification score
+            # def eval_classif(output, target):
+            #     pred = output.argmax(dim=1, keepdim=True)
+            #     correct = pred.eq(target.view_as(pred)).sum().item()
+            #     return correct
+            self._score_func = score_func
         elif score_func == "Regression":
             self._score_func = MSELoss()
         elif score_func is not None:
@@ -456,7 +455,7 @@ class TorchProgram:
 
         # send job to runtime and return result
         job = self.provider.runtime.run(
-            program_id="torch-inference",
+            program_id="torch-infer",
             inputs=inputs,
             options=options,
             callback=self._wrap_torch_callback(),

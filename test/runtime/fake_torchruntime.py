@@ -12,20 +12,37 @@
 
 """Fake runtime provider and VQE runtime."""
 
+import base64
 from typing import Dict, Any
+import dill
 from qiskit.providers import Provider
 from qiskit_machine_learning.runtime import TorchProgramResult
 
 
 class FakeTorchTrainerJob:
     """A fake job for unit tests."""
+    def __init__(self, serial_model):
+        model = self.str_to_obj(serial_model)
+        self._model_state_dict = self.obj_to_str(model.state_dict())
+
+    def obj_to_str(self, obj: Any) -> str:
+        """Encodes any object into a JSON-compatible string using dill. The intermediate
+        binary data must be converted to base 64 to be able to decode into utf-8 format."""
+        string = base64.b64encode(dill.dumps(obj, byref=False)).decode("utf-8")
+        return string
+
+    def str_to_obj(self, string: str) -> Any:
+        """Decodes a previously encoded string using dill (with an intermediate step
+        converting the binary data from base 64)."""
+        obj = dill.loads(base64.b64decode(string.encode()))
+        return obj
 
     def result(self) -> Dict[str, Any]:
         """Return a Torch program result."""
         result = TorchProgramResult()
         serialized_result = {
-            "model_state_dict": result.model_state_dict,
-            "train_history": result.train_history,
+            "model_state_dict": self._model_state_dict,
+            "train_history": {},
             "train_time": result.train_time
         }
         return serialized_result
@@ -36,13 +53,18 @@ class FakeTorchTrainerJob:
 
 class FakeTorchInferJob:
     """A fake job for unit tests."""
+    def __init__(self, is_score):
+        self._is_score = is_score
 
     def result(self) -> Dict[str, Any]:
         """Return a Torch program result."""
         serialized_result = {
             "prediction": [],
             "time": 1,
-        }
+            }
+        if self._is_score:
+            serialized_result["score"] = float
+
         return serialized_result
 
     def job_id(self) -> str:
@@ -63,12 +85,12 @@ class FakeTorchRuntimeTrainer:
             "optimizer": str,
             "loss_func": str,
             "train_data": str,
-            "val_data": str,
+            "val_data": (str, type(None)),
             "shots": int,
             "measurement_error_mitigation": bool,
             "epochs": int,
             "start_epoch": int,
-            "hooks": str
+            "hooks": (str, type(None), list)
         }
         for arg, value in inputs.items():
             if not isinstance(value, allowed_inputs[arg]):
@@ -87,7 +109,7 @@ class FakeTorchRuntimeTrainer:
             except Exception as exc:
                 raise ValueError("Callback failed") from exc
 
-        return FakeTorchTrainerJob()
+        return FakeTorchTrainerJob(inputs["model"])
 
 class FakeTorchRuntimeInfer:
     """A fake Torch runtime for unit tests."""
@@ -104,6 +126,9 @@ class FakeTorchRuntimeInfer:
             "shots": int,
             "measurement_error_mitigation": bool,
         }
+        if "score_func" in inputs:
+            allowed_inputs["score_func"] = str
+
         for arg, value in inputs.items():
             if not isinstance(value, allowed_inputs[arg]):
                 raise ValueError(f"{arg} does not have the right type: {allowed_inputs[arg]}")
@@ -112,7 +137,7 @@ class FakeTorchRuntimeInfer:
         for arg, value in options.items():
             if not isinstance(value, allowed_options[arg]):
                 raise ValueError(f"{arg} does not have the right type: {allowed_inputs[arg]}")
-        return FakeTorchInferJob()
+        return FakeTorchInferJob(is_score="score_func" in inputs)
 
 class FakeTorchTrainerRuntimeProvider(Provider):
     """A fake runtime provider for unit tests."""
