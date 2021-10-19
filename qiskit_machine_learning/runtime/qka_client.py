@@ -12,11 +12,21 @@
 
 """The Qiskit Machine Learning QKA Runtime Client."""
 
+from typing import Optional, Union, Dict, Callable, Any
 
-class QKAClient():
-    """The Qiskit Nature VQE Runtime Client.
+import numpy as np
 
-    This class is a client to call the VQE program in Qiskit Runtime."""
+from qiskit import QuantumCircuit
+from qiskit.providers import Provider
+from qiskit.providers.backend import Backend
+from qiskit.algorithms.variational_algorithm import VariationalResult
+from qiskit.algorithms.optimizers import Optimizer, SPSA
+
+
+class QKAClient:
+    """The Qiskit Machine Learning Runtime Client.
+
+    This class is a client to call the QKA program in Qiskit Runtime."""
 
     def __init__(
         self,
@@ -52,7 +62,7 @@ class QKAClient():
 
         # store settings
         self._provider = None
-        self._feature_map = ansatz
+        self._feature_map = feature_map
         self._optimizer = None
         self._backend = backend
         self._initial_point = initial_point
@@ -147,15 +157,14 @@ class QKAClient():
         self._callback = callback
 
     def align_kernel(
-            self,
-            data: np.ndarray,
-            labels: np.ndarray,
-            maxiters: int = 1,
-            C: float = 1.0,
-            initial_layout: Optional[Iterable[int]] = None,
+        self,
+        data: np.ndarray,
+        labels: np.ndarray,
+        maxiters: int = 1,
+        C: float = 1.0,
+        initial_layout: Optional[Iterable[int]] = None,
     ) -> QKARuntimeResult:
-        """
-        """
+        """ """
         if self.backend is None:
             raise ValueError("The backend has not been set.")
 
@@ -165,8 +174,8 @@ class QKAClient():
         # combine the settings with the given operator to runtime inputs
         inputs = {
             "feature_map": self.feature_map,
-            "data", data,
-            "labels", labels,
+            "data": data,
+            "labels": labels,
             "optimizer": self.optimizer,
             "initial_point": self.initial_point,
         }
@@ -262,8 +271,10 @@ def _validate_optimizer_settings(settings):
             f"{unsupported_args}"
         )
 
+
 class QKACallback:
     """Callback wrapper class."""
+
     def __init__(self) -> None:
         self._data = [[] for i in range(5)]
 
