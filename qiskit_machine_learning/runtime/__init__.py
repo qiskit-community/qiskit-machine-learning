@@ -24,9 +24,11 @@ algorithms and scripts in the cloud.
    :toctree: ../stubs/
    :nosignatures:
 
+   HookBase
    TorchProgram
+   TorchProgramResult
 """
-
+from .hookbase import HookBase
 from .torch_program import TorchProgram, TorchProgramResult
 
-__all__ = ["TorchProgram", "TorchProgramResult"]
+__all__ = ["HookBase", "TorchProgram", "TorchProgramResult"]
