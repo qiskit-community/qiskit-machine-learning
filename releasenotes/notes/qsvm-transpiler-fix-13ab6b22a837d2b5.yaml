@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    ``QuantumKernel`` transpiles all circuits before execution. However, this
+     information was not being passed, which calls the transpiler many times
+     during the execution of the ``QSVM`` algorithm. Now, ``had_transpiled=True``
+     is passed correctly and the algorithm runs faster.
