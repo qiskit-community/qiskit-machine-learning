@@ -95,7 +95,6 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 1.0)
 
-
     def test_empty_kernel(self):
         """Test PegasosQSVC with empty QuantumKernel"""
         qkernel = QuantumKernel()
