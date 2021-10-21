@@ -322,6 +322,10 @@ class TorchProgram:
             "hooks": serial_hooks,
         }
 
+        # import json
+        # with open('params.json', 'w') as f:
+        #     json.dump(inputs, f, indent=4)
+
         # send job to runtime and return result
         job = self.provider.runtime.run(
             program_id="torch-train",
