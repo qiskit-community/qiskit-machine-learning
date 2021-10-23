@@ -143,33 +143,14 @@ class PegasosQSVC(SVC):
 
         # empty dictionaries to represent sparse arrays
         self._alphas = {}
-        kernel: Dict[Tuple, np.ndarray] = {}
 
         t_0 = datetime.now()
+        # training loop
         for step in range(1, self._num_steps + 1):
             # for every step, a random index (determining a random datum) is fixed
             i = np.random.randint(0, len(y))
 
-            # this value corresponds to a sum of kernel values weighted by their labels and alphas
-            value = 0.0
-            # only loop over the non zero alphas (preliminary support vectors)
-            for j in self._alphas:
-                if not self._precomputed:
-                    # evaluate kernel function only for the fixed datum and the data with non zero alpha
-                    kernel[(i, j)] = kernel.get((i, j), self._quantum_kernel.evaluate(X[i], X[j]))
-                    value += (
-                        # alpha weights the contribution of the associated datum
-                        self._alphas[j]
-                        # the class membership labels have to be in {-1, +1}
-                        * self._label_map[y[j]]
-                        # the offset to the kernel function leads to an implicit bias term
-                        * (kernel[(i, j)] + self._kernel_offset)
-                    )
-                else:
-                    # analogous to the block following the if statement, but for a precomputed kernel
-                    value += (
-                        self._alphas[j] * self._label_map[y[j]] * (X[i, j] + self._kernel_offset)
-                    )
+            value = self._compute_weighted_kernel_sum(i, X, True)
 
             if (self._label_map[y[i]] * self.C / step) * value < 1:
                 # only way for a component of alpha to become non zero
@@ -185,7 +166,7 @@ class PegasosQSVC(SVC):
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Perform classification on samples in X.
         Args:
-            X: Train features. For a callable kernel shape (m_samples, n_features), for a precomputed
+            X: Features. For a callable kernel shape (m_samples, n_features), for a precomputed
                kernel shape (m_samples, n_samples), where m denotes the set to be predicted and n the
                size of the training set. In that case, the kernel values in X have to be calculated
                with respect to the elements of the set to be predicted and the training set.
@@ -211,23 +192,7 @@ class PegasosQSVC(SVC):
         t_0 = datetime.now()
         y = np.zeros(X.shape[0])
         for i in range(X.shape[0]):
-            value = 0.0
-            for j in self._alphas:  # only loop over the non zero alphas
-                if not self._precomputed:
-                    value += (
-                        self._alphas[j]
-                        * self._label_map[self._y_train[j]]
-                        * (
-                            self._quantum_kernel.evaluate(X[i], self._x_train[j])
-                            + self._kernel_offset
-                        )
-                    )
-                else:
-                    value += (
-                        self._alphas[j]
-                        * self._label_map[self._y_train[j]]
-                        * (X[i, j] + self._kernel_offset)
-                    )
+            value = self._compute_weighted_kernel_sum(i, X, False)
 
             if value > 0:
                 y[i] = self._label_pos
@@ -237,6 +202,53 @@ class PegasosQSVC(SVC):
         logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
 
         return y
+
+    def _compute_weighted_kernel_sum(self, index, X, training) -> float:
+        """Helper function to compute the weighted sum over support vectors used for both training
+        and prediction with the Pegasos algorithm.
+
+        Args:
+            index: fixed index distinguishing some datum
+            X: Features
+            training: flag indicating whether the loop is used within training or prediction
+
+        Returns:
+            float: weighted sum of kernel evaluations employed in the Pegasos algorithm
+        """
+        kernel: Dict[Tuple, np.ndarray] = {}
+        # this value corresponds to a sum of kernel values weighted by their labels and alphas
+        value = 0.0
+        # only loop over the non zero alphas (preliminary support vectors)
+        for j in self._alphas:
+            # perform the kernel evaluations on the fly, as intended
+            if not self._precomputed:
+                # for training
+                if training:
+                    x_j = X[j]
+                # for prediction
+                else:
+                    x_j = self._x_train[j]
+
+                # evaluate kernel function only for the fixed datum and the data with non zero alpha
+                kernel[(index, j)] = kernel.get(
+                    (index, j), self._quantum_kernel.evaluate(X[index], x_j)
+                )
+                kernel_value = kernel[(index, j)]
+
+            # consider a precomputed kernel
+            else:
+                kernel_value = X[index, j]
+
+            value += (
+                # alpha weights the contribution of the associated datum
+                self._alphas[j]
+                # the class membership labels have to be in {-1, +1}
+                * self._label_map[self._y_train[j]]
+                # the offset to the kernel function leads to an implicit bias term
+                * (kernel_value + self._kernel_offset)
+            )
+
+        return value
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
