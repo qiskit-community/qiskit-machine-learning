@@ -105,6 +105,53 @@ class TestVQC(QiskitMachineLearningTestCase):
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
 
+    @data(
+        # num_qubits, feature_map, ansatz
+        (True, False, False),
+        (True, True, False),
+        (True, True, True),
+        (False, True, True),
+        (False, False, True),
+        (True, False, True),
+        (False, True, False),
+    )
+    def test_default_parameters(self, config):
+        provide_num_qubits, provide_feature_map, provide_ansatz = config
+        num_inputs = 2
+
+        num_qubits, feature_map, ansatz = None, None, None
+
+        if provide_num_qubits:
+            num_qubits = num_inputs
+        if provide_feature_map:
+            feature_map = ZZFeatureMap(num_inputs)
+        if provide_ansatz:
+            ansatz = RealAmplitudes(num_inputs, reps=1)
+
+        classifier = VQC(
+            num_qubits=num_qubits,
+            feature_map=feature_map,
+            ansatz=ansatz,
+            quantum_instance=self.qasm_quantum_instance,
+        )
+
+        # construct data
+        num_samples = 5
+        # pylint: disable=invalid-name
+        X = algorithm_globals.random.random((num_samples, num_inputs))
+        y = 1.0 * (np.sum(X, axis=1) <= 1)
+        while len(np.unique(y)) == 1:
+            X = algorithm_globals.random.random((num_samples, num_inputs))
+            y = 1.0 * (np.sum(X, axis=1) <= 1)
+        y = np.array([y, 1 - y]).transpose()  # VQC requires one-hot encoded input
+
+        # fit to data
+        classifier.fit(X, y)
+
+        # score
+        score = classifier.score(X, y)
+        self.assertGreater(score, 0.5)
+
 
 if __name__ == "__main__":
     unittest.main()
