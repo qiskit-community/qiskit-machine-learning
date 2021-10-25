@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixes a bug where ```VQC``` could not be instantiated unless either ```feature_map```
+    or ```ansatz``` were provided (#217). ```VQC``` is now instantiated with the default
+    ```feature_map``` and/or ```ansatz```.
