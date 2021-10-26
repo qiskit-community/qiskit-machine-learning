@@ -116,6 +116,8 @@ class TestVQC(QiskitMachineLearningTestCase):
         (False, True, False),
     )
     def test_default_parameters(self, config):
+        """Test VQC instantiation with default parameters."""
+
         provide_num_qubits, provide_feature_map, provide_ansatz = config
         num_inputs = 2
 
