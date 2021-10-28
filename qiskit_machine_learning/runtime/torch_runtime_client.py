@@ -221,21 +221,21 @@ class TorchRuntimeClient:
 
         def wrapped_callback(*args):
             _, data = args  # first element is the job id
-            # Publish results for callback
-            # epoch_count = data[0]
-            # training_avg_loss = data[1]
-            # validating_avg_loss = data[2]
-            # avg_fwd_time = data[3]
-            # avg_bckwd_time = data[4]
-            # epoch_time = data[5]
-            # self._callback(
-            #     epoch_count,
-            #     training_avg_loss,
-            #     validating_avg_loss,
-            #     avg_fwd_time,
-            #     avg_bckwd_time,
-            #     epoch_time,
-            # )
+            # wrap the callback
+            epoch_count = data[0]
+            training_avg_loss = data[1]
+            validating_avg_loss = data[2]
+            avg_forward_time = data[3]
+            avg_backward_time = data[4]
+            epoch_time = data[5]
+            self._callback(
+                epoch_count,
+                training_avg_loss,
+                validating_avg_loss,
+                avg_forward_time,
+                avg_backward_time,
+                epoch_time,
+            )
             return self._callback(data)
 
         # if callback is set, return wrapped callback, else return None

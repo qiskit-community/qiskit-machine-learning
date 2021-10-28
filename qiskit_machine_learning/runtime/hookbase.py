@@ -15,7 +15,7 @@
 from typing import Optional, Any
 
 
-class HookBase():
+class HookBase:
     """Base class for hooks that can be registered in ``Trainer``.
     A hook can implement 6 methods. Each method is called before/after the corresponding processes.
     """
