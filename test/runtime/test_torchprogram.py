@@ -27,8 +27,7 @@ from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 from qiskit_machine_learning.runtime import TorchProgram
 
-from .fake_torchruntime import (FakeTorchInferRuntimeProvider,
-                                FakeTorchTrainerRuntimeProvider)
+from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
 
 class TorchDataset(Dataset):
@@ -43,6 +42,7 @@ class TorchDataset(Dataset):
 
     def __getitem__(self, idx):
         import torch
+
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
@@ -51,6 +51,7 @@ class TorchDataset(Dataset):
 
         return X_i, y_i
 
+
 class TestTorchProgram(QiskitMachineLearningTestCase):
     """Test the Torch program."""
 
@@ -58,7 +59,7 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         super().setUp()
         self._trainer_provider = FakeTorchTrainerRuntimeProvider()
         self._infer_provider = FakeTorchInferRuntimeProvider()
-        self._train_set = TorchDataset([1],[1])
+        self._train_set = TorchDataset([1], [1])
         self._train_loader = DataLoader(self._train_set, batch_size=1, shuffle=False)
         # construct a simple qnn for unittests
         param_x = Parameter("x")
@@ -67,11 +68,7 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         param_y = Parameter("y")
         ansatz = QuantumCircuit(1, name="vf")
         ansatz.ry(param_y, 0)
-        qnn = TwoLayerQNN(
-            1,
-            feature_map,
-            ansatz
-        )
+        qnn = TwoLayerQNN(1, feature_map, ansatz)
         self._model = TorchConnector(qnn, [1])
 
     def test_fit(self):
@@ -79,16 +76,31 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchProgram(model=self._model, optimizer=optimizer, loss_func=loss_func, provider=self._trainer_provider, epochs=1, backend=backend, shots=1024)
+        torch_program = TorchProgram(
+            model=self._model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+            provider=self._trainer_provider,
+            epochs=1,
+            backend=backend,
+            shots=1024,
+        )
         torch_program.fit(self._train_loader)
-
 
     def test_predict(self):
         """Test for predict"""
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchProgram(model=self._model, optimizer=optimizer, loss_func=loss_func, provider=self._infer_provider, epochs=1, backend=backend, shots=1024)
+        torch_program = TorchProgram(
+            model=self._model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+            provider=self._infer_provider,
+            epochs=1,
+            backend=backend,
+            shots=1024,
+        )
         torch_program.predict(self._train_loader)
 
     def test_score(self):
@@ -96,7 +108,15 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchProgram(model=self._model, optimizer=optimizer, loss_func=loss_func, provider=self._infer_provider, epochs=1, backend=backend, shots=1024)
+        torch_program = TorchProgram(
+            model=self._model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+            provider=self._infer_provider,
+            epochs=1,
+            backend=backend,
+            shots=1024,
+        )
         torch_program.score(self._train_loader, score_func="Regression")
 
 

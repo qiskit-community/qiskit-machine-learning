@@ -21,6 +21,7 @@ from qiskit_machine_learning.runtime import TorchProgramResult
 
 class FakeTorchTrainerJob:
     """A fake job for unit tests."""
+
     def __init__(self, serial_model):
         model = self.str_to_obj(serial_model)
         self._model_state_dict = self.obj_to_str(model.state_dict())
@@ -43,7 +44,7 @@ class FakeTorchTrainerJob:
         serialized_result = {
             "model_state_dict": self._model_state_dict,
             "train_history": {},
-            "train_time": result.train_time
+            "train_time": result.train_time,
         }
         return serialized_result
 
@@ -51,8 +52,10 @@ class FakeTorchTrainerJob:
         """Return a fake job ID."""
         return "c2985khdm6upobbnmll0"
 
+
 class FakeTorchInferJob:
     """A fake job for unit tests."""
+
     def __init__(self, is_score):
         self._is_score = is_score
 
@@ -61,7 +64,7 @@ class FakeTorchInferJob:
         serialized_result = {
             "prediction": [],
             "time": 1,
-            }
+        }
         if self._is_score:
             serialized_result["score"] = float
 
@@ -70,6 +73,7 @@ class FakeTorchInferJob:
     def job_id(self) -> str:
         """Return a fake job ID."""
         return "c2985khdm6upobbnmll0"
+
 
 class FakeTorchRuntimeTrainer:
     """A fake Torch runtime for unit tests."""
@@ -90,7 +94,7 @@ class FakeTorchRuntimeTrainer:
             "measurement_error_mitigation": bool,
             "epochs": int,
             "start_epoch": int,
-            "hooks": (str, type(None), list)
+            "hooks": (str, type(None), list),
         }
         for arg, value in inputs.items():
             if not isinstance(value, allowed_inputs[arg]):
@@ -110,6 +114,7 @@ class FakeTorchRuntimeTrainer:
                 raise ValueError("Callback failed") from exc
 
         return FakeTorchTrainerJob(inputs["model"])
+
 
 class FakeTorchRuntimeInfer:
     """A fake Torch runtime for unit tests."""
@@ -139,6 +144,7 @@ class FakeTorchRuntimeInfer:
                 raise ValueError(f"{arg} does not have the right type: {allowed_inputs[arg]}")
         return FakeTorchInferJob(is_score="score_func" in inputs)
 
+
 class FakeTorchTrainerRuntimeProvider(Provider):
     """A fake runtime provider for unit tests."""
 
@@ -152,6 +158,7 @@ class FakeTorchTrainerRuntimeProvider(Provider):
     def runtime(self) -> FakeTorchRuntimeTrainer:
         """Return the runtime for a torch trainer."""
         return FakeTorchRuntimeTrainer()
+
 
 class FakeTorchInferRuntimeProvider(Provider):
     """A fake runtime provider for unit tests."""

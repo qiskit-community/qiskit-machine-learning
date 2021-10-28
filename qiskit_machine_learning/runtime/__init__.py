@@ -25,10 +25,10 @@ algorithms and scripts in the cloud.
    :nosignatures:
 
    HookBase
-   TorchProgram
-   TorchProgramResult
+   TorchRuntimeClient
+   TorchRuntimeResult
 """
 from .hookbase import HookBase
-from .torch_program import TorchProgram, TorchProgramResult
+from .torch_runtime_client import TorchRuntimeClient, TorchRuntimeResult
 
-__all__ = ["HookBase", "TorchProgram", "TorchProgramResult"]
+__all__ = ["HookBase", "TorchRuntimeClient", "TorchRuntimeResult"]

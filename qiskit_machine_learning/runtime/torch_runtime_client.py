@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""The Qiskit Machine Learning Torch Program"""
+"""The Qiskit Machine Learning Torch Runtime Client"""
 
 import base64
 from typing import Any, Callable, Dict, Optional, Union
@@ -31,7 +31,8 @@ from qiskit.providers.backend import Backend
 class TorchRuntimeResult:
     """The TorchRuntimeClient result object.
 
-    The result objects contains the state dictionary of thetrained model, ,and the training history such as the value of loss function in each epoch.
+    The result objects contains the state dictionary of thetrained model,
+    and the training history such as the value of loss function in each epoch.
     """
 
     def __init__(self) -> None:
@@ -196,7 +197,9 @@ class TorchRuntimeClient:
     def loss_func(self, loss: Any) -> None:
         """Set the loss function."""
         if not isinstance(loss, (_Loss, Callable)):
-            raise TypeError("The loss function must be an instance of torch.nn.Loss._Loss or Callable")
+            raise TypeError(
+                "The loss function must be an instance of torch.nn.Loss._Loss or Callable"
+            )
         self._loss_func = loss
 
     @property
@@ -295,7 +298,6 @@ class TorchRuntimeClient:
         serial_hooks = []
         if hooks is not None:
             serial_hooks = self.obj_to_str(hooks)
-
         # combine the settings with the serialized buffers to runtime inputs
         inputs = {
             "model": serial_model,
@@ -313,9 +315,12 @@ class TorchRuntimeClient:
         # define runtime options
         options = {"backend_name": self._backend.name()}
 
-        # import json
-        # with open('params.json', 'w') as f:
-        #     json.dump(inputs, f, indent=4)
+        import json
+
+        with open("params.json", "w") as f:
+            json.dump(inputs, f, indent=4)
+
+        return 1
 
         # send job to runtime and return result
         job = self.provider.runtime.run(
@@ -376,6 +381,13 @@ class TorchRuntimeClient:
 
         # define runtime options
         options = {"backend_name": self._backend.name()}
+
+        import json
+
+        with open("params.json", "w") as f:
+            json.dump(inputs, f, indent=4)
+
+        return 1
 
         # send job to runtime and return result
         job = self.provider.runtime.run(
