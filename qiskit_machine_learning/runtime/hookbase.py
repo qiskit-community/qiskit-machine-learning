@@ -1,4 +1,4 @@
-# This code is part of qiskit-runtime.
+# This code is part of Qiskit.
 #
 # (C) Copyright IBM 2021.
 #
@@ -12,75 +12,47 @@
 
 """HookBase for the Torch Runtime"""
 
-from typing import Optional
+from typing import Optional, Any
 
 
-class HookBase:
-    """
-    Base class for hooks that can be registered in ``Trainer``.
-    Each hook can implement 6 methods. The way they are called is demonstrated
-    in the following snippet:
-    ```
-        hook.before_train()
-        for epoch in range(epochs):
-            hook.before_epoch()
-            for batch in train_loader:
-                hook.before_step()
-                trainer.run_step()
-                hook.after_step()
-            hook.after_epoch()
-        hook.after_train()
-    ```
-    In the hook method, users can access ``self.trainer`` to access more
-    properties about the context (e.g., model, current iteration, or config).
+class HookBase():
+    """Base class for hooks that can be registered in ``Trainer``.
+    A hook can implement 6 methods. Each method is called before/after the corresponding processes.
     """
 
-    # Weak reference to the trainer object set by the trainer when the hook is registered.
     def __init__(self):
         self._trainer: Optional["Trainer"] = None
 
     @property
-    def trainer(self) -> Optional["Trainer"]:  # type: ignore
+    def trainer(self) -> Any:
         """Return the trainer for the hook"""
         return self._trainer
 
     @trainer.setter
-    def trainer(self, trainer: Optional["Trainer"]) -> None:  # type: ignore
+    def trainer(self, trainer: Any) -> None:
         """Set the trainer"""
         self._trainer = trainer
 
     def before_train(self):
-        """
-        Called before the first iteration.
-        """
+        """Called before the first iteration."""
         pass
 
     def after_train(self):
-        """
-        Called after the last iteration.
-        """
+        """Called after the last iteration."""
         pass
 
     def before_epoch(self):
-        """
-        Called before each epoch.
-        """
+        """Called before each epoch."""
         pass
 
     def after_epoch(self):
-        """
-        Called after each epoch.
-        """
+        """Called after each epoch."""
         pass
 
     def before_step(self):
-        """
-        Called before each iteration.
-        """
+        """Called before each iteration."""
         pass
 
     def after_step(self):
-        """
-        Called after each iteration.
-        """
+        """Called after each iteration."""
         pass

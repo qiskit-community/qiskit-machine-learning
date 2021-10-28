@@ -52,7 +52,7 @@ class TorchDataset(Dataset):
         return x_i, y_i
 
 
-class TestTorchProgram(QiskitMachineLearningTestCase):
+class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
     """Test the Torch program."""
 
     def setUp(self):
@@ -61,7 +61,7 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         self._infer_provider = FakeTorchInferRuntimeProvider()
         self._train_set = TorchDataset([1], [1])
         self._train_loader = DataLoader(self._train_set, batch_size=1, shuffle=False)
-        # construct a simple qnn for unittests
+        # construct a simple qnn for unit tests
         param_x = Parameter("x")
         feature_map = QuantumCircuit(1, name="fm")
         feature_map.ry(param_x, 0)

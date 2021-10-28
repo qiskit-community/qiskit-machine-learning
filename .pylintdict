@@ -47,6 +47,7 @@ endian
 entangler
 et
 eval
+func
 formatter
 gaussian
 getter
@@ -134,6 +135,7 @@ regressors
 regs
 rescale
 rhs
+runtime
 rx
 ry
 rz
@@ -172,6 +174,7 @@ transpiling
 unitaries
 univariate
 unsymmetric
+utf
 utils
 variational
 vec

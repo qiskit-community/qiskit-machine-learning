@@ -14,21 +14,24 @@
 Runtime (:mod:`qiskit_machine_learning.runtime`)
 ===============================================================
 
+.. currentmodule:: qiskit_machine_learning.runtime
+
 Programs that embed Qiskit Runtime in the algorithmic interfaces and facilitate usage of
 algorithms and scripts in the cloud.
-
-.. currentmodule:: qiskit_machine_learning.runtime
 
 
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
 
-   HookBase
+
    TorchRuntimeClient
    TorchRuntimeResult
 """
+
 from .hookbase import HookBase
 from .torch_runtime_client import TorchRuntimeClient, TorchRuntimeResult
+
+# __all__ = ["HookBase"]
 
 __all__ = ["HookBase", "TorchRuntimeClient", "TorchRuntimeResult"]

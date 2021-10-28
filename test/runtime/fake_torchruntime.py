@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Fake runtime provider and VQE runtime."""
+"""Fake runtime provider and Torch runtime."""
 
 import base64
 from typing import Dict, Any

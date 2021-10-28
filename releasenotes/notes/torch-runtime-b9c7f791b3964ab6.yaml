@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Allow leveraging Qiskit Runtime to execute a PyTorch Module including TorchConnector
+    in the cloud using the :class:`~qiskit_machine_learning.runtime.TorchRuntimeClient`.

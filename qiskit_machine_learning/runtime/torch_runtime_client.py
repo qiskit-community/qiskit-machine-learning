@@ -26,12 +26,13 @@ from torch.utils.data import DataLoader as TorchDataloader
 from qiskit.exceptions import QiskitError
 from qiskit.providers import Provider
 from qiskit.providers.backend import Backend
+from qiskit_machine_learning.runtime.hookbase import HookBase
 
 
 class TorchRuntimeResult:
     """The TorchRuntimeClient result object.
 
-    The result objects contains the state dictionary of thetrained model,
+    The result objects contains the state dictionary of the trained model,
     and the training history such as the value of loss function in each epoch.
     """
 
@@ -123,7 +124,7 @@ class TorchRuntimeClient:
                 Six parameter values are passed to the callback as follows during each evaluation
                 by the optimizer for its current set of parameters as it works towards the minimum.
                 These are: the epoch_count, the average loss of training,
-                the avarage loss of validating, the average forward pass time,
+                the average loss of validating, the average forward pass time,
                 the average backward pass time, the epoch time.
             provider: IBMQ provider that supports runtime services.
             backend: Selected quantum backend.
@@ -259,21 +260,21 @@ class TorchRuntimeClient:
         self,
         train_loader: TorchDataloader,
         val_loader: Optional[TorchDataloader] = None,
-        hooks: Optional[Any] = None,
+        hooks: Optional[HookBase] = None,
         start_epoch: int = 0,
     ) -> TorchRuntimeResult:
         """Calls the Torch Runtime train('torch-train') to train the model.
 
         Args:
-            train_loader: A PyTorch dataloader object containing the training dataset.
-            val_loader: A PyTorch dataloader object containing the validation dataset.
+            train_loader: A PyTorch data loader object containing the training dataset.
+            val_loader: A PyTorch data loader object containing the validation dataset.
                 If no validation loader is provided, the validation step will be skipped
                 during training.
             hooks: List of custom hook functions to interact with the training loop.
             start_epoch: initial epoch for warm-start training.
         Returns:
-            result: A ``TorchRuntimeResult`` object with the trained model's state dictionary
-                    and training history data.
+            result: A :class:`~qiskit_machine_learning.runtime.TorchRuntimeResult` object
+                with the trained model's state dictionary and training history data.
         Raises:
             ValueError: If the backend has not yet been set.
             ValueError: If the provider has not yet been set.
@@ -340,7 +341,7 @@ class TorchRuntimeClient:
         # Store trained model state for later prediction/scoring/further training
         self._model.load_state_dict(self.str_to_obj(result["model_state_dict"]))
 
-        # deserialize result
+        # re-build result from serialized return value
         torch_result = TorchRuntimeResult()
         torch_result.job_id = job.job_id()
         torch_result.train_history = result.get("train_history", {}).get("train", None)
@@ -353,7 +354,7 @@ class TorchRuntimeClient:
         """Calls the Torch Runtime infer ('torch-infer') for prediction purposes.
 
         Args:
-            data_loader: A PyTorch dataloader object containing the inference dataset.
+            data_loader: A PyTorch data loader object containing the inference dataset.
         Returns:
             prediction: A PyTorch ``Tensor`` with the result of applying the model.
         Raises:
@@ -410,11 +411,11 @@ class TorchRuntimeClient:
         """Calls the Torch Runtime infer ('torch-infer') for scoring.
 
         Args:
-            data_loader: A PyTorch dataloader object containing the inference dataset.
+            data_loader: A PyTorch data loader object containing the inference dataset.
             score_func: A string indicating one of the available scoring functions
                         ("Classification" for binary classification, and "Regression" for regression)
                         or a custom scoring function defined as:
-                        `def score_func(model_output, target): -> score: float`.
+                        ``def score_func(model_output, target): -> score: float``.
         Returns:
             score: A metric of the model's performance.
         Raises:
@@ -432,15 +433,10 @@ class TorchRuntimeClient:
         serial_model = self.obj_to_str(self._model)
 
         if score_func == "Classification":
-            # The following function is used for the classification score
-            # def eval_classif(output, target):
-            #     pred = output.argmax(dim=1, keepdim=True)
-            #     correct = pred.eq(target.view_as(pred)).sum().item()
-            #     return correct
             self._score_func = _score_classification
         elif score_func == "Regression":
             self._score_func = MSELoss()
-        elif score_func is not None:
+        elif callable(score_func):
             self._score_func = score_func
         else:
             raise ValueError("Scoring function is not provided.")
@@ -460,6 +456,13 @@ class TorchRuntimeClient:
             "shots": self._shots,
             "measurement_error_mitigation": self.measurement_error_mitigation,
         }
+
+        import json
+
+        with open("params.json", "w") as f:
+            json.dump(inputs, f, indent=4)
+
+        return 1
 
         # send job to runtime and return result
         job = self.provider.runtime.run(
