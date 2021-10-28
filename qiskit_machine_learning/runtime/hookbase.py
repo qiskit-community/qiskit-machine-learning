@@ -12,6 +12,9 @@
 
 """HookBase for the Torch Runtime"""
 
+from typing import Optional
+
+
 class HookBase:
     """
     Base class for hooks that can be registered in ``Trainer``.
@@ -34,14 +37,16 @@ class HookBase:
 
     # Weak reference to the trainer object set by the trainer when the hook is registered.
     def __init__(self):
-        self._trainer: "Trainer" = None
+        self._trainer: Optional["Trainer"] = None
 
     @property
-    def trainer(self) -> "Trainer":
+    def trainer(self) -> Optional["Trainer"]:  # type: ignore
+        """Return the trainer for the hook"""
         return self._trainer
 
     @trainer.setter
-    def trainer(self, trainer: "Trainer") -> None:
+    def trainer(self, trainer: Optional["Trainer"]) -> None:  # type: ignore
+        """Set the trainer"""
         self._trainer = trainer
 
     def before_train(self):

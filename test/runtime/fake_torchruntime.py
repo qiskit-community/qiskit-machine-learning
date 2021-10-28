@@ -16,7 +16,7 @@ import base64
 from typing import Dict, Any
 import dill
 from qiskit.providers import Provider
-from qiskit_machine_learning.runtime import TorchProgramResult
+from qiskit_machine_learning.runtime import TorchRuntimeResult
 
 
 class FakeTorchTrainerJob:
@@ -40,7 +40,7 @@ class FakeTorchTrainerJob:
 
     def result(self) -> Dict[str, Any]:
         """Return a Torch program result."""
-        result = TorchProgramResult()
+        result = TorchRuntimeResult()
         serialized_result = {
             "model_state_dict": self._model_state_dict,
             "train_history": {},
@@ -119,7 +119,7 @@ class FakeTorchRuntimeTrainer:
 class FakeTorchRuntimeInfer:
     """A fake Torch runtime for unit tests."""
 
-    def run(self, program_id, inputs, options, callback=None):
+    def run(self, program_id, inputs, options):
         """Run the fake program. Checks the input types."""
 
         if program_id != "torch-infer":

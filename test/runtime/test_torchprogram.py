@@ -25,7 +25,7 @@ from qiskit.circuit import Parameter
 from qiskit.providers.basicaer import QasmSimulatorPy
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
-from qiskit_machine_learning.runtime import TorchProgram
+from qiskit_machine_learning.runtime import TorchRuntimeClient
 
 from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
@@ -33,12 +33,12 @@ from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRu
 class TorchDataset(Dataset):
     """Map-style dataset"""
 
-    def __init__(self, X, y):
-        self.X = Tensor(X).float()
+    def __init__(self, x, y):
+        self.x = Tensor(x).float()
         self.y = Tensor(y).float()
 
     def __len__(self):
-        return len(self.X)
+        return len(self.x)
 
     def __getitem__(self, idx):
         import torch
@@ -46,10 +46,10 @@ class TorchDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        X_i = self.X[idx]
+        x_i = self.x[idx]
         y_i = self.y[idx]
 
-        return X_i, y_i
+        return x_i, y_i
 
 
 class TestTorchProgram(QiskitMachineLearningTestCase):
@@ -76,7 +76,7 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchProgram(
+        torch_program = TorchRuntimeClient(
             model=self._model,
             optimizer=optimizer,
             loss_func=loss_func,
@@ -92,7 +92,7 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchProgram(
+        torch_program = TorchRuntimeClient(
             model=self._model,
             optimizer=optimizer,
             loss_func=loss_func,
@@ -108,7 +108,7 @@ class TestTorchProgram(QiskitMachineLearningTestCase):
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchProgram(
+        torch_program = TorchRuntimeClient(
             model=self._model,
             optimizer=optimizer,
             loss_func=loss_func,

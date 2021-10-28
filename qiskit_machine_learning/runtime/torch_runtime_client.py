@@ -36,12 +36,11 @@ class TorchRuntimeResult:
     """
 
     def __init__(self) -> None:
-        self._job_id = None
-        self._job_id = None
-        self._train_history = None
-        self._val_history = None
-        self._model_state_dict = None
-        self._train_time = None
+        self._job_id = None  # type: str
+        self._train_history = None  # type: Dict[str, Any]
+        self._val_history = None  # type: Dict[str, Any]
+        self._model_state_dict = None  # type: Dict[str, Any]
+        self._train_time = None  # type: float
 
     @property
     def job_id(self) -> str:
@@ -54,7 +53,7 @@ class TorchRuntimeResult:
         self._job_id = job_id
 
     @property
-    def train_history(self) -> int:
+    def train_history(self) -> Dict[str, Any]:
         """The train history"""
         return self._train_history
 
@@ -64,7 +63,7 @@ class TorchRuntimeResult:
         self._train_history = history
 
     @property
-    def val_history(self) -> int:
+    def val_history(self) -> Dict[str, Any]:
         """Returns validation history"""
         return self._val_history
 
@@ -89,7 +88,7 @@ class TorchRuntimeResult:
         return self._train_time
 
     @train_time.setter
-    def train_time(self, time: int) -> None:
+    def train_time(self, time: float) -> None:
         """Sets training time"""
         self._train_time = time
 
@@ -116,7 +115,7 @@ class TorchRuntimeClient:
             loss_func: A PyTorch-compatible loss function. Can be one of the
                 official PyTorch loss functions from ``torch.nn.loss`` or a custom
                 function defined by the user, as long as it follows the format
-                ``def loss_f(out_model, target): -> loss: float``.
+                ``def loss_func(output: TorchTensor, target: TorchTensor): -> loss: float``.
             epochs: The maximum number of training epochs. By default, 100.
             shots: The number of shots for the quantum backend. By default, 1024.
             measurement_error_mitigation: Whether or not to use measurement error mitigation.
@@ -189,14 +188,14 @@ class TorchRuntimeClient:
         self._optimizer = optim
 
     @property
-    def loss_func(self) -> TorchOptim:
+    def loss_func(self) -> Union[_Loss, Callable]:
         """Return the loss function."""
         return self._loss_func
 
     @loss_func.setter
-    def loss_func(self, loss: Any) -> None:
+    def loss_func(self, loss: Union[_Loss, Callable]) -> None:
         """Set the loss function."""
-        if not isinstance(loss, (_Loss, Callable)):
+        if not isinstance(loss, (_Loss, Callable)):  # type: ignore
             raise TypeError(
                 "The loss function must be an instance of torch.nn.Loss._Loss or Callable"
             )
@@ -292,12 +291,14 @@ class TorchRuntimeClient:
         serial_optim = self.obj_to_str(self.optimizer)
         serial_loss = self.obj_to_str(self.loss_func)
         serial_train_data = self.obj_to_str(train_loader)
-        serial_val_data = None
+        serial_val_data: Optional[str] = None
         if val_loader is not None:
             serial_val_data = self.obj_to_str(val_loader)
-        serial_hooks = []
-        if hooks is not None:
+        if hooks is None:
+            serial_hooks = self.obj_to_str([])
+        else:
             serial_hooks = self.obj_to_str(hooks)
+
         # combine the settings with the serialized buffers to runtime inputs
         inputs = {
             "model": serial_model,
@@ -436,13 +437,13 @@ class TorchRuntimeClient:
             #     pred = output.argmax(dim=1, keepdim=True)
             #     correct = pred.eq(target.view_as(pred)).sum().item()
             #     return correct
-            self._score_func = score_func
+            self._score_func = _score_classification
         elif score_func == "Regression":
             self._score_func = MSELoss()
         elif score_func is not None:
             self._score_func = score_func
         else:
-            raise ValueError(f"Scoring function is not provided.")
+            raise ValueError("Scoring function is not provided.")
 
         # serialize loss function using pickle + dill
         serial_score_func = self.obj_to_str(self._score_func)
@@ -474,3 +475,9 @@ class TorchRuntimeClient:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
         return result["score"]
+
+
+def _score_classification(output: TorchTensor, target: TorchTensor) -> float:
+    pred = output.argmax(dim=1, keepdim=True)
+    correct = pred.eq(target.view_as(pred)).sum().item()
+    return correct
