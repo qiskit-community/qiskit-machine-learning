@@ -427,7 +427,7 @@ class QuantumKernel:
                     parameterized_circuit.assign_parameters({feature_map_params: x})
                     for x in to_be_computed_data[min_idx:max_idx]
                 ]
-                results = self._quantum_instance.execute(circuits)
+                results = self._quantum_instance.execute(circuits, had_transpiled=True)
                 for j in range(max_idx - min_idx):
                     statevectors.append(results.get_statevector(j))
 
@@ -472,7 +472,7 @@ class QuantumKernel:
                     for x, y in to_be_computed_data_pair
                 ]
 
-                results = self._quantum_instance.execute(circuits)
+                results = self._quantum_instance.execute(circuits, had_transpiled=True)
 
                 matrix_elements = [
                     self._compute_overlap(circuit, results, is_statevector_sim, measurement_basis)
