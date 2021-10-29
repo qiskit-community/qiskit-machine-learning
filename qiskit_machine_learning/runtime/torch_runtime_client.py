@@ -262,6 +262,7 @@ class TorchRuntimeClient:
         val_loader: Optional[TorchDataloader] = None,
         hooks: Optional[HookBase] = None,
         start_epoch: int = 0,
+        seed: Optional[int] = None
     ) -> TorchRuntimeResult:
         """Calls the Torch Runtime train('torch-train') to train the model.
 
@@ -272,6 +273,7 @@ class TorchRuntimeClient:
                 during training.
             hooks: List of custom hook functions to interact with the training loop.
             start_epoch: initial epoch for warm-start training.
+            seed: Set the random seed for `torch.manual_seed(seed)`.
         Returns:
             result: A :class:`~qiskit_machine_learning.runtime.TorchRuntimeResult` object
                 with the trained model's state dictionary and training history data.
@@ -312,6 +314,7 @@ class TorchRuntimeClient:
             "epochs": self._epochs,
             "start_epoch": start_epoch,
             "hooks": serial_hooks,
+            "seed": seed,
         }
 
         # define runtime options
