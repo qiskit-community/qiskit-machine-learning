@@ -73,6 +73,8 @@ class PegasosQSVC(SVC):
             else:
                 self._quantum_kernel = QuantumKernel()
         elif isinstance(quantum_kernel, QuantumKernel):
+            # pylint is too restrictive
+            # pylint: disable=no-else-raise
             if precomputed:
                 raise ValueError("'quantum_kernel' has to be None to use a precomputed kernel")
             else:

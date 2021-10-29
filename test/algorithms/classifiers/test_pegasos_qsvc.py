@@ -117,6 +117,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 1)
 
     def test_wrong_parameters(self):
+        """Tests PegasosQSVC with incorrect constructor parameter values."""
         qkernel = QuantumKernel(
             feature_map=self.feature_map, quantum_instance=self.statevector_simulator
         )
