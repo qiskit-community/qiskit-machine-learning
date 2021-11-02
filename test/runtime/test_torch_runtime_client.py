@@ -15,11 +15,6 @@
 import unittest
 from test import QiskitMachineLearningTestCase
 
-from torch import Tensor
-from torch.nn import MSELoss
-from torch.optim import Adam
-from torch.utils.data import DataLoader, Dataset
-
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.providers.basicaer import QasmSimulatorPy
@@ -27,7 +22,22 @@ from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 from qiskit_machine_learning.runtime import TorchRuntimeClient
 
-from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
+from .fake_torchruntime import (FakeTorchInferRuntimeProvider,
+                                FakeTorchTrainerRuntimeProvider)
+
+try:
+    from torch import Tensor
+    from torch.nn import MSELoss
+    from torch.optim import Adam
+    from torch.utils.data import DataLoader, Dataset
+except ImportError:
+
+    class Dataset:  # type: ignore
+        """Empty Dataset class
+        Replacement if torch.utils.data.Dataset is not present.
+        """
+
+        pass
 
 
 class TorchDataset(Dataset):

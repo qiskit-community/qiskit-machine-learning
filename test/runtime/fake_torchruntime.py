@@ -95,7 +95,7 @@ class FakeTorchRuntimeTrainer:
             "epochs": int,
             "start_epoch": int,
             "hooks": (str, type(None), list),
-            "seed": (int, type(None))
+            "seed": (int, type(None)),
         }
         for arg, value in inputs.items():
             if not isinstance(value, allowed_inputs[arg]):

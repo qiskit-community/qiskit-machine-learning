@@ -16,17 +16,54 @@ import base64
 from typing import Any, Callable, Dict, Optional, Union
 
 import dill
-from torch import Tensor as TorchTensor
-from torch.nn import Module as TorchModule
-from torch.nn import MSELoss
-from torch.nn.modules.loss import _Loss
-from torch.optim import Optimizer as TorchOptim
-from torch.utils.data import DataLoader as TorchDataloader
 
+from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.exceptions import QiskitError
 from qiskit.providers import Provider
 from qiskit.providers.backend import Backend
 from qiskit_machine_learning.runtime.hookbase import HookBase
+
+try:
+    from torch import Tensor
+    from torch.nn import Module, MSELoss
+    from torch.nn.modules.loss import _Loss
+    from torch.optim import Optimizer
+    from torch.utils.data import DataLoader
+except ImportError:
+
+    class DataLoader:  # type: ignore
+        """Empty DataLoader class
+        Replacement if torch.utils.data.DataLoader is not present.
+        """
+
+        pass
+
+    class Tensor:  # type: ignore
+        """Empty Tensor class
+        Replacement if torch.Tensor is not present.
+        """
+
+        pass
+
+    class _Loss:  # type: ignore
+        """Empty _Loss class
+        Replacement if torch.nn.modules.loss._Loss is not present.
+        """
+
+        pass
+
+    class Module:  # type: ignore
+        """Empty Module class
+        Replacement if torch.nn.Module is not present.
+        Always fails to initialize
+        """
+
+        def __init__(self) -> None:
+            raise MissingOptionalLibraryError(
+                libname="Pytorch",
+                name="TorchConnector",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            )
 
 
 class TorchRuntimeResult:
@@ -99,8 +136,8 @@ class TorchRuntimeClient:
 
     def __init__(
         self,
-        model: TorchModule,
-        optimizer: TorchOptim,
+        model: Module,
+        optimizer: Optimizer,
         loss_func: Union[_Loss, Callable],
         epochs: int = 10,
         shots: int = 1024,
@@ -156,26 +193,26 @@ class TorchRuntimeClient:
         self._provider = provider
 
     @property
-    def model(self) -> TorchModule:
+    def model(self) -> Module:
         """Return the model."""
         return self._model
 
     @model.setter
-    def model(self, t_model: TorchModule) -> None:
+    def model(self, t_model: Module) -> None:
         """Set the model."""
-        if not isinstance(t_model, TorchModule):
+        if not isinstance(t_model, Module):
             raise TypeError("The model must be an instance of torch.nn.Module")
         self._model = t_model
 
     @property
-    def optimizer(self) -> TorchOptim:
+    def optimizer(self) -> Optimizer:
         """Return the optimizer."""
         return self._optimizer
 
     @optimizer.setter
-    def optimizer(self, optim: TorchOptim) -> None:
+    def optimizer(self, optim: Optimizer) -> None:
         """Set the optimizer."""
-        if not isinstance(optim, TorchOptim):
+        if not isinstance(optim, Optimizer):
             raise TypeError("The optimizer must be an instance of torch.optim")
         self._optimizer = optim
 
@@ -187,11 +224,12 @@ class TorchRuntimeClient:
     @loss_func.setter
     def loss_func(self, loss: Union[_Loss, Callable]) -> None:
         """Set the loss function."""
-        if not isinstance(loss, (_Loss, Callable)):  # type: ignore
+        if isinstance(loss, _Loss) or callable(loss):
+            self._loss_func = loss
+        else:
             raise TypeError(
                 "The loss function must be an instance of torch.nn.Loss._Loss or Callable"
             )
-        self._loss_func = loss
 
     @property
     def measurement_error_mitigation(self) -> bool:
@@ -231,8 +269,8 @@ class TorchRuntimeClient:
 
     def fit(
         self,
-        train_loader: TorchDataloader,
-        val_loader: Optional[TorchDataloader] = None,
+        train_loader: DataLoader,
+        val_loader: Optional[DataLoader] = None,
         hooks: Optional[HookBase] = None,
         start_epoch: int = 0,
         seed: Optional[int] = None,
@@ -262,13 +300,13 @@ class TorchRuntimeClient:
         if self.provider is None:
             raise ValueError("The provider has not been set.")
 
-        if not isinstance(train_loader, TorchDataloader):
-            raise ValueError("`train_loader` must be an instance of `torch.utils.data.Dataloader`.")
+        if not isinstance(train_loader, DataLoader):
+            raise ValueError("`train_loader` must be an instance of `torch.utils.data.DataLoader`.")
 
         if val_loader:
-            if not isinstance(val_loader, TorchDataloader):
+            if not isinstance(val_loader, DataLoader):
                 raise ValueError(
-                    "`val_loader` must be an instance of `torch.utils.data.Dataloader`."
+                    "`val_loader` must be an instance of `torch.utils.data.DataLoader`."
                 )
 
         # serialize using dill
@@ -331,7 +369,7 @@ class TorchRuntimeClient:
         torch_result.train_time = result.get("train_time")
         return torch_result
 
-    def predict(self, data_loader: TorchDataloader) -> TorchTensor:
+    def predict(self, data_loader: DataLoader) -> Tensor:
         """Calls the Torch Runtime infer ('torch-infer') for prediction purposes.
 
         Args:
@@ -377,13 +415,9 @@ class TorchRuntimeClient:
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
-        return TorchTensor(result["prediction"])
+        return Tensor(result["prediction"])
 
-    def score(
-        self,
-        data_loader: TorchDataloader,
-        score_func: Union[str, Callable]
-    ) -> float:
+    def score(self, data_loader: DataLoader, score_func: Union[str, Callable]) -> float:
         """Calls the Torch Runtime infer ('torch-infer') for scoring.
 
         Args:
@@ -448,7 +482,7 @@ class TorchRuntimeClient:
         return result["score"]
 
 
-def _score_classification(output: TorchTensor, target: TorchTensor) -> float:
+def _score_classification(output: Tensor, target: Tensor) -> float:
     pred = output.argmax(dim=1, keepdim=True)
     correct = pred.eq(target.view_as(pred)).sum().item()
     return correct
