@@ -102,7 +102,7 @@ class TorchRuntimeClient:
         model: TorchModule,
         optimizer: TorchOptim,
         loss_func: Union[_Loss, Callable],
-        epochs: int = 100,
+        epochs: int = 10,
         shots: int = 1024,
         measurement_error_mitigation: bool = False,
         provider: Optional[Provider] = None,
@@ -115,7 +115,7 @@ class TorchRuntimeClient:
             loss_func: A PyTorch-compatible loss function. Can be one of the
                 official PyTorch loss functions from ``torch.nn.loss`` or a custom
                 function defined by the user.
-            epochs: The maximum number of training epochs. By default, 100.
+            epochs: The maximum number of training epochs. By default, 10.
             shots: The number of shots for the quantum backend. By default, 1024.
             measurement_error_mitigation: Whether or not to use measurement error mitigation.
             provider: IBMQ provider that supports runtime services.
@@ -377,8 +377,7 @@ class TorchRuntimeClient:
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
-        out_tensor = TorchTensor(result["prediction"])
-        return out_tensor
+        return TorchTensor(result["prediction"])
 
     def score(
         self,
