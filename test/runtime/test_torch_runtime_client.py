@@ -22,8 +22,7 @@ from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 from qiskit_machine_learning.runtime import TorchRuntimeClient
 
-from .fake_torchruntime import (FakeTorchInferRuntimeProvider,
-                                FakeTorchTrainerRuntimeProvider)
+from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
 try:
     from torch import Tensor
