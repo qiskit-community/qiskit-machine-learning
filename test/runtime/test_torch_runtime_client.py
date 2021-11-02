@@ -25,7 +25,7 @@ from qiskit_machine_learning.runtime import TorchRuntimeClient
 from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
 try:
-    from torch import Tensor
+    from torch import is_tensor, Tensor
     from torch.nn import MSELoss
     from torch.optim import Adam
     from torch.utils.data import DataLoader, Dataset
@@ -34,6 +34,13 @@ except ImportError:
     class Dataset:  # type: ignore
         """Empty Dataset class
         Replacement if torch.utils.data.Dataset is not present.
+        """
+
+        pass
+
+    class Tensor:  # type: ignore
+        """Empty Tensor class
+        Replacement if torch.Tensor is not present.
         """
 
         pass
@@ -51,9 +58,8 @@ class TorchDataset(Dataset):
         return len(self.x)
 
     def __getitem__(self, idx):
-        import torch
 
-        if torch.is_tensor(idx):
+        if is_tensor(idx):
             idx = idx.tolist()
 
         x_i = self.x[idx]
