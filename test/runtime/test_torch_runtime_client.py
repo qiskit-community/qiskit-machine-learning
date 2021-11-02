@@ -13,22 +13,22 @@
 """Test for TorchProgram."""
 
 import unittest
-from test import QiskitMachineLearningTestCase
+from test import QiskitMachineLearningTestCase, requires_extra_library
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
+from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.providers.basicaer import QasmSimulatorPy
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 from qiskit_machine_learning.runtime import TorchRuntimeClient
-
 from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
 try:
     from torch import is_tensor, Tensor
     from torch.nn import MSELoss
     from torch.optim import Adam
-    from torch.utils.data import DataLoader, Dataset
+    from torch.utils.data import Dataset
 except ImportError:
 
     class Dataset:  # type: ignore
@@ -75,8 +75,6 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         super().setUp()
         self._trainer_provider = FakeTorchTrainerRuntimeProvider()
         self._infer_provider = FakeTorchInferRuntimeProvider()
-        self._train_set = TorchDataset([1], [1])
-        self._train_loader = DataLoader(self._train_set, batch_size=1, shuffle=False)
         # construct a simple qnn for unit tests
         param_x = Parameter("x")
         feature_map = QuantumCircuit(1, name="fm")
@@ -87,8 +85,19 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         qnn = TwoLayerQNN(1, feature_map, ansatz)
         self._model = TorchConnector(qnn, [1])
 
+    @requires_extra_library
     def test_fit(self):
         """Test for fit"""
+        try:
+            from torch.utils.data import DataLoader
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="Pytorch",
+                name="TorchConnector",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            ) from ex
+        train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
+
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
@@ -101,10 +110,21 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_program.fit(self._train_loader)
+        torch_program.fit(train_loader)
 
+    @requires_extra_library
     def test_predict(self):
         """Test for predict"""
+        try:
+            from torch.utils.data import DataLoader
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="Pytorch",
+                name="TorchConnector",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            ) from ex
+        train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
+
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
@@ -117,10 +137,21 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_program.predict(self._train_loader)
+        torch_program.predict(train_loader)
 
+    @requires_extra_library
     def test_score(self):
         """Test for score"""
+        try:
+            from torch.utils.data import DataLoader
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="Pytorch",
+                name="TorchConnector",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            ) from ex
+        train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
+
         backend = QasmSimulatorPy()
         optimizer = Adam(self._model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
@@ -133,7 +164,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_program.score(self._train_loader, score_func="Regression")
+        torch_program.score(train_loader, score_func="Regression")
 
 
 if __name__ == "__main__":
