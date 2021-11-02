@@ -43,6 +43,7 @@ class TorchDataset(Dataset):
     """Map-style dataset"""
 
     def __init__(self, x, y):
+        # pylint: disable=W0231
         self.x = Tensor(x).float()
         self.y = Tensor(y).float()
 

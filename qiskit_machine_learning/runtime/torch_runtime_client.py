@@ -52,6 +52,13 @@ except ImportError:
 
         pass
 
+    class Optimizer:  # type: ignore
+        """Empty Optimizer
+        Replacement if torch.optim.Optimizer is not present.
+        """
+
+        pass
+
     class Module:  # type: ignore
         """Empty Module class
         Replacement if torch.nn.Module is not present.
