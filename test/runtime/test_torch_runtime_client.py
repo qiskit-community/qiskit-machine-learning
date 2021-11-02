@@ -82,8 +82,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         param_y = Parameter("y")
         ansatz = QuantumCircuit(1, name="vf")
         ansatz.ry(param_y, 0)
-        qnn = TwoLayerQNN(1, feature_map, ansatz)
-        self._model = TorchConnector(qnn, [1])
+        self._qnn = TwoLayerQNN(1, feature_map, ansatz)
 
     @requires_extra_library
     def test_fit(self):
@@ -97,12 +96,12 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
                 pip_install="pip install 'qiskit-machine-learning[torch]'",
             ) from ex
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
-
+        model = TorchConnector(self._qnn, [1])
         backend = QasmSimulatorPy()
-        optimizer = Adam(self._model.parameters(), lr=0.1)
+        optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
         torch_program = TorchRuntimeClient(
-            model=self._model,
+            model=model,
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._trainer_provider,
@@ -124,12 +123,12 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
                 pip_install="pip install 'qiskit-machine-learning[torch]'",
             ) from ex
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
-
+        model = TorchConnector(self._qnn, [1])
         backend = QasmSimulatorPy()
-        optimizer = Adam(self._model.parameters(), lr=0.1)
+        optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
         torch_program = TorchRuntimeClient(
-            model=self._model,
+            model=model,
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._infer_provider,
@@ -151,12 +150,12 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
                 pip_install="pip install 'qiskit-machine-learning[torch]'",
             ) from ex
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
-
+        model = TorchConnector(self._qnn, [1])
         backend = QasmSimulatorPy()
-        optimizer = Adam(self._model.parameters(), lr=0.1)
+        optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
         torch_program = TorchRuntimeClient(
-            model=self._model,
+            model=model,
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._infer_provider,
