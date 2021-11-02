@@ -105,7 +105,6 @@ class TorchRuntimeClient:
         epochs: int = 100,
         shots: int = 1024,
         measurement_error_mitigation: bool = False,
-        callback: Optional[Callable] = None,
         provider: Optional[Provider] = None,
         backend: Optional[Backend] = None,
     ) -> None:
@@ -115,17 +114,10 @@ class TorchRuntimeClient:
             optimizer: A PyTorch optimizer for the model parameters.
             loss_func: A PyTorch-compatible loss function. Can be one of the
                 official PyTorch loss functions from ``torch.nn.loss`` or a custom
-                function defined by the user, as long as it follows the format
-                ``def loss_func(output: TorchTensor, target: TorchTensor): -> loss: float``.
+                function defined by the user.
             epochs: The maximum number of training epochs. By default, 100.
             shots: The number of shots for the quantum backend. By default, 1024.
             measurement_error_mitigation: Whether or not to use measurement error mitigation.
-            callback: a callback that can access the intermediate data during the optimization.
-                Six parameter values are passed to the callback as follows during each evaluation
-                by the optimizer for its current set of parameters as it works towards the minimum.
-                These are: the epoch_count, the average loss of training,
-                the average loss of validating, the average forward pass time,
-                the average backward pass time, the epoch time.
             provider: IBMQ provider that supports runtime services.
             backend: Selected quantum backend.
         """
@@ -136,7 +128,6 @@ class TorchRuntimeClient:
         self._optimizer = None
         self._epochs = epochs
         self._shots = shots
-        self._callback = callback
         self._measurement_error_mitigation = measurement_error_mitigation
         self._backend = backend
         self._score_func = None
@@ -216,43 +207,25 @@ class TorchRuntimeClient:
         """Whether or not to use measurement error mitigation."""
         self._measurement_error_mitigation = measurement_error_mitigation
 
-    def _wrap_torch_callback(self) -> Optional[Callable]:
-        """Wraps and returns the given callback to match the signature of the runtime callback."""
-
-        def wrapped_callback(*args):
-            _, data = args  # first element is the job id
-            # wrap the callback
-            epoch_count = data[0]
-            training_avg_loss = data[1]
-            validating_avg_loss = data[2]
-            avg_forward_time = data[3]
-            avg_backward_time = data[4]
-            epoch_time = data[5]
-            self._callback(
-                epoch_count,
-                training_avg_loss,
-                validating_avg_loss,
-                avg_forward_time,
-                avg_backward_time,
-                epoch_time,
-            )
-            return self._callback(data)
-
-        # if callback is set, return wrapped callback, else return None
-        if self._callback:
-            return wrapped_callback
-        else:
-            return None
-
     def obj_to_str(self, obj: Any) -> str:
-        """Encodes any object into a JSON-compatible string using dill. The intermediate
-        binary data must be converted to base 64 to be able to decode into utf-8 format."""
+        """
+        Encodes any object into a JSON-compatible string using dill. The intermediate
+        binary data must be converted to base 64 to be able to decode into utf-8 format.
+
+        Returns:
+            The encoded string
+        """
         string = base64.b64encode(dill.dumps(obj, byref=False)).decode("utf-8")
         return string
 
     def str_to_obj(self, string: str) -> Any:
-        """Decodes a previously encoded string using dill (with an intermediate step
-        converting the binary data from base 64)."""
+        """
+        Decodes a previously encoded string using dill (with an intermediate step
+        converting the binary data from base 64).
+
+        Returns:
+            The decoded object
+        """
         obj = dill.loads(base64.b64decode(string.encode()))
         return obj
 
@@ -262,7 +235,7 @@ class TorchRuntimeClient:
         val_loader: Optional[TorchDataloader] = None,
         hooks: Optional[HookBase] = None,
         start_epoch: int = 0,
-        seed: Optional[int] = None
+        seed: Optional[int] = None,
     ) -> TorchRuntimeResult:
         """Calls the Torch Runtime train('torch-train') to train the model.
 
@@ -271,7 +244,7 @@ class TorchRuntimeClient:
             val_loader: A PyTorch data loader object containing the validation dataset.
                 If no validation loader is provided, the validation step will be skipped
                 during training.
-            hooks: List of custom hook functions to interact with the training loop.
+            hooks: List of hook classes to interact with the training loop.
             start_epoch: initial epoch for warm-start training.
             seed: Set the random seed for `torch.manual_seed(seed)`.
         Returns:
@@ -280,14 +253,23 @@ class TorchRuntimeClient:
         Raises:
             ValueError: If the backend has not yet been set.
             ValueError: If the provider has not yet been set.
+            ValueError: If one of hooks is not a HookBase type
             RuntimeError: If the job execution failed.
         """
-
         if self._backend is None:
             raise ValueError("The backend has not been set.")
 
         if self.provider is None:
             raise ValueError("The provider has not been set.")
+
+        if not isinstance(train_loader, TorchDataloader):
+            raise ValueError("`train_loader` must be an instance of `torch.utils.data.Dataloader`.")
+
+        if val_loader:
+            if not isinstance(val_loader, TorchDataloader):
+                raise ValueError(
+                    "`val_loader` must be an instance of `torch.utils.data.Dataloader`."
+                )
 
         # serialize using dill
         serial_model = self.obj_to_str(self.model)
@@ -295,13 +277,17 @@ class TorchRuntimeClient:
         serial_loss = self.obj_to_str(self.loss_func)
         serial_train_data = self.obj_to_str(train_loader)
         serial_val_data: Optional[str] = None
-        if val_loader is not None:
+        # check hooks
+        if val_loader:
             serial_val_data = self.obj_to_str(val_loader)
         if hooks is None:
             serial_hooks = self.obj_to_str([])
-        else:
+        elif isinstance(hooks, HookBase):
+            serial_hooks = self.obj_to_str([hooks])
+        elif isinstance(hooks, list) and all(isinstance(hook, HookBase) for hook in hooks):
             serial_hooks = self.obj_to_str(hooks)
-
+        else:
+            raise ValueError("`hooks` must all be of the HookBase type")
         # combine the settings with the serialized buffers to runtime inputs
         inputs = {
             "model": serial_model,
@@ -320,19 +306,11 @@ class TorchRuntimeClient:
         # define runtime options
         options = {"backend_name": self._backend.name()}
 
-        import json
-
-        with open("params.json", "w") as f:
-            json.dump(inputs, f, indent=4)
-
-        return 1
-
         # send job to runtime and return result
         job = self.provider.runtime.run(
             program_id="torch-train",
             inputs=inputs,
             options=options,
-            callback=self._wrap_torch_callback(),
         )
 
         # print job ID if something goes wrong
@@ -387,19 +365,11 @@ class TorchRuntimeClient:
         # define runtime options
         options = {"backend_name": self._backend.name()}
 
-        import json
-
-        with open("params.json", "w") as f:
-            json.dump(inputs, f, indent=4)
-
-        return 1
-
         # send job to runtime and return result
         job = self.provider.runtime.run(
             program_id="torch-infer",
             inputs=inputs,
             options=options,
-            callback=self._wrap_torch_callback(),
         )
 
         try:
@@ -410,7 +380,11 @@ class TorchRuntimeClient:
         out_tensor = TorchTensor(result["prediction"])
         return out_tensor
 
-    def score(self, data_loader: TorchDataloader, score_func: Union[str, Callable]) -> float:
+    def score(
+        self,
+        data_loader: TorchDataloader,
+        score_func: Union[str, Callable]
+    ) -> float:
         """Calls the Torch Runtime infer ('torch-infer') for scoring.
 
         Args:
@@ -460,19 +434,11 @@ class TorchRuntimeClient:
             "measurement_error_mitigation": self.measurement_error_mitigation,
         }
 
-        import json
-
-        with open("params.json", "w") as f:
-            json.dump(inputs, f, indent=4)
-
-        return 1
-
         # send job to runtime and return result
         job = self.provider.runtime.run(
             program_id="torch-infer",
             inputs=inputs,
             options=options,
-            callback=self._wrap_torch_callback(),
         )
 
         try:

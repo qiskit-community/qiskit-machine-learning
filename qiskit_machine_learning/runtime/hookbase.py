@@ -21,7 +21,7 @@ class HookBase:
     """
 
     def __init__(self):
-        self._trainer: Optional["Trainer"] = None
+        self._trainer: Optional["TorchTrainer"] = None
 
     @property
     def trainer(self) -> Any:
