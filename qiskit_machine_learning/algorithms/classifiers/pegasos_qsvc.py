@@ -154,7 +154,7 @@ class PegasosQSVC(SVC):
         self._y_train = y
         self._n_samples = X.shape[0]
 
-        # empty dictionaries to represent sparse arrays
+        # empty dictionary to represent sparse array
         self._alphas = {}
 
         t_0 = datetime.now()
