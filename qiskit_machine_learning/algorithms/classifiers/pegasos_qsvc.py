@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class PegasosQSVC(SVC):
     """
-    This class implements Quantum Pegasos Support Vector Classifier algorithm developed in [1]
+    This class implements Pegasos Quantum Support Vector Classifier algorithm developed in [1]
     and includes overridden methods ``fit`` and ``predict`` from the ``SVC`` super-class.
 
     **Example**
