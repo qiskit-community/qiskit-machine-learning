@@ -273,4 +273,14 @@ class PegasosQSVC(SVC):
     @quantum_kernel.setter
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
         """Sets quantum kernel"""
+        # reset training status
+        self._fit_status = False
+        self._alphas = None
+        self._x_train = None
+        self._n_samples = None
+        self._y_train = None
+        self._label_map = None
+        self._label_pos = None
+        self._label_neg = None
+
         self._quantum_kernel = quantum_kernel
