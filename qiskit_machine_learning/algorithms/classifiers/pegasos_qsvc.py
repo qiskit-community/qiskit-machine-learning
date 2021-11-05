@@ -109,7 +109,7 @@ class PegasosQSVC(SVC):
         Args:
             X: Train features. For a callable kernel shape (n_samples, n_features), for a precomputed
                kernel shape (n_samples, n_samples).
-            y: shape (n_samples), train labels.
+            y: shape (n_samples), train labels . Must not contain more than two unique labels.
             sample_weight: this parameter is not supported, passing a value raises an error.
 
         Returns:
