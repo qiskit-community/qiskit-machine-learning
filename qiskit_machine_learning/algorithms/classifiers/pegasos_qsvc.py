@@ -54,7 +54,8 @@ class PegasosQSVC(SVC):
     ) -> None:
         """
         Args:
-            quantum_kernel: QuantumKernel to be used for classification.
+            quantum_kernel: QuantumKernel to be used for classification. Has to be ``None`` when
+                a precomputed kernel is used.
             C: positive regularization parameter.
             num_steps: number of steps in the Pegasos algorithm. There is no early stopping
                 criterion. The algorithm iterates over all steps.
