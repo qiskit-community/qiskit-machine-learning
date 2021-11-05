@@ -68,11 +68,9 @@ class PegasosQSVC(SVC):
             TypeError:
                 - if ``quantum_instance`` neither instance of ``QuantumKernel`` nor ``None``.
         """
-        if quantum_kernel is None:
-            if precomputed:
-                self._precomputed = True
-            else:
-                self._quantum_kernel = QuantumKernel()
+        if quantum_kernel is None and not precomputed:
+            self._quantum_kernel = QuantumKernel()
+            
         elif isinstance(quantum_kernel, QuantumKernel):
             # pylint is too restrictive
             # pylint: disable=no-else-raise
