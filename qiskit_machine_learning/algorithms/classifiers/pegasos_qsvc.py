@@ -96,7 +96,7 @@ class PegasosQSVC(SVC):
         self._label_pos: Optional[int] = None
         self._label_neg: Optional[int] = None
 
-        # added to all kernel values  to include an implicit bias to the hyperplane
+        # added to all kernel values to include an implicit bias to the hyperplane
         self._kernel_offset = 1
 
     # pylint: disable=invalid-name
