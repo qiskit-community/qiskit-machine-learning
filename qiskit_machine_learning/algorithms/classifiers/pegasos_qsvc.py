@@ -32,7 +32,8 @@ class PegasosQSVC(SVC):
 
     **Example**
 
-    .. code-block::
+    .. code-block:: python
+
         quantum_kernel = QuantumKernel()
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=quantum_kernel)
