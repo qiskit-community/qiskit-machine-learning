@@ -47,6 +47,7 @@ Algorithms for data classification.
    :toctree: ../stubs/
    :nosignatures:
 
+   PegasosQSVC
    QSVC
    NeuralNetworkClassifier
    VQC

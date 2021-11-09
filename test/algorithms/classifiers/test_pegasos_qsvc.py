@@ -149,6 +149,59 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 1.0)
 
+    def test_constructor(self):
+        """Tests properties of PegasosQSVC"""
+        with self.subTest("Default parameters"):
+            pegasos_qsvc = PegasosQSVC()
+            self.assertIsInstance(pegasos_qsvc.quantum_kernel, QuantumKernel)
+            self.assertFalse(pegasos_qsvc.precomputed)
+            self.assertEqual(pegasos_qsvc.num_steps, 1000)
+
+        with self.subTest("PegasosQSVC with QuantumKernel"):
+            qkernel = QuantumKernel(
+                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+            )
+            pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
+            self.assertIsInstance(pegasos_qsvc.quantum_kernel, QuantumKernel)
+            self.assertFalse(pegasos_qsvc.precomputed)
+
+        with self.subTest("PegasosQSVC with precomputed kernel"):
+            pegasos_qsvc = PegasosQSVC(precomputed=True)
+            self.assertIsNone(pegasos_qsvc.quantum_kernel)
+            self.assertTrue(pegasos_qsvc.precomputed)
+
+        with self.subTest("PegasosQSVC with wrong parameters"):
+            qkernel = QuantumKernel(
+                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+            )
+            with self.assertRaises(ValueError):
+                _ = PegasosQSVC(quantum_kernel=qkernel, precomputed=True)
+
+        with self.subTest("PegasosQSVC with wrong type of kernel"):
+            with self.assertRaises(TypeError):
+                _ = PegasosQSVC(quantum_kernel=object())
+
+    def test_change_kernel_types(self):
+        """Test PegasosQSVC with a precomputed kernel matrix"""
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
+
+        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
+
+        # train precomputed
+        kernel_matrix_train = qkernel.evaluate(self.sample_train, self.sample_train)
+        pegasos_qsvc.fit(kernel_matrix_train, self.label_train)
+
+        # now train the same instance, but with a new quantum kernel
+        pegasos_qsvc.quantum_kernel = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
+        pegasos_qsvc.fit(self.sample_train, self.label_train)
+        score = pegasos_qsvc.score(self.sample_test, self.label_test)
+
+        self.assertEqual(score, 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

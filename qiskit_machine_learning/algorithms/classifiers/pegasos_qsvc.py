@@ -48,7 +48,7 @@ class PegasosQSVC(SVC):
     def __init__(
         self,
         quantum_kernel: Optional[QuantumKernel] = None,
-        C: float = 1,
+        C: float = 1.0,
         num_steps: int = 1000,
         precomputed: bool = False,
     ) -> None:
@@ -59,7 +59,8 @@ class PegasosQSVC(SVC):
             C: positive regularization parameter.
             num_steps: number of steps in the Pegasos algorithm. There is no early stopping
                 criterion. The algorithm iterates over all steps.
-            precomputed: flag indicating whether a precomputed kernel is used.
+            precomputed: a boolean flag indicating whether a precomputed kernel is used. Set it to
+                ``True`` in case of precomputed kernel.
 
         Raises:
             ValueError:
@@ -68,22 +69,20 @@ class PegasosQSVC(SVC):
             TypeError:
                 - if ``quantum_instance`` neither instance of ``QuantumKernel`` nor ``None``.
         """
-        if quantum_kernel is None and not precomputed:
-            self._quantum_kernel = QuantumKernel()
-            
-        elif isinstance(quantum_kernel, QuantumKernel):
-            # pylint is too restrictive
-            # pylint: disable=no-else-raise
-            if precomputed:
-                raise ValueError("'quantum_kernel' has to be None to use a precomputed kernel")
-            else:
-                self._quantum_kernel = quantum_kernel
-        else:
-            raise TypeError("'quantum_kernel' has to be of type None or QuantumKernel")
-
         super().__init__(C=C)
-        self._num_steps = num_steps
+
+        if precomputed:
+            if quantum_kernel is not None:
+                raise ValueError("'quantum_kernel' has to be None to use a precomputed kernel")
+        else:
+            if quantum_kernel is None:
+                quantum_kernel = QuantumKernel()
+            elif not isinstance(quantum_kernel, QuantumKernel):
+                raise TypeError("'quantum_kernel' has to be of type None or QuantumKernel")
+
+        self._quantum_kernel = quantum_kernel
         self._precomputed = precomputed
+        self._num_steps = num_steps
 
         # these are the parameters being fit and are needed for prediction
         self._fit_status = False
@@ -105,13 +104,14 @@ class PegasosQSVC(SVC):
         """Implementation of the kernelized Pegasos algorithm to fit the QSVC.
 
         Args:
-            X: Train features. For a callable kernel shape (n_samples, n_features), for a precomputed
-               kernel shape (n_samples, n_samples).
+            X: Train features. For a callable kernel (an instance of ``QuantumKernel``) the shape
+               should be ``(n_samples, n_features)``, for a precomputed kernel the shape should be
+               ``(n_samples, n_samples)``.
             y: shape (n_samples), train labels . Must not contain more than two unique labels.
             sample_weight: this parameter is not supported, passing a value raises an error.
 
         Returns:
-            ``self``, a trained model.
+            ``self``, Fitted estimator.
 
         Raises:
             ValueError:
@@ -180,8 +180,9 @@ class PegasosQSVC(SVC):
         Perform classification on samples in X.
 
         Args:
-            X: Features. For a callable kernel shape (m_samples, n_features), for a precomputed
-               kernel shape (m_samples, n_samples), where m denotes the set to be predicted and n the
+            X: Features. For a callable kernel (an instance of ``QuantumKernel``) the shape
+               should be ``(m_samples, n_features)``, for a precomputed kernel the shape should be
+               ``(m_samples, n_samples)``. Where ``m`` denotes the set to be predicted and ``n`` the
                size of the training set. In that case, the kernel values in X have to be calculated
                with respect to the elements of the set to be predicted and the training set.
 
@@ -217,7 +218,7 @@ class PegasosQSVC(SVC):
 
         return y
 
-    def _compute_weighted_kernel_sum(self, index, X, training) -> float:
+    def _compute_weighted_kernel_sum(self, index: int, X: np.ndarray, training: bool) -> float:
         """Helper function to compute the weighted sum over support vectors used for both training
         and prediction with the Pegasos algorithm.
 
@@ -227,7 +228,7 @@ class PegasosQSVC(SVC):
             training: flag indicating whether the loop is used within training or prediction
 
         Returns:
-            float: weighted sum of kernel evaluations employed in the Pegasos algorithm
+            Weighted sum of kernel evaluations employed in the Pegasos algorithm
         """
         kernel: Dict[Tuple, np.ndarray] = {}
         # this value corresponds to a sum of kernel values weighted by their labels and alphas
@@ -271,8 +272,52 @@ class PegasosQSVC(SVC):
 
     @quantum_kernel.setter
     def quantum_kernel(self, quantum_kernel: QuantumKernel):
-        """Sets quantum kernel"""
+        """
+        Sets quantum kernel. If previously a precomputed kernel was set, it is reset to ``False``.
+        """
+
+        self._quantum_kernel = quantum_kernel
+        # quantum kernel is set, so we assume the kernel is not precomputed
+        self._precomputed = False
+
         # reset training status
+        self._reset_state()
+
+    @property
+    def num_steps(self) -> int:
+        """Returns number of steps in the Pegasos algorithm."""
+        return self._num_steps
+
+    @num_steps.setter
+    def num_steps(self, num_steps: int):
+        """Sets the number of steps to be used in the Pegasos algorithm."""
+        self._num_steps = num_steps
+
+        # reset training status
+        self._reset_state()
+
+    @property
+    def precomputed(self) -> bool:
+        """Returns a boolean flag indicating whether a precomputed kernel is used."""
+        return self._precomputed
+
+    @precomputed.setter
+    def precomputed(self, precomputed: bool):
+        """Sets the pre-computed kernel flag. If ``True`` is passed then the previous kernel is
+        cleared. If ``False`` is passed then a new instance of ``QuantumKernel`` is created."""
+        self._precomputed = precomputed
+        if precomputed:
+            # remove the kernel, a precomputed will
+            self._quantum_kernel = None
+        else:
+            # re-create a new default quantum kernel
+            self._quantum_kernel = QuantumKernel()
+
+        # reset training status
+        self._reset_state()
+
+    def _reset_state(self):
+        """Resets internal data structures used in training."""
         self._fit_status = False
         self._alphas = None
         self._x_train = None
@@ -281,5 +326,3 @@ class PegasosQSVC(SVC):
         self._label_map = None
         self._label_pos = None
         self._label_neg = None
-
-        self._quantum_kernel = quantum_kernel
