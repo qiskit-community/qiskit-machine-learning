@@ -188,7 +188,7 @@ class PegasosQSVC(SVC):
                with respect to the elements of the set to be predicted and the training set.
 
         Returns:
-            y_pred: Shape (n_samples), the predicted class labels for samples in X.
+            An array of the shape (n_samples), the predicted class labels for samples in X.
 
         Raises:
             QiskitMachineLearningError:
