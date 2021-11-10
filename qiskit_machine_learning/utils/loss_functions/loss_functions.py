@@ -101,9 +101,9 @@ class KernelLoss(ABC):
     """
     Abstract base class for computing the loss of a kernel function.
     Unlike many loss functions, which only take into account the labels and predictions
-    of a model, kernel loss functions may be a function of internal model parameters or 
+    of a model, kernel loss functions may be a function of internal model parameters or
     quantities that are generated during training. For this reason, extensions of this
-    class may find it neccesary to introduce additional inputs. 
+    class may find it neccesary to introduce additional inputs.
     """
 
     def __call__(
@@ -132,7 +132,7 @@ class KernelLoss(ABC):
         Args:
             parameter_values: an array of values to assign to the user params
             quantum_kernel: A ``QuantumKernel`` object to evaluate
-            data: An ``NxM`` matrix containing the data
+            data: An ``(N, M)`` matrix containing the data
                     ``N = # samples, M = dimension of data``
             labels: A length-N array containing the truth labels
 
@@ -144,9 +144,9 @@ class KernelLoss(ABC):
     @abstractmethod
     def get_variational_callable(self) -> Callable[[Sequence[float]], float]:
         """
-        Return a callable variational loss function given a quantum kernel and labeled dataset.
-        The sole input to the callable will be an array of feature map parameter values, and the
-        output will be a loss value.
+        Return a callable variational loss function given some inputs. The sole input to the
+        callable should be an array of numerical feature map parameter values, and the output should
+        be a numerical loss value.
         """
         raise NotImplementedError
 
@@ -262,14 +262,16 @@ class CrossEntropySigmoidLoss(Loss):
 
 
 class SVCLoss(KernelLoss):
-    """
+    r"""
     This class computes the inverse of the margin obtained after training a SKLearn
     ``SVC`` class on a given quantum kernel and data set. The dual-form of the
     SVC objective, which gives the inverse margin, is equal to the negative
     weighted kernel alignment with an added regularization term.
 
-    SVCLoss = (\sum_i^N a_i)   - (\sum_{i,j}^N a_i•a_j•y_i•y_j•K_ij)
-            = (regularization) - (weighted alignment)
+    .. math::
+
+        \text{SVCLoss} = \sum_{a_i}^{N} - \sum_{i,j}^N a_i•a_j•y_i•y_j•K_ij =
+        \text{regularization - weighted alignment}
 
     See https://arxiv.org/pdf/2105.03406.pdf for further details.
     """
@@ -305,6 +307,7 @@ class SVCLoss(KernelLoss):
 
         return loss
 
+    # pylint: disable=arguments-differ
     def get_variational_callable(
         self,
         quantum_kernel: QuantumKernel,
