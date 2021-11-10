@@ -19,7 +19,7 @@ import numpy as np
 from qiskit.utils.algorithm_globals import algorithm_globals
 from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
-from qiskit_machine_learning.utils.loss_functions import SVCAlignment
+from qiskit_machine_learning.utils.loss_functions import SVCLoss
 
 # Prevent circular dependencies from type checking
 if TYPE_CHECKING:
@@ -86,7 +86,7 @@ class QuantumKernelTrainer:
         Args:
             quantum_kernel: QuantumKernel to be trained
             loss (Callable[[Sequence[float]], float] or str):
-                str: Loss functions available via string: {'svc_alignment: SVCAlignment()).
+                str: Loss functions available via string: {'svc_alignment: SVCLoss()).
                     If a string is passed as the loss function, then the underlying
                     KernelLoss object will exhibit default behavior.
                 Callable[[Sequence[float]], float]: A callable loss function which takes
@@ -222,7 +222,7 @@ def _str_to_variational_callable(
     labels: np.ndarray = None,
 ) -> Callable[[Sequence[float]], float]:
     if loss_str == "svc_alignment":
-        loss_obj = SVCAlignment()
+        loss_obj = SVCLoss()
         return loss_obj.get_variational_callable(
             quantum_kernel=quantum_kernel, data=data, labels=labels
         )

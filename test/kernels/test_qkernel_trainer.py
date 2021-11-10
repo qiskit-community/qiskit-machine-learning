@@ -22,7 +22,7 @@ from qiskit import Aer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit_machine_learning.kernels import QuantumKernel, QuantumKernelTrainer
-from qiskit_machine_learning.utils.loss_functions import SVCAlignment
+from qiskit_machine_learning.utils.loss_functions import SVCLoss
 from qiskit_machine_learning.algorithms.classifiers import QSVC
 
 
@@ -89,7 +89,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
         with self.subTest("check fit with params"):
             self.setUp()
-            loss = SVCAlignment(C=0.8, gamma="auto").get_variational_callable(
+            loss = SVCLoss(C=0.8, gamma="auto").get_variational_callable(
                 self.quantum_kernel, self.sample_train, self.label_train
             )
             qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, loss=loss)
