@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import Optional, Dict, Tuple
 
 import numpy as np
+from qiskit.utils import algorithm_globals
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -52,6 +53,7 @@ class PegasosQSVC(SVC):
         C: float = 1.0,
         num_steps: int = 1000,
         precomputed: bool = False,
+        seed: Optional[int] = None,
     ) -> None:
         """
         Args:
@@ -62,6 +64,7 @@ class PegasosQSVC(SVC):
                 criterion. The algorithm iterates over all steps.
             precomputed: a boolean flag indicating whether a precomputed kernel is used. Set it to
                 ``True`` in case of precomputed kernel.
+            seed: a seed for the random number generator
 
         Raises:
             ValueError:
@@ -84,6 +87,8 @@ class PegasosQSVC(SVC):
         self._quantum_kernel = quantum_kernel
         self._precomputed = precomputed
         self._num_steps = num_steps
+        if seed is not None:
+            algorithm_globals.random_seed = seed
 
         # these are the parameters being fit and are needed for prediction
         self._fit_status = False
@@ -161,7 +166,7 @@ class PegasosQSVC(SVC):
         # training loop
         for step in range(1, self._num_steps + 1):
             # for every step, a random index (determining a random datum) is fixed
-            i = np.random.randint(0, len(y))
+            i = algorithm_globals.random.integers(0, len(y))
 
             value = self._compute_weighted_kernel_sum(i, X, training=True)
 
