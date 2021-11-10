@@ -274,12 +274,12 @@ class SVCLoss(KernelLoss):
     |
     .. math::
         \text{where a_i are the optimal Lagrange multipliers found by solving the standard
-        SVM quadratic program. Note that the hyperparameter C for the soft-margin penalty can
+        SVM quadratic program. Note that the hyper-parameter C for the soft-margin penalty can
         be specified through the keyword args.}
 
     Minimizing this loss over the parameters b of the kernel is equivalent to maximizing a
     weighted kernel alignment, which in turn yields the smallest upper bound to the SVM
-    generalization error for a given parametrization.
+    generalization error for a given set of parameters.
 
     See https://arxiv.org/abs/2105.03406 for further details.
     """
