@@ -12,14 +12,20 @@
 
 """ Loss utilities """
 
+from functools import partial
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Sequence, Callable, TYPE_CHECKING
 
 import numpy as np
 from sklearn.svm import SVC
 
-from qiskit_machine_learning.kernels import QuantumKernel
 from ...exceptions import QiskitMachineLearningError
+
+# Prevent circular dependencies caused from type checking
+if TYPE_CHECKING:
+    from ...kernels import QuantumKernel
+else:
+    QuantumKernel = object
 
 
 class Loss(ABC):
@@ -98,21 +104,21 @@ class KernelLoss(ABC):
 
     def __call__(
         self,
-        user_parameters: Sequence[float],
-        kernel: QuantumKernel,
+        parameter_values: Sequence[float],
+        quantum_kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
         """
         This method calls the ``evaluate`` method. This is a convenient method to compute loss.
         """
-        return self.evaluate(user_parameters, kernel, data, labels)
+        return self.evaluate(parameter_values, quantum_kernel, data, labels)
 
     @abstractmethod
     def evaluate(
         self,
-        user_parameters: Sequence[float],
-        kernel: QuantumKernel,
+        parameter_values: Sequence[float],
+        quantum_kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -120,9 +126,8 @@ class KernelLoss(ABC):
         An abstract method for evaluating the loss of a kernel function on a labeled dataset.
 
         Args:
-            user_parameters: an array of values to assign to the user params
-            kernel: An ``NxN`` matrix representing the kernel function
-                    ``N = # samples``
+            parameter_values: an array of values to assign to the user params
+            quantum_kernel: A ``QuantumKernel`` object to evaluate
             data: An ``NxM`` matrix containing the data
                     ``N = # samples, M = dimension of data``
             labels: A length-N array containing the truth labels
@@ -251,18 +256,32 @@ class SVCAlignment(KernelLoss):
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
+    def get_variational_callable(
+        self,
+        quantum_kernel: QuantumKernel,
+        data: np.ndarray,
+        labels: np.ndarray,
+    ) -> Callable[[Sequence[float]], float]:
+        """
+        Return a callable variational loss function given a quantum kernel and labeled dataset.
+        The sole input to the callable will be an array of feature map parameter values, and the
+        output will be a loss value.
+        """
+
+        return partial(self.evaluate, quantum_kernel=quantum_kernel, data=data, labels=labels)
+
     def evaluate(
         self,
-        user_parameters: Sequence[float],
-        kernel: QuantumKernel,
+        parameter_values: Sequence[float],
+        quantum_kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
         # Bind training parameters
-        kernel.assign_user_parameters(user_parameters)
+        quantum_kernel.assign_user_parameters(parameter_values)
 
         # Train a quantum support vector classifier
-        svc = SVC(kernel=kernel.evaluate, **self.kwargs)
+        svc = SVC(kernel=quantum_kernel.evaluate, **self.kwargs)
         svc.fit(data, labels)
 
         # Get dual coefficients
@@ -272,7 +291,7 @@ class SVCAlignment(KernelLoss):
         support_vecs = svc.support_
 
         # Get estimated kernel matrix
-        kmatrix = kernel.evaluate(np.array(data))[support_vecs, :][:, support_vecs]
+        kmatrix = quantum_kernel.evaluate(np.array(data))[support_vecs, :][:, support_vecs]
 
         # Calculate loss
         loss = np.sum(np.abs(dual_coefs)) - (0.5 * (dual_coefs.T @ kmatrix @ dual_coefs))

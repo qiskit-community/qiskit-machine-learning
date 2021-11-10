@@ -23,9 +23,12 @@ Quantum Kernels
    :nosignatures:
 
    QuantumKernel
+   QuantumKernelTrainer
+   QuantumKernelTrainerResult
 
 """
 
 from .quantum_kernel import QuantumKernel
+from .quantum_kernel_trainer import QuantumKernelTrainer, QuantumKernelTrainerResult
 
-__all__ = ["QuantumKernel"]
+__all__ = ["QuantumKernel", "QuantumKernelTrainer", "QuantumKernelTrainerResult"]
