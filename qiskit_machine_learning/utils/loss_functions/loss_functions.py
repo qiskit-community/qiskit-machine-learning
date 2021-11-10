@@ -103,7 +103,7 @@ class KernelLoss(ABC):
     Unlike many loss functions, which only take into account the labels and predictions
     of a model, kernel loss functions may be a function of internal model parameters or
     quantities that are generated during training. For this reason, extensions of this
-    class may find it neccesary to introduce additional inputs.
+    class may find it necessary to introduce additional inputs.
     """
 
     def __call__(
@@ -272,11 +272,11 @@ class SVCLoss(KernelLoss):
         SVCLoss = \sum_{i} a_i - 0.5 \sum_{i,j} a_i a_j y_{i} y_{j} K_b(x_i, x_j)
 
     where a_i are the optimal Lagrange multipliers found by solving the standard SVM quadratic program.
-    Note that the hyperparameter C for the soft-margin penalty can be specified through the keyword args.
+    Note that the hyper-parameter C for the soft-margin penalty can be specified through the keyword args.
 
     Minimizing this loss over the parameters b of the kernel is equivalent to maximizing a weighted
     kernel alignment, which in turn yields the smallest upper bound to the SVM generalization error for a
-    given parametrization.
+    given set of parameter values.
 
     See https://arxiv.org/abs/2105.03406 for further details.
     """

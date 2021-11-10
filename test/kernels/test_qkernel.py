@@ -430,7 +430,7 @@ class TestQuantumKernelUserParameters(QiskitMachineLearningTestCase):
             }
             qkclass.assign_user_parameters(param_binds)
 
-            # Ensure QKernel forgets unused param 1 and unbinds param 0 and 2
+            # Ensure quantum kernel forgets unused param 1 and unbinds param 0 and 2
             self.assertEqual(
                 list(qkclass.user_param_binds.keys()),
                 [self.user_parameters[0], self.user_parameters[2]],
