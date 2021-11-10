@@ -19,7 +19,7 @@ import numbers
 import numpy as np
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from qiskit.circuit import Parameter, ParameterVector
+from qiskit.circuit import Parameter, ParameterVector, ParameterExpression
 from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend, BaseBackend
@@ -77,7 +77,7 @@ class QuantumKernel:
         self._quantum_instance = quantum_instance
 
         # Setters
-        self.feature_map = feature_map if feature_map else ZZFeatureMap(2)
+        self.feature_map = feature_map if feature_map is not None else ZZFeatureMap(2)
         if user_parameters is not None:
             self.user_parameters = user_parameters
 
@@ -122,27 +122,25 @@ class QuantumKernel:
     @property
     def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
         """Return the vector of user parameters."""
-        return self._user_parameters
+        return copy.copy(self._user_parameters)
 
     @user_parameters.setter
     def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
         """Sets the user parameters"""
         self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
-
-        self._user_parameters = user_params
+        self._user_parameters = copy.deepcopy(user_params)
 
     def assign_user_parameters(
         self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
         """
         Assign user parameters in the ``QuantumKernel`` feature map.
-
         Args:
             values (dict or iterable): Either a dictionary or iterable specifying the new
-                parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
-                ``new_parameter``, where ``new_parameter`` can be a parameter object or a
-                numeric value. If an iterable, the elements are assigned to the existing parameters
-                in the order of ``QuantumKernel.user_parameters``.
+            parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
+            ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
+            numeric value. If an iterable, the elements are assigned to the existing parameters
+            in the order of ``QuantumKernel.user_parameters``.
 
         Raises:
             ValueError: Incompatible number of user parameters and values
@@ -156,14 +154,11 @@ class QuantumKernel:
                 """
             )
 
-        if isinstance(values, dict):
-            unknown_parameters = list(set(values.keys()) - set(self._user_parameters))
-            if len(unknown_parameters) > 0:
-                raise ValueError(
-                    f"Cannot bind parameters ({unknown_parameters}) not tracked by the quantum kernel."
-                )
-            param_binds = values
-        else:
+        # Get the input parameters. These should remain unaffected by assigning of user parameters.
+        input_params = list(set(self._unbound_feature_map.parameters) - set(self._user_parameters))
+
+        # If iterable of values is passed, the length must match length of user_parameters field
+        if isinstance(values, (Sequence, np.ndarray)):
             if len(values) != len(self._user_parameters):
                 raise ValueError(
                     f"""
@@ -172,12 +167,75 @@ class QuantumKernel:
                 ({len(self._user_parameters)}).
                 """
                 )
-            param_binds = {param: values[i] for i, param in enumerate(self._user_parameters)}
-
-        if self._user_param_binds is None:
-            self._user_param_binds = param_binds
+            values = {p: values[i] for i, p in enumerate(self._user_parameters)}
         else:
-            self._user_param_binds.update(param_binds)
+            if not isinstance(values, dict):
+                raise ValueError(
+                    f"""
+                'values' must be of type Dict or Sequence.
+                Type {type(values)} is not supported.
+                """
+                )
+
+            # All input keys must exist in the circuit
+            # This check actually catches some well defined assignments;
+            # however; we throw an error to be consistent with the behavior
+            # of QuantumCircuit's parameter binding.
+            unknown_parameters = list(set(values.keys()) - set(self._user_parameters))
+            if len(unknown_parameters) > 0:
+                raise ValueError(
+                    f"Cannot bind parameters ({unknown_parameters}) not tracked by the quantum kernel."
+                )
+
+        # Because QuantumKernel supports parameter rebinding, entries of the `values` dictionary must
+        # be handled differently depending on whether they represent numerical assignments or parameter
+        # reassignments. However, re-ordering the values dictionary inherently changes the expected
+        # behavior of parameter binding, as entries in the values dict do not commute with one another
+        # in general. To resolve this issue, we handle each entry of the values dict one at a time.
+        for param, bind in values.items():
+            if isinstance(bind, ParameterExpression):
+                self._unbound_feature_map.assign_parameters({param: bind}, inplace=True)
+
+                # User params are all non-input params in the unbound feature map
+                # This list comprehension ensures that self._user_parameters is ordered
+                # in a way that is consistent with self.feature_map.parameters
+                self._user_parameters = [
+                    p for p in self._unbound_feature_map.parameters if (p not in input_params)
+                ]
+
+                # Remove param if it was overwritten
+                if param not in self._user_parameters:
+                    del self._user_param_binds[param]
+
+                # Add new parameters
+                for sub_param in bind.parameters:
+                    if sub_param not in self._user_param_binds.keys():
+                        self._user_param_binds[sub_param] = sub_param
+
+                # If parameter is being set to expression of itself, user_param_binds
+                # reflects a self-bind
+                if param in bind.parameters:
+                    self._user_param_binds[param] = param
+
+            # If assignment is numerical, update the param_binds
+            elif isinstance(bind, numbers.Number):
+                self._user_param_binds[param] = bind
+
+            else:
+                raise ValueError(
+                    f"""
+                    Parameters can only be bound to numeric values,
+                    Parameters, or ParameterExpressions. Type {type(bind)}
+                    is not supported.
+                    """
+                )
+
+        # Reorder dict according to self._user_parameters
+        self._user_param_binds = {
+            param: self._user_param_binds[param] for param in self._user_parameters
+        }
+
+        # Update feature map with numerical parameter assignments
         self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
 
     @property
@@ -185,16 +243,15 @@ class QuantumKernel:
         """Return a copy of the current user parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._user_param_binds)
 
-    def bind_user_parameters(self, values: Sequence[float]) -> None:
+    def bind_user_parameters(
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+    ) -> None:
         """
         Alternate function signature for ``assign_user_parameters``
-
-        Args:
-            values (iterable): [value1, value2, ...]
         """
         self.assign_user_parameters(values)
 
-    def get_unbound_parameters(self) -> List[Parameter]:
+    def get_unbound_user_parameters(self) -> List[Parameter]:
         """Returns a list of any unbound user parameters in the feature map circuit."""
         unbound_user_params = []
         if self._user_param_binds is not None:
@@ -236,7 +293,7 @@ class QuantumKernel:
                 - unbound user parameters in the feature map circuit
         """
         # Ensure all user parameters have been bound in the feature map circuit.
-        unbound_params = self.get_unbound_parameters()
+        unbound_params = self.get_unbound_user_parameters()
         if unbound_params:
             raise ValueError(
                 f"""
@@ -322,7 +379,7 @@ class QuantumKernel:
                     and feature map can not be modified to match.
         """
         # Ensure all user parameters have been bound in the feature map circuit.
-        unbound_params = self.get_unbound_parameters()
+        unbound_params = self.get_unbound_user_parameters()
         if unbound_params:
             raise ValueError(
                 f"""

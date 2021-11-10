@@ -23,11 +23,11 @@ algorithms and scripts in the cloud.
    :toctree: ../stubs/
    :nosignatures:
 
-   QKAClient
-   QKARuntimeResult
+   QuantumKernelTrainerClient
+   QKTRuntimeResult
 
 """
 
-from .qka_client import QKAClient, QKARuntimeResult
+from .quantum_kernel_trainer_client import QuantumKernelTrainerClient, QKTRuntimeResult
 
-__all__ = ["QKAClient", "QKARuntimeResult"]
+__all__ = ["QuantumKernelTrainerClient", "QKTRuntimeResult"]
