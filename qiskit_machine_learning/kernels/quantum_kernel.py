@@ -137,10 +137,11 @@ class QuantumKernel:
         Assign user parameters in the ``QuantumKernel`` feature map.
         Args:
             values (dict or iterable): Either a dictionary or iterable specifying the new
-                parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
-                ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
-                numeric value. If an iterable, the elements are assigned to the existing parameters
-                in the order of ``QuantumKernel.user_parameters``.
+            parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
+            ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
+            numeric value. If an iterable, the elements are assigned to the existing parameters
+            in the order of ``QuantumKernel.user_parameters``.
+
         Raises:
             ValueError: Incompatible number of user parameters and values
         """

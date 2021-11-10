@@ -263,17 +263,22 @@ class CrossEntropySigmoidLoss(Loss):
 
 class SVCLoss(KernelLoss):
     r"""
-    This class computes the inverse of the margin obtained after training a SKLearn
-    ``SVC`` class on a given quantum kernel and data set. The dual-form of the
-    SVC objective, which gives the inverse margin, is equal to the negative
-    weighted kernel alignment with an added regularization term.
+    This class provides a kernel loss function for classification tasks by fitting an ``SVC`` model
+    from sklearn. Given training samples x_{i} with binary labels y_{i} and a kernel K_{b}
+    parameterized by values b, the loss is defined as
 
     .. math::
 
-        \text{SVCLoss} = \sum_{a_i}^{N} - \sum_{i,j}^N a_i•a_j•y_i•y_j•K_ij =
-        \text{regularization - weighted alignment}
+        SVCLoss = \sum_{i} a_i - 0.5 \sum_{i,j} a_i a_j y_{i} y_{j} K_b(x_i, x_j)
 
-    See https://arxiv.org/pdf/2105.03406.pdf for further details.
+    where a_i are the optimal Lagrange multipliers found by solving the standard SVM quadratic program.
+    Note that the hyperparameter C for the soft-margin penalty can be specified through the keyword args.
+
+    Minimizing this loss over the parameters b of the kernel is equivalent to maximizing a weighted
+    kernel alignment, which in turn yields the smallest upper bound to the SVM generalization error for a
+    given parametrization.
+
+    See https://arxiv.org/abs/2105.03406 for further details.
     """
 
     def __init__(self, **kwargs):
