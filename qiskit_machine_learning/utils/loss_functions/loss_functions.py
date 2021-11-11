@@ -24,8 +24,6 @@ from ...exceptions import QiskitMachineLearningError
 # Prevent circular dependencies caused from type checking
 if TYPE_CHECKING:
     from ...kernels import QuantumKernel
-else:
-    QuantumKernel = object
 
 
 class Loss(ABC):
@@ -109,7 +107,7 @@ class KernelLoss(ABC):
     def __call__(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: 'QuantumKernel',
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -120,7 +118,7 @@ class KernelLoss(ABC):
 
     def get_variational_callable(
         self,
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: 'QuantumKernel',
         data: np.ndarray,
         labels: np.ndarray,
     ) -> Callable[[Sequence[float]], float]:
@@ -129,14 +127,13 @@ class KernelLoss(ABC):
         callable should be an array of numerical feature map parameter values, and the output should
         be a numerical loss value.
         """
-
         return partial(self.evaluate, quantum_kernel=quantum_kernel, data=data, labels=labels)
 
     @abstractmethod
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: 'QuantumKernel',
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -293,7 +290,7 @@ class SVCLoss(KernelLoss):
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: 'QuantumKernel',
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
