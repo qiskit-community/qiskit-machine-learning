@@ -33,7 +33,7 @@ class QuantumKernelTrainerResult(VariationalResult):
 
     def __init__(self) -> None:
         super().__init__()
-        self._quantum_kernel = None
+        self._quantum_kernel = None # type: QuantumKernel
 
     @property
     def quantum_kernel(self) -> Optional[QuantumKernel]:
