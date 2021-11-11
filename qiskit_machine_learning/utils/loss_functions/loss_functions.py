@@ -267,7 +267,7 @@ class SVCLoss(KernelLoss):
 
         \text{This class provides a kernel loss function for classification tasks by
         fitting an ``SVC`` model from sklearn. Given training samples, x_{i}, with binary
-        labels, y_{i}, and a kernel, K_{θ}, parameterized by values θ, the loss is defined as}
+        labels, y_{i}, and a kernel, K_{θ}, parameterized by values theta, the loss is defined as}
 
         SVCLoss = \sum_{i} a_i - 0.5 \sum_{i,j} a_i a_j y_{i} y_{j} K_θ(x_i, x_j)
 
@@ -275,7 +275,7 @@ class SVCLoss(KernelLoss):
         SVM quadratic program. Note that the hyper-parameter C for the soft-margin penalty can
         be specified through the keyword args.}
 
-    Minimizing this loss over the parameters θ of the kernel is equivalent to maximizing a
+    Minimizing this loss over the parameters theta of the kernel is equivalent to maximizing a
     weighted kernel alignment, which in turn yields the smallest upper bound to the SVM
     generalization error for a given set of parameters.
 
