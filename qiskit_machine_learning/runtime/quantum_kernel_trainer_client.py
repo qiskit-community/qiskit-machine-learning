@@ -39,12 +39,12 @@ class QKTRuntimeResult(QuantumKernelTrainerResult):
 
     @property
     def job_id(self) -> str:
-        """The job ID associated with the VQE runtime job."""
+        """The job ID associated with the QuantumKernelTrainer runtime job."""
         return self._job_id
 
     @job_id.setter
     def job_id(self, job_id: str) -> None:
-        """Set the job ID associated with the VQE runtime job."""
+        """Set the job ID associated with the quantum-kernel-trainer runtime job."""
         self._job_id = job_id
 
     @property
@@ -61,7 +61,7 @@ class QKTRuntimeResult(QuantumKernelTrainerResult):
 class QuantumKernelTrainerClient:
     """The Quantum Kernel Trainer Runtime Client.
 
-    This class is a client to call the QKT program in Qiskit Runtime."""
+    This class is a client to call the quantum-kernel-trainer program in Qiskit Runtime."""
 
     def __init__(
         self,
@@ -246,7 +246,7 @@ class QuantumKernelTrainerClient:
         Args:
             data: A 2D array representing an ``NxM`` training dataset
                     ``N`` = number of samples
-                    ``M`` = feature dimensionality
+                    ``M`` = feature dimension
             labels: A length-N array of training labels
         Returns:
             QKTRuntimeResult: A :class:`~qiskit_machine_learning.runtime.QKTRuntimeResult`

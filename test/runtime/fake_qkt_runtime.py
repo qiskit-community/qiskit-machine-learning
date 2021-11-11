@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Fake runtime provider and Torch runtime."""
+"""Fake runtime provider and quantum-kernel-trainer runtime."""
 
 from typing import Dict, Any
 import base64
@@ -39,7 +39,7 @@ class FakeQKTJob:
         return obj
 
     def result(self) -> Dict[str, Any]:
-        """Return a QKT program result."""
+        """Return a quantum-kernel-trainer program result."""
         # pylint: disable=no-member
         num_params = len(self._quantum_kernel.user_parameters)
         # pylint: enable=no-member
@@ -56,7 +56,7 @@ class FakeQKTJob:
 
 
 class FakeQKTRuntime:
-    """A fake QKT runtime for unit tests."""
+    """A fake quantum-kernel-trainer runtime for unit tests."""
 
     def run(self, program_id, inputs, options, callback=None):
         """Run the fake program. Checks the input types."""
