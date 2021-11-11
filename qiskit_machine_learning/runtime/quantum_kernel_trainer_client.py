@@ -15,6 +15,7 @@
 from typing import Optional, Union, Dict, Callable, Any, Iterable
 import base64
 import dill
+import copy
 
 import numpy as np
 
@@ -312,8 +313,8 @@ class QuantumKernelTrainerClient:
         qkt_result.optimizer_time = result.get("optimizer_time", None)
         qkt_result.optimizer_history = result.get("optimizer_history", None)
 
-        qkt_result.quantum_kernel = self._quantum_kernel.assign_user_parameters(
-            qkt_result.optimal_point
-        )
+        optimized_kernel = copy.deepcopy(self._quantum_kernel)
+        optimized_kernel.assign_user_parameters(qkt_result.optimal_point)
+        qkt_result.quantum_kernel = optimized_kernel
 
         return qkt_result
