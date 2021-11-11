@@ -43,7 +43,7 @@ def generate_feature_map():
 
 
 class TestQKTRuntimeClient(QiskitMachineLearningTestCase):
-    """Test the QKT program."""
+    """Test the quantum-kernel-trainer program."""
 
     def setUp(self):
         super().setUp()
