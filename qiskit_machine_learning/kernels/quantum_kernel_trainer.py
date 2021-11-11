@@ -24,8 +24,6 @@ from qiskit_machine_learning.utils.loss_functions import SVCLoss
 # Prevent circular dependencies from type checking
 if TYPE_CHECKING:
     from qiskit_machine_learning.kernels import QuantumKernel
-else:
-    QuantumKernel = object
 
 
 class QuantumKernelTrainerResult(VariationalResult):
@@ -36,12 +34,12 @@ class QuantumKernelTrainerResult(VariationalResult):
         self._quantum_kernel = None  # type: QuantumKernel
 
     @property
-    def quantum_kernel(self) -> Optional[QuantumKernel]:
+    def quantum_kernel(self) -> Optional['QuantumKernel']:
         """Returns the optimized quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
+    def quantum_kernel(self, quantum_kernel: 'QuantumKernel') -> None:
         self._quantum_kernel = quantum_kernel
 
 
@@ -77,7 +75,7 @@ class QuantumKernelTrainer:
 
     def __init__(
         self,
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: 'QuantumKernel',
         loss: Union[str, Callable[[Sequence[float]], float]] = "svc_alignment",
         optimizer: Optimizer = SPSA(),
         initial_point: Optional[Sequence[float]] = None,
@@ -109,12 +107,12 @@ class QuantumKernelTrainer:
         self.loss = loss
 
     @property
-    def quantum_kernel(self) -> QuantumKernel:
+    def quantum_kernel(self) -> 'QuantumKernel':
         """Returns the quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
+    def quantum_kernel(self, quantum_kernel: 'QuantumKernel') -> None:
         """Sets the quantum kernel."""
         self._quantum_kernel = quantum_kernel
 
@@ -217,7 +215,7 @@ class QuantumKernelTrainer:
 
 def _str_to_variational_callable(
     loss_str: str,
-    quantum_kernel: QuantumKernel = None,
+    quantum_kernel: 'QuantumKernel' = None,
     data: np.ndarray = None,
     labels: np.ndarray = None,
 ) -> Callable[[Sequence[float]], float]:
