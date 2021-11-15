@@ -13,7 +13,7 @@
 """The Qiskit Machine Learning Torch Runtime Client"""
 
 import base64
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union, List
 
 import dill
 
@@ -81,11 +81,11 @@ class TorchRuntimeResult:
     """
 
     def __init__(self) -> None:
-        self._job_id = None  # type: str
-        self._train_history = None  # type: Dict[str, Any]
-        self._val_history = None  # type: Dict[str, Any]
-        self._model_state_dict = None  # type: Dict[str, Any]
-        self._train_time = None  # type: float
+        self._job_id: Optional[str] = None
+        self._train_history: Optional[Dict[str, Any]] = None
+        self._val_history: Optional[Dict[str, Any]] = None
+        self._model_state_dict: Optional[Dict[str, Any]] = None
+        self._train_time: Optional[float] = None
 
     @property
     def job_id(self) -> str:
@@ -252,44 +252,24 @@ class TorchRuntimeClient:
         """Whether or not to use measurement error mitigation."""
         self._measurement_error_mitigation = measurement_error_mitigation
 
-    def obj_to_str(self, obj: Any) -> str:
-        """
-        Encodes any object into a JSON-compatible string using dill. The intermediate
-        binary data must be converted to base 64 to be able to decode into utf-8 format.
-
-        Returns:
-            The encoded string
-        """
-        string = base64.b64encode(dill.dumps(obj, byref=False)).decode("utf-8")
-        return string
-
-    def str_to_obj(self, string: str) -> Any:
-        """
-        Decodes a previously encoded string using dill (with an intermediate step
-        converting the binary data from base 64).
-
-        Returns:
-            The decoded object
-        """
-        obj = dill.loads(base64.b64decode(string.encode()))
-        return obj
-
     def fit(
         self,
         train_loader: DataLoader,
         val_loader: Optional[DataLoader] = None,
-        hooks: Optional[HookBase] = None,
+        hooks: Optional[Union[List[HookBase], HookBase]] = None,
         start_epoch: int = 0,
         seed: Optional[int] = None,
     ) -> TorchRuntimeResult:
-        """Calls the Torch Runtime train('torch-train') to train the model.
+        """Train the model using the Torch Runtime train('torch-train').
+        All necessary data is serialized and it's sent to the server side.
+        After training, model's parameter is updated and TorchRuntimeResult is returned for the result.
 
         Args:
             train_loader: A PyTorch data loader object containing the training dataset.
             val_loader: A PyTorch data loader object containing the validation dataset.
                 If no validation loader is provided, the validation step will be skipped
                 during training.
-            hooks: List of hook classes to interact with the training loop.
+            hooks: a hook class of a List of hook classes to interact with the training loop.
             start_epoch: initial epoch for warm-start training.
             seed: Set the random seed for `torch.manual_seed(seed)`.
         Returns:
@@ -298,13 +278,15 @@ class TorchRuntimeClient:
         Raises:
             ValueError: If the backend has not yet been set.
             ValueError: If the provider has not yet been set.
+            ValueError: If the train_loader is not an instance of DataLoader in PyTorch.
+            ValueError: If the val_loader is not an instance of DataLoader in PyTorch.
             ValueError: If one of hooks is not a HookBase type
             RuntimeError: If the job execution failed.
         """
         if self._backend is None:
             raise ValueError("The backend has not been set.")
 
-        if self.provider is None:
+        if self._provider is None:
             raise ValueError("The provider has not been set.")
 
         if not isinstance(train_loader, DataLoader):
@@ -317,20 +299,20 @@ class TorchRuntimeClient:
                 )
 
         # serialize using dill
-        serial_model = self.obj_to_str(self.model)
-        serial_optim = self.obj_to_str(self.optimizer)
-        serial_loss = self.obj_to_str(self.loss_func)
-        serial_train_data = self.obj_to_str(train_loader)
+        serial_model = obj_to_str(self.model)
+        serial_optim = obj_to_str(self.optimizer)
+        serial_loss = obj_to_str(self.loss_func)
+        serial_train_data = obj_to_str(train_loader)
         serial_val_data: Optional[str] = None
         # check hooks
         if val_loader:
-            serial_val_data = self.obj_to_str(val_loader)
+            serial_val_data = obj_to_str(val_loader)
         if hooks is None:
-            serial_hooks = self.obj_to_str([])
+            serial_hooks = obj_to_str([])
         elif isinstance(hooks, HookBase):
-            serial_hooks = self.obj_to_str([hooks])
+            serial_hooks = obj_to_str([hooks])
         elif isinstance(hooks, list) and all(isinstance(hook, HookBase) for hook in hooks):
-            serial_hooks = self.obj_to_str(hooks)
+            serial_hooks = obj_to_str(hooks)
         else:
             raise ValueError("`hooks` must all be of the HookBase type")
         # combine the settings with the serialized buffers to runtime inputs
@@ -358,26 +340,28 @@ class TorchRuntimeClient:
             options=options,
         )
 
-        # print job ID if something goes wrong
+        # Raise a runtime error with the job id if something goes wrong
         try:
             result = job.result()
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
         # Store trained model state for later prediction/scoring/further training
-        self._model.load_state_dict(self.str_to_obj(result["model_state_dict"]))
+        self._model.load_state_dict(str_to_obj(result["model_state_dict"]))
 
         # re-build result from serialized return value
         torch_result = TorchRuntimeResult()
         torch_result.job_id = job.job_id()
         torch_result.train_history = result.get("train_history", {}).get("train", None)
         torch_result.val_history = result.get("train_history", {}).get("val", None)
-        torch_result.model_state_dict = self.str_to_obj(result.get("model_state_dict"))
+        torch_result.model_state_dict = str_to_obj(result.get("model_state_dict"))
         torch_result.train_time = result.get("train_time")
         return torch_result
 
     def predict(self, data_loader: DataLoader) -> Tensor:
-        """Calls the Torch Runtime infer ('torch-infer') for prediction purposes.
+        """Predict the result using the trained model and the Torch Runtime infer ('torch-infer').
+        All necessary data is serialized and it's sent to the server side.
+        After predicting, a Tensor corresponding to the predicted result of the input data is returned.
 
         Args:
             data_loader: A PyTorch data loader object containing the inference dataset.
@@ -392,12 +376,12 @@ class TorchRuntimeClient:
         if self._backend is None:
             raise ValueError("The backend has not been set.")
 
-        if self.provider is None:
+        if self._provider is None:
             raise ValueError("The provider has not been set.")
 
         # Serialize inputs
-        serial_model = self.obj_to_str(self._model)
-        serial_data = self.obj_to_str(data_loader)
+        serial_model = obj_to_str(self._model)
+        serial_data = obj_to_str(data_loader)
 
         # combine the settings with the serialized buffers to runtime inputs
         inputs = {
@@ -417,6 +401,7 @@ class TorchRuntimeClient:
             options=options,
         )
 
+        # Raise a runtime error with the job id if something goes wrong
         try:
             result = job.result()
         except Exception as exc:
@@ -425,12 +410,15 @@ class TorchRuntimeClient:
         return Tensor(result["prediction"])
 
     def score(self, data_loader: DataLoader, score_func: Union[str, Callable]) -> float:
-        """Calls the Torch Runtime infer ('torch-infer') for scoring.
+        """Calculate the score using the trained model and the Torch Runtime infer ('torch-infer').
+        Users can use either pre-defined score functions or their own score function.
+        All necessary data is serialized and it's sent to the server side.
+        After calculating the score, a float number corresponding to the score is returned.
 
         Args:
             data_loader: A PyTorch data loader object containing the inference dataset.
             score_func: A string indicating one of the available scoring functions
-                        ("Classification" for binary classification, and "Regression" for regression)
+                        ("classification" for classification, and "regression" for regression)
                         or a custom scoring function defined as:
                         ``def score_func(model_output, target): -> score: float``.
         Returns:
@@ -443,15 +431,15 @@ class TorchRuntimeClient:
         if self._backend is None:
             raise ValueError("The backend has not been set.")
 
-        if self.provider is None:
+        if self._provider is None:
             raise ValueError("The provider has not been set.")
 
         # serialize model using pickle + dill
-        serial_model = self.obj_to_str(self._model)
+        serial_model = obj_to_str(self._model)
 
-        if score_func == "Classification":
+        if score_func == "classification":
             self._score_func = _score_classification
-        elif score_func == "Regression":
+        elif score_func == "regression":
             self._score_func = MSELoss()
         elif callable(score_func):
             self._score_func = score_func
@@ -459,8 +447,8 @@ class TorchRuntimeClient:
             raise ValueError("Scoring function is not provided.")
 
         # serialize loss function using pickle + dill
-        serial_score_func = self.obj_to_str(self._score_func)
-        serial_data = self.obj_to_str(data_loader)
+        serial_score_func = obj_to_str(self._score_func)
+        serial_data = obj_to_str(data_loader)
 
         # define runtime options
         options = {"backend_name": self._backend.name()}
@@ -481,12 +469,37 @@ class TorchRuntimeClient:
             options=options,
         )
 
+        # Raise a runtime error with the job id if something goes wrong
         try:
             result = job.result()
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
         return result["score"]
+
+
+def obj_to_str(obj: Any) -> str:
+    """
+    Encodes any object into a JSON-compatible string using dill. The intermediate
+    binary data must be converted to base 64 to be able to decode into utf-8 format.
+
+    Returns:
+        The encoded string
+    """
+    string = base64.b64encode(dill.dumps(obj, byref=False)).decode("utf-8")
+    return string
+
+
+def str_to_obj(string: str) -> Any:
+    """
+    Decodes a previously encoded string using dill (with an intermediate step
+    converting the binary data from base 64).
+
+    Returns:
+        The decoded object
+    """
+    obj = dill.loads(base64.b64decode(string.encode()))
+    return obj
 
 
 def _score_classification(output: Tensor, target: Tensor) -> float:

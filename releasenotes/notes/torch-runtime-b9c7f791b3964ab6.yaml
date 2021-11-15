@@ -1,5 +1,7 @@
 ---
 features:
   - |
-    Allow leveraging Qiskit Runtime to execute a PyTorch Module including TorchConnector
-    in the cloud using the :class:`~qiskit_machine_learning.runtime.TorchRuntimeClient`.
+    Introduce the :class:`~qiskit_machine_learning.runtime.TorchRuntimeClient` for training
+    a quantum model or a hybrid quantum-classical model faster using Qiskit Runtime.
+    It can also be used for predicting the result using the trained model
+    or calculating the score of the trained model faster using Qiskit Runtime.

@@ -94,7 +94,7 @@ class FakeTorchRuntimeTrainer:
             "measurement_error_mitigation": bool,
             "epochs": int,
             "start_epoch": int,
-            "hooks": (str, type(None), list),
+            "hooks": (str),
             "seed": (int, type(None)),
         }
         for arg, value in inputs.items():

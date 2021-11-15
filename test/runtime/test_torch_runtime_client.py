@@ -21,7 +21,7 @@ from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.providers.basicaer import QasmSimulatorPy
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
-from qiskit_machine_learning.runtime import TorchRuntimeClient
+from qiskit_machine_learning.runtime import TorchRuntimeClient, HookBase
 from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
 try:
@@ -100,7 +100,17 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchRuntimeClient(
+        # Default arguments
+        torch_runtime_client = TorchRuntimeClient(
+            model=model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+            provider=self._trainer_provider,
+            backend=backend,
+        )
+        torch_runtime_client.fit(train_loader)
+        # Specify arguments
+        torch_runtime_client = TorchRuntimeClient(
             model=model,
             optimizer=optimizer,
             loss_func=loss_func,
@@ -109,7 +119,64 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_program.fit(train_loader)
+        torch_runtime_client.fit(train_loader, start_epoch=0, seed=42)
+
+    @requires_extra_library
+    def test_fit_with_validattion_set(self):
+        """Test for fit with a validation set"""
+        try:
+            from torch.utils.data import DataLoader
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="Pytorch",
+                name="TorchConnector",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            ) from ex
+        train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
+        model = TorchConnector(self._qnn, [1])
+        backend = QasmSimulatorPy()
+        optimizer = Adam(model.parameters(), lr=0.1)
+        loss_func = MSELoss(reduction="sum")
+        torch_runtime_client = TorchRuntimeClient(
+            model=model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+            provider=self._trainer_provider,
+            epochs=1,
+            backend=backend,
+            shots=1024,
+        )
+        validation_loader = DataLoader(TorchDataset([0], [0]), batch_size=1, shuffle=False)
+        torch_runtime_client.fit(train_loader, val_loader=validation_loader)
+
+    @requires_extra_library
+    def test_fit_with_hooks(self):
+        """Test for fit with hooks"""
+        try:
+            from torch.utils.data import DataLoader
+        except ImportError as ex:
+            raise MissingOptionalLibraryError(
+                libname="Pytorch",
+                name="TorchConnector",
+                pip_install="pip install 'qiskit-machine-learning[torch]'",
+            ) from ex
+        train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
+        model = TorchConnector(self._qnn, [1])
+        backend = QasmSimulatorPy()
+        optimizer = Adam(model.parameters(), lr=0.1)
+        loss_func = MSELoss(reduction="sum")
+        torch_runtime_client = TorchRuntimeClient(
+            model=model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+            provider=self._trainer_provider,
+            epochs=1,
+            backend=backend,
+            shots=1024,
+        )
+        hook = HookBase()
+        torch_runtime_client.fit(train_loader, hooks=hook)
+        torch_runtime_client.fit(train_loader, hooks=[hook, hook])
 
     @requires_extra_library
     def test_predict(self):
@@ -122,12 +189,12 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
                 name="TorchConnector",
                 pip_install="pip install 'qiskit-machine-learning[torch]'",
             ) from ex
-        train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
+        data_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
         backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchRuntimeClient(
+        torch_runtime_client = TorchRuntimeClient(
             model=model,
             optimizer=optimizer,
             loss_func=loss_func,
@@ -136,7 +203,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_program.predict(train_loader)
+        torch_runtime_client.predict(data_loader)
 
     @requires_extra_library
     def test_score(self):
@@ -149,12 +216,12 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
                 name="TorchConnector",
                 pip_install="pip install 'qiskit-machine-learning[torch]'",
             ) from ex
-        train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
+        data_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
         backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        torch_program = TorchRuntimeClient(
+        torch_runtime_client = TorchRuntimeClient(
             model=model,
             optimizer=optimizer,
             loss_func=loss_func,
@@ -163,7 +230,16 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_program.score(train_loader, score_func="Regression")
+        # Test different score functions
+        torch_runtime_client.score(data_loader, score_func="Regression")
+        torch_runtime_client.score(data_loader, score_func="Classification")
+
+        def score_classification(output: Tensor, target: Tensor) -> float:
+            pred = output.argmax(dim=1, keepdim=True)
+            correct = pred.eq(target.view_as(pred)).sum().item()
+            return correct
+
+        torch_runtime_client.score(data_loader, score_func=score_classification)
 
 
 if __name__ == "__main__":
