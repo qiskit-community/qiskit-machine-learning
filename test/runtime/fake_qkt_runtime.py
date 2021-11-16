@@ -12,31 +12,18 @@
 
 """Fake runtime provider and quantum-kernel-trainer runtime."""
 
-from typing import Dict, Any
-import base64
-import dill
+from typing import Dict, Any, Iterable
 from qiskit.providers import Provider
+from qiskit.algorithms.optimizers import Optimizer
+
+from qiskit_machine_learning.kernels import QuantumKernel
 
 
 class FakeQKTJob:
     """A fake job for unit tests."""
 
-    def __init__(self, serial_qkernel):
-        self._quantum_kernel = self.str_to_obj(serial_qkernel)
-
-    def obj_to_str(self, obj: Any) -> str:
-        """
-        Encodes any object into a JSON-compatible string using dill. The intermediate
-        binary data must be converted to base 64 to be able to decode into utf-8 format.
-        """
-        string = base64.b64encode(dill.dumps(obj, byref=False)).decode("utf-8")
-        return string
-
-    def str_to_obj(self, string: str) -> Any:
-        """Decodes a previously encoded string using dill (with an intermediate step
-        converting the binary data from base 64)."""
-        obj = dill.loads(base64.b64decode(string.encode()))
-        return obj
+    def __init__(self, quantum_kernel):
+        self._quantum_kernel = quantum_kernel
 
     def result(self) -> Dict[str, Any]:
         """Return a quantum-kernel-trainer program result."""
@@ -44,7 +31,7 @@ class FakeQKTJob:
         num_params = len(self._quantum_kernel.user_parameters)
         # pylint: enable=no-member
         serialized_result = {
-            "quantum_kernel": self.obj_to_str(self._quantum_kernel),
+            "quantum_kernel": self._quantum_kernel,
             "optimal_point": [0.1] * num_params,
         }
 
@@ -65,23 +52,24 @@ class FakeQKTRuntime:
             raise ValueError("program_id is not quantum-kernel-training.")
 
         allowed_inputs = {
-            "quantum_kernel": str,
-            "data": str,
-            "labels": str,
-            "optimizer": str,
+            "quantum_kernel": QuantumKernel,
+            "data": Iterable,
+            "labels": Iterable,
+            "optimizer": Optimizer,
             "shots": int,
             "measurement_error_mitigation": bool,
-            "initial_point": str,
+            "initial_point": Iterable,
         }
 
         for arg, value in inputs.items():
             if not isinstance(value, allowed_inputs[arg]):
-                raise ValueError(f"{arg} does not have the right type: {allowed_inputs[arg]}")
+                raise ValueError(f"{arg} does not have the right type: {type(value)}")
 
-        allowed_options = {"backend_name": str, "initial_layout": str}
+        allowed_options = {"backend_name": str, "initial_layout": Iterable}
+
         for arg, value in options.items():
             if not isinstance(value, allowed_options[arg]):
-                raise ValueError(f"{arg} does not have the right type: {allowed_inputs[arg]}")
+                raise ValueError(f"{arg} does not have the right type: {type(value)}")
 
         if callback is not None:
             try:

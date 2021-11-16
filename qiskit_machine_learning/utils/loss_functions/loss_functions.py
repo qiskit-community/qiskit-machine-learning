@@ -107,7 +107,7 @@ class KernelLoss(ABC):
     def __call__(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: 'QuantumKernel',
+        quantum_kernel: "QuantumKernel",
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -116,24 +116,19 @@ class KernelLoss(ABC):
         """
         return self.evaluate(parameter_values, quantum_kernel, data, labels)
 
-    def get_variational_callable(
-        self,
-        quantum_kernel: 'QuantumKernel',
-        data: np.ndarray,
-        labels: np.ndarray,
-    ) -> Callable[[Sequence[float]], float]:
+    def get_variational_callable(self, **kwargs) -> Callable[[Sequence[float]], float]:
         """
         Return a callable variational loss function given some inputs. The sole input to the
         callable should be an array of numerical feature map parameter values, and the output should
         be a numerical loss value.
         """
-        return partial(self.evaluate, quantum_kernel=quantum_kernel, data=data, labels=labels)
+        raise NotImplementedError
 
     @abstractmethod
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: 'QuantumKernel',
+        quantum_kernel: "QuantumKernel",
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -287,10 +282,18 @@ class SVCLoss(KernelLoss):
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
+    def get_variational_callable(self, **kwargs) -> Callable[[Sequence[float]], float]:
+        return partial(
+            self.evaluate,
+            quantum_kernel=kwargs["quantum_kernel"],
+            data=kwargs["data"],
+            labels=kwargs["labels"],
+        )
+
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: 'QuantumKernel',
+        quantum_kernel: "QuantumKernel",
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:

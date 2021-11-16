@@ -13,8 +13,6 @@
 """The Qiskit Machine Learning Quantum Kernel Trainer Runtime Client."""
 
 from typing import Optional, Union, Dict, Callable, Any, Iterable
-import base64
-import dill
 import copy
 
 import numpy as np
@@ -23,6 +21,8 @@ from qiskit.exceptions import QiskitError
 from qiskit.providers import Provider
 from qiskit.providers.backend import Backend
 from qiskit.algorithms.optimizers import Optimizer, SPSA
+from qiskit.utils.algorithm_globals import algorithm_globals
+
 from qiskit_machine_learning.kernels import QuantumKernel, QuantumKernelTrainerResult
 
 
@@ -40,12 +40,12 @@ class QKTRuntimeResult(QuantumKernelTrainerResult):
 
     @property
     def job_id(self) -> str:
-        """The job ID associated with the QuantumKernelTrainer runtime job."""
+        """The job ID associated with the VQE runtime job."""
         return self._job_id
 
     @job_id.setter
     def job_id(self, job_id: str) -> None:
-        """Set the job ID associated with the quantum-kernel-trainer runtime job."""
+        """Set the job ID associated with the VQE runtime job."""
         self._job_id = job_id
 
     @property
@@ -62,7 +62,7 @@ class QKTRuntimeResult(QuantumKernelTrainerResult):
 class QuantumKernelTrainerClient:
     """The Quantum Kernel Trainer Runtime Client.
 
-    This class is a client to call the quantum-kernel-trainer program in Qiskit Runtime."""
+    This class is a client to call the QKT program in Qiskit Runtime."""
 
     def __init__(
         self,
@@ -79,8 +79,10 @@ class QuantumKernelTrainerClient:
     ) -> None:
         """
         Args:
-            quantum_kernel: Quantum kernel to optimize
-            loss: (str): Loss functions available via string: {'svc_alignment: SVCAlignment()}
+            quantum_kernel: Quantum kernel to optimize. The quantum kernel feature map
+                will have its user parameters unbound before submitting to runtime program
+                to avoid conflicts between internal class fields when deserializing.
+            loss: (str): Loss functions available via string: {'svc_loss: SVCLoss()}
             optimizer: An instance of ``Optimizer`` to be used in training. Defaults to
                 ``SPSA``.
             initial_point: An optional initial point (i.e. initial parameter values)
@@ -225,17 +227,6 @@ class QuantumKernelTrainerClient:
         """Sets the initial layout."""
         self._initial_layout = initial_layout
 
-    def obj_to_str(self, obj: Any) -> str:
-        """
-        Encodes any object into a JSON-compatible string using dill. The intermediate
-        binary data must be converted to base 64 to be able to decode into utf-8 format.
-
-        Returns:
-            The encoded string
-        """
-        string = base64.b64encode(dill.dumps(obj, byref=False)).decode("utf-8")
-        return string
-
     def fit_kernel(
         self,
         data: Iterable[float],
@@ -245,9 +236,9 @@ class QuantumKernelTrainerClient:
         the quantum kernel.
 
         Args:
-            data: A 2D array representing an ``NxM`` training dataset
+            data: A 2D array representing an ``(N, M)`` training dataset
                     ``N`` = number of samples
-                    ``M`` = feature dimension
+                    ``M`` = feature dimensionality
             labels: A length-N array of training labels
         Returns:
             QKTRuntimeResult: A :class:`~qiskit_machine_learning.runtime.QKTRuntimeResult`
@@ -258,7 +249,6 @@ class QuantumKernelTrainerClient:
             ValueError: If the provider has not yet been set.
             RuntimeError: If the job execution failed.
         """
-
         num_params = len(self._quantum_kernel.user_parameters)
         if num_params == 0:
             msg = "Quantum kernel cannot be fit because there are no user parameters specified."
@@ -270,25 +260,31 @@ class QuantumKernelTrainerClient:
         if self._provider is None:
             raise ValueError("The provider has not been set.")
 
-        # Serialize inputs to runtime program
-        qkernel_serial = self.obj_to_str(self._quantum_kernel)
-        data_serial = self.obj_to_str(data)
-        labels_serial = self.obj_to_str(labels)
-        optimizer_serial = self.obj_to_str(self._optimizer)
-        initial_point_serial = self.obj_to_str(self._initial_point)
-        initial_layout_serial = self.obj_to_str(self._initial_layout)
+        # The quantum kernel feature map should be unbound before sending to runtime
+        # to avoid conflicts between the feature map, unbound feature map, and the
+        # user_param_binds fields upon deserialization.
+        unbind_params = list(self._quantum_kernel.user_parameters)
+        self._quantum_kernel.assign_user_parameters(unbind_params)
+
+        # Randomly initialize the initial point if one was not passed
+        if self._initial_point is None:
+            self._initial_point = algorithm_globals.random.random(num_params)
+
+        if self._initial_layout is None:
+            self._initial_layout = list(range(self._quantum_kernel.feature_map.num_qubits))
+
         inputs = {
-            "quantum_kernel": qkernel_serial,
-            "data": data_serial,
-            "labels": labels_serial,
-            "optimizer": optimizer_serial,
+            "quantum_kernel": self._quantum_kernel,
+            "data": data,
+            "labels": labels,
+            "optimizer": self._optimizer,
             "shots": self._shots,
             "measurement_error_mitigation": self._measurement_error_mitigation,
-            "initial_point": initial_point_serial,
+            "initial_point": self._initial_point,
         }
 
         # define runtime options
-        options = {"backend_name": self._backend.name(), "initial_layout": initial_layout_serial}
+        options = {"backend_name": self._backend.name(), "initial_layout": self._initial_layout}
 
         # send job to runtime and return result
         job = self._provider.runtime.run(
@@ -313,8 +309,9 @@ class QuantumKernelTrainerClient:
         qkt_result.optimizer_time = result.get("optimizer_time", None)
         qkt_result.optimizer_history = result.get("optimizer_history", None)
 
-        optimized_kernel = copy.deepcopy(self._quantum_kernel)
-        optimized_kernel.assign_user_parameters(qkt_result.optimal_point)
-        qkt_result.quantum_kernel = optimized_kernel
+        # Return a trained kernel in the results dict
+        qkernel_out = copy.copy(self._quantum_kernel)
+        qkernel_out.assign_user_parameters(qkt_result.optimal_point)
+        qkt_result.quantum_kernel = qkernel_out
 
         return qkt_result

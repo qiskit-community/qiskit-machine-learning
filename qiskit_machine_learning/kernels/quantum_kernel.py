@@ -12,7 +12,7 @@
 
 """Quantum Kernel Algorithm"""
 
-from typing import Optional, Union, Sequence, Mapping, List
+from typing import Optional, Union, Sequence, Mapping, List, Dict, Any
 import copy
 import numbers
 
@@ -130,6 +130,24 @@ class QuantumKernel:
         self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
         self._user_parameters = copy.deepcopy(user_params)
 
+    @property
+    def settings(self) -> Dict[str, Any]:
+        """
+        A property used by the ``RuntimeEncoder`` and ``RuntimeDecoder`` to serialize this class.
+
+        Users who wish to serialize a ``QuantumKernel`` must ensure the feature map is
+        serializable via ``RuntimeEncoder``.
+        """
+        # Ensure user parameters are in a list, not a ParameterVector
+        user_parameters_list = list(self._user_parameters)
+
+        return {
+            "feature_map": self._feature_map,
+            "user_parameters": user_parameters_list,
+            "enforce_psd": self._enforce_psd,
+            "batch_size": self._batch_size,
+        }
+
     def assign_user_parameters(
         self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
@@ -137,11 +155,10 @@ class QuantumKernel:
         Assign user parameters in the ``QuantumKernel`` feature map.
         Args:
             values (dict or iterable): Either a dictionary or iterable specifying the new
-            parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
-            ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
-            numeric value. If an iterable, the elements are assigned to the existing parameters
-            in the order of ``QuantumKernel.user_parameters``.
-
+                parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
+                ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
+                numeric value. If an iterable, the elements are assigned to the existing parameters
+                in the order of ``QuantumKernel.user_parameters``.
         Raises:
             ValueError: Incompatible number of user parameters and values
         """

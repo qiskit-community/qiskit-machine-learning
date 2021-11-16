@@ -48,6 +48,7 @@ class TestQKTRuntimeClient(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         self._provider = FakeQKTRuntimeProvider()
+        self.shots = 10
         self.sample_train = np.asarray(
             [
                 [3.07876080, 1.75929189],
@@ -73,7 +74,7 @@ class TestQKTRuntimeClient(QiskitMachineLearningTestCase):
         )
         optimizer = COBYLA(maxiter=25)
         loss_func = SVCLoss().get_variational_callable(
-            quantum_kernel, self.sample_train, self.label_train
+            quantum_kernel=quantum_kernel, data=self.sample_train, labels=self.label_train
         )
         provider = self._provider
 
@@ -82,6 +83,7 @@ class TestQKTRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             loss=loss_func,
             optimizer=optimizer,
+            shots=self.shots,
             provider=provider,
         )
         qkt_program.fit_kernel(self.sample_train, self.label_train)
