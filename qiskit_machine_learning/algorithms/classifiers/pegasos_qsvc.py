@@ -29,7 +29,8 @@ logger = logging.getLogger(__name__)
 class PegasosQSVC(SVC):
     """
     This class implements Pegasos Quantum Support Vector Classifier algorithm developed in [1]
-    and includes overridden methods ``fit`` and ``predict`` from the ``SVC`` super-class.
+    and includes overridden methods ``fit`` and ``predict`` from the ``SVC`` super-class. This
+    implementation is adapted to work with quantum kernels.
 
     **Example**
 
@@ -46,6 +47,9 @@ class PegasosQSVC(SVC):
             `Pegasos for SVM <https://home.ttic.edu/~nati/Publications/PegasosMPB.pdf>`_
 
     """
+
+    FITTED = 0
+    UNFITTED = 1
 
     def __init__(
         self,
@@ -93,7 +97,6 @@ class PegasosQSVC(SVC):
             algorithm_globals.random_seed = seed
 
         # these are the parameters being fit and are needed for prediction
-        self._fit_status = False
         self._alphas: Optional[Dict[int, int]] = None
         self._x_train: Optional[np.ndarray] = None
         self._n_samples: Optional[int] = None
@@ -105,11 +108,14 @@ class PegasosQSVC(SVC):
         # added to all kernel values to include an implicit bias to the hyperplane
         self._kernel_offset = 1
 
+        # for compatibility with the base SVC class. Set as unfitted.
+        self.fit_status_ = PegasosQSVC.UNFITTED
+
     # pylint: disable=invalid-name
     def fit(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
     ) -> "PegasosQSVC":
-        """Implementation of the kernelized Pegasos algorithm to fit the QSVC.
+        """Fit the model according to the given training data.
 
         Args:
             X: Train features. For a callable kernel (an instance of ``QuantumKernel``) the shape
@@ -149,7 +155,7 @@ class PegasosQSVC(SVC):
                 "Parameter 'sample_weight' is not supported. All samples have to be weighed equally"
             )
         # reset the fit state
-        self._fit_status = False
+        self.fit_status_ = PegasosQSVC.UNFITTED
 
         # the algorithm works with labels in {+1, -1}
         self._label_pos = np.unique(y)[0]
@@ -176,7 +182,7 @@ class PegasosQSVC(SVC):
                 # only way for a component of alpha to become non zero
                 self._alphas[i] = self._alphas.get(i, 0) + 1
 
-        self._fit_status = True
+        self.fit_status_ = PegasosQSVC.FITTED
 
         logger.debug("fit completed after %s", str(datetime.now() - t_0)[:-7])
 
@@ -203,7 +209,7 @@ class PegasosQSVC(SVC):
             ValueError:
                 - Pre-computed kernel matrix has the wrong shape and/or dimension.
         """
-        if not self._fit_status:
+        if self.fit_status_ == PegasosQSVC.UNFITTED:
             raise QiskitMachineLearningError("The PegasosQSVC has to be fit first")
         if np.ndim(X) != 2:
             raise ValueError("X has to be a 2D array")
@@ -326,7 +332,7 @@ class PegasosQSVC(SVC):
 
     def _reset_state(self):
         """Resets internal data structures used in training."""
-        self._fit_status = False
+        self.fit_status_ = PegasosQSVC.UNFITTED
         self._alphas = None
         self._x_train = None
         self._n_samples = None
