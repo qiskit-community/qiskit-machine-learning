@@ -75,7 +75,7 @@ class QuantumKernelTrainer:
     def __init__(
         self,
         quantum_kernel: "QuantumKernel",
-        loss: Union[str, Callable[[Sequence[float]], float]] = "svc_alignment",
+        loss: Union[str, Callable[[Sequence[float]], float]] = "svc_loss",
         optimizer: Optimizer = SPSA(),
         initial_point: Optional[Sequence[float]] = None,
     ):
@@ -83,7 +83,7 @@ class QuantumKernelTrainer:
         Args:
             quantum_kernel: QuantumKernel to be trained
             loss (Callable[[Sequence[float]], float] or str):
-                str: Loss functions available via string: {'svc_alignment: SVCLoss()).
+                str: Loss functions available via string: {'svc_loss: SVCLoss()).
                     If a string is passed as the loss function, then the underlying
                     KernelLoss object will exhibit default behavior.
                 Callable[[Sequence[float]], float]: A callable loss function which takes
@@ -125,7 +125,7 @@ class QuantumKernelTrainer:
         """Sets the loss."""
         if isinstance(loss, str):
             self._loss = loss.lower()
-            if self._loss == "svc_alignment":
+            if self._loss == "svc_loss":
                 pass
             else:
                 raise ValueError(f"Unknown loss {loss}!")
@@ -218,7 +218,7 @@ def _str_to_variational_callable(
     data: np.ndarray = None,
     labels: np.ndarray = None,
 ) -> Callable[[Sequence[float]], float]:
-    if loss_str == "svc_alignment":
+    if loss_str == "svc_loss":
         loss_obj = SVCLoss()
         return loss_obj.get_variational_callable(
             quantum_kernel=quantum_kernel, data=data, labels=labels
