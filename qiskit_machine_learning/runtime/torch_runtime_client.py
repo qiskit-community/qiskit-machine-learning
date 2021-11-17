@@ -426,6 +426,8 @@ class TorchRuntimeClient:
         Raises:
             ValueError: If the backend has not yet been set.
             ValueError: If the provider has not yet been set.
+            ValueError: If "score_func" is not "classification", "regression",
+                or a custom scoring function.
             RuntimeError: If the job execution failed.
         """
         if self._backend is None:
@@ -444,7 +446,10 @@ class TorchRuntimeClient:
         elif callable(score_func):
             self._score_func = score_func
         else:
-            raise ValueError("Scoring function is not provided.")
+            raise ValueError(
+                '"score_func" must be a string for the available scoring functions',
+                '("classification" or "regression"), or a custom scoring function.',
+            )
 
         # serialize loss function using pickle + dill
         serial_score_func = obj_to_str(self._score_func)

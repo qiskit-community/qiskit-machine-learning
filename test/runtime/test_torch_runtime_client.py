@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test for TorchProgram."""
+"""Test for TorchRuntimeClient."""
 
 import unittest
 from test import QiskitMachineLearningTestCase, requires_extra_library
