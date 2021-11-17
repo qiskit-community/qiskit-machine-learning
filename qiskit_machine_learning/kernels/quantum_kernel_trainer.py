@@ -63,6 +63,7 @@ class QuantumKernelTrainer:
         initial_point = ...
 
         qk_trainer = QuantumKernelTrainer(
+                                        quantum_kernel=quant_kernel,
                                         loss=loss_func,
                                         optimizer=optimizer,
                                         initial_point=initial_point,
