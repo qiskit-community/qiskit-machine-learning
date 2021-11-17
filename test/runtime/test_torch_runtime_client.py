@@ -231,8 +231,8 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             shots=1024,
         )
         # Test different score functions
-        torch_runtime_client.score(data_loader, score_func="Regression")
-        torch_runtime_client.score(data_loader, score_func="Classification")
+        torch_runtime_client.score(data_loader, score_func="regression")
+        torch_runtime_client.score(data_loader, score_func="classification")
 
         def score_classification(output: Tensor, target: Tensor) -> float:
             pred = output.argmax(dim=1, keepdim=True)
