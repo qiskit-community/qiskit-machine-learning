@@ -116,7 +116,9 @@ class KernelLoss(ABC):
         """
         return self.evaluate(parameter_values, quantum_kernel, data, labels)
 
-    def get_variational_callable(self, **kwargs) -> Callable[[Sequence[float]], float]:
+    def get_variational_callable(
+        self, quantum_kernel: QuantumKernel, data: Iterable, labels: Iterable
+    ) -> Callable[[Sequence[float]], float]:
         """
         Return a callable variational loss function given some inputs. The sole input to the
         callable should be an array of numerical feature map parameter values, and the output should
@@ -282,12 +284,14 @@ class SVCLoss(KernelLoss):
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
-    def get_variational_callable(self, **kwargs) -> Callable[[Sequence[float]], float]:
+    def get_variational_callable(
+        self, quantum_kernel: QuantumKernel, data: Iterable, labels: Iterable
+    ) -> Callable[[Sequence[float]], float]:
         return partial(
             self.evaluate,
-            quantum_kernel=kwargs["quantum_kernel"],
-            data=kwargs["data"],
-            labels=kwargs["labels"],
+            quantum_kernel=quantum_kernel,
+            data=data,
+            labels=labels,
         )
 
     def evaluate(
