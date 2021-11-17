@@ -67,10 +67,8 @@ class QuantumKernelTrainer:
                                         optimizer=optimizer,
                                         initial_point=initial_point,
                                         )
-
-        qsvc = QSVC(quantum_kernel=quant_kernel, kernel_trainer=qk_trainer)
-        qsvc.fit(X_train, y_train)
-        score = qsvc.score(X_test, y_test)
+        qkt_results = qk_trainer.fit_kernel(X_train, y_train)
+        optimized_kernel = qkt_results.quantum_kernel
     """
 
     def __init__(
