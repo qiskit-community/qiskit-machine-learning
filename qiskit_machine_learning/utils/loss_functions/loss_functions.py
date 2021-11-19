@@ -14,7 +14,7 @@
 
 from functools import partial
 from abc import ABC, abstractmethod
-from typing import Sequence, Callable, TYPE_CHECKING
+from typing import Sequence, Iterable, Callable, TYPE_CHECKING
 
 import numpy as np
 from sklearn.svm import SVC
@@ -22,8 +22,7 @@ from sklearn.svm import SVC
 from ...exceptions import QiskitMachineLearningError
 
 # Prevent circular dependencies caused from type checking
-if TYPE_CHECKING:
-    from ...kernels import QuantumKernel
+from ...kernels import QuantumKernel
 
 
 class Loss(ABC):
@@ -304,9 +303,12 @@ class SVCLoss(KernelLoss):
         # Bind training parameters
         quantum_kernel.assign_user_parameters(parameter_values)
 
+        # Get estimated kernel matrix
+        kmatrix = quantum_kernel.evaluate(np.array(data))
+
         # Train a quantum support vector classifier
-        svc = SVC(kernel=quantum_kernel.evaluate, **self.kwargs)
-        svc.fit(data, labels)
+        svc = SVC(kernel='precomputed', **self.kwargs)
+        svc.fit(kmatrix, labels)
 
         # Get dual coefficients
         dual_coefs = svc.dual_coef_[0]
@@ -314,8 +316,8 @@ class SVCLoss(KernelLoss):
         # Get support vectors
         support_vecs = svc.support_
 
-        # Get estimated kernel matrix
-        kmatrix = quantum_kernel.evaluate(np.array(data))[support_vecs, :][:, support_vecs]
+        # Prune kernel matrix of non-support-vector entries
+        kmatrix = kmatrix[support_vecs, :][:, support_vecs]
 
         # Calculate loss
         loss = np.sum(np.abs(dual_coefs)) - (0.5 * (dual_coefs.T @ kmatrix @ dual_coefs))
