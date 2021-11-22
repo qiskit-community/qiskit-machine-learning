@@ -12,7 +12,7 @@
 
 """Quantum Kernel Trainer"""
 import copy
-from typing import Union, Optional, Sequence, Callable, TYPE_CHECKING
+from typing import Union, Optional, Sequence, Callable
 
 import numpy as np
 
@@ -21,9 +21,7 @@ from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import SVCLoss
 
-# Prevent circular dependencies from type checking
-if TYPE_CHECKING:
-    from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel
 
 
 class QuantumKernelTrainerResult(VariationalResult):
@@ -34,12 +32,12 @@ class QuantumKernelTrainerResult(VariationalResult):
         self._quantum_kernel = None  # type: QuantumKernel
 
     @property
-    def quantum_kernel(self) -> Optional['QuantumKernel']:
+    def quantum_kernel(self) -> Optional["QuantumKernel"]:
         """Returns the optimized quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: 'QuantumKernel') -> None:
+    def quantum_kernel(self, quantum_kernel: "QuantumKernel") -> None:
         self._quantum_kernel = quantum_kernel
 
 
@@ -63,20 +61,19 @@ class QuantumKernelTrainer:
         initial_point = ...
 
         qk_trainer = QuantumKernelTrainer(
+                                        quantum_kernel=quant_kernel,
                                         loss=loss_func,
                                         optimizer=optimizer,
                                         initial_point=initial_point,
                                         )
-
-        qsvc = QSVC(quantum_kernel=quant_kernel, kernel_trainer=qk_trainer)
-        qsvc.fit(X_train, y_train)
-        score = qsvc.score(X_test, y_test)
+        qkt_results = qk_trainer.fit_kernel(X_train, y_train)
+        optimized_kernel = qkt_results.quantum_kernel
     """
 
     def __init__(
         self,
-        quantum_kernel: 'QuantumKernel',
-        loss: Union[str, Callable[[Sequence[float]], float]] = "svc_alignment",
+        quantum_kernel: "QuantumKernel",
+        loss: Union[str, Callable[[Sequence[float]], float]] = "svc_loss",
         optimizer: Optimizer = SPSA(),
         initial_point: Optional[Sequence[float]] = None,
     ):
@@ -84,7 +81,7 @@ class QuantumKernelTrainer:
         Args:
             quantum_kernel: QuantumKernel to be trained
             loss (Callable[[Sequence[float]], float] or str):
-                str: Loss functions available via string: {'svc_alignment: SVCLoss()).
+                str: Loss functions available via string: {'svc_loss: SVCLoss()).
                     If a string is passed as the loss function, then the underlying
                     KernelLoss object will exhibit default behavior.
                 Callable[[Sequence[float]], float]: A callable loss function which takes
@@ -107,12 +104,12 @@ class QuantumKernelTrainer:
         self.loss = loss
 
     @property
-    def quantum_kernel(self) -> 'QuantumKernel':
+    def quantum_kernel(self) -> "QuantumKernel":
         """Returns the quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: 'QuantumKernel') -> None:
+    def quantum_kernel(self, quantum_kernel: "QuantumKernel") -> None:
         """Sets the quantum kernel."""
         self._quantum_kernel = quantum_kernel
 
@@ -126,7 +123,7 @@ class QuantumKernelTrainer:
         """Sets the loss."""
         if isinstance(loss, str):
             self._loss = loss.lower()
-            if self._loss == "svc_alignment":
+            if self._loss == "svc_loss":
                 pass
             else:
                 raise ValueError(f"Unknown loss {loss}!")
@@ -190,8 +187,8 @@ class QuantumKernelTrainer:
             self._loss = obj_func
 
         # Randomly initialize the initial point if one was not passed
-        if self.initial_point is None:
-            self.initial_point = algorithm_globals.random.random(num_params)
+        if self._initial_point is None:
+            self._initial_point = algorithm_globals.random.random(num_params)
 
         # Perform kernel optimization
         opt_results = self._optimizer.minimize(
@@ -215,11 +212,11 @@ class QuantumKernelTrainer:
 
 def _str_to_variational_callable(
     loss_str: str,
-    quantum_kernel: 'QuantumKernel' = None,
+    quantum_kernel: "QuantumKernel" = None,
     data: np.ndarray = None,
     labels: np.ndarray = None,
 ) -> Callable[[Sequence[float]], float]:
-    if loss_str == "svc_alignment":
+    if loss_str == "svc_loss":
         loss_obj = SVCLoss()
         return loss_obj.get_variational_callable(
             quantum_kernel=quantum_kernel, data=data, labels=labels

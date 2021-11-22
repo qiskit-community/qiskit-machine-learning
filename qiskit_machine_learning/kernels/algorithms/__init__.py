@@ -11,9 +11,9 @@
 # that they have been altered from the originals.
 
 """
-Quantum Kernels (:mod:`qiskit_machine_learning.kernels`)
+Quantum Kernel Algorithms (:mod:`qiskit_machine_learning.kernels.algorithms`)
 
-.. currentmodule:: qiskit_machine_learning.kernels
+.. currentmodule:: qiskit_machine_learning.kernels.algorithms
 
 Quantum Kernels
 ===============
@@ -22,10 +22,11 @@ Quantum Kernels
    :toctree: ../stubs/
    :nosignatures:
 
-   QuantumKernel
+   QuantumKernelTrainer
+   QuantumKernelTrainerResult
 
 """
 
-from .quantum_kernel import QuantumKernel
+from .quantum_kernel_trainer import QuantumKernelTrainer, QuantumKernelTrainerResult
 
-__all__ = ["QuantumKernel"]
+__all__ = ["QuantumKernelTrainer", "QuantumKernelTrainerResult"]
