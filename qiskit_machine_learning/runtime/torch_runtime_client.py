@@ -465,7 +465,9 @@ class TorchRuntimeClient:
 
         return torch_result
 
-    def score(self, data_loader: DataLoader, score_func: Union[str, Callable]) -> TorchRuntimeResult:
+    def score(
+        self, data_loader: DataLoader, score_func: Union[str, Callable]
+    ) -> TorchRuntimeResult:
         """Calculate a score using the trained model and the Torch Infer Runtime ('torch-infer').
         Users can use either pre-defined score functions or their own score function.
         All required data is serialized and sent to the server side.
