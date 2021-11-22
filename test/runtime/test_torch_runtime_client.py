@@ -75,6 +75,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         super().setUp()
         self._trainer_provider = FakeTorchTrainerRuntimeProvider()
         self._infer_provider = FakeTorchInferRuntimeProvider()
+        self._backend = QasmSimulatorPy()
         # construct a simple qnn for unit tests
         param_x = Parameter("x")
         feature_map = QuantumCircuit(1, name="fm")
@@ -85,6 +86,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         self._qnn = TwoLayerQNN(1, feature_map, ansatz)
 
     def validate_train_result(self, result, val_loader=False):
+        """To validate the train results"""
         self.assertTrue(isinstance(result, TorchRuntimeResult))
         self.assertEqual(result.model_state_dict["weight"], Tensor([1]))
         self.assertEqual(result.job_id, "c2985khdm6upobbnmll0")
@@ -118,6 +120,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         self.assertEqual(result.execution_time, 0.2)
 
     def validate_infer_result(self, result, score=False):
+        """To validate the infer results"""
         self.assertTrue(isinstance(result, TorchRuntimeResult))
         self.assertEqual(result.prediction, Tensor([1]))
         self.assertEqual(result.execution_time, 0.1)
@@ -138,16 +141,24 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             ) from ex
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
-        backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
-        # Default arguments
+        # Default arguments (no provider or backend)
+        torch_runtime_client = TorchRuntimeClient(
+            model=model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+        )
+        with self.assertRaises(ValueError):
+            torch_runtime_client.fit(train_loader)
+
+        # Default arguments for fit
         torch_runtime_client = TorchRuntimeClient(
             model=model,
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._trainer_provider,
-            backend=backend,
+            backend=self._backend,
         )
         result = torch_runtime_client.fit(train_loader)
         self.validate_train_result(result)
@@ -159,7 +170,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             loss_func=loss_func,
             provider=self._trainer_provider,
             epochs=1,
-            backend=backend,
+            backend=self._backend,
             shots=1024,
         )
         result = torch_runtime_client.fit(train_loader, start_epoch=0, seed=42)
@@ -178,7 +189,6 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             ) from ex
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
-        backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
         torch_runtime_client = TorchRuntimeClient(
@@ -186,9 +196,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._trainer_provider,
-            epochs=1,
-            backend=backend,
-            shots=1024,
+            backend=self._backend,
         )
         validation_loader = DataLoader(TorchDataset([0], [0]), batch_size=1, shuffle=False)
         result = torch_runtime_client.fit(train_loader, val_loader=validation_loader)
@@ -207,7 +215,6 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             ) from ex
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
-        backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
         torch_runtime_client = TorchRuntimeClient(
@@ -215,9 +222,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._trainer_provider,
-            epochs=1,
-            backend=backend,
-            shots=1024,
+            backend=self._backend,
         )
         hook = HookBase()
         # a single hook
@@ -240,17 +245,26 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             ) from ex
         data_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
-        backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
+        # Default arguments (no provider or backend)
+        torch_runtime_client = TorchRuntimeClient(
+            model=model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+        )
+        with self.assertRaises(ValueError):
+            torch_runtime_client.predict(data_loader)
+        # Test for the predict result
         torch_runtime_client = TorchRuntimeClient(
             model=model,
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._infer_provider,
-            backend=backend,
+            backend=self._backend,
         )
         result = torch_runtime_client.predict(data_loader)
+
         self.validate_infer_result(result)
 
     @requires_extra_library
@@ -266,15 +280,23 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             ) from ex
         data_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
-        backend = QasmSimulatorPy()
         optimizer = Adam(model.parameters(), lr=0.1)
         loss_func = MSELoss(reduction="sum")
+        # Default arguments (no provider or backend)
+        torch_runtime_client = TorchRuntimeClient(
+            model=model,
+            optimizer=optimizer,
+            loss_func=loss_func,
+        )
+        with self.assertRaises(ValueError):
+            torch_runtime_client.score(data_loader, score_func="regression")
+        # Test for the score result
         torch_runtime_client = TorchRuntimeClient(
             model=model,
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._infer_provider,
-            backend=backend,
+            backend=self._backend,
         )
         # Test different score functions
         result = torch_runtime_client.score(data_loader, score_func="regression")

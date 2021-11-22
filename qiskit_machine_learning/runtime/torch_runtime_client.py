@@ -82,9 +82,9 @@ class TorchRuntimeResult:
 
     def __init__(self) -> None:
         self._job_id: Optional[str] = None
-        self._train_history: Optional[Dict[str, Any]] = None
-        self._val_history: Optional[Dict[str, Any]] = None
-        self._model_state_dict: Optional[Dict[str, Any]] = None
+        self._train_history: Optional[List[Dict[str, float]]] = None
+        self._val_history: Optional[List[Dict[str, float]]] = None
+        self._model_state_dict: Optional[Dict[str, Tensor]] = None
         self._execution_time: Optional[float] = None
         self._score: Optional[float] = None
         self._prediction: Optional[Tensor] = None
@@ -100,32 +100,32 @@ class TorchRuntimeResult:
         self._job_id = job_id
 
     @property
-    def train_history(self) -> List[Dict[str, Any]]:
+    def train_history(self) -> List[Dict[str, float]]:
         """The train history"""
         return self._train_history
 
     @train_history.setter
-    def train_history(self, history: List[Dict[str, Any]]) -> None:
+    def train_history(self, history: List[Dict[str, float]]) -> None:
         """Set the train history"""
         self._train_history = history
 
     @property
-    def val_history(self) -> List[Dict[str, Any]]:
+    def val_history(self) -> List[Dict[str, float]]:
         """Returns the validation history"""
         return self._val_history
 
     @val_history.setter
-    def val_history(self, history: List[Dict[str, Any]]) -> None:
+    def val_history(self, history: List[Dict[str, float]]) -> None:
         """Sets the validation history"""
         self._val_history = history
 
     @property
-    def model_state_dict(self) -> List[Dict[str, Any]]:
+    def model_state_dict(self) -> Dict[str, Tensor]:
         """Returns the state dictionary of trained model"""
         return self._model_state_dict
 
     @model_state_dict.setter
-    def model_state_dict(self, state_dict: List[Dict[str, Any]]) -> None:
+    def model_state_dict(self, state_dict: Dict[str, Tensor]) -> None:
         """Sets the state dictionary of trained model"""
         self._model_state_dict = state_dict
 
@@ -155,7 +155,7 @@ class TorchRuntimeResult:
         return self._prediction
 
     @prediction.setter
-    def prediction(self, prediction: float) -> None:
+    def prediction(self, prediction: Tensor) -> None:
         """Sets the prediction"""
         self._prediction = prediction
 
@@ -409,22 +409,21 @@ class TorchRuntimeClient:
         torch_result.execution_time = result["execution_time"]
         return torch_result
 
-    def predict(self, data_loader: DataLoader) -> Tensor:
+    def predict(self, data_loader: DataLoader) -> TorchRuntimeResult:
         """Perform prediction on the passed data using the trained model
         and the Torch Infer Runtime ('torch-infer').
         All required data is serialized and sent to the server side.
-        After predicting, a PyTorch tensor with the predicted results is returned.
 
         Args:
             data_loader: A PyTorch data loader object containing the inference dataset.
         Returns:
-            prediction: A PyTorch ``Tensor`` with the result of applying the model.
+            result: A :class:`~qiskit_machine_learning.runtime.TorchRuntimeResult` object
+            with the predicted results.
         Raises:
             ValueError: If the backend has not yet been set.
             ValueError: If the provider has not yet been set.
             RuntimeError: If the job execution failed.
         """
-
         if self._backend is None:
             raise ValueError("The backend has not been set.")
 
@@ -466,11 +465,10 @@ class TorchRuntimeClient:
 
         return torch_result
 
-    def score(self, data_loader: DataLoader, score_func: Union[str, Callable]) -> float:
+    def score(self, data_loader: DataLoader, score_func: Union[str, Callable]) -> TorchRuntimeResult:
         """Calculate a score using the trained model and the Torch Infer Runtime ('torch-infer').
         Users can use either pre-defined score functions or their own score function.
         All required data is serialized and sent to the server side.
-        After calculating the score, a float number corresponding to the score is returned.
 
         Args:
             data_loader: A PyTorch data loader object containing the inference dataset.
@@ -479,7 +477,8 @@ class TorchRuntimeClient:
                         or a custom scoring function defined as:
                         ``def score_func(model_output, target): -> score: float``.
         Returns:
-            score: A metric of the model's performance.
+            result: A :class:`~qiskit_machine_learning.runtime.TorchRuntimeResult` object
+            with the score, a float number corresponding to the score is obtained.
         Raises:
             ValueError: If the backend has not yet been set.
             ValueError: If the provider has not yet been set.
