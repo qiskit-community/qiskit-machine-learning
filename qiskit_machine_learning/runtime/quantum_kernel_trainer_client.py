@@ -23,7 +23,8 @@ from qiskit.providers.backend import Backend
 from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.utils.algorithm_globals import algorithm_globals
 
-from qiskit_machine_learning.kernels import QuantumKernel, QuantumKernelTrainerResult
+from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainerResult
 
 
 class QKTRuntimeResult(QuantumKernelTrainerResult):
@@ -62,7 +63,7 @@ class QKTRuntimeResult(QuantumKernelTrainerResult):
 class QuantumKernelTrainerClient:
     """The Quantum Kernel Trainer Runtime Client.
 
-    This class is a client to call the QKT program in Qiskit Runtime."""
+    This class is a client to call the quantum-kernel-trainer program in Qiskit Runtime."""
 
     def __init__(
         self,
@@ -81,7 +82,7 @@ class QuantumKernelTrainerClient:
         Args:
             quantum_kernel: Quantum kernel to optimize. The quantum kernel feature map
                 will have its user parameters unbound before submitting to runtime program
-                to avoid conflicts between internal class fields when deserializing.
+                to avoid conflicts between internal class fields when de-serializing.
             loss: (str): Loss functions available via string: {'svc_loss: SVCLoss()}
             optimizer: An instance of ``Optimizer`` to be used in training. Defaults to
                 ``SPSA``.
@@ -238,7 +239,7 @@ class QuantumKernelTrainerClient:
         Args:
             data: A 2D array representing an ``(N, M)`` training dataset
                     ``N`` = number of samples
-                    ``M`` = feature dimensionality
+                    ``M`` = feature dimension
             labels: A length-N array of training labels
         Returns:
             QKTRuntimeResult: A :class:`~qiskit_machine_learning.runtime.QKTRuntimeResult`
@@ -262,7 +263,7 @@ class QuantumKernelTrainerClient:
 
         # The quantum kernel feature map should be unbound before sending to runtime
         # to avoid conflicts between the feature map, unbound feature map, and the
-        # user_param_binds fields upon deserialization.
+        # user_param_binds fields when object is de-serialized.
         unbind_params = list(self._quantum_kernel.user_parameters)
         self._quantum_kernel.assign_user_parameters(unbind_params)
 

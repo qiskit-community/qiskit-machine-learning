@@ -21,7 +21,8 @@ import numpy as np
 from qiskit import Aer
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA
-from qiskit_machine_learning.kernels import QuantumKernel, QuantumKernelTrainer
+from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
 from qiskit_machine_learning.utils.loss_functions import SVCLoss
 from qiskit_machine_learning.algorithms.classifiers import QSVC
 

@@ -12,7 +12,7 @@
 
 """Quantum Kernel Trainer"""
 import copy
-from typing import Union, Optional, Sequence, Callable, TYPE_CHECKING
+from typing import Union, Optional, Sequence, Callable
 
 import numpy as np
 
@@ -21,9 +21,7 @@ from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import SVCLoss
 
-# Prevent circular dependencies from type checking
-if TYPE_CHECKING:
-    from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel
 
 
 class QuantumKernelTrainerResult(VariationalResult):
