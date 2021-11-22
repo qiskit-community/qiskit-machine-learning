@@ -15,7 +15,7 @@
 from typing import Dict, Any
 
 from qiskit.providers import Provider
-from qiskit_machine_learning.runtime import TorchRuntimeResult, str_to_obj, obj_to_str
+from qiskit_machine_learning.runtime import str_to_obj, obj_to_str
 
 
 class FakeTorchTrainerJob:
