@@ -94,7 +94,7 @@ class SVCLoss(KernelLoss):
 
     Minimizing this loss over the parameters, θ, of the kernel is equivalent to maximizing a
     weighted kernel alignment, which in turn yields the smallest upper bound to the SVM
-    generalization error for a given parameterization.
+    generalization error for a given parametrization.
 
     See https://arxiv.org/abs/2105.03406 for further details.
     """
