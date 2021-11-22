@@ -12,40 +12,46 @@
 
 """Fake runtime provider and Torch runtime."""
 
-import base64
 from typing import Dict, Any
-import dill
+
 from qiskit.providers import Provider
-from qiskit_machine_learning.runtime import TorchRuntimeResult
+from qiskit_machine_learning.runtime import TorchRuntimeResult, str_to_obj, obj_to_str
 
 
 class FakeTorchTrainerJob:
     """A fake job for unit tests."""
 
-    def __init__(self, serial_model):
-        model = self.str_to_obj(serial_model)
-        self._model_state_dict = self.obj_to_str(model.state_dict())
-
-    def obj_to_str(self, obj: Any) -> str:
-        """Encodes any object into a JSON-compatible string using dill. The intermediate
-        binary data must be converted to base 64 to be able to decode into utf-8 format."""
-        string = base64.b64encode(dill.dumps(obj, byref=False)).decode("utf-8")
-        return string
-
-    def str_to_obj(self, string: str) -> Any:
-        """Decodes a previously encoded string using dill (with an intermediate step
-        converting the binary data from base 64)."""
-        obj = dill.loads(base64.b64decode(string.encode()))
-        return obj
+    def __init__(self, serialized_model, val_data):
+        model = str_to_obj(serialized_model)
+        self._model_state_dict = obj_to_str(model.state_dict())
+        self._validate = val_data is not None
 
     def result(self) -> Dict[str, Any]:
         """Return a Torch program result."""
-        result = TorchRuntimeResult()
+        train_history = {}
+        train_history['train'] = [{
+                    "epoch": 0,
+                    "loss": 0.1,
+                    "forward_time": 0.1,
+                    "backward_time": 0.1,
+                    "epoch_time": 0.2,
+                }]
+        if self._validate:
+            train_history['validation'] = [{
+                    "epoch": 0,
+                    "loss": 0.2,
+                    "forward_time": 0.2,
+                    "backward_time": 0.2,
+                    "epoch_time": 0.4,
+                }]
+        else:
+            train_history['validation'] = []
         serialized_result = {
             "model_state_dict": self._model_state_dict,
-            "train_history": {},
-            "train_time": result.train_time,
+            "train_history": train_history,
+            "execution_time": 0.2,
         }
+
         return serialized_result
 
     def job_id(self) -> str:
@@ -62,11 +68,11 @@ class FakeTorchInferJob:
     def result(self) -> Dict[str, Any]:
         """Return a Torch program result."""
         serialized_result = {
-            "prediction": [],
-            "time": 1,
+            "prediction": [1],
+            "execution_time": 0.1,
         }
         if self._is_score:
-            serialized_result["score"] = float
+            serialized_result["score"] = 1
 
         return serialized_result
 
@@ -78,7 +84,7 @@ class FakeTorchInferJob:
 class FakeTorchRuntimeTrainer:
     """A fake Torch runtime for unit tests."""
 
-    def run(self, program_id, inputs, options, callback=None):
+    def run(self, program_id, inputs, options):
         """Run the fake program. Checks the input types."""
 
         if program_id != "torch-train":
@@ -106,15 +112,7 @@ class FakeTorchRuntimeTrainer:
             if not isinstance(value, allowed_options[arg]):
                 raise ValueError(f"{arg} does not have the right type: {allowed_inputs[arg]}")
 
-        if callback is not None:
-            try:
-                fake_job_id = "c2985khdm6upobbnmll0"
-                fake_data = [1, 0.9, 0.8, 10, 60, 70]
-                _ = callback(fake_job_id, fake_data)
-            except Exception as exc:
-                raise ValueError("Callback failed") from exc
-
-        return FakeTorchTrainerJob(inputs["model"])
+        return FakeTorchTrainerJob(inputs["model"], inputs["val_data"])
 
 
 class FakeTorchRuntimeInfer:

@@ -21,7 +21,7 @@ from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.providers.basicaer import QasmSimulatorPy
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
-from qiskit_machine_learning.runtime import TorchRuntimeClient, HookBase
+from qiskit_machine_learning.runtime import TorchRuntimeClient, TorchRuntimeResult, HookBase
 from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
 try:
@@ -84,6 +84,47 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         ansatz.ry(param_y, 0)
         self._qnn = TwoLayerQNN(1, feature_map, ansatz)
 
+    def validate_train_result(self, result, val_loader=False):
+        self.assertTrue(isinstance(result, TorchRuntimeResult))
+        self.assertEqual(result.model_state_dict["weight"], Tensor([1]))
+        self.assertEqual(result.job_id, "c2985khdm6upobbnmll0")
+        self.assertEqual(
+            result.train_history,
+            [
+                {
+                    "epoch": 0,
+                    "loss": 0.1,
+                    "forward_time": 0.1,
+                    "backward_time": 0.1,
+                    "epoch_time": 0.2,
+                }
+            ],
+        )
+        if val_loader:
+            self.assertEqual(
+                result.val_history,
+                [
+                    {
+                        "epoch": 0,
+                        "loss": 0.2,
+                        "forward_time": 0.2,
+                        "backward_time": 0.2,
+                        "epoch_time": 0.4,
+                    }
+                ],
+            )
+        else:
+            self.assertEqual(result.val_history, [])
+        self.assertEqual(result.execution_time, 0.2)
+
+    def validate_infer_result(self, result, score=False):
+        self.assertTrue(isinstance(result, TorchRuntimeResult))
+        self.assertEqual(result.prediction, Tensor([1]))
+        self.assertEqual(result.execution_time, 0.1)
+        self.assertEqual(result.job_id, "c2985khdm6upobbnmll0")
+        if score:
+            self.assertEqual(result.score, 1)
+
     @requires_extra_library
     def test_fit(self):
         """Test for fit"""
@@ -108,7 +149,9 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             provider=self._trainer_provider,
             backend=backend,
         )
-        torch_runtime_client.fit(train_loader)
+        result = torch_runtime_client.fit(train_loader)
+        self.validate_train_result(result)
+
         # Specify arguments
         torch_runtime_client = TorchRuntimeClient(
             model=model,
@@ -119,7 +162,8 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_runtime_client.fit(train_loader, start_epoch=0, seed=42)
+        result = torch_runtime_client.fit(train_loader, start_epoch=0, seed=42)
+        self.validate_train_result(result)
 
     @requires_extra_library
     def test_fit_with_validattion_set(self):
@@ -147,7 +191,8 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             shots=1024,
         )
         validation_loader = DataLoader(TorchDataset([0], [0]), batch_size=1, shuffle=False)
-        torch_runtime_client.fit(train_loader, val_loader=validation_loader)
+        result = torch_runtime_client.fit(train_loader, val_loader=validation_loader)
+        self.validate_train_result(result, val_loader=True)
 
     @requires_extra_library
     def test_fit_with_hooks(self):
@@ -175,8 +220,12 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             shots=1024,
         )
         hook = HookBase()
-        torch_runtime_client.fit(train_loader, hooks=hook)
-        torch_runtime_client.fit(train_loader, hooks=[hook, hook])
+        # a single hook
+        result = torch_runtime_client.fit(train_loader, hooks=hook)
+        self.validate_train_result(result)
+        # a hook list
+        result = torch_runtime_client.fit(train_loader, hooks=[hook, hook])
+        self.validate_train_result(result)
 
     @requires_extra_library
     def test_predict(self):
@@ -203,7 +252,8 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             backend=backend,
             shots=1024,
         )
-        torch_runtime_client.predict(data_loader)
+        result = torch_runtime_client.predict(data_loader)
+        self.validate_infer_result(result)
 
     @requires_extra_library
     def test_score(self):
@@ -231,15 +281,16 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             shots=1024,
         )
         # Test different score functions
-        torch_runtime_client.score(data_loader, score_func="regression")
-        torch_runtime_client.score(data_loader, score_func="classification")
-
+        result = torch_runtime_client.score(data_loader, score_func="regression")
+        self.validate_infer_result(result, score=True)
+        result = torch_runtime_client.score(data_loader, score_func="classification")
+        self.validate_infer_result(result, score=True)
         def score_classification(output: Tensor, target: Tensor) -> float:
             pred = output.argmax(dim=1, keepdim=True)
             correct = pred.eq(target.view_as(pred)).sum().item()
             return correct
-
-        torch_runtime_client.score(data_loader, score_func=score_classification)
+        result = torch_runtime_client.score(data_loader, score_func=score_classification)
+        self.validate_infer_result(result, score=True)
 
 
 if __name__ == "__main__":

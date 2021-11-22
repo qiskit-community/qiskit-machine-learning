@@ -85,7 +85,9 @@ class TorchRuntimeResult:
         self._train_history: Optional[Dict[str, Any]] = None
         self._val_history: Optional[Dict[str, Any]] = None
         self._model_state_dict: Optional[Dict[str, Any]] = None
-        self._train_time: Optional[float] = None
+        self._execution_time: Optional[float] = None
+        self._score: Optional[float] = None
+        self._prediction: Optional[Tensor] = None
 
     @property
     def job_id(self) -> str:
@@ -98,44 +100,64 @@ class TorchRuntimeResult:
         self._job_id = job_id
 
     @property
-    def train_history(self) -> Dict[str, Any]:
+    def train_history(self) -> List[Dict[str, Any]]:
         """The train history"""
         return self._train_history
 
     @train_history.setter
-    def train_history(self, history: Dict[str, Any]) -> None:
+    def train_history(self, history: List[Dict[str, Any]]) -> None:
         """Set the train history"""
         self._train_history = history
 
     @property
-    def val_history(self) -> Dict[str, Any]:
-        """Returns validation history"""
+    def val_history(self) -> List[Dict[str, Any]]:
+        """Returns the validation history"""
         return self._val_history
 
     @val_history.setter
-    def val_history(self, history: Dict[str, Any]) -> None:
-        """Sets validation history"""
+    def val_history(self, history: List[Dict[str, Any]]) -> None:
+        """Sets the validation history"""
         self._val_history = history
 
     @property
-    def model_state_dict(self) -> Dict[str, Any]:
-        """Returns state dictionary of trained model"""
+    def model_state_dict(self) -> List[Dict[str, Any]]:
+        """Returns the state dictionary of trained model"""
         return self._model_state_dict
 
     @model_state_dict.setter
-    def model_state_dict(self, state_dict: Dict[str, Any]) -> None:
-        """Sets state dictionary of trained model"""
+    def model_state_dict(self, state_dict: List[Dict[str, Any]]) -> None:
+        """Sets the state dictionary of trained model"""
         self._model_state_dict = state_dict
 
     @property
-    def train_time(self) -> float:
-        """Returns training time"""
-        return self._train_time
+    def execution_time(self) -> float:
+        """Returns the execution time"""
+        return self._execution_time
 
-    @train_time.setter
-    def train_time(self, time: float) -> None:
-        """Sets training time"""
-        self._train_time = time
+    @execution_time.setter
+    def execution_time(self, time: float) -> None:
+        """Sets the execution time"""
+        self._execution_time = time
+
+    @property
+    def score(self) -> float:
+        """Returns the score"""
+        return self._score
+
+    @score.setter
+    def score(self, score: float) -> None:
+        """Sets the score"""
+        self._score = score
+
+    @property
+    def prediction(self) -> Tensor:
+        """Returns the prediction"""
+        return self._prediction
+
+    @prediction.setter
+    def prediction(self, prediction: float) -> None:
+        """Sets the prediction"""
+        self._prediction = prediction
 
 
 class TorchRuntimeClient:
@@ -145,7 +167,7 @@ class TorchRuntimeClient:
         self,
         model: Module,
         optimizer: Optimizer,
-        loss_func: Union[_Loss, Callable],
+        loss_func: Callable,
         epochs: int = 10,
         shots: int = 1024,
         measurement_error_mitigation: bool = False,
@@ -154,7 +176,7 @@ class TorchRuntimeClient:
     ) -> None:
         """
         Args:
-            model: A PyTorch nn.Module to be trained.
+            model: A PyTorch module to be trained.
             optimizer: A PyTorch optimizer for the model parameters.
             loss_func: A PyTorch-compatible loss function. Can be one of the
                 official PyTorch loss functions from ``torch.nn.loss`` or a custom
@@ -162,6 +184,7 @@ class TorchRuntimeClient:
             epochs: The maximum number of training epochs. By default, 10.
             shots: The number of shots for the quantum backend. By default, 1024.
             measurement_error_mitigation: Whether or not to use measurement error mitigation.
+            By default, ``False``.
             provider: IBMQ provider that supports runtime services.
             backend: Selected quantum backend.
         """
@@ -190,12 +213,17 @@ class TorchRuntimeClient:
 
     @provider.setter
     def provider(self, provider: Provider) -> None:
-        """Set the provider. Must be a provider that supports the runtime feature."""
+        """Set the provider. Must be a provider that supports the runtime feature.
+
+        Raises:
+            ValueError: If the provider does not provide a runtime environment.
+        """
         try:
             _ = hasattr(provider, "runtime")
-        except QiskitError:
-            # pylint: disable=raise-missing-from
-            raise ValueError(f"The provider {provider} does not provide a runtime environment.")
+        except QiskitError as exc:
+            raise ValueError(
+                f"The provider {provider} does not provide a runtime environment."
+            ) from exc
 
         self._provider = provider
 
@@ -206,9 +234,13 @@ class TorchRuntimeClient:
 
     @model.setter
     def model(self, t_model: Module) -> None:
-        """Set the model."""
+        """Set the model.
+
+        Raises:
+            ValueError: If the model is not an instance of ``torch.nn.Module``.
+        """
         if not isinstance(t_model, Module):
-            raise TypeError("The model must be an instance of torch.nn.Module")
+            raise ValueError("The model must be an instance of torch.nn.Module")
         self._model = t_model
 
     @property
@@ -218,9 +250,13 @@ class TorchRuntimeClient:
 
     @optimizer.setter
     def optimizer(self, optim: Optimizer) -> None:
-        """Set the optimizer."""
+        """Set the optimizer.
+
+        Raises:
+            ValueError: If the optimizer is not an instance of ``torch.optim``.
+        """
         if not isinstance(optim, Optimizer):
-            raise TypeError("The optimizer must be an instance of torch.optim")
+            raise ValueError("The optimizer must be an instance of torch.optim")
         self._optimizer = optim
 
     @property
@@ -230,13 +266,27 @@ class TorchRuntimeClient:
 
     @loss_func.setter
     def loss_func(self, loss: Union[_Loss, Callable]) -> None:
-        """Set the loss function."""
-        if isinstance(loss, _Loss) or callable(loss):
+        """Set the loss function.
+
+        Raises:
+            ValueError: If the loss function is not callable.
+        """
+        if callable(loss):
             self._loss_func = loss
         else:
-            raise TypeError(
+            raise ValueError(
                 "The loss function must be an instance of torch.nn.Loss._Loss or Callable"
             )
+
+    @property
+    def shots(self) -> int:
+        """Return the number of shots."""
+        return self._shots
+
+    @shots.setter
+    def shots(self, shots: int) -> None:
+        """Set the number of shots."""
+        self._shots = shots
 
     @property
     def measurement_error_mitigation(self) -> bool:
@@ -260,9 +310,10 @@ class TorchRuntimeClient:
         start_epoch: int = 0,
         seed: Optional[int] = None,
     ) -> TorchRuntimeResult:
-        """Train the model using the Torch Runtime train('torch-train').
-        All necessary data is serialized and it's sent to the server side.
-        After training, model's parameter is updated and TorchRuntimeResult is returned for the result.
+        """Train the model using the Torch Train Runtime ('torch-train').
+        All required data is serialized and sent to the server side.
+        After training, model's parameters are updated and an instance of ``TorchRuntimeResult``
+        is returned as a result.
 
         Args:
             train_loader: A PyTorch data loader object containing the training dataset.
@@ -270,7 +321,7 @@ class TorchRuntimeClient:
                 If no validation loader is provided, the validation step will be skipped
                 during training.
             hooks: a hook class of a List of hook classes to interact with the training loop.
-            start_epoch: initial epoch for warm-start training.
+            start_epoch: initial epoch for warm-start training. Default value is ``0``.
             seed: Set the random seed for `torch.manual_seed(seed)`.
         Returns:
             result: A :class:`~qiskit_machine_learning.runtime.TorchRuntimeResult` object
@@ -333,6 +384,14 @@ class TorchRuntimeClient:
         # define runtime options
         options = {"backend_name": self._backend.name()}
 
+        # #train内で使ってた　ローカルdockerテスト用のjsonへの書き出しコード
+        # import json
+
+        # with open("params.json", "w") as f:
+        #     json.dump(inputs, f, indent=4)
+
+        # return 1
+
         # send job to runtime and return result
         job = self.provider.runtime.run(
             program_id="torch-train",
@@ -352,16 +411,17 @@ class TorchRuntimeClient:
         # re-build result from serialized return value
         torch_result = TorchRuntimeResult()
         torch_result.job_id = job.job_id()
-        torch_result.train_history = result.get("train_history", {}).get("train", None)
-        torch_result.val_history = result.get("train_history", {}).get("val", None)
-        torch_result.model_state_dict = str_to_obj(result.get("model_state_dict"))
-        torch_result.train_time = result.get("train_time")
+        torch_result.train_history = result["train_history"]["train"]
+        torch_result.val_history = result["train_history"]["validation"]
+        torch_result.model_state_dict = str_to_obj(result["model_state_dict"])
+        torch_result.execution_time = result["execution_time"]
         return torch_result
 
     def predict(self, data_loader: DataLoader) -> Tensor:
-        """Predict the result using the trained model and the Torch Runtime infer ('torch-infer').
-        All necessary data is serialized and it's sent to the server side.
-        After predicting, a Tensor corresponding to the predicted result of the input data is returned.
+        """Perform prediction on the passed data using the trained model
+        and the Torch Infer Runtime ('torch-infer').
+        All required data is serialized and sent to the server side.
+        After predicting, a PyTorch tensor with the predicted results is returned.
 
         Args:
             data_loader: A PyTorch data loader object containing the inference dataset.
@@ -407,12 +467,17 @@ class TorchRuntimeClient:
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
-        return Tensor(result["prediction"])
+        torch_result = TorchRuntimeResult()
+        torch_result.job_id = job.job_id()
+        torch_result.prediction = Tensor(result["prediction"])
+        torch_result.execution_time = result["execution_time"]
+
+        return torch_result
 
     def score(self, data_loader: DataLoader, score_func: Union[str, Callable]) -> float:
-        """Calculate the score using the trained model and the Torch Runtime infer ('torch-infer').
+        """Calculate a score using the trained model and the Torch Infer Runtime ('torch-infer').
         Users can use either pre-defined score functions or their own score function.
-        All necessary data is serialized and it's sent to the server side.
+        All required data is serialized and sent to the server side.
         After calculating the score, a float number corresponding to the score is returned.
 
         Args:
@@ -480,7 +545,13 @@ class TorchRuntimeClient:
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
-        return result["score"]
+        torch_result = TorchRuntimeResult()
+        torch_result.job_id = job.job_id()
+        torch_result.prediction = Tensor(result["prediction"])
+        torch_result.score = result["score"]
+        torch_result.execution_time = result["execution_time"]
+
+        return torch_result
 
 
 def obj_to_str(obj: Any) -> str:

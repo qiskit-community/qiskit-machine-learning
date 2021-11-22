@@ -16,12 +16,12 @@ from typing import Optional, Any
 
 
 class HookBase:
-    """Base class for a hook that is a set of callback functions for training.
-    Users can make their own hook from this base class.
-    It will be sent to the sever side and will be executed during training on the server side.
-    All its dependents must be coded in the class including an import sentence.
+    """A base class for hooks that is a set of callback functions used in the training process.
+    Users can implement their own hook class from this base class.
+    It will be sent to the sever side and will be executed during the training process on the server
+    side. All its dependencies must be coded in the class including import statements.
     A hook can implement 6 methods. Each method is called before/after the corresponding processes
-    in training. Please see the tutorial of TorchRuntimeClient for details
+    during training. Please see the tutorial of ``TorchRuntimeClient`` for details
     such as when each method is called and how to use hooks.
     """
 
