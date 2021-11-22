@@ -73,7 +73,6 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             quantum_instance=self.backend,
         )
 
-
     def test_qkt(self):
         """Test QuantumKernelTrainer"""
         self.setUp()
