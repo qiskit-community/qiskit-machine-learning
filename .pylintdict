@@ -102,6 +102,7 @@ ovo
 ovr
 param
 parametrized
+parametrization
 params
 pauli
 pre
@@ -134,7 +135,6 @@ regressors
 regs
 rescale
 rhs
-runtime
 rx
 ry
 rz
@@ -179,7 +179,6 @@ utils
 variational
 vec
 vqc
-vqe
 vqr
 vx
 vy
@@ -187,3 +186,4 @@ vz
 wrt
 zoufal
 zsh
+θ

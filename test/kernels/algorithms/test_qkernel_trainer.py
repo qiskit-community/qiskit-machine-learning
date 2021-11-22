@@ -20,6 +20,7 @@ import numpy as np
 
 from qiskit import Aer
 from qiskit.circuit.library import ZZFeatureMap
+from qiskit.utils import algorithm_globals
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
@@ -29,7 +30,7 @@ from qiskit_machine_learning.algorithms.classifiers import QSVC
 
 def generate_feature_map():
     """
-    Create a 2 qubit circuit consisting of 2 user parameters and 2 data bound parameters.
+    Create a 2 qubit circuit for tuning.
     """
     data_block = ZZFeatureMap(2)
     trainable_block = ZZFeatureMap(2)
@@ -48,6 +49,8 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        algorithm_globals.random_seed = 10598
+        self.optimizer = COBYLA(maxiter=25)
         self.backend = Aer.get_backend("statevector_simulator")
         self.feature_map, self.user_parameters = generate_feature_map()
 
@@ -62,7 +65,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self.label_train = np.asarray([0, 0, 1, 1])
 
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
-        self.label_test = np.asarray([0, 1])
+        self.label_test = np.asarray([1, 0])
 
         self.quantum_kernel = QuantumKernel(
             feature_map=self.feature_map,
@@ -70,13 +73,11 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             quantum_instance=self.backend,
         )
 
-        self.optimizer = COBYLA(maxiter=25)
-
     def test_qkt(self):
         """Test QuantumKernelTrainer"""
         self.setUp()
         with self.subTest("check default fit"):
-            qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
+            qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, optimizer=self.optimizer)
             qkt_result = qkt.fit_kernel(self.sample_train, self.label_train)
 
             # Ensure user parameters are bound to real values
@@ -103,7 +104,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
             qsvc.fit(self.sample_train, self.label_train)
             score = qsvc.score(self.sample_test, self.label_test)
-            self.assertAlmostEqual(score, 0.5)
+            self.assertAlmostEqual(score, 1.0)
 
 
 if __name__ == "__main__":
