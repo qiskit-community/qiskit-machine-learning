@@ -82,7 +82,7 @@ class QuantumKernelTrainerClient:
         Args:
             quantum_kernel: Quantum kernel to optimize. The quantum kernel feature map
                 will have its user parameters unbound before submitting to runtime program
-                to avoid conflicts between internal class fields when de-serializing.
+                to avoid conflicts between internal class fields when decoding.
             loss: (str): Loss functions available via string: {'svc_loss: SVCLoss()}
             optimizer: An instance of ``Optimizer`` to be used in training. Defaults to
                 ``SPSA``.
@@ -263,7 +263,7 @@ class QuantumKernelTrainerClient:
 
         # The quantum kernel feature map should be unbound before sending to runtime
         # to avoid conflicts between the feature map, unbound feature map, and the
-        # user_param_binds fields when object is de-serialized.
+        # user_param_binds fields when object is decoded.
         unbind_params = list(self._quantum_kernel.user_parameters)
         self._quantum_kernel.assign_user_parameters(unbind_params)
 
