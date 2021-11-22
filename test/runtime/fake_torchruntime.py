@@ -29,23 +29,27 @@ class FakeTorchTrainerJob:
     def result(self) -> Dict[str, Any]:
         """Return a Torch program result."""
         train_history = {}
-        train_history['train'] = [{
-                    "epoch": 0,
-                    "loss": 0.1,
-                    "forward_time": 0.1,
-                    "backward_time": 0.1,
-                    "epoch_time": 0.2,
-                }]
+        train_history["train"] = [
+            {
+                "epoch": 0,
+                "loss": 0.1,
+                "forward_time": 0.1,
+                "backward_time": 0.1,
+                "epoch_time": 0.2,
+            }
+        ]
         if self._validate:
-            train_history['validation'] = [{
+            train_history["validation"] = [
+                {
                     "epoch": 0,
                     "loss": 0.2,
                     "forward_time": 0.2,
                     "backward_time": 0.2,
                     "epoch_time": 0.4,
-                }]
+                }
+            ]
         else:
-            train_history['validation'] = []
+            train_history["validation"] = []
         serialized_result = {
             "model_state_dict": self._model_state_dict,
             "train_history": train_history,

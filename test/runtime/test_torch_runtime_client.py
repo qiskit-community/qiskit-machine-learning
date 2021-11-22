@@ -248,9 +248,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._infer_provider,
-            epochs=1,
             backend=backend,
-            shots=1024,
         )
         result = torch_runtime_client.predict(data_loader)
         self.validate_infer_result(result)
@@ -276,19 +274,19 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
             optimizer=optimizer,
             loss_func=loss_func,
             provider=self._infer_provider,
-            epochs=1,
             backend=backend,
-            shots=1024,
         )
         # Test different score functions
         result = torch_runtime_client.score(data_loader, score_func="regression")
         self.validate_infer_result(result, score=True)
         result = torch_runtime_client.score(data_loader, score_func="classification")
         self.validate_infer_result(result, score=True)
+
         def score_classification(output: Tensor, target: Tensor) -> float:
             pred = output.argmax(dim=1, keepdim=True)
             correct = pred.eq(target.view_as(pred)).sum().item()
             return correct
+
         result = torch_runtime_client.score(data_loader, score_func=score_classification)
         self.validate_infer_result(result, score=True)
 

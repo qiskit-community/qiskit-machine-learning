@@ -384,14 +384,6 @@ class TorchRuntimeClient:
         # define runtime options
         options = {"backend_name": self._backend.name()}
 
-        # #train内で使ってた　ローカルdockerテスト用のjsonへの書き出しコード
-        # import json
-
-        # with open("params.json", "w") as f:
-        #     json.dump(inputs, f, indent=4)
-
-        # return 1
-
         # send job to runtime and return result
         job = self.provider.runtime.run(
             program_id="torch-train",
