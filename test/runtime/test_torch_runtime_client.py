@@ -177,7 +177,7 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         self.validate_train_result(result)
 
     @requires_extra_library
-    def test_fit_with_validattion_set(self):
+    def test_fit_with_validation_set(self):
         """Test for fit with a validation set"""
         try:
             from torch.utils.data import DataLoader

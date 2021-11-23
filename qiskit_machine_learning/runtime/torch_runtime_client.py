@@ -253,10 +253,10 @@ class TorchRuntimeClient:
         """Set the optimizer.
 
         Raises:
-            ValueError: If the optimizer is not an instance of ``torch.optim``.
+            ValueError: If the optimizer is not an instance of ``torch.optim.Optimizer``.
         """
         if not isinstance(optim, Optimizer):
-            raise ValueError("The optimizer must be an instance of torch.optim")
+            raise ValueError("The optimizer must be an instance of torch.optim.Optimizer")
         self._optimizer = optim
 
     @property
