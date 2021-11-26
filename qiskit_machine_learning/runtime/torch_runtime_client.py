@@ -476,7 +476,7 @@ class TorchRuntimeClient:
             data_loader: A PyTorch data loader object containing the inference dataset.
             score_func: A string indicating one of the available scoring functions
                         ("classification" for classification, and "regression" for regression)
-                        or a custom scoring function defined as:
+                        or a custom scoring function defined as
                         ``def score_func(model_output, target): -> score: float``.
         Returns:
             result: A :class:`~qiskit_machine_learning.runtime.TorchRuntimeResult` object
