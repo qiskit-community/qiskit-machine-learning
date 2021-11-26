@@ -1,13 +1,19 @@
-pull_request_rules:
-  - name: Automatic merge on CI success and review
+queue_rules:
+  - name: automerge
     conditions:
+      - check-success=Deprecation_Messages_and_Coverage (3.7)
+
+pull_request_rules:
+  - name: automatic merge on CI success and review
+    conditions:
+      - check-success=Deprecation_Messages_and_Coverage (3.7)
       - "#approved-reviews-by>=1"
       - label=automerge
       - label!=on hold
     actions:
-      merge:
+      queue:
+        name: automerge
         method: squash
-        strict: smart+fasttrack
   - name: backport
     conditions:
       - label=stable backport potential
