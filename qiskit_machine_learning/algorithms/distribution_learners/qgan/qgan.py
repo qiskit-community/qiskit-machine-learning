@@ -184,7 +184,7 @@ class QGAN:
         """Execute the algorithm with selected backend.
         Args:
             quantum_instance: the experimental setting.
-            kwargs (dict): kwargs
+            **kwargs (dict): kwargs
         Returns:
             dict: results of an algorithm.
         Raises:
