@@ -413,8 +413,7 @@ class NumPyDiscriminator(DiscriminativeNetwork):
         Perform one training step w.r.t to the discriminator's parameters
 
         Args:
-            data (tuple(numpy.ndarray, numpy.ndarray)):
-                real_batch: array, Training data batch.
+            data (tuple(numpy.ndarray, numpy.ndarray)): real_batch: array, Training data batch.
                 generated_batch: array, Generated data batch.
             weights (tuple):real problem, generated problem
             penalty (bool): Depreciated for classical networks.
