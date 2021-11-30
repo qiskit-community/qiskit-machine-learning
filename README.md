@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/github/license/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)<!--- long-description-skip-begin -->[![Build Status](https://github.com/Qiskit/qiskit-machine-learning/workflows/Machine%20Learning%20Unit%20Tests/badge.svg?branch=main)](https://github.com/Qiskit/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)[![](https://img.shields.io/github/release/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://github.com/Qiskit/qiskit-machine-learning/releases)[![](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg?style=popout-square)](https://pypi.org/project/qiskit-machine-learning/)[![Coverage Status](https://coveralls.io/repos/github/Qiskit/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/Qiskit/qiskit-machine-learning?branch=main)<!--- long-description-skip-end -->
 
-The Machine Learning package contains sample datasets, classification algorithms such as QSVMs(Quantum State Vector Machines), VQC (Variational Quantum CLassifier) where the datasets can be used for experiments apart from QGANs (Quantum Generative Adversarial Networks).
+The Machine Learning package contains sample datasets, classification algorithms such as QSVMs (Quantum State Vector Machines), VQCs (Variational Quantum CLassifiers) and QGANs (Quantum Generative Adversarial Networks).
 
 ## Installation
 
@@ -12,11 +12,11 @@ We encourage installing Qiskit Machine Learning via the pip tool (a python packa
 pip install qiskit-machine-learning
 ```
 
-**pip** will handle all dependencies automatically and you will always install the latest
+**pip** will handle all dependencies automatically and will always install the latest
 (and well-tested) version.
 
-If you want to work on the very latest work-in-progress versions, either to try features ahead of
-their official release or if you want to contribute to Machine Learning, then you can install from source.
+If one wants to work on the latest work-in-progress versions, either to try features ahead of
+their official release or to contribute to Machine Learning, then one can install from the source.
 To do this follow the instructions in the
  [documentation](https://qiskit.org/documentation/machine-learning/getting_started.html#installation).
 
