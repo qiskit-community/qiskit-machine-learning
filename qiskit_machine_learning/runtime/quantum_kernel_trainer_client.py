@@ -12,7 +12,7 @@
 
 """The Qiskit Machine Learning Quantum Kernel Trainer Runtime Client."""
 
-from typing import Optional, Union, Dict, Callable, Any, Iterable
+from typing import Optional, Union, Dict, Callable, Any, Iterable, Sequence
 import copy
 
 import numpy as np
@@ -68,9 +68,9 @@ class QuantumKernelTrainerClient:
     def __init__(
         self,
         quantum_kernel: QuantumKernel,
-        loss: Callable,
+        loss: Union[str, Callable[[Sequence[float]], float]] = "svc_loss",
         optimizer: Optional[Optimizer] = SPSA(),
-        initial_point: Optional[np.ndarray] = None,
+        initial_point: Optional[Sequence[float]] = None,
         initial_layout: Optional[Iterable[int]] = None,
         provider: Optional[Provider] = None,
         backend: Optional[Backend] = None,
@@ -99,7 +99,7 @@ class QuantumKernelTrainerClient:
                 ansatz, the evaluated mean and the evaluated standard deviation.
         """
         # define program name
-        self._program_id = "quantum-kernel-training"
+        self._program_id = "quantum-kernel-trainer"
 
         # store settings
         self._quantum_kernel = quantum_kernel
@@ -149,23 +149,27 @@ class QuantumKernelTrainerClient:
         self._quantum_kernel = quantum_kernel
 
     @property
-    def loss(self) -> Callable:
+    def loss(self) -> Union[str, Callable[[Sequence[float]], float]]:
         """Return the loss."""
         return self._loss
 
     @loss.setter
-    def loss(self, loss: Callable) -> None:
-        """Sets the loss."""
-        if callable(loss):
-            self._loss = loss
+    def loss(self, loss: Union[str, Callable[[Sequence[float]], float]]) -> None:
+        """Set the loss."""
+        if isinstance(loss, str):
+            self._loss = loss.lower()
+            if self._loss == "svc_loss":
+                pass
+            else:
+                raise ValueError(f"Unknown loss {loss}!")
+        elif callable(loss):
+            self._loss = loss  # type: ignore
         else:
-            raise TypeError(
-                "The loss function must be an instance of ``KernelLoss`` or ``Callable``."
-            )
+            raise ValueError(f"Unknown loss { loss}!")
 
     @property
-    def optimizer(self) -> Union[Optimizer, Dict[str, Any]]:
-        """Return the dictionary describing the optimizer."""
+    def optimizer(self) -> Optimizer:
+        """Return the optimizer."""
         return self._optimizer
 
     @optimizer.setter
@@ -177,12 +181,12 @@ class QuantumKernelTrainerClient:
 
     @property
     def backend(self) -> Optional[Backend]:
-        """Returns the backend."""
+        """Return the backend."""
         return self._backend
 
     @backend.setter
     def backend(self, backend) -> None:
-        """Sets the backend."""
+        """Set the backend."""
         self._backend = backend
 
     @property
@@ -197,7 +201,7 @@ class QuantumKernelTrainerClient:
 
     @property
     def measurement_error_mitigation(self) -> bool:
-        """Returns whether or not to use measurement error mitigation.
+        """Return whether or not to use measurement error mitigation.
         Readout error mitigation is done using a complete measurement fitter with the
         ``self.shots`` number of shots and re-calibrations every 30 minutes.
         """
@@ -210,22 +214,22 @@ class QuantumKernelTrainerClient:
 
     @property
     def initial_point(self) -> Optional[np.ndarray]:
-        """Returns the initial point."""
+        """Return the initial point."""
         return self._initial_point
 
     @initial_point.setter
     def initial_point(self, initial_point: Optional[np.ndarray]) -> None:
-        """Sets the initial point."""
+        """Set the initial point."""
         self._initial_point = initial_point
 
     @property
     def initial_layout(self) -> Optional[Iterable[int]]:
-        """Returns the initial layout."""
+        """Return the initial layout."""
         return self._initial_layout
 
     @initial_layout.setter
     def initial_layout(self, initial_layout: Optional[Iterable[int]]) -> None:
-        """Sets the initial layout."""
+        """Set the initial layout."""
         self._initial_layout = initial_layout
 
     def fit_kernel(
@@ -233,7 +237,7 @@ class QuantumKernelTrainerClient:
         data: Iterable[float],
         labels: Iterable[float],
     ) -> QKTRuntimeResult:
-        """Calls the Quantum Kernel Training Runtime ('quantum-kernel-training') to train
+        """Call the Quantum Kernel Training Runtime ('quantum-kernel-trainer') to train
         the quantum kernel.
 
         Args:
@@ -260,6 +264,13 @@ class QuantumKernelTrainerClient:
 
         if self._provider is None:
             raise ValueError("The provider has not been set.")
+
+        # Ensure loss function is callable
+        if isinstance(self._loss, str):
+            obj_func = _str_to_variational_callable(
+                loss_str=self._loss, quantum_kernel=output_kernel, data=data, labels=labels
+            )
+            self._loss = obj_func
 
         # The quantum kernel feature map should be unbound before sending to runtime
         # to avoid conflicts between the feature map, unbound feature map, and the
@@ -316,3 +327,18 @@ class QuantumKernelTrainerClient:
         qkt_result.quantum_kernel = qkernel_out
 
         return qkt_result
+
+
+def _str_to_variational_callable(
+    loss_str: str,
+    quantum_kernel: QuantumKernel = None,
+    data: np.ndarray = None,
+    labels: np.ndarray = None,
+) -> Callable[[Sequence[float]], float]:
+    if loss_str == "svc_loss":
+        loss_obj = SVCLoss()
+        return loss_obj.get_variational_callable(
+            quantum_kernel=quantum_kernel, data=data, labels=labels
+        )
+    else:
+        raise ValueError(f"Unknown loss {loss_str}!")

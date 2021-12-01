@@ -83,13 +83,13 @@ class QuantumKernel:
 
     @property
     def feature_map(self) -> QuantumCircuit:
-        """Returns feature map"""
+        """Return feature map"""
         return self._feature_map
 
     @feature_map.setter
     def feature_map(self, feature_map: QuantumCircuit) -> None:
         """
-        Sets feature map.
+        Set feature map.
 
         The ``unbound_feature_map`` field will be automatically updated when this field is set,
         and ``user_parameters`` and ``user_param_binds`` fields will be reset to ``None``.
@@ -101,19 +101,19 @@ class QuantumKernel:
 
     @property
     def unbound_feature_map(self) -> QuantumCircuit:
-        """Returns unbound feature map"""
+        """Return unbound feature map"""
         return copy.deepcopy(self._unbound_feature_map)
 
     @property
     def quantum_instance(self) -> QuantumInstance:
-        """Returns quantum instance"""
+        """Return quantum instance"""
         return self._quantum_instance
 
     @quantum_instance.setter
     def quantum_instance(
         self, quantum_instance: Union[Backend, BaseBackend, QuantumInstance]
     ) -> None:
-        """Sets quantum instance"""
+        """Set quantum instance"""
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             self._quantum_instance = QuantumInstance(quantum_instance)
         else:
@@ -126,7 +126,7 @@ class QuantumKernel:
 
     @user_parameters.setter
     def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
-        """Sets the user parameters"""
+        """Set the user parameters"""
         self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
         self._user_parameters = copy.deepcopy(user_params)
 
@@ -192,9 +192,9 @@ class QuantumKernel:
             if not isinstance(values, dict):
                 raise ValueError(
                     f"""
-                'values' must be of type Dict or Sequence.
-                Type {type(values)} is not supported.
-                """
+                    'values' must be of type Dict or Sequence.
+                    Type {type(values)} is not supported.
+                    """
                 )
 
             # All input keys must exist in the circuit
@@ -272,7 +272,7 @@ class QuantumKernel:
         self.assign_user_parameters(values)
 
     def get_unbound_user_parameters(self) -> List[Parameter]:
-        """Returns a list of any unbound user parameters in the feature map circuit."""
+        """Return a list of any unbound user parameters in the feature map circuit."""
         unbound_user_params = []
         if self._user_param_binds is not None:
             # Get all user parameters not associated with numerical values
