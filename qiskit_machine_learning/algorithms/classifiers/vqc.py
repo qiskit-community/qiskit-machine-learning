@@ -105,14 +105,14 @@ class VQC(NeuralNetworkClassifier):
         self._ansatz = ansatz_
         self._num_qubits = num_qubits_
         self._circuit = QuantumCircuit(self._num_qubits)
-        self._circuit.compose(feature_map, inplace=True)
-        self._circuit.compose(ansatz, inplace=True)
+        self._circuit.compose(self.feature_map, inplace=True)
+        self._circuit.compose(self.ansatz, inplace=True)
 
         # construct circuit QNN
         neural_network = CircuitQNN(
             self._circuit,
-            feature_map.parameters,
-            ansatz.parameters,
+            self.feature_map.parameters,
+            self.ansatz.parameters,
             interpret=self._get_interpret(2),
             output_shape=2,
             quantum_instance=quantum_instance,
