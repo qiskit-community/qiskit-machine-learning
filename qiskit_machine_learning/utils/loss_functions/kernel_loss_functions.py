@@ -28,8 +28,7 @@ class KernelLoss(ABC):
     Abstract base class for computing the loss of a kernel function.
     Unlike many loss functions, which only take into account the labels and predictions
     of a model, kernel loss functions may be a function of internal model parameters or
-    quantities that are generated during training. For this reason, extensions of this
-    class may find it necessary to introduce additional inputs.
+    quantities that are generated during training.
     """
 
     def __call__(

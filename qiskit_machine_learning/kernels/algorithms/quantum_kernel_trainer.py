@@ -33,7 +33,7 @@ class QuantumKernelTrainerResult(VariationalResult):
 
     @property
     def quantum_kernel(self) -> Optional["QuantumKernel"]:
-        """Returns the optimized quantum kernel object."""
+        """Return the optimized quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
@@ -72,7 +72,7 @@ class QuantumKernelTrainer:
 
     def __init__(
         self,
-        quantum_kernel: "QuantumKernel",
+        quantum_kernel: QuantumKernel,
         loss: Union[str, Callable[[Sequence[float]], float]] = "svc_loss",
         optimizer: Optimizer = SPSA(),
         initial_point: Optional[Sequence[float]] = None,
@@ -105,22 +105,22 @@ class QuantumKernelTrainer:
 
     @property
     def quantum_kernel(self) -> "QuantumKernel":
-        """Returns the quantum kernel object."""
+        """Return the quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
     def quantum_kernel(self, quantum_kernel: "QuantumKernel") -> None:
-        """Sets the quantum kernel."""
+        """Set the quantum kernel."""
         self._quantum_kernel = quantum_kernel
 
     @property
     def loss(self) -> Union[str, Callable[[Sequence[float]], float]]:
-        """Returns the loss object."""
+        """Return the loss object."""
         return self._loss
 
     @loss.setter
     def loss(self, loss: Union[str, Callable[[Sequence[float]], float]]) -> None:
-        """Sets the loss."""
+        """Set the loss."""
         if isinstance(loss, str):
             self._loss = loss.lower()
             if self._loss == "svc_loss":
@@ -134,22 +134,22 @@ class QuantumKernelTrainer:
 
     @property
     def optimizer(self) -> Optimizer:
-        """Returns an optimizer to be used in training."""
+        """Return an optimizer to be used in training."""
         return self._optimizer
 
     @optimizer.setter
     def optimizer(self, optimizer: Optimizer) -> None:
-        """Sets the loss."""
+        """Set the optimizer."""
         self._optimizer = optimizer
 
     @property
     def initial_point(self) -> Optional[Sequence[float]]:
-        """Returns initial point"""
+        """Return initial point"""
         return self._initial_point
 
     @initial_point.setter
     def initial_point(self, initial_point: Optional[Sequence[float]]) -> None:
-        """Sets the initial point"""
+        """Set the initial point"""
         self._initial_point = initial_point
 
     def fit_kernel(
@@ -162,9 +162,9 @@ class QuantumKernelTrainer:
         quantum kernel will not be altered, and an optimized quantum kernel will be returned.
 
         Args:
-            data (numpy.ndarray): ``NxD`` array of training data, where ``N`` is the
+            data (numpy.ndarray): ``(N, D)`` array of training data, where ``N`` is the
                               number of samples and ``D`` is the feature dimension
-            labels (numpy.ndarray): ``Nx1`` array of +/-1 labels of the ``N`` training samples
+            labels (numpy.ndarray): ``(N, 1)`` array of +/-1 labels of the ``N`` training samples
 
         Returns:
             QuantumKernelTrainerResult: the results of kernel training

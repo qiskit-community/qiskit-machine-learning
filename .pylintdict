@@ -135,6 +135,7 @@ regressors
 regs
 rescale
 rhs
+runtime
 rx
 ry
 rz
@@ -179,6 +180,7 @@ utils
 variational
 vec
 vqc
+vqe
 vqr
 vx
 vy
