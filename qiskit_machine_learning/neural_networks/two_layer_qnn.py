@@ -115,9 +115,10 @@ class TwoLayerQNN(OpflowQNN):
         operator = ~StateFn(self.observable) @ StateFn(self._circuit)
 
         super().__init__(
-            operator,
-            input_params,
-            weight_params,
+            operator=operator,
+            input_params=input_params,
+            weight_params=weight_params,
+            exp_val=exp_val,
             quantum_instance=quantum_instance,
             input_gradients=input_gradients,
         )
