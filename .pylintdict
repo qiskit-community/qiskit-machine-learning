@@ -56,6 +56,7 @@ hashable
 hilbert
 hoc
 html
+hyperparameter
 init
 inlier
 inplace
@@ -104,6 +105,7 @@ ovo
 ovr
 param
 parametrized
+parameterization
 params
 pauli
 pegasos
