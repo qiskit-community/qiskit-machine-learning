@@ -40,6 +40,7 @@ Submodules
    datasets
    kernels
    neural_networks
+   runtime
    utils
 
 """
