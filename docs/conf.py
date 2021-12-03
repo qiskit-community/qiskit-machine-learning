@@ -104,7 +104,7 @@ html_static_path = ['_static']
 templates_path = ['_templates']
 html_css_files = ['style.css', 'custom.css', 'gallery.css']
 
-nbsphinx_timeout = 360
+nbsphinx_timeout = 7200
 nbsphinx_execute = os.getenv('QISKIT_DOCS_BUILD_TUTORIALS', 'never')
 nbsphinx_widgets_path = ''
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
