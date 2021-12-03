@@ -50,6 +50,9 @@ class TwoLayerQNN(OpflowQNN):
                 the `RealAmplitudes` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
                 is given, the `Z^{\otimes num_qubits}` observable is used.
+            exp_val: The Expected Value converter to be used for the operator obtained from the
+                feature map and ansatz.
+            quantum_instance: The quantum instance to evaluate the network.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
@@ -115,9 +118,10 @@ class TwoLayerQNN(OpflowQNN):
         operator = ~StateFn(self.observable) @ StateFn(self._circuit)
 
         super().__init__(
-            operator,
-            input_params,
-            weight_params,
+            operator=operator,
+            input_params=input_params,
+            weight_params=weight_params,
+            exp_val=exp_val,
             quantum_instance=quantum_instance,
             input_gradients=input_gradients,
         )
