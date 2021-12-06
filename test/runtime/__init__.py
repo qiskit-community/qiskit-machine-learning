@@ -11,6 +11,3 @@
 # that they have been altered from the originals.
 
 """Runtime test packages."""
-from .fake_qkt_runtime import FakeQKTRuntimeProvider
-
-__all__ = ["FakeQKTRuntimeProvider"]

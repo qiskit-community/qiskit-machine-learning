@@ -30,6 +30,7 @@ currentmodule
 cvs
 cx
 data's
+dataloader
 datapoints
 dataset
 datasets
@@ -47,6 +48,7 @@ endian
 entangler
 et
 eval
+func
 formatter
 gaussian
 getter
@@ -176,6 +178,7 @@ transpiling
 unitaries
 univariate
 unsymmetric
+utf
 utils
 variational
 vec
