@@ -64,7 +64,12 @@ class PegasosQSVC(SVC):
             quantum_kernel: QuantumKernel to be used for classification. Has to be ``None`` when
                 a precomputed kernel is used.
             C: Positive regularization parameter. The strength of the regularization is inversely
-                proportional to C. Must be strictly positive. The penalty is a l1 penalty.
+                proportional to C. Smaller ``C`` induce smaller weights which generally helps
+                preventing overfitting. However, due to the nature of this algorithm, some of the
+                computation steps become trivial for larger ``C``. Thus, larger ``C`` improve
+                the performance of the algorithm drastically. If the data is linearly separable
+                in feature space, ``C`` should be chosen to be large. If the separation is not
+                perfect, ``C`` should be chosen smaller to prevent overfitting.
 
             num_steps: number of steps in the Pegasos algorithm. There is no early stopping
                 criterion. The algorithm iterates over all steps.
