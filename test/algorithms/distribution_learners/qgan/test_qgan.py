@@ -19,8 +19,8 @@ from test import QiskitMachineLearningTestCase, requires_extra_library
 
 from ddt import ddt, data
 
-from qiskit import BasicAer
-from qiskit.circuit.library import UniformDistribution, RealAmplitudes
+from qiskit import BasicAer, QuantumCircuit
+from qiskit.circuit.library import RealAmplitudes
 from qiskit.utils import algorithm_globals, QuantumInstance
 from qiskit.algorithms.optimizers import CG, COBYLA
 from qiskit.opflow.gradients import Gradient
@@ -82,7 +82,8 @@ class TestQGAN(QiskitMachineLearningTestCase):
         # Set entangler map
         entangler_map = [[0, 1]]
 
-        qc = UniformDistribution(sum(num_qubits))
+        qc = QuantumCircuit(sum(num_qubits))
+        qc.h(qc.qubits)
 
         ansatz = RealAmplitudes(sum(num_qubits), reps=1, entanglement=entangler_map)
         qc.compose(ansatz, inplace=True)
