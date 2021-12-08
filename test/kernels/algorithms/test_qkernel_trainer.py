@@ -28,22 +28,6 @@ from qiskit_machine_learning.utils.loss_functions import SVCLoss
 from qiskit_machine_learning.algorithms.classifiers import QSVC
 
 
-def generate_feature_map():
-    """
-    Create a 2 qubit circuit for tuning.
-    """
-    data_block = ZZFeatureMap(2)
-    trainable_block = ZZFeatureMap(2)
-    user_parameters = trainable_block.parameters
-
-    for i, _ in enumerate(user_parameters):
-        user_parameters[i]._name = f"θ[{i}]"
-
-    feature_map = data_block.compose(trainable_block).compose(data_block)
-
-    return feature_map, user_parameters
-
-
 class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     """Test QuantumKernelTrainer Algorithm"""
 
@@ -52,7 +36,16 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 10598
         self.optimizer = COBYLA(maxiter=25)
         self.backend = Aer.get_backend("statevector_simulator")
-        self.feature_map, self.user_parameters = generate_feature_map()
+
+        data_block = ZZFeatureMap(2)
+        trainable_block = ZZFeatureMap(2)
+        user_parameters = trainable_block.parameters
+
+        for i, _ in enumerate(user_parameters):
+            user_parameters[i]._name = f"θ[{i}]"
+
+        self.feature_map = data_block.compose(trainable_block).compose(data_block)
+        self.user_parameters = user_parameters
 
         self.sample_train = np.asarray(
             [
@@ -81,7 +74,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             qkt_result = qkt.fit_kernel(self.sample_train, self.label_train)
 
             # Ensure user parameters are bound to real values
-            self.assertFalse(qkt_result.quantum_kernel.get_unbound_user_parameters())
+            self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_user_parameters()), 0)
 
             # Ensure kernel training functions and is deterministic
             qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
@@ -91,14 +84,12 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
         with self.subTest("check fit with params"):
             self.setUp()
-            loss = SVCLoss(C=0.8, gamma="auto").get_variational_callable(
-                self.quantum_kernel, self.sample_train, self.label_train
-            )
+            loss = SVCLoss(C=0.8, gamma="auto")
             qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, loss=loss)
             qkt_result = qkt.fit_kernel(self.sample_train, self.label_train)
 
             # Ensure user parameters are bound to real values
-            self.assertFalse(qkt_result.quantum_kernel.get_unbound_user_parameters())
+            self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_user_parameters()), 0)
 
             # Ensure kernel training functions and is deterministic
             qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)

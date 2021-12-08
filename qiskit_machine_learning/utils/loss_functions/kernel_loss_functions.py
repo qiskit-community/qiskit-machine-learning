@@ -12,9 +12,8 @@
 
 """ Kernel Loss utilities """
 
-from functools import partial
 from abc import ABC, abstractmethod
-from typing import Sequence, Iterable, Callable
+from typing import Sequence
 
 import numpy as np
 from sklearn.svm import SVC
@@ -34,7 +33,7 @@ class KernelLoss(ABC):
     def __call__(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: "QuantumKernel",
+        quantum_kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -43,21 +42,11 @@ class KernelLoss(ABC):
         """
         return self.evaluate(parameter_values, quantum_kernel, data, labels)
 
-    def get_variational_callable(
-        self, quantum_kernel: QuantumKernel, data: Iterable, labels: Iterable
-    ) -> Callable[[Sequence[float]], float]:
-        """
-        Return a callable variational loss function given some inputs. The sole input to the
-        callable should be an array of numerical feature map parameter values, and the output should
-        be a numerical loss value.
-        """
-        raise NotImplementedError
-
     @abstractmethod
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: "QuantumKernel",
+        quantum_kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -99,22 +88,17 @@ class SVCLoss(KernelLoss):
     """
 
     def __init__(self, **kwargs):
+        """
+        Args:
+            **kwargs: Arbitrary keyword arguments to pass to SVC constructor within
+                      SVCLoss evaluation.
+        """
         self.kwargs = kwargs
-
-    def get_variational_callable(
-        self, quantum_kernel: QuantumKernel, data: Iterable, labels: Iterable
-    ) -> Callable[[Sequence[float]], float]:
-        return partial(
-            self.evaluate,
-            quantum_kernel=quantum_kernel,
-            data=data,
-            labels=labels,
-        )
 
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: "QuantumKernel",
+        quantum_kernel: QuantumKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:

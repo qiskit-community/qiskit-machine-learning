@@ -12,6 +12,7 @@
 
 """Quantum Kernel Trainer"""
 import copy
+from functools import partial
 from typing import Union, Optional, Sequence, Callable
 
 import numpy as np
@@ -19,7 +20,7 @@ import numpy as np
 from qiskit.utils.algorithm_globals import algorithm_globals
 from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
-from qiskit_machine_learning.utils.loss_functions import SVCLoss
+from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
 
 from qiskit_machine_learning.kernels import QuantumKernel
 
@@ -29,15 +30,15 @@ class QuantumKernelTrainerResult(VariationalResult):
 
     def __init__(self) -> None:
         super().__init__()
-        self._quantum_kernel = None  # type: QuantumKernel
+        self._quantum_kernel: QuantumKernel = None
 
     @property
-    def quantum_kernel(self) -> Optional["QuantumKernel"]:
+    def quantum_kernel(self) -> Optional[QuantumKernel]:
         """Return the optimized quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: "QuantumKernel") -> None:
+    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
         self._quantum_kernel = quantum_kernel
 
 
@@ -50,9 +51,24 @@ class QuantumKernelTrainer:
 
     .. code-block::
 
+        # Create 2-qubit feature map
+        qc = QuantumCircuit(2)
+
+        # Vectors of input and trainable user parameters
+        input_params = ParameterVector("x_par", 2)
+        user_params = ParameterVector("θ_par", 2)
+
+        # Create an initial rotation layer of trainable parameters
+        for i, param in enumerate(user_params):
+            qc.ry(param, qc.qubits[i])
+
+        # Create a rotation layer of input parameters
+        for i, param in enumerate(input_params):
+            qc.rz(param, qc.qubits[i])
+
         quant_kernel = QuantumKernel(
-            feature_map=...,
-            user_parameters=...,
+            feature_map=qc,
+            user_parameters=user_params,
             quantum_instance=...
         )
 
@@ -74,7 +90,7 @@ class QuantumKernelTrainer:
         self,
         quantum_kernel: QuantumKernel,
         loss: Union[str, Callable[[Sequence[float]], float]] = "svc_loss",
-        optimizer: Optimizer = SPSA(),
+        optimizer: Optional[Optimizer] = None,
         initial_point: Optional[Sequence[float]] = None,
     ):
         """
@@ -96,20 +112,19 @@ class QuantumKernelTrainer:
         """
         # Class fields
         self._quantum_kernel = quantum_kernel
-        self._optimizer = optimizer
         self._initial_point = initial_point
-        self._loss = None
+        self._optimizer = optimizer if optimizer else SPSA()
 
         # Setters
         self.loss = loss
 
     @property
-    def quantum_kernel(self) -> "QuantumKernel":
+    def quantum_kernel(self) -> QuantumKernel:
         """Return the quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: "QuantumKernel") -> None:
+    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
         """Set the quantum kernel."""
         self._quantum_kernel = quantum_kernel
 
@@ -120,7 +135,12 @@ class QuantumKernelTrainer:
 
     @loss.setter
     def loss(self, loss: Union[str, Callable[[Sequence[float]], float]]) -> None:
-        """Set the loss."""
+        """
+        Set the loss.
+
+        Raises:
+            ValueError: unknown loss function
+        """
         if isinstance(loss, str):
             self._loss = loss.lower()
             if self._loss == "svc_loss":
@@ -164,7 +184,7 @@ class QuantumKernelTrainer:
         Args:
             data (numpy.ndarray): ``(N, D)`` array of training data, where ``N`` is the
                               number of samples and ``D`` is the feature dimension
-            labels (numpy.ndarray): ``(N, 1)`` array of +/-1 labels of the ``N`` training samples
+            labels (numpy.ndarray): ``(N, 1)`` array of target values for the training samples
 
         Returns:
             QuantumKernelTrainerResult: the results of kernel training
@@ -181,18 +201,19 @@ class QuantumKernelTrainer:
         # Bind inputs to objective function
         output_kernel = copy.deepcopy(self._quantum_kernel)
         if isinstance(self._loss, str):
-            obj_func = _str_to_variational_callable(
-                loss_str=self._loss, quantum_kernel=output_kernel, data=data, labels=labels
-            )
-            self._loss = obj_func
+            loss_func = self._str_to_loss(self._loss)
+            self._loss = loss_func
 
         # Randomly initialize the initial point if one was not passed
         if self._initial_point is None:
             self._initial_point = algorithm_globals.random.random(num_params)
 
         # Perform kernel optimization
+        loss_function = partial(
+            self._loss.evaluate, quantum_kernel=self.quantum_kernel, data=data, labels=labels
+        )
         opt_results = self._optimizer.minimize(
-            fun=self._loss,
+            fun=loss_function,
             x0=self._initial_point,
         )
 
@@ -209,17 +230,10 @@ class QuantumKernelTrainer:
 
         return result
 
+    def _str_to_loss(self, loss_str: str) -> KernelLoss:
+        if loss_str == "svc_loss":
+            loss_obj = SVCLoss()
+        else:
+            raise ValueError(f"Unknown loss {loss_str}!")
 
-def _str_to_variational_callable(
-    loss_str: str,
-    quantum_kernel: "QuantumKernel" = None,
-    data: np.ndarray = None,
-    labels: np.ndarray = None,
-) -> Callable[[Sequence[float]], float]:
-    if loss_str == "svc_loss":
-        loss_obj = SVCLoss()
-        return loss_obj.get_variational_callable(
-            quantum_kernel=quantum_kernel, data=data, labels=labels
-        )
-    else:
-        raise ValueError(f"Unknown loss {loss_str}!")
+        return loss_obj

@@ -365,7 +365,7 @@ class TestQuantumKernelUserParameters(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
 
-        # Create an arbitrary 2-qubit feature map circuit
+        # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
         circ2 = ZZFeatureMap(3)
         user_params = circ2.parameters
