@@ -18,7 +18,7 @@ import unittest
 
 import numpy as np
 
-from qiskit import Aer
+from qiskit.providers.aer import AerSimulator
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import algorithm_globals
 from qiskit.algorithms.optimizers import COBYLA
@@ -35,7 +35,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.random_seed = 10598
         self.optimizer = COBYLA(maxiter=25)
-        self.backend = Aer.get_backend("statevector_simulator")
+        self.backend = AerSimulator(method="statevector")
 
         data_block = ZZFeatureMap(2)
         trainable_block = ZZFeatureMap(2)

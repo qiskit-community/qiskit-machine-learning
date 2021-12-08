@@ -115,8 +115,17 @@ class QuantumKernelTrainer:
         self._initial_point = initial_point
         self._optimizer = optimizer if optimizer else SPSA()
 
-        # Setters
-        self.loss = loss
+        # Set up loss function
+        if isinstance(loss, str):
+            loss = loss.lower()
+            if loss == "svc_loss":
+                self._loss = self._str_to_loss(loss)
+            else:
+                raise ValueError(f"Unknown loss {loss}!")
+        elif isinstance(loss, KernelLoss):
+            self._loss = loss
+        else:
+            raise ValueError(f"Unknown loss {loss}!")
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
@@ -129,28 +138,14 @@ class QuantumKernelTrainer:
         self._quantum_kernel = quantum_kernel
 
     @property
-    def loss(self) -> Union[str, Callable[[Sequence[float]], float]]:
+    def loss(self) -> KernelLoss:
         """Return the loss object."""
         return self._loss
 
     @loss.setter
-    def loss(self, loss: Union[str, Callable[[Sequence[float]], float]]) -> None:
-        """
-        Set the loss.
-
-        Raises:
-            ValueError: unknown loss function
-        """
-        if isinstance(loss, str):
-            self._loss = loss.lower()
-            if self._loss == "svc_loss":
-                pass
-            else:
-                raise ValueError(f"Unknown loss {loss}!")
-        elif callable(loss):
-            self._loss = loss  # type: ignore
-        else:
-            raise ValueError(f"Unknown loss {loss}!")
+    def loss(self, loss: KernelLoss) -> None:
+        """Set the loss."""
+        self._loss = loss
 
     @property
     def optimizer(self) -> Optimizer:
@@ -200,9 +195,6 @@ class QuantumKernelTrainer:
 
         # Bind inputs to objective function
         output_kernel = copy.deepcopy(self._quantum_kernel)
-        if isinstance(self._loss, str):
-            loss_func = self._str_to_loss(self._loss)
-            self._loss = loss_func
 
         # Randomly initialize the initial point if one was not passed
         if self._initial_point is None:
