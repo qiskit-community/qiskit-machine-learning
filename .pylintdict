@@ -13,6 +13,7 @@ bergholm
 bitstring
 bitstrings
 bool
+boolean
 cargs
 cbit
 chuang
@@ -57,6 +58,7 @@ hashable
 hilbert
 hoc
 html
+hyperparameter
 init
 inlier
 inplace
@@ -66,6 +68,7 @@ isometry
 iten
 iterable
 jupyter
+kernelized
 kwarg
 kwargs
 langle
@@ -101,11 +104,14 @@ optimizers
 orthonormal
 otimes
 ovo
+overfitting
 ovr
 param
 parametrized
+parameterization
 params
 pauli
+pegasos
 pre
 precomputed
 precomputes
@@ -143,7 +149,9 @@ rz
 scikit
 scipy
 semidefinite
+shalev
 shende
+shwartz
 sigmoid
 sklearn
 softmax
