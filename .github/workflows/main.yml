@@ -73,7 +73,10 @@ jobs:
       - run:  make spell
         if: ${{ !cancelled() }}
         shell: bash
-      - run:  make style
+      - name: Style Check
+        run: |
+          make clean_sphinx
+          make style
         if: ${{ !cancelled() }}
         shell: bash
       - name: Run make html
