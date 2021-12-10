@@ -14,6 +14,7 @@
 
 from .neural_network_classifier import NeuralNetworkClassifier
 from .qsvc import QSVC
+from .pegasos_qsvc import PegasosQSVC
 from .vqc import VQC
 
-__all__ = ["NeuralNetworkClassifier", "QSVC", "VQC"]
+__all__ = ["NeuralNetworkClassifier", "QSVC", "PegasosQSVC", "VQC"]
