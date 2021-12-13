@@ -13,7 +13,7 @@
 """Quantum Kernel Trainer"""
 import copy
 from functools import partial
-from typing import Union, Optional, Sequence, Callable
+from typing import Union, Optional, Sequence
 
 import numpy as np
 
@@ -82,26 +82,27 @@ class QuantumKernelTrainer:
                                         optimizer=optimizer,
                                         initial_point=initial_point,
                                         )
-        qkt_results = qk_trainer.fit_kernel(X_train, y_train)
+        qkt_results = qk_trainer.fit(X_train, y_train)
         optimized_kernel = qkt_results.quantum_kernel
     """
 
     def __init__(
         self,
         quantum_kernel: QuantumKernel,
-        loss: Union[str, Callable[[Sequence[float]], float]] = "svc_loss",
+        loss: Union[str, KernelLoss] = "svc_loss",
         optimizer: Optional[Optimizer] = None,
         initial_point: Optional[Sequence[float]] = None,
     ):
         """
         Args:
             quantum_kernel: QuantumKernel to be trained
-            loss (Callable[[Sequence[float]], float] or str):
+            loss (str or KernelLoss):
                 str: Loss functions available via string: {'svc_loss: SVCLoss()).
                     If a string is passed as the loss function, then the underlying
                     KernelLoss object will exhibit default behavior.
-                Callable[[Sequence[float]], float]: A callable loss function which takes
-                    a vector of parameter values as input and returns a loss value (float)
+                KernelLoss: A kernel loss function which takes
+                    a vector of parameter values as input to its evaluate function
+                    and returns a loss value (float)
             optimizer: An instance of ``Optimizer`` to be used in training. Since no
                 analytical gradient is defined for kernel loss functions, gradient-based
                 optimizers are not recommended for training kernels.
@@ -113,7 +114,7 @@ class QuantumKernelTrainer:
         # Class fields
         self._quantum_kernel = quantum_kernel
         self._initial_point = initial_point
-        self._optimizer = optimizer if optimizer else SPSA()
+        self._optimizer = optimizer or SPSA()
 
         # Set up loss function
         if isinstance(loss, str):
@@ -143,8 +144,12 @@ class QuantumKernelTrainer:
         return self._loss
 
     @loss.setter
-    def loss(self, loss: KernelLoss) -> None:
+    def loss(self, loss: Union[str, KernelLoss]) -> None:
         """Set the loss."""
+        if isinstance(loss, str):
+            loss = loss.lower()
+            loss = self._str_to_loss(loss)
+
         self._loss = loss
 
     @property
@@ -167,7 +172,7 @@ class QuantumKernelTrainer:
         """Set the initial point"""
         self._initial_point = initial_point
 
-    def fit_kernel(
+    def fit(
         self,
         data: np.ndarray,
         labels: np.ndarray,

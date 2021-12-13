@@ -16,7 +16,7 @@ from enchant import tokenize
 
 
 class LowercaseFilter(tokenize.Filter):
-    """ Lower Case Filter """
+    """Lower Case Filter"""
 
     def _split(self, word):
         """Filter method for sub-tokenization of tokens.

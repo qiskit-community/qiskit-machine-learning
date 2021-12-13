@@ -66,12 +66,23 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             quantum_instance=self.backend,
         )
 
+    def test_qkt_defaults(self):
+        """Test QuantumKernelTrainer with default values"""
+        qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
+        qkt_result = qkt.fit(self.sample_train, self.label_train)
+
+        # Ensure kernel training functions and is deterministic
+        qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
+        qsvc.fit(self.sample_train, self.label_train)
+        score = qsvc.score(self.sample_test, self.label_test)
+
+        self.assertEqual(score, 0.5)
+
     def test_qkt(self):
         """Test QuantumKernelTrainer"""
-        self.setUp()
         with self.subTest("check default fit"):
             qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, optimizer=self.optimizer)
-            qkt_result = qkt.fit_kernel(self.sample_train, self.label_train)
+            qkt_result = qkt.fit(self.sample_train, self.label_train)
 
             # Ensure user parameters are bound to real values
             self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_user_parameters()), 0)
@@ -83,10 +94,9 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             self.assertAlmostEqual(score, 0.5)
 
         with self.subTest("check fit with params"):
-            self.setUp()
             loss = SVCLoss(C=0.8, gamma="auto")
             qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, loss=loss)
-            qkt_result = qkt.fit_kernel(self.sample_train, self.label_train)
+            qkt_result = qkt.fit(self.sample_train, self.label_train)
 
             # Ensure user parameters are bound to real values
             self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_user_parameters()), 0)
