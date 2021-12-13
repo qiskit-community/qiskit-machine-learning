@@ -76,7 +76,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 
-        self.assertEqual(score, 0.5)
+        self.assertEqual(score, 1.0)
 
     def test_qkt(self):
         """Test QuantumKernelTrainer"""
