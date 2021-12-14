@@ -114,13 +114,8 @@ class QuantumKernelTrainer:
         self._initial_point = initial_point
         self._optimizer = optimizer or SPSA()
 
-        # Loss function setter
-        if loss is None:
-            loss = SVCLoss()
-        elif isinstance(loss, str):
-            loss = self._str_to_loss(loss)
-
-        self._loss = loss
+        # Loss setter
+        self._set_loss(loss)
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
@@ -138,8 +133,15 @@ class QuantumKernelTrainer:
         return self._loss
 
     @loss.setter
-    def loss(self, loss: Union[str, KernelLoss]) -> None:
-        """Set the loss."""
+    def loss(self, loss: Optional[Union[str, KernelLoss]]) -> None:
+        """
+        Set the loss.
+
+        Raises:
+            ValueError: Unknown loss function
+        """
+        if loss is None:
+            loss = SVCLoss()
         if isinstance(loss, str):
             loss = loss.lower()
             loss = self._str_to_loss(loss)
@@ -221,7 +223,17 @@ class QuantumKernelTrainer:
 
         return result
 
+    def _set_loss(self, loss: Optional[Union[str, KernelLoss]]) -> None:
+        """Internal setter."""
+        if loss is None:
+            loss = SVCLoss()
+        elif isinstance(loss, str):
+            loss = self._str_to_loss(loss)
+
+        self._loss = loss
+
     def _str_to_loss(self, loss_str: str) -> KernelLoss:
+        """Function which maps strings to default KernelLoss objects."""
         if loss_str == "svc_loss":
             loss_obj = SVCLoss()
         else:
