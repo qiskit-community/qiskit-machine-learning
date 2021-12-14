@@ -14,7 +14,7 @@
 
 import logging
 from datetime import datetime
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict
 
 import numpy as np
 from qiskit.utils import algorithm_globals
@@ -272,7 +272,7 @@ class PegasosQSVC(SVC):
 
         return value
 
-        
+
     @property
     def quantum_kernel(self) -> QuantumKernel:
         """Returns quantum kernel"""
