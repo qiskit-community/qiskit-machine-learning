@@ -113,17 +113,8 @@ class QuantumKernelTrainer:
         self._initial_point = initial_point
         self._optimizer = optimizer or SPSA()
 
-        # Set up loss function
-        if isinstance(loss, str):
-            loss = loss.lower()
-            if loss == "svc_loss":
-                self._loss = self._str_to_loss(loss)
-            else:
-                raise ValueError(f"Unknown loss {loss}!")
-        elif isinstance(loss, KernelLoss):
-            self._loss = loss
-        else:
-            raise ValueError(f"Unknown loss {loss}!")
+        # Loss function setter
+        self.loss = loss
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
