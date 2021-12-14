@@ -249,41 +249,30 @@ class PegasosQSVC(SVC):
         Returns:
             Weighted sum of kernel evaluations employed in the Pegasos algorithm
         """
-        kernel: Dict[Tuple, np.ndarray] = {}
+        # non-zero indices corresponding to the support vectors
+        support_vectors = list(self._alphas.keys())
+
+        # for training
+        if training:
+            x = X[support_vectors]
+        # for prediction
+        else:
+            x = self._x_train[support_vectors]
+        if not self._precomputed:
+            # evaluate kernel function only for the fixed datum and the support vectors
+            kernel = self._quantum_kernel.evaluate(X[index],x) + self._kernel_offset
+        else:
+            kernel = X[index, support_vectors] 
+        
+        
+        y = np.array(list(map(self._label_map.get, self._y_train[support_vectors])))
+        a = np.array(list(self._alphas.values()))
         # this value corresponds to a sum of kernel values weighted by their labels and alphas
-        value = 0.0
-        # only loop over the non zero alphas (preliminary support vectors)
-        for j in self._alphas:
-            # perform the kernel evaluations on the fly, as intended
-            if not self._precomputed:
-                # for training
-                if training:
-                    x_j = X[j]
-                # for prediction
-                else:
-                    x_j = self._x_train[j]
-
-                # evaluate kernel function only for the fixed datum and the data with non zero alpha
-                kernel[(index, j)] = kernel.get(
-                    (index, j), self._quantum_kernel.evaluate(X[index], x_j)
-                )
-                kernel_value = kernel[(index, j)]
-
-            # consider a precomputed kernel
-            else:
-                kernel_value = X[index, j]
-
-            value += (
-                # alpha weights the contribution of the associated datum
-                self._alphas[j]
-                # the class membership labels have to be in {-1, +1}
-                * self._label_map[self._y_train[j]]
-                # the offset to the kernel function leads to an implicit bias term
-                * (kernel_value + self._kernel_offset)
-            )
+        value = np.sum(a * y * kernel)
 
         return value
 
+        
     @property
     def quantum_kernel(self) -> QuantumKernel:
         """Returns quantum kernel"""
