@@ -137,16 +137,13 @@ class QuantumKernelTrainer:
         """
         Set the loss.
 
+        Args:
+            loss: a loss function to set
+
         Raises:
             ValueError: Unknown loss function
         """
-        if loss is None:
-            loss = SVCLoss()
-        if isinstance(loss, str):
-            loss = loss.lower()
-            loss = self._str_to_loss(loss)
-
-        self._loss = loss
+        self._set_loss(loss)
 
     @property
     def optimizer(self) -> Optimizer:
