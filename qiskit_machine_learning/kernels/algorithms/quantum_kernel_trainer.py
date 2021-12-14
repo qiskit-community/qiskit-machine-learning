@@ -97,9 +97,10 @@ class QuantumKernelTrainer:
         Args:
             quantum_kernel: QuantumKernel to be trained
             loss (str or KernelLoss): Loss functions available via string:
-                       {'svc_loss': SVCLoss()). If a string is passed as the
-                       loss function, then the underlying KernelLoss object
-                       will exhibit default behavior.
+                       {'svc_loss': SVCLoss()}.
+                       If a string is passed as the loss function, then the
+                       underlying KernelLoss object will exhibit default
+                       behavior.
             optimizer: An instance of ``Optimizer`` to be used in training. Since no
                        analytical gradient is defined for kernel loss functions, gradient-based
                        optimizers are not recommended for training kernels.
