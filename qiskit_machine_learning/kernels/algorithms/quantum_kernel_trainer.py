@@ -89,7 +89,7 @@ class QuantumKernelTrainer:
     def __init__(
         self,
         quantum_kernel: QuantumKernel,
-        loss: Union[str, KernelLoss] = "svc_loss",
+        loss: Optional[Union[str, KernelLoss]] = None,
         optimizer: Optional[Optimizer] = None,
         initial_point: Optional[Sequence[float]] = None,
     ):
@@ -115,7 +115,12 @@ class QuantumKernelTrainer:
         self._optimizer = optimizer or SPSA()
 
         # Loss function setter
-        self.loss = loss
+        if loss is None:
+            loss = SVCLoss()
+        elif isinstance(loss, str):
+            loss = self._str_to_loss(loss)
+
+        self._loss = loss
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
