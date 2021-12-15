@@ -260,18 +260,16 @@ class PegasosQSVC(SVC):
             x = self._x_train[support_vectors]
         if not self._precomputed:
             # evaluate kernel function only for the fixed datum and the support vectors
-            kernel = self._quantum_kernel.evaluate(X[index],x) + self._kernel_offset
+            kernel = self._quantum_kernel.evaluate(X[index], x) + self._kernel_offset
         else:
-            kernel = X[index, support_vectors] 
-        
-        
+            kernel = X[index, support_vectors]
+
         y = np.array(list(map(self._label_map.get, self._y_train[support_vectors])))
         a = np.array(list(self._alphas.values()))
         # this value corresponds to a sum of kernel values weighted by their labels and alphas
         value = np.sum(a * y * kernel)
 
         return value
-
 
     @property
     def quantum_kernel(self) -> QuantumKernel:
