@@ -13,7 +13,7 @@
 """
 Loss Functions (:mod:`qiskit_machine_learning.utils.loss_functions`)
 ====================================================================
-A collections of common loss functions to be used with the classifiers and regressors provided
+A collection of common loss functions to be used with the classifiers and regressors provided
 by Qiskit Machine Learning.
 
 .. currentmodule:: qiskit_machine_learning.utils.loss_functions
@@ -26,6 +26,7 @@ Loss Function Base Class
    :nosignatures:
 
    Loss
+   KernelLoss
 
 Loss Functions
 ==============
@@ -38,7 +39,7 @@ Loss Functions
    L2Loss
    CrossEntropyLoss
    CrossEntropySigmoidLoss
-
+   SVCLoss
 """
 
 from .loss_functions import (
@@ -49,4 +50,14 @@ from .loss_functions import (
     CrossEntropySigmoidLoss,
 )
 
-__all__ = ["Loss", "L1Loss", "L2Loss", "CrossEntropyLoss", "CrossEntropySigmoidLoss"]
+from .kernel_loss_functions import KernelLoss, SVCLoss
+
+__all__ = [
+    "Loss",
+    "KernelLoss",
+    "L1Loss",
+    "L2Loss",
+    "CrossEntropyLoss",
+    "CrossEntropySigmoidLoss",
+    "SVCLoss",
+]

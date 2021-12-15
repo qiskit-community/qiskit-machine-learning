@@ -1,0 +1,9 @@
+features:
+  - |
+    Introduced a new classification algorithm, which is an alternative version of the Quantum
+    Support Vector Classifier (QSVC) that is trained via the Pegasos algorithm from 
+    https://home.ttic.edu/~nati/Publications/PegasosMPB.pdf instead of the dual optimization problem
+    like in sklearn. This algorithm yields a training complexity that is independent of the size of
+    the training set (see the to be published Master's Thesis "Comparing Quantum Neural Networks and
+    Quantum Support Vector Machines" by Arne Thomsen), such that the PegasosQSVC is expected to
+    train faster than QSVC for sufficiently large training sets.
