@@ -67,6 +67,7 @@ instantiations
 isometry
 iten
 iterable
+iteratively
 jupyter
 kernelized
 kwarg
@@ -116,6 +117,7 @@ pre
 precomputed
 precomputes
 precomputing
+preprint
 priori
 ps
 py
@@ -190,6 +192,7 @@ utils
 variational
 vec
 vqc
+vqe
 vqr
 vx
 vy
@@ -197,3 +200,4 @@ vz
 wrt
 zoufal
 zsh
+θ

@@ -12,7 +12,6 @@
 
 """ Test QuantumKernel """
 
-import numbers
 import unittest
 
 from test import QiskitMachineLearningTestCase
@@ -22,6 +21,7 @@ import numpy as np
 from sklearn.svm import SVC
 
 from qiskit import BasicAer
+from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.kernels import QuantumKernel
@@ -359,15 +359,15 @@ class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
             _ = qkclass.construct_circuit(self.x, self.z)
 
 
-class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
+class TestQuantumKernelUserParameters(QiskitMachineLearningTestCase):
     """Test QuantumKernel user parameter support"""
 
     def setUp(self):
         super().setUp()
 
-        # Create an arbitrary 2-qubit feature map circuit
-        circ1 = ZZFeatureMap(2)
-        circ2 = ZZFeatureMap(2)
+        # Create an arbitrary 3-qubit feature map circuit
+        circ1 = ZZFeatureMap(3)
+        circ2 = ZZFeatureMap(3)
         user_params = circ2.parameters
         for i, _ in enumerate(user_params):
             user_params[i]._name = f"θ[{i}]"
@@ -386,48 +386,133 @@ class TestQuantumKernelFreeParameters(QiskitMachineLearningTestCase):
             self.assertEqual(qkclass.user_parameters, self.user_parameters)
 
         with self.subTest("test invalid parameter assignment"):
-            # Instantiate a QuantumKernel but do not set the user_parameters field
+            # Instantiate a QuantumKernel
             qkclass = QuantumKernel(
                 feature_map=self.feature_map, user_parameters=self.user_parameters
             )
 
             # Try to set the user parameters using an incorrect number of values
-            user_param_values = [np.pi / 2, np.pi / 4, np.pi / 6]
+            user_param_values = [2.0, 4.0, 6.0, 8.0]
             with self.assertRaises(ValueError):
                 qkclass.assign_user_parameters(user_param_values)
 
-            self.assertEqual(qkclass.get_unbound_parameters(), qkclass.user_parameters)
+            self.assertEqual(qkclass.get_unbound_user_parameters(), qkclass.user_parameters)
 
         with self.subTest("test parameter assignment"):
             # Assign params to some new values, and also test the bind_user_parameters interface
-            user_param_values = [np.pi / 4, np.pi / 2]
-            qkclass.bind_user_parameters(user_param_values)
+            param_binds = {
+                self.user_parameters[0]: 0.1,
+                self.user_parameters[1]: 0.2,
+                self.user_parameters[2]: 0.3,
+            }
+            qkclass.bind_user_parameters(param_binds)
 
-            # Ensure the old values are properly overwritten in the feature map
-            bound_user_param_vals = [
-                val for val in qkclass.user_param_binds.values() if isinstance(val, numbers.Number)
-            ]
-            self.assertEqual(user_param_values, bound_user_param_vals)
-            self.assertEqual(qkclass.get_unbound_parameters(), [])
+            # Ensure the values are properly bound
+            self.assertEqual(list(qkclass.user_param_binds.values()), list(param_binds.values()))
+            self.assertEqual(qkclass.get_unbound_user_parameters(), [])
+            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
 
-        with self.subTest("test unbound feature map"):
-            # Ensure unbound feature map still holds all parameters of input feature map
-            self.assertEqual(len(qkclass.unbound_feature_map.parameters), 4)
+        with self.subTest("test partial parameter assignment"):
+            # Assign params to some new values, and also test the bind_user_parameters interface
+            param_binds = {self.user_parameters[0]: 0.5, self.user_parameters[1]: 0.4}
+            qkclass.bind_user_parameters(param_binds)
 
-        with self.subTest("test consecutive dict binding"):
-            # Unbind parameter values
-            user_param_values = self.user_parameters
-            qkclass.bind_user_parameters(user_param_values)
+            # Ensure values were properly bound and param 2 was unchanged
+            self.assertEqual(list(qkclass.user_param_binds.values()), [0.5, 0.4, 0.3])
+            self.assertEqual(qkclass.get_unbound_user_parameters(), [])
+            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
 
-            binding = {self.user_parameters[0]: np.pi / 3}
-            qkclass.assign_user_parameters(binding)
-            binding = {self.user_parameters[1]: np.pi / 6}
-            qkclass.bind_user_parameters(binding)
+        with self.subTest("test unassign and assign to parameter expression"):
+            param_binds = {
+                self.user_parameters[0]: self.user_parameters[0],
+                self.user_parameters[1]: self.user_parameters[0] + self.user_parameters[2],
+                self.user_parameters[2]: self.user_parameters[2],
+            }
+            qkclass.assign_user_parameters(param_binds)
 
-            bind_vals = [np.pi / 3, np.pi / 6]
-            param_vals = list(qkclass.user_param_binds.values())
+            # Ensure quantum kernel forgets unused param 1 and unbinds param 0 and 2
+            self.assertEqual(
+                list(qkclass.user_param_binds.keys()),
+                [self.user_parameters[0], self.user_parameters[2]],
+            )
+            self.assertEqual(
+                list(qkclass.user_param_binds.keys()), list(qkclass.user_param_binds.values())
+            )
+            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
 
-            self.assertEqual(param_vals, bind_vals)
+        with self.subTest("test immediate reassignment to parameter expression"):
+            # Create a new quantum kernel
+            qkclass = QuantumKernel(
+                feature_map=self.feature_map, user_parameters=self.user_parameters
+            )
+            # Create a new parameter
+            new_param = Parameter("0[n]")
+
+            # Create partial param binds with immediate reassignments to param expressions
+            param_binds = {
+                self.user_parameters[0]: new_param,
+                self.user_parameters[1]: self.user_parameters[0] + self.user_parameters[2],
+            }
+            qkclass.assign_user_parameters(param_binds)
+
+            self.assertEqual(
+                list(qkclass.user_param_binds.keys()),
+                [new_param, self.user_parameters[0], self.user_parameters[2]],
+            )
+            self.assertEqual(
+                list(qkclass.user_param_binds.keys()), list(qkclass.user_param_binds.values())
+            )
+            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
+
+        with self.subTest("test bringing back old parameters"):
+            param_binds = {
+                new_param: self.user_parameters[1] * self.user_parameters[0]
+                + self.user_parameters[2]
+            }
+            qkclass.assign_user_parameters(param_binds)
+            self.assertEqual(
+                list(qkclass.user_param_binds.keys()),
+                [self.user_parameters[0], self.user_parameters[1], self.user_parameters[2]],
+            )
+            self.assertEqual(
+                list(qkclass.user_param_binds.keys()), list(qkclass.user_param_binds.values())
+            )
+            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
+
+        with self.subTest("test assign with immediate reassign"):
+            # Create a new quantum kernel
+            qkclass = QuantumKernel(
+                feature_map=self.feature_map, user_parameters=self.user_parameters
+            )
+            param_binds = {
+                self.user_parameters[0]: 0.9,
+                self.user_parameters[1]: self.user_parameters[0],
+                self.user_parameters[2]: self.user_parameters[1],
+            }
+            qkclass.assign_user_parameters(param_binds)
+            self.assertEqual(
+                list(qkclass.user_param_binds.keys()),
+                [self.user_parameters[0], self.user_parameters[1]],
+            )
+            self.assertEqual(
+                list(qkclass.user_param_binds.values()), [0.9, self.user_parameters[1]]
+            )
+            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
+
+        with self.subTest("test unordered assigns"):
+            # Create a new quantum kernel
+            qkclass = QuantumKernel(
+                feature_map=self.feature_map, user_parameters=self.user_parameters
+            )
+            param_binds = {
+                self.user_parameters[2]: self.user_parameters[1],
+                self.user_parameters[1]: self.user_parameters[0],
+                self.user_parameters[0]: 1.7,
+            }
+            qkclass.assign_user_parameters(param_binds)
+            self.assertEqual(list(qkclass.user_param_binds.keys()), [self.user_parameters[0]])
+            self.assertEqual(list(qkclass.user_param_binds.values()), [1.7])
+            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
 
 
 if __name__ == "__main__":
