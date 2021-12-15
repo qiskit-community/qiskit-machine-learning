@@ -103,7 +103,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9]
         include:
           - os: macos-latest
             python-version: 3.8
@@ -117,7 +117,7 @@ jobs:
       - uses: ./.github/actions/install-main-dependencies
         with:
           os: ${{ matrix.os }}
-        if: ${{ matrix.python-version >= 3.7 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+        if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
       - run: make lint
         shell: bash
@@ -245,10 +245,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: actions/download-artifact@v2
         with:
-          name: ubuntu-latest-3.6
-          path: /tmp/m36
-      - uses: actions/download-artifact@v2
-        with:
           name: ubuntu-latest-3.7
           path: /tmp/m37
       - uses: actions/download-artifact@v2
@@ -272,7 +268,7 @@ jobs:
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/m36/ml.dep /tmp/m37/ml.dep /tmp/m38/ml.dep /tmp/m39/ml.dep /tmp/m38/ml.dep /tmp/w38/ml.dep || true
+          sort -f -u /tmp/m37/ml.dep /tmp/m38/ml.dep /tmp/m39/ml.dep /tmp/m38/ml.dep /tmp/w38/ml.dep || true
         shell: bash
       - name: Coverage combine
         run: coverage3 combine /tmp/m37/ml.dat
