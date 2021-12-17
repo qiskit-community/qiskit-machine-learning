@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Fixed a bug in ``QuantumKernel`` where for statevector simulator
+    all circuits were constructed and transpiled at once, leading to high memory
+    usage. Now the circuits are batched similarly to how it was previously
+    done for non-statevector simulators (same flag is used for both now;
+    previously ``batch_size`` was silently ignored by statevector simulator)

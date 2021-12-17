@@ -1,6 +1,6 @@
 coverage>=4.4.0
 matplotlib>=2.1
-black==21.4b2
+black[jupyter]==21.12b0
 pylint>=2.8.3
 pylatexenc>=1.4
 stestr>=2.0.0

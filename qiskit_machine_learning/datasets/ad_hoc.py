@@ -57,15 +57,15 @@ def ad_hoc_data(
     # sy = np.array([[0, -1j], [1j, 0]])
     # Y = np.asmatrix(sy)
     s_z = np.array([[1, 0], [0, -1]])
-    z_m = np.asmatrix(s_z)
+    z_m = np.asarray(s_z)
     j_m = np.array([[1, 0], [0, 1]])
-    j_m = np.asmatrix(j_m)
+    j_m = np.asarray(j_m)
     h_m = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
     h_2 = np.kron(h_m, h_m)
     h_3 = np.kron(h_m, h_2)
-    h_m = np.asmatrix(h_m)
-    h_2 = np.asmatrix(h_2)
-    h_3 = np.asmatrix(h_3)
+    h_m = np.asarray(h_m)
+    h_2 = np.asarray(h_2)
+    h_3 = np.asarray(h_3)
 
     f_a = np.arange(2 ** n)
 
@@ -92,7 +92,7 @@ def ad_hoc_data(
     basis = algorithm_globals.random.random(
         (2 ** n, 2 ** n)
     ) + 1j * algorithm_globals.random.random((2 ** n, 2 ** n))
-    basis = np.asmatrix(basis).getH() * np.asmatrix(basis)
+    basis = np.asarray(basis).conj().T @ np.asarray(basis)
 
     [s_a, u_a] = np.linalg.eig(basis)
 
@@ -100,12 +100,12 @@ def ad_hoc_data(
     s_a = s_a[idx]
     u_a = u_a[:, idx]
 
-    m_m = (np.asmatrix(u_a)).getH() * np.asmatrix(d_m) * np.asmatrix(u_a)
+    m_m = (np.asarray(u_a)).conj().T @ np.asarray(d_m) @ np.asarray(u_a)
 
     psi_plus = np.transpose(np.ones(2)) / np.sqrt(2)
-    psi_0 = 1
+    psi_0 = [[1]]
     for k in range(n):
-        psi_0 = np.kron(np.asmatrix(psi_0), np.asmatrix(psi_plus))
+        psi_0 = np.kron(np.asarray(psi_0), np.asarray(psi_plus))
 
     sample_total_a = []
     sample_total_b = []
@@ -121,8 +121,8 @@ def ad_hoc_data(
                     + (np.pi - x_1) * (np.pi - x_2) * np.kron(z_m, z_m)
                 )
                 u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
-                psi = np.asmatrix(u_u) * h_2 * np.asmatrix(u_u) * np.transpose(psi_0)
-                temp = np.real(psi.getH() * m_m * psi).item()
+                psi = np.asarray(u_u) @ h_2 @ np.asarray(u_u) @ np.transpose(psi_0)
+                temp = np.real(psi.conj().T @ m_m @ psi).item()
                 if temp > gap:
                     sample_total[n_1][n_2] = +1
                 elif temp < -gap:
@@ -201,8 +201,8 @@ def ad_hoc_data(
                         + (np.pi - x_1) * (np.pi - x_3) * np.kron(np.kron(z_m, j_m), z_m)
                     )
                     u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
-                    psi = np.asmatrix(u_u) * h_3 * np.asmatrix(u_u) * np.transpose(psi_0)
-                    temp = np.real(psi.getH() * m_m * psi).item()
+                    psi = np.asarray(u_u) * h_3 * np.asarray(u_u) * np.transpose(psi_0)
+                    temp = np.real(psi.conj().T * m_m * psi).item()
                     if temp > gap:
                         sample_total[n_1][n_2][n_3] = +1
                         sample_total_a.append([n_1, n_2, n_3])

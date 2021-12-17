@@ -64,6 +64,7 @@ except ImportError:
 class TorchConnector(Module):
     """Connects a Qiskit (Quantum) Neural Network to PyTorch."""
 
+    # pylint: disable=abstract-method
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
         @staticmethod

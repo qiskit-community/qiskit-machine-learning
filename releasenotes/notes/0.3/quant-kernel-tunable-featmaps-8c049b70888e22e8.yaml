@@ -1,0 +1,8 @@
+---
+features:
+  - | 
+    ``QuantumKernel`` now provides an interface for users to specify a new class field, ``user_parameters``.
+    User parameters are an array of ``Parameter`` objects corresponding to parameterized quantum gates in the feature
+    map circuit the user wishes to tune. This is useful in algorithms where feature map parameters must be bound and
+    re-bound many times (i.e. variational algorithms). Users may also use a new function ``assign_user_parameters``
+    to assign real values to some or all of the user parameters in the feature map.

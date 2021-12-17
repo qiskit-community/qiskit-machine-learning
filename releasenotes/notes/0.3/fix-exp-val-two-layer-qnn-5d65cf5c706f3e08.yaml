@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    ``TwoLayerQNN`` now passes the value of the ``exp_val`` parameter in the constructor to
+    the constructor of ``OpflowNN`` which ``TwoLayerQNN`` inherits from.
