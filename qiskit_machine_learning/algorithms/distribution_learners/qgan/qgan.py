@@ -109,9 +109,9 @@ class QGAN:
         if bounds is None:
             bounds_min = np.percentile(self._data, 5, axis=0)
             bounds_max = np.percentile(self._data, 95, axis=0)
-            bounds = []  # type: ignore
+            bounds = []
             for i, _ in enumerate(bounds_min):
-                bounds.append([bounds_min[i], bounds_max[i]])  # type: ignore
+                bounds.append([bounds_min[i], bounds_max[i]])
         if np.ndim(data) > 1:
             if len(bounds) != (len(num_qubits) or len(data[0])):
                 raise QiskitMachineLearningError(
