@@ -495,7 +495,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                     else:
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
-                        key = (row, *key, grad_index)  # type: ignore
+                        key = (row, *key, grad_index)
 
                     # store value for inputs or weights gradients
                     if self._input_gradients:
