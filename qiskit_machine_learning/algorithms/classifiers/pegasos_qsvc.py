@@ -250,24 +250,27 @@ class PegasosQSVC(SVC):
             Weighted sum of kernel evaluations employed in the Pegasos algorithm
         """
         # non-zero indices corresponding to the support vectors
-        support_vectors = list(self._alphas.keys())
+        support_indices = list(self._alphas.keys())
 
         # for training
         if training:
-            x = X[support_vectors]
+            # support vectors
+            x_supp = X[support_indices]
         # for prediction
         else:
-            x = self._x_train[support_vectors]
+            x_supp = self._x_train[support_indices]
         if not self._precomputed:
             # evaluate kernel function only for the fixed datum and the support vectors
-            kernel = self._quantum_kernel.evaluate(X[index], x) + self._kernel_offset
+            kernel = self._quantum_kernel.evaluate(X[index], x_supp) + self._kernel_offset
         else:
-            kernel = X[index, support_vectors]
+            kernel = X[index, support_indices]
 
-        y = np.array(list(map(self._label_map.get, self._y_train[support_vectors])))
-        a = np.array(list(self._alphas.values()))
+        # map the training labels of the support vectors to {-1,1}
+        y = np.array(list(map(self._label_map.get, self._y_train[support_indices])))
+        # weights for the support vectors
+        alphas = np.array(list(self._alphas.values()))
         # this value corresponds to a sum of kernel values weighted by their labels and alphas
-        value = np.sum(a * y * kernel)
+        value = np.sum(alphas * y * kernel)
 
         return value
 
