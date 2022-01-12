@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,7 +12,7 @@
 
 """ Check copyright year """
 
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 import sys
 import os
 import datetime
@@ -29,6 +29,8 @@ class CopyrightChecker:
 
     def __init__(self, root_dir: str) -> None:
         self._root_dir = root_dir
+        self._current_year = datetime.datetime.now().year
+        self._changed_files = self._get_changed_files()
 
     @staticmethod
     def _exception_to_string(excp: Exception) -> str:
@@ -43,16 +45,8 @@ class CopyrightChecker:
 
         return int(date[:4])
 
-    @staticmethod
-    def _format_output(out: bytes, err: bytes) -> Tuple[int, Union[None, str]]:
-        out_str = out.decode("utf-8").strip()
-        err_str = err.decode("utf-8").strip()
-        err_str = err_str if err_str else None
-        year = CopyrightChecker._get_year_from_date(out_str)
-        return year, err_str
-
-    def _process_file_last_year(self, relative_path: str) -> Tuple[int, Union[None, str]]:
-        # construct minimal environment
+    def _cmd_execute(self, args: List[str]) -> Tuple[str, Union[None, str]]:
+        # execute command
         env = {}
         for k in ["SYSTEMROOT", "PATH"]:
             v = os.environ.get(k)
@@ -63,7 +57,7 @@ class CopyrightChecker:
         env["LANG"] = "C"
         env["LC_ALL"] = "C"
         with subprocess.Popen(
-            ["git", "log", "-1", "--format=%aI", relative_path],
+            args,
             cwd=self._root_dir,
             env=env,
             stdin=subprocess.DEVNULL,
@@ -72,15 +66,28 @@ class CopyrightChecker:
         ) as popen:
             out, err = popen.communicate()
             popen.wait()
-            return CopyrightChecker._format_output(out, err)
+            out_str = out.decode("utf-8").strip()
+            err_str = err.decode("utf-8").strip()
+            err_str = err_str if err_str else None
+            return out_str, err_str
+
+    def _get_changed_files(self) -> List[str]:
+        out_str, err_str = self._cmd_execute(["git", "diff", "--name-only", "HEAD"])
+        if err_str:
+            raise Exception(err_str)
+
+        return out_str.splitlines()
 
     def _get_file_last_year(self, relative_path: str) -> int:
         last_year = None
         errors = []
         try:
-            last_year, err = self._process_file_last_year(relative_path)
-            if err:
-                errors.append(err)
+            out_str, err_str = self._cmd_execute(
+                ["git", "log", "-1", "--format=%cI", relative_path]
+            )
+            last_year = CopyrightChecker._get_year_from_date(out_str)
+            if err_str:
+                errors.append(err_str)
         except Exception as ex:  # pylint: disable=broad-except
             errors.append(f"'{relative_path}' Last year: {str(ex)}")
 
@@ -91,7 +98,6 @@ class CopyrightChecker:
 
     def check_copyright(self, file_path) -> Tuple[bool, bool, bool]:
         """check copyright for a file"""
-        now = datetime.datetime.now()
         file_with_utf8 = False
         file_with_invalid_year = False
         file_has_header = False
@@ -124,13 +130,17 @@ class CopyrightChecker:
                     elif len(curr_years) == 1:
                         header_start_year = header_last_year = curr_years[0]
 
-                    last_year = self._get_file_last_year(relative_path)
+                    if relative_path in self._changed_files:
+                        self._changed_files.remove(relative_path)
+                        last_year = self._current_year
+                    else:
+                        last_year = self._get_file_last_year(relative_path)
                     if last_year and header_last_year != last_year:
                         new_line = "# (C) Copyright IBM "
                         if header_start_year and header_start_year != last_year:
                             new_line += f"{header_start_year}, "
 
-                        new_line += f"{now.year}.\n"
+                        new_line += f"{self._current_year}.\n"
                         print(
                             f"Wrong Copyright Year:'{relative_path}': ",
                             f"Current:'{line[:-1]}' Correct:'{new_line[:-1]}'",
