@@ -18,12 +18,24 @@ from qiskit.exceptions import MissingOptionalLibraryError
 import numpy as np
 from ddt import ddt, data
 
-from qiskit_machine_learning.utils.loss_functions import L1Loss, L2Loss
+from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss, L1Loss, L2Loss
 
 
 @ddt
 class TestLossFunctions(QiskitMachineLearningTestCase):
     """Tests of loss functions."""
+
+    @data(
+        # predict, target, expected_loss
+        (np.array([.5, .5]), np.array([1., 0.]), 1.),
+        (np.array([.9999999, .0000001]), np.array([1., 0.]), 0.),
+        (np.array([1., 0.]), np.array([1., 0.]), 0.),
+    )
+    def test_cross_entropy_loss(self, config):
+        predict, target, expected_loss = config
+        loss_fn = CrossEntropyLoss()
+        loss = loss_fn.evaluate(predict, target)
+        assert np.allclose(loss, expected_loss, atol=1e-5)
 
     @data(
         # input shape, loss shape

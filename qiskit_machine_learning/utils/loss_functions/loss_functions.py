@@ -155,8 +155,8 @@ class CrossEntropyLoss(Loss):
         # multiply target and log(predict) matrices row by row and sum up each row
         # into a single float, so the output is of shape(N,), where N number or samples.
         # then reshape
-        val = -np.einsum("ij,ij->i", target, np.log2(predict)).reshape(-1, 1)
 
+        val = -np.einsum("ij,ij->i", target, np.log2(predict + 1e-10)).reshape(-1, 1)
         return val
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
