@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -27,11 +27,14 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
 
     @data(
         # predict, target, expected_loss
-        (np.array([.5, .5]), np.array([1., 0.]), 1.),
-        (np.array([.9999999, .0000001]), np.array([1., 0.]), 0.),
-        (np.array([1., 0.]), np.array([1., 0.]), 0.),
+        (np.array([0.5, 0.5]), np.array([1.0, 0.0]), 1.0),
+        (np.array([1.0, 0.0]), np.array([1.0, 0.0]), 0.0),
     )
     def test_cross_entropy_loss(self, config):
+        """
+        Tests that CrossEntropyLoss returns the correct value, and no nans when one of the
+        probabilities is zero.
+        """
         predict, target, expected_loss = config
         loss_fn = CrossEntropyLoss()
         loss = loss_fn.evaluate(predict, target)

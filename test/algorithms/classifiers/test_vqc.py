@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -48,13 +48,13 @@ class TestVQC(QiskitMachineLearningTestCase):
         )
 
     @data(
-    # optimizer, quantum instance
-    ("cobyla", "statevector"),
-    ("cobyla", "qasm"),
-    ("bfgs", "statevector"),
-    ("bfgs", "qasm"),
-    (None, "statevector"),
-    (None, "qasm"),
+        # optimizer, quantum instance
+        ("cobyla", "statevector"),
+        ("cobyla", "qasm"),
+        ("bfgs", "statevector"),
+        ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
     )
     def test_multiclass(self, config):
         opt, q_i = config
@@ -93,7 +93,9 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         X = algorithm_globals.random.random((num_samples, num_inputs))
         X = X[X.sum(1).argsort()]
-        y_indices = np.digitize(np.arange(0, 1, 1/num_samples), np.arange(0, 1, 1/num_classes)) - 1
+        y_indices = (
+            np.digitize(np.arange(0, 1, 1 / num_samples), np.arange(0, 1, 1 / num_classes)) - 1
+        )
         permutation = np.random.permutation(np.arange(num_samples))
         X = X[permutation]
         y_indices = y_indices[permutation]

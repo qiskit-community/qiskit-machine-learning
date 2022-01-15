@@ -1,0 +1,14 @@
+---
+fixes:
+  - |
+    Fixes an issue where `VQC` could not be trained on multiclass datasets.
+    It returned `nan` values on some iterations. This is fixed in 2 ways.
+    First, the default parity function is now guaranteed to be able to assign
+    at least one output bitstring to each class, so long as `2**N >= C` where `N`
+    is the number of output qubits and `C` is the number of classes. This
+    guarantees that it is at least possible for every class to be predicted with a
+    non-zero probability. Second, even with this change it is still possible
+    that on a given training instance a class is predicted with 0 probability.
+    Previously this could lead to `nan` in the `CrossEntropyLoss` calculation.
+    We now replace 0 probabilities with a small positive value to ensure the
+    loss cannot return `nan`.
