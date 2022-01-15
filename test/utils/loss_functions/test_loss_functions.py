@@ -32,7 +32,7 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
     )
     def test_cross_entropy_loss(self, config):
         """
-        Tests that CrossEntropyLoss returns the correct value, and no nans when one of the
+        Tests that CrossEntropyLoss returns the correct value, and no `nan` when one of the
         probabilities is zero.
         """
         predict, target, expected_loss = config

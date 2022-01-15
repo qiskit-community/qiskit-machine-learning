@@ -156,7 +156,7 @@ class CrossEntropyLoss(Loss):
         # into a single float, so the output is of shape(N,), where N number or samples.
         # then reshape
         # before taking the log we clip the predicted probabilities at a small positive number. This
-        # ensures that in cases where a class is predicted to have 0 probability we don't get nans.
+        # ensures that in cases where a class is predicted to have 0 probability we don't get `nan`.
         val = -np.einsum(
             "ij,ij->i", target, np.log2(np.clip(predict, a_min=1e-10, a_max=None))
         ).reshape(-1, 1)
