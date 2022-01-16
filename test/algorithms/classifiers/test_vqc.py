@@ -56,69 +56,6 @@ class TestVQC(QiskitMachineLearningTestCase):
         (None, "statevector"),
         (None, "qasm"),
     )
-    def test_multiclass(self, config):
-        opt, q_i = config
-
-        if q_i == "statevector":
-            quantum_instance = self.sv_quantum_instance
-        else:
-            quantum_instance = self.qasm_quantum_instance
-
-        if opt == "bfgs":
-            optimizer = L_BFGS_B(maxiter=5)
-        elif opt == "cobyla":
-            optimizer = COBYLA(maxiter=25)
-        else:
-            optimizer = None
-
-        num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, reps=1)
-        # fix the initial point
-        initial_point = np.array([0.5] * ansatz.num_parameters)
-
-        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = VQC(
-            feature_map=feature_map,
-            ansatz=ansatz,
-            optimizer=optimizer,
-            quantum_instance=quantum_instance,
-            initial_point=initial_point,
-        )
-
-        # construct data
-        num_samples = 5
-        num_classes = 5
-        # pylint: disable=invalid-name
-
-        X = algorithm_globals.random.random((num_samples, num_inputs))
-        X = X[X.sum(1).argsort()]
-        y_indices = (
-            np.digitize(np.arange(0, 1, 1 / num_samples), np.arange(0, 1, 1 / num_classes)) - 1
-        )
-        permutation = np.random.permutation(np.arange(num_samples))
-        X = X[permutation]
-        y_indices = y_indices[permutation]
-        y = np.zeros((num_samples, num_classes))
-        for e, index in enumerate(y_indices):
-            y[e, index] = 1
-
-        # fit to data
-        classifier.fit(X, y)
-
-        # score
-        score = classifier.score(X, y)
-        self.assertGreater(score, 1 / num_classes)
-
-    @data(
-        # optimizer, quantum instance
-        ("cobyla", "statevector"),
-        ("cobyla", "qasm"),
-        ("bfgs", "statevector"),
-        ("bfgs", "qasm"),
-        (None, "statevector"),
-        (None, "qasm"),
-    )
     def test_vqc(self, config):
         """Test VQC."""
 
@@ -216,6 +153,70 @@ class TestVQC(QiskitMachineLearningTestCase):
         # score
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
+
+    @data(
+        # optimizer, quantum instance
+        ("cobyla", "statevector"),
+        ("cobyla", "qasm"),
+        ("bfgs", "statevector"),
+        ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
+    )
+    def test_multiclass(self, config):
+        """Test multiclass VQC."""
+        opt, q_i = config
+
+        if q_i == "statevector":
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        if opt == "bfgs":
+            optimizer = L_BFGS_B(maxiter=5)
+        elif opt == "cobyla":
+            optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
+
+        num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
+        # fix the initial point
+        initial_point = np.array([0.5] * ansatz.num_parameters)
+
+        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
+        classifier = VQC(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            quantum_instance=quantum_instance,
+            initial_point=initial_point,
+        )
+
+        # construct data
+        num_samples = 5
+        num_classes = 5
+        # pylint: disable=invalid-name
+
+        X = algorithm_globals.random.random((num_samples, num_inputs))
+        X = X[X.sum(1).argsort()]
+        y_indices = (
+            np.digitize(np.arange(0, 1, 1 / num_samples), np.arange(0, 1, 1 / num_classes)) - 1
+        )
+        permutation = np.random.permutation(np.arange(num_samples))
+        X = X[permutation]
+        y_indices = y_indices[permutation]
+        y = np.zeros((num_samples, num_classes))
+        for e, index in enumerate(y_indices):
+            y[e, index] = 1
+
+        # fit to data
+        classifier.fit(X, y)
+
+        # score
+        score = classifier.score(X, y)
+        self.assertGreater(score, 1 / num_classes)
 
 
 if __name__ == "__main__":
