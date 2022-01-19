@@ -199,14 +199,26 @@ class TestVQC(QiskitMachineLearningTestCase):
         num_classes = 5
         # pylint: disable=invalid-name
 
+        # We create a dataset that is random, but has some training signal, as follows:
+        # First, we create a random feature matrix X, but sort it by the row-wise sum in ascending
+        # order.
         X = algorithm_globals.random.random((num_samples, num_inputs))
         X = X[X.sum(1).argsort()]
+
+        # Next we create an array which contains all class labels, multiple times if num_samples <
+        # num_classes, and in ascending order (e.g. [0, 0, 1, 1, 2]). So now we have a dataset
+        # where the row-sum of X is correlated with the class label (i.e. smaller row-sum is more
+        # likely to belong to class 0, and big row-sum is more likely to belong to class >0)
         y_indices = (
             np.digitize(np.arange(0, 1, 1 / num_samples), np.arange(0, 1, 1 / num_classes)) - 1
         )
+
+        # Third, we random shuffle both X and y_indices
         permutation = np.random.permutation(np.arange(num_samples))
         X = X[permutation]
         y_indices = y_indices[permutation]
+
+        # Lastly we create a 1-hot label matrix y
         y = np.zeros((num_samples, num_classes))
         for e, index in enumerate(y_indices):
             y[e, index] = 1
