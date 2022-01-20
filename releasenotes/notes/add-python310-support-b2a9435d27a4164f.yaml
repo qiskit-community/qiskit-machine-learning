@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Added support for running with Python 3.10. 
+    At the the time of the release, Torch didn't have a python 3.10 version.
