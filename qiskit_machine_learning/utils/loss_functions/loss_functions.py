@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -155,8 +155,11 @@ class CrossEntropyLoss(Loss):
         # multiply target and log(predict) matrices row by row and sum up each row
         # into a single float, so the output is of shape(N,), where N number or samples.
         # then reshape
-        val = -np.einsum("ij,ij->i", target, np.log2(predict)).reshape(-1, 1)
-
+        # before taking the log we clip the predicted probabilities at a small positive number. This
+        # ensures that in cases where a class is predicted to have 0 probability we don't get `nan`.
+        val = -np.einsum(
+            "ij,ij->i", target, np.log2(np.clip(predict, a_min=1e-10, a_max=None))
+        ).reshape(-1, 1)
         return val
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:

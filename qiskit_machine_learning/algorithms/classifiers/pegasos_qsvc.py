@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@
 
 import logging
 from datetime import datetime
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict
 
 import numpy as np
 from qiskit.utils import algorithm_globals
@@ -249,38 +249,28 @@ class PegasosQSVC(SVC):
         Returns:
             Weighted sum of kernel evaluations employed in the Pegasos algorithm
         """
-        kernel: Dict[Tuple, np.ndarray] = {}
+        # non-zero indices corresponding to the support vectors
+        support_indices = list(self._alphas.keys())
+
+        # for training
+        if training:
+            # support vectors
+            x_supp = X[support_indices]
+        # for prediction
+        else:
+            x_supp = self._x_train[support_indices]
+        if not self._precomputed:
+            # evaluate kernel function only for the fixed datum and the support vectors
+            kernel = self._quantum_kernel.evaluate(X[index], x_supp) + self._kernel_offset
+        else:
+            kernel = X[index, support_indices]
+
+        # map the training labels of the support vectors to {-1,1}
+        y = np.array(list(map(self._label_map.get, self._y_train[support_indices])))
+        # weights for the support vectors
+        alphas = np.array(list(self._alphas.values()))
         # this value corresponds to a sum of kernel values weighted by their labels and alphas
-        value = 0.0
-        # only loop over the non zero alphas (preliminary support vectors)
-        for j in self._alphas:
-            # perform the kernel evaluations on the fly, as intended
-            if not self._precomputed:
-                # for training
-                if training:
-                    x_j = X[j]
-                # for prediction
-                else:
-                    x_j = self._x_train[j]
-
-                # evaluate kernel function only for the fixed datum and the data with non zero alpha
-                kernel[(index, j)] = kernel.get(
-                    (index, j), self._quantum_kernel.evaluate(X[index], x_j)
-                )
-                kernel_value = kernel[(index, j)]
-
-            # consider a precomputed kernel
-            else:
-                kernel_value = X[index, j]
-
-            value += (
-                # alpha weights the contribution of the associated datum
-                self._alphas[j]
-                # the class membership labels have to be in {-1, +1}
-                * self._label_map[self._y_train[j]]
-                # the offset to the kernel function leads to an implicit bias term
-                * (kernel_value + self._kernel_offset)
-            )
+        value = np.sum(alphas * y * kernel)
 
         return value
 
