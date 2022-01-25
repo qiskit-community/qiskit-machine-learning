@@ -52,6 +52,16 @@ Algorithms for data classification.
    NeuralNetworkClassifier
    VQC
 
+Clusterers
+++++++++++
+Algorithms for data clustering.
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QKMeans
+
 Regressors
 ++++++++++
 Quantum Support Vector Regressor.
@@ -88,6 +98,7 @@ from .objective_functions import (
     OneHotObjectiveFunction,
 )
 from .classifiers import QSVC, PegasosQSVC, VQC, NeuralNetworkClassifier
+from .clusterers import QKMeans
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
 from .distribution_learners import (
     DiscriminativeNetwork,
@@ -117,4 +128,5 @@ __all__ = [
     "PyTorchDiscriminator",
     "QuantumGenerator",
     "QGAN",
+    "QKMeans",
 ]
