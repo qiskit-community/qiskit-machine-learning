@@ -109,9 +109,9 @@ jobs:
             python-version: 3.8
           - os: macos-latest
             python-version: '3.10'
-          - os: windows-latest
+          - os: windows-2019
             python-version: 3.8
-          - os: windows-latest
+          - os: windows-2019
             python-version: '3.10'
     steps:
       - uses: actions/checkout@v2
@@ -273,11 +273,11 @@ jobs:
           path: /tmp/m310
       - uses: actions/download-artifact@v2
         with:
-          name: windows-latest-3.8
+          name: windows-2019-3.8
           path: /tmp/w38
       - uses: actions/download-artifact@v2
         with:
-          name: windows-latest-3.10
+          name: windows-2019-3.10
           path: /tmp/w310
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
