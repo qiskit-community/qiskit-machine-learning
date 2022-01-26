@@ -28,7 +28,7 @@ runs:
           sudo apt-get -y install libspdlog-dev
           sudo apt-get -y install libmuparserx-dev
         fi
-        if [ "${{ inputs.os }}" == "windows-latest" ]; then
+        if [ "${{ inputs.os }}" == "windows-2019" ]; then
           git clone https://github.com/Qiskit/qiskit-aer.git /tmp/qiskit-aer
           pushd /tmp/qiskit-aer
           python setup.py bdist_wheel -- -G 'Visual Studio 16 2019'
