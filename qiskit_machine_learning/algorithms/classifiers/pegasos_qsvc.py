@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -273,7 +273,7 @@ class PegasosQSVC(SVC):
             else:
                 kernel_value = X[index, j]
 
-            value += (
+            value += (  # type: ignore
                 # alpha weights the contribution of the associated datum
                 self._alphas[j]
                 # the class membership labels have to be in {-1, +1}
