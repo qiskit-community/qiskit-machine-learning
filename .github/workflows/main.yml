@@ -184,6 +184,15 @@ jobs:
           os: ${{ matrix.os }}
         if: ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
       - uses: ./.github/actions/install-machine-learning
+      - name: Install Finance
+        run: |
+          if ${{ !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }} ; then
+            pip install git+https://github.com/Qiskit/qiskit-optimization
+            pip install git+https://github.com/Qiskit/qiskit-finance
+          else
+            pip install qiskit-finance
+          fi
+        shell: bash
       - name: Install Dependencies
         run: |
           pip install jupyter sphinx_rtd_theme qiskit-terra[visualization] 'torchvision<0.10.0'
@@ -228,14 +237,14 @@ jobs:
           cd docs/_build/html
           mkdir artifacts
           tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
-        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
         shell: bash
       - name: Run upload stable tutorials
         uses: actions/upload-artifact@v2
         with:
           name: tutorials-stable${{ matrix.python-version }}
           path: docs/_build/html/artifacts/tutorials.tar.gz
-        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
   Deprecation_Messages_and_Coverage:
     needs: [Checks, MachineLearning, Tutorials]
     runs-on: ubuntu-latest

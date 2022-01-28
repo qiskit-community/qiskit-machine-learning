@@ -32,6 +32,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
+          pip install qiskit-finance
           pip install jupyter sphinx_rtd_theme qiskit-terra[visualization] 'torchvision<0.10.0'
           sudo apt-get install -y pandoc graphviz
         shell: bash
