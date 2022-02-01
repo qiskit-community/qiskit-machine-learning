@@ -208,7 +208,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                         "determined as 2^num_qubits."
                     )
 
-                output_shape_ = (2 ** self._circuit.num_qubits,)
+                output_shape_ = (2**self._circuit.num_qubits,)
 
         # final validation
         output_shape_ = self._validate_output_shape(output_shape_)
@@ -250,8 +250,10 @@ class CircuitQNN(SamplingNeuralNetwork):
         measurements or not depending on the type of backend used.
         """
         self._set_quantum_instance(
-            quantum_instance, self._original_output_shape, self._original_interpret,
-            self._cache_transpilation
+            quantum_instance,
+            self._original_output_shape,
+            self._original_interpret,
+            self._cache_transpilation,
         )
 
     def _set_quantum_instance(
