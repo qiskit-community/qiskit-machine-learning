@@ -62,11 +62,16 @@ class CircuitQNN(SamplingNeuralNetwork):
         gradient: Gradient = None,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
         input_gradients: bool = False,
-        cache_transpilation: bool = True,
     ) -> None:
         """
         Args:
             circuit: The parametrized quantum circuit that generates the samples of this network.
+                There will be an attempt to transpile this circuit and cache the transpiled circuit
+                for subsequent usages by the network. If for some reasons the circuit can't be
+                transpiled, e.g. it originates from
+                :class:`~qiskit_machine_learning.circuit.library.RawFeatureVector`, the circuit
+                will be transpiled every time it is required to be executed and only when all
+                parameters are bound. This may impact overall performance on the network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
             sparse: Returns whether the output is sparse or not.
@@ -94,12 +99,6 @@ class CircuitQNN(SamplingNeuralNetwork):
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
-            cache_transpilation: If set to True, there will be an attempt to transpile this circuit
-                and cache the transpiled circuit for subsequent usages by the network. If set to
-                False or if for some reasons the circuit can't be transpiled (e.g. it originates
-                from :class:`~qiskit_machine_learning.circuit.library.RawFeatureVector`) the circuit
-                will be transpiled every time it is required to be executed and only when all
-                parameters are bound. This may impact overall performance on the network.
         Raises:
             QiskitMachineLearningError: if ``interpret`` is passed without ``output_shape``.
 
@@ -120,14 +119,13 @@ class CircuitQNN(SamplingNeuralNetwork):
         # next line is required by pylint only
         self._interpret = interpret
         self._original_interpret = interpret
-        self._cache_transpilation = cache_transpilation
 
         # we need this property in _set_quantum_instance despite it is initialized
         # in the super class later on, review of SamplingNN is required.
         self._sampling = sampling
 
         # set quantum instance and derive target output_shape and interpret
-        self._set_quantum_instance(quantum_instance, output_shape, interpret, cache_transpilation)
+        self._set_quantum_instance(quantum_instance, output_shape, interpret)
 
         # init super class
         super().__init__(
@@ -208,7 +206,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                         "determined as 2^num_qubits."
                     )
 
-                output_shape_ = (2**self._circuit.num_qubits,)
+                output_shape_ = (2 ** self._circuit.num_qubits,)
 
         # final validation
         output_shape_ = self._validate_output_shape(output_shape_)
@@ -250,10 +248,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         measurements or not depending on the type of backend used.
         """
         self._set_quantum_instance(
-            quantum_instance,
-            self._original_output_shape,
-            self._original_interpret,
-            self._cache_transpilation,
+            quantum_instance, self._original_output_shape, self._original_interpret
         )
 
     def _set_quantum_instance(
@@ -261,7 +256,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]],
         output_shape: Union[int, Tuple[int, ...]],
         interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]],
-        cache_transpilation: bool,
     ) -> None:
         """
         Internal method to set a quantum instance and compute/initialize internal properties such
@@ -272,7 +266,6 @@ class CircuitQNN(SamplingNeuralNetwork):
             output_shape: An output shape of the custom interpretation.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers.
-            cache_transpilation: Whether to store transpiled circuit.
         """
         if isinstance(quantum_instance, (BaseBackend, Backend)):
             quantum_instance = QuantumInstance(quantum_instance)
@@ -293,15 +286,12 @@ class CircuitQNN(SamplingNeuralNetwork):
             self._sampler = CircuitSampler(self._quantum_instance, param_qobj=False, caching="all")
 
             # transpile the QNN circuit
-            if cache_transpilation:
-                try:
-                    self._circuit = self._quantum_instance.transpile(self._circuit)[0]
-                    self._circuit_transpiled = True
-                except QiskitError:
-                    # likely it is caused by RawFeatureVector, we just ignore this error and
-                    # transpile circuits when it is required.
-                    self._circuit_transpiled = False
-            else:
+            try:
+                self._circuit = self._quantum_instance.transpile(self._circuit)[0]
+                self._circuit_transpiled = True
+            except QiskitError:
+                # likely it is caused by RawFeatureVector, we just ignore this error and
+                # transpile circuits when it is required.
                 self._circuit_transpiled = False
         else:
             self._output_shape = output_shape
@@ -369,6 +359,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
+        if self._quantum_instance.bound_pass_manager:
+            circuits = self._quantum_instance(circuits, self._quantum_instance.bound_pass_manager)
+
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # set the memory setting back
         self._quantum_instance.backend_options["memory"] = orig_memory
@@ -402,6 +395,9 @@ class CircuitQNN(SamplingNeuralNetwork):
                 {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
             )
             circuits.append(self._circuit.bind_parameters(param_values))
+
+        if self._quantum_instance.bound_pass_manager:
+            circuits = self._quantum_instance(circuits, self._quantum_instance.bound_pass_manager)
 
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # initialize probabilities

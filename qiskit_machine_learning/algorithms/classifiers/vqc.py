@@ -40,7 +40,6 @@ class VQC(NeuralNetworkClassifier):
         quantum_instance: QuantumInstance = None,
         initial_point: np.ndarray = None,
         callback: Optional[Callable[[np.ndarray, float], None]] = None,
-        cache_transpilation: bool = True,
     ) -> None:
         """
         Args:
@@ -118,7 +117,6 @@ class VQC(NeuralNetworkClassifier):
             output_shape=2,
             quantum_instance=quantum_instance,
             input_gradients=False,
-            cache_transpilation=cache_transpilation,
         )
 
         super().__init__(
