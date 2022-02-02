@@ -360,7 +360,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             circuits.append(self._circuit.bind_parameters(param_values))
 
         if self._quantum_instance.bound_pass_manager:
-            circuits = self._quantum_instance(circuits, self._quantum_instance.bound_pass_manager)
+            circuits = self._quantum_instance.transpile(
+                circuits, pass_manager=self._quantum_instance.bound_pass_manager
+            )
 
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # set the memory setting back
@@ -397,7 +399,9 @@ class CircuitQNN(SamplingNeuralNetwork):
             circuits.append(self._circuit.bind_parameters(param_values))
 
         if self._quantum_instance.bound_pass_manager:
-            circuits = self._quantum_instance(circuits, self._quantum_instance.bound_pass_manager)
+            circuits = self._quantum_instance.transpile(
+                circuits, pass_manager=self._quantum_instance.bound_pass_manager
+            )
 
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # initialize probabilities
