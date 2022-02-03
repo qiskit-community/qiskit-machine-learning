@@ -16,9 +16,12 @@ bool
 boolean
 cargs
 cbit
+centroid
+centroids
 chuang
 clbit
 clbits
+clusterers
 codec
 config
 contravariance
@@ -35,6 +38,7 @@ dataloader
 datapoints
 dataset
 datasets
+dawid
 deepcopy
 diag
 dicts
@@ -51,6 +55,7 @@ et
 eval
 func
 formatter
+frobenius
 gaussian
 getter
 hamiltonian
@@ -70,6 +75,7 @@ iterable
 iteratively
 jupyter
 kernelized
+kopczyk
 kwarg
 kwargs
 langle
@@ -176,6 +182,7 @@ tensored
 th
 toctree
 todo
+tol
 traceback
 transpilation
 transpile

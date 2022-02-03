@@ -46,7 +46,7 @@ def _swap_test(psi: QuantumCircuit, phi: QuantumCircuit) -> QuantumCircuit:
     cq_measure = ClassicalRegister(1)
     qc = QuantumCircuit(2 * len(psi.qubits), name="SwapTest")
     qc.compose(psi, qubits=qc.qubits[: len(psi.qubits)], inplace=True)
-    qc.compose(phi, qubits=qc.qubits[len(psi.qubits):], inplace=True)
+    qc.compose(phi, qubits=qc.qubits[len(psi.qubits) :], inplace=True)
     qc.add_register(control_qubit, cq_measure)
     qc.barrier()
     qc.h(control_qubit)
@@ -73,13 +73,13 @@ class QKMeans(ClusterMixin):
     """
 
     def __init__(
-            self,
-            n_clusters: int = 3,
-            init: Union[str, np.ndarray, Callable] = "k-means++",
-            max_iter: Optional[int] = 100,
-            tol: float = 1e-4,
-            verbose: bool = False,
-            quantum_instance: QuantumInstance = None,
+        self,
+        n_clusters: int = 3,
+        init: Union[str, np.ndarray, Callable] = "k-means++",
+        max_iter: Optional[int] = 100,
+        tol: float = 1e-4,
+        verbose: bool = False,
+        quantum_instance: QuantumInstance = None,
     ) -> None:
         """
         Args:
@@ -140,9 +140,9 @@ class QKMeans(ClusterMixin):
 
         # init
         if not (
-                hasattr(self._init, "__array__")
-                or callable(self._init)
-                or (isinstance(self._init, str) and self._init in ["k-means++", "random"])
+            hasattr(self._init, "__array__")
+            or callable(self._init)
+            or (isinstance(self._init, str) and self._init in ["k-means++", "random"])
         ):
             raise ValueError(
                 "init should be either 'k-means++', 'random', a ndarray or a "
@@ -244,7 +244,7 @@ class QKMeans(ClusterMixin):
         return x_con
 
     def _prepare_states(
-            self, a: np.ndarray, b: np.ndarray
+        self, a: np.ndarray, b: np.ndarray
     ) -> Tuple[QuantumCircuit, QuantumCircuit]:
         """Internal method that prepares the states |psi> and |phi> for a pair of vectors.
 

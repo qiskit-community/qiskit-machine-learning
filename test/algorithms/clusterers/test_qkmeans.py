@@ -32,7 +32,7 @@ class TestQKMeans(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 10598
 
         self.X = np.array([[1, 1], [2, 1], [100, 90], [120, 140]])
-        self.init_centers = 'k-means++'
+        self.init_centers = "k-means++"
 
         self.expected_labels = np.array([0, 0, 1, 1])
         self.expected_centers = np.array([[1.5, 1], [110, 115]])
@@ -86,7 +86,9 @@ class TestQKMeans(QiskitMachineLearningTestCase):
 
         # Test invalid dataset - 0 vector in dataset
         with self.assertRaises(QiskitMachineLearningError):
-            QKMeans(n_clusters=2, quantum_instance=self.qasm_simulator).fit(np.array([[2, 0], [0, 0]]))
+            QKMeans(n_clusters=2, quantum_instance=self.qasm_simulator).fit(
+                np.array([[2, 0], [0, 0]])
+            )
 
     # pylint: disable=invalid-name
     def test_quantum_instance(self):
