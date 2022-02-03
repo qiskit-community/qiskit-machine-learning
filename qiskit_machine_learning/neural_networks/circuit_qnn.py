@@ -426,16 +426,13 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probability_gradients(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
-
-        if self._quantum_instance is None:
-            raise QiskitMachineLearningError(
-                "Evaluation of probability gradients requires a quantum instance!"
-            )
+        self._check_quantum_instance()
 
         # check whether gradient circuit could be constructed
         if self._gradient_circuit is None:
             return None, None
 
+        # todo: rename to num_samples
         rows = input_data.shape[0]
 
         # initialize empty gradients
@@ -455,30 +452,37 @@ class CircuitQNN(SamplingNeuralNetwork):
                 input_grad = np.zeros((rows, *self._output_shape, self._num_inputs))
             weights_grad = np.zeros((rows, *self._output_shape, self._num_weights))
 
+        param_values = {
+            input_param: input_data[:, j] for j, input_param in enumerate(self._input_params)
+        }
+        param_values.update(
+            {weight_param: np.full(rows, weights[j]) for j, weight_param in enumerate(self._weight_params)}
+        )
+
+        converted_op = self._sampler.convert(self._gradient_circuit, param_values)
+        if len(converted_op.parameters) >= 0:
+            # create an list of parameter bindings, each element corresponds to a sample in the dataset
+            param_bindings = [
+                {param: param_values[i] for param, param_values in param_values.items()} for i in range(rows)
+            ]
+
+            grad = []
+            # iterate over gradient vectors and bind the correct leftover parameters
+            for g_i, param_i in zip(converted_op, param_bindings):
+                # bind or re-bind remaining values
+                grad.append(g_i.bind_parameters(param_i).eval())
+        else:
+            grad = converted_op.eval()
+
+        if self._input_gradients:
+            num_grad_vars = self._num_inputs + self._num_weights
+        else:
+            num_grad_vars = self._num_weights
+
+        # construct gradients
         for row in range(rows):
-            param_values = {
-                input_param: input_data[row, j] for j, input_param in enumerate(self._input_params)
-            }
-            param_values.update(
-                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
-            )
-
-            # TODO: additional "bind_parameters" should not be necessary,
-            #  seems like a bug to be fixed
-            grad = (
-                self._sampler.convert(self._gradient_circuit, param_values)
-                .bind_parameters(param_values)
-                .eval()
-            )
-
-            # construct gradients
-            if self._input_gradients:
-                num_grad_vars = self._num_inputs + self._num_weights
-            else:
-                num_grad_vars = self._num_weights
-
             for i in range(num_grad_vars):
-                coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
+                coo_grad = coo_matrix(grad[row][i])  # this works for sparse and dense case
 
                 # get index for input or weights gradients
                 if self._input_gradients:
@@ -506,10 +510,17 @@ class CircuitQNN(SamplingNeuralNetwork):
                             weights_grad[key] += np.real(val)
                     else:
                         weights_grad[key] += np.real(val)
+        # end of for each sample
 
         if self._sparse:
             if self._input_gradients:
                 input_grad = input_grad.to_coo()
-            return input_grad, weights_grad.to_coo()
-        else:
-            return input_grad, weights_grad
+            weights_grad = weights_grad.to_coo()
+
+        return input_grad, weights_grad
+
+    def _check_quantum_instance(self):
+        if self._quantum_instance is None:
+            raise QiskitMachineLearningError(
+                "Evaluation of probability gradients requires a quantum instance!"
+            )
