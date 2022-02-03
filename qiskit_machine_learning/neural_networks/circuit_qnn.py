@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -208,7 +208,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                         "determined as 2^num_qubits."
                     )
 
-                output_shape_ = (2**self._circuit.num_qubits,)
+                output_shape_ = (2 ** self._circuit.num_qubits,)
 
         # final validation
         output_shape_ = self._validate_output_shape(output_shape_)
@@ -447,7 +447,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
         converted_op = self._sampler.convert(self._gradient_circuit, param_values)
         # if statement is a workaround for https://github.com/Qiskit/qiskit-terra/issues/7608
-        if len(converted_op.parameters) >= 0:
+        if len(converted_op.parameters) > 0:
             # create an list of parameter bindings, each element corresponds to a sample in the dataset
             param_bindings = [
                 {param: param_values[i] for param, param_values in param_values.items()}
