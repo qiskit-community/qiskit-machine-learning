@@ -15,7 +15,7 @@ Quantum Kernel Algorithms (:mod:`qiskit_machine_learning.kernels.algorithms`)
 
 .. currentmodule:: qiskit_machine_learning.kernels.algorithms
 
-Quantum Kernels
+Quantum Kernel Algorithms
 ===============
 
 .. autosummary::
