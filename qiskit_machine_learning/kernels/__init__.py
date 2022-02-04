@@ -24,6 +24,13 @@ Quantum Kernels
 
    QuantumKernel
 
+Submodules
+==========
+
+.. autosummary::
+   :toctree:
+
+   algorithms
 """
 
 from .quantum_kernel import QuantumKernel
