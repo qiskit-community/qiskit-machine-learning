@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -57,7 +57,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] 'torchvision<0.10.0'
+          pip install jupyter sphinx_rtd_theme qiskit-terra[visualization] 'torchvision<0.10.0'
           sudo apt-get -y install pandoc graphviz
           sudo apt-get -y install python3-enchant
           sudo apt-get -y install hunspell-en-us
@@ -73,7 +73,10 @@ jobs:
       - run:  make spell
         if: ${{ !cancelled() }}
         shell: bash
-      - run:  make style
+      - name: Style Check
+        run: |
+          make clean_sphinx
+          make style
         if: ${{ !cancelled() }}
         shell: bash
       - name: Run make html
@@ -100,12 +103,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9, '3.10']
         include:
           - os: macos-latest
             python-version: 3.8
-          - os: windows-latest
+          - os: macos-latest
+            python-version: '3.10'
+          - os: windows-2019
             python-version: 3.8
+          - os: windows-2019
+            python-version: '3.10'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -119,7 +126,7 @@ jobs:
       - run: make lint
         shell: bash
       - run: make mypy
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && matrix.python-version != '3.10' }}
         shell: bash
       - name: Run make lint latest version
         run: |
@@ -179,7 +186,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx_rtd_theme 'matplotlib<3.3.0' qiskit-terra[visualization] 'torchvision<0.10.0'
+          pip install jupyter sphinx_rtd_theme qiskit-terra[visualization] 'torchvision<0.10.0'
           sudo apt-get install -y pandoc graphviz
         shell: bash
       - name: Run Machine Learning Tutorials
@@ -230,7 +237,7 @@ jobs:
           path: docs/_build/html/artifacts/tutorials.tar.gz
         if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
   Deprecation_Messages_and_Coverage:
-    needs: [MachineLearning]
+    needs: [Checks, MachineLearning, Tutorials]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -242,37 +249,45 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: actions/download-artifact@v2
         with:
-          name: ubuntu-latest-3.6
-          path: /tmp/m36
-      - uses: actions/download-artifact@v2
-        with:
           name: ubuntu-latest-3.7
-          path: /tmp/m37
+          path: /tmp/u37
       - uses: actions/download-artifact@v2
         with:
           name: ubuntu-latest-3.8
-          path: /tmp/m38
+          path: /tmp/u38
       - uses: actions/download-artifact@v2
         with:
           name: ubuntu-latest-3.9
-          path: /tmp/m39
+          path: /tmp/u39
+      - uses: actions/download-artifact@v2
+        with:
+          name: ubuntu-latest-3.10
+          path: /tmp/u310
       - uses: actions/download-artifact@v2
         with:
           name: macos-latest-3.8
           path: /tmp/m38
       - uses: actions/download-artifact@v2
         with:
-          name: windows-latest-3.8
+          name: macos-latest-3.10
+          path: /tmp/m310
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-2019-3.8
           path: /tmp/w38
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-2019-3.10
+          path: /tmp/w310
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/m36/ml.dep /tmp/m37/ml.dep /tmp/m38/ml.dep /tmp/m39/ml.dep /tmp/m38/ml.dep /tmp/w38/ml.dep || true
+          sort -f -u /tmp/u37/ml.dep /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/m38/ml.dep /tmp/m310/ml.dep /tmp/w38/ml.dep /tmp/w310/ml.dep || true
         shell: bash
       - name: Coverage combine
-        run: coverage3 combine /tmp/m37/ml.dat
+        run: coverage3 combine /tmp/u37/ml.dat
         shell: bash
       - name: Upload to Coveralls
         env:

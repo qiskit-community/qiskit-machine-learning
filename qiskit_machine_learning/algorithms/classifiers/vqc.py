@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -50,6 +50,7 @@ class VQC(NeuralNetworkClassifier):
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
+            quantum_instance: The quantum instance to execute circuits on.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and
                 returns ``None``. The callback can access intermediate data during training.
@@ -104,14 +105,14 @@ class VQC(NeuralNetworkClassifier):
         self._ansatz = ansatz_
         self._num_qubits = num_qubits_
         self._circuit = QuantumCircuit(self._num_qubits)
-        self._circuit.compose(feature_map, inplace=True)
-        self._circuit.compose(ansatz, inplace=True)
+        self._circuit.compose(self.feature_map, inplace=True)
+        self._circuit.compose(self.ansatz, inplace=True)
 
         # construct circuit QNN
         neural_network = CircuitQNN(
             self._circuit,
-            feature_map.parameters,
-            ansatz.parameters,
+            self.feature_map.parameters,
+            self.ansatz.parameters,
             interpret=self._get_interpret(2),
             output_shape=2,
             quantum_instance=quantum_instance,
@@ -165,8 +166,8 @@ class VQC(NeuralNetworkClassifier):
         )
         return super().fit(X, y)
 
-    def _get_interpret(self, num_classes):
-        def parity(x, num_classes=num_classes):
-            return f"{x:b}".count("1") % num_classes
+    def _get_interpret(self, num_classes: int):
+        def parity(x: int, num_classes: int = num_classes) -> int:
+            return x % num_classes
 
         return parity

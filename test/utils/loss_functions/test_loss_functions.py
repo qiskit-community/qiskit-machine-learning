@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,12 +18,27 @@ from qiskit.exceptions import MissingOptionalLibraryError
 import numpy as np
 from ddt import ddt, data
 
-from qiskit_machine_learning.utils.loss_functions import L1Loss, L2Loss
+from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss, L1Loss, L2Loss
 
 
 @ddt
 class TestLossFunctions(QiskitMachineLearningTestCase):
     """Tests of loss functions."""
+
+    @data(
+        # predict, target, expected_loss
+        (np.array([0.5, 0.5]), np.array([1.0, 0.0]), 1.0),
+        (np.array([1.0, 0.0]), np.array([1.0, 0.0]), 0.0),
+    )
+    def test_cross_entropy_loss(self, config):
+        """
+        Tests that CrossEntropyLoss returns the correct value, and no `nan` when one of the
+        probabilities is zero.
+        """
+        predict, target, expected_loss = config
+        loss_fn = CrossEntropyLoss()
+        loss = loss_fn.evaluate(predict, target)
+        assert np.allclose(loss, expected_loss, atol=1e-5)
 
     @data(
         # input shape, loss shape

@@ -47,6 +47,7 @@ Algorithms for data classification.
    :toctree: ../stubs/
    :nosignatures:
 
+   PegasosQSVC
    QSVC
    NeuralNetworkClassifier
    VQC
@@ -86,7 +87,7 @@ from .objective_functions import (
     MultiClassObjectiveFunction,
     OneHotObjectiveFunction,
 )
-from .classifiers import QSVC, VQC, NeuralNetworkClassifier
+from .classifiers import QSVC, PegasosQSVC, VQC, NeuralNetworkClassifier
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
 from .distribution_learners import (
     DiscriminativeNetwork,
@@ -104,6 +105,7 @@ __all__ = [
     "MultiClassObjectiveFunction",
     "OneHotObjectiveFunction",
     "QSVC",
+    "PegasosQSVC",
     "NeuralNetworkClassifier",
     "VQC",
     "QSVR",
