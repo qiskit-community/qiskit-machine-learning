@@ -528,8 +528,8 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     Checks batching with both statevector simulator and QASM simulator.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, methodName='runTest'):
+        super().__init__(methodName)
         self.circuit_counts = []
 
     def count_circuits(self, func):
