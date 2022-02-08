@@ -13,6 +13,7 @@
 """ Test QuantumKernel """
 
 import unittest
+import functools
 
 from test import QiskitMachineLearningTestCase
 
@@ -513,6 +514,117 @@ class TestQuantumKernelUserParameters(QiskitMachineLearningTestCase):
             self.assertEqual(list(qkclass.user_param_binds.keys()), [self.user_parameters[0]])
             self.assertEqual(list(qkclass.user_param_binds.values()), [1.7])
             self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
+
+
+class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
+    """Test QuantumKernel circuit batching
+
+    Creates a class factory that takes the QuantumInstance class,
+    applies a method decorator to the execute function and returns the modified class.
+    The decorator function records the actual number of circuits being passed
+    to execute does not excede the batch_size requested by the Quantum Kernel.
+    """
+
+    def count_circuits(self, f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwds):
+            self.circuit_counts.append(len(args[1]))
+            return f(*args, **kwds)
+
+        return wrapper
+
+    def hook_quantum_instance(self):
+        class HookedQuantumInstance(QuantumInstance):
+            @self.count_circuits
+            def execute(self, circuits, had_transpiled: bool = False):
+                return super().execute(circuits, had_transpiled)
+
+        return HookedQuantumInstance
+
+    def setUp(self):
+        super().setUp()
+
+        self.batch_size = 3
+
+        algorithm_globals.random_seed = 10598
+
+        self.shots = 12000
+
+        self.statevector_simulator = self.hook_quantum_instance()(
+            BasicAer.get_backend("statevector_simulator"),
+            shots=1,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        self.qasm_simulator = self.hook_quantum_instance()(
+            BasicAer.get_backend("qasm_simulator"),
+            shots=self.shots,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
+
+        self.sample_train = np.asarray(
+            [
+                [3.07876080, 1.75929189],
+                [6.03185789, 5.27787566],
+                [6.22035345, 2.70176968],
+                [0.18849556, 2.82743339],
+            ]
+        )
+        self.label_train = np.asarray([0, 0, 1, 1])
+
+        self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
+        self.label_test = np.asarray([0, 1])
+
+    def test_statevector_batching(self):
+        """Test batching when using the statevector simulator"""
+
+        self.circuit_counts = []
+
+        kernel = QuantumKernel(
+            feature_map=self.feature_map,
+            batch_size=self.batch_size,
+            quantum_instance=self.statevector_simulator,
+        )
+
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(self.sample_train, self.label_train)
+
+        for circuit_count in self.circuit_counts:
+            self.assertLessEqual(circuit_count, self.batch_size)
+
+        self.assertEqual(sum(self.circuit_counts), len(self.sample_train))
+
+        score = svc.score(self.sample_test, self.label_test)
+        self.assertEqual(score, 0.5)
+
+    def test_qasm_batching(self):
+        """Test batching when using the QASM simulator"""
+
+        self.circuit_counts = []
+
+        kernel = QuantumKernel(
+            feature_map=self.feature_map,
+            batch_size=self.batch_size,
+            quantum_instance=self.qasm_simulator,
+        )
+
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(self.sample_train, self.label_train)
+
+        for circuit_count in self.circuit_counts:
+            self.assertLessEqual(circuit_count, self.batch_size)
+
+        num_train = len(self.sample_train)
+        num_circuits = num_train * (num_train - 1) / 2
+
+        self.assertEqual(sum(self.circuit_counts), num_circuits)
+
+        score = svc.score(self.sample_test, self.label_test)
+        self.assertEqual(score, 0.5)
 
 
 if __name__ == "__main__":
