@@ -522,7 +522,9 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     Creates a class factory that takes the QuantumInstance class,
     applies a method decorator to the execute function and returns the modified class.
     The decorator function records the actual number of circuits being passed
-    to execute does not excede the batch_size requested by the Quantum Kernel.
+    to execute does not exceed the batch_size requested by the Quantum Kernel.
+    Also checks that the sum of the batch sizes matches the total number of expected
+    circuits.
     """
 
     def count_circuits(self, f):
