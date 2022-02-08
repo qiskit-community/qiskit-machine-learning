@@ -525,18 +525,40 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     to execute does not exceed the batch_size requested by the Quantum Kernel.
     Also checks that the sum of the batch sizes matches the total number of expected
     circuits.
+    Checks batching with both statevector simulator and QASM simulator.
     """
 
-    def count_circuits(self, f):
-        @functools.wraps(f)
+    def __init__(self):
+        super().__init__()
+        self.circuit_counts = []
+
+    def count_circuits(self, func):
+        """Decorator to record the number of circuits passed to QuantumInstance.execute.
+
+        Args:
+            func (Callable): execute function to be wrapped
+
+        Returns:
+            Callable: function wrapper
+        """
+
+        @functools.wraps(func)
         def wrapper(*args, **kwds):
             self.circuit_counts.append(len(args[1]))
-            return f(*args, **kwds)
+            return func(*args, **kwds)
 
         return wrapper
 
     def hook_quantum_instance(self):
+        """Hooks into QuantumInstance to monitor circuit batching.
+
+        Class factory that takes the QuantumInstance class, applies a method decorator to the
+        execute function and returns the modified class.
+        """
+
         class HookedQuantumInstance(QuantumInstance):
+            """Applies the count_circuits decorator to the QuantumInstance.execute function."""
+
             @self.count_circuits
             def execute(self, circuits, had_transpiled: bool = False):
                 return super().execute(circuits, had_transpiled)
