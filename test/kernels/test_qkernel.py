@@ -528,10 +528,6 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     Checks batching with both statevector simulator and QASM simulator.
     """
 
-    def __init__(self, methodName="runTest"):
-        super().__init__(methodName)
-        self.circuit_counts = []
-
     def count_circuits(self, func):
         """Decorator to record the number of circuits passed to QuantumInstance.execute.
 
@@ -568,11 +564,11 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
 
-        self.batch_size = 3
-
         algorithm_globals.random_seed = 10598
 
         self.shots = 12000
+        self.batch_size = 3
+        self.circuit_counts = []
 
         self.statevector_simulator = self.hook_quantum_instance()(
             BasicAer.get_backend("statevector_simulator"),
