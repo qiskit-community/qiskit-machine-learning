@@ -574,7 +574,8 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
 
-        # Data generated with ad_hoc_data(training_size=4, test_size=2, n=2, gap=0.3)
+        # data generated using
+        # sample_train, label_train, _, _ = ad_hoc_data(training_size=4, test_size=2, n=2, gap=0.3)
         self.sample_train = np.asarray(
             [
                 [5.90619419, 1.25663706],
@@ -588,16 +589,6 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
             ]
         )
         self.label_train = np.asarray([0, 0, 0, 0, 1, 1, 1, 1])
-
-        self.sample_test = np.asarray(
-            [
-                [0.87964594, 3.76991118],
-                [0.37699112, 1.50796447],
-                [0.12566371, 3.20442451],
-                [4.96371639, 0.0],
-            ]
-        )
-        self.label_test = np.asarray([0, 0, 1, 1])
 
     def test_statevector_batching(self):
         """Test batching when using the statevector simulator"""
