@@ -529,7 +529,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     """
 
     def count_circuits(self, func):
-        """Decorator to record the number of circuits passed to QuantumInstance.execute.
+        """Wrapper to record the number of circuits passed to QuantumInstance.execute.
 
         Args:
             func (Callable): execute function to be wrapped
