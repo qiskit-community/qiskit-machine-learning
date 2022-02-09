@@ -545,22 +545,6 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
         return wrapper
 
-    def hook_quantum_instance(self):
-        """Hooks into QuantumInstance to monitor circuit batching.
-
-        Class factory that takes the QuantumInstance class, applies a method decorator to the
-        execute function and returns the modified class.
-        """
-
-        class HookedQuantumInstance(QuantumInstance):
-            """Applies the count_circuits decorator to the QuantumInstance.execute function."""
-
-            @self.count_circuits
-            def execute(self, circuits, had_transpiled: bool = False):
-                return super().execute(circuits, had_transpiled)
-
-        return HookedQuantumInstance
-
     def setUp(self):
         super().setUp()
 
@@ -570,14 +554,16 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         self.batch_size = 3
         self.circuit_counts = []
 
-        self.statevector_simulator = self.hook_quantum_instance()(
+        QuantumInstance.execute = self.count_circuits(QuantumInstance.execute)
+
+        self.statevector_simulator = QuantumInstance(
             BasicAer.get_backend("statevector_simulator"),
             shots=1,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
 
-        self.qasm_simulator = self.hook_quantum_instance()(
+        self.qasm_simulator = QuantumInstance(
             BasicAer.get_backend("qasm_simulator"),
             shots=self.shots,
             seed_simulator=algorithm_globals.random_seed,
