@@ -53,6 +53,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
+        np.random.seed(algorithm_globals.random_seed)
 
     def validate_output_shape(self, qnn: OpflowQNN, test_data: List[np.ndarray]) -> None:
         """
