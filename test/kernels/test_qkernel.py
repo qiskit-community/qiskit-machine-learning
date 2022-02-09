@@ -519,11 +519,11 @@ class TestQuantumKernelUserParameters(QiskitMachineLearningTestCase):
 class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     """Test QuantumKernel circuit batching
 
+    Checks batching with both statevector simulator and QASM simulator.
     Checks that the actual number of circuits being passed
     to execute does not exceed the batch_size requested by the Quantum Kernel.
     Checks that the sum of the batch sizes matches the total number of expected
     circuits.
-    Checks batching with both statevector simulator and QASM simulator.
     """
 
     def count_circuits(self, func):
@@ -574,18 +574,30 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
 
+        # Data generated with ad_hoc_data(training_size=4, test_size=2, n=2, gap=0.3)
         self.sample_train = np.asarray(
             [
-                [3.07876080, 1.75929189],
-                [6.03185789, 5.27787566],
-                [6.22035345, 2.70176968],
-                [0.18849556, 2.82743339],
+                [5.90619419, 1.25663706],
+                [2.32477856, 0.9424778],
+                [4.52389342, 5.0893801],
+                [3.58141563, 0.9424778],
+                [0.31415927, 3.45575192],
+                [4.83805269, 3.70707933],
+                [5.65486678, 6.09468975],
+                [5.46637122, 4.52389342],
             ]
         )
-        self.label_train = np.asarray([0, 0, 1, 1])
+        self.label_train = np.asarray([0, 0, 0, 0, 1, 1, 1, 1])
 
-        self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
-        self.label_test = np.asarray([0, 1])
+        self.sample_test = np.asarray(
+            [
+                [0.87964594, 3.76991118],
+                [0.37699112, 1.50796447],
+                [0.12566371, 3.20442451],
+                [4.96371639, 0.0],
+            ]
+        )
+        self.label_test = np.asarray([0, 0, 1, 1])
 
     def test_statevector_batching(self):
         """Test batching when using the statevector simulator"""
@@ -606,9 +618,6 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
             self.assertLessEqual(circuit_count, self.batch_size)
 
         self.assertEqual(sum(self.circuit_counts), len(self.sample_train))
-
-        score = svc.score(self.sample_test, self.label_test)
-        self.assertEqual(score, 0.5)
 
     def test_qasm_batching(self):
         """Test batching when using the QASM simulator"""
@@ -631,9 +640,6 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         num_circuits = num_train * (num_train - 1) / 2
 
         self.assertEqual(sum(self.circuit_counts), num_circuits)
-
-        score = svc.score(self.sample_test, self.label_test)
-        self.assertEqual(score, 0.5)
 
 
 if __name__ == "__main__":
