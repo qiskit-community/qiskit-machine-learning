@@ -560,9 +560,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         )
 
         # monkey patch the statevector simulator
-        self.statevector_simulator.execute = self.count_circuits(
-            self.statevector_simulator.execute
-        )
+        self.statevector_simulator.execute = self.count_circuits(self.statevector_simulator.execute)
 
         self.qasm_simulator = QuantumInstance(
             BasicAer.get_backend("qasm_simulator"),
@@ -572,9 +570,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         )
 
         # monkey patch the qasm simulator
-        self.qasm_simulator.execute = self.count_circuits(
-            self.qasm_simulator.execute
-        )
+        self.qasm_simulator.execute = self.count_circuits(self.qasm_simulator.execute)
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
 
