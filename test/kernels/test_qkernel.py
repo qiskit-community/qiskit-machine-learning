@@ -538,7 +538,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
         @functools.wraps(func)
         def wrapper(*args, **kwds):
-            self.circuit_counts.append(len(args[1]))
+            self.circuit_counts.append(len(args[0]))
             return func(*args, **kwds)
 
         return wrapper
@@ -552,8 +552,6 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         self.batch_size = 3
         self.circuit_counts = []
 
-        QuantumInstance.execute = self.count_circuits(QuantumInstance.execute)
-
         self.statevector_simulator = QuantumInstance(
             BasicAer.get_backend("statevector_simulator"),
             shots=1,
@@ -561,11 +559,21 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
             seed_transpiler=algorithm_globals.random_seed,
         )
 
+        # monkey patch the statevector simulator
+        self.statevector_simulator.execute = self.count_circuits(
+            self.statevector_simulator.execute
+        )
+
         self.qasm_simulator = QuantumInstance(
             BasicAer.get_backend("qasm_simulator"),
             shots=self.shots,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        # monkey patch the qasm simulator
+        self.qasm_simulator.execute = self.count_circuits(
+            self.qasm_simulator.execute
         )
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
@@ -595,6 +603,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         )
 
         svc = SVC(kernel=kernel.evaluate)
+
         svc.fit(self.sample_train, self.label_train)
 
         for circuit_count in self.circuit_counts:
