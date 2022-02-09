@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,8 +15,8 @@ Quantum Kernel Algorithms (:mod:`qiskit_machine_learning.kernels.algorithms`)
 
 .. currentmodule:: qiskit_machine_learning.kernels.algorithms
 
-Quantum Kernels
-===============
+Quantum Kernel Algorithms
+=========================
 
 .. autosummary::
    :toctree: ../stubs/
