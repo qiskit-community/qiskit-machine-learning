@@ -43,41 +43,41 @@ train and test samples from a data set to see how accurately the test set can
 be classified.
 
 ```python
-        from qiskit import BasicAer
-        from qiskit.utils import QuantumInstance, algorithm_globals
-        from qiskit.algorithms.optimizers import COBYLA
-        from qiskit.circuit.library import TwoLocal
-        from qiskit_machine_learning.algorithms import VQC
-        from qiskit_machine_learning.datasets import wine
-        from qiskit_machine_learning.circuit.library import RawFeatureVector
+from qiskit import BasicAer
+from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.algorithms.optimizers import COBYLA
+from qiskit.circuit.library import TwoLocal
+from qiskit_machine_learning.algorithms import VQC
+from qiskit_machine_learning.datasets import wine
+from qiskit_machine_learning.circuit.library import RawFeatureVector
 
-        seed = 1376
-        algorithm_globals.random_seed = seed
+seed = 1376
+algorithm_globals.random_seed = seed
 
-        # Use Wine data set for training and test data
-        feature_dim = 4  # dimension of each data point
-        training_size = 12
-        test_size = 4
+# Use Wine data set for training and test data
+feature_dim = 4  # dimension of each data point
+training_size = 12
+test_size = 4
 
-        # training features, training labels, test features, test labels as np.array,
-        # one hot encoding for labels
-        training_features, training_labels, test_features, test_labels = \
-            wine(training_size=training_size, test_size=test_size, n=feature_dim)
+# training features, training labels, test features, test labels as np.array,
+# one hot encoding for labels
+training_features, training_labels, test_features, test_labels = \
+    wine(training_size=training_size, test_size=test_size, n=feature_dim)
 
-        feature_map = RawFeatureVector(feature_dimension=feature_dim)
-        ansatz = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
-        vqc = VQC(feature_map=feature_map,
-                  ansatz=ansatz,
-                  optimizer=COBYLA(maxiter=100),
-                  quantum_instance=QuantumInstance(BasicAer.get_backend('statevector_simulator'),
-                                                   shots=1024,
-                                                   seed_simulator=seed,
-                                                   seed_transpiler=seed)
-                  )
-        vqc.fit(training_features, training_labels)
+feature_map = RawFeatureVector(feature_dimension=feature_dim)
+ansatz = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
+vqc = VQC(feature_map=feature_map,
+          ansatz=ansatz,
+          optimizer=COBYLA(maxiter=100),
+          quantum_instance=QuantumInstance(BasicAer.get_backend('statevector_simulator'),
+                                           shots=1024,
+                                           seed_simulator=seed,
+                                           seed_transpiler=seed)
+          )
+vqc.fit(training_features, training_labels)
 
-        score = vqc.score(test_features, test_labels)
-        print(f"Testing accuracy: {score:0.2f}")
+score = vqc.score(test_features, test_labels)
+print(f"Testing accuracy: {score:0.2f}")
 ```
 
 ### Further examples
