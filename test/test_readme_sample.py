@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,6 +18,10 @@ the issue then ensure changes are made to readme too.
 
 import unittest
 
+import contextlib
+import io
+from pathlib import Path
+import re
 from test import QiskitMachineLearningTestCase
 
 
@@ -26,55 +30,50 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
 
     def test_readme_sample(self):
         """readme sample test"""
-        # pylint: disable=import-outside-toplevel,redefined-builtin
-        def print(*args):
-            """overloads print to log values"""
-            if args:
-                self.log.debug(args[0], *args[1:])
+        # pylint: disable=exec-used
 
-        # --- Exact copy of sample code ----------------------------------------
+        readme_name = "README.md"
+        readme_path = Path(__file__).parent.parent.joinpath(readme_name)
+        if not readme_path.exists() or not readme_path.is_file():
+            self.fail(msg=f"{readme_name} not found at {readme_path}")
+            return
 
-        from qiskit import BasicAer
-        from qiskit.utils import QuantumInstance, algorithm_globals
-        from qiskit.algorithms.optimizers import COBYLA
-        from qiskit.circuit.library import TwoLocal
-        from qiskit_machine_learning.algorithms import VQC
-        from qiskit_machine_learning.datasets import wine
-        from qiskit_machine_learning.circuit.library import RawFeatureVector
+        # gets the first matched code sample
+        # assumes one code sample to test per readme
+        readme_sample = None
+        with open(readme_path, encoding="UTF-8") as readme_file:
+            match_sample = re.search(
+                "```python.*```",
+                readme_file.read(),
+                flags=re.S,
+            )
+            if match_sample:
+                # gets the matched string stripping the markdown code block
+                readme_sample = match_sample.group(0)[9:-3]
 
-        seed = 1376
-        algorithm_globals.random_seed = seed
+        if readme_sample is None:
+            self.skipTest(f"No sample found inside {readme_name}.")
+            return
 
-        # Use Wine data set for training and test data
-        feature_dim = 4  # dimension of each data point
-        training_size = 12
-        test_size = 4
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            try:
+                exec(readme_sample)
+            except Exception as ex:  # pylint: disable=broad-except
+                self.fail(str(ex))
+                return
 
-        # training features, training labels, test features, test labels as np.array,
-        # one hot encoding for labels
-        training_features, training_labels, test_features, test_labels = wine(
-            training_size=training_size, test_size=test_size, n=feature_dim
-        )
+        score = None
+        str_ref = "Testing accuracy: "
+        texts = out.getvalue().split("\n")
+        for text in texts:
+            idx = text.find(str_ref)
+            if idx >= 0:
+                score = float(text[idx + len(str_ref) :])
+                break
 
-        feature_map = RawFeatureVector(feature_dimension=feature_dim)
-        ansatz = TwoLocal(feature_map.num_qubits, ["ry", "rz"], "cz", reps=3)
-        vqc = VQC(
-            feature_map=feature_map,
-            ansatz=ansatz,
-            optimizer=COBYLA(maxiter=100),
-            quantum_instance=QuantumInstance(
-                BasicAer.get_backend("statevector_simulator"),
-                shots=1024,
-                seed_simulator=seed,
-                seed_transpiler=seed,
-            ),
-        )
-        vqc.fit(training_features, training_labels)
-
-        score = vqc.score(test_features, test_labels)
-        print(f"Testing accuracy: {score:0.2f}")
-
-        # ----------------------------------------------------------------------
+        if score is None:
+            self.fail(f"Failed to find final score inside {readme_name}.")
+            return
 
         self.assertGreater(score, 0.7)
 
