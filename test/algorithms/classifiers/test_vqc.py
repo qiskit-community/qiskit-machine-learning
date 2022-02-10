@@ -278,7 +278,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             quantum_instance=quantum_instance,
         )
 
-        # Fit the VQC to the first half of data.
+        # Fit the VQC to the first half of the data.
         num_start = num_samples // 2
         classifier.fit(X[:num_start, :], y[:num_start])
         first_fit_final_point = classifier._fit_result.x
