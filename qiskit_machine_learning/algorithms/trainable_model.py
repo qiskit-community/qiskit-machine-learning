@@ -201,7 +201,7 @@ class TrainableModel:
             An array as an initial point
         """
         if self._warm_start and self._fit_result is not None:
-            self._initial_point = self._fit_result[0]
+            self._initial_point = self._fit_result.x
         elif self._initial_point is None:
             self._initial_point = algorithm_globals.random.random(self._neural_network.num_weights)
         return self._initial_point
