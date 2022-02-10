@@ -259,7 +259,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, reps=1)
 
-        # construct data
+        # Construct the data.
         num_samples = 10
         # pylint: disable=invalid-name
         X = algorithm_globals.random.random((num_samples, num_inputs))
@@ -278,16 +278,16 @@ class TestVQC(QiskitMachineLearningTestCase):
             quantum_instance=quantum_instance,
         )
 
-        # Fit the VQC to first half of data.
+        # Fit the VQC to the first half of data.
         num_start = num_samples // 2
         classifier.fit(X[:num_start, :], y[:num_start])
         first_fit_final_point = classifier._fit_result.x
 
-        # Fit the VQC to second half of data with a warm start.
+        # Fit the VQC to the second half of the data with a warm start.
         classifier.fit(X[num_start:, :], y[num_start:])
         second_fit_initial_point = classifier._initial_point
 
-        # Check final optimization point from first fit was used to start second fit.
+        # Check the final optimization point from the first fit was used to the start second fit.
         np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
 
         # Check score.
