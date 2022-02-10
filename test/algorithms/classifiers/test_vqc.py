@@ -269,7 +269,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             y = 1.0 * (np.sum(X, axis=1) <= 1)
         y = np.array([y, 1 - y]).transpose()  # VQC requires one-hot encoded input.
 
-        # Initialise the VQC.
+        # Initialize the VQC.
         classifier = VQC(
             feature_map=feature_map,
             ansatz=ansatz,
