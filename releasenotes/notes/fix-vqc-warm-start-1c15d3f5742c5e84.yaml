@@ -1,11 +1,11 @@
 ---
 fixes:
   - |
-    Fixes an issue where `VQC` would fail with `warm_start=True`.
-    The extraction of the `initial_point` in `TrainableModel` from the final
+    Fixes an issue where ``VQC`` would fail with ``warm_start=True``.
+    The extraction of the ``initial_point`` in ``TrainableModel`` from the final
     point of the minimization had not been updated to reflect the refactor
-    of optimizers in `qiskit-terra`; the old `optimize` method, that returned
-    a tuple was deprecated and new method `minimize` was created that returns
-    an `OptimizerResult` object. We now correctly recover the final point of
+    of optimizers in ``qiskit-terra``; the old ``optimize`` method, that returned
+    a tuple was deprecated and new method ``minimize`` was created that returns
+    an ``OptimizerResult`` object. We now correctly recover the final point of
     the minimization from previous fits to use for a warm start in subsequent
     fits.
