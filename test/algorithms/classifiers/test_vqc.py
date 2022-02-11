@@ -287,7 +287,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         classifier.fit(X[num_start:, :], y[num_start:])
         second_fit_initial_point = classifier._initial_point
 
-        # Check the final optimization point from the first fit was used to the start second fit.
+        # Check the final optimization point from the first fit was used to start the second fit.
         np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
 
         # Check score.
