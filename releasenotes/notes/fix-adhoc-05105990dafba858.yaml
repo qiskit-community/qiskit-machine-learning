@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixes in Ad Hoc dataset. Fixed an ``ValueError`` when ``n=3`` is passed to ``ad_hoc_data``.
+    When the value of ``n`` is not 2 or 3, a ``ValueError`` is raised with a message that the only
+    supported values of ``n`` are 2 and 3.

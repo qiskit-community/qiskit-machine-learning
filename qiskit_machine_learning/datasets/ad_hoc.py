@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -40,6 +40,8 @@ def ad_hoc_data(
         count = 100
     elif n == 3:
         count = 20  # coarseness of data separation
+    else:
+        raise ValueError(f"Supported values of 'n' are 2 and 3 only, but {n} is provided.")
 
     label_train = np.zeros(2 * (training_size + test_size))
     sample_train = []
@@ -201,8 +203,8 @@ def ad_hoc_data(
                         + (np.pi - x_1) * (np.pi - x_3) * np.kron(np.kron(z_m, j_m), z_m)
                     )
                     u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
-                    psi = np.asarray(u_u) * h_3 * np.asarray(u_u) * np.transpose(psi_0)
-                    temp = np.real(psi.conj().T * m_m * psi).item()
+                    psi = np.asarray(u_u) @ h_3 @ np.asarray(u_u) @ np.transpose(psi_0)
+                    temp = np.real(psi.conj().T @ m_m @ psi).item()
                     if temp > gap:
                         sample_total[n_1][n_2][n_3] = +1
                         sample_total_a.append([n_1, n_2, n_3])
