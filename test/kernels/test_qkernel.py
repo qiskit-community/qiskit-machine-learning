@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,6 +13,7 @@
 """ Test QuantumKernel """
 
 import unittest
+import functools
 
 from test import QiskitMachineLearningTestCase
 
@@ -513,6 +514,123 @@ class TestQuantumKernelUserParameters(QiskitMachineLearningTestCase):
             self.assertEqual(list(qkclass.user_param_binds.keys()), [self.user_parameters[0]])
             self.assertEqual(list(qkclass.user_param_binds.values()), [1.7])
             self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
+
+
+class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
+    """Test QuantumKernel circuit batching
+
+    Checks batching with both statevector simulator and QASM simulator.
+    Checks that the actual number of circuits being passed
+    to execute does not exceed the batch_size requested by the Quantum Kernel.
+    Checks that the sum of the batch sizes matches the total number of expected
+    circuits.
+    """
+
+    def count_circuits(self, func):
+        """Wrapper to record the number of circuits passed to QuantumInstance.execute.
+
+        Args:
+            func (Callable): execute function to be wrapped
+
+        Returns:
+            Callable: function wrapper
+        """
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwds):
+            self.circuit_counts.append(len(args[0]))
+            return func(*args, **kwds)
+
+        return wrapper
+
+    def setUp(self):
+        super().setUp()
+
+        algorithm_globals.random_seed = 10598
+
+        self.shots = 12000
+        self.batch_size = 3
+        self.circuit_counts = []
+
+        self.statevector_simulator = QuantumInstance(
+            BasicAer.get_backend("statevector_simulator"),
+            shots=1,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        # monkey patch the statevector simulator
+        self.statevector_simulator.execute = self.count_circuits(self.statevector_simulator.execute)
+
+        self.qasm_simulator = QuantumInstance(
+            BasicAer.get_backend("qasm_simulator"),
+            shots=self.shots,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        # monkey patch the qasm simulator
+        self.qasm_simulator.execute = self.count_circuits(self.qasm_simulator.execute)
+
+        self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
+
+        # data generated using
+        # sample_train, label_train, _, _ = ad_hoc_data(training_size=4, test_size=2, n=2, gap=0.3)
+        self.sample_train = np.asarray(
+            [
+                [5.90619419, 1.25663706],
+                [2.32477856, 0.9424778],
+                [4.52389342, 5.0893801],
+                [3.58141563, 0.9424778],
+                [0.31415927, 3.45575192],
+                [4.83805269, 3.70707933],
+                [5.65486678, 6.09468975],
+                [5.46637122, 4.52389342],
+            ]
+        )
+        self.label_train = np.asarray([0, 0, 0, 0, 1, 1, 1, 1])
+
+    def test_statevector_batching(self):
+        """Test batching when using the statevector simulator"""
+
+        self.circuit_counts = []
+
+        kernel = QuantumKernel(
+            feature_map=self.feature_map,
+            batch_size=self.batch_size,
+            quantum_instance=self.statevector_simulator,
+        )
+
+        svc = SVC(kernel=kernel.evaluate)
+
+        svc.fit(self.sample_train, self.label_train)
+
+        for circuit_count in self.circuit_counts:
+            self.assertLessEqual(circuit_count, self.batch_size)
+
+        self.assertEqual(sum(self.circuit_counts), len(self.sample_train))
+
+    def test_qasm_batching(self):
+        """Test batching when using the QASM simulator"""
+
+        self.circuit_counts = []
+
+        kernel = QuantumKernel(
+            feature_map=self.feature_map,
+            batch_size=self.batch_size,
+            quantum_instance=self.qasm_simulator,
+        )
+
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(self.sample_train, self.label_train)
+
+        for circuit_count in self.circuit_counts:
+            self.assertLessEqual(circuit_count, self.batch_size)
+
+        num_train = len(self.sample_train)
+        num_circuits = num_train * (num_train - 1) / 2
+
+        self.assertEqual(sum(self.circuit_counts), num_circuits)
 
 
 if __name__ == "__main__":
