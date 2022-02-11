@@ -287,7 +287,9 @@ class CircuitQNN(SamplingNeuralNetwork):
 
             # transpile the QNN circuit
             try:
-                self._circuit = self._quantum_instance.transpile(self._circuit)[0]
+                self._circuit = self._quantum_instance.transpile(
+                    self._circuit, pass_manager=self._quantum_instance.unbound_pass_manager
+                )[0]
                 self._circuit_transpiled = True
             except QiskitError:
                 # likely it is caused by RawFeatureVector, we just ignore this error and
