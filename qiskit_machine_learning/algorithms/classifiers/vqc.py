@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -166,8 +166,8 @@ class VQC(NeuralNetworkClassifier):
         )
         return super().fit(X, y)
 
-    def _get_interpret(self, num_classes):
-        def parity(x, num_classes=num_classes):
-            return f"{x:b}".count("1") % num_classes
+    def _get_interpret(self, num_classes: int):
+        def parity(x: int, num_classes: int = num_classes) -> int:
+            return x % num_classes
 
         return parity
