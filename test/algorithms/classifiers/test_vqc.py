@@ -230,6 +230,70 @@ class TestVQC(QiskitMachineLearningTestCase):
         score = classifier.score(X, y)
         self.assertGreater(score, 1 / num_classes)
 
+    @data(
+        # optimizer, quantum instance
+        ("cobyla", "statevector"),
+        ("cobyla", "qasm"),
+        ("bfgs", "statevector"),
+        ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
+    )
+    def test_warm_start(self, config):
+        """Test VQC with warm_start=True."""
+        opt, q_i = config
+
+        if q_i == "statevector":
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        if opt == "bfgs":
+            optimizer = L_BFGS_B(maxiter=5)
+        elif opt == "cobyla":
+            optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
+
+        num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
+
+        # Construct the data.
+        num_samples = 10
+        # pylint: disable=invalid-name
+        X = algorithm_globals.random.random((num_samples, num_inputs))
+        y = 1.0 * (np.sum(X, axis=1) <= 1)
+        while len(np.unique(y)) == 1:
+            X = algorithm_globals.random.random((num_samples, num_inputs))
+            y = 1.0 * (np.sum(X, axis=1) <= 1)
+        y = np.array([y, 1 - y]).transpose()  # VQC requires one-hot encoded input.
+
+        # Initialize the VQC.
+        classifier = VQC(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            warm_start=True,
+            quantum_instance=quantum_instance,
+        )
+
+        # Fit the VQC to the first half of the data.
+        num_start = num_samples // 2
+        classifier.fit(X[:num_start, :], y[:num_start])
+        first_fit_final_point = classifier._fit_result.x
+
+        # Fit the VQC to the second half of the data with a warm start.
+        classifier.fit(X[num_start:, :], y[num_start:])
+        second_fit_initial_point = classifier._initial_point
+
+        # Check the final optimization point from the first fit was used to start the second fit.
+        np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
+
+        # Check score.
+        score = classifier.score(X, y)
+        self.assertGreater(score, 0.5)
+
 
 if __name__ == "__main__":
     unittest.main()
