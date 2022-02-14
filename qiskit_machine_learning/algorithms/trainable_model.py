@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -201,7 +201,7 @@ class TrainableModel:
             An array as an initial point
         """
         if self._warm_start and self._fit_result is not None:
-            self._initial_point = self._fit_result[0]
+            self._initial_point = self._fit_result.x
         elif self._initial_point is None:
             self._initial_point = algorithm_globals.random.random(self._neural_network.num_weights)
         return self._initial_point
