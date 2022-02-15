@@ -308,7 +308,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         """Wrapper to record the number of classes assumed when building CircuitQNN."""
 
         @functools.wraps(func)
-        def wrapper(num_classes:int):
+        def wrapper(num_classes: int):
             self.num_classes_by_batch.append(num_classes)
             return func(num_classes)
 
