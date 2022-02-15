@@ -63,8 +63,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -169,8 +171,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -245,8 +249,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -309,8 +315,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
