@@ -12,7 +12,9 @@
 
 """ Test Neural Network Classifier """
 
+from typing import Callable
 import unittest
+import functools
 
 from test import QiskitMachineLearningTestCase
 
@@ -32,6 +34,8 @@ class TestVQC(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+
+        self.num_classes_by_batch = []
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
@@ -300,6 +304,16 @@ class TestVQC(QiskitMachineLearningTestCase):
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
 
+    def get_num_classes(self, func: Callable) -> Callable:
+        """Wrapper to record the number of classes assumed when building CircuitQNN."""
+
+        @functools.wraps(func)
+        def wrapper(num_classes:int):
+            self.num_classes_by_batch.append(num_classes)
+            return func(num_classes)
+
+        return wrapper
+
     @data(
         # optimizer, quantum instance
         ("cobyla", "statevector"),
@@ -334,6 +348,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         # Construct the data.
         features = algorithm_globals.random.random((15, num_inputs))
         target = np.asarray([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2])
+        num_classes = len(np.unique(target))
 
         # One-hot encode the target.
         target_onehot = np.zeros((target.size, int(target.max() + 1)))
@@ -348,6 +363,8 @@ class TestVQC(QiskitMachineLearningTestCase):
             quantum_instance=quantum_instance,
         )
 
+        classifier._get_interpret = self.get_num_classes(classifier._get_interpret)
+
         # Fit the VQC to the first third of the data.
         classifier.fit(features[:5, :], target_onehot[:5])
 
@@ -356,6 +373,9 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         # Fit the VQC to the third third of the data with a warm start.
         classifier.fit(features[10:, :], target_onehot[10:])
+
+        # Check all batches assume the correct number of classes
+        self.assertTrue((np.asarray(self.num_classes_by_batch) == num_classes).all())
 
 
 if __name__ == "__main__":
