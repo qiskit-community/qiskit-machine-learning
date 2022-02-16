@@ -62,7 +62,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
-        rzx_basis = ["rzx", "rz", "x", "sx"]
+        cz_basis = ["cz", "rz", "x", "sx"]
         self.quantum_instance_pm = QuantumInstance(
             AerSimulator(),
             shots=100,
@@ -71,8 +71,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             pass_manager=level_3_pass_manager(PassManagerConfig.from_backend(FakeToronto())),
             bound_pass_manager=PassManager(
                 [
-                    UnrollCustomDefinitions(std_eqlib, rzx_basis),
-                    BasisTranslator(std_eqlib, rzx_basis),
+                    UnrollCustomDefinitions(std_eqlib, cz_basis),
+                    BasisTranslator(std_eqlib, cz_basis),
                 ]
             ),
         )
