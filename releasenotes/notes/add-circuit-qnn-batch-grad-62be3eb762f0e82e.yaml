@@ -6,6 +6,6 @@ features:
     were aggregated into one output array. Thus, for each sample in a dataset at least one job was
     submitted. Now, gradients are computed for all samples in a dataset in one go by passing a
     list of values for a single parameter to ``CircuitSampler``. Therefore, a number of jobs
-    required for such computations is significantly reduced. This improvements may speed up
+    required for such computations is significantly reduced. This improvement may speed up
     training process in the cloud environment, where queue time for submitting a job may be
     a major contribution in the overall training time.
