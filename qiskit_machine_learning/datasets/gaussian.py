@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,10 +18,15 @@ import numpy as np
 from qiskit.utils import algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
 from .dataset_helper import features_and_labels_transform
+from ..deprecation import deprecate_function
 
 
+@deprecate_function("0.4.0")
 def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
-    """returns gaussian dataset"""
+    """
+    Returns gaussian dataset.
+    This function is deprecated in version 0.4.0
+    """
     sigma = 1
     if n == 2:
         class_labels = [r"A", r"B"]
