@@ -12,7 +12,9 @@
 
 """ Test Neural Network Classifier """
 
+from typing import Callable
 import unittest
+import functools
 
 from test import QiskitMachineLearningTestCase
 
@@ -32,6 +34,8 @@ class TestVQC(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+
+        self.num_classes_by_batch = []
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
@@ -63,8 +67,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -169,8 +175,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -245,8 +253,10 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -293,6 +303,79 @@ class TestVQC(QiskitMachineLearningTestCase):
         # Check score.
         score = classifier.score(X, y)
         self.assertGreater(score, 0.5)
+
+    def get_num_classes(self, func: Callable) -> Callable:
+        """Wrapper to record the number of classes assumed when building CircuitQNN."""
+
+        @functools.wraps(func)
+        def wrapper(num_classes: int):
+            self.num_classes_by_batch.append(num_classes)
+            return func(num_classes)
+
+        return wrapper
+
+    @data(
+        # optimizer, quantum instance
+        ("cobyla", "statevector"),
+        ("cobyla", "qasm"),
+        ("bfgs", "statevector"),
+        ("bfgs", "qasm"),
+        (None, "statevector"),
+        (None, "qasm"),
+    )
+    def test_batches_with_incomplete_labels(self, config):
+        """Test VQC when some batches do not include all possible labels."""
+        opt, q_i = config
+
+        if q_i == "statevector":
+            quantum_instance = self.sv_quantum_instance
+        elif q_i == "qasm":
+            quantum_instance = self.qasm_quantum_instance
+        else:
+            quantum_instance = None
+
+        if opt == "bfgs":
+            optimizer = L_BFGS_B(maxiter=5)
+        elif opt == "cobyla":
+            optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
+
+        num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
+
+        # Construct the data.
+        features = algorithm_globals.random.random((15, num_inputs))
+        target = np.asarray([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2])
+        num_classes = len(np.unique(target))
+
+        # One-hot encode the target.
+        target_onehot = np.zeros((target.size, int(target.max() + 1)))
+        target_onehot[np.arange(target.size), target.astype(int)] = 1
+
+        # Initialize the VQC.
+        classifier = VQC(
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            warm_start=True,
+            quantum_instance=quantum_instance,
+        )
+
+        classifier._get_interpret = self.get_num_classes(classifier._get_interpret)
+
+        # Fit the VQC to the first third of the data.
+        classifier.fit(features[:5, :], target_onehot[:5])
+
+        # Fit the VQC to the second third of the data with a warm start.
+        classifier.fit(features[5:10, :], target_onehot[5:10])
+
+        # Fit the VQC to the third third of the data with a warm start.
+        classifier.fit(features[10:, :], target_onehot[10:])
+
+        # Check all batches assume the correct number of classes
+        self.assertTrue((np.asarray(self.num_classes_by_batch) == num_classes).all())
 
 
 if __name__ == "__main__":
