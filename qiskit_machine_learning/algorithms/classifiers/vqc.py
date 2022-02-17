@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""An implementation of quantum neural network classifier."""
+"""An implementation of variational quantum classifier."""
 
 from typing import Union, Optional, Callable, cast
 import numpy as np
@@ -27,7 +27,17 @@ from .neural_network_classifier import NeuralNetworkClassifier
 
 
 class VQC(NeuralNetworkClassifier):
-    """Quantum neural network classifier."""
+    """Variational quantum classifier.
+
+    The variational quantum classifier is a variational algorithm where the
+    measured expectation value is interpreted as the output of a classifier.
+
+    Only supports one-hot encoded labels;
+    e.g., data like ``[1, 0, 0]``, ``[0, 1, 0]``, ``[0, 0, 1]``.
+
+    Multi-label classification is not supported;
+    e.g., data like ``[1, 1, 0]``, ``[0, 1, 1]``, ``[1, 0, 1]``, ``[1, 1, 1]``.
+    """
 
     def __init__(
         self,
@@ -155,12 +165,12 @@ class VQC(NeuralNetworkClassifier):
 
         Args:
             X: The input data.
-            y: The target values.
+            y: The target values. Required to be one-hot encoded.
 
         Returns:
             self: returns a trained classifier.
         """
-        num_classes = len(np.unique(y, axis=0))
+        num_classes = y.shape[-1]
         cast(CircuitQNN, self._neural_network).set_interpret(
             self._get_interpret(num_classes), num_classes
         )
