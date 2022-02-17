@@ -46,25 +46,25 @@ be classified.
 from qiskit import BasicAer
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms.optimizers import COBYLA
-from qiskit.circuit.library import TwoLocal
+from qiskit.circuit.library import TwoLocal, ZZFeatureMap
 from qiskit_machine_learning.algorithms import VQC
-from qiskit_machine_learning.datasets import wine
-from qiskit_machine_learning.circuit.library import RawFeatureVector
+from qiskit_machine_learning.datasets import ad_hoc_data
 
 seed = 1376
 algorithm_globals.random_seed = seed
 
-# Use Wine data set for training and test data
-feature_dim = 4  # dimension of each data point
-training_size = 12
-test_size = 4
+# Use ad hoc data set for training and test data
+feature_dim = 2  # dimension of each data point
+training_size = 20
+test_size = 10
 
 # training features, training labels, test features, test labels as np.array,
 # one hot encoding for labels
 training_features, training_labels, test_features, test_labels = \
-    wine(training_size=training_size, test_size=test_size, n=feature_dim)
+    ad_hoc_data(
+            training_size=training_size, test_size=test_size, n=feature_dim, gap=0.3)
 
-feature_map = RawFeatureVector(feature_dimension=feature_dim)
+feature_map = ZZFeatureMap(feature_dimension=feature_dim, reps=2, entanglement="linear")
 ansatz = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
 vqc = VQC(feature_map=feature_map,
           ansatz=ansatz,
