@@ -26,11 +26,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
-from qiskit.compiler.transpiler import PassManager, PassManagerConfig, level_3_pass_manager
-from qiskit.transpiler.passes.basis import BasisTranslator, UnrollCustomDefinitions
-from qiskit.circuit.library.standard_gates.equivalence_library import (
-    StandardEquivalenceLibrary as std_eqlib,
-)
+from qiskit.compiler.transpiler import PassManagerConfig, level_1_pass_manager, level_2_pass_manager
 from qiskit.test.mock import FakeToronto
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -68,13 +64,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
-            pass_manager=level_3_pass_manager(PassManagerConfig.from_backend(FakeToronto())),
-            bound_pass_manager=PassManager(
-                [
-                    UnrollCustomDefinitions(std_eqlib, cz_basis),
-                    BasisTranslator(std_eqlib, cz_basis),
-                ]
-            ),
+            pass_manager=level_1_pass_manager(PassManagerConfig.from_backend(FakeToronto())),
+            bound_pass_manager=level_2_pass_manager(PassManagerConfig.from_backend(FakeToronto())),
         )
 
         # define feature map and ansatz
