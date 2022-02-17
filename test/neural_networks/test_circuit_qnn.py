@@ -58,7 +58,6 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
-        cz_basis = ["cz", "rz", "x", "sx"]
         self.quantum_instance_pm = QuantumInstance(
             AerSimulator(),
             shots=100,
