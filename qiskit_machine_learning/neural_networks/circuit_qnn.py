@@ -36,7 +36,7 @@ from scipy.sparse import coo_matrix
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError
+from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError, OperatorBase
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 from qiskit.exceptions import MissingOptionalLibraryError
@@ -107,6 +107,8 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._weight_params = list(weight_params or [])
         self._input_gradients = input_gradients
         sparse = False if sampling else sparse
+        if sparse:
+            self._check_sparse_installed()
 
         # copy circuit and add measurements in case non are given
         # TODO: need to be able to handle partial measurements! (partial trace...)
@@ -145,7 +147,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._construct_gradient_circuit()
 
     def _construct_gradient_circuit(self):
-        self._gradient_circuit: QuantumCircuit = None
+        self._gradient_circuit: OperatorBase = None
         try:
             # todo: avoid copying the circuit
             grad_circuit = self._original_circuit.copy()
@@ -338,9 +340,7 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _sample(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> np.ndarray:
-
-        if self._quantum_instance is None:
-            raise QiskitMachineLearningError("Sampling requires a quantum instance!")
+        self._check_quantum_instance("samples")
 
         if self._quantum_instance.is_statevector:
             raise QiskitMachineLearningError("Sampling does not work with statevector simulator!")
@@ -350,9 +350,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._quantum_instance.backend_options["memory"] = True
 
         circuits = []
-        # iterate over rows, each row is an element of a batch
-        rows = input_data.shape[0]
-        for i in range(rows):
+        # iterate over samples, each sample is an element of a batch
+        num_samples = input_data.shape[0]
+        for i in range(num_samples):
             param_values = {
                 input_param: input_data[i, j] for j, input_param in enumerate(self._input_params)
             }
@@ -371,7 +371,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._quantum_instance.backend_options["memory"] = orig_memory
 
         # return samples
-        samples = np.zeros((rows, *self._output_shape))
+        samples = np.zeros((num_samples, *self._output_shape))
         # collect them from all executed circuits
         for i, circuit in enumerate(circuits):
             memory = result.get_memory(circuit)
@@ -382,16 +382,12 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probabilities(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Union[np.ndarray, SparseArray]:
-
-        if self._quantum_instance is None:
-            raise QiskitMachineLearningError(
-                "Evaluation of probabilities requires a quantum instance!"
-            )
+        self._check_quantum_instance("probabilities")
 
         # evaluate operator
         circuits = []
-        rows = input_data.shape[0]
-        for i in range(rows):
+        num_samples = input_data.shape[0]
+        for i in range(num_samples):
             param_values = {
                 input_param: input_data[i, j] for j, input_param in enumerate(self._input_params)
             }
@@ -408,15 +404,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # initialize probabilities
         if self._sparse:
-            if not _HAS_SPARSE:
-                raise MissingOptionalLibraryError(
-                    libname="sparse",
-                    name="DOK",
-                    pip_install="pip install 'qiskit-machine-learning[sparse]'",
-                )
-            prob = DOK((rows, *self._output_shape))
+            prob = DOK((num_samples, *self._output_shape))
         else:
-            prob = np.zeros((rows, *self._output_shape))
+            prob = np.zeros((num_samples, *self._output_shape))
 
         for i, circuit in enumerate(circuits):
             counts = result.get_counts(circuit)
@@ -438,59 +428,61 @@ class CircuitQNN(SamplingNeuralNetwork):
     def _probability_gradients(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
-
-        if self._quantum_instance is None:
-            raise QiskitMachineLearningError(
-                "Evaluation of probability gradients requires a quantum instance!"
-            )
+        self._check_quantum_instance("probability gradients")
 
         # check whether gradient circuit could be constructed
         if self._gradient_circuit is None:
             return None, None
 
-        rows = input_data.shape[0]
+        num_samples = input_data.shape[0]
 
         # initialize empty gradients
         input_grad = None  # by default we don't have data gradients
         if self._sparse:
-            if not _HAS_SPARSE:
-                raise MissingOptionalLibraryError(
-                    libname="sparse",
-                    name="DOK",
-                    pip_install="pip install 'qiskit-machine-learning[sparse]'",
-                )
             if self._input_gradients:
-                input_grad = DOK((rows, *self._output_shape, self._num_inputs))
-            weights_grad = DOK((rows, *self._output_shape, self._num_weights))
+                input_grad = DOK((num_samples, *self._output_shape, self._num_inputs))
+            weights_grad = DOK((num_samples, *self._output_shape, self._num_weights))
         else:
             if self._input_gradients:
-                input_grad = np.zeros((rows, *self._output_shape, self._num_inputs))
-            weights_grad = np.zeros((rows, *self._output_shape, self._num_weights))
+                input_grad = np.zeros((num_samples, *self._output_shape, self._num_inputs))
+            weights_grad = np.zeros((num_samples, *self._output_shape, self._num_weights))
 
-        for row in range(rows):
-            param_values = {
-                input_param: input_data[row, j] for j, input_param in enumerate(self._input_params)
+        param_values = {
+            input_param: input_data[:, j] for j, input_param in enumerate(self._input_params)
+        }
+        param_values.update(
+            {
+                weight_param: np.full(num_samples, weights[j])
+                for j, weight_param in enumerate(self._weight_params)
             }
-            param_values.update(
-                {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
-            )
+        )
 
-            # TODO: additional "bind_parameters" should not be necessary,
-            #  seems like a bug to be fixed
-            grad = (
-                self._sampler.convert(self._gradient_circuit, param_values)
-                .bind_parameters(param_values)
-                .eval()
-            )
+        converted_op = self._sampler.convert(self._gradient_circuit, param_values)
+        # if statement is a workaround for https://github.com/Qiskit/qiskit-terra/issues/7608
+        if len(converted_op.parameters) > 0:
+            # create an list of parameter bindings, each element corresponds to a sample in the dataset
+            param_bindings = [
+                {param: param_values[i] for param, param_values in param_values.items()}
+                for i in range(num_samples)
+            ]
 
-            # construct gradients
-            if self._input_gradients:
-                num_grad_vars = self._num_inputs + self._num_weights
-            else:
-                num_grad_vars = self._num_weights
+            grad = []
+            # iterate over gradient vectors and bind the correct leftover parameters
+            for g_i, param_i in zip(converted_op, param_bindings):
+                # bind or re-bind remaining values and evaluate the gradient
+                grad.append(g_i.bind_parameters(param_i).eval())
+        else:
+            grad = converted_op.eval()
 
+        if self._input_gradients:
+            num_grad_vars = self._num_inputs + self._num_weights
+        else:
+            num_grad_vars = self._num_weights
+
+        # construct gradients
+        for sample in range(num_samples):
             for i in range(num_grad_vars):
-                coo_grad = coo_matrix(grad[i])  # this works for sparse and dense case
+                coo_grad = coo_matrix(grad[sample][i])  # this works for sparse and dense case
 
                 # get index for input or weights gradients
                 if self._input_gradients:
@@ -499,15 +491,14 @@ class CircuitQNN(SamplingNeuralNetwork):
                     grad_index = i
 
                 for _, k, val in zip(coo_grad.row, coo_grad.col, coo_grad.data):
-
                     # interpret integer and construct key
                     key = self._interpret(k)
                     if isinstance(key, Integral):
-                        key = (row, int(key), grad_index)
+                        key = (sample, int(key), grad_index)
                     else:
                         # if key is an array-type, cast to hashable tuple
                         key = tuple(cast(Iterable[int], key))
-                        key = (row, *key, grad_index)
+                        key = (sample, *key, grad_index)
 
                     # store value for inputs or weights gradients
                     if self._input_gradients:
@@ -518,10 +509,25 @@ class CircuitQNN(SamplingNeuralNetwork):
                             weights_grad[key] += np.real(val)
                     else:
                         weights_grad[key] += np.real(val)
+        # end of for each sample
 
         if self._sparse:
             if self._input_gradients:
                 input_grad = input_grad.to_coo()
-            return input_grad, weights_grad.to_coo()
-        else:
-            return input_grad, weights_grad
+            weights_grad = weights_grad.to_coo()
+
+        return input_grad, weights_grad
+
+    def _check_sparse_installed(self):
+        if not _HAS_SPARSE:
+            raise MissingOptionalLibraryError(
+                libname="sparse",
+                name="DOK",
+                pip_install="pip install 'qiskit-machine-learning[sparse]'",
+            )
+
+    def _check_quantum_instance(self, feature: str):
+        if self._quantum_instance is None:
+            raise QiskitMachineLearningError(
+                f"Evaluation of {feature} requires a quantum instance!"
+            )
