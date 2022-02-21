@@ -289,7 +289,9 @@ class CircuitQNN(SamplingNeuralNetwork):
 
             # transpile the QNN circuit
             try:
-                self._circuit = self._quantum_instance.transpile(self._circuit)[0]
+                self._circuit = self._quantum_instance.transpile(
+                    self._circuit, pass_manager=self._quantum_instance.unbound_pass_manager
+                )[0]
                 self._circuit_transpiled = True
             except QiskitError:
                 # likely it is caused by RawFeatureVector, we just ignore this error and
@@ -359,6 +361,11 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
+        if self._quantum_instance.bound_pass_manager:
+            circuits = self._quantum_instance.transpile(
+                circuits, pass_manager=self._quantum_instance.bound_pass_manager
+            )
+
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # set the memory setting back
         self._quantum_instance.backend_options["memory"] = orig_memory
@@ -388,6 +395,11 @@ class CircuitQNN(SamplingNeuralNetwork):
                 {weight_param: weights[j] for j, weight_param in enumerate(self._weight_params)}
             )
             circuits.append(self._circuit.bind_parameters(param_values))
+
+        if self._quantum_instance.bound_pass_manager:
+            circuits = self._quantum_instance.transpile(
+                circuits, pass_manager=self._quantum_instance.bound_pass_manager
+            )
 
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # initialize probabilities
