@@ -1,5 +1,5 @@
 ---
-fixes:
+features:
   - |
     Fix in ``CircuitQNN`` that ensures unbound_pass_manager is called when caching
     the QNN circuit and that ``bound_pass_manager`` is called when QNN parameters
