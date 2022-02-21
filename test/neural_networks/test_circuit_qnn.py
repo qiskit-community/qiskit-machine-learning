@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -26,6 +26,8 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.exceptions import MissingOptionalLibraryError
+from qiskit.compiler.transpiler import PassManagerConfig, level_1_pass_manager, level_2_pass_manager
+from qiskit.test.mock import FakeToronto
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
@@ -33,6 +35,8 @@ from qiskit_machine_learning.neural_networks import CircuitQNN
 QASM = "qasm"
 
 STATEVECTOR = "statevector"
+
+CUSTOM_PASS_MANAGERS = "custom_pass_managers"
 
 
 @ddt
@@ -53,6 +57,14 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
+        )
+        self.quantum_instance_pm = QuantumInstance(
+            AerSimulator(),
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+            pass_manager=level_1_pass_manager(PassManagerConfig.from_backend(FakeToronto())),
+            bound_pass_manager=level_2_pass_manager(PassManagerConfig.from_backend(FakeToronto())),
         )
 
         # define feature map and ansatz
@@ -93,6 +105,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             quantum_instance = self.quantum_instance_sv
         elif quantum_instance_type == QASM:
             quantum_instance = self.quantum_instance_qasm
+        elif quantum_instance_type == CUSTOM_PASS_MANAGERS:
+            quantum_instance = self.quantum_instance_pm
         else:
             quantum_instance = None
 
@@ -204,6 +218,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (True, True, QASM, 1, 2),
         (True, True, QASM, 2, 1),
         (True, True, QASM, 2, 2),
+        (True, True, CUSTOM_PASS_MANAGERS, 0, 1),
+        (True, True, CUSTOM_PASS_MANAGERS, 0, 2),
+        (True, True, CUSTOM_PASS_MANAGERS, 1, 1),
+        (True, True, CUSTOM_PASS_MANAGERS, 1, 2),
+        (True, True, CUSTOM_PASS_MANAGERS, 2, 1),
+        (True, True, CUSTOM_PASS_MANAGERS, 2, 2),
         (True, False, STATEVECTOR, 0, 1),
         (True, False, STATEVECTOR, 0, 2),
         (True, False, STATEVECTOR, 1, 1),
@@ -216,6 +236,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (True, False, QASM, 1, 2),
         (True, False, QASM, 2, 1),
         (True, False, QASM, 2, 2),
+        (True, False, CUSTOM_PASS_MANAGERS, 0, 1),
+        (True, False, CUSTOM_PASS_MANAGERS, 0, 2),
+        (True, False, CUSTOM_PASS_MANAGERS, 1, 1),
+        (True, False, CUSTOM_PASS_MANAGERS, 1, 2),
+        (True, False, CUSTOM_PASS_MANAGERS, 2, 1),
+        (True, False, CUSTOM_PASS_MANAGERS, 2, 2),
         (False, True, STATEVECTOR, 0, 1),
         (False, True, STATEVECTOR, 0, 2),
         (False, True, STATEVECTOR, 1, 1),
@@ -228,6 +254,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, True, QASM, 1, 2),
         (False, True, QASM, 2, 1),
         (False, True, QASM, 2, 2),
+        (False, True, CUSTOM_PASS_MANAGERS, 0, 1),
+        (False, True, CUSTOM_PASS_MANAGERS, 0, 2),
+        (False, True, CUSTOM_PASS_MANAGERS, 1, 1),
+        (False, True, CUSTOM_PASS_MANAGERS, 1, 2),
+        (False, True, CUSTOM_PASS_MANAGERS, 2, 1),
+        (False, True, CUSTOM_PASS_MANAGERS, 2, 2),
         (False, False, STATEVECTOR, 0, 1),
         (False, False, STATEVECTOR, 0, 2),
         (False, False, STATEVECTOR, 1, 1),
@@ -240,6 +272,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, False, QASM, 1, 2),
         (False, False, QASM, 2, 1),
         (False, False, QASM, 2, 2),
+        (False, False, CUSTOM_PASS_MANAGERS, 0, 1),
+        (False, False, CUSTOM_PASS_MANAGERS, 0, 2),
+        (False, False, CUSTOM_PASS_MANAGERS, 1, 1),
+        (False, False, CUSTOM_PASS_MANAGERS, 1, 2),
+        (False, False, CUSTOM_PASS_MANAGERS, 2, 1),
+        (False, False, CUSTOM_PASS_MANAGERS, 2, 2),
     )
     @requires_extra_library
     def test_circuit_qnn(self, config):
@@ -341,6 +379,13 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (True, True, QASM, 1, 1),
         (True, True, QASM, 1, 2),
         (True, True, QASM, 2, 1),
+        (True, True, QASM, 2, 2),
+        (True, True, CUSTOM_PASS_MANAGERS, 0, 1),
+        (True, True, CUSTOM_PASS_MANAGERS, 0, 2),
+        (True, True, CUSTOM_PASS_MANAGERS, 1, 1),
+        (True, True, CUSTOM_PASS_MANAGERS, 1, 2),
+        (True, True, CUSTOM_PASS_MANAGERS, 2, 1),
+        (True, True, CUSTOM_PASS_MANAGERS, 2, 2),
         (True, False, STATEVECTOR, 0, 1),
         (True, False, STATEVECTOR, 0, 2),
         (True, False, STATEVECTOR, 1, 1),
@@ -353,6 +398,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (True, False, QASM, 1, 2),
         (True, False, QASM, 2, 1),
         (True, False, QASM, 2, 2),
+        (True, False, CUSTOM_PASS_MANAGERS, 0, 1),
+        (True, False, CUSTOM_PASS_MANAGERS, 0, 2),
+        (True, False, CUSTOM_PASS_MANAGERS, 1, 1),
+        (True, False, CUSTOM_PASS_MANAGERS, 1, 2),
+        (True, False, CUSTOM_PASS_MANAGERS, 2, 1),
+        (True, False, CUSTOM_PASS_MANAGERS, 2, 2),
         (False, True, STATEVECTOR, 0, 1),
         (False, True, STATEVECTOR, 0, 2),
         (False, True, STATEVECTOR, 1, 1),
@@ -365,6 +416,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, True, QASM, 1, 2),
         (False, True, QASM, 2, 1),
         (False, True, QASM, 2, 2),
+        (False, True, CUSTOM_PASS_MANAGERS, 0, 1),
+        (False, True, CUSTOM_PASS_MANAGERS, 0, 2),
+        (False, True, CUSTOM_PASS_MANAGERS, 1, 1),
+        (False, True, CUSTOM_PASS_MANAGERS, 1, 2),
+        (False, True, CUSTOM_PASS_MANAGERS, 2, 1),
+        (False, True, CUSTOM_PASS_MANAGERS, 2, 2),
         (False, False, STATEVECTOR, 0, 1),
         (False, False, STATEVECTOR, 0, 2),
         (False, False, STATEVECTOR, 1, 1),
@@ -377,6 +434,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, False, QASM, 1, 2),
         (False, False, QASM, 2, 1),
         (False, False, QASM, 2, 2),
+        (False, False, CUSTOM_PASS_MANAGERS, 0, 1),
+        (False, False, CUSTOM_PASS_MANAGERS, 0, 2),
+        (False, False, CUSTOM_PASS_MANAGERS, 1, 1),
+        (False, False, CUSTOM_PASS_MANAGERS, 1, 2),
+        (False, False, CUSTOM_PASS_MANAGERS, 2, 1),
+        (False, False, CUSTOM_PASS_MANAGERS, 2, 2),
     )
     @requires_extra_library
     def test_no_quantum_instance(self, config):
@@ -403,6 +466,8 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             quantum_instance = self.quantum_instance_sv
         elif quantum_instance_type == QASM:
             quantum_instance = self.quantum_instance_qasm
+        elif quantum_instance_type == CUSTOM_PASS_MANAGERS:
+            quantum_instance = self.quantum_instance_pm
         else:
             # must never happen
             quantum_instance = None
