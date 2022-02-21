@@ -1,6 +1,6 @@
 ---
 features:
   - |
-    Fix in ``CircuitQNN`` that ensures unbound_pass_manager is called when caching
+    Added a new feature in ``CircuitQNN`` that ensures unbound_pass_manager is called when caching
     the QNN circuit and that ``bound_pass_manager`` is called when QNN parameters
     are assigned.
