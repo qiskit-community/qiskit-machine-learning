@@ -21,7 +21,7 @@ import numpy as np
 
 from sklearn.svm import SVC
 
-from qiskit import BasicAer
+from qiskit import BasicAer, QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
@@ -315,35 +315,56 @@ class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=1)
 
+    def _check_circuit(self, qc: QuantumCircuit, check_measurements: bool, check_inverse: bool):
+        self.assertEqual(qc.num_qubits, self.feature_map.num_qubits)
+
+        # check that there are two feature maps
+        self.assertTrue(qc.data[0][0].name.startswith(self.feature_map.name))
+        self.assertTrue(qc.data[1][0].name.startswith(self.feature_map.name))
+
+        # check that there are measurement operations in the circuit
+        if check_measurements:
+            original_depth = qc.depth()
+            qc.remove_final_measurements()
+            self.assertNotEqual(original_depth, qc.depth())
+
+        # check that there are two feature maps: plain and plain dagger (inverse)
+        if check_inverse:
+            self.assertEqual(qc.data[1][0].definition, qc.data[0][0].definition.inverse())
+
     def test_innerproduct(self):
         """Test inner product"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, self.y)
-        self.assertEqual(qc.decompose().size(), 4)
+        self._check_circuit(qc, check_measurements=True, check_inverse=False)
 
     def test_selfinnerproduct(self):
         """Test self inner product"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x)
-        self.assertEqual(qc.decompose().size(), 4)
+        self._check_circuit(qc, check_measurements=True, check_inverse=True)
 
     def test_innerproduct_nomeasurement(self):
         """Test inner product no measurement"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, self.y, measurement=False)
-        self.assertEqual(qc.decompose().size(), 2)
+        self._check_circuit(qc, check_measurements=False, check_inverse=False)
 
     def test_selfinnerprodect_nomeasurement(self):
         """Test self inner product no measurement"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, measurement=False)
-        self.assertEqual(qc.decompose().size(), 2)
+        self._check_circuit(qc, check_measurements=False, check_inverse=True)
 
     def test_statevector(self):
         """Test state vector simulator"""
         qkclass = QuantumKernel(feature_map=self.feature_map)
         qc = qkclass.construct_circuit(self.x, is_statevector_sim=True)
-        self.assertEqual(qc.decompose().size(), 1)
+
+        self.assertEqual(qc.num_qubits, self.feature_map.num_qubits)
+
+        # check that there's a feature map in the circuit
+        self.assertTrue(qc.data[0][0].name.startswith(self.feature_map.name))
 
     def test_xdim(self):
         """Test incorrect x dimension"""
