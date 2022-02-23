@@ -84,7 +84,18 @@ print(f"Testing accuracy: {score:0.2f}")
 
 Learning path notebooks may be found in the
 [Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials/index.html) section
-of the documentation and are a great place to start.
+of the documentation and are a great place to start. 
+
+Another good place to learn the fundamentals of quantum machine learning is the
+[Quantum Machine Learning](https://learn.qiskit.org/course/machine-learning/introduction) course 
+on the Qiskit Textbook's website. The course is very convenient for beginners who are eager to learn 
+quantum machine learning from scratch, as well as understand the background and theory behind algorithms in
+Qiskit Machine Learning. The course covers a variety of topics to build understanding of parameterized
+circuits, data encoding, variational algorithms etc., and in the end the ultimate goal of machine
+learning - how to build and train quantum ML models for supervised and unsupervised learning. 
+The textbook course is complementary to the tutorials of this module, where the tutorials focus
+on actual Qiskit Machine Learning algorithms, the course more explains and details underlying fundamentals
+of quantum machine learning.
 
 ----------------------------------------------------------------------------------------------------
 
