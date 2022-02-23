@@ -1,0 +1,9 @@
+---
+fixes:
+  - |
+    Previously, VQC would throw an error if trained on batches of data where
+    not all of the target labels that can be found in the full dataset were
+    present. This is because VQC interpreted the number of unique targets in
+    the current batch as the number of classes. Currently, VQC is hard-coded
+    to expect one-hot-encoded targets. Therefore, VQC will now determine the
+    number of classes from the shape of the target array.
