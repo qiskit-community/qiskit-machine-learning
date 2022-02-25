@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -101,7 +101,12 @@ class TorchConnector(Module):
             ctx.neural_network = neural_network
             ctx.sparse = sparse
             ctx.save_for_backward(input_data, weights)
-            result = neural_network.forward(input_data.numpy(), weights.numpy())
+            # Added detach to handle tensor that is part of a computation graph that requires a gradient.
+            # Also converting to CPU if the tensor is on a GPU.
+            # Both methods are idempotent.
+            result = neural_network.forward(
+                input_data.detach().to("cpu").numpy(), weights.detach().to("cpu").numpy()
+            )
             if neural_network.sparse and sparse:
                 if not _HAS_SPARSE:
                     raise MissingOptionalLibraryError(
