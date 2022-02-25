@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,10 +21,15 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 from qiskit.exceptions import MissingOptionalLibraryError
 from .dataset_helper import features_and_labels_transform
+from ..deprecation import deprecate_function
 
 
+@deprecate_function("0.4.0")
 def digits(training_size, test_size, n, plot_data=False, one_hot=True):
-    """returns digits dataset"""
+    """
+    Returns digits dataset
+    This function is deprecated in version 0.4.0
+    """
     class_labels = [r"A", r"B", r"C", r"D", r"E", r"F", r"G", r"H", r"I", r"J"]
     data = datasets.load_digits()
     # pylint: disable=no-member

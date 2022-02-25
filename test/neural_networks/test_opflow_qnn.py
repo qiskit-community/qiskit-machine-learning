@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -53,6 +53,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
+        np.random.seed(algorithm_globals.random_seed)
 
     def validate_output_shape(self, qnn: OpflowQNN, test_data: List[np.ndarray]) -> None:
         """
