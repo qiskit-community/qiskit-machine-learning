@@ -69,9 +69,9 @@ def ad_hoc_data(
     h_2 = np.asarray(h_2)
     h_3 = np.asarray(h_3)
 
-    f_a = np.arange(2 ** n)
+    f_a = np.arange(2**n)
 
-    my_array = [[0 for x in range(n)] for y in range(2 ** n)]
+    my_array = [[0 for x in range(n)] for y in range(2**n)]
 
     for arindex, _ in enumerate(my_array):
         temp_f = bin(f_a[arindex])[2:].zfill(n)
@@ -92,8 +92,8 @@ def ad_hoc_data(
         d_m = np.diag(maj)
 
     basis = algorithm_globals.random.random(
-        (2 ** n, 2 ** n)
-    ) + 1j * algorithm_globals.random.random((2 ** n, 2 ** n))
+        (2**n, 2**n)
+    ) + 1j * algorithm_globals.random.random((2**n, 2**n))
     basis = np.asarray(basis).conj().T @ np.asarray(basis)
 
     [s_a, u_a] = np.linalg.eig(basis)
