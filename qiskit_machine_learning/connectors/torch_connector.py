@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -101,7 +101,13 @@ class TorchConnector(Module):
             ctx.neural_network = neural_network
             ctx.sparse = sparse
             ctx.save_for_backward(input_data, weights)
-            result = neural_network.forward(input_data.numpy(), weights.numpy())
+
+            # Detach the tensors and move it to CPU as we need numpy array to compute gradients
+            # of the quantum neural network. If the tensors are on CPU already this does nothing.
+            # Some other tensors down below are also moved to CPU for computations.
+            result = neural_network.forward(
+                input_data.detach().cpu().numpy(), weights.detach().cpu().numpy()
+            )
             if neural_network.sparse and sparse:
                 if not _HAS_SPARSE:
                     raise MissingOptionalLibraryError(
@@ -120,6 +126,9 @@ class TorchConnector(Module):
             # convention.
             if len(input_data.shape) == 1:
                 result_tensor = result_tensor[0]
+
+            # place the resulting tensor back to the device where input data is stored
+            result_tensor = result_tensor.to(input_data.device)
 
             return result_tensor
 
@@ -155,7 +164,9 @@ class TorchConnector(Module):
                 grad_output = grad_output.view(1, -1)
 
             # evaluate QNN gradient
-            input_grad, weights_grad = neural_network.backward(input_data.numpy(), weights.numpy())
+            input_grad, weights_grad = neural_network.backward(
+                input_data.detach().cpu().numpy(), weights.detach().cpu().numpy()
+            )
             if input_grad is not None:
                 if neural_network.sparse:
                     input_grad = sparse_coo_tensor(input_grad.coords, input_grad.data)
@@ -174,7 +185,10 @@ class TorchConnector(Module):
                 # to get total gradient of output w.r.t. each input k and batch index i.
                 # This operation should preserve the batch dimension to be able to do back-prop in
                 # a batched manner.
-                input_grad = einsum("ij,ijk->ik", grad_output, input_grad)
+                input_grad = einsum("ij,ijk->ik", grad_output.detach().cpu(), input_grad)
+
+                # place the resulting tensor to the device where they were stored
+                input_grad = input_grad.to(input_data.device)
 
             if weights_grad is not None:
                 if neural_network.sparse:
@@ -193,7 +207,10 @@ class TorchConnector(Module):
                 # from this point on backwards with respect to each parameter k. Sums over all i and
                 # j to get total gradient of output w.r.t. each parameter k.
                 # The weights' dimension is independent of the batch size.
-                weights_grad = einsum("ij,ijk->k", grad_output, weights_grad)
+                weights_grad = einsum("ij,ijk->k", grad_output.detach().cpu(), weights_grad)
+
+                # place the resulting tensor to the device where they were stored
+                weights_grad = weights_grad.to(weights.device)
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
             return input_grad, weights_grad, None, None

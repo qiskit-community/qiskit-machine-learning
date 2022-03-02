@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Added GPU support to ``TorchConnector``. Now, if a hybrid PyTorch model is being trained on GPU,
+    ``TorchConnector`` correctly detaches tensors, moves them to CPU, evaluate forward and backward
+    passes and places resulting tensors to the same device they came from.
