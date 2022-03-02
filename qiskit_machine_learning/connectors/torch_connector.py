@@ -187,6 +187,9 @@ class TorchConnector(Module):
                 # a batched manner.
                 input_grad = einsum("ij,ijk->ik", grad_output.detach().cpu(), input_grad)
 
+                # place the resulting tensor to the device where they were stored
+                input_grad = input_grad.to(input_data.device)
+
             if weights_grad is not None:
                 if neural_network.sparse:
                     weights_grad = sparse_coo_tensor(weights_grad.coords, weights_grad.data)
@@ -206,9 +209,8 @@ class TorchConnector(Module):
                 # The weights' dimension is independent of the batch size.
                 weights_grad = einsum("ij,ijk->k", grad_output.detach().cpu(), weights_grad)
 
-            # place the resulting tensor to the device where they were stored
-            input_grad = input_grad.to(input_data.device)
-            weights_grad = weights_grad.to(weights.device)
+                # place the resulting tensor to the device where they were stored
+                weights_grad = weights_grad.to(weights.device)
 
             # return gradients for the first two arguments and None for the others (i.e. qnn/sparse)
             return input_grad, weights_grad, None, None
