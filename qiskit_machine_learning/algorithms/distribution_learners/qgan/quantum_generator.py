@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2021.
+# (C) Copyright IBM 2019, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -107,7 +107,7 @@ class QuantumGenerator(GenerativeNetwork):
             bounds = self._bounds
         for j, prec in enumerate(self._num_qubits):
             # prepare data grid for dim j
-            grid = np.linspace(bounds[j, 0], bounds[j, 1], (2 ** prec))
+            grid = np.linspace(bounds[j, 0], bounds[j, 1], (2**prec))
             if j == 0:
                 if len(self._num_qubits) > 1:
                     self._data_grid = [grid]

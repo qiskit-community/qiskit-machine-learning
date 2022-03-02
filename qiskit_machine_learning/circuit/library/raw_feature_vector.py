@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -129,7 +129,7 @@ class RawFeatureVector(BlueprintCircuit):
         Returns:
             The feature dimension, which is ``2 ** num_qubits``.
         """
-        return 2 ** self.num_qubits
+        return 2**self.num_qubits
 
     @feature_dimension.setter
     def feature_dimension(self, feature_dimension: int) -> None:
