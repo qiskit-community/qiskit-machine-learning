@@ -19,7 +19,7 @@ from functools import reduce
 import numpy as np
 import scipy
 from qiskit.utils import algorithm_globals
-from qiskit.exceptions import MissingOptionalLibraryError
+from qiskit.utils.optionals import HAS_MATPLOTLIB
 
 from qiskit_machine_learning.datasets.dataset_helper import (
     features_and_labels_transform,
@@ -145,16 +145,9 @@ def _sample_ad_hoc_data(sample_total, xvals, num_samples, n):
     return samples, labels
 
 
+@HAS_MATPLOTLIB.require_in_call
 def _plot_ad_hoc_data(x_total, y_total, training_size):
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError as ex:
-        raise MissingOptionalLibraryError(
-            libname="Matplotlib",
-            name="ad_hoc_data",
-            pip_install="pip install matplotlib",
-        ) from ex
-
+    import matplotlib.pyplot as plt
     n = x_total.shape[1]
     fig = plt.figure()
     projection = "3d" if n == 3 else None
