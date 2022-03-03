@@ -17,12 +17,22 @@ from typing import Tuple, Union, List, Callable, Optional, cast, Iterable
 
 import numpy as np
 
-try:
-    from sparse import SparseArray, DOK
+from scipy.sparse import coo_matrix
 
-    _HAS_SPARSE = True
-except ImportError:
-    _HAS_SPARSE = False
+from qiskit import QuantumCircuit
+from qiskit.circuit import Parameter
+from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError, OperatorBase
+from qiskit.providers import BaseBackend, Backend
+from qiskit.utils import QuantumInstance
+
+import qiskit_machine_learning.optionals as _optionals
+from .sampling_neural_network import SamplingNeuralNetwork
+from ..exceptions import QiskitMachineLearningError, QiskitError
+
+if _optionals.HAS_SPARSE:
+    # pylint: disable=import-error
+    from sparse import SparseArray
+else:
 
     class SparseArray:  # type: ignore
         """Empty SparseArray class
@@ -31,18 +41,6 @@ except ImportError:
 
         pass
 
-
-from scipy.sparse import coo_matrix
-
-from qiskit import QuantumCircuit
-from qiskit.circuit import Parameter
-from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError, OperatorBase
-from qiskit.providers import BaseBackend, Backend
-from qiskit.utils import QuantumInstance
-from qiskit.exceptions import MissingOptionalLibraryError
-
-from .sampling_neural_network import SamplingNeuralNetwork
-from ..exceptions import QiskitMachineLearningError, QiskitError
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +106,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         self._input_gradients = input_gradients
         sparse = False if sampling else sparse
         if sparse:
-            self._check_sparse_installed()
+            _optionals.HAS_SPARSE.require_now("DOK")
 
         # copy circuit and add measurements in case non are given
         # TODO: need to be able to handle partial measurements! (partial trace...)
@@ -404,6 +402,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         result = self._quantum_instance.execute(circuits, had_transpiled=self._circuit_transpiled)
         # initialize probabilities
         if self._sparse:
+            # pylint: disable=import-error
+            from sparse import DOK
+
             prob = DOK((num_samples, *self._output_shape))
         else:
             prob = np.zeros((num_samples, *self._output_shape))
@@ -439,6 +440,9 @@ class CircuitQNN(SamplingNeuralNetwork):
         # initialize empty gradients
         input_grad = None  # by default we don't have data gradients
         if self._sparse:
+            # pylint: disable=import-error
+            from sparse import DOK
+
             if self._input_gradients:
                 input_grad = DOK((num_samples, *self._output_shape, self._num_inputs))
             weights_grad = DOK((num_samples, *self._output_shape, self._num_weights))
@@ -517,14 +521,6 @@ class CircuitQNN(SamplingNeuralNetwork):
             weights_grad = weights_grad.to_coo()
 
         return input_grad, weights_grad
-
-    def _check_sparse_installed(self):
-        if not _HAS_SPARSE:
-            raise MissingOptionalLibraryError(
-                libname="sparse",
-                name="DOK",
-                pip_install="pip install 'qiskit-machine-learning[sparse]'",
-            )
 
     def _check_quantum_instance(self, feature: str):
         if self._quantum_instance is None:

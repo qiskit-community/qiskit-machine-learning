@@ -16,8 +16,7 @@ ad hoc dataset
 
 import numpy as np
 import scipy
-from qiskit.utils import algorithm_globals
-from qiskit.exceptions import MissingOptionalLibraryError
+from qiskit.utils import algorithm_globals, optionals
 
 from qiskit_machine_learning.datasets.dataset_helper import (
     features_and_labels_transform,
@@ -167,14 +166,9 @@ def ad_hoc_data(
         }
 
         if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname="Matplotlib",
-                    name="ad_hoc_data",
-                    pip_install="pip install matplotlib",
-                ) from ex
+            optionals.HAS_MATPLOTLIB.require_now("ad_hoc_data")
+            # pylint: disable=import-error
+            import matplotlib.pyplot as plt
 
             plt.show()
             fig2 = plt.figure()
@@ -260,14 +254,10 @@ def ad_hoc_data(
         }
 
         if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname="Matplotlib",
-                    name="ad_hoc_data",
-                    pip_install="pip install matplotlib",
-                ) from ex
+            optionals.HAS_MATPLOTLIB.require_now("ad_hoc_data")
+            # pylint: disable=import-error
+            import matplotlib.pyplot as plt
+
             sample_total_a = np.asarray(sample_total_a)
             sample_total_b = np.asarray(sample_total_b)
             x_1 = sample_total_a[:, 0]

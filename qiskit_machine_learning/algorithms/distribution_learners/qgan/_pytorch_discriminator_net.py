@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2021.
+# (C) Copyright IBM 2019, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,22 +14,10 @@
 Discriminator
 """
 
-import logging
-from qiskit.exceptions import MissingOptionalLibraryError
+import qiskit_machine_learning.optionals as _optionals
 
-logger = logging.getLogger(__name__)
-
-try:
+if _optionals.HAS_TORCH:
     import torch
-    from torch import nn
-except ImportError:
-    if logger.isEnabledFor(logging.INFO):
-        EXC = MissingOptionalLibraryError(
-            libname="Pytorch",
-            name="DiscriminatorNet",
-            pip_install="pip install 'qiskit-machine-learning[torch]'",
-        )
-        logger.info(str(EXC))
 
 # torch 1.6.0 fixed a mypy error about not applying contravariance rules
 # to inputs by defining forward as a value, rather than a function.  See also
@@ -39,6 +27,7 @@ except ImportError:
 # The pylint disable=abstract-method fixes it.
 
 
+@_optionals.HAS_TORCH.require_in_instance
 class DiscriminatorNet(torch.nn.Module):  # pylint: disable=abstract-method
     """
     Discriminator
@@ -54,6 +43,9 @@ class DiscriminatorNet(torch.nn.Module):  # pylint: disable=abstract-method
         """
 
         super().__init__()
+        # pylint: disable=import-error
+        from torch import nn
+
         self.n_features = n_features
 
         self.hidden0 = nn.Sequential(

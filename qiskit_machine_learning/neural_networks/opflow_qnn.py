@@ -29,10 +29,14 @@ from qiskit.opflow import (
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
+import qiskit_machine_learning.optionals as _optionals
+from .neural_network import NeuralNetwork
+from ..exceptions import QiskitMachineLearningError, QiskitError
 
-try:
+if _optionals.HAS_SPARSE:
+    # pylint: disable=import-error
     from sparse import SparseArray
-except ImportError:
+else:
 
     class SparseArray:  # type: ignore
         """Empty SparseArray class
@@ -41,9 +45,6 @@ except ImportError:
 
         pass
 
-
-from .neural_network import NeuralNetwork
-from ..exceptions import QiskitMachineLearningError, QiskitError
 
 logger = logging.getLogger(__name__)
 

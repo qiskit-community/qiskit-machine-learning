@@ -14,24 +14,17 @@
 
 from typing import Tuple, Any, Optional, cast, Union
 import numpy as np
-from qiskit.exceptions import MissingOptionalLibraryError
 
-try:
-    from sparse import SparseArray, COO
-
-    _HAS_SPARSE = True
-except ImportError:
-    _HAS_SPARSE = False
-
+import qiskit_machine_learning.optionals as _optionals
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
 from ..deprecation import deprecate_property
 
-try:
+if _optionals.HAS_TORCH:
     from torch import Tensor, sparse_coo_tensor, einsum
     from torch.autograd import Function
     from torch.nn import Module, Parameter as TorchParam
-except ImportError:
+else:
 
     class Function:  # type: ignore
         """Empty Function class
@@ -50,17 +43,12 @@ except ImportError:
     class Module:  # type: ignore
         """Empty Module class
         Replacement if torch.nn.Module is not present.
-        Always fails to initialize
         """
 
-        def __init__(self) -> None:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            )
+        pass
 
 
+@_optionals.HAS_TORCH.require_in_instance
 class TorchConnector(Module):
     """Connects a Qiskit (Quantum) Neural Network to PyTorch."""
 
@@ -88,7 +76,6 @@ class TorchConnector(Module):
 
             Raises:
                 QiskitMachineLearningError: Invalid input data.
-                MissingOptionalLibraryError: sparse not installed.
             """
 
             # validate input shape
@@ -109,12 +96,10 @@ class TorchConnector(Module):
                 input_data.detach().cpu().numpy(), weights.detach().cpu().numpy()
             )
             if neural_network.sparse and sparse:
-                if not _HAS_SPARSE:
-                    raise MissingOptionalLibraryError(
-                        libname="sparse",
-                        name="COO",
-                        pip_install="pip install 'qiskit-machine-learning[sparse]'",
-                    )
+                _optionals.HAS_SPARSE.require_now("COO")
+                # pylint: disable=import-error
+                from sparse import SparseArray, COO
+
                 result = cast(COO, cast(SparseArray, result).asformat("coo"))
                 result_tensor = sparse_coo_tensor(result.coords, result.data)
             else:

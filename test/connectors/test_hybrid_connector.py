@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,31 +13,15 @@
 """Test Torch Connector 2."""
 
 import unittest
-from typing import List
-from test import QiskitMachineLearningTestCase, requires_extra_library
+from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import ddt
 
-try:
-    from torch import Tensor
-    from torch.nn import MSELoss
-    from torch.optim import SGD
-except ImportError:
-
-    class Tensor:  # type: ignore
-        """Empty Tensor class
-        Replacement if torch.Tensor is not present.
-        """
-
-        pass
-
-
-from qiskit import QuantumCircuit, Aer
-from qiskit.providers.aer import AerSimulator
-from qiskit.exceptions import MissingOptionalLibraryError
+import qiskit
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
-
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN
 from qiskit_machine_learning.connectors import TorchConnector
 
@@ -46,42 +30,34 @@ from qiskit_machine_learning.connectors import TorchConnector
 class TestTorchConnector(QiskitMachineLearningTestCase):
     """Torch Connector Tests 2."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
         # specify quantum instances
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
+        # pylint: disable=no-member
         self.qasm_quantum_instance = QuantumInstance(
-            AerSimulator(),
+            qiskit.providers.aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
-        try:
-            import torch
+        import torch
 
-            torch.manual_seed(algorithm_globals.random_seed)
-        except ImportError:
-            pass
+        torch.manual_seed(algorithm_globals.random_seed)
 
-    @requires_extra_library
     def test_opflow_qnn_hybrid_batch_gradients(self):
         """Test gradient back-prop for batch input in hybrid opflow qnn."""
-
-        try:
-            from torch import cat
-            from torch.nn import Linear, Module
-            import torch.nn.functional as F
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch import cat, Tensor
+        from torch.nn import Linear, Module, MSELoss
+        import torch.nn.functional as F
+        from torch.optim import SGD
 
         num_inputs = 2
 
@@ -94,7 +70,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # set up dummy hybrid PyTorch module
         class Net(Module):
-            """Pytorch nn module."""
+            """PyTorch nn module."""
 
             def __init__(self):
                 super().__init__()
@@ -158,20 +134,12 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             places=4,
         )
 
-    @requires_extra_library
     def test_circuit_qnn_hybrid_batch_gradients(self):
         """Test gradient back-prop for batch input in hybrid circuit qnn."""
-
-        try:
-            from torch import cat
-            from torch.nn import Linear, Module
-            import torch.nn.functional as F
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch import cat, Tensor
+        from torch.nn import Linear, Module, MSELoss
+        import torch.nn.functional as F
+        from torch.optim import SGD
 
         output_shape, interpret = 2, lambda x: f"{x:b}".count("1") % 2
         num_inputs = 2
@@ -195,7 +163,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         # set up dummy hybrid PyTorch module
         class Net(Module):
-            """Pytorch nn module."""
+            """PyTorch nn module."""
 
             def __init__(self):
                 super().__init__()

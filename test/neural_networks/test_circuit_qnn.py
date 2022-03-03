@@ -14,23 +14,22 @@
 
 import unittest
 
-from test import QiskitMachineLearningTestCase, requires_extra_library
+from test import QiskitMachineLearningTestCase
 
 from ddt import ddt, data
 
 import numpy as np
 
-from qiskit import Aer
-from qiskit.providers.aer import AerSimulator
+import qiskit
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
-from qiskit.exceptions import MissingOptionalLibraryError
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from qiskit.compiler.transpiler import PassManagerConfig, level_1_pass_manager, level_2_pass_manager
 from qiskit.test.mock import FakeToronto
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
+import qiskit_machine_learning.optionals as _optionals
 
 QASM = "qasm"
 
@@ -43,23 +42,25 @@ CUSTOM_PASS_MANAGERS = "custom_pass_managers"
 class TestCircuitQNN(QiskitMachineLearningTestCase):
     """Opflow QNN Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
         # specify "run configuration"
         self.quantum_instance_sv = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
+        # pylint: disable=no-member
         self.quantum_instance_qasm = QuantumInstance(
-            AerSimulator(),
+            qiskit.providers.aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.quantum_instance_pm = QuantumInstance(
-            AerSimulator(),
+            qiskit.providers.aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
@@ -149,18 +150,9 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         Returns:
             None.
-
-        Raises:
-            MissingOptionalLibraryError: if ``sparse`` library is not installed.
         """
-        try:
-            from sparse import SparseArray
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="sparse",
-                name="SparseArray",
-                pip_install="pip install 'qiskit-machine-learning[sparse]'",
-            ) from ex
+        # pylint: disable=import-error
+        from sparse import SparseArray
 
         input_data = np.zeros((batch_size, qnn.num_inputs))
         weights = np.zeros(qnn.num_weights)
@@ -279,7 +271,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, False, CUSTOM_PASS_MANAGERS, 2, 1),
         (False, False, CUSTOM_PASS_MANAGERS, 2, 2),
     )
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
     def test_circuit_qnn(self, config):
         """Circuit QNN Test."""
         # get configuration
@@ -304,12 +296,14 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, False, STATEVECTOR, 2, 1),
         (False, False, STATEVECTOR, 2, 2),
     )
-    @requires_extra_library
     def test_circuit_qnn_gradient(self, config):
         """Circuit QNN Gradient Test."""
 
         # get configuration
         sparse, sampling, quantum_instance_type, interpret_id, batch_size = config
+        if sparse and not _optionals.HAS_SPARSE:
+            self.skipTest("sparse library is required to run this test")
+            return
 
         # get QNN
         qnn = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_id)
@@ -441,11 +435,14 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         (False, False, CUSTOM_PASS_MANAGERS, 2, 1),
         (False, False, CUSTOM_PASS_MANAGERS, 2, 2),
     )
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
     def test_no_quantum_instance(self, config):
         """Circuit QNN Test with and without QuantumInstance."""
         # get configuration
         sparse, sampling, quantum_instance_type, interpret_id, batch_size = config
+        if sparse and not _optionals.HAS_SPARSE:
+            self.skipTest("sparse library is required to run this test")
+            return
 
         # get QNN with QuantumInstance
         qnn_qi = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_id)

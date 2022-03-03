@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,9 +19,13 @@ from typing import Tuple, Union, List, Optional
 
 import numpy as np
 
-try:
+import qiskit_machine_learning.optionals as _optionals
+from ..exceptions import QiskitMachineLearningError
+
+if _optionals.HAS_SPARSE:
+    # pylint: disable=import-error
     from sparse import SparseArray
-except ImportError:
+else:
 
     class SparseArray:  # type: ignore
         """Empty SparseArray class
@@ -29,9 +33,6 @@ except ImportError:
         """
 
         pass
-
-
-from ..exceptions import QiskitMachineLearningError
 
 
 class NeuralNetwork(ABC):

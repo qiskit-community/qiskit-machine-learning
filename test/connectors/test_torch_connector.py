@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,67 +16,53 @@ import unittest
 import warnings
 from typing import List
 
-from test import QiskitMachineLearningTestCase, requires_extra_library
+from test import QiskitMachineLearningTestCase
 
 from copy import deepcopy
 import numpy as np
 
 from ddt import ddt, data
 
-try:
-    from torch import Tensor
-    from torch.nn import MSELoss
-    from torch.optim import SGD
-except ImportError:
-
-    class Tensor:  # type: ignore
-        """Empty Tensor class
-        Replacement if torch.Tensor is not present.
-        """
-
-        pass
-
-
-from qiskit import QuantumCircuit, Aer
-from qiskit.providers.aer import AerSimulator
-from qiskit.exceptions import MissingOptionalLibraryError
+import qiskit
+from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN, OpflowQNN
 from qiskit_machine_learning.connectors import TorchConnector
+import qiskit_machine_learning.optionals as _optionals
 
 
 @ddt
 class TestTorchConnector(QiskitMachineLearningTestCase):
     """Torch Connector Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
         # specify quantum instances
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
+        # pylint: disable=no-member
         self.qasm_quantum_instance = QuantumInstance(
-            AerSimulator(),
+            qiskit.providers.aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
-        try:
-            import torch
+        import torch
 
-            torch.manual_seed(algorithm_globals.random_seed)
-        except ImportError:
-            pass
+        torch.manual_seed(algorithm_globals.random_seed)
 
-    def validate_output_shape(self, model: TorchConnector, test_data: List[Tensor]) -> None:
+    def _validate_output_shape(self, model: TorchConnector, test_data: List) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
         applies the list of test input data to both, and asserts that they have the same
         output shape.
@@ -86,17 +72,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             test_data: list of test input tensors
 
         Raises:
-            MissingOptionalLibraryError: torch not installed
             QiskitMachineLearningError: Invalid input.
         """
-        try:
-            from torch.nn import Linear
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch.nn import Linear
 
         # create benchmark model
         in_dim = model.neural_network.num_inputs
@@ -129,23 +107,13 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 with self.subTest("c_shape == q_shape", tensor=x):
                     self.assertEqual(c_shape, q_shape)
 
-    def validate_backward_pass(self, model: TorchConnector) -> None:
+    def _validate_backward_pass(self, model: TorchConnector) -> None:
         """Uses PyTorch to validate the backward pass / autograd.
 
         Args:
             model: The model to be tested.
-
-        Raises:
-            MissingOptionalLibraryError: torch not installed
         """
-        try:
-            import torch
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        import torch
 
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
@@ -159,9 +127,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         self.assertTrue(test)
 
     @data("sv", "qasm")
-    @requires_extra_library
     def test_opflow_qnn_1_1(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 1/1."""
+        from torch import Tensor
 
         if q_i == "sv":
             quantum_instance = self.sv_quantum_instance
@@ -213,14 +181,14 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 self.assertListEqual(c_m, [])
 
         # test model
-        self.validate_output_shape(model, test_data)
+        self._validate_output_shape(model, test_data)
         if q_i == "sv":
-            self.validate_backward_pass(model)
+            self._validate_backward_pass(model)
 
     @data("sv", "qasm")
-    @requires_extra_library
     def test_opflow_qnn_2_1(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 2/1."""
+        from torch import Tensor
 
         if q_i == "sv":
             quantum_instance = self.sv_quantum_instance
@@ -240,14 +208,14 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         ]
 
         # test model
-        self.validate_output_shape(model, test_data)
+        self._validate_output_shape(model, test_data)
         if q_i == "sv":
-            self.validate_backward_pass(model)
+            self._validate_backward_pass(model)
 
     @data("sv", "qasm")
-    @requires_extra_library
     def test_opflow_qnn_2_2(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 2/2."""
+        from torch import Tensor
 
         if q_i == "sv":
             quantum_instance = self.sv_quantum_instance
@@ -301,9 +269,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         ]
 
         # test model
-        self.validate_output_shape(model, test_data)
+        self._validate_output_shape(model, test_data)
         if q_i == "sv":
-            self.validate_backward_pass(model)
+            self._validate_backward_pass(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -316,12 +284,15 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    @requires_extra_library
     def test_circuit_qnn_1_1(self, config):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/1 ."""
+        from torch import Tensor
 
         interpret, output_shape, sparse, q_i = config
+        if sparse and not _optionals.HAS_SPARSE:
+            self.skipTest("sparse library is required to run this test")
+            return
         if q_i == "sv":
             quantum_instance = self.sv_quantum_instance
         else:
@@ -358,9 +329,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         ]
 
         # test model
-        self.validate_output_shape(model, test_data)
+        self._validate_output_shape(model, test_data)
         if q_i == "sv":
-            self.validate_backward_pass(model)
+            self._validate_backward_pass(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -373,12 +344,15 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    @requires_extra_library
     def test_circuit_qnn_1_8(self, config):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
+        from torch import Tensor
 
         interpret, output_shape, sparse, q_i = config
+        if sparse and not _optionals.HAS_SPARSE:
+            self.skipTest("sparse library is required to run this test")
+            return
         if q_i == "sv":
             quantum_instance = self.sv_quantum_instance
         else:
@@ -415,9 +389,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         ]
 
         # test model
-        self.validate_output_shape(model, test_data)
+        self._validate_output_shape(model, test_data)
         if q_i == "sv":
-            self.validate_backward_pass(model)
+            self._validate_backward_pass(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -430,12 +404,15 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    @requires_extra_library
     def test_circuit_qnn_2_4(self, config):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
+        from torch import Tensor
 
         interpret, output_shape, sparse, q_i = config
+        if sparse and not _optionals.HAS_SPARSE:
+            self.skipTest("sparse library is required to run this test")
+            return
         if q_i == "sv":
             quantum_instance = self.sv_quantum_instance
         else:
@@ -474,11 +451,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         ]
 
         # test model
-        self.validate_output_shape(model, test_data)
+        self._validate_output_shape(model, test_data)
         if q_i == "sv":
-            self.validate_backward_pass(model)
+            self._validate_backward_pass(model)
 
-    @requires_extra_library
     def test_circuit_qnn_without_parameters(self):
         """Tests CircuitQNN without parameters."""
         quantum_instance = self.sv_quantum_instance
@@ -494,7 +470,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             input_gradients=True,
         )
         model = TorchConnector(qnn)
-        self.validate_backward_pass(model)
+        self._validate_backward_pass(model)
 
         qnn = CircuitQNN(
             circuit=qc,
@@ -504,16 +480,16 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             input_gradients=True,
         )
         model = TorchConnector(qnn)
-        self.validate_backward_pass(model)
+        self._validate_backward_pass(model)
 
     @data(
         # interpret
         (None),
         (lambda x: np.sum(x) % 2),
     )
-    @requires_extra_library
     def test_circuit_qnn_sampling(self, interpret):
         """Test Torch Connector + Circuit QNN for sampling."""
+        from torch import Tensor
 
         qc = QuantumCircuit(2)
 
@@ -547,9 +523,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 shape = model(x).shape
                 self.assertEqual(shape, (len(x), *qnn.output_shape))
 
-    @requires_extra_library
     def test_opflow_qnn_batch_gradients(self):
         """Test backward pass for batch input."""
+        from torch import Tensor
 
         # construct random data set
         num_inputs = 2
@@ -627,10 +603,12 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         (4, None),
         (2, lambda x: f"{x:b}".count("1") % 2),
     )
-    @requires_extra_library
     def test_circuit_qnn_batch_gradients(self, config):
         """Test batch gradient computation of CircuitQNN gives the same result as the sum of
         individual gradients."""
+        from torch import Tensor
+        from torch.nn import MSELoss
+        from torch.optim import SGD
 
         output_shape, interpret = config
         num_inputs = 2
@@ -694,11 +672,14 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         (None, 1, False, "quasm"),
         (None, 1, True, "quasm"),
     )
-    @requires_extra_library
     def test_warning1_circuit_qnn(self, config):
         """Torch Connector + Circuit QNN with no sampling and input/output shape 1/1 ."""
 
         interpret, output_shape, sparse, q_i = config
+        if sparse and not _optionals.HAS_SPARSE:
+            self.skipTest("sparse library is required to run this test")
+            return
+
         if q_i == "sv":
             quantum_instance = self.sv_quantum_instance
         else:
@@ -743,7 +724,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         (lambda x: np.sum(x) % 2, 2, True, "quasm"),
         (lambda x: np.sum(x) % 2, 2, False, "quasm"),
     )
-    @requires_extra_library
     def test_warning2_circuit_qnn(self, config):
         """Torch Connector + Circuit QNN with sampling and input/output shape 1/1 ."""
 
