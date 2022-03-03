@@ -27,15 +27,66 @@ from qiskit_machine_learning.datasets.dataset_helper import (
 
 
 def ad_hoc_data(
-    training_size,
-    test_size,
-    n,
-    gap,
-    plot_data=False,
-    one_hot=True,
-    include_sample_total=False,
+    training_size: int,
+    test_size: int,
+    n: int,
+    gap: int,
+    plot_data: bool = False,
+    one_hot: bool = True,
+    include_sample_total: bool = False,
 ):
-    """returns ad hoc dataset"""
+    """Generates a toy dataset that can be fully separated with
+    ``qiskit.circuit.library.ZZ_Feature_Map`` according to the procedure
+    outlined in [1]. To construct the dataset, we first sample uniformly
+    distribuited vectors :math:`\\vec{x} \in (0, 2\pi]^{n}` and apply the
+    feature map
+
+    .. math::
+        |\Phi(\\vec{x})\\rangle = U_{{\Phi} (\\vec{x})} H^{\otimes n} U_{{\Phi} (\\vec{x})} H^{\otimes n} |0^{\otimes n} \\rangle
+
+    where
+
+    .. math::
+        U_{{\Phi} (\\vec{x})} = \exp \left( i \sum_{S \subseteq [n] } \phi_S(\\vec{x}) \prod_{i \in S} Z_i \\right)
+
+    and
+
+    .. math::
+        \\begin{cases}
+        \phi_{\{i, j\}} = (\pi - x_i)(\pi - x_j) \\\\
+        \phi_{\{i\}} = x_i
+        \\end{cases}
+
+    We then attribute labels to the vectors according to the rule
+
+    .. math::
+        m(\\vec{x}) = \\begin{cases}
+        1 \qquad \langle \Phi(\\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\\vec{x}) \\rangle > \Delta \\\\
+        -1 \qquad \langle \Phi(\\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\\vec{x}) \\rangle < -\Delta
+        \\end{cases}
+
+    where :math:`\Delta` is the separation gap, and
+    :math:`V\in \mathrm{SU}(4)` is a random unitary.
+
+    **References:**
+
+    [1] Havlíček V, Córcoles AD, Temme K, Harrow AW, Kandala A, Chow JM,
+    Gambetta JM. Supervised learning with quantum-enhanced feature
+    spaces. Nature. 2019 Mar;567(7747):209-12.
+    `arXiv:1804.11326 <https://arxiv.org/abs/1804.11326>`_
+
+    Args:
+        training_size: the number of training samples.
+        test_size: the number of testing samples.
+        n: number of qubits (dimension of the feature space). Must be 2 or 3.
+        gap: separation gap (:math:`\Delta`).
+        plot_data: whether to plot the data. Requires matplotlib.
+        one_hot: if True, return the data in one-hot format.
+        include_sample_total: if True, return all points in the uniform
+            grid in addition to training and testing samples.
+    Returns:
+        Training and testing samples.
+    """
     class_labels = [r"A", r"B"]
     count = 0
     if n == 2:
@@ -64,7 +115,8 @@ def ad_hoc_data(
         bitstring_majority = [0 if bstr.count("0") > 1 else 1 for bstr in bitstrings]
         d_m = np.diag((-1) ** np.array(bitstring_majority))
 
-    # Generate a random unitary operator
+    # Generate a random unitary operator by collecting eigenvectors of a
+    # random hermitian operator
     basis = algorithm_globals.random.random(
         (2 ** n, 2 ** n)
     ) + 1j * algorithm_globals.random.random((2 ** n, 2 ** n))
@@ -74,7 +126,8 @@ def ad_hoc_data(
     eigvecs = eigvecs[:, idx]
     m_m = eigvecs.conj().T @ d_m @ eigvecs
 
-    # Compute expectation value of parity in grid
+    # Generate a grid of points in the feature space and compute the
+    # expectation value of the parity
     xvals = np.linspace(0, 2 * np.pi, count, endpoint=False)
     ind_pairs = list(it.combinations(range(n), 2))
     sample_total = []
@@ -91,7 +144,7 @@ def ad_hoc_data(
             sample_total.append(0)
     sample_total = np.array(sample_total).reshape(*[count] * n)
 
-    # Extract samples from grid
+    # Extract training and testing samples from grid
     x_sample, y_sample = _sample_ad_hoc_data(sample_total, xvals, training_size + test_size, n)
 
     if plot_data:
@@ -148,6 +201,7 @@ def _sample_ad_hoc_data(sample_total, xvals, num_samples, n):
 @HAS_MATPLOTLIB.require_in_call
 def _plot_ad_hoc_data(x_total, y_total, training_size):
     import matplotlib.pyplot as plt
+
     n = x_total.shape[1]
     fig = plt.figure()
     projection = "3d" if n == 3 else None
