@@ -4,73 +4,74 @@ import numpy as np
 import time
 
 # how should this import be handled??
-from ..neural_networks import OpflowQNN
+from ..neural_networks import OpflowQNN, NeuralNetwork
+from typing import Optional, Union, List
 
 class EffectiveDimension:
 
-    """This class computes the effective dimension for Qiskit QuantumNeuralNetworks.
+    """This class computes the effective dimension for Qiskit NeuralNetworks.
     """
 
-    def __init__(self, qnn, num_thetas=1, num_inputs=1, thetas=None, inputs=None):
-
+    def __init__(
+            self,
+            qnn: NeuralNetwork,
+            num_thetas: Optional[int] = 1,
+            num_inputs: Optional[int] = 1,
+            thetas: Optional[Union[List, np.array]] = None,
+            inputs: Optional[Union[List, np.array]] = None
+            ) -> None:
+        """
+        Args:
+            qnn: A Qiskit NeuralNetwork
+            num_thetas:
+            num_inputs:
+            thetas:
+            inputs:
+        """
+        np.random.seed(0)
+        # Store inputs
         self.model = qnn
-        self.d = qnn.num_weights
         self.num_thetas = num_thetas
         self.num_inputs = num_inputs
 
-        # check that parameters are provided
+        # Define Fisher Matrix size (d)
+        self.d = qnn.num_weights
 
-
+        # Check for user-defined inputs and thetas
         if thetas is not None:
             self.params = thetas
             self.num_thetas = len(self.params)
-
-        elif num_thetas is not None:
+        else:
+            # if thetas are not provided, sample randomly from uniform distribution
             self.params = np.random.uniform(0, 1, size=(self.num_thetas, self.d))
 
         if inputs is not None:
             self.x = inputs
             self.num_inputs = len(self.x)
-
-        elif num_inputs is not None:
+        else:
+            # if inputs are not provided, sample randomly from normal distribution
             self.x = np.random.normal(0, 1, size=(self.num_inputs, self.model.num_inputs))
 
 
-    def get_fisher(self, gradients, model_output):
+    def get_fisher(
+            self,
+            gradients: Optional[Union[List, np.array]], # dp_theta
+            model_output: Optional[Union[List, np.array]] # p_theta
+            )-> None:
         """
-        Computes the jacobian as we defined it and then returns the average jacobian:
+        Computes the empirical Fisher Information Matrix, of shape (num_inputs*num_thetas, d, d),
+        by calculating the average jacobian for every set of gradients and model output given.
+
         1/K(sum_k(sum_i dp_theta_i/sum_i p_theta_i)) for i in index for label k
         :param gradients: ndarray, dp_theta
         :param model_output: ndarray, p_theta
         :return: ndarray, average jacobian for every set of gradients and model output given
         """
-        gradvectors = []
-        outputsize = model_output.shape[1]
 
-        for k in range(len(gradients)):
-            jacobian = []
-            m_output = model_output[k]  # p_theta size: (1, outputsize)
-            new_gradients = np.transpose(gradients, (0, 2, 1))
-            jacobians_ = new_gradients[k, :, :]  # dp_theta size: (d, 2**num_qubits)
-            for idx, y in enumerate(m_output):
-                denominator = m_output[idx]  # get correct model output sum(p_theta) for indices
-                for j in range(self.d):
-                    row = jacobians_[j, :]
-                    # for each row of a particular dp_theta, do sum(dp_theta)/sum(p_theta) for indices
-                    # multiply by sqrt(sum(p_theta)) so that the outer product cross term is correct
-                    jacobian.append(np.sqrt(denominator) * (row[idx] / denominator))
-            # append gradient vectors for every output for all data points
-            gradvectors.append(np.reshape(jacobian, (outputsize, self.d)))
-        # full gradient vector
-        gradients = np.reshape(gradvectors, (len(gradients), outputsize, self.d))
+        model_output = np.expand_dims(model_output, axis=2)
+        gradients = np.sqrt(model_output) * gradients / model_output # shape: (num_inputs*num_thetas, outputsize, d)
+        fishers = np.einsum('ijk,lji->ikl', gradients, gradients.T)
 
-        fishers = np.zeros((len(gradients), self.d, self.d))
-        for i in range(len(gradients)):
-            grads = gradients[i]  # size = (outputsize, d)
-            temp_sum = np.zeros((outputsize, self.d, self.d))
-            for j in range(outputsize):
-                temp_sum[j] += np.array(np.outer(grads[j], np.transpose(grads[j])))
-            fishers[i] += np.sum(temp_sum, axis=0)  # sum the two matrices to get fisher estimate
         return fishers
 
     def get_fhat(self):
