@@ -9,11 +9,10 @@ from typing import Optional, Union, List
 
 class EffectiveDimension:
 
-    """This class computes the effective dimension for Qiskit NeuralNetworks.
+    """This class computes the global effective dimension for Qiskit NeuralNetworks.
     """
 
-    def __init__(
-            self,
+    def __init__(self,
             qnn: NeuralNetwork,
             num_thetas: Optional[int] = 1,
             num_inputs: Optional[int] = 1,
@@ -22,11 +21,11 @@ class EffectiveDimension:
             ) -> None:
         """
         Args:
-            qnn: A Qiskit NeuralNetwork
-            num_thetas:
-            num_inputs:
-            thetas:
-            inputs:
+            qnn: A Qiskit NeuralNetwork, with a specific number of weights (qnn_num_weights) and input size (qnn_input_size)
+            num_thetas: Number of parameters, if user chooses to randomly sample from a uniform distribution.
+            num_inputs:  Number of inputs, if user chooses to randomly sample from a normal distribution.
+            thetas: An array of neural network weights, of shape (num_thetas, qnn_num_weights).
+            inputs: An array of inputs to the neural network, of shape (num_inputs, qnn_input_size).
         """
         np.random.seed(0)
         # Store inputs
@@ -53,20 +52,21 @@ class EffectiveDimension:
             self.x = np.random.normal(0, 1, size=(self.num_inputs, self.model.num_inputs))
 
 
-    def get_fisher(
-            self,
+    def get_fisher(self,
             gradients: Optional[Union[List, np.array]], # dp_thetas
             model_output: Optional[Union[List, np.array]] # p_thetas
-            )-> None:
+            ) -> np.array:
         """
         Computes the empirical Fisher Information Matrix, of shape (num_inputs * num_thetas, d, d),
         by calculating the average jacobian for every set of gradients and model output given:
 
         1/K * (sum_k(dp_thetas_k/p_thetas_k)), where K = num_labels
 
-        :param gradients: ndarray, dp_theta
-        :param model_output: ndarray, p_theta
-        :return: ndarray, average jacobian for every set of gradients and model output given
+        Args:
+            gradients: A numpy array with dp_thetas
+            model_output: A numpy array with p_thetas
+        Returns:
+            fishers: A numpy matrix of shape (num_inputs * num_thetas, d, d) with the Fisher information
         """
 
         # add dimension for broadcasting reasons
@@ -79,9 +79,13 @@ class EffectiveDimension:
 
         return fishers
 
-    def get_fhat(self):
+    def get_fhat(self) -> [np.array, np.array]:
         """
-        :return: ndarray, f_hat values of size (num_inputs, d, d)
+        Computes the normalized Fisher Information Matrix.
+
+        Returns:
+             f_hat: The normalized FIM, of size (num_inputs, d, d)
+             fisher_trace: The trace of the FIM (before normalizing)
         """
         grads, output = self.do_montecarlo()
         fishers = self.get_fisher(gradients=grads, model_output=output)
@@ -93,31 +97,40 @@ class EffectiveDimension:
         f_hat = self.d * fisher / fisher_trace
         return f_hat, fisher_trace
 
-    def do_montecarlo(self):
+    def do_montecarlo(self) -> [np.array, np.array]:
+        """
+        Computes the qnn output and gradient Monte Carlo sampling for a set of inputs and parameters (thetas).
 
+        Returns:
+             grads: QNN gradient vector, of shape (num_inputs * num_thetas, outputsize, d)
+             outputs: QNN goutput vector, of shape (num_inputs * num_thetas, outputsize)
+        """
         grads = np.zeros((self.num_inputs * self.num_thetas, self.model.output_shape[0], self.d))
-        output = np.zeros((self.num_inputs * self.num_thetas, self.model.output_shape[0]))
+        outputs = np.zeros((self.num_inputs * self.num_thetas, self.model.output_shape[0]))
 
         for (i, p) in enumerate(self.params):
             back_pass = np.array(self.model.backward(input_data=self.x, weights=p)[1])
             fwd_pass = np.array(self.model.forward(input_data=self.x, weights=p))  # get model output
 
             grads[self.num_inputs * i:self.num_inputs * (i + 1)] = back_pass
-            output[self.num_inputs * i:self.num_inputs * (i + 1)] = fwd_pass
+            outputs[self.num_inputs * i:self.num_inputs * (i + 1)] = fwd_pass
 
         # post-process in the case of OpflowQNN output to match CircuitQNN output format
         if isinstance(self.model, OpflowQNN):
             grads = np.concatenate([grads/ 2, -1 * grads / 2], 1)
-            output = np.concatenate([(output + 1) / 2, (1 - output) / 2], 1)
+            outputs = np.concatenate([(outputs + 1) / 2, (1 - outputs) / 2], 1)
 
-        return grads, output
+        return grads, outputs
 
-    def eff_dim(self, n):
+    def eff_dim(self,
+                n: List):
         """
         Compute the effective dimension.
-        :param f_hat: ndarray
-        :param n: list, used to represent number of data samples available as per the effective dimension calc
-        :return: list, effective dimension for each n
+        Args:
+            n: list of ranges for number of data
+        Returns:
+             effective_dim: list of effective dimensions for each data range in n
+             time: [DEBUG] time estimation for eff dim algorithm
         """
         t0 = time.time()
         f_hat, trace = self.get_fhat()
@@ -132,12 +145,24 @@ class EffectiveDimension:
         return effective_dim, t1-t0
 
 class LocalEffectiveDimension(EffectiveDimension):
-    def __init__(self, qnn, num_inputs=1, thetas=None, inputs=None):
+    """
+    Computes the LOCAL effective dimension for a parametrized model.
+    """
+    def __init__(self,
+            qnn: NeuralNetwork,
+            num_inputs: Optional[int] = 1,
+            thetas: Optional[Union[List, np.array]] = None,
+            inputs: Optional[Union[List, np.array]] = None
+            ) -> None:
         """
-        Computes the effective dimension for a parameterised model.
-        :param model: class instance
-        :param num_thetas: int, number of parameter sets to include
-        :param num_inputs: int, number of input samples to include
+        Args:
+            qnn: A Qiskit NeuralNetwork, with a specific number of weights (qnn_num_weights) and input size (qnn_input_size)
+            num_inputs:  Number of inputs, if user chooses to randomly sample from a normal distribution.
+            thetas: An array of neural network weights, of shape (1, qnn_num_weights).
+            inputs: An array of inputs to the neural network, of shape (num_inputs, qnn_input_size).
+
+        Raises:
+            ValueError: If len(thetas) > 1
         """
         np.random.seed(0)
         self.model = qnn
@@ -152,7 +177,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         if thetas is not None:
             if len(thetas.shape) > 1:
                 if thetas.shape[0] > 1:
-                    print("NOOO, ERROR!!!")
+                    raise ValueError("The local effective dimension algorithm uses only 1 set of parameters.")
                 else:
                     self.params = thetas
             else:
@@ -160,9 +185,6 @@ class LocalEffectiveDimension(EffectiveDimension):
             self.num_thetas = len(self.params)
         else:
             self.params = np.random.uniform(0, 1, size=(self.num_thetas, self.d))
-
-
-        print(self.params.shape)
 
         if inputs is not None:
             self.x = inputs
