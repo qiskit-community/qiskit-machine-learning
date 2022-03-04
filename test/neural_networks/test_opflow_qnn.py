@@ -20,11 +20,10 @@ import unittest
 from ddt import ddt, data
 
 import numpy as np
-from qiskit import Aer
-from qiskit.providers.aer import AerSimulator
+import qiskit
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliExpectation, Gradient, StateFn, PauliSumOp, ListOp
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 
 from qiskit_machine_learning.neural_networks import OpflowQNN
@@ -37,18 +36,20 @@ STATEVECTOR = "sv"
 class TestOpflowQNN(QiskitMachineLearningTestCase):
     """Opflow QNN Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
 
         algorithm_globals.random_seed = 12345
         # specify quantum instances
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
+        # pylint: disable=no-member
         self.qasm_quantum_instance = QuantumInstance(
-            AerSimulator(),
+            qiskit.providers.aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

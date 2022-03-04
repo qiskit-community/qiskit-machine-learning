@@ -11,13 +11,14 @@
 # that they have been altered from the originals.
 
 """Tests of loss functions."""
-from test import QiskitMachineLearningTestCase, requires_extra_library
 
-from qiskit.exceptions import MissingOptionalLibraryError
+import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, data
 
+import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss, L1Loss, L2Loss
 
 
@@ -47,19 +48,12 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
         ((5,), (5,), "squared_error"),
         ((5, 2), (5,), "squared_error"),
     )
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_l1_l2_loss(self, config):
         """Tests L1 and L2 loss functions on different input types."""
-        try:
-            import torch
-            from torch.nn import L1Loss as TL1Loss
-            from torch.nn import MSELoss as TL2Loss
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TestLossFunctions",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        import torch
+        from torch.nn import L1Loss as TL1Loss
+        from torch.nn import MSELoss as TL2Loss
 
         input_shape, loss_shape, loss_function = config
         qpredict = np.random.rand(*input_shape) if input_shape else np.random.rand()
@@ -70,7 +64,7 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
         # quantum loss
         if loss_function == "absolute_error":
             q_loss_fun = L1Loss()
-            # pytorch loss
+            # PyTorch loss
             t_loss_fun = TL1Loss(reduction="none")
         elif loss_function == "squared_error":
             q_loss_fun = L2Loss()
@@ -92,3 +86,7 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
         # comparison
         np.testing.assert_almost_equal(qloss_sum, tloss_sum.detach().numpy())
         np.testing.assert_almost_equal(qgrad, tgrad)
+
+
+if __name__ == "__main__":
+    unittest.main()

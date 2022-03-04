@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,8 +18,8 @@ import unittest
 
 import numpy as np
 
-from qiskit.providers.aer import AerSimulator
-from qiskit.utils.algorithm_globals import algorithm_globals
+import qiskit
+from qiskit.utils import algorithm_globals, optionals
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit_machine_learning.kernels import QuantumKernel
@@ -31,11 +31,13 @@ from qiskit_machine_learning.algorithms.classifiers import QSVC
 class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     """Test QuantumKernelTrainer Algorithm"""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 10598
         self.optimizer = COBYLA(maxiter=25)
-        self.backend = AerSimulator(method="statevector")
+        # pylint: disable=no-member
+        self.backend = qiskit.providers.aer.AerSimulator(method="statevector")
         data_block = ZZFeatureMap(2)
         trainable_block = ZZFeatureMap(2)
         user_parameters = trainable_block.parameters

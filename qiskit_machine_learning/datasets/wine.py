@@ -19,7 +19,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
-from qiskit.exceptions import MissingOptionalLibraryError
+from qiskit.utils import optionals
 from .dataset_helper import features_and_labels_transform
 from ..deprecation import deprecate_function
 
@@ -69,12 +69,10 @@ def wine(training_size, test_size, n, plot_data=False, one_hot=True):
     )
 
     if plot_data:
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Matplotlib", name="wine", pip_install="pip install matplotlib"
-            ) from ex
+        optionals.HAS_MATPLOTLIB.require_now("wine")
+        # pylint: disable=import-error
+        import matplotlib.pyplot as plt
+
         for k in range(0, 3):
             plt.scatter(
                 sample_train[label_train == k, 0][:training_size],
