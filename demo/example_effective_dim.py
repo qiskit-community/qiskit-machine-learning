@@ -7,7 +7,7 @@ from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
 from qiskit.utils import QuantumInstance
 from qiskit import Aer, QuantumCircuit
 
-from new_effective_dimension_3 import EffectiveDimension
+from qiskit_machine_learning.algorithms.effective_dimension import EffectiveDimension, LocalEffectiveDimension
 # This is an example file to create a quantum model and compute its effective dimension
 
 # create ranges for the number of data, n
@@ -58,7 +58,7 @@ observable = PauliSumOp.from_list([("Z" * num_qubits, 1)])
 print(observable)
 # define two layer QNN
 qnn3 = TwoLayerQNN(
-    num_qubits, feature_map=fm, ansatz=vf, observable=observable, quantum_instance=qi_sv
+    num_qubits, feature_map=feat_map, ansatz=ansatz, observable=observable, quantum_instance=qi_sv
 )
 
 ed = EffectiveDimension(qnn3, num_thetas=num_thetas, num_inputs=num_inputs)
