@@ -55,22 +55,27 @@ class EffectiveDimension:
 
     def get_fisher(
             self,
-            gradients: Optional[Union[List, np.array]], # dp_theta
-            model_output: Optional[Union[List, np.array]] # p_theta
+            gradients: Optional[Union[List, np.array]], # dp_thetas
+            model_output: Optional[Union[List, np.array]] # p_thetas
             )-> None:
         """
-        Computes the empirical Fisher Information Matrix, of shape (num_inputs*num_thetas, d, d),
-        by calculating the average jacobian for every set of gradients and model output given.
+        Computes the empirical Fisher Information Matrix, of shape (num_inputs * num_thetas, d, d),
+        by calculating the average jacobian for every set of gradients and model output given:
 
-        1/K(sum_k(sum_i dp_theta_i/sum_i p_theta_i)) for i in index for label k
+        1/K * (sum_k(dp_thetas_k/p_thetas_k)), where K = num_labels
+
         :param gradients: ndarray, dp_theta
         :param model_output: ndarray, p_theta
         :return: ndarray, average jacobian for every set of gradients and model output given
         """
 
+        # add dimension for broadcasting reasons
         model_output = np.expand_dims(model_output, axis=2)
-        gradients = np.sqrt(model_output) * gradients / model_output # shape: (num_inputs*num_thetas, outputsize, d)
-        fishers = np.einsum('ijk,lji->ikl', gradients, gradients.T)
+        # get dp_thetas/p_thetas for every label
+        # multiply by sqrt(p_thetas) so that the outer product cross term is correct
+        gradvectors = np.sqrt(model_output) * gradients / model_output
+        # compute sum of matrices obtained from outer product of gradvectors
+        fishers = np.einsum('ijk,lji->ikl', gradvectors, gradvectors.T)
 
         return fishers
 
@@ -80,10 +85,12 @@ class EffectiveDimension:
         """
         grads, output = self.do_montecarlo()
         fishers = self.get_fisher(gradients=grads, model_output=output)
-        fisher_trace = np.trace(np.average(fishers, axis=0))  # compute the trace with all fishers
+        # compute the trace with all fishers
+        fisher_trace = np.trace(np.average(fishers, axis=0))
         # average the fishers over the num_inputs to get the empirical fishers
         fisher = np.average(np.reshape(fishers, (self.num_thetas, self.num_inputs, self.d, self.d)), axis=1)
-        f_hat = self.d * fisher / fisher_trace  # calculate f_hats for all the empirical fishers
+        # calculate f_hats for all the empirical fishers
+        f_hat = self.d * fisher / fisher_trace
         return f_hat, fisher_trace
 
     def do_montecarlo(self):
