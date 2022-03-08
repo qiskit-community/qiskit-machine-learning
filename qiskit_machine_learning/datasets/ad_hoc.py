@@ -18,8 +18,7 @@ import itertools as it
 from functools import reduce
 import numpy as np
 import scipy
-from qiskit.utils import algorithm_globals
-from qiskit.utils.optionals import HAS_MATPLOTLIB
+from qiskit.utils import algorithm_globals, optionals
 
 from qiskit_machine_learning.datasets.dataset_helper import (
     features_and_labels_transform,
@@ -198,7 +197,7 @@ def _sample_ad_hoc_data(sample_total, xvals, num_samples, n):
     return samples, labels
 
 
-@HAS_MATPLOTLIB.require_in_call
+@optionals.HAS_MATPLOTLIB.require_in_call
 def _plot_ad_hoc_data(x_total, y_total, training_size):
     import matplotlib.pyplot as plt
 
