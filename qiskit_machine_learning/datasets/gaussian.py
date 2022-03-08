@@ -15,8 +15,7 @@ gaussian dataset
 """
 
 import numpy as np
-from qiskit.utils import algorithm_globals
-from qiskit.exceptions import MissingOptionalLibraryError
+from qiskit.utils import algorithm_globals, optionals
 from .dataset_helper import features_and_labels_transform
 from ..deprecation import deprecate_function
 
@@ -72,14 +71,9 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         )
 
         if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname="Matplotlib",
-                    name="gaussian",
-                    pip_install="pip install matplotlib",
-                ) from ex
+            optionals.HAS_MATPLOTLIB.require_now("gaussian")
+            # pylint: disable=import-error
+            import matplotlib.pyplot as plt
 
             for k in range(0, 2):
                 plt.scatter(
@@ -173,14 +167,9 @@ def gaussian(training_size, test_size, n, plot_data=False, one_hot=True):
         )
 
         if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname="Matplotlib",
-                    name="gaussian",
-                    pip_install="pip install matplotlib",
-                ) from ex
+            optionals.HAS_MATPLOTLIB.require_now("gaussian")
+            # pylint: disable=import-error
+            import matplotlib.pyplot as plt
 
             for k in range(0, 3):
                 plt.scatter(
