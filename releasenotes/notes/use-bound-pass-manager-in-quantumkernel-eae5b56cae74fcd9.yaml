@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Added a new feature in ``QuantumKernel`` that ensures bound_pass_manager is used when
+    transpiling the kernel circuits.
