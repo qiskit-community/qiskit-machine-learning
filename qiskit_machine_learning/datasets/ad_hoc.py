@@ -141,7 +141,7 @@ def ad_hoc_data(
     # expectation value of the parity
     xvals = np.linspace(0, 2 * np.pi, count, endpoint=False)
     ind_pairs = list(it.combinations(range(n), 2))
-    sample_total = []
+    _sample_total = []
     for x in it.product(*[xvals] * n):
         x = np.array(x)
         phi = np.sum(x[:, None, None] * z_i, axis=0)
@@ -150,10 +150,10 @@ def ad_hoc_data(
         psi = u_u @ h_n @ u_u @ psi_0
         exp_val = np.real(psi.conj().T @ m_m @ psi)
         if np.abs(exp_val) > gap:
-            sample_total.append(np.sign(exp_val))
+            _sample_total.append(np.sign(exp_val))
         else:
-            sample_total.append(0)
-    sample_total = np.array(sample_total).reshape(*[count] * n)
+            _sample_total.append(0)
+    sample_total = np.array(_sample_total).reshape(*[count] * n)
 
     # Extract training and testing samples from grid
     x_sample, y_sample = _sample_ad_hoc_data(sample_total, xvals, training_size + test_size, n)
