@@ -14,6 +14,7 @@
 ad hoc dataset
 """
 
+from typing import Union, Tuple
 import itertools as it
 from functools import reduce
 import numpy as np
@@ -33,39 +34,46 @@ def ad_hoc_data(
     plot_data: bool = False,
     one_hot: bool = True,
     include_sample_total: bool = False,
-):
-    """Generates a toy dataset that can be fully separated with
+) -> Union[
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray],
+]:
+    r"""Generates a toy dataset that can be fully separated with
     ``qiskit.circuit.library.ZZ_Feature_Map`` according to the procedure
     outlined in [1]. To construct the dataset, we first sample uniformly
-    distribuited vectors :math:`\\vec{x} \in (0, 2\pi]^{n}` and apply the
+    distributed vectors :math:`\vec{x} \in (0, 2\pi]^{n}` and apply the
     feature map
 
     .. math::
-        |\Phi(\\vec{x})\\rangle = U_{{\Phi} (\\vec{x})} H^{\otimes n} U_{{\Phi} (\\vec{x})} H^{\otimes n} |0^{\otimes n} \\rangle
+        |\Phi(\vec{x})\rangle = U_{{\Phi} (\vec{x})} H^{\otimes n} U_{{\Phi} (\vec{x})}
+        H^{\otimes n} |0^{\otimes n} \rangle
 
     where
 
     .. math::
-        U_{{\Phi} (\\vec{x})} = \exp \left( i \sum_{S \subseteq [n] } \phi_S(\\vec{x}) \prod_{i \in S} Z_i \\right)
+        U_{{\Phi} (\vec{x})} = \exp \left( i \sum_{S \subseteq [n] } \phi_S(\vec{x})
+        \prod_{i \in S} Z_i \right)
 
     and
 
     .. math::
-        \\begin{cases}
-        \phi_{\{i, j\}} = (\pi - x_i)(\pi - x_j) \\\\
+        \begin{cases}
+        \phi_{\{i, j\}} = (\pi - x_i)(\pi - x_j) \\
         \phi_{\{i\}} = x_i
-        \\end{cases}
+        \end{cases}
 
     We then attribute labels to the vectors according to the rule
 
     .. math::
-        m(\\vec{x}) = \\begin{cases}
-        1 \qquad \langle \Phi(\\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\\vec{x}) \\rangle > \Delta \\\\
-        -1 \qquad \langle \Phi(\\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\\vec{x}) \\rangle < -\Delta
-        \\end{cases}
+        m(\vec{x}) = \begin{cases}
+        1 \qquad \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle > \Delta \\
+        -1 \qquad \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle < -\Delta
+        \end{cases}
 
     where :math:`\Delta` is the separation gap, and
     :math:`V\in \mathrm{SU}(4)` is a random unitary.
+
+    The current implementation only works with n = 2 or 3.
 
     **References:**
 
@@ -83,8 +91,12 @@ def ad_hoc_data(
         one_hot: if True, return the data in one-hot format.
         include_sample_total: if True, return all points in the uniform
             grid in addition to training and testing samples.
+
     Returns:
         Training and testing samples.
+
+    Raises:
+        ValueError: if n is not 2 or 3.
     """
     class_labels = [r"A", r"B"]
     count = 0
