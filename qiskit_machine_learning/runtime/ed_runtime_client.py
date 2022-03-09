@@ -15,9 +15,10 @@ from typing import List, Union, Callable, Optional, Any, Dict
 from qiskit.exceptions import QiskitError
 from qiskit.providers import Provider
 from qiskit.providers.backend import Backend
+from qiskit_ibm_runtime import IBMRuntimeService as Service
 
 from qiskit import QuantumCircuit
-from qiskit_machine_learning.neural_networks import CircuitQNN
+from qiskit_machine_learning.neural_networks import NeuralNetwork
 
 import dill, base64
 import numpy as np
@@ -28,14 +29,14 @@ class EffDimRuntimeClient:
 
     def __init__(
         self,
-        feat_map: QuantumCircuit,
-        ansatz: QuantumCircuit,
+        qnn: NeuralNetwork,
         shots: int = 1024,
         mock_runtime: bool = False,
         measurement_error_mitigation: bool = False,
         callback: Optional[Callable] = None,
-        provider: Optional[Provider] = None,
+        service: Optional[Service] = None,
         backend: Optional[Backend] = None,
+        program_id = None
     ) -> None:
         """
         Args:
@@ -52,19 +53,18 @@ class EffDimRuntimeClient:
         """
 
         # Store settings
-        self._provider = None
+        self._service = None
         self._backend = backend
         # TO-DO: getters, setters. Make private variables
-        self.feat_map = feat_map
-        self.ansatz = ansatz
         self._shots = shots
         self._callback = callback
         self._mock_runtime = mock_runtime
         self._measurement_error_mitigation = measurement_error_mitigation
 
+        self.program_id = program_id
         # Use setter to check for valid inputs
-        if provider is not None:
-            self.provider = provider
+        if service is not None:
+            self.service = service
 
         if self._mock_runtime:
             # This section is for debugging purposes and not general at all.
@@ -77,45 +77,45 @@ class EffDimRuntimeClient:
             self.user_messenger = UserMessenger()
 
 
-        if feat_map.num_qubits != ansatz.num_qubits:
-            print("NUM QUBITS ERROR") # DO BETTER
-
-        qc = QuantumCircuit(feat_map.num_qubits)
-        qc.append(feat_map, range(feat_map.num_qubits))
-        qc.append(ansatz, range(ansatz.num_qubits))
-
-        # parity maps bitstrings to 0 or 1
-        def parity(x):
-            return "{:b}".format(x).count("1") % 2
-
-        # construct QNN. DO NOT SET QUANTUM INSTANCE HERE (it has to be done inside the runtime)
-        qnn = CircuitQNN(
-            qc,
-            input_params=feat_map.parameters,
-            weight_params=ansatz.parameters,
-            interpret=parity,
-            output_shape=2,
-            sparse=False
-        )
+        # if feat_map.num_qubits != ansatz.num_qubits:
+        #     print("NUM QUBITS ERROR") # DO BETTER
+        #
+        # qc = QuantumCircuit(feat_map.num_qubits)
+        # qc.append(feat_map, range(feat_map.num_qubits))
+        # qc.append(ansatz, range(ansatz.num_qubits))
+        #
+        # # parity maps bitstrings to 0 or 1
+        # def parity(x):
+        #     return "{:b}".format(x).count("1") % 2
+        #
+        # # construct QNN. DO NOT SET QUANTUM INSTANCE HERE (it has to be done inside the runtime)
+        # qnn = CircuitQNN(
+        #     qc,
+        #     input_params=feat_map.parameters,
+        #     weight_params=ansatz.parameters,
+        #     interpret=parity,
+        #     output_shape=2,
+        #     sparse=False
+        # )
 
         self._qnn = qnn
         self.d = qnn.num_weights
 
     @property
-    def provider(self) -> Optional[Provider]:
-        """Return the provider."""
-        return self._provider
+    def service(self) -> Optional[Service]:
+        """Return the service."""
+        return self._service
 
-    @provider.setter
-    def provider(self, provider: Provider) -> None:
-        """Set the provider. Must be a provider that supports the runtime feature."""
-        try:
-            _ = hasattr(provider, "runtime")
-        except QiskitError:
-            # pylint: disable=raise-missing-from
-            raise ValueError(f"The provider {provider} does not provide a runtime environment.")
+    @service.setter
+    def service(self, service: Service) -> None:
+        """Set the service. Must be a service that supports the runtime feature."""
+        # try:
+        #     _ = hasattr(service, "runtime")
+        # except QiskitError:
+        #     # pylint: disable=raise-missing-from
+        #     raise ValueError(f"The service {service} does not provide a runtime environment.")
 
-        self._provider = provider
+        self._service = service
 
     @property
     def measurement_error_mitigation(self) -> bool:
@@ -174,8 +174,8 @@ class EffDimRuntimeClient:
         if self._backend is None:
             raise ValueError("The backend has not been set.")
 
-        if not self._mock_runtime and self.provider is None:
-            raise ValueError("The provider has not been set.")
+        if not self._mock_runtime and self.service is None:
+            raise ValueError("The service has not been set.")
 
         # No need for self.num_inputs/num_thetas
         if thetas is not None:
@@ -194,7 +194,7 @@ class EffDimRuntimeClient:
         # USE QPY HERE? # REMINDER: qiskit-machine-learning versions have to match
 
         # define runtime options
-        options = {"backend_name": self._backend.name()}
+        options = {"backend_name": self._backend.name}
 
         if self._mock_runtime:
             # combine the settings with the serialized buffers to runtime inputs
@@ -226,8 +226,8 @@ class EffDimRuntimeClient:
             }
 
             # send job to runtime and return result
-            job = self.provider.runtime.run(
-                program_id="eff-dim",
+            job = self.service.run(
+                program_id=self.program_id,
                 inputs=inputs,
                 options=options,
                 callback=self._wrap_torch_callback(),

@@ -61,7 +61,7 @@ qnn3 = TwoLayerQNN(
     num_qubits, feature_map=feat_map, ansatz=ansatz, observable=observable, quantum_instance=qi_sv
 )
 
-ed = EffectiveDimension(qnn3, num_thetas=num_thetas, num_inputs=num_inputs)
+ed = EffectiveDimension(qnn, num_thetas=num_thetas, num_inputs=num_inputs)
 # f, trace = ed.get_fhat()
 # print("f: ", f)
 effdim = ed.eff_dim(n)

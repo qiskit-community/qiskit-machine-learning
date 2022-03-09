@@ -1,0 +1,40 @@
+{
+  "name": "eff-dim",
+  "description": "A sample runtime program.",
+  "max_execution_time": 3000000,
+  "spec": {
+    "backend_requirements": {
+      "min_num_qubits": 5
+    },
+    "parameters": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "properties": {
+        "iterations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of iterations to run. Each iteration generates a runs a random circuit."
+        }
+      },
+      "required": [
+      ]
+    },
+    "return_values": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "description": "A string that says 'All done!'.",
+      "type": "string"
+    },
+    "interim_results": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "properties": {
+        "iteration": {
+          "type": "integer",
+          "description": "Iteration number."
+        },
+        "counts": {
+          "description": "Histogram data of the circuit result.",
+          "type": "object"
+        }
+      }
+    }
+  }
+}
