@@ -66,8 +66,8 @@ def ad_hoc_data(
 
     .. math::
         m(\vec{x}) = \begin{cases}
-        1 \qquad \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle > \Delta \\
-        -1 \qquad \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle < -\Delta
+        1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle > \Delta \\
+        -1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle < -\Delta
         \end{cases}
 
     where :math:`\Delta` is the separation gap, and
