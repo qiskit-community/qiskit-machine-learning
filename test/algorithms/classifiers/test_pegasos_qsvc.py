@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -64,6 +64,22 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         self.sample_test = sample[15:]
         self.label_test = label[15:]
 
+        # The same for a 4-dimensional example
+        # number of qubits is equal to the number of features
+        self.q_4d = 4
+        self.feature_map_4d = ZFeatureMap(feature_dimension=self.q_4d, reps=1)
+
+        sample_4d, label_4d = make_blobs(
+            n_samples=20, n_features=self.q_4d, centers=2, random_state=3, shuffle=True
+        )
+        sample_4d = MinMaxScaler(feature_range=(0, np.pi)).fit_transform(sample_4d)
+
+        # split into train and test set
+        self.sample_train_4d = sample_4d[:15]
+        self.label_train_4d = label_4d[:15]
+        self.sample_test_4d = sample_4d[15:]
+        self.label_test_4d = label_4d[15:]
+
     def test_qsvc(self):
         """Test PegasosQSVC"""
         qkernel = QuantumKernel(
@@ -75,6 +91,18 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         pegasos_qsvc.fit(self.sample_train, self.label_train)
         score = pegasos_qsvc.score(self.sample_test, self.label_test)
 
+        self.assertEqual(score, 1.0)
+
+    def test_qsvc__4d(self):
+        """Test PegasosQSVC with 4-dimensional input data"""
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map_4d, quantum_instance=self.statevector_simulator
+        )
+
+        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
+
+        pegasos_qsvc.fit(self.sample_train_4d, self.label_train_4d)
+        score = pegasos_qsvc.score(self.sample_test_4d, self.label_test_4d)
         self.assertEqual(score, 1.0)
 
     def test_precomputed_kernel(self):
