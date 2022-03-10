@@ -93,7 +93,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 1.0)
 
-    def test_qsvc__4d(self):
+    def test_qsvc_4d(self):
         """Test PegasosQSVC with 4-dimensional input data"""
         qkernel = QuantumKernel(
             feature_map=self.feature_map_4d, quantum_instance=self.statevector_simulator
