@@ -20,6 +20,7 @@ import logging
 import os
 import unittest
 import time
+import functools
 
 # disable deprecation warnings that can cause log output overflow
 # pylint: disable=unused-argument
@@ -31,6 +32,31 @@ def _noop(*args, **kargs):
 
 # disable warning messages
 # warnings.warn = _noop
+
+_NEEDS_GPU = os.getenv("QISKIT_GPU", "false").lower() == "true"
+
+
+def gpu(func):
+    """Decorator that signals that the test needs GPU to run.
+
+    Args:
+        func (callable): test function to be decorated.
+
+    Returns:
+        callable: the decorated function.
+    """
+
+    @functools.wraps(func)
+    def _wrapper(*args, **kwargs):
+        if not _NEEDS_GPU:
+            raise unittest.SkipTest("Skipping gpu tests")
+
+        return func(*args, **kwargs)
+
+    # save decorator function so that it can be
+    # inspected for the existence of this decorator
+    _wrapper._decorator = gpu
+    return _wrapper
 
 
 class QiskitMachineLearningTestCase(unittest.TestCase, ABC):
