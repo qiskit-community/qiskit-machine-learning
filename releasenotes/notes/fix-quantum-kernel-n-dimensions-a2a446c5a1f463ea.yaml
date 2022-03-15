@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixes an issue in ``QuantumKernel`` where evaluating a quantum kernel for 
+    data with dimension `d>2` raised an error. This is fixed by changing the 
+    hard-coded reshaping of one-dimensional arrays in ``QuantumKernel.evaluate()``.
