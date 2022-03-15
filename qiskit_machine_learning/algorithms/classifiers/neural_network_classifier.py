@@ -143,21 +143,22 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
     def _validate_input(self, X: np.ndarray, y: np.ndarray = None) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Prepares features and labels. If arrays are sparse, they are converted to dense as the numpy
-        math in the loss/objective functions does not work with sparse. If one hot encoding is
-        required, then labels are one hot encoded otherwise label are encoded via ``LabelEncoder``
-        from ``SciKit-Learn``. If labels are strings, they converted to numerical representation.
+        Validates and transforms if required features and labels. If arrays are sparse, they are
+        converted to dense as the numpy math in the loss/objective functions does not work with
+        sparse. If one hot encoding is required, then labels are one hot encoded otherwise label
+        are encoded via ``LabelEncoder`` from ``SciKit-Learn``. If labels are strings, they
+        converted to numerical representation.
 
         Args:
             X: features
             y: labels
 
         Returns:
-            A tuple with prepared features and labels.
+            A tuple with validated features and labels.
         """
         if scipy.sparse.issparse(X):
             # our math does not work with sparse arrays
-            X = np.array(cast(spmatrix, X).todense())  # cast is required by mypy
+            X = cast(spmatrix, X).toarray()  # cast is required by mypy
 
         if y is not None:
             if isinstance(y[0], str):
@@ -171,6 +172,6 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                     self._target_encoder.fit(y)
                 y = self._target_encoder.transform(y)
             elif scipy.sparse.issparse(y):
-                y = np.array(cast(spmatrix, y).todense())  # cast is required by mypy
+                y = cast(spmatrix, y).toarray()  # cast is required by mypy
 
         return X, y
