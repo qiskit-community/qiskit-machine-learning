@@ -88,7 +88,8 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         self._target_encoder = OneHotEncoder(sparse=False) if one_hot else LabelEncoder()
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
-        self._fit_result = None
+        if not self._warm_start:
+            self._fit_result = None
         X, y = self._validate_input(X, y)
 
         # mypy definition
