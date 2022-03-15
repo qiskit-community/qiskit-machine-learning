@@ -12,13 +12,14 @@
 
 """ Test Neural Network Classifier """
 
-from typing import Callable
-import unittest
 import functools
-
+import unittest
 from test import QiskitMachineLearningTestCase
 
+from typing import Callable
+
 import numpy as np
+import scipy
 from ddt import ddt, data
 from qiskit import Aer
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
@@ -376,6 +377,25 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         # Check all batches assume the correct number of classes
         self.assertTrue((np.asarray(self.num_classes_by_batch) == num_classes).all())
+
+    def test_sparse_arrays(self):
+        """Tests VQC on sparse features and labels."""
+        for quantum_instance in [self.sv_quantum_instance, self.qasm_quantum_instance]:
+            for loss in ["squared_error", "absolute_error", "cross_entropy"]:
+                with self.subTest(f"quantum_instance: {quantum_instance}, loss: {loss}"):
+                    self._test_sparse_arrays(quantum_instance, loss)
+
+    def _test_sparse_arrays(self, quantum_instance: QuantumInstance, loss: str):
+        classifier = VQC(num_qubits=2, loss=loss, quantum_instance=quantum_instance)
+        features = scipy.sparse.csr_matrix([[0, 0], [1, 1]])
+        labels = scipy.sparse.csr_matrix([[1, 0], [0, 1]])
+
+        # fit to data
+        classifier.fit(features, labels)
+
+        # score
+        score = classifier.score(features, labels)
+        self.assertGreater(score, 0.5)
 
 
 if __name__ == "__main__":
