@@ -15,20 +15,20 @@
 import unittest
 from test import QiskitMachineLearningTestCase
 import numpy as np
-from ddt import ddt
+from ddt import ddt, idata
 
 import qiskit
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 import qiskit_machine_learning.optionals as _optionals
-from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN
+from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN, NeuralNetwork
 from qiskit_machine_learning.connectors import TorchConnector
 
 
 @ddt
-class TestTorchConnector(QiskitMachineLearningTestCase):
-    """Torch Connector Tests 2."""
+class TestHybridTorchModels(QiskitMachineLearningTestCase):
+    """Hybrid model tests for Torch Connector."""
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
@@ -52,21 +52,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         torch.manual_seed(algorithm_globals.random_seed)
 
-    def test_opflow_qnn_hybrid_batch_gradients(self):
-        """Test gradient back-prop for batch input in hybrid opflow qnn."""
-        from torch import cat, Tensor
-        from torch.nn import Linear, Module, MSELoss
+    def _create_network(self, qnn: NeuralNetwork, output_size: int):
+        from torch import cat
+        from torch.nn import Linear, Module
         import torch.nn.functional as F
-        from torch.optim import SGD
-
-        num_inputs = 2
-
-        # set up QNN
-        qnn = TwoLayerQNN(
-            num_qubits=num_inputs,
-            quantum_instance=self.sv_quantum_instance,
-            input_gradients=True,  # for hybrid qnn
-        )
 
         # set up dummy hybrid PyTorch module
         class Net(Module):
@@ -78,7 +67,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 self.qnn = TorchConnector(
                     qnn, np.array([0.1] * qnn.num_weights)
                 )  # Apply torch connector
-                self.fc2 = Linear(1, 1)  # 1-dimensional output from QNN
+                self.fc2 = Linear(output_size, 1)  # shape depends on the type of the QNN
 
             def forward(self, x):
                 """Forward pass."""
@@ -87,60 +76,14 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
                 x = self.fc2(x)
                 return cat((x, 1 - x), -1)
 
-        model = Net()
+        return Net()
 
-        # random data set
-        x = Tensor(np.random.rand(5, 4))
-        y = Tensor(np.random.rand(5, 2))
+    def _get_device(self):
+        import torch
 
-        # define optimizer and loss
-        optimizer = SGD(model.parameters(), lr=0.1)
-        f_loss = MSELoss(reduction="sum")
+        return torch.device("cpu")
 
-        # loss and gradients without batch
-        optimizer.zero_grad(set_to_none=True)
-        sum_of_individual_losses = 0.0
-        for x_i, y_i in zip(x, y):
-            output = model(x_i)
-            sum_of_individual_losses += f_loss(output, y_i)
-        sum_of_individual_losses.backward()
-        sum_of_individual_gradients = 0.0
-        for n, param in model.named_parameters():
-            # make sure gradient is not None
-            self.assertFalse(param.grad is None)
-            if n.endswith(".weight"):
-                sum_of_individual_gradients += np.sum(param.grad.numpy())
-
-        # loss and gradients with batch
-        optimizer.zero_grad(set_to_none=True)
-        output = model(x)
-        batch_loss = f_loss(output, y)
-        batch_loss.backward()
-        batch_gradients = 0.0
-        for n, param in model.named_parameters():
-            # make sure gradient is not None
-            self.assertFalse(param.grad is None)
-            if n.endswith(".weight"):
-                batch_gradients += np.sum(param.grad.numpy())
-
-        # making sure they are equivalent
-        self.assertAlmostEqual(
-            np.linalg.norm(sum_of_individual_gradients - batch_gradients), 0.0, places=4
-        )
-
-        self.assertAlmostEqual(
-            sum_of_individual_losses.detach().numpy(),
-            batch_loss.detach().numpy(),
-            places=4,
-        )
-
-    def test_circuit_qnn_hybrid_batch_gradients(self):
-        """Test gradient back-prop for batch input in hybrid circuit qnn."""
-        from torch import cat, Tensor
-        from torch.nn import Linear, Module, MSELoss
-        import torch.nn.functional as F
-        from torch.optim import SGD
-
+    def _create_circuit_qnn(self) -> CircuitQNN:
         output_shape, interpret = 2, lambda x: f"{x:b}".count("1") % 2
         num_inputs = 2
 
@@ -160,31 +103,42 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             output_shape=output_shape,
             quantum_instance=self.sv_quantum_instance,
         )
+        return qnn
 
-        # set up dummy hybrid PyTorch module
-        class Net(Module):
-            """PyTorch nn module."""
+    def _create_opflow_qnn(self) -> TwoLayerQNN:
+        num_inputs = 2
 
-            def __init__(self):
-                super().__init__()
-                self.fc1 = Linear(4, 2)
-                self.qnn = TorchConnector(
-                    qnn, np.array([0.1] * qnn.num_weights)
-                )  # Apply torch connector
-                self.fc2 = Linear(2, 1)  # 2-dimensional output from QNN
+        # set up QNN
+        qnn = TwoLayerQNN(
+            num_qubits=num_inputs,
+            quantum_instance=self.sv_quantum_instance,
+            input_gradients=True,  # for hybrid qnn
+        )
+        return qnn
 
-            def forward(self, x):
-                """Forward pass."""
-                x = F.relu(self.fc1(x))
-                x = self.qnn(x)  # apply QNN
-                x = self.fc2(x)
-                return cat((x, 1 - x), -1)
+    @idata(["opflow", "circuit_qnn"])
+    def test_hybrid_batch_gradients(self, qnn_type: str):
+        """Test gradient back-prop for batch input in a qnn."""
+        import torch
+        from torch.nn import MSELoss
+        from torch.optim import SGD
 
-        model = Net()
+        if qnn_type == "opflow":
+            qnn = self._create_opflow_qnn()
+            output_size = 1
+        elif qnn_type == "circuit_qnn":
+            qnn = self._create_circuit_qnn()
+            output_size = 2
+        else:
+            raise ValueError("Unsupported QNN type")
+
+        model = self._create_network(qnn, output_size=output_size)
+        device = self._get_device()
+        model.to(device)
 
         # random data set
-        x = Tensor(np.random.rand(5, 4))
-        y = Tensor(np.random.rand(5, output_shape))
+        x = torch.rand((5, 4), device=device)
+        y = torch.rand((5, 2), device=device)
 
         # define optimizer and loss
         optimizer = SGD(model.parameters(), lr=0.1)
