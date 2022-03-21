@@ -21,7 +21,7 @@ from ddt import ddt, data
 import numpy as np
 
 import qiskit
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import QuantumCircuit, Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from qiskit.compiler.transpiler import PassManagerConfig, level_1_pass_manager, level_2_pass_manager
@@ -32,9 +32,7 @@ from qiskit_machine_learning.neural_networks import CircuitQNN
 import qiskit_machine_learning.optionals as _optionals
 
 QASM = "qasm"
-
 STATEVECTOR = "statevector"
-
 CUSTOM_PASS_MANAGERS = "custom_pass_managers"
 
 
@@ -196,89 +194,37 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                     weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
                 )
 
-    @data(
-        # sparse, sampling, quantum_instance_type, interpret (0=no, 1=1d, 2=2d), batch_size
-        (True, True, STATEVECTOR, 0, 1),
-        (True, True, STATEVECTOR, 0, 2),
-        (True, True, STATEVECTOR, 1, 1),
-        (True, True, STATEVECTOR, 1, 2),
-        (True, True, STATEVECTOR, 2, 1),
-        (True, True, STATEVECTOR, 2, 2),
-        (True, True, QASM, 0, 1),
-        (True, True, QASM, 0, 2),
-        (True, True, QASM, 1, 1),
-        (True, True, QASM, 1, 2),
-        (True, True, QASM, 2, 1),
-        (True, True, QASM, 2, 2),
-        (True, True, CUSTOM_PASS_MANAGERS, 0, 1),
-        (True, True, CUSTOM_PASS_MANAGERS, 0, 2),
-        (True, True, CUSTOM_PASS_MANAGERS, 1, 1),
-        (True, True, CUSTOM_PASS_MANAGERS, 1, 2),
-        (True, True, CUSTOM_PASS_MANAGERS, 2, 1),
-        (True, True, CUSTOM_PASS_MANAGERS, 2, 2),
-        (True, False, STATEVECTOR, 0, 1),
-        (True, False, STATEVECTOR, 0, 2),
-        (True, False, STATEVECTOR, 1, 1),
-        (True, False, STATEVECTOR, 1, 2),
-        (True, False, STATEVECTOR, 2, 1),
-        (True, False, STATEVECTOR, 2, 2),
-        (True, False, QASM, 0, 1),
-        (True, False, QASM, 0, 2),
-        (True, False, QASM, 1, 1),
-        (True, False, QASM, 1, 2),
-        (True, False, QASM, 2, 1),
-        (True, False, QASM, 2, 2),
-        (True, False, CUSTOM_PASS_MANAGERS, 0, 1),
-        (True, False, CUSTOM_PASS_MANAGERS, 0, 2),
-        (True, False, CUSTOM_PASS_MANAGERS, 1, 1),
-        (True, False, CUSTOM_PASS_MANAGERS, 1, 2),
-        (True, False, CUSTOM_PASS_MANAGERS, 2, 1),
-        (True, False, CUSTOM_PASS_MANAGERS, 2, 2),
-        (False, True, STATEVECTOR, 0, 1),
-        (False, True, STATEVECTOR, 0, 2),
-        (False, True, STATEVECTOR, 1, 1),
-        (False, True, STATEVECTOR, 1, 2),
-        (False, True, STATEVECTOR, 2, 1),
-        (False, True, STATEVECTOR, 2, 2),
-        (False, True, QASM, 0, 1),
-        (False, True, QASM, 0, 2),
-        (False, True, QASM, 1, 1),
-        (False, True, QASM, 1, 2),
-        (False, True, QASM, 2, 1),
-        (False, True, QASM, 2, 2),
-        (False, True, CUSTOM_PASS_MANAGERS, 0, 1),
-        (False, True, CUSTOM_PASS_MANAGERS, 0, 2),
-        (False, True, CUSTOM_PASS_MANAGERS, 1, 1),
-        (False, True, CUSTOM_PASS_MANAGERS, 1, 2),
-        (False, True, CUSTOM_PASS_MANAGERS, 2, 1),
-        (False, True, CUSTOM_PASS_MANAGERS, 2, 2),
-        (False, False, STATEVECTOR, 0, 1),
-        (False, False, STATEVECTOR, 0, 2),
-        (False, False, STATEVECTOR, 1, 1),
-        (False, False, STATEVECTOR, 1, 2),
-        (False, False, STATEVECTOR, 2, 1),
-        (False, False, STATEVECTOR, 2, 2),
-        (False, False, QASM, 0, 1),
-        (False, False, QASM, 0, 2),
-        (False, False, QASM, 1, 1),
-        (False, False, QASM, 1, 2),
-        (False, False, QASM, 2, 1),
-        (False, False, QASM, 2, 2),
-        (False, False, CUSTOM_PASS_MANAGERS, 0, 1),
-        (False, False, CUSTOM_PASS_MANAGERS, 0, 2),
-        (False, False, CUSTOM_PASS_MANAGERS, 1, 1),
-        (False, False, CUSTOM_PASS_MANAGERS, 1, 2),
-        (False, False, CUSTOM_PASS_MANAGERS, 2, 1),
-        (False, False, CUSTOM_PASS_MANAGERS, 2, 2),
-    )
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
-    def test_circuit_qnn(self, config):
+    def test_circuit_qnn(self):
         """Circuit QNN Test."""
-        # get configuration
-        sparse, sampling, quantum_instance_type, interpret_id, batch_size = config
+        for sparse in [True, False]:
+            for sampling in [True, False]:
+                for quantum_instance_type in [STATEVECTOR, QASM, CUSTOM_PASS_MANAGERS]:
+                    for interpret_type in [0, 1, 2]:  # (0=no, 1=1d, 2=2d)
+                        for batch_size in [1, 2]:
+                            test_name = (
+                                f"sparse: {sparse}, sampling: {sampling}, "
+                                f"quantum_instance_type: {quantum_instance_type}, "
+                                f"interpret_type: {interpret_type}, batch_size: {batch_size}"
+                            )
+                            with self.subTest(test_name):
+                                self._test_circuit_qnn(
+                                    sparse,
+                                    sampling,
+                                    quantum_instance_type,
+                                    interpret_type,
+                                    batch_size,
+                                )
 
-        # get QNN
-        qnn = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_id)
+    def _test_circuit_qnn(
+        self,
+        sparse: bool,
+        sampling: bool,
+        quantum_instance_type: str,
+        interpret_type: int,
+        batch_size: int,
+    ):
+        qnn = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_type)
         self._verify_qnn(qnn, quantum_instance_type, batch_size)
 
     @data(
@@ -360,95 +306,41 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
-    @data(
-        # sparse, sampling, quantum_instance_type, interpret (0=no, 1=1d, 2=2d), batch_size
-        (True, True, STATEVECTOR, 0, 1),
-        (True, True, STATEVECTOR, 0, 2),
-        (True, True, STATEVECTOR, 1, 1),
-        (True, True, STATEVECTOR, 1, 2),
-        (True, True, STATEVECTOR, 2, 1),
-        (True, True, STATEVECTOR, 2, 2),
-        (True, True, QASM, 0, 1),
-        (True, True, QASM, 0, 2),
-        (True, True, QASM, 1, 1),
-        (True, True, QASM, 1, 2),
-        (True, True, QASM, 2, 1),
-        (True, True, QASM, 2, 2),
-        (True, True, CUSTOM_PASS_MANAGERS, 0, 1),
-        (True, True, CUSTOM_PASS_MANAGERS, 0, 2),
-        (True, True, CUSTOM_PASS_MANAGERS, 1, 1),
-        (True, True, CUSTOM_PASS_MANAGERS, 1, 2),
-        (True, True, CUSTOM_PASS_MANAGERS, 2, 1),
-        (True, True, CUSTOM_PASS_MANAGERS, 2, 2),
-        (True, False, STATEVECTOR, 0, 1),
-        (True, False, STATEVECTOR, 0, 2),
-        (True, False, STATEVECTOR, 1, 1),
-        (True, False, STATEVECTOR, 1, 2),
-        (True, False, STATEVECTOR, 2, 1),
-        (True, False, STATEVECTOR, 2, 2),
-        (True, False, QASM, 0, 1),
-        (True, False, QASM, 0, 2),
-        (True, False, QASM, 1, 1),
-        (True, False, QASM, 1, 2),
-        (True, False, QASM, 2, 1),
-        (True, False, QASM, 2, 2),
-        (True, False, CUSTOM_PASS_MANAGERS, 0, 1),
-        (True, False, CUSTOM_PASS_MANAGERS, 0, 2),
-        (True, False, CUSTOM_PASS_MANAGERS, 1, 1),
-        (True, False, CUSTOM_PASS_MANAGERS, 1, 2),
-        (True, False, CUSTOM_PASS_MANAGERS, 2, 1),
-        (True, False, CUSTOM_PASS_MANAGERS, 2, 2),
-        (False, True, STATEVECTOR, 0, 1),
-        (False, True, STATEVECTOR, 0, 2),
-        (False, True, STATEVECTOR, 1, 1),
-        (False, True, STATEVECTOR, 1, 2),
-        (False, True, STATEVECTOR, 2, 1),
-        (False, True, STATEVECTOR, 2, 2),
-        (False, True, QASM, 0, 1),
-        (False, True, QASM, 0, 2),
-        (False, True, QASM, 1, 1),
-        (False, True, QASM, 1, 2),
-        (False, True, QASM, 2, 1),
-        (False, True, QASM, 2, 2),
-        (False, True, CUSTOM_PASS_MANAGERS, 0, 1),
-        (False, True, CUSTOM_PASS_MANAGERS, 0, 2),
-        (False, True, CUSTOM_PASS_MANAGERS, 1, 1),
-        (False, True, CUSTOM_PASS_MANAGERS, 1, 2),
-        (False, True, CUSTOM_PASS_MANAGERS, 2, 1),
-        (False, True, CUSTOM_PASS_MANAGERS, 2, 2),
-        (False, False, STATEVECTOR, 0, 1),
-        (False, False, STATEVECTOR, 0, 2),
-        (False, False, STATEVECTOR, 1, 1),
-        (False, False, STATEVECTOR, 1, 2),
-        (False, False, STATEVECTOR, 2, 1),
-        (False, False, STATEVECTOR, 2, 2),
-        (False, False, QASM, 0, 1),
-        (False, False, QASM, 0, 2),
-        (False, False, QASM, 1, 1),
-        (False, False, QASM, 1, 2),
-        (False, False, QASM, 2, 1),
-        (False, False, QASM, 2, 2),
-        (False, False, CUSTOM_PASS_MANAGERS, 0, 1),
-        (False, False, CUSTOM_PASS_MANAGERS, 0, 2),
-        (False, False, CUSTOM_PASS_MANAGERS, 1, 1),
-        (False, False, CUSTOM_PASS_MANAGERS, 1, 2),
-        (False, False, CUSTOM_PASS_MANAGERS, 2, 1),
-        (False, False, CUSTOM_PASS_MANAGERS, 2, 2),
-    )
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
-    def test_no_quantum_instance(self, config):
+    def test_no_quantum_instance(self):
         """Circuit QNN Test with and without QuantumInstance."""
-        # get configuration
-        sparse, sampling, quantum_instance_type, interpret_id, batch_size = config
-        if sparse and not _optionals.HAS_SPARSE:
-            self.skipTest("sparse library is required to run this test")
-            return
+        for sparse in [True, False]:
+            for sampling in [True, False]:
+                for quantum_instance_type in [STATEVECTOR, QASM, CUSTOM_PASS_MANAGERS]:
+                    for interpret_type in [0, 1, 2]:  # (0=no, 1=1d, 2=2d)
+                        for batch_size in [1, 2]:
+                            test_name = (
+                                f"sparse: {sparse}, sampling: {sampling}, "
+                                f"quantum_instance_type: {quantum_instance_type}, "
+                                f"interpret_type: {interpret_type}, batch_size: {batch_size}"
+                            )
+                            with self.subTest(test_name):
+                                self._test_no_quantum_instance(
+                                    sparse,
+                                    sampling,
+                                    quantum_instance_type,
+                                    interpret_type,
+                                    batch_size,
+                                )
 
+    def _test_no_quantum_instance(
+        self,
+        sparse: bool,
+        sampling: bool,
+        quantum_instance_type: str,
+        interpret_type: int,
+        batch_size: int,
+    ):
         # get QNN with QuantumInstance
-        qnn_qi = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_id)
+        qnn_qi = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_type)
 
         # get QNN without QuantumInstance
-        qnn_no_qi = self._get_qnn(sparse, sampling, None, interpret_id)
+        qnn_no_qi = self._get_qnn(sparse, sampling, None, interpret_type)
 
         with self.assertRaises(QiskitMachineLearningError):
             qnn_no_qi.sample(input_data=None, weights=None)
@@ -473,6 +365,111 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         self.assertEqual(qnn_qi.output_shape, qnn_no_qi.output_shape)
         self._verify_qnn(qnn_no_qi, quantum_instance_type, batch_size)
+
+    @data(
+        # interpret, output_shape, sparse, quantum_instance
+        (None, 1, False, "sv"),
+        (None, 1, True, "sv"),
+        (None, 1, False, "qasm"),
+        (None, 1, True, "qasm"),
+    )
+    def test_warning1_circuit_qnn(self, config):
+        """Circuit QNN with no sampling and input/output shape 1/1 ."""
+
+        interpret, output_shape, sparse, q_i = config
+        if sparse and not _optionals.HAS_SPARSE:
+            self.skipTest("sparse library is required to run this test")
+            return
+
+        if q_i == "sv":
+            quantum_instance = self.quantum_instance_sv
+        elif q_i == "qasm":
+            quantum_instance = self.quantum_instance_qasm
+        else:
+            raise ValueError("Unsupported quantum instance")
+
+        qc = QuantumCircuit(1)
+
+        # construct simple feature map
+        param_x = Parameter("x")
+        qc.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter("y")
+        qc.ry(param_y, 0)
+
+        # check warning when output_shape defined without interpret
+        with self.assertLogs(level="WARNING") as w_1:
+            CircuitQNN(
+                qc,
+                [param_x],
+                [param_y],
+                sparse=sparse,
+                sampling=False,
+                interpret=interpret,
+                output_shape=output_shape,
+                quantum_instance=quantum_instance,
+                input_gradients=True,
+            )
+            self.assertEqual(
+                w_1.output,
+                [
+                    "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:No "
+                    "interpret function given, output_shape will be automatically "
+                    "determined as 2^num_qubits."
+                ],
+            )
+
+    @data(
+        # interpret, output_shape, sparse, quantum_instance
+        (None, 1, False, "qasm"),
+        (None, 1, True, "qasm"),
+        (lambda x: np.sum(x) % 2, 2, True, "qasm"),
+        (lambda x: np.sum(x) % 2, 2, False, "qasm"),
+    )
+    def test_warning2_circuit_qnn(self, config):
+        """Torch Connector + Circuit QNN with sampling and input/output shape 1/1 ."""
+
+        interpret, output_shape, sparse, q_i = config
+        if q_i == "sv":
+            quantum_instance = self.quantum_instance_sv
+        elif q_i == "qasm":
+            quantum_instance = self.quantum_instance_qasm
+        else:
+            raise ValueError("Unsupported quantum instance")
+
+        qc = QuantumCircuit(2)
+
+        # construct simple feature map
+        param_x = Parameter("x")
+        qc.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter("y")
+        qc.ry(param_y, 0)
+
+        # check warning when sampling true
+        with self.assertLogs(level="WARNING") as w_2:
+            CircuitQNN(
+                qc,
+                [param_x],
+                [param_y],
+                sparse=sparse,
+                sampling=True,
+                interpret=interpret,
+                output_shape=output_shape,
+                quantum_instance=quantum_instance,
+                input_gradients=True,
+            )
+
+            self.assertEqual(
+                w_2.output,
+                [
+                    "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:"
+                    "In sampling mode, output_shape will be automatically inferred "
+                    "from the number of samples and interpret function, if provided."
+                ],
+            )
 
 
 if __name__ == "__main__":
