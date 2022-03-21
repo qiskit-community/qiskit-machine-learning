@@ -28,10 +28,9 @@ class TestCPUTorchNetworks(QiskitMachineLearningTestCase, TestTorchNetworks):
         super().setup_test()
         super().setUp()
 
-    def _get_device(self):
         import torch
 
-        return torch.device("cpu")
+        self._device = torch.device("cpu")
 
 
 if __name__ == "__main__":

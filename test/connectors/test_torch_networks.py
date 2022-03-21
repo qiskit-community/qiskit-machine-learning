@@ -29,20 +29,21 @@ class TestTorchNetworks(ABC):
     """Base class for hybrid PyTorch network tests."""
 
     def __init__(self):
-        self.sv_quantum_instance = None
-        self.qasm_quantum_instance = None
+        self._sv_quantum_instance = None
+        self._qasm_quantum_instance = None
+        self._device = None
 
     def setup_test(self):
-        """Base setup"""
+        """Base setup."""
         algorithm_globals.random_seed = 12345
         # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(
+        self._sv_quantum_instance = QuantumInstance(
             qiskit.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         # pylint: disable=no-member
-        self.qasm_quantum_instance = QuantumInstance(
+        self._qasm_quantum_instance = QuantumInstance(
             qiskit.providers.aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
@@ -60,10 +61,6 @@ class TestTorchNetworks(ABC):
     @abstractmethod
     def assertAlmostEqual(self, first, second, places=None, msg=None, delta=None):
         """assert Almost Equal"""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def _get_device(self):
         raise Exception("Abstract method")
 
     def _create_network(self, qnn: NeuralNetwork, output_size: int):
@@ -110,7 +107,7 @@ class TestTorchNetworks(ABC):
             input_gradients=True,  # for hybrid qnn
             interpret=interpret,
             output_shape=output_shape,
-            quantum_instance=self.sv_quantum_instance,
+            quantum_instance=self._sv_quantum_instance,
         )
         return qnn
 
@@ -120,7 +117,7 @@ class TestTorchNetworks(ABC):
         # set up QNN
         qnn = TwoLayerQNN(
             num_qubits=num_inputs,
-            quantum_instance=self.sv_quantum_instance,
+            quantum_instance=self._sv_quantum_instance,
             input_gradients=True,  # for hybrid qnn
         )
         return qnn
@@ -143,12 +140,11 @@ class TestTorchNetworks(ABC):
             raise ValueError("Unsupported QNN type")
 
         model = self._create_network(qnn, output_size=output_size)
-        device = self._get_device()
-        model.to(device)
+        model.to(self._device)
 
         # random data set
-        x = torch.rand((5, 4), device=device)
-        y = torch.rand((5, 2), device=device)
+        x = torch.rand((5, 4), device=self._device)
+        y = torch.rand((5, 2), device=self._device)
 
         # define optimizer and loss
         optimizer = SGD(model.parameters(), lr=0.1)
