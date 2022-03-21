@@ -12,8 +12,6 @@
 
 """ ML test packages """
 
-from .machine_learning_test_case import (
-    QiskitMachineLearningTestCase,
-)
+from .machine_learning_test_case import QiskitMachineLearningTestCase, gpu
 
-__all__ = ["QiskitMachineLearningTestCase"]
+__all__ = ["QiskitMachineLearningTestCase", "gpu"]
