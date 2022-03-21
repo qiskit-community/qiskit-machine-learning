@@ -13,7 +13,6 @@
 """Test Torch Connector."""
 
 import unittest
-import warnings
 from typing import List
 
 from test import QiskitMachineLearningTestCase
@@ -158,27 +157,6 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             Tensor([[1], [2]]),
             Tensor([[[1], [2]], [[3], [4]]]),
         ]
-
-        # Test weights property deprecation
-        if q_i == "sv":
-            # emit deprecation the first time it is used
-            with warnings.catch_warnings(record=True) as c_m:
-                warnings.simplefilter("always")
-                _ = model.weights
-                msg = str(c_m[0].message)
-                msg_ref = (
-                    "The weights property is deprecated as of version 0.2.0 and "
-                    "will be removed no sooner than 3 months after the release. "
-                    "Instead use the weight property."
-                )
-                self.assertEqual(msg, msg_ref)
-                self.assertTrue("test_torch_connector.py" in c_m[0].filename, c_m[0].filename)
-
-            # trying again should not emit deprecation
-            with warnings.catch_warnings(record=True) as c_m:
-                warnings.simplefilter("always")
-                _ = model.weights
-                self.assertListEqual(c_m, [])
 
         # test model
         self._validate_output_shape(model, test_data)
