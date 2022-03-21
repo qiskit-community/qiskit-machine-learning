@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test Opflow QNN."""
+"""Test Circuit QNN."""
 
 import unittest
 
@@ -38,7 +38,7 @@ CUSTOM_PASS_MANAGERS = "custom_pass_managers"
 
 @ddt
 class TestCircuitQNN(QiskitMachineLearningTestCase):
-    """Opflow QNN Tests."""
+    """Circuit QNN Tests."""
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
