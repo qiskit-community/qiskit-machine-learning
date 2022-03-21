@@ -9,18 +9,18 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-"""Test Torch GPU Torch Connector."""
+"""GPU based tests of hybrid PyTorch networks."""
 
 import unittest
 from test import QiskitMachineLearningTestCase, gpu
-from test.connectors.test_torch_models import TestTorchModels
+from test.connectors.test_torch_networks import TestTorchNetworks
+
 from qiskit.utils import optionals
 import qiskit_machine_learning.optionals as _optionals
 
 
-class TestGPUTorchConnector(QiskitMachineLearningTestCase, TestTorchModels):
-    """GPU Hybrid model tests for Torch Connector."""
+class TestGPUTorchConnector(QiskitMachineLearningTestCase, TestTorchNetworks):
+    """GPU based tests of hybrid PyTorch networks."""
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")

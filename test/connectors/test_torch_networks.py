@@ -9,8 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-"""Test Torch Models."""
+"""Abstract class to test PyTorch hybrid networks."""
 
 from abc import ABC, abstractmethod
 from typing import Optional, Union, cast
@@ -26,8 +25,8 @@ from qiskit_machine_learning.connectors import TorchConnector
 
 
 @ddt
-class TestTorchModels(ABC):
-    """Test Models for Torch Connector."""
+class TestTorchNetworks(ABC):
+    """Base class for hybrid PyTorch network tests."""
 
     def __init__(self):
         self.sv_quantum_instance = None
@@ -167,7 +166,7 @@ class TestTorchModels(ABC):
             # make sure gradient is not None
             self.assertFalse(param.grad is None)
             if n.endswith(".weight"):
-                sum_of_individual_gradients += np.sum(param.grad.numpy())
+                sum_of_individual_gradients += np.sum(param.grad.detach().cpu().numpy())
 
         # loss and gradients with batch
         optimizer.zero_grad(set_to_none=True)
@@ -179,7 +178,7 @@ class TestTorchModels(ABC):
             # make sure gradient is not None
             self.assertFalse(param.grad is None)
             if n.endswith(".weight"):
-                batch_gradients += np.sum(param.grad.numpy())
+                batch_gradients += np.sum(param.grad.detach().cpu().numpy())
 
         # making sure they are equivalent
         self.assertAlmostEqual(
@@ -189,7 +188,7 @@ class TestTorchModels(ABC):
         )
 
         self.assertAlmostEqual(
-            cast(torch.Tensor, sum_of_individual_losses).detach().numpy(),
-            batch_loss.detach().numpy(),
+            cast(torch.Tensor, sum_of_individual_losses).detach().cpu().numpy(),
+            batch_loss.detach().cpu().numpy(),
             places=4,
         )
