@@ -18,7 +18,6 @@ import numpy as np
 import qiskit_machine_learning.optionals as _optionals
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
-from ..deprecation import deprecate_property
 
 if _optionals.HAS_TORCH:
     from torch import Tensor, sparse_coo_tensor, einsum
@@ -244,20 +243,6 @@ class TorchConnector(Module):
     def neural_network(self) -> NeuralNetwork:
         """Returns the underlying neural network."""
         return self._neural_network
-
-    # Bug in mypy, if property decorator is used with another one
-    # https://github.com/python/mypy/issues/1362
-
-    @property  # type: ignore
-    @deprecate_property("0.2.0", new_name="weight")
-    def weights(self) -> Tensor:
-        """
-        .. deprecated:: 0.2.0
-           Use :meth:`weight` instead.
-
-        Returns the weights of the underlying network.
-        """
-        return self.weight
 
     @property
     def weight(self) -> Tensor:
