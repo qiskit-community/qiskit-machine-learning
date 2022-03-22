@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,10 +11,12 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-from typing import Union, Optional, Callable
+from typing import Union, Optional, Callable, Tuple, cast
 
 import numpy as np
+import scipy.sparse
 from qiskit.algorithms.optimizers import Optimizer
+from scipy.sparse import spmatrix
 from sklearn.base import ClassifierMixin
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
@@ -86,7 +88,9 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         self._target_encoder = OneHotEncoder(sparse=False) if one_hot else LabelEncoder()
 
     def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
-        y = self._fit_and_encode_labels(y)
+        if not self._warm_start:
+            self._fit_result = None
+        X, y = self._validate_input(X, y)
 
         # mypy definition
         function: ObjectiveFunction = None
@@ -114,6 +118,9 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
         if self._fit_result is None:
             raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
+
+        X, _ = self._validate_input(X)
+
         if self._neural_network.output_shape == (1,):
             predict = np.sign(self._neural_network.forward(X, self._fit_result.x))
         else:
@@ -131,32 +138,40 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def score(
         self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
     ) -> float:
-        y = self._encode_labels(y)
+        X, y = self._validate_input(X, y)
         return ClassifierMixin.score(self, X, y, sample_weight)
 
-    def _fit_and_encode_labels(self, y: np.ndarray) -> np.ndarray:
-        """Fits label or one-hot encoder and converts categorical target data."""
+    def _validate_input(self, X: np.ndarray, y: np.ndarray = None) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Validates and transforms if required features and labels. If arrays are sparse, they are
+        converted to dense as the numpy math in the loss/objective functions does not work with
+        sparse. If one hot encoding is required, then labels are one hot encoded otherwise label
+        are encoded via ``LabelEncoder`` from ``SciKit-Learn``. If labels are strings, they
+        converted to numerical representation.
 
-        if isinstance(y[0], str):
-            # string data is assumed to be categorical
+        Args:
+            X: features
+            y: labels
 
-            # OneHotEncoder expects data with shape (n_samples, n_features) but
-            # LabelEncoder expects shape (n_samples,) so set desired shape
-            y = y.reshape(-1, 1) if self._one_hot else y
-            self._target_encoder.fit(y)
-            y = self._target_encoder.transform(y)
+        Returns:
+            A tuple with validated features and labels.
+        """
+        if scipy.sparse.issparse(X):
+            # our math does not work with sparse arrays
+            X = cast(spmatrix, X).toarray()  # cast is required by mypy
 
-        return y
+        if y is not None:
+            if isinstance(y[0], str):
+                # string data is assumed to be categorical
 
-    def _encode_labels(self, y: np.ndarray) -> np.ndarray:
-        """Converts categorical target data using label or one-hot encoding."""
+                # OneHotEncoder expects data with shape (n_samples, n_features) but
+                # LabelEncoder expects shape (n_samples,) so set desired shape
+                y = y.reshape(-1, 1) if self._one_hot else y
+                if self._fit_result is None:
+                    # the model is being trained, fit first
+                    self._target_encoder.fit(y)
+                y = self._target_encoder.transform(y)
+            elif scipy.sparse.issparse(y):
+                y = cast(spmatrix, y).toarray()  # cast is required by mypy
 
-        if isinstance(y[0], str):
-            # string data is assumed to be categorical
-
-            # OneHotEncoder expects data with shape (n_samples, n_features) but
-            # LabelEncoder expects shape (n_samples,) so set desired shape
-            y = y.reshape(-1, 1) if self._one_hot else y
-            y = self._target_encoder.transform(y)
-
-        return y
+        return X, y
