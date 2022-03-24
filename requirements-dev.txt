@@ -19,3 +19,5 @@ mypy-extensions>=0.4.3
 nbsphinx
 qiskit_sphinx_theme
 networkx>=2.2,<2.6
+# Jinja2 3.1.0 breaks docs. Keep until nbconvert or Jinja2 fixes it.
+jinja2<3.1.0
