@@ -12,19 +12,16 @@
 
 """Test Torch Connector."""
 
-import unittest
-from abc import ABC, abstractmethod
 from typing import List
+from test.connectors.test_torch import TestTorch
 
 import numpy as np
 
 from ddt import ddt, data
 
-import qiskit
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -34,69 +31,8 @@ import qiskit_machine_learning.optionals as _optionals
 
 
 @ddt
-class TestTorchConnector(ABC):
+class TestTorchConnector(TestTorch):
     """Torch Connector Tests."""
-
-    def __init__(self):
-        self._device = None
-        self._sv_quantum_instance = None
-        self._qasm_quantum_instance = None
-
-    def setup_test(self):
-        """Base setup."""
-        algorithm_globals.random_seed = 12345
-        # specify quantum instances
-        self._sv_quantum_instance = QuantumInstance(
-            qiskit.Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        # pylint: disable=no-member
-        self._qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        import torch
-
-        torch.manual_seed(algorithm_globals.random_seed)
-
-    @abstractmethod
-    def subTest(self, msg, **kwargs):
-        # pylint: disable=invalid-name
-        """Sub test."""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def assertAlmostEqual(self, first, second, places=None, msg=None, delta=None):
-        """Assert almost equal."""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def assertEqual(self, first, second, msg=None):
-        """Assert equal."""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def assertTrue(self, expr, msg=None):
-        """Assert true."""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def skipTest(self, reason):  # pylint: disable=invalid-name
-        """Skip test."""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def assertLogs(self, logger=None, level=None):
-        """Assert logs."""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def assertListEqual(self, list1, list2, msg=None):
-        """Assert list equal."""
-        raise Exception("Abstract method")
 
     def _validate_output_shape(self, model: TorchConnector, test_data: List) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
@@ -800,7 +736,3 @@ class TestTorchConnector(ABC):
                     "from the number of samples and interpret function, if provided."
                 ],
             )
-
-
-if __name__ == "__main__":
-    unittest.main()

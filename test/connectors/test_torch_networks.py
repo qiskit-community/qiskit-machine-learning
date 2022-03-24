@@ -9,59 +9,23 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
 """Abstract class to test PyTorch hybrid networks."""
 
-from abc import ABC, abstractmethod
 from typing import Optional, Union, cast
+from test.connectors.test_torch import TestTorch
 import numpy as np
 from ddt import ddt, idata
 
-import qiskit
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN, NeuralNetwork
 from qiskit_machine_learning.connectors import TorchConnector
 
 
 @ddt
-class TestTorchNetworks(ABC):
+class TestTorchNetworks(TestTorch):
     """Base class for hybrid PyTorch network tests."""
-
-    def __init__(self):
-        self._sv_quantum_instance = None
-        self._qasm_quantum_instance = None
-        self._device = None
-
-    def setup_test(self):
-        """Base setup."""
-        algorithm_globals.random_seed = 12345
-        # specify quantum instances
-        self._sv_quantum_instance = QuantumInstance(
-            qiskit.Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        # pylint: disable=no-member
-        self._qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        import torch
-
-        torch.manual_seed(algorithm_globals.random_seed)
-
-    @abstractmethod
-    def assertFalse(self, expr, msg=None):
-        """assert False"""
-        raise Exception("Abstract method")
-
-    @abstractmethod
-    def assertAlmostEqual(self, first, second, places=None, msg=None, delta=None):
-        """assert Almost Equal"""
-        raise Exception("Abstract method")
 
     def _create_network(self, qnn: NeuralNetwork, output_size: int):
         from torch import cat

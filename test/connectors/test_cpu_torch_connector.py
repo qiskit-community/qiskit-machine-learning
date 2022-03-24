@@ -15,15 +15,10 @@ import unittest
 from test import QiskitMachineLearningTestCase
 from test.connectors.test_torch_connector import TestTorchConnector
 
-from qiskit.utils import optionals
-import qiskit_machine_learning.optionals as _optionals
-
 
 class TestCPUTorchConnector(QiskitMachineLearningTestCase, TestTorchConnector):
     """CPU based tests of the PyTorch connector."""
 
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def setUp(self):
         super().setup_test()
         super().setUp()
