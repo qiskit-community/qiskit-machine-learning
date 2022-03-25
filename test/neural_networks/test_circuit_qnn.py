@@ -11,12 +11,12 @@
 # that they have been altered from the originals.
 
 """Test Circuit QNN."""
-
+import itertools
 import unittest
 
 from test import QiskitMachineLearningTestCase
 
-from ddt import ddt, data
+from ddt import ddt, data, idata, unpack
 
 import numpy as np
 
@@ -34,6 +34,12 @@ import qiskit_machine_learning.optionals as _optionals
 QASM = "qasm"
 STATEVECTOR = "statevector"
 CUSTOM_PASS_MANAGERS = "custom_pass_managers"
+
+SPARSE = [True, False]
+SAMPLING = [True, False]
+QUANTUM_INSTANCES = [STATEVECTOR, QASM, CUSTOM_PASS_MANAGERS]
+INTERPRET_TYPES = [0, 1, 2]
+BATCH_SIZES = [1, 2]
 
 
 @ddt
@@ -195,35 +201,12 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 )
 
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
-    def test_circuit_qnn(self):
-        """Circuit QNN Test."""
-        for sparse in [True, False]:
-            for sampling in [True, False]:
-                for quantum_instance_type in [STATEVECTOR, QASM, CUSTOM_PASS_MANAGERS]:
-                    for interpret_type in [0, 1, 2]:  # (0=no, 1=1d, 2=2d)
-                        for batch_size in [1, 2]:
-                            test_name = (
-                                f"sparse: {sparse}, sampling: {sampling}, "
-                                f"quantum_instance_type: {quantum_instance_type}, "
-                                f"interpret_type: {interpret_type}, batch_size: {batch_size}"
-                            )
-                            with self.subTest(test_name):
-                                self._test_circuit_qnn(
-                                    sparse,
-                                    sampling,
-                                    quantum_instance_type,
-                                    interpret_type,
-                                    batch_size,
-                                )
-
-    def _test_circuit_qnn(
-        self,
-        sparse: bool,
-        sampling: bool,
-        quantum_instance_type: str,
-        interpret_type: int,
-        batch_size: int,
+    @idata(itertools.product(SPARSE, SAMPLING, QUANTUM_INSTANCES, INTERPRET_TYPES, BATCH_SIZES))
+    @unpack
+    def test_circuit_qnn(
+        self, sparse: bool, sampling: bool, quantum_instance_type, interpret_type, batch_size
     ):
+        """Circuit QNN Test."""
         qnn = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_type)
         self._verify_qnn(qnn, quantum_instance_type, batch_size)
 
@@ -307,28 +290,9 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
-    def test_no_quantum_instance(self):
-        """Circuit QNN Test with and without QuantumInstance."""
-        for sparse in [True, False]:
-            for sampling in [True, False]:
-                for quantum_instance_type in [STATEVECTOR, QASM, CUSTOM_PASS_MANAGERS]:
-                    for interpret_type in [0, 1, 2]:  # (0=no, 1=1d, 2=2d)
-                        for batch_size in [1, 2]:
-                            test_name = (
-                                f"sparse: {sparse}, sampling: {sampling}, "
-                                f"quantum_instance_type: {quantum_instance_type}, "
-                                f"interpret_type: {interpret_type}, batch_size: {batch_size}"
-                            )
-                            with self.subTest(test_name):
-                                self._test_no_quantum_instance(
-                                    sparse,
-                                    sampling,
-                                    quantum_instance_type,
-                                    interpret_type,
-                                    batch_size,
-                                )
-
-    def _test_no_quantum_instance(
+    @idata(itertools.product(SPARSE, SAMPLING, QUANTUM_INSTANCES, INTERPRET_TYPES, BATCH_SIZES))
+    @unpack
+    def test_no_quantum_instance(
         self,
         sparse: bool,
         sampling: bool,
@@ -336,6 +300,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         interpret_type: int,
         batch_size: int,
     ):
+        """Circuit QNN Test with and without QuantumInstance."""
         # get QNN with QuantumInstance
         qnn_qi = self._get_qnn(sparse, sampling, quantum_instance_type, interpret_type)
 
