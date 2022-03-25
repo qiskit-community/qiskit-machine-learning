@@ -12,21 +12,16 @@
 
 """Test Torch Connector."""
 
-import unittest
 from typing import List
+from test.connectors.test_torch import TestTorch
 
-from test import QiskitMachineLearningTestCase
-
-from copy import deepcopy
 import numpy as np
 
 from ddt import ddt, data
 
-import qiskit
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -36,30 +31,8 @@ import qiskit_machine_learning.optionals as _optionals
 
 
 @ddt
-class TestTorchConnector(QiskitMachineLearningTestCase):
+class TestTorchConnector(TestTorch):
     """Torch Connector Tests."""
-
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
-    def setUp(self):
-        super().setUp()
-        algorithm_globals.random_seed = 12345
-        # specify quantum instances
-        self.sv_quantum_instance = QuantumInstance(
-            qiskit.Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        # pylint: disable=no-member
-        self.qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        import torch
-
-        torch.manual_seed(algorithm_globals.random_seed)
 
     def _validate_output_shape(self, model: TorchConnector, test_data: List) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
@@ -80,11 +53,13 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         if len(model.neural_network.output_shape) != 1:
             raise QiskitMachineLearningError("Function only works for one dimensional output")
         out_dim = model.neural_network.output_shape[0]
-        linear = Linear(in_dim, out_dim)
+        # we target our tests to either cpu or gpu
+        linear = Linear(in_dim, out_dim, device=self._device)
+        model.to(self._device)
 
         # iterate over test data and validate behavior of model
         for x in test_data:
-
+            x = x.to(self._device)
             # test linear model and track whether it failed or store the output shape
             c_worked = True
             try:
@@ -117,8 +92,18 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
         input_data = (
-            torch.randn(model.neural_network.num_inputs, dtype=torch.double, requires_grad=True),
-            torch.randn(model.neural_network.num_weights, dtype=torch.double, requires_grad=True),
+            torch.randn(
+                model.neural_network.num_inputs,
+                dtype=torch.double,
+                requires_grad=True,
+                device=self._device,
+            ),
+            torch.randn(
+                model.neural_network.num_weights,
+                dtype=torch.double,
+                requires_grad=True,
+                device=self._device,
+            ),
             model.neural_network,
             False,
         )
@@ -131,9 +116,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         from torch import Tensor
 
         if q_i == "sv":
-            quantum_instance = self.sv_quantum_instance
+            quantum_instance = self._sv_quantum_instance
         else:
-            quantum_instance = self.qasm_quantum_instance
+            quantum_instance = self._qasm_quantum_instance
 
         # construct simple feature map
         param_x = Parameter("x")
@@ -169,9 +154,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         from torch import Tensor
 
         if q_i == "sv":
-            quantum_instance = self.sv_quantum_instance
+            quantum_instance = self._sv_quantum_instance
         else:
-            quantum_instance = self.qasm_quantum_instance
+            quantum_instance = self._qasm_quantum_instance
 
         # construct QNN
         qnn = TwoLayerQNN(2, quantum_instance=quantum_instance, input_gradients=True)
@@ -196,9 +181,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         from torch import Tensor
 
         if q_i == "sv":
-            quantum_instance = self.sv_quantum_instance
+            quantum_instance = self._sv_quantum_instance
         else:
-            quantum_instance = self.qasm_quantum_instance
+            quantum_instance = self._qasm_quantum_instance
 
         # construct parametrized circuit
         params_1 = [Parameter("input1"), Parameter("weight1")]
@@ -272,9 +257,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             self.skipTest("sparse library is required to run this test")
             return
         if q_i == "sv":
-            quantum_instance = self.sv_quantum_instance
+            quantum_instance = self._sv_quantum_instance
         else:
-            quantum_instance = self.qasm_quantum_instance
+            quantum_instance = self._qasm_quantum_instance
 
         qc = QuantumCircuit(1)
 
@@ -332,9 +317,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             self.skipTest("sparse library is required to run this test")
             return
         if q_i == "sv":
-            quantum_instance = self.sv_quantum_instance
+            quantum_instance = self._sv_quantum_instance
         else:
-            quantum_instance = self.qasm_quantum_instance
+            quantum_instance = self._qasm_quantum_instance
 
         qc = QuantumCircuit(3)
 
@@ -392,9 +377,9 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             self.skipTest("sparse library is required to run this test")
             return
         if q_i == "sv":
-            quantum_instance = self.sv_quantum_instance
+            quantum_instance = self._sv_quantum_instance
         else:
-            quantum_instance = self.qasm_quantum_instance
+            quantum_instance = self._qasm_quantum_instance
 
         qc = QuantumCircuit(2)
 
@@ -435,7 +420,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
     def test_circuit_qnn_without_parameters(self):
         """Tests CircuitQNN without parameters."""
-        quantum_instance = self.sv_quantum_instance
+        quantum_instance = self._sv_quantum_instance
         qc = QuantumCircuit(2)
         param_y = Parameter("y")
         qc.ry(param_y, range(2))
@@ -488,13 +473,15 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             sampling=True,
             interpret=interpret,
             output_shape=None,
-            quantum_instance=self.qasm_quantum_instance,
+            quantum_instance=self._qasm_quantum_instance,
             input_gradients=True,
         )
         model = TorchConnector(qnn)
+        model.to(self._device)
 
         test_data = [Tensor([2, 2]), Tensor([[1, 1], [2, 2]])]
         for i, x in enumerate(test_data):
+            x = x.to(self._device)
             if i == 0:
                 self.assertEqual(model(x).shape, qnn.output_shape)
             else:
@@ -503,7 +490,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
     def test_opflow_qnn_batch_gradients(self):
         """Test backward pass for batch input."""
-        from torch import Tensor
+        import torch
 
         # construct random data set
         num_inputs = 2
@@ -513,15 +500,16 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         # set up QNN
         qnn = TwoLayerQNN(
             num_qubits=num_inputs,
-            quantum_instance=self.sv_quantum_instance,
+            quantum_instance=self._sv_quantum_instance,
         )
 
         # set up PyTorch module
         initial_weights = np.random.rand(qnn.num_weights)
         model = TorchConnector(qnn, initial_weights=initial_weights)
+        model.to(self._device)
 
         # test single gradient
-        w = model.weight.detach().numpy()
+        w = model.weight.detach().cpu().numpy()
         res_qnn = qnn.forward(x[0, :], w)
 
         # construct finite difference gradient for weight
@@ -540,14 +528,14 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         self.assertAlmostEqual(np.linalg.norm(grad - grad_qnn), 0.0, places=4)
 
         model.zero_grad()
-        res_model = model(Tensor(x[0, :]))
+        res_model = model(torch.tensor(x[0, :], device=self._device))
         self.assertAlmostEqual(
-            np.linalg.norm(res_model.detach().numpy() - res_qnn[0]), 0.0, places=4
+            np.linalg.norm(res_model.detach().cpu().numpy() - res_qnn[0]), 0.0, places=4
         )
         res_model.backward()
         grad_model = model.weight.grad
         self.assertAlmostEqual(
-            np.linalg.norm(grad_model.detach().numpy() - grad_qnn), 0.0, places=4
+            np.linalg.norm(grad_model.detach().cpu().numpy() - grad_qnn), 0.0, places=4
         )
 
         # test batch input
@@ -568,10 +556,10 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
         )
 
         model.zero_grad()
-        batch_res_model = sum(model(Tensor(x)))
+        batch_res_model = sum(model(torch.tensor(x, device=self._device)))
         batch_res_model.backward()
         self.assertAlmostEqual(
-            np.linalg.norm(model.weight.grad.numpy() - batch_grad.transpose()[0]),
+            np.linalg.norm(model.weight.grad.detach().cpu().numpy() - batch_grad.transpose()[0]),
             0.0,
             places=4,
         )
@@ -584,7 +572,7 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
     def test_circuit_qnn_batch_gradients(self, config):
         """Test batch gradient computation of CircuitQNN gives the same result as the sum of
         individual gradients."""
-        from torch import Tensor
+        import torch
         from torch.nn import MSELoss
         from torch.optim import SGD
 
@@ -604,16 +592,17 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
             weight_params=ansatz.parameters,
             interpret=interpret,
             output_shape=output_shape,
-            quantum_instance=self.sv_quantum_instance,
+            quantum_instance=self._sv_quantum_instance,
         )
 
         # set up PyTorch module
         initial_weights = np.array([0.1] * qnn.num_weights)
         model = TorchConnector(qnn, initial_weights)
+        model.to(self._device)
 
         # random data set
-        x = Tensor(np.random.rand(5, 2))
-        y = Tensor(np.random.rand(5, output_shape))
+        x = torch.rand(5, 2)
+        y = torch.rand(5, output_shape)
 
         # define optimizer and loss
         optimizer = SGD(model.parameters(), lr=0.1)
@@ -621,28 +610,28 @@ class TestTorchConnector(QiskitMachineLearningTestCase):
 
         sum_of_individual_losses = 0.0
         for x_i, y_i in zip(x, y):
+            x_i = x_i.to(self._device)
+            y_i = y_i.to(self._device)
             output = model(x_i)
             sum_of_individual_losses += f_loss(output, y_i)
         optimizer.zero_grad()
         sum_of_individual_losses.backward()
-        sum_of_individual_gradients = deepcopy(model.weight.grad)
+        sum_of_individual_gradients = model.weight.grad.detach().cpu()
 
+        x = x.to(self._device)
+        y = y.to(self._device)
         output = model(x)
         batch_loss = f_loss(output, y)
         optimizer.zero_grad()
         batch_loss.backward()
-        batch_gradients = deepcopy(model.weight.grad)
+        batch_gradients = model.weight.grad.detach().cpu()
 
         self.assertAlmostEqual(
             np.linalg.norm(sum_of_individual_gradients - batch_gradients), 0.0, places=4
         )
 
         self.assertAlmostEqual(
-            sum_of_individual_losses.detach().numpy(),
-            batch_loss.detach().numpy(),
+            sum_of_individual_losses.detach().cpu().numpy(),
+            batch_loss.detach().cpu().numpy(),
             places=4,
         )
-
-
-if __name__ == "__main__":
-    unittest.main()
