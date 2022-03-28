@@ -16,7 +16,7 @@ from test import QiskitMachineLearningTestCase, gpu
 from test.connectors.test_torch_networks import TestTorchNetworks
 
 
-class TestGPUTorchConnector(QiskitMachineLearningTestCase, TestTorchNetworks):
+class TestGPUTorchNetworks(QiskitMachineLearningTestCase, TestTorchNetworks):
     """GPU based tests of hybrid PyTorch networks."""
 
     @gpu
