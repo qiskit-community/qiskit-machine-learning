@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -206,7 +206,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                         "determined as 2^num_qubits."
                     )
 
-                output_shape_ = (2 ** self._circuit.num_qubits,)
+                output_shape_ = (2**self._circuit.num_qubits,)
 
         # final validation
         output_shape_ = self._validate_output_shape(output_shape_)
