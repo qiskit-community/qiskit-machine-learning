@@ -17,11 +17,12 @@ from typing import Optional
 
 from sklearn.svm import SVR
 
+from ..serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningWarning
 from ...kernels.quantum_kernel import QuantumKernel
 
 
-class QSVR(SVR):
+class QSVR(SVR, SerializableModelMixin):
     r"""Quantum Support Vector Regressor.
 
     This class shows how to use a quantum kernel for regression. The class extends

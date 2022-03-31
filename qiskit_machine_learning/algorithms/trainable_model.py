@@ -11,6 +11,9 @@
 # that they have been altered from the originals.
 """A base ML model with a Scikit-Learn like interface."""
 
+from __future__ import annotations
+
+import logging
 from abc import abstractmethod
 from typing import Union, Optional, Callable
 
@@ -30,9 +33,12 @@ from qiskit_machine_learning.utils.loss_functions import (
 from qiskit_machine_learning.deprecation import deprecate_values
 
 from .objective_functions import ObjectiveFunction
+from .serializable_model import SerializableModelMixin
+
+logger = logging.getLogger(__name__)
 
 
-class TrainableModel:
+class TrainableModel(SerializableModelMixin):
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
 
     @deprecate_values(

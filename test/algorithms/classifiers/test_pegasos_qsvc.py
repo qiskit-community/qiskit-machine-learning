@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 """ Test Pegasos QSVC """
-
+import os
 import unittest
 
 from test import QiskitMachineLearningTestCase
@@ -24,8 +24,7 @@ from sklearn.preprocessing import MinMaxScaler
 from qiskit import BasicAer
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
-from qiskit_machine_learning.algorithms import PegasosQSVC
-
+from qiskit_machine_learning.algorithms import PegasosQSVC, SerializableModelMixin
 
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -229,6 +228,43 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         score = pegasos_qsvc.score(self.sample_test, self.label_test)
 
         self.assertEqual(score, 1.0)
+
+    def test_save_load(self):
+        """Tests save and load models."""
+        features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
+        labels = np.array([0, 0, 1, 1])
+
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
+
+        regressor = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
+        regressor.fit(features, labels)
+
+        # predicted labels from the newly trained model
+        test_features = np.array([[0.5, 0.5]])
+        original_predicts = regressor.predict(test_features)
+
+        # save/load, change the quantum instance and check if predicted values are the same
+        file_name = "pegasos.model"
+        regressor.save(file_name)
+        try:
+            regressor_load = PegasosQSVC.load(file_name)
+            loaded_model_predicts = regressor_load.predict(test_features)
+
+            np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
+
+            # test loading warning
+            class FakeModel(SerializableModelMixin):
+                """Fake model class for test purposes."""
+
+                pass
+
+            with self.assertLogs(level="WARNING"):
+                FakeModel.load(file_name)
+
+        finally:
+            os.remove(file_name)
 
 
 if __name__ == "__main__":

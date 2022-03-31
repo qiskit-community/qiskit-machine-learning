@@ -12,17 +12,20 @@
 
 """Quantum Support Vector Classifier"""
 
+from __future__ import annotations
+
 import warnings
 from typing import Optional
 
 from qiskit.utils.algorithm_globals import algorithm_globals
 from sklearn.svm import SVC
 
+from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
 
 
-class QSVC(SVC):
+class QSVC(SVC, SerializableModelMixin):
     r"""Quantum Support Vector Classifier.
 
     This class shows how to use a quantum kernel for classification. The class extends
