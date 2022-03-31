@@ -29,11 +29,13 @@ from qiskit_machine_learning.utils.loss_functions import (
 )
 
 from .objective_functions import ObjectiveFunction
+from ..deprecation import deprecate_values
 
 
 class TrainableModel:
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
 
+    @deprecate_values("0.4.0", {"loss": {"cross_entropy_sigmoid": "<unsupported>"}})
     def __init__(
         self,
         neural_network: NeuralNetwork,
