@@ -11,8 +11,6 @@
 # that they have been altered from the originals.
 """A base ML model with a Scikit-Learn like interface."""
 
-from __future__ import annotations
-
 import logging
 from abc import abstractmethod
 from typing import Union, Optional, Callable

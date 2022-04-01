@@ -20,9 +20,9 @@ import numpy as np
 from qiskit.utils import algorithm_globals
 from sklearn.svm import SVC
 
-from qiskit_machine_learning.algorithms import SerializableModelMixin
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
-from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
+from ...algorithms.serializable_model import SerializableModelMixin
+from ...exceptions import QiskitMachineLearningError
+from ...kernels.quantum_kernel import QuantumKernel
 
 logger = logging.getLogger(__name__)
 
