@@ -10,198 +10,192 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test Pegasos QSVC """
+""" Test Effective Dimension Algorithm """
 
 import unittest
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-
-from sklearn.datasets import make_blobs
-from sklearn.preprocessing import MinMaxScaler
-
-from qiskit import BasicAer
-from qiskit.circuit.library import ZFeatureMap
+from ddt import ddt, data
+from qiskit import Aer, QuantumCircuit
+from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
 from qiskit.utils import QuantumInstance, algorithm_globals
-from qiskit_machine_learning.algorithms import PegasosQSVC
 
-
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit.opflow import PauliSumOp
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
+from qiskit_machine_learning.algorithms.effective_dimension import EffectiveDimension, LocalEffectiveDimension
 
-
-class TestPegasosQSVC(QiskitMachineLearningTestCase):
-    """Test Pegasos QSVC Algorithm"""
+@ddt
+class TestEffDim(QiskitMachineLearningTestCase):
+    """Test the Effective Dimension algorithm"""
 
     def setUp(self):
         super().setUp()
 
-        algorithm_globals.random_seed = 10598
+        # fix seeds
+        algorithm_globals.random_seed = 12345
+        np.random.seed(0)
 
-        self.statevector_simulator = QuantumInstance(
-            BasicAer.get_backend("statevector_simulator"),
-            shots=1,
+        qi_sv = QuantumInstance(
+            Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
 
-        # number of qubits is equal to the number of features
-        self.q = 2
-        # number of steps performed during the training procedure
-        self.tau = 100
+        # set up qnns
+        num_qubits = 3
+        feature_map = ZFeatureMap(feature_dimension=num_qubits, reps=1)
+        ansatz = RealAmplitudes(num_qubits, reps=1)
 
-        self.feature_map = ZFeatureMap(feature_dimension=self.q, reps=1)
+        # CircuitQNNs
+        qc = QuantumCircuit(num_qubits)
+        qc.append(feature_map, range(num_qubits))
+        qc.append(ansatz, range(num_qubits))
 
-        sample, label = make_blobs(
-            n_samples=20, n_features=2, centers=2, random_state=3, shuffle=True
-        )
-        sample = MinMaxScaler(feature_range=(0, np.pi)).fit_transform(sample)
+        def parity(x):
+            return "{:b}".format(x).count("1") % 2
 
-        # split into train and test set
-        self.sample_train = sample[:15]
-        self.label_train = label[:15]
-        self.sample_test = sample[15:]
-        self.label_test = label[15:]
-
-    def test_qsvc(self):
-        """Test PegasosQSVC"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
-
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
-
-        pegasos_qsvc.fit(self.sample_train, self.label_train)
-        score = pegasos_qsvc.score(self.sample_test, self.label_test)
-
-        self.assertEqual(score, 1.0)
-
-    def test_precomputed_kernel(self):
-        """Test PegasosQSVC with a precomputed kernel matrix"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        self.circuit_qnn_1 = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            interpret=parity,
+            output_shape=2,
+            sparse=False,
+            quantum_instance=qi_sv
         )
 
-        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
-
-        # training
-        kernel_matrix_train = qkernel.evaluate(self.sample_train, self.sample_train)
-        pegasos_qsvc.fit(kernel_matrix_train, self.label_train)
-
-        # testing
-        kernel_matrix_test = qkernel.evaluate(self.sample_test, self.sample_train)
-        score = pegasos_qsvc.score(kernel_matrix_test, self.label_test)
-
-        self.assertEqual(score, 1.0)
-
-    def test_empty_kernel(self):
-        """Test PegasosQSVC with empty QuantumKernel"""
-        qkernel = QuantumKernel()
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
-
-        with self.assertRaises(QiskitMachineLearningError):
-            pegasos_qsvc.fit(self.sample_train, self.label_train)
-
-    def test_change_kernel(self):
-        """Test QSVC with QuantumKernel later"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        self.circuit_qnn_2 = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            sparse=False,
+            quantum_instance=qi_sv
         )
 
-        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau)
-        pegasos_qsvc.quantum_kernel = qkernel
-        pegasos_qsvc.fit(self.sample_train, self.label_train)
-        score = pegasos_qsvc.score(self.sample_test, self.label_test)
-
-        self.assertEqual(score, 1)
-
-    def test_wrong_parameters(self):
-        """Tests PegasosQSVC with incorrect constructor parameter values."""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        # OpflowQNN
+        observable = PauliSumOp.from_list([("Z" * num_qubits, 1)])
+        self.opflow_qnn = TwoLayerQNN(
+            num_qubits, feature_map=feature_map, ansatz=ansatz, observable=observable, quantum_instance=qi_sv
         )
 
-        with self.subTest("Both kernel and precomputed are passed"):
-            self.assertRaises(ValueError, PegasosQSVC, quantum_kernel=qkernel, precomputed=True)
+        # define sample numbers
+        self.ns = [5000, 8000, 10000, 40000, 60000, 100000, 150000, 200000, 500000, 1000000]
 
-        with self.subTest("Incorrect quantum kernel value is passed"):
-            self.assertRaises(TypeError, PegasosQSVC, quantum_kernel=1)
+        #define results
+        # 3,10,10
+        self.result1 = np.array([4.59708043, 4.65734914, 4.68726872, 4.87388243, 4.92499272, 4.98564672,
+                        5.03059347, 5.06074163, 5.14746625, 5.2044278])
+        # 3,1,1
+        self.result2 = np.array([1.39529449, 1.36195183, 1.3479573,  1.2800836,  1.26484116, 1.24778548,
+                        1.23569339, 1.22778588, 1.20571209, 1.19159584])
+        # 3,10,1
+        self.result3 = np.array([4.68945879, 4.76472694, 4.7999759,  4.99906019, 5.04914996, 5.10690519,
+                        5.14874164, 5.17642467, 5.25473156, 5.30537064])
 
-    def test_labels(self):
-        """Test PegasosQSVC with different integer labels than {0, 1}"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        # circuitqnn2 with 3,10,10
+        self.result4 = np.array([4.59708043, 4.65734914, 4.68726872, 4.87388243, 4.92499272, 4.98564672,
+                                5.03059347, 5.06074163, 5.14746625, 5.2044278])
+    @data(
+        # num_inputs, num_params
+        ("circuit1", 10, 10),
+        ("circuit1", 1, 1),
+        ("circuit1", 10, 1),
+        ("circuit2", 10, 10),
+    )
+    def test_alg_results(self, config):
+        """Test that the algorithm results match the original code's."""
 
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
+        qnn_name, num_inputs, num_params = config
 
-        label_train_temp = self.label_train.copy()
-        label_train_temp[self.label_train == 0] = 2
-        label_train_temp[self.label_train == 1] = 3
+        if qnn_name == "circuit2":
+            qnn = self.circuit_qnn_2
+            result = self.result4
+        else:
+            qnn = self.circuit_qnn_1
+            if num_inputs == 1:
+                result = self.result1
+            elif num_params == 10:
+                result = self.result2
+            else:
+                result = self.result3
 
-        label_test_temp = self.label_test.copy()
-        label_test_temp[self.label_test == 0] = 2
-        label_test_temp[self.label_test == 1] = 3
+        global_ed = EffectiveDimension(qnn=qnn,
+                                       num_inputs=num_inputs,
+                                       num_params=num_params,
+                                       fix_seed=True)
 
-        pegasos_qsvc.fit(self.sample_train, label_train_temp)
-        score = pegasos_qsvc.score(self.sample_test, label_test_temp)
+        effdim = global_ed.get_eff_dim(self.ns)
 
-        self.assertEqual(score, 1.0)
+        self.assertSequenceEqual(effdim, result)
 
-    def test_constructor(self):
-        """Tests properties of PegasosQSVC"""
-        with self.subTest("Default parameters"):
-            pegasos_qsvc = PegasosQSVC()
-            self.assertIsInstance(pegasos_qsvc.quantum_kernel, QuantumKernel)
-            self.assertFalse(pegasos_qsvc.precomputed)
-            self.assertEqual(pegasos_qsvc.num_steps, 1000)
 
-        with self.subTest("PegasosQSVC with QuantumKernel"):
-            qkernel = QuantumKernel(
-                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-            )
-            pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
-            self.assertIsInstance(pegasos_qsvc.quantum_kernel, QuantumKernel)
-            self.assertFalse(pegasos_qsvc.precomputed)
+    def test_diff_qnn(self):
+        """Test that the results are equivalent for opflow and circuit qnn."""
 
-        with self.subTest("PegasosQSVC with precomputed kernel"):
-            pegasos_qsvc = PegasosQSVC(precomputed=True)
-            self.assertIsNone(pegasos_qsvc.quantum_kernel)
-            self.assertTrue(pegasos_qsvc.precomputed)
+        num_inputs, num_params = 1, 1
+        qnn1 = self.circuit_qnn_1
+        qnn2 = self.opflow_qnn
 
-        with self.subTest("PegasosQSVC with wrong parameters"):
-            qkernel = QuantumKernel(
-                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-            )
-            with self.assertRaises(ValueError):
-                _ = PegasosQSVC(quantum_kernel=qkernel, precomputed=True)
+        global_ed1 = EffectiveDimension(qnn=qnn1,
+                                       num_inputs=num_inputs,
+                                       num_params=num_params,
+                                       fix_seed=True)
 
-        with self.subTest("PegasosQSVC with wrong type of kernel"):
-            with self.assertRaises(TypeError):
-                _ = PegasosQSVC(quantum_kernel=object())
+        global_ed2 = EffectiveDimension(qnn=qnn2,
+                                       num_inputs=num_inputs,
+                                       num_params=num_params,
+                                       fix_seed=True)
 
-    def test_change_kernel_types(self):
-        """Test PegasosQSVC with a precomputed kernel matrix"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        effdim1= global_ed1.get_eff_dim(self.ns)
+        effdim2 = global_ed2.get_eff_dim(self.ns)
 
-        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
+        self.assertSequenceEqual(effdim1, effdim2)
 
-        # train precomputed
-        kernel_matrix_train = qkernel.evaluate(self.sample_train, self.sample_train)
-        pegasos_qsvc.fit(kernel_matrix_train, self.label_train)
 
-        # now train the same instance, but with a new quantum kernel
-        pegasos_qsvc.quantum_kernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
-        pegasos_qsvc.fit(self.sample_train, self.label_train)
-        score = pegasos_qsvc.score(self.sample_test, self.label_test)
+    def test_custom_inputs(self):
+        """Test that the results are equivalent for equal custom and provided inputs."""
 
-        self.assertEqual(score, 1.0)
+        num_inputs, num_params = 10, 10
+
+        qnn = self.circuit_qnn_1
+
+        inputs = np.random.normal(0, 1, size=(num_inputs, qnn.num_inputs))
+        params = np.random.uniform(0, 1, size=(num_params, qnn.num_weights))
+
+        global_ed1 = EffectiveDimension(qnn=qnn,
+                                       num_inputs=num_inputs,
+                                       num_params=num_params,
+                                       fix_seed=True)
+
+        global_ed2 = EffectiveDimension(qnn=qnn,
+                                       inputs=inputs,
+                                       params=params,
+                                       fix_seed=True)
+
+        effdim1= global_ed1.get_eff_dim(self.ns)
+        effdim2 = global_ed2.get_eff_dim(self.ns)
+
+        self.assertTrue((effdim1 == effdim2).all())
+
+    def test_local_ed_error(self):
+        """Test that ValueError is raised."""
+
+        with self.assertRaises(ValueError):
+
+            qnn = self.circuit_qnn_1
+            inputs = np.random.normal(0, 1, size=(10, qnn.num_inputs))
+            params = np.random.uniform(0, 1, size=(10, qnn.num_weights))
+
+            local_ed1 = LocalEffectiveDimension(qnn=qnn,
+                                                inputs=inputs,
+                                                params=params,
+                                                fix_seed=True)
+            local_ed1.get_eff_dim(self.ns)
 
 
 if __name__ == "__main__":
     unittest.main()
+
