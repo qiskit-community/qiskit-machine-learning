@@ -57,7 +57,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         qc.append(ansatz, range(num_qubits))
 
         def parity(x):
-            return f'{x:b}'.count('1') % 2
+            return f"{x:b}".count("1") % 2
 
         self.circuit_qnn_1 = CircuitQNN(
             qc,
@@ -190,7 +190,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
     def test_local_ed_error(self):
         """Test that QiskitMachineLearningError is raised for wrong use
-            of LocalEffectiveDimension class."""
+        of LocalEffectiveDimension class."""
 
         with self.assertRaises(QiskitMachineLearningError):
 
