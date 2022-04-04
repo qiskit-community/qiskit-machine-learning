@@ -12,6 +12,7 @@
 
 """ Test QSVC """
 import os
+import tempfile
 import unittest
 
 from test import QiskitMachineLearningTestCase
@@ -130,7 +131,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         original_predicts = classifier.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = "qsvc.model"
+        file_name = os.path.join(tempfile.gettempdir(), "qsvc.model")
         classifier.save(file_name)
         try:
             classifier_load = QSVC.load(file_name)

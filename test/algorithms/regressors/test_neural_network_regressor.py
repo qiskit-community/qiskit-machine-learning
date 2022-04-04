@@ -12,12 +12,15 @@
 """ Test Neural Network Regressor """
 
 import os
+import tempfile
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt
-from qiskit import Aer
-from qiskit.algorithms.optimizers import COBYLA
+from ddt import ddt, data
+from qiskit import Aer, QuantumCircuit
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
 from qiskit.utils import QuantumInstance, algorithm_globals
@@ -56,6 +59,82 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
 
+    @data(
+        # optimizer, loss, quantum instance
+        ("cobyla", "statevector", False),
+        ("cobyla", "qasm", False),
+        ("bfgs", "statevector", False),
+        ("bfgs", "qasm", False),
+        (None, "statevector", False),
+        (None, "qasm", False),
+    )
+    def test_regressor_with_opflow_qnn(self, config):
+        """Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
+        opt, q_i, cb_flag = config
+
+        num_qubits = 1
+        # construct simple feature map
+        param_x = Parameter("x")
+        feature_map = QuantumCircuit(num_qubits, name="fm")
+        feature_map.ry(param_x, 0)
+
+        # construct simple feature map
+        param_y = Parameter("y")
+        ansatz = QuantumCircuit(num_qubits, name="vf")
+        ansatz.ry(param_y, 0)
+
+        if q_i == "statevector":
+            quantum_instance = self.sv_quantum_instance
+        else:
+            quantum_instance = self.qasm_quantum_instance
+
+        if opt == "bfgs":
+            optimizer = L_BFGS_B(maxiter=5)
+        elif opt == "cobyla":
+            optimizer = COBYLA(maxiter=25)
+        else:
+            optimizer = None
+
+        if cb_flag is True:
+            history = {"weights": [], "values": []}
+
+            def callback(objective_weights, objective_value):
+                history["weights"].append(objective_weights)
+                history["values"].append(objective_value)
+
+        else:
+            callback = None
+
+        # construct QNN
+        regression_opflow_qnn = TwoLayerQNN(
+            num_qubits, feature_map, ansatz, quantum_instance=quantum_instance
+        )
+
+        initial_point = np.zeros(ansatz.num_parameters)
+
+        # construct the regressor from the neural network
+        regressor = NeuralNetworkRegressor(
+            neural_network=regression_opflow_qnn,
+            loss="squared_error",
+            optimizer=optimizer,
+            initial_point=initial_point,
+            callback=callback,
+        )
+
+        # fit to data
+        regressor.fit(self.X, self.y)
+
+        # score the result
+        score = regressor.score(self.X, self.y)
+        self.assertGreater(score, 0.5)
+
+        # callback
+        if callback is not None:
+            self.assertTrue(all(isinstance(value, float) for value in history["values"]))
+            for weights in history["weights"]:
+                self.assertEqual(len(weights), regression_opflow_qnn.num_weights)
+                self.assertTrue(all(isinstance(weight, float) for weight in weights))
+
     def test_save_load(self):
         """Tests save and load models."""
         features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
@@ -76,7 +155,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         original_predicts = regressor.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = "regressor.model"
+        file_name = os.path.join(tempfile.gettempdir(), "regressor.model")
         regressor.save(file_name)
         try:
             regressor_load = NeuralNetworkRegressor.load(file_name)

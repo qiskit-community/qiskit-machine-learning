@@ -12,6 +12,7 @@
 """ Test Neural Network Classifier """
 
 import os
+import tempfile
 import unittest
 from test import QiskitMachineLearningTestCase
 
@@ -413,7 +414,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         original_predicts = classifier.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = "classifier.model"
+        file_name = os.path.join(tempfile.gettempdir(), "classifier.model")
         classifier.save(file_name)
         try:
             classifier_load = NeuralNetworkClassifier.load(file_name)

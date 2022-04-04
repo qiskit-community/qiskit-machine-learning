@@ -27,10 +27,11 @@ class SerializableModelMixin:
 
     def save(self, file_name: str) -> None:
         """
-        Saves this model to the file. Internally, the model is serialized via ``dill`` and saved to
-        the specified file. All parameters are saved, including a quantum instance that is
-        referenced by internal objects. That means if a model is loaded from a model and is used
-        the same quantum instance and a corresponding backend will be used.
+        Saves this model to the specified file. Internally, the model is serialized via ``dill`.
+        All parameters are saved, including a quantum instance that is referenced by internal
+        objects. That means if a model is loaded from a file and is used, for instance, for
+        inference, the same quantum instance and a corresponding backend will be used even
+        if a cloud backend was used.
 
         Args:
             file_name: a file name or path where to save the model.

@@ -12,6 +12,7 @@
 
 """ Test Pegasos QSVC """
 import os
+import tempfile
 import unittest
 
 from test import QiskitMachineLearningTestCase
@@ -246,7 +247,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         original_predicts = regressor.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = "pegasos.model"
+        file_name = os.path.join(tempfile.gettempdir(), "pegasos.model")
         regressor.save(file_name)
         try:
             regressor_load = PegasosQSVC.load(file_name)

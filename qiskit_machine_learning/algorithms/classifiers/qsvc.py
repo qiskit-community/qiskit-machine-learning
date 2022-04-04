@@ -12,8 +12,6 @@
 
 """Quantum Support Vector Classifier"""
 
-from __future__ import annotations
-
 import warnings
 from typing import Optional
 

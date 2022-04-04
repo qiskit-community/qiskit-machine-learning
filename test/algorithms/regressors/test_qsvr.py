@@ -12,6 +12,7 @@
 
 """ Test QSVR """
 import os
+import tempfile
 import unittest
 from test import QiskitMachineLearningTestCase
 
@@ -130,7 +131,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         original_predicts = regressor.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = "qsvr.model"
+        file_name = os.path.join(tempfile.gettempdir(), "qsvr.model")
         regressor.save(file_name)
         try:
             regressor_load = QSVR.load(file_name)
