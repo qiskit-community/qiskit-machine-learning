@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Introduced two new classes, ``EffectiveDimension`` and ``LocalEffectiveDimension`` 
+    for calculating the effective dimension of Qiskit quantum neural network models
+    for specific sets of inputs, parameters and sample sizes.
+
