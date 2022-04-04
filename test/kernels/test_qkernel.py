@@ -126,6 +126,14 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
             ]
         )
 
+        self.sample_train_duplicate = np.asarray(
+            [
+                [0.43982297, 3.70707933],
+                [0.43982297, 3.70707933],
+                [0.43982297, 3.717933]
+            ]
+        )
+
         self.sample_test = np.asarray([[3.83274304, 2.45044227], [3.89557489, 0.31415927]])
 
         self.sample_feature_dim = np.asarray([[1, 2, 3], [4, 5, 6]])
@@ -147,6 +155,20 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
                     [0.85342280, 1.00000000, 0.11529017, 0.45246347],
                     [0.12267747, 0.11529017, 1.00000000, 0.67137258],
                     [0.36334379, 0.45246347, 0.67137258, 1.00000000],
+                ]
+            ),
+            "statevector_duplicates": np.array(
+                [
+                    [1.        , 1.        , 0.99899594],
+                    [1.        , 1.        , 0.99899594],
+                    [0.99899594, 0.99899594, 1.        ]
+                ]
+            ),
+            "qasm_duplicates": np.array(
+                [
+                    [1.      , 1.      , 0.999333],
+                    [1.      , 1.      , 0.999333],
+                    [0.999333, 0.999333, 1.      ]
                 ]
             ),
             "qasm_sample": np.array(
@@ -223,6 +245,26 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
         kernel = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_test)
 
         np.testing.assert_allclose(kernel, self.ref_kernel_test["statevector"], rtol=1e-4)
+
+    def test_sv_duplicates(self):
+        """Test matrix evaluation for training data with duplicates using state vector simulator"""
+        qkclass = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+        )
+
+        kernel = qkclass.evaluate(self.sample_train_duplicate)
+
+        np.testing.assert_allclose(kernel, self.ref_kernel_train["statevector_duplicates"], rtol=1e-4)
+    
+    def test_qasm_duplicates(self):
+        """Test matrix evaluation for training data with duplicates using qasm simulator"""
+        qkclass = QuantumKernel(
+            feature_map=self.feature_map, quantum_instance=self.qasm_simulator
+        )
+
+        kernel = qkclass.evaluate(self.sample_train_duplicate)
+
+        np.testing.assert_allclose(kernel, self.ref_kernel_train["qasm_duplicates"], rtol=1e-4)
 
     def test_qasm_nopsd(self):
         """Test symmetric matrix qasm sample no positive semi-definite enforcement"""
@@ -301,6 +343,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_feature_dim)
+
 
 
 class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
