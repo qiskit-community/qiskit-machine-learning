@@ -3,5 +3,5 @@ fixes:
   - |
     Fixes an issue in ``QuantumKernel`` where evaluating a quantum kernel with
     duplicate feature vectors raised an exception when using qasm simulator.
-    The bug is fixed by hardcoding the overlap of a feature vector with itself
+    The bug is fixed by hard coding the overlap of a feature vector with itself
     as `1`.
