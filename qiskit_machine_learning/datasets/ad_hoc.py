@@ -14,10 +14,12 @@
 ad hoc dataset
 """
 
+from typing import Union, Tuple
+import itertools as it
+from functools import reduce
 import numpy as np
 import scipy
-from qiskit.utils import algorithm_globals
-from qiskit.exceptions import MissingOptionalLibraryError
+from qiskit.utils import algorithm_globals, optionals
 
 from qiskit_machine_learning.datasets.dataset_helper import (
     features_and_labels_transform,
@@ -25,15 +27,63 @@ from qiskit_machine_learning.datasets.dataset_helper import (
 
 
 def ad_hoc_data(
-    training_size,
-    test_size,
-    n,
-    gap,
-    plot_data=False,
-    one_hot=True,
-    include_sample_total=False,
-):
-    """returns ad hoc dataset"""
+    training_size: int,
+    test_size: int,
+    n: int,
+    gap: int,
+    plot_data: bool = False,
+    one_hot: bool = True,
+    include_sample_total: bool = False,
+) -> Union[
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray],
+]:
+    r"""Generates a toy dataset that can be fully separated with
+    ``qiskit.circuit.library.ZZ_Feature_Map`` according to the procedure
+    outlined in [1]. To construct the dataset, we first sample uniformly
+    distributed vectors :math:`\vec{x} \in (0, 2\pi]^{n}` and apply the
+    feature map
+    .. math::
+        |\Phi(\vec{x})\rangle = U_{{\Phi} (\vec{x})} H^{\otimes n} U_{{\Phi} (\vec{x})}
+        H^{\otimes n} |0^{\otimes n} \rangle
+    where
+    .. math::
+        U_{{\Phi} (\vec{x})} = \exp \left( i \sum_{S \subseteq [n] } \phi_S(\vec{x})
+        \prod_{i \in S} Z_i \right)
+    and
+    .. math::
+        \begin{cases}
+        \phi_{\{i, j\}} = (\pi - x_i)(\pi - x_j) \\
+        \phi_{\{i\}} = x_i
+        \end{cases}
+    We then attribute labels to the vectors according to the rule
+    .. math::
+        m(\vec{x}) = \begin{cases}
+        1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle > \Delta \\
+        -1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle < -\Delta
+        \end{cases}
+    where :math:`\Delta` is the separation gap, and
+    :math:`V\in \mathrm{SU}(4)` is a random unitary.
+    The current implementation only works with n = 2 or 3.
+    **References:**
+    [1] Havlíček V, Córcoles AD, Temme K, Harrow AW, Kandala A, Chow JM,
+    Gambetta JM. Supervised learning with quantum-enhanced feature
+    spaces. Nature. 2019 Mar;567(7747):209-12.
+    `arXiv:1804.11326 <https://arxiv.org/abs/1804.11326>`_
+    Args:
+        training_size: the number of training samples.
+        test_size: the number of testing samples.
+        n: number of qubits (dimension of the feature space). Must be 2 or 3.
+        gap: separation gap (:math:`\Delta`).
+        plot_data: whether to plot the data. Requires matplotlib.
+        one_hot: if True, return the data in one-hot format.
+        include_sample_total: if True, return all points in the uniform
+            grid in addition to training and testing samples.
+    Returns:
+        Training and testing samples.
+    Raises:
+        ValueError: if n is not 2 or 3.
+    """
     class_labels = [r"A", r"B"]
     count = 0
     if n == 2:
@@ -43,267 +93,67 @@ def ad_hoc_data(
     else:
         raise ValueError(f"Supported values of 'n' are 2 and 3 only, but {n} is provided.")
 
-    label_train = np.zeros(2 * (training_size + test_size))
-    sample_train = []
-    sample_a = [[0 for x in range(n)] for y in range(training_size + test_size)]
-    sample_b = [[0 for x in range(n)] for y in range(training_size + test_size)]
+    # Define auxiliary matrices and initial state
+    z = np.diag([1, -1])
+    i_2 = np.eye(2)
+    h_2 = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
+    h_n = reduce(np.kron, [h_2] * n)
+    psi_0 = np.ones(2**n) / np.sqrt(2**n)
 
-    sample_total = [[[0 for x in range(count)] for y in range(count)] for z in range(count)]
+    # Generate Z matrices acting on each qubits
+    z_i = np.array([reduce(np.kron, [i_2] * i + [z] + [i_2] * (n - i - 1)) for i in range(n)])
 
-    # interactions = np.transpose(np.array([[1, 0], [0, 1], [1, 1]]))
-
-    steps = 2 * np.pi / count
-
-    # sx = np.array([[0, 1], [1, 0]])
-    # X = np.asmatrix(sx)
-    # sy = np.array([[0, -1j], [1j, 0]])
-    # Y = np.asmatrix(sy)
-    s_z = np.array([[1, 0], [0, -1]])
-    z_m = np.asarray(s_z)
-    j_m = np.array([[1, 0], [0, 1]])
-    j_m = np.asarray(j_m)
-    h_m = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
-    h_2 = np.kron(h_m, h_m)
-    h_3 = np.kron(h_m, h_2)
-    h_m = np.asarray(h_m)
-    h_2 = np.asarray(h_2)
-    h_3 = np.asarray(h_3)
-
-    f_a = np.arange(2 ** n)
-
-    my_array = [[0 for x in range(n)] for y in range(2 ** n)]
-
-    for arindex, _ in enumerate(my_array):
-        temp_f = bin(f_a[arindex])[2:].zfill(n)
-        for findex in range(n):
-            my_array[arindex][findex] = int(temp_f[findex])
-
-    my_array = np.asarray(my_array)
-    my_array = np.transpose(my_array)
-
-    # Define decision functions
-    maj = (-1) ** (2 * my_array.sum(axis=0) > n)
-    parity = (-1) ** (my_array.sum(axis=0))
-    # dict1 = (-1) ** (my_array[0])
-    d_m = None
+    # Construct the parity operator
+    bitstrings = ["".join(bstring) for bstring in it.product(*[["0", "1"]] * n)]
     if n == 2:
-        d_m = np.diag(parity)
+        bitstring_parity = [bstr.count("1") % 2 for bstr in bitstrings]
+        d_m = np.diag((-1) ** np.array(bitstring_parity))
     elif n == 3:
-        d_m = np.diag(maj)
+        bitstring_majority = [0 if bstr.count("0") > 1 else 1 for bstr in bitstrings]
+        d_m = np.diag((-1) ** np.array(bitstring_majority))
 
+    # Generate a random unitary operator by collecting eigenvectors of a
+    # random hermitian operator
     basis = algorithm_globals.random.random(
-        (2 ** n, 2 ** n)
-    ) + 1j * algorithm_globals.random.random((2 ** n, 2 ** n))
-    basis = np.asarray(basis).conj().T @ np.asarray(basis)
+        (2**n, 2**n)
+    ) + 1j * algorithm_globals.random.random((2**n, 2**n))
+    basis = np.array(basis).conj().T @ np.array(basis)
+    eigvals, eigvecs = np.linalg.eig(basis)
+    idx = eigvals.argsort()[::-1]
+    eigvecs = eigvecs[:, idx]
+    m_m = eigvecs.conj().T @ d_m @ eigvecs
 
-    [s_a, u_a] = np.linalg.eig(basis)
+    # Generate a grid of points in the feature space and compute the
+    # expectation value of the parity
+    xvals = np.linspace(0, 2 * np.pi, count, endpoint=False)
+    ind_pairs = list(it.combinations(range(n), 2))
+    _sample_total = []
+    for x in it.product(*[xvals] * n):
+        x = np.array(x)
+        phi = np.sum(x[:, None, None] * z_i, axis=0)
+        phi += sum([(np.pi - x[i1]) * (np.pi - x[i2]) * z_i[i1] @ z_i[i2] for i1, i2 in ind_pairs])
+        u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
+        psi = u_u @ h_n @ u_u @ psi_0
+        exp_val = np.real(psi.conj().T @ m_m @ psi)
+        if np.abs(exp_val) > gap:
+            _sample_total.append(np.sign(exp_val))
+        else:
+            _sample_total.append(0)
+    sample_total = np.array(_sample_total).reshape(*[count] * n)
 
-    idx = s_a.argsort()[::-1]
-    s_a = s_a[idx]
-    u_a = u_a[:, idx]
+    # Extract training and testing samples from grid
+    x_sample, y_sample = _sample_ad_hoc_data(sample_total, xvals, training_size + test_size, n)
 
-    m_m = (np.asarray(u_a)).conj().T @ np.asarray(d_m) @ np.asarray(u_a)
+    if plot_data:
+        _plot_ad_hoc_data(x_sample, y_sample, training_size)
 
-    psi_plus = np.transpose(np.ones(2)) / np.sqrt(2)
-    psi_0 = [[1]]
-    for k in range(n):
-        psi_0 = np.kron(np.asarray(psi_0), np.asarray(psi_plus))
-
-    sample_total_a = []
-    sample_total_b = []
-    sample_total_void = []
-    if n == 2:
-        for n_1 in range(count):
-            for n_2 in range(count):
-                x_1 = steps * n_1
-                x_2 = steps * n_2
-                phi = (
-                    x_1 * np.kron(z_m, j_m)
-                    + x_2 * np.kron(j_m, z_m)
-                    + (np.pi - x_1) * (np.pi - x_2) * np.kron(z_m, z_m)
-                )
-                u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
-                psi = np.asarray(u_u) @ h_2 @ np.asarray(u_u) @ np.transpose(psi_0)
-                temp = np.real(psi.conj().T @ m_m @ psi).item()
-                if temp > gap:
-                    sample_total[n_1][n_2] = +1
-                elif temp < -gap:
-                    sample_total[n_1][n_2] = -1
-                else:
-                    sample_total[n_1][n_2] = 0
-
-        # Now sample randomly from sample_Total a number of times training_size+testing_size
-        t_r = 0
-        while t_r < (training_size + test_size):
-            draw1 = algorithm_globals.random.choice(count)
-            draw2 = algorithm_globals.random.choice(count)
-            if sample_total[draw1][draw2] == +1:
-                sample_a[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
-                t_r += 1
-
-        t_r = 0
-        while t_r < (training_size + test_size):
-            draw1 = algorithm_globals.random.choice(count)
-            draw2 = algorithm_globals.random.choice(count)
-            if sample_total[draw1][draw2] == -1:
-                sample_b[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
-                t_r += 1
-
-        sample_train = [sample_a, sample_b]
-
-        for lindex in range(training_size + test_size):
-            label_train[lindex] = 0
-        for lindex in range(training_size + test_size):
-            label_train[training_size + test_size + lindex] = 1
-        label_train = label_train.astype(int)
-        sample_train = np.reshape(sample_train, (2 * (training_size + test_size), n))
-        training_input = {
-            key: (sample_train[label_train == k, :])[:training_size]
-            for k, key in enumerate(class_labels)
-        }
-        test_input = {
-            key: (sample_train[label_train == k, :])[training_size : (training_size + test_size)]
-            for k, key in enumerate(class_labels)
-        }
-
-        if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname="Matplotlib",
-                    name="ad_hoc_data",
-                    pip_install="pip install matplotlib",
-                ) from ex
-
-            plt.show()
-            fig2 = plt.figure()
-            for k in range(0, 2):
-                plt.scatter(
-                    sample_train[label_train == k, 0][:training_size],
-                    sample_train[label_train == k, 1][:training_size],
-                )
-
-            plt.title("Ad-hoc Data")
-            plt.show()
-
-    elif n == 3:
-        for n_1 in range(count):
-            for n_2 in range(count):
-                for n_3 in range(count):
-                    x_1 = steps * n_1
-                    x_2 = steps * n_2
-                    x_3 = steps * n_3
-                    phi = (
-                        x_1 * np.kron(np.kron(z_m, j_m), j_m)
-                        + x_2 * np.kron(np.kron(j_m, z_m), j_m)
-                        + x_3 * np.kron(np.kron(j_m, j_m), z_m)
-                        + (np.pi - x_1) * (np.pi - x_2) * np.kron(np.kron(z_m, z_m), j_m)
-                        + (np.pi - x_2) * (np.pi - x_3) * np.kron(np.kron(j_m, z_m), z_m)
-                        + (np.pi - x_1) * (np.pi - x_3) * np.kron(np.kron(z_m, j_m), z_m)
-                    )
-                    u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
-                    psi = np.asarray(u_u) @ h_3 @ np.asarray(u_u) @ np.transpose(psi_0)
-                    temp = np.real(psi.conj().T @ m_m @ psi).item()
-                    if temp > gap:
-                        sample_total[n_1][n_2][n_3] = +1
-                        sample_total_a.append([n_1, n_2, n_3])
-                    elif temp < -gap:
-                        sample_total[n_1][n_2][n_3] = -1
-                        sample_total_b.append([n_1, n_2, n_3])
-                    else:
-                        sample_total[n_1][n_2][n_3] = 0
-                        sample_total_void.append([n_1, n_2, n_3])
-
-        # Now sample randomly from sample_Total a number of times training_size+testing_size
-        t_r = 0
-        while t_r < (training_size + test_size):
-            draw1 = algorithm_globals.random.choice(count)
-            draw2 = algorithm_globals.random.choice(count)
-            draw3 = algorithm_globals.random.choice(count)
-            if sample_total[draw1][draw2][draw3] == +1:
-                sample_a[t_r] = [
-                    2 * np.pi * draw1 / count,
-                    2 * np.pi * draw2 / count,
-                    2 * np.pi * draw3 / count,
-                ]
-                t_r += 1
-
-        t_r = 0
-        while t_r < (training_size + test_size):
-            draw1 = algorithm_globals.random.choice(count)
-            draw2 = algorithm_globals.random.choice(count)
-            draw3 = algorithm_globals.random.choice(count)
-            if sample_total[draw1][draw2][draw3] == -1:
-                sample_b[t_r] = [
-                    2 * np.pi * draw1 / count,
-                    2 * np.pi * draw2 / count,
-                    2 * np.pi * draw3 / count,
-                ]
-                t_r += 1
-
-        sample_train = [sample_a, sample_b]
-
-        for lindex in range(training_size + test_size):
-            label_train[lindex] = 0
-        for lindex in range(training_size + test_size):
-            label_train[training_size + test_size + lindex] = 1
-        label_train = label_train.astype(int)
-        sample_train = np.reshape(sample_train, (2 * (training_size + test_size), n))
-        training_input = {
-            key: (sample_train[label_train == k, :])[:training_size]
-            for k, key in enumerate(class_labels)
-        }
-        test_input = {
-            key: (sample_train[label_train == k, :])[training_size : (training_size + test_size)]
-            for k, key in enumerate(class_labels)
-        }
-
-        if plot_data:
-            try:
-                import matplotlib.pyplot as plt
-            except ImportError as ex:
-                raise MissingOptionalLibraryError(
-                    libname="Matplotlib",
-                    name="ad_hoc_data",
-                    pip_install="pip install matplotlib",
-                ) from ex
-            sample_total_a = np.asarray(sample_total_a)
-            sample_total_b = np.asarray(sample_total_b)
-            x_1 = sample_total_a[:, 0]
-            y_1 = sample_total_a[:, 1]
-            z_1 = sample_total_a[:, 2]
-
-            x_2 = sample_total_b[:, 0]
-            y_2 = sample_total_b[:, 1]
-            z_2 = sample_total_b[:, 2]
-
-            fig1 = plt.figure()
-            ax_1 = fig1.add_subplot(1, 1, 1, projection="3d")
-            ax_1.scatter(x_1, y_1, z_1, c="#8A360F")
-            plt.show()
-
-            fig2 = plt.figure()
-            ax_2 = fig2.add_subplot(1, 1, 1, projection="3d")
-            ax_2.scatter(x_2, y_2, z_2, c="#683FC8")
-            plt.show()
-
-            sample_training_a = training_input["A"]
-            sample_training_b = training_input["B"]
-
-            x_1 = sample_training_a[:, 0]
-            y_1 = sample_training_a[:, 1]
-            z_1 = sample_training_a[:, 2]
-
-            x_2 = sample_training_b[:, 0]
-            y_2 = sample_training_b[:, 1]
-            z_2 = sample_training_b[:, 2]
-
-            fig1 = plt.figure()
-            ax_1 = fig1.add_subplot(1, 1, 1, projection="3d")
-            ax_1.scatter(x_1, y_1, z_1, c="#8A360F")
-            ax_1.scatter(x_2, y_2, z_2, c="#683FC8")
-            plt.show()
+    training_input = {
+        key: (x_sample[y_sample == k, :])[:training_size] for k, key in enumerate(class_labels)
+    }
+    test_input = {
+        key: (x_sample[y_sample == k, :])[training_size : (training_size + test_size)]
+        for k, key in enumerate(class_labels)
+    }
 
     training_feature_array, training_label_array = features_and_labels_transform(
         training_input, class_labels, one_hot
@@ -329,40 +179,31 @@ def ad_hoc_data(
         )
 
 
-def sample_ad_hoc_data(sample_total, test_size, n):
-    """returns sample ad hoc data"""
+def _sample_ad_hoc_data(sample_total, xvals, num_samples, n):
+    count = sample_total.shape[0]
+    sample_a, sample_b = [], []
+    for i, sample_list in enumerate([sample_a, sample_b]):
+        label = 1 if i == 0 else -1
+        while len(sample_list) < num_samples:
+            draws = tuple(algorithm_globals.random.choice(count) for i in range(n))
+            if sample_total[draws] == label:
+                sample_list.append([xvals[d] for d in draws])
 
-    class_labels = [r"A", r"B"]  # copied from ad_hoc_data()
-    count = 0
-    if n == 2:
-        count = 100
-    elif n == 3:
-        count = 20
+    labels = np.array([0] * num_samples + [1] * num_samples)
+    samples = [sample_a, sample_b]
+    samples = np.reshape(samples, (2 * num_samples, n))
+    return samples, labels
 
-    label_train = np.zeros(2 * test_size)
-    sample_a = [[0 for x in range(n)] for y in range(test_size)]
-    sample_b = [[0 for x in range(n)] for y in range(test_size)]
-    t_r = 0
-    while t_r < (test_size):
-        draw1 = algorithm_globals.random.choice(count)
-        draw2 = algorithm_globals.random.choice(count)
-        if sample_total[draw1][draw2] == +1:
-            sample_a[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
-            t_r += 1
 
-    t_r = 0
-    while t_r < (test_size):
-        draw1 = algorithm_globals.random.choice(count)
-        draw2 = algorithm_globals.random.choice(count)
-        if sample_total[draw1][draw2] == -1:
-            sample_b[t_r] = [2 * np.pi * draw1 / count, 2 * np.pi * draw2 / count]
-            t_r += 1
-    sample_train = [sample_a, sample_b]
-    for lindex in range(test_size):
-        label_train[lindex] = 0
-    for lindex in range(test_size):
-        label_train[test_size + lindex] = 1
-    label_train = label_train.astype(int)
-    sample_train = np.reshape(sample_train, (2 * test_size, n))
-    test_input = {key: (sample_train[label_train == k, :])[:] for k, key in enumerate(class_labels)}
-    return test_input
+@optionals.HAS_MATPLOTLIB.require_in_call
+def _plot_ad_hoc_data(x_total, y_total, training_size):
+    import matplotlib.pyplot as plt
+
+    n = x_total.shape[1]
+    fig = plt.figure()
+    projection = "3d" if n == 3 else None
+    ax1 = fig.add_subplot(1, 1, 1, projection=projection)
+    for k in range(0, 2):
+        ax1.scatter(*x_total[y_total == k][:training_size].T)
+    ax1.set_title("Ad-hoc Data")
+    plt.show()

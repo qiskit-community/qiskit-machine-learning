@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -407,13 +407,13 @@ class QuantumKernel:
             raise ValueError("x_vec must be a 1D or 2D array")
 
         if x_vec.ndim == 1:
-            x_vec = np.reshape(x_vec, (-1, 2))
+            x_vec = np.reshape(x_vec, (-1, len(x_vec)))
 
         if y_vec is not None and y_vec.ndim > 2:
             raise ValueError("y_vec must be a 1D or 2D array")
 
         if y_vec is not None and y_vec.ndim == 1:
-            y_vec = np.reshape(y_vec, (-1, 2))
+            y_vec = np.reshape(y_vec, (-1, len(y_vec)))
 
         if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
             raise ValueError(

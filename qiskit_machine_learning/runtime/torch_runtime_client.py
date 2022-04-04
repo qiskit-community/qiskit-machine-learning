@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,19 +17,19 @@ from typing import Any, Callable, Dict, Optional, Union, List
 
 import dill
 
-from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.exceptions import QiskitError
 from qiskit.providers import Provider
 from qiskit.providers.backend import Backend
 from qiskit_machine_learning.runtime.hookbase import HookBase
+import qiskit_machine_learning.optionals as _optionals
 
-try:
+if _optionals.HAS_TORCH:
     from torch import Tensor
     from torch.nn import Module, MSELoss
     from torch.nn.modules.loss import _Loss
     from torch.optim import Optimizer
     from torch.utils.data import DataLoader
-except ImportError:
+else:
 
     class DataLoader:  # type: ignore
         """Empty DataLoader class
@@ -65,12 +65,7 @@ except ImportError:
         Always fails to initialize
         """
 
-        def __init__(self) -> None:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            )
+        pass
 
 
 class TorchRuntimeResult:
@@ -160,6 +155,7 @@ class TorchRuntimeResult:
         self._prediction = prediction
 
 
+@_optionals.HAS_TORCH.require_in_instance
 class TorchRuntimeClient:
     """The Qiskit Machine Learning Torch runtime client to call the Torch runtime."""
 

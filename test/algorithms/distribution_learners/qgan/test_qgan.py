@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2021.
+# (C) Copyright IBM 2019, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,7 +15,7 @@
 import unittest
 import warnings
 import tempfile
-from test import QiskitMachineLearningTestCase, requires_extra_library
+from test import QiskitMachineLearningTestCase
 
 from ddt import ddt, data
 
@@ -29,6 +29,7 @@ from qiskit_machine_learning.algorithms import (
     PyTorchDiscriminator,
     QGAN,
 )
+import qiskit_machine_learning.optionals as _optionals
 
 
 @ddt
@@ -129,7 +130,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
         trained_qasm = self.qgan.run(self.qi_qasm)
         self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_qgan_training_run_algo_torch(self):
         """Test QGAN training using a PyTorch discriminator."""
         # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
@@ -165,7 +166,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
         )
         self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_qgan_training_run_algo_torch_multivariate(self):
         """Test QGAN training using a PyTorch discriminator, for multivariate distributions."""
         # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]

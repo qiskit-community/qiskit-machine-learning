@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,10 +16,14 @@ import unittest
 
 from test import QiskitMachineLearningTestCase
 
+from typing import Tuple, Optional, Callable
+
+import scipy.sparse
+
 import numpy as np
 from ddt import ddt, data
 from qiskit import Aer, QuantumCircuit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 
@@ -133,6 +137,63 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                 self.assertEqual(len(weights), qnn.num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
+    def _create_circuit_qnn(self, quantum_instance: QuantumInstance) -> Tuple[CircuitQNN, int, int]:
+        num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, reps=1)
+
+        # construct circuit
+        qc = QuantumCircuit(num_inputs)
+        qc.append(feature_map, range(2))
+        qc.append(ansatz, range(2))
+
+        # construct qnn
+        def parity(x):
+            return f"{x:b}".count("1") % 2
+
+        output_shape = 2
+        qnn = CircuitQNN(
+            qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            sparse=False,
+            interpret=parity,
+            output_shape=output_shape,
+            quantum_instance=quantum_instance,
+        )
+
+        return qnn, num_inputs, ansatz.num_parameters
+
+    def _generate_data(self, num_inputs: int) -> Tuple[np.ndarray, np.ndarray]:
+        # construct data
+        num_samples = 5
+        features = algorithm_globals.random.random((num_samples, num_inputs))
+        labels = 1.0 * (np.sum(features, axis=1) <= 1)
+
+        return features, labels
+
+    def _create_classifier(
+        self,
+        qnn: CircuitQNN,
+        num_parameters: int,
+        optimizer: Optimizer,
+        loss: str,
+        callback: Optional[Callable[[np.ndarray, float], None]] = None,
+        one_hot: bool = False,
+    ):
+        initial_point = np.array([0.5] * num_parameters)
+
+        # construct classifier
+        classifier = NeuralNetworkClassifier(
+            qnn,
+            optimizer=optimizer,
+            loss=loss,
+            one_hot=one_hot,
+            initial_point=initial_point,
+            callback=callback,
+        )
+        return classifier
+
     @data(
         # optimizer, loss, quantum instance
         ("cobyla", "absolute_error", "statevector", False),
@@ -187,48 +248,17 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         else:
             callback = None
 
-        num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, reps=1)
+        qnn, num_inputs, num_parameters = self._create_circuit_qnn(quantum_instance)
 
-        # construct circuit
-        qc = QuantumCircuit(num_inputs)
-        qc.append(feature_map, range(2))
-        qc.append(ansatz, range(2))
+        classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, callback)
 
-        # construct qnn
-        def parity(x):
-            return f"{x:b}".count("1") % 2
-
-        output_shape = 2
-        qnn = CircuitQNN(
-            qc,
-            input_params=feature_map.parameters,
-            weight_params=ansatz.parameters,
-            sparse=False,
-            interpret=parity,
-            output_shape=output_shape,
-            quantum_instance=quantum_instance,
-        )
-        initial_point = np.array([0.5] * ansatz.num_parameters)
-
-        # construct classifier
-        classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point, callback=callback
-        )
-
-        # construct data
-        num_samples = 5
-        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
-            (num_samples, num_inputs)
-        )
-        y = 1.0 * (np.sum(X, axis=1) <= 1)
+        features, labels = self._generate_data(num_inputs)
 
         # fit to data
-        classifier.fit(X, y)
+        classifier.fit(features, labels)
 
         # score
-        score = classifier.score(X, y)
+        score = classifier.score(features, labels)
         self.assertGreater(score, 0.5)
 
         # callback
@@ -276,54 +306,18 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         loss = CrossEntropyLoss()
 
-        num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, reps=1)
+        qnn, num_inputs, num_parameters = self._create_circuit_qnn(quantum_instance)
 
-        # construct circuit
-        qc = QuantumCircuit(num_inputs)
-        qc.append(feature_map, range(2))
-        qc.append(ansatz, range(2))
+        classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, callback, True)
 
-        # construct qnn
-        def parity(x):
-            return f"{x:b}".count("1") % 2
-
-        output_shape = 2
-        qnn = CircuitQNN(
-            qc,
-            input_params=feature_map.parameters,
-            weight_params=ansatz.parameters,
-            sparse=False,
-            interpret=parity,
-            output_shape=output_shape,
-            quantum_instance=quantum_instance,
-        )
-        # classification may fail sometimes, so let's fix initial point
-        initial_point = np.array([0.5] * ansatz.num_parameters)
-        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = NeuralNetworkClassifier(
-            qnn,
-            optimizer=optimizer,
-            loss=loss,
-            one_hot=True,
-            initial_point=initial_point,
-            callback=callback,
-        )
-
-        # construct data
-        num_samples = 5
-        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
-            (num_samples, num_inputs)
-        )
-        y = 1.0 * (np.sum(X, axis=1) <= 1)
-        y = np.array([y, 1 - y]).transpose()
+        features, labels = self._generate_data(num_inputs)
+        labels = np.array([labels, 1 - labels]).transpose()
 
         # fit to data
-        classifier.fit(X, y)
+        classifier.fit(features, labels)
 
         # score
-        score = classifier.score(X, y)
+        score = classifier.score(features, labels)
         self.assertGreater(score, 0.5)
 
         # callback
@@ -349,52 +343,45 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         quantum_instance = self.sv_quantum_instance
         optimizer = L_BFGS_B(maxiter=5)
 
-        num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, reps=1)
+        qnn, num_inputs, num_parameters = self._create_circuit_qnn(quantum_instance)
 
-        # construct circuit
-        qc = QuantumCircuit(num_inputs)
-        qc.append(feature_map, range(2))
-        qc.append(ansatz, range(2))
+        classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, one_hot=one_hot)
 
-        # construct qnn
-        def parity(x):
-            return f"{x:b}".count("1") % 2
-
-        output_shape = 2
-        qnn = CircuitQNN(
-            qc,
-            input_params=feature_map.parameters,
-            weight_params=ansatz.parameters,
-            sparse=False,
-            interpret=parity,
-            output_shape=output_shape,
-            quantum_instance=quantum_instance,
-        )
-        initial_point = np.array([0.5] * ansatz.num_parameters)
-
-        # construct classifier
-        classifier = NeuralNetworkClassifier(
-            qnn, optimizer=optimizer, loss=loss, initial_point=initial_point, one_hot=one_hot
-        )
-
-        # construct data
-        num_samples = 5
-        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
-            (num_samples, num_inputs)
-        )
-        y = 1.0 * (np.sum(X, axis=1) <= 1)
-        y = y.astype(str)
+        features, labels = self._generate_data(num_inputs)
+        labels = labels.astype(str)
         # convert to categorical
-        y[y == "0.0"] = "A"
-        y[y == "1.0"] = "B"
+        labels[labels == "0.0"] = "A"
+        labels[labels == "1.0"] = "B"
 
         # fit to data
-        classifier.fit(X, y)
+        classifier.fit(features, labels)
 
         # score
-        score = classifier.score(X, y)
+        score = classifier.score(features, labels)
+        self.assertGreater(score, 0.5)
+
+    def test_sparse_arrays(self):
+        """Tests classifier with sparse arrays as features and labels."""
+        for quantum_instance in [self.sv_quantum_instance, self.qasm_quantum_instance]:
+            for loss in ["squared_error", "absolute_error", "cross_entropy"]:
+                with self.subTest(f"quantum_instance: {quantum_instance}, loss: {loss}"):
+                    self._test_sparse_arrays(quantum_instance, loss)
+
+    def _test_sparse_arrays(self, quantum_instance: QuantumInstance, loss: str):
+        optimizer = L_BFGS_B(maxiter=5)
+
+        qnn, _, num_parameters = self._create_circuit_qnn(quantum_instance)
+
+        classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, one_hot=True)
+
+        features = scipy.sparse.csr_matrix([[0, 0], [1, 1]])
+        labels = scipy.sparse.csr_matrix([[1, 0], [0, 1]])
+
+        # fit to data
+        classifier.fit(features, labels)
+
+        # score
+        score = classifier.score(features, labels)
         self.assertGreater(score, 0.5)
 
 

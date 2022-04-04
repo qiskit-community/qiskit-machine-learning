@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,9 +12,6 @@
 
 """ ML test packages """
 
-from .machine_learning_test_case import (
-    QiskitMachineLearningTestCase,
-    requires_extra_library,
-)
+from .machine_learning_test_case import QiskitMachineLearningTestCase, gpu
 
-__all__ = ["QiskitMachineLearningTestCase", "requires_extra_library"]
+__all__ = ["QiskitMachineLearningTestCase", "gpu"]

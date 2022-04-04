@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,23 +13,23 @@
 """Test for TorchRuntimeClient."""
 
 import unittest
-from test import QiskitMachineLearningTestCase, requires_extra_library
+from test import QiskitMachineLearningTestCase
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.providers.basicaer import QasmSimulatorPy
+import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 from qiskit_machine_learning.runtime import TorchRuntimeClient, TorchRuntimeResult, HookBase
 from .fake_torchruntime import FakeTorchInferRuntimeProvider, FakeTorchTrainerRuntimeProvider
 
-try:
+if _optionals.HAS_TORCH:
     from torch import is_tensor, Tensor
     from torch.nn import MSELoss
     from torch.optim import Adam
     from torch.utils.data import Dataset
-except ImportError:
+else:
 
     class Dataset:  # type: ignore
         """Empty Dataset class
@@ -46,6 +46,7 @@ except ImportError:
         pass
 
 
+@_optionals.HAS_TORCH.require_in_instance
 class TorchDataset(Dataset):
     """Map-style dataset"""
 
@@ -128,17 +129,11 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         if score:
             self.assertEqual(result.score, 1)
 
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_fit(self):
         """Test for fit"""
-        try:
-            from torch.utils.data import DataLoader
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch.utils.data import DataLoader
+
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
         optimizer = Adam(model.parameters(), lr=0.1)
@@ -176,17 +171,11 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         result = torch_runtime_client.fit(train_loader, start_epoch=0, seed=42)
         self.validate_train_result(result)
 
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_fit_with_validation_set(self):
         """Test for fit with a validation set"""
-        try:
-            from torch.utils.data import DataLoader
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch.utils.data import DataLoader
+
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
         optimizer = Adam(model.parameters(), lr=0.1)
@@ -202,17 +191,11 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         result = torch_runtime_client.fit(train_loader, val_loader=validation_loader)
         self.validate_train_result(result, val_loader=True)
 
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_fit_with_hooks(self):
         """Test for fit with hooks"""
-        try:
-            from torch.utils.data import DataLoader
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch.utils.data import DataLoader
+
         train_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
         optimizer = Adam(model.parameters(), lr=0.1)
@@ -232,17 +215,11 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         result = torch_runtime_client.fit(train_loader, hooks=[hook, hook])
         self.validate_train_result(result)
 
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_predict(self):
         """Test for predict"""
-        try:
-            from torch.utils.data import DataLoader
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch.utils.data import DataLoader
+
         data_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
         optimizer = Adam(model.parameters(), lr=0.1)
@@ -267,17 +244,11 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
 
         self.validate_infer_result(result)
 
-    @requires_extra_library
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
     def test_score(self):
         """Test for score"""
-        try:
-            from torch.utils.data import DataLoader
-        except ImportError as ex:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="TorchConnector",
-                pip_install="pip install 'qiskit-machine-learning[torch]'",
-            ) from ex
+        from torch.utils.data import DataLoader
+
         data_loader = DataLoader(TorchDataset([1], [1]), batch_size=1, shuffle=False)
         model = TorchConnector(self._qnn, [1])
         optimizer = Adam(model.parameters(), lr=0.1)
