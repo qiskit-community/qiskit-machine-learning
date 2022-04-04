@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2021.
+# (C) Copyright IBM 2019, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,20 +17,12 @@ PyTorch Discriminator Neural Network
 from typing import Dict, Any, Iterable, Optional, Sequence, cast
 import os
 import numpy as np
-from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.utils import QuantumInstance
+import qiskit_machine_learning.optionals as _optionals
 from .discriminative_network import DiscriminativeNetwork
 
-try:
-    import torch
-    from torch import nn, optim
-    from torch.autograd.variable import Variable
 
-    _HAS_TORCH = True
-except ImportError:
-    _HAS_TORCH = False
-
-
+@_optionals.HAS_TORCH.require_in_instance
 class PyTorchDiscriminator(DiscriminativeNetwork):
     """
     Discriminator based on PyTorch
@@ -41,17 +33,10 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Args:
             n_features: Dimension of input data vector.
             n_out: Dimension of the discriminator's output vector.
-
-        Raises:
-            MissingOptionalLibraryError: Pytorch not installed
         """
         super().__init__()
-        if not _HAS_TORCH:
-            raise MissingOptionalLibraryError(
-                libname="Pytorch",
-                name="PyTorchDiscriminator",
-                pip_install="pip install 'qiskit-meachine-learning[torch]'",
-            )
+        # pylint: disable=import-outside-toplevel
+        from torch import optim
 
         self._n_features = n_features
         self._n_out = n_out
@@ -73,6 +58,8 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Args:
             seed: seed
         """
+        import torch
+
         torch.manual_seed(seed)
 
     def save_model(self, snapshot_dir: str):
@@ -82,6 +69,8 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Args:
             snapshot_dir:  directory path for saving the model
         """
+        import torch
+
         torch.save(self._discriminator, os.path.join(snapshot_dir, "discriminator.pt"))
 
     def load_model(self, load_dir: str):
@@ -89,8 +78,10 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Load discriminator model
 
         Args:
-            load_dir: file with stored pytorch discriminator model to be loaded
+            load_dir: file with stored PyTorch discriminator model to be loaded
         """
+        import torch
+
         self._discriminator = torch.load(load_dir)
 
     @property
@@ -118,11 +109,14 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Returns:
             torch.Tensor: Discriminator output, i.e. data label
         """
-
         # pylint: disable=not-callable, no-member
+        import torch
+
         if isinstance(x, torch.Tensor):
             pass
         else:
+            from torch.autograd.variable import Variable
+
             x = torch.tensor(x, dtype=torch.float32)
             x = Variable(x)
 
@@ -143,6 +137,8 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         Returns:
             torch.Tensor: Loss w.r.t to the generated data points.
         """
+        from torch import nn
+
         if weights is not None:
             loss_funct = nn.BCELoss(weight=weights, reduction="sum")
         else:
@@ -164,9 +160,13 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
             torch.Tensor: Gradient penalty.
         """
         # pylint: disable=not-callable, no-member
+        import torch
+
         if isinstance(x, torch.Tensor):
             pass
         else:
+            from torch.autograd.variable import Variable
+
             x = torch.tensor(x, dtype=torch.float32)
             x = Variable(x)
         # pylint: disable=no-member
@@ -207,6 +207,9 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
         """
         # pylint: disable=E1101
         # pylint: disable=E1102
+        import torch
+        from torch.autograd.variable import Variable
+
         # Reset gradients
         self._optimizer.zero_grad()
         real_batch = cast(Sequence, data)[0]

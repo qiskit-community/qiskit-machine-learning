@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    Fixed a bug when a sparse array is passed to ``VQC`` as labels. Sparse arrays can be easily
+    observed when labels are encoded via ``OneHotEncoder`` from ``SciKit-Learn``. Now both
+    ``NeuralNetworkClassifier`` and ``VQC`` support sparse arrays and convert them dense arrays in
+    the implementation.

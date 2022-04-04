@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -20,7 +20,7 @@ import logging
 import os
 import unittest
 import time
-from qiskit.exceptions import MissingOptionalLibraryError
+import functools
 
 # disable deprecation warnings that can cause log output overflow
 # pylint: disable=unused-argument
@@ -33,25 +33,30 @@ def _noop(*args, **kargs):
 # disable warning messages
 # warnings.warn = _noop
 
+_NEEDS_GPU = os.getenv("QISKIT_GPU", "false").lower() == "true"
 
-def requires_extra_library(test_item):
-    """Decorator that skips test if an extra library is not available
+
+def gpu(func):
+    """Decorator that signals that the test needs GPU to run.
 
     Args:
-        test_item (callable): function to be decorated.
+        func (callable): test function to be decorated.
 
     Returns:
         callable: the decorated function.
     """
 
-    def wrapper(self, *args):
-        try:
-            test_item(self, *args)
-        except MissingOptionalLibraryError as ex:
-            self.skipTest(str(ex))
-        return wrapper
+    @functools.wraps(func)
+    def _wrapper(*args, **kwargs):
+        if not _NEEDS_GPU:
+            raise unittest.SkipTest("Skipping gpu tests")
 
-    return wrapper
+        return func(*args, **kwargs)
+
+    # save decorator function so that it can be
+    # inspected for the existence of this decorator
+    _wrapper._decorator = gpu
+    return _wrapper
 
 
 class QiskitMachineLearningTestCase(unittest.TestCase, ABC):

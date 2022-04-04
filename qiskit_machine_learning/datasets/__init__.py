@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2021.
+# (C) Copyright IBM 2019, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,7 +25,6 @@ Datasets
    :nosignatures:
 
    ad_hoc_data
-   sample_ad_hoc_data
    breast_cancer
    digits
    gaussian
@@ -34,7 +33,7 @@ Datasets
 
 """
 
-from .ad_hoc import ad_hoc_data, sample_ad_hoc_data
+from .ad_hoc import ad_hoc_data
 from .breast_cancer import breast_cancer
 from .digits import digits
 from .gaussian import gaussian
@@ -43,7 +42,6 @@ from .wine import wine
 
 __all__ = [
     "ad_hoc_data",
-    "sample_ad_hoc_data",
     "breast_cancer",
     "digits",
     "gaussian",
