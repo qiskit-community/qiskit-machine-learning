@@ -38,6 +38,7 @@ class EffectiveDimension:
         fix_seed=False,
         callback: Optional[Callable] = None,
     ) -> None:
+        # pylint: disable=wrong-spelling-in-docstring
         """
         Args:
             qnn: A Qiskit ``NeuralNetwork``, with a specific number
@@ -73,12 +74,13 @@ class EffectiveDimension:
         else:
             self._seed = None
         # Define inputs and parameters
-        self.params = params
-        self.inputs = inputs  # input setter uses self._model
+        self.params = params # type: ignore
+        # input setter uses self._model
+        self.inputs = inputs  # type: ignore
 
     # keep d = num_weights for the sake of consistency with the
     # nomenclature in the original code/paper
-    def get_d(self) -> int:
+    def d(self) -> int: # pylint: disable=invalid-name
         """Returns the dimension of the model according to the definition
         from the original paper."""
         return self._model.num_weights
@@ -138,16 +140,16 @@ class EffectiveDimension:
             # random sampling from normal distribution
             self._inputs = np.random.normal(0, 1, size=(self.num_inputs, self._model.num_inputs))
 
-    def run_montecarlo(self) -> [np.ndarray, np.ndarray]:
+    def run_montecarlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         This method computes the model's Monte Carlo sampling for a set of
         inputs and parameters (params).
 
         Returns:
              grads: QNN gradient vector, result of backward passes, of shape
-                (num_inputs * num_params, outputsize, d)
+                (num_inputs * num_params, output-size, d)
              outputs: QNN output vector, result of forward passes, of shape
-                (num_inputs * num_params, outputsize)
+                (num_inputs * num_params, output-size)
         """
         grads = np.zeros(
             (
@@ -182,17 +184,18 @@ class EffectiveDimension:
         return grads, outputs
 
     def get_fishers(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
+        # pylint: disable=wrong-spelling-in-docstring
         """
-        This method computes the average jacobian for every set of gradients and
+        This method computes the average Jacobian for every set of gradients and
         model output given as:
 
             1/K(sum_k(sum_i gradients_i/sum_i model_output_i)) for i in len(gradients) for label k
 
         Args:
             gradients: A numpy array, result of the neural network's backward pass
-            model_outputs: A numpy array, result of the neural networks's forward pass
+            model_outputs: A numpy array, result of the neural networks' forward pass
         Returns:
-            fishers: A numpy array with the average jacobian (of shape dxd) for every
+            fishers: A numpy array with the average Jacobian (of shape dxd) for every
             set of gradients and model output given
         """
 
@@ -200,11 +203,12 @@ class EffectiveDimension:
             # add dimension to model outputs for broadcasting
             model_outputs = np.expand_dims(model_outputs, axis=2)
 
-        # get gradvectors (gradient_k/model_output_k)
-        # multiply by sqrt(model_output) so that the outer product cross term is correct after einsum
+        # get grad-vectors (gradient_k/model_output_k)
+        # multiply by sqrt(model_output) so that the outer product cross term is correct
+        # after Einstein summation
         gradvectors = np.sqrt(model_outputs) * gradients / model_outputs
 
-        # compute sum of matrices obtained from outer product of gradvectors
+        # compute sum of matrices obtained from outer product of grad-vectors
         fishers = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
 
         return fishers
@@ -214,10 +218,11 @@ class EffectiveDimension:
         This method computes the normalized Fisher Information Matrix (f_hat)
         and extracts its trace.
         Args:
-            fishers: The FIM to be normalized
+            fishers: The Fisher Information Matrix to be normalized.
         Returns:
              f_hat: The normalized FIM, a numpy array of size (num_inputs, d, d)
-             fisher_trace: The trace of the FIM (before normalizing)
+             fisher_trace: The trace of the Fisher Information Matrix
+                            (before normalizing).
         """
 
         # compute the trace with all fishers
@@ -251,15 +256,17 @@ class EffectiveDimension:
             n_expanded = np.expand_dims(np.asarray(n), axis=(1, 2, 3))
             logsum_axis = 1
         else:
-            n_expanded = n
+            n_expanded = n # type: ignore
             logsum_axis = None
 
         # calculate effective dimension for each data sample size "n" out
         # of normalized fishers
         f_mod = f_hat * n_expanded / (2 * np.pi * np.log(n_expanded))
         one_plus_fmod = np.eye(self._model.num_weights) + f_mod
-        dets = np.linalg.slogdet(one_plus_fmod)[1]  # log det because of overflow
-        dets_div = dets / 2  # divide by 2 because of sqrt
+        # take log. of the determinant because of overflow
+        dets = np.linalg.slogdet(one_plus_fmod)[1]
+        # divide by 2 because of square root
+        dets_div = dets / 2
         effective_dims = (
             2
             * (logsumexp(dets_div, axis=logsum_axis) - np.log(self.num_params))
@@ -278,6 +285,7 @@ class EffectiveDimension:
              effective_dim: array of effective dimensions for each sample size in n.
         """
 
+        # pylint: disable=wrong-spelling-in-comment
         # step 1: Montecarlo sampling
         grads, output = self.run_montecarlo()
 
@@ -318,11 +326,12 @@ class LocalEffectiveDimension(EffectiveDimension):
                 (num_inputs, qnn_input_size).
 
         Raises:
-            QiskitMachineLearningError: If len(params) > 1
+            QiskitMachineLearningError: If ``len(params) > 1``
         """
+        params = np.asarray(params)
         if params is not None and len(params.shape) > 1 and params.shape[0] > 1:
             raise QiskitMachineLearningError(
                 "The local effective dimension algorithm uses only 1 set of parameters."
             )
 
-        super().__init__(qnn, num_inputs, params, inputs, fix_seed, callback)
+        super().__init__(qnn, params, inputs, 1, num_inputs, fix_seed, callback)
