@@ -24,6 +24,7 @@ _DECORATOR = "_decorator"
 
 def _find_methods(suite):
     """find gpu test decorated methods recursively"""
+    # pylint: disable=no-name-in-module
     from test import gpu
 
     methods = []
@@ -38,7 +39,8 @@ def _find_methods(suite):
             if decorator is None:
                 decorator = getattr(test_method, _DECORATOR, None)
             if decorator is not None and decorator is gpu:
-                methods.append(f"{_TEST}.{test_method.__module__}.{test_method.__qualname__}")
+                cls_str = f"{obj.__module__}.{obj.__class__.__name__}"
+                methods.append(f"{_TEST}.{cls_str}.{test_method.__name__}")
         else:
             raise Exception(f"Unexpected class {type(obj)}")
     return methods

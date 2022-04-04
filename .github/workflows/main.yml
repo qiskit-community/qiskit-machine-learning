@@ -67,7 +67,9 @@ jobs:
       - run:  pip check
         if: ${{ !cancelled() }}
         shell: bash
-      - run:  make copyright
+      - name: Copyright Check
+        run: |
+          python tools/check_copyright.py -check
         if: ${{ !cancelled() }}
         shell: bash
       - run:  make spell
