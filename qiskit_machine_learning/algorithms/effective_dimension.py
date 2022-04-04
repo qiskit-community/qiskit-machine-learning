@@ -15,9 +15,10 @@ import numpy as np
 import time
 
 from scipy.special import logsumexp
-from typing import Optional, Union, List, Callable
+from typing import Optional, Union, List, Callable, Tuple
 
 from ..neural_networks import OpflowQNN, NeuralNetwork
+from ..exceptions import QiskitMachineLearningError
 
 class EffectiveDimension:
 
@@ -62,7 +63,9 @@ class EffectiveDimension:
         self.d = self._model.num_weights
 
         if fix_seed:
-            np.random.seed(0)
+            self._seed = 0
+        else:
+            self._seed = None
         # Define inputs and parameters
         self.params = params
         self.inputs = inputs # input setter uses self._model
@@ -82,11 +85,14 @@ class EffectiveDimension:
     @params.setter
     def params(self, params: Union[List[float], np.ndarray, float]) -> None:
         if params is not None:
-            self._params = np.ndarray(params)
+            self._params = np.asarray(params)
             self.num_params = len(self._params)
         else:
+            if self._seed is not None:
+                np.random.seed(self._seed)
             # random sampling from uniform distribution
-            self._params = np.random.uniform(0, 1, size=(self.num_params, self.d))
+            params = np.random.uniform(0, 1, size=(self.num_params, self.d))
+            self._params = params
 
     @property
     def num_inputs(self) -> int:
@@ -103,9 +109,11 @@ class EffectiveDimension:
     @inputs.setter
     def inputs(self, inputs: Union[List[float], np.ndarray, float]) -> None:
         if inputs is not None:
-            self._inputs = np.ndarray(inputs)
+            self._inputs = np.asarray(inputs)
             self.num_inputs = len(self._inputs)
         else:
+            if self._seed is not None:
+                np.random.seed(self._seed)
             # random sampling from normal distribution
             self._inputs = np.random.normal(0, 1, size=(self.num_inputs, self._model.num_inputs))
 
@@ -155,7 +163,7 @@ class EffectiveDimension:
             gradients: A numpy array, result of the neural network's backward pass
             model_outputs: A numpy array, result of the neural networks's forward pass
         Returns:
-            fishers: average jacobian (of shape dxd) for every set of gradients and model output given
+            fishers: A numpy array with the average jacobian (of shape dxd) for every set of gradients and model output given
         """
 
         if model_outputs.shape < gradients.shape:
@@ -173,13 +181,13 @@ class EffectiveDimension:
 
     def get_fhat(
             self,
-            fishers: np.ndarray) -> [np.ndarray, np.ndarray]:
+            fishers: np.ndarray) -> Tuple[np.ndarray, float]:
         """
         This method computes the normalized Fisher Information Matrix (f_hat) out of a and extracts its trace.
         Args:
             fishers: The FIM to be normalized
         Returns:
-             f_hat: The normalized FIM, of size (num_inputs, d, d)
+             f_hat: The normalized FIM, a numpy array of size (num_inputs, d, d)
              fisher_trace: The trace of the FIM (before normalizing)
         """
 
@@ -193,27 +201,11 @@ class EffectiveDimension:
         f_hat = self.d * fisher_avg / fisher_trace
         return f_hat, fisher_trace
 
-    def get_eff_dim(
-        self,
-        n: Union[List, int]
-    ) -> Union[List[int], int]:
-        """
-        This method compute the effective dimension for a data sample size ``n``.
-
-        Args:
-            n: list of ranges for number of data
-        Returns:
-             effective_dim: list of effective dimensions for each data range in n
-        """
-
-        # step 1: Montecarlo sampling
-        grads, output = self.run_montecarlo()
-
-        # step 2: compute as many fisher info. matrices as (input, params) sets
-        fishers = self.get_fishers(gradients=grads, model_outputs=output)
-
-        # step 3: get normalized fisher info matrices
-        f_hat, trace = self.get_fhat(fishers)
+    def _get_eff_dim(
+            self,
+            f_hat: Union[List[float], np.ndarray],
+            n: Union[List[int], np.ndarray, int]
+    ) -> Union[np.ndarray, int]:
 
         if type(n) is not int and len(n) > 1:
             # expand dims for broadcasting
@@ -224,7 +216,7 @@ class EffectiveDimension:
             ns = n
             logsum_axis = None
 
-        # step 4: calculate effective dimension(s) for each data sample size "n" out
+        # calculate effective dimension for each data sample size "n" out
         # of normalized fishers
         fs = f_hat * ns / (2 * np.pi * np.log(ns))
         one_plus_fs = np.eye(self.d) + fs
@@ -234,6 +226,33 @@ class EffectiveDimension:
                          np.log(n / (2 * np.pi * np.log(n)))
 
         return np.squeeze(effective_dims)
+
+    def get_eff_dim(
+        self,
+        n: Union[List[int], np.ndarray, int]
+    ) -> Union[np.ndarray, int]:
+        """
+        This method compute the effective dimension for a data sample size ``n``.
+
+        Args:
+            n: array of sample sizes
+        Returns:
+             effective_dim: array of effective dimensions for each sample size in n
+        """
+
+        # step 1: Montecarlo sampling
+        grads, output = self.run_montecarlo()
+
+        # step 2: compute as many fisher info. matrices as (input, params) sets
+        fishers = self.get_fishers(gradients=grads, model_outputs=output)
+
+        # step 3: get normalized fisher info matrices
+        f_hat, _ = self.get_fhat(fishers)
+
+        # step 4: compute eff. dim
+        effective_dims = self._get_eff_dim(f_hat, n)
+
+        return effective_dims
 
 class LocalEffectiveDimension(EffectiveDimension):
     """
@@ -258,7 +277,7 @@ class LocalEffectiveDimension(EffectiveDimension):
             ValueError: If len(params) > 1
         """
         if params is not None and len(params.shape) > 1 and params.shape[0] > 1:
-                    raise ValueError("The local effective dimension algorithm uses only 1 set of parameters.")
+                    raise QiskitMachineLearningError("The local effective dimension algorithm uses only 1 set of parameters.")
 
         super().__init__(qnn, num_inputs, params, inputs, fix_seed, callback)
 
