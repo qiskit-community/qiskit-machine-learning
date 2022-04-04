@@ -36,8 +36,6 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         # fix seeds
         algorithm_globals.random_seed = 12345
-        np.random.seed(0)
-
         qi_sv = QuantumInstance(
             Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
@@ -67,6 +65,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
             quantum_instance=qi_sv
         )
 
+        # qnn2 for checking result without parity with
         self.circuit_qnn_2 = CircuitQNN(
             qc,
             input_params=feature_map.parameters,
@@ -83,21 +82,14 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         # define sample numbers
         self.ns = [5000, 8000, 10000, 40000, 60000, 100000, 150000, 200000, 500000, 1000000]
+        self.n = 5000
 
-        #define results
-        # 3,10,10
-        self.result1 = np.array([4.59708043, 4.65734914, 4.68726872, 4.87388243, 4.92499272, 4.98564672,
-                        5.03059347, 5.06074163, 5.14746625, 5.2044278])
-        # 3,1,1
-        self.result2 = np.array([1.39529449, 1.36195183, 1.3479573,  1.2800836,  1.26484116, 1.24778548,
-                        1.23569339, 1.22778588, 1.20571209, 1.19159584])
-        # 3,10,1
-        self.result3 = np.array([4.68945879, 4.76472694, 4.7999759,  4.99906019, 5.04914996, 5.10690519,
-                        5.14874164, 5.17642467, 5.25473156, 5.30537064])
+        # define results
+        self.result1 = 4.62355185 # 3,10,10
+        self.result2 = 1.39529449 # 3,1,1
+        self.result3 = 4.92825035 # 3,10,1
+        self.result4 = 5.93064172 # circuitqnn2 with 3,10,10
 
-        # circuitqnn2 with 3,10,10
-        self.result4 = np.array([4.59708043, 4.65734914, 4.68726872, 4.87388243, 4.92499272, 4.98564672,
-                                5.03059347, 5.06074163, 5.14746625, 5.2044278])
     @data(
         # num_inputs, num_params
         ("circuit1", 10, 10),
@@ -116,9 +108,9 @@ class TestEffDim(QiskitMachineLearningTestCase):
         else:
             qnn = self.circuit_qnn_1
             if num_inputs == 1:
-                result = self.result1
-            elif num_params == 10:
                 result = self.result2
+            elif num_params == 10:
+                result = self.result1
             else:
                 result = self.result3
 
@@ -127,12 +119,11 @@ class TestEffDim(QiskitMachineLearningTestCase):
                                        num_params=num_params,
                                        fix_seed=True)
 
-        effdim = global_ed.get_eff_dim(self.ns)
+        effdim = global_ed.get_eff_dim(self.n)
 
-        self.assertSequenceEqual(effdim, result)
+        self.assertAlmostEqual(effdim, result, 5)
 
-
-    def test_diff_qnn(self):
+    def test_qnn_type(self):
         """Test that the results are equivalent for opflow and circuit qnn."""
 
         num_inputs, num_params = 1, 1
@@ -149,20 +140,19 @@ class TestEffDim(QiskitMachineLearningTestCase):
                                        num_params=num_params,
                                        fix_seed=True)
 
-        effdim1= global_ed1.get_eff_dim(self.ns)
-        effdim2 = global_ed2.get_eff_dim(self.ns)
+        effdim1= global_ed1.get_eff_dim(self.n)
+        effdim2 = global_ed2.get_eff_dim(self.n)
 
-        self.assertSequenceEqual(effdim1, effdim2)
+        self.assertAlmostEqual(effdim1, effdim2, 5)
 
-
-    def test_custom_inputs(self):
-        """Test that the results are equivalent for equal custom and provided inputs."""
-
+    def test_custom_data(self):
+        """Test that the results are equivalent for equal custom and generated data."""
         num_inputs, num_params = 10, 10
-
         qnn = self.circuit_qnn_1
 
+        np.random.seed(0)
         inputs = np.random.normal(0, 1, size=(num_inputs, qnn.num_inputs))
+        np.random.seed(0)
         params = np.random.uniform(0, 1, size=(num_params, qnn.num_weights))
 
         global_ed1 = EffectiveDimension(qnn=qnn,
@@ -175,25 +165,45 @@ class TestEffDim(QiskitMachineLearningTestCase):
                                        params=params,
                                        fix_seed=True)
 
-        effdim1= global_ed1.get_eff_dim(self.ns)
-        effdim2 = global_ed2.get_eff_dim(self.ns)
+        effdim1 = global_ed1.get_eff_dim(self.n)
+        effdim2 = global_ed2.get_eff_dim(self.n)
 
-        self.assertTrue((effdim1 == effdim2).all())
+        self.assertTrue(global_ed1._inputs.all() == global_ed2._inputs.all())
+        self.assertTrue(global_ed1._params.all() == global_ed2._params.all())
+        self.assertAlmostEqual(effdim1, effdim2, 5)
+
+    def test_multiple_samples(self):
+        """Test results for a list of sampling sizes."""
+
+        num_inputs, num_params = 10, 10
+        qnn = self.circuit_qnn_1
+
+        global_ed1 = EffectiveDimension(qnn=qnn,
+                                        num_inputs=num_inputs,
+                                        num_params=num_params,
+                                        fix_seed=True)
+
+        effdim1 = global_ed1.get_eff_dim(self.ns)
+        effdim2 = global_ed1.get_eff_dim(np.asarray(self.ns))
+
+        self.assertTrue(effdim1.all() == effdim2.all())
 
     def test_local_ed_error(self):
-        """Test that ValueError is raised."""
+        """Test that QiskitMachineLearningError is raised for wrong use of LocalEffectiveDimension class."""
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(QiskitMachineLearningError):
 
             qnn = self.circuit_qnn_1
+            np.random.seed(0)
             inputs = np.random.normal(0, 1, size=(10, qnn.num_inputs))
+            np.random.seed(0)
             params = np.random.uniform(0, 1, size=(10, qnn.num_weights))
 
             local_ed1 = LocalEffectiveDimension(qnn=qnn,
                                                 inputs=inputs,
                                                 params=params,
                                                 fix_seed=True)
-            local_ed1.get_eff_dim(self.ns)
+            local_ed1.get_eff_dim(self.n)
 
 
 if __name__ == "__main__":
