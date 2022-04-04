@@ -208,7 +208,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                         "determined as 2^num_qubits."
                     )
 
-                output_shape_ = (2**self._circuit.num_qubits,)
+                output_shape_ = (2 ** self._circuit.num_qubits,)
 
         # final validation
         output_shape_ = self._validate_output_shape(output_shape_)

@@ -382,7 +382,7 @@ class TorchRuntimeClient:
         }
 
         # define runtime options
-        options = {"backend_name": self._backend.name()}
+        options = {"backend_name": self._backend}
 
         # send job to runtime and return result
         job = self.provider.runtime.run(
