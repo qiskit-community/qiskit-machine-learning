@@ -524,25 +524,32 @@ class QuantumKernel:
                     if not np.all(x_i == y_j):
                         to_be_computed_data_pair.append((x_i, y_j))
                         to_be_computed_index.append((i, j))
+                    else:
+                        # the overlap of a state with itself is always 1
+                        kernel[i, j] = 1.0
+                        kernel[j, i] = 1.0
 
-                circuits = [
-                    parameterized_circuit.assign_parameters(
-                        {feature_map_params_x: x, feature_map_params_y: y}
-                    )
-                    for x, y in to_be_computed_data_pair
-                ]
+                if len(to_be_computed_index) > 0:
+                    circuits = [
+                        parameterized_circuit.assign_parameters(
+                            {feature_map_params_x: x, feature_map_params_y: y}
+                        )
+                        for x, y in to_be_computed_data_pair
+                    ]
 
-                results = self._quantum_instance.execute(circuits, had_transpiled=True)
+                    results = self._quantum_instance.execute(circuits, had_transpiled=True)
 
-                matrix_elements = [
-                    self._compute_overlap(circuit, results, is_statevector_sim, measurement_basis)
-                    for circuit in range(len(circuits))
-                ]
+                    matrix_elements = [
+                        self._compute_overlap(
+                            circuit, results, is_statevector_sim, measurement_basis
+                        )
+                        for circuit in range(len(circuits))
+                    ]
 
-                for (i, j), value in zip(to_be_computed_index, matrix_elements):
-                    kernel[i, j] = value
-                    if is_symmetric:
-                        kernel[j, i] = kernel[i, j]
+                    for (i, j), value in zip(to_be_computed_index, matrix_elements):
+                        kernel[i, j] = value
+                        if is_symmetric:
+                            kernel[j, i] = kernel[i, j]
 
             if self._enforce_psd and is_symmetric:
                 # Find the closest positive semi-definite approximation to symmetric kernel matrix.

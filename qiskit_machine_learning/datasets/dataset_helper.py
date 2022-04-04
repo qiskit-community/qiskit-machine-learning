@@ -92,7 +92,7 @@ def discretize_and_truncate(
         data_row = data[:, j]  # dim j of all data samples
         # prepare element grid for dim j
         elements_current_dim = np.linspace(
-            min_max_bin_centers[j, 0], min_max_bin_centers[j, 1], (2**prec)
+            min_max_bin_centers[j, 0], min_max_bin_centers[j, 1], (2 ** prec)
         )
         # find index for data sample in grid
         index_grid = np.searchsorted(
