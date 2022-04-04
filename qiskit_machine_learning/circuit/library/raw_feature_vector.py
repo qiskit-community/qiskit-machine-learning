@@ -129,7 +129,7 @@ class RawFeatureVector(BlueprintCircuit):
         Returns:
             The feature dimension, which is ``2 ** num_qubits``.
         """
-        return 2 ** self.num_qubits
+        return 2**self.num_qubits
 
     @feature_dimension.setter
     def feature_dimension(self, feature_dimension: int) -> None:

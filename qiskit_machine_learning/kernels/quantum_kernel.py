@@ -527,7 +527,8 @@ class QuantumKernel:
                     else:
                         # the overlap of a state with itself is always 1
                         kernel[i, j] = 1.0
-                        kernel[j, i] = 1.0
+                        if is_symmetric:
+                            kernel[j, i] = 1.0
 
                 if len(to_be_computed_index) > 0:
                     circuits = [

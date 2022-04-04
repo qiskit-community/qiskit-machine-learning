@@ -112,7 +112,7 @@ def ad_hoc_data(
     i_2 = np.eye(2)
     h_2 = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
     h_n = reduce(np.kron, [h_2] * n)
-    psi_0 = np.ones(2 ** n) / np.sqrt(2 ** n)
+    psi_0 = np.ones(2**n) / np.sqrt(2**n)
 
     # Generate Z matrices acting on each qubits
     z_i = np.array([reduce(np.kron, [i_2] * i + [z] + [i_2] * (n - i - 1)) for i in range(n)])
@@ -129,8 +129,8 @@ def ad_hoc_data(
     # Generate a random unitary operator by collecting eigenvectors of a
     # random hermitian operator
     basis = algorithm_globals.random.random(
-        (2 ** n, 2 ** n)
-    ) + 1j * algorithm_globals.random.random((2 ** n, 2 ** n))
+        (2**n, 2**n)
+    ) + 1j * algorithm_globals.random.random((2**n, 2**n))
     basis = np.array(basis).conj().T @ np.array(basis)
     eigvals, eigvecs = np.linalg.eig(basis)
     idx = eigvals.argsort()[::-1]
