@@ -2,6 +2,10 @@
 features:
   - |
     Introduced two new classes, ``EffectiveDimension`` and ``LocalEffectiveDimension`` 
-    for calculating the effective dimension of Qiskit quantum neural network models
-    for specific sets of inputs, parameters and sample sizes.
+    for calculating the capacity Qiskit quantum neural network models through the 
+    computation of the Fisher Information Matrix. The local effective dimension bounds 
+    the generalization error of QNNs and only accepts single parameter sets as inputs. 
+    The global effective dimension (or just ``EffectiveDimension``) can be used as a 
+    measure of the expressibility of the model, and accepts multiple parameter sets.
+
 
