@@ -24,7 +24,8 @@ from ..exceptions import QiskitMachineLearningError
 class EffectiveDimension:
 
     """
-    This class computes the global effective dimension for Qiskit NeuralNetworks following the algorithm
+    This class computes the global effective dimension for Qiskit
+    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`s following the algorithm
     presented in "The Power of Quantum Neural Networks": https://arxiv.org/abs/2011.00027.
     """
 
@@ -41,8 +42,8 @@ class EffectiveDimension:
 
         """
         Args:
-            qnn: A Qiskit ``NeuralNetwork``, with a specific number
-                of weights/parameters (d = qnn_num_weights) that
+            qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,
+                with a specific number of weights/parameters (d = qnn_num_weights) that
                 will determine the shape of the Fisher Information Matrix
                 (num_inputs * num_params, d, d) used to compute the global
                 effective dimension for a set of ``inputs``, of shape
@@ -317,8 +318,9 @@ class LocalEffectiveDimension(EffectiveDimension):
     ) -> None:
         """
         Args:
-            qnn: A Qiskit NeuralNetwork, with a specific number of weights
-                (qnn_num_weights) and input size (qnn_input_size)
+            qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,
+                with a specific number of weights (qnn_num_weights) and input size
+                (qnn_input_size).
             num_inputs:  Number of inputs, if user chooses to randomly sample
                 from a normal distribution.
             params: An array of neural network weights, of shape (1, qnn_num_weights).
@@ -335,3 +337,4 @@ class LocalEffectiveDimension(EffectiveDimension):
             )
 
         super().__init__(qnn, params, inputs, 1, num_inputs, fix_seed, callback)
+        
