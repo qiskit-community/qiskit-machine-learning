@@ -36,9 +36,9 @@ class EffectiveDimension:
         num_params: int = 1,
         num_inputs: int = 1,
         fix_seed=False,
-        callback: Optional[Callable] = None,
+        callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
-        # pylint: disable=wrong-spelling-in-docstring
+
         """
         Args:
             qnn: A Qiskit ``NeuralNetwork``, with a specific number
@@ -58,7 +58,7 @@ class EffectiveDimension:
             num_inputs:  If ``inputs`` is not provided, the algorithm will
                 randomly sample ``num_inputs`` input sets
                 from a normal distribution. By default, num_inputs = 1.
-            callback: A callback function for the Montecarlo sampling.
+            callback: A callback function for the Monte Carlo sampling.
         """
 
         # Store arguments
@@ -91,7 +91,7 @@ class EffectiveDimension:
         return self._num_params
 
     @num_params.setter
-    def num_params(self, num_params) -> None:
+    def num_params(self, num_params: int) -> None:
         """Sets the number of network parameter sets."""
         self._num_params = num_params
 
@@ -101,7 +101,7 @@ class EffectiveDimension:
         return self._params
 
     @params.setter
-    def params(self, params: Union[List[float], np.ndarray, float]) -> None:
+    def params(self, params: Optional[Union[List[float], np.ndarray, float]]) -> None:
         """Sets network parameters."""
         if params is not None:
             self._params = np.asarray(params)
@@ -119,7 +119,7 @@ class EffectiveDimension:
         return self._num_inputs
 
     @num_inputs.setter
-    def num_inputs(self, num_inputs) -> None:
+    def num_inputs(self, num_inputs: int) -> None:
         """Sets the number of input sets."""
         self._num_inputs = num_inputs
 
@@ -129,7 +129,7 @@ class EffectiveDimension:
         return self._inputs
 
     @inputs.setter
-    def inputs(self, inputs: Union[List[float], np.ndarray, float]) -> None:
+    def inputs(self, inputs: Optional[Union[List[float], np.ndarray, float]]) -> None:
         """Sets network inputs."""
         if inputs is not None:
             self._inputs = np.asarray(inputs)
@@ -184,7 +184,7 @@ class EffectiveDimension:
         return grads, outputs
 
     def get_fishers(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
-        # pylint: disable=wrong-spelling-in-docstring
+
         """
         This method computes the average Jacobian for every set of gradients and
         model output given as:
@@ -195,7 +195,7 @@ class EffectiveDimension:
             gradients: A numpy array, result of the neural network's backward pass
             model_outputs: A numpy array, result of the neural networks' forward pass
         Returns:
-            fishers: A numpy array with the average Jacobian (of shape dxd) for every
+            fishers: A numpy array with the average Jacobian (of shape d x d) for every
             set of gradients and model output given
         """
 
@@ -286,8 +286,7 @@ class EffectiveDimension:
              effective_dim: array of effective dimensions for each sample size in n.
         """
 
-        # pylint: disable=wrong-spelling-in-comment
-        # step 1: Montecarlo sampling
+        # step 1: Monte Carlo sampling
         grads, output = self.run_montecarlo()
 
         # step 2: compute as many fisher info. matrices as (input, params) sets
@@ -310,11 +309,11 @@ class LocalEffectiveDimension(EffectiveDimension):
     def __init__(
         self,
         qnn: NeuralNetwork,
+        params: Optional[Union[List[float], np.ndarray, float]] = None,
+        inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_inputs: int = 1,
-        params: Optional[Union[List, np.ndarray]] = None,
-        inputs: Optional[Union[List, np.ndarray]] = None,
-        fix_seed: bool = False,
-        callback: Optional[Callable] = None,
+        fix_seed=False,
+        callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
         """
         Args:
