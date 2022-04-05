@@ -33,8 +33,8 @@ class EffectiveDimension:
         qnn: NeuralNetwork,
         params: Optional[Union[List[float], np.ndarray, float]] = None,
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
-        num_params: Optional[int] = 1,
-        num_inputs: Optional[int] = 1,
+        num_params: int = 1,
+        num_inputs: int = 1,
         fix_seed=False,
         callback: Optional[Callable] = None,
     ) -> None:
@@ -74,13 +74,13 @@ class EffectiveDimension:
         else:
             self._seed = None
         # Define inputs and parameters
-        self.params = params # type: ignore
+        self.params = params  # type: ignore
         # input setter uses self._model
         self.inputs = inputs  # type: ignore
 
     # keep d = num_weights for the sake of consistency with the
     # nomenclature in the original code/paper
-    def d(self) -> int: # pylint: disable=invalid-name
+    def d(self) -> int:  # pylint: disable=invalid-name
         """Returns the dimension of the model according to the definition
         from the original paper."""
         return self._model.num_weights
@@ -220,7 +220,8 @@ class EffectiveDimension:
         Args:
             fishers: The Fisher Information Matrix to be normalized.
         Returns:
-             f_hat: The normalized FIM, a numpy array of size (num_inputs, d, d)
+             f_hat: The normalized Fisher Information Matrix, a numpy array
+                    of size (num_inputs, d, d)
              fisher_trace: The trace of the Fisher Information Matrix
                             (before normalizing).
         """
@@ -256,7 +257,7 @@ class EffectiveDimension:
             n_expanded = np.expand_dims(np.asarray(n), axis=(1, 2, 3))
             logsum_axis = 1
         else:
-            n_expanded = n # type: ignore
+            n_expanded = n
             logsum_axis = None
 
         # calculate effective dimension for each data sample size "n" out
@@ -309,7 +310,7 @@ class LocalEffectiveDimension(EffectiveDimension):
     def __init__(
         self,
         qnn: NeuralNetwork,
-        num_inputs: Optional[int] = 1,
+        num_inputs: int = 1,
         params: Optional[Union[List, np.ndarray]] = None,
         inputs: Optional[Union[List, np.ndarray]] = None,
         fix_seed: bool = False,

@@ -46,7 +46,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
             seed_transpiler=algorithm_globals.random_seed,
         )
 
-        # set up qnns
+        # set up quantum neural networks
         num_qubits = 3
         feature_map = ZFeatureMap(feature_dimension=num_qubits, reps=1)
         ansatz = RealAmplitudes(num_qubits, reps=1)
@@ -69,7 +69,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
             quantum_instance=qi_sv,
         )
 
-        # qnn2 for checking result without parity with
+        # qnn2 for checking result without parity
         self.circuit_qnn_2 = CircuitQNN(
             qc,
             input_params=feature_map.parameters,
