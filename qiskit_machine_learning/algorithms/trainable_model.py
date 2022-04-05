@@ -97,9 +97,7 @@ class TrainableModel(SerializableModelMixin):
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
-        if optimizer is None:
-            optimizer = SLSQP()
-        self._optimizer = optimizer
+        self._optimizer = optimizer or SLSQP()
         self._warm_start = warm_start
         self._fit_result = None
         self._initial_point = initial_point
@@ -119,6 +117,11 @@ class TrainableModel(SerializableModelMixin):
     def optimizer(self) -> Optimizer:
         """Returns an optimizer to be used in training."""
         return self._optimizer
+
+    @optimizer.setter
+    def optimizer(self, optimizer: Optional[Optimizer] = None):
+        """Sets the optimizer to use in training process."""
+        self._optimizer = optimizer or SLSQP()
 
     @property
     def warm_start(self) -> bool:
