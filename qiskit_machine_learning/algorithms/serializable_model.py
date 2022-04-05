@@ -11,13 +11,9 @@
 # that they have been altered from the originals.
 """A mixin class for saving and loading models."""
 
-import logging
 from typing import Any
 
 import dill
-
-
-logger = logging.getLogger(__name__)
 
 
 class SerializableModelMixin:
@@ -51,13 +47,12 @@ class SerializableModelMixin:
 
         Returns:
             A loaded model.
+
+        Raises:
+            TypeError: if a loaded model is not an instance of the expected class.
         """
         with open(file_name, "rb") as handler:
             model = dill.load(handler)
         if not isinstance(model, cls):
-            logger.warning(
-                "Loaded a model of a different class. Expected class: %s, loaded: %s.",
-                cls,
-                type(model),
-            )
+            raise TypeError(f"Loaded model is of class {type(model)}. Expected class: {cls}.")
         return model

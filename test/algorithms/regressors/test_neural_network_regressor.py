@@ -169,7 +169,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
                 pass
 
-            with self.assertLogs(level="WARNING"):
+            with self.assertRaises(TypeError):
                 FakeModel.load(file_name)
 
         finally:
