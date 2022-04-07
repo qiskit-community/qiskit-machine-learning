@@ -27,18 +27,16 @@ from qiskit_machine_learning.utils.loss_functions import (
     CrossEntropyLoss,
     CrossEntropySigmoidLoss,
 )
-from qiskit_machine_learning.deprecation import deprecate_values
 
 from .objective_functions import ObjectiveFunction
 from .serializable_model import SerializableModelMixin
+from ..deprecation import deprecate_values
 
 
 class TrainableModel(SerializableModelMixin):
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
 
-    @deprecate_values(
-        "0.2.0", {"loss": {"l1": "absolute_error", "l2": "squared_error"}}, stack_level=4
-    )
+    @deprecate_values("0.4.0", {"loss": {"cross_entropy_sigmoid": "<unsupported>"}})
     def __init__(
         self,
         neural_network: NeuralNetwork,
@@ -90,10 +88,6 @@ class TrainableModel(SerializableModelMixin):
                 self._loss = CrossEntropyLoss()
             elif loss == "cross_entropy_sigmoid":
                 self._loss = CrossEntropySigmoidLoss()
-            elif loss == "l1":
-                self._loss = L1Loss()
-            elif loss == "l2":
-                self._loss = L2Loss()
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
