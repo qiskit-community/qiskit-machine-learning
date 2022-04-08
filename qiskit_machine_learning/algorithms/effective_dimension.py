@@ -42,7 +42,7 @@ class EffectiveDimension:
         """
         Args:
             qnn: A Qiskit ``NeuralNetwork``, with a specific number
-                of weights/parameters (d = qnn_num_weights) that
+                of weights/parameters (d = qnn.num_weights) that
                 will determine the shape of the Fisher Information Matrix
                 (num_inputs * num_params, d, d) used to compute the global
                 effective dimension for a set of ``inputs``, of shape
