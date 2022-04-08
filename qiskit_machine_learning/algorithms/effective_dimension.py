@@ -71,7 +71,6 @@ class EffectiveDimension:
         self._model = qnn
         self._callback = callback
 
-
         # Define inputs and parameters
         self.params = params  # type: ignore
         # input setter uses self._model
@@ -102,16 +101,6 @@ class EffectiveDimension:
         self._seed = seed
 
     @property
-    def num_params(self) -> int:
-        """Returns the number of network parameter sets."""
-        return self._num_params
-
-    @num_params.setter
-    def num_params(self, num_params: int) -> None:
-        """Sets the number of network parameter sets."""
-        self._num_params = num_params
-
-    @property
     def params(self) -> np.ndarray:
         """Returns network parameters."""
         return self._params
@@ -121,22 +110,11 @@ class EffectiveDimension:
         """Sets network parameters."""
         if params is not None:
             self._params = np.asarray(params)
-            self.num_params = len(self._params)
+            self._num_params = len(self._params)
         else:
             # random sampling from uniform distribution
             np.random.seed(self._seed)
-            params = np.random.uniform(0, 1, size=(self.num_params, self._model.num_weights))
-            self._params = params
-
-    @property
-    def num_inputs(self) -> int:
-        """Returns the number of input sets."""
-        return self._num_inputs
-
-    @num_inputs.setter
-    def num_inputs(self, num_inputs: int) -> None:
-        """Sets the number of input sets."""
-        self._num_inputs = num_inputs
+            self._params = np.random.uniform(0, 1, size=(self._num_params, self._model.num_weights))
 
     @property
     def inputs(self) -> np.ndarray:
@@ -148,11 +126,11 @@ class EffectiveDimension:
         """Sets network inputs."""
         if inputs is not None:
             self._inputs = np.asarray(inputs)
-            self.num_inputs = len(self._inputs)
+            self._num_inputs = len(self._inputs)
         else:
             # random sampling from normal distribution
             np.random.seed(self._seed)
-            self._inputs = np.random.normal(0, 1, size=(self.num_inputs, self._model.num_inputs))
+            self._inputs = np.random.normal(0, 1, size=(self._num_inputs, self._model.num_inputs))
 
     def run_montecarlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -167,12 +145,12 @@ class EffectiveDimension:
         """
         grads = np.zeros(
             (
-                self.num_inputs * self.num_params,
+                self._num_inputs * self._num_params,
                 self._model.output_shape[0],
                 self._model.num_weights,
             )
         )
-        outputs = np.zeros((self.num_inputs * self.num_params, self._model.output_shape[0]))
+        outputs = np.zeros((self._num_inputs * self._num_params, self._model.output_shape[0]))
 
         for (i, param_set) in enumerate(self.params):
             t_before_forward = time.time()
@@ -192,8 +170,8 @@ class EffectiveDimension:
                 msg = f'iteration {i}, time backward pass: {t_after_backward - t_after_forward}'
                 self._callback(msg)
 
-            grads[self.num_inputs * i: self.num_inputs * (i + 1)] = back_pass
-            outputs[self.num_inputs * i: self.num_inputs * (i + 1)] = fwd_pass
+            grads[self._num_inputs * i: self._num_inputs * (i + 1)] = back_pass
+            outputs[self._num_inputs * i: self._num_inputs * (i + 1)] = fwd_pass
 
         # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
         if isinstance(self._model, OpflowQNN):
@@ -253,8 +231,8 @@ class EffectiveDimension:
             np.reshape(
                 normalized_fisher,
                 (
-                    self.num_params,
-                    self.num_inputs,
+                    self._num_params,
+                    self._num_inputs,
                     self._model.num_weights,
                     self._model.num_weights,
                 ),
@@ -289,7 +267,7 @@ class EffectiveDimension:
         dets_div = dets / 2
         effective_dims = (
             2
-            * (logsumexp(dets_div, axis=logsum_axis) - np.log(self.num_params))
+            * (logsumexp(dets_div, axis=logsum_axis) - np.log(self._num_params))
             / np.log(n / (2 * np.pi * np.log(n)))
         )
 
@@ -347,11 +325,28 @@ class LocalEffectiveDimension(EffectiveDimension):
         Raises:
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
-        params = np.asarray(params)
-        if params is not None and len(params.shape) > 1 and params.shape[0] > 1:
-            raise ValueError(
-                f'The local effective dimension algorithm uses only 1 set of parameters, '
-                f'got {params.shape[0]}'
-            )
-
         super().__init__(qnn, params, inputs, 1, num_inputs, callback)
+
+    # override setter to enforce 1 set of parameters
+    @property
+    def params(self) -> np.ndarray:
+        """Returns network parameters."""
+        return self._params
+
+    @params.setter
+    def params(self, params: Optional[Union[List[float], np.ndarray, float]]) -> None:
+        """Sets network parameters."""
+        if params is not None:
+            params = np.asarray(params)
+            if len(params.shape) > 1 and params.shape[0] > 1:
+                self._params = params
+                self._num_params = len(self._params)
+            else:
+                raise ValueError(
+                    f'The local effective dimension algorithm uses only 1 set of parameters, '
+                    f'got {params.shape[0]}'
+                )
+        else:
+            # random sampling from uniform distribution
+            np.random.seed(self._seed)
+            self._params = np.random.uniform(0, 1, size=(1, self._model.num_weights))
