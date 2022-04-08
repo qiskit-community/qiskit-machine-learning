@@ -45,21 +45,21 @@ class EffectiveDimension:
         """
         Args:
             qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,
-                with a specific dimension (num_weights) that will determine the shape of the
-                Fisher Information Matrix (num_inputs * num_params, num_weights, num_weights)
+                with a specific dimension ``(num_weights)`` that will determine the shape of the
+                Fisher Information Matrix ``(num_inputs * num_params, num_weights, num_weights)``
                 used to compute the global effective dimension for a set of ``inputs``,
-                of shape (num_inputs, qnn_input_size),
-                and ``params``, of shape (num_params, num_weights).
+                of shape ``(num_inputs, qnn_input_size)``,
+                and ``params``, of shape ``(num_params, num_weights)``.
             params: An array of neural network parameters (weights), of shape
-                (num_params, num_weights).
+                ``(num_params, num_weights)``.
             inputs: An array of inputs to the neural network, of shape
-                (num_inputs, qnn_input_size).
+                ``(num_inputs, qnn_input_size)``.
             num_params: If ``params`` is not provided, the algorithm will
                 randomly sample ``num_params`` parameter sets from a
-                uniform distribution. By default, num_params = 1.
+                uniform distribution. By default, ``num_params = 1``.
             num_inputs:  If ``inputs`` is not provided, the algorithm will
                 randomly sample ``num_inputs`` input sets
-                from a normal distribution. By default, num_inputs = 1.
+                from a normal distribution. By default, ``num_inputs = 1``.
             callback: A callback function for the Monte Carlo sampling.
         """
 
@@ -189,11 +189,12 @@ class EffectiveDimension:
 
         Args:
             gradients: A numpy array, result of the neural network's backward pass, of
-                shape (num_inputs * num_params, output_size, num_weights)
+                shape ``(num_inputs * num_params, output_size, num_weights)``
             model_outputs: A numpy array, result of the neural networks' forward pass,
-                of shape (num_inputs * num_params, output_size)
+                of shape ``(num_inputs * num_params, output_size)``
         Returns:
-            normalized_fisher: A numpy array of shape (num_inputs * num_params, num_weights, num_weights)
+            normalized_fisher: A numpy array of shape
+                ``(num_inputs * num_params, num_weights, num_weights)``
                 with the average Jacobian  for every set of gradients and model output given.
         """
 
@@ -219,7 +220,7 @@ class EffectiveDimension:
             normalized_fisher: The Fisher Information Matrix to be normalized.
         Returns:
              normalized_fisher: The normalized Fisher Information Matrix, a numpy array
-                    of size (num_inputs, num_weights, num_weights)
+                    of size ``(num_inputs, num_weights, num_weights)``
              fisher_trace: The trace of the Fisher Information Matrix
                             (before normalizing).
         """
@@ -325,17 +326,25 @@ class LocalEffectiveDimension(EffectiveDimension):
         """
         Args:
             qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,
-                with a specific number of weights (qnn_num_weights) and input size
-                (qnn_input_size).
-            num_inputs:  Number of inputs, if user chooses to randomly sample
-                from a normal distribution.
-            params: An array of neural network weights, of shape (1, qnn_num_weights).
+                with a specific dimension ``(num_weights)`` that will determine the shape of the
+                Fisher Information Matrix ``(num_inputs, num_weights, num_weights)``
+                used to compute the global effective dimension for a set of ``inputs``,
+                of shape ``(num_inputs, qnn_input_size)``,
+                and 1 set of ``params``, of shape ``(1, num_weights)``.
+            params: An array of neural network parameters (weights), of shape
+                ``(1, num_weights)``. If ``params`` is not provided, the algorithm will
+                randomly sample 1 param set from a uniform distribution.
             inputs: An array of inputs to the neural network, of shape
-                (num_inputs, qnn_input_size).
+                ``(num_inputs, qnn_input_size)``.
+            num_inputs:  If ``inputs`` is not provided, the algorithm will
+                randomly sample ``num_inputs`` input sets
+                from a normal distribution. By default, ``num_inputs = 1``.
+            callback: A callback function for the Monte Carlo sampling.
 
         Raises:
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
+
         super().__init__(qnn, params, inputs, 1, num_inputs, callback)
 
     # override setter to enforce 1 set of parameters
