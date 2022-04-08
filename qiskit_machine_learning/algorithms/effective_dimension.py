@@ -137,9 +137,9 @@ class EffectiveDimension:
 
         Returns:
              grads: QNN gradient vector, result of backward passes, of shape
-                (num_inputs * num_params, output_size, num_weights)
+                ``(num_inputs * num_params, output_size, num_weights)``
              outputs: QNN output vector, result of forward passes, of shape
-                (num_inputs * num_params, output_size)
+                ``(num_inputs * num_params, output_size)``
         """
         grads = np.zeros(
             (
