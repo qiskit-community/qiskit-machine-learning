@@ -77,8 +77,6 @@ class EffectiveDimension:
         # input setter uses self._model
         self.inputs = inputs  # type: ignore
 
-        np.random.seed(0)
-
     def num_weights(self) -> int:
         """Returns the dimension of the model according to the definition
         from the original paper."""
@@ -133,7 +131,7 @@ class EffectiveDimension:
             np.random.seed(self._seed)
             self._inputs = np.random.normal(0, 1, size=(self._num_inputs, self._model.num_inputs))
 
-    def run_montecarlo(self) -> Tuple[np.ndarray, np.ndarray]:
+    def run_monte_carlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         This method computes the model's Monte Carlo sampling for a set of
         inputs and parameters (params).
@@ -193,7 +191,7 @@ class EffectiveDimension:
             model_outputs: A numpy array, result of the neural networks' forward pass,
                 of shape ``(num_inputs * num_params, output_size)``
         Returns:
-            normalized_fisher: A numpy array of shape
+            fisher: A numpy array of shape
                 ``(num_inputs * num_params, num_weights, num_weights)``
                 with the average Jacobian  for every set of gradients and model output given.
         """
@@ -290,13 +288,13 @@ class EffectiveDimension:
         """
 
         # step 1: Monte Carlo sampling
-        grads, output = self.run_montecarlo()
+        grads, output = self.run_monte_carlo()
 
         # step 2: compute as many fisher info. matrices as (input, params) sets
-        normalized_fisher = self.get_fisher(gradients=grads, model_outputs=output)
+        fisher = self.get_fisher(gradients=grads, model_outputs=output)
 
         # step 3: get normalized fisher info matrices
-        normalized_fisher, _ = self.get_normalized_fisher(normalized_fisher)
+        normalized_fisher, _ = self.get_normalized_fisher(fisher)
 
         # step 4: compute eff. dim
         effective_dimensions = self._get_effective_dimension(normalized_fisher, n)
