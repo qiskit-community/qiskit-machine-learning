@@ -178,21 +178,26 @@ class EffectiveDimension:
         )
         outputs = np.zeros((self.num_inputs * self.num_params, self._model.output_shape[0]))
 
-        # could this be batched further?
         for (i, param_set) in enumerate(self.params):
-            t_0 = time.time()
+            t_before_forward = time.time()
+            fwd_pass = np.asarray(self._model.forward(input_data=self.inputs, weights=param_set))
+            t_after_forward = time.time()
+
+            if self._callback is not None:
+                msg = f'iteration {i}, time forward pass: {t_after_forward - t_before_forward}'
+                self._callback(msg)
+
             back_pass = np.asarray(
                 self._model.backward(input_data=self.inputs, weights=param_set)[1]
             )
-            t_1 = time.time()
-            fwd_pass = np.asarray(self._model.forward(input_data=self.inputs, weights=param_set))
-            t_2 = time.time()
-
-            grads[self.num_inputs * i : self.num_inputs * (i + 1)] = back_pass
-            outputs[self.num_inputs * i : self.num_inputs * (i + 1)] = fwd_pass
+            t_after_backward = time.time()
 
             if self._callback is not None:
-                self._callback(i, t_1 - t_0, t_2 - t_1)
+                msg = f'iteration {i}, time backward pass: {t_after_backward - t_after_forward}'
+                self._callback(msg)
+
+            grads[self.num_inputs * i: self.num_inputs * (i + 1)] = back_pass
+            outputs[self.num_inputs * i: self.num_inputs * (i + 1)] = fwd_pass
 
         # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
         if isinstance(self._model, OpflowQNN):
