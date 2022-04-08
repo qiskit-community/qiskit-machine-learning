@@ -38,8 +38,8 @@ class EffectiveDimension:
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_params: int = 1,
         num_inputs: int = 1,
-        seed: int = 0,
         callback: Optional[Callable[[str], None]] = None,
+        seed: int = 0,
     ) -> None:
 
         """
@@ -320,6 +320,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_inputs: int = 1,
         callback: Optional[Callable[[str], None]] = None,
+        seed: int = 0,
     ) -> None:
         """
         Args:
@@ -343,7 +344,7 @@ class LocalEffectiveDimension(EffectiveDimension):
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
 
-        super().__init__(qnn, params, inputs, 1, num_inputs, callback)
+        super().__init__(qnn, params, inputs, 1, num_inputs, callback, seed)
 
     # override setter to enforce 1 set of parameters
     @property
