@@ -13,9 +13,10 @@
 """ Unit Tests for Effective Dimension Algorithm """
 
 import unittest
+from test import QiskitMachineLearningTestCase
+
 import numpy as np
 from ddt import ddt, data
-from test import QiskitMachineLearningTestCase
 
 from qiskit import Aer, QuantumCircuit
 from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
