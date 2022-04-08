@@ -1,0 +1,7 @@
+---
+deprecations:
+  - |
+    Class ``CrossEntropySigmoidLoss`` is deprecated and marked for removal.
+  - |
+    Removed support of ``l2`` and ``l1`` values as loss function definitions. Please, use
+    ``absolute_error`` and ``squared_error`` respectively.
