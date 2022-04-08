@@ -13,15 +13,14 @@
 """ Unit Tests for Effective Dimension Algorithm """
 
 import unittest
-from qiskit.utils import optionals
-
-from test import QiskitMachineLearningTestCase
-
 import numpy as np
 from ddt import ddt, data
+from test import QiskitMachineLearningTestCase
+
 from qiskit import Aer, QuantumCircuit
 from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
 from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import optionals
 
 from qiskit.opflow import PauliSumOp
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
@@ -97,7 +96,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         ("circuit1", 10, 10, 4.62355184),
         ("circuit1", 1, 1, 1.39529449),
         ("circuit1", 10, 1, 4.92825034),
-        ("circuit2", 10, 10,  5.93064171),
+        ("circuit2", 10, 10, 5.93064171),
     )
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_alg_results(self, config):
@@ -127,11 +126,15 @@ class TestEffDim(QiskitMachineLearningTestCase):
         qnn2 = self.opflow_qnn
 
         global_ed1 = EffectiveDimension(
-            qnn=qnn1, num_params=num_params, num_inputs=num_inputs,
+            qnn=qnn1,
+            num_params=num_params,
+            num_inputs=num_inputs,
         )
 
         global_ed2 = EffectiveDimension(
-            qnn=qnn2, num_params=num_params, num_inputs=num_inputs,
+            qnn=qnn2,
+            num_params=num_params,
+            num_inputs=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n)
@@ -147,14 +150,14 @@ class TestEffDim(QiskitMachineLearningTestCase):
         qnn = self.circuit_qnn_1
         np.random.seed(0)
         inputs = np.random.normal(0, 1, size=(10, qnn.num_inputs))
-        np.random.seed(0) # if seed not set again, test fails
+        np.random.seed(0)  # if seed not set again, test fails
         params = np.random.uniform(0, 1, size=(10, qnn.num_weights))
 
         global_ed1 = EffectiveDimension(
-            qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed = 0
+            qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed=0
         )
 
-        global_ed2 = EffectiveDimension(qnn=qnn, params=params, inputs=inputs, seed = 0)
+        global_ed2 = EffectiveDimension(qnn=qnn, params=params, inputs=inputs, seed=0)
 
         effdim1 = global_ed1.get_effective_dimension(self.n)
         effdim2 = global_ed2.get_effective_dimension(self.n)
@@ -172,13 +175,15 @@ class TestEffDim(QiskitMachineLearningTestCase):
         qnn = self.circuit_qnn_1
 
         global_ed1 = EffectiveDimension(
-            qnn=qnn, num_params=num_params, num_inputs=num_inputs,
+            qnn=qnn,
+            num_params=num_params,
+            num_inputs=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n_list)
         effdim2 = global_ed1.get_effective_dimension(np.asarray(self.n_list))
 
-        np.testing.assert_array_equal(effdim1,  effdim2)
+        np.testing.assert_array_equal(effdim1, effdim2)
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_local_ed_error(self):
@@ -192,7 +197,9 @@ class TestEffDim(QiskitMachineLearningTestCase):
             params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
 
             local_ed1 = LocalEffectiveDimension(
-                qnn=qnn, inputs=inputs, params=params,
+                qnn=qnn,
+                inputs=inputs,
+                params=params,
             )
             local_ed1.get_effective_dimension(self.n)
 

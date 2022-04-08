@@ -18,9 +18,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 from ..neural_networks import OpflowQNN, NeuralNetwork
-from ..exceptions import QiskitMachineLearningError
 
-from qiskit.utils import algorithm_globals
 
 class EffectiveDimension:
 
@@ -38,7 +36,7 @@ class EffectiveDimension:
         num_params: int = 1,
         num_inputs: int = 1,
         seed: int = 0,
-        callback: Optional[Callable[[int, float, float], None]] = None
+        callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
 
         """
@@ -158,7 +156,7 @@ class EffectiveDimension:
             t_after_forward = time.time()
 
             if self._callback is not None:
-                msg = f'iteration {i}, time forward pass: {t_after_forward - t_before_forward}'
+                msg = f"iteration {i}, time forward pass: {t_after_forward - t_before_forward}"
                 self._callback(msg)
 
             back_pass = np.asarray(
@@ -167,11 +165,11 @@ class EffectiveDimension:
             t_after_backward = time.time()
 
             if self._callback is not None:
-                msg = f'iteration {i}, time backward pass: {t_after_backward - t_after_forward}'
+                msg = f"iteration {i}, time backward pass: {t_after_backward - t_after_forward}"
                 self._callback(msg)
 
-            grads[self._num_inputs * i: self._num_inputs * (i + 1)] = back_pass
-            outputs[self._num_inputs * i: self._num_inputs * (i + 1)] = fwd_pass
+            grads[self._num_inputs * i : self._num_inputs * (i + 1)] = back_pass
+            outputs[self._num_inputs * i : self._num_inputs * (i + 1)] = fwd_pass
 
         # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
         if isinstance(self._model, OpflowQNN):
@@ -245,7 +243,9 @@ class EffectiveDimension:
         return normalized_fisher, fisher_trace
 
     def _get_effective_dimension(
-        self, normalized_fisher: Union[List[float], np.ndarray], n: Union[List[int], np.ndarray, int]
+        self,
+        normalized_fisher: Union[List[float], np.ndarray],
+        n: Union[List[int], np.ndarray, int],
     ) -> Union[np.ndarray, int]:
 
         if not isinstance(n, int) and len(n) > 1:
@@ -273,7 +273,9 @@ class EffectiveDimension:
 
         return np.squeeze(effective_dims)
 
-    def get_effective_dimension(self, n: Union[List[int], np.ndarray, int]) -> Union[np.ndarray, int]:
+    def get_effective_dimension(
+        self, n: Union[List[int], np.ndarray, int]
+    ) -> Union[np.ndarray, int]:
         """
         This method compute the effective dimension for a data sample size ``n``.
 
@@ -340,12 +342,11 @@ class LocalEffectiveDimension(EffectiveDimension):
             params = np.asarray(params)
             if len(params.shape) > 1 and params.shape[0] > 1:
                 raise ValueError(
-                    f'The local effective dimension algorithm uses only 1 set of parameters, '
-                    f'got {params.shape[0]}'
+                    f"The local effective dimension algorithm uses only 1 set of parameters, "
+                    f"got {params.shape[0]}"
                 )
-            else:
-                self._params = params
-                self._num_params = len(self._params)
+            self._params = params
+            self._num_params = len(self._params)
         else:
             # random sampling from uniform distribution
             np.random.seed(self._seed)
