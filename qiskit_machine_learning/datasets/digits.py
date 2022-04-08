@@ -34,7 +34,7 @@ def digits(training_size, test_size, n, plot_data=False, one_hot=True):
     data = datasets.load_digits()
     # pylint: disable=no-member
     sample_train, sample_test, label_train, label_test = train_test_split(
-        data.data, data.target, test_size=0.3, random_state=22
+        data.data, data.target, test_size=test_size, random_state=22
     )
 
     # Now we standardize for gaussian around 0 with unit variance
