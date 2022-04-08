@@ -44,14 +44,13 @@ class EffectiveDimension:
         """
         Args:
             qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,
-                with a specific number of weights/parameters (d = qnn_num_weights) that
-                will determine the shape of the Fisher Information Matrix
-                (num_inputs * num_params, d, d) used to compute the global
-                effective dimension for a set of ``inputs``, of shape
-                (num_inputs, qnn_input_size), and ``params``, of shape
-                (num_params, d).
+                with a specific dimension (num_weights) that will determine the shape of the
+                Fisher Information Matrix (num_inputs * num_params, num_weights, num_weights)
+                used to compute the global effective dimension for a set of ``inputs``,
+                of shape (num_inputs, qnn_input_size),
+                and ``params``, of shape (num_params, num_weights).
             params: An array of neural network parameters (weights), of shape
-                (num_params, qnn_num_weights).
+                (num_params, num_weights).
             inputs: An array of inputs to the neural network, of shape
                 (num_inputs, qnn_input_size).
             num_params: If ``params`` is not provided, the algorithm will
@@ -80,10 +79,7 @@ class EffectiveDimension:
 
         np.random.seed(0)
 
-    # keep d = num_weights for the sake of consistency with the
-    # nomenclature in the original code/paper
-
-    def d(self) -> int:  # pylint: disable=invalid-name
+    def num_weights(self) -> int:
         """Returns the dimension of the model according to the definition
         from the original paper."""
         return self._model.num_weights
@@ -165,9 +161,9 @@ class EffectiveDimension:
 
         Returns:
              grads: QNN gradient vector, result of backward passes, of shape
-                (num_inputs * num_params, output-size, d)
+                (num_inputs * num_params, output_size, num_weights)
              outputs: QNN output vector, result of forward passes, of shape
-                (num_inputs * num_params, output-size)
+                (num_inputs * num_params, output_size)
         """
         grads = np.zeros(
             (
@@ -210,16 +206,16 @@ class EffectiveDimension:
 
         """
         This method computes the average Jacobian for every set of gradients and
-        model output given as:
-
-            1/K(sum_k(sum_i gradients_i/sum_i model_output_i)) for i in len(gradients) for label k
+        model output as shown in Abbas et al.
 
         Args:
-            gradients: A numpy array, result of the neural network's backward pass
-            model_outputs: A numpy array, result of the neural networks' forward pass
+            gradients: A numpy array, result of the neural network's backward pass, of
+                shape (num_inputs * num_params, output_size, num_weights)
+            model_outputs: A numpy array, result of the neural networks' forward pass,
+                of shape (num_inputs * num_params, output_size)
         Returns:
-            normalized_fisher: A numpy array with the average Jacobian (of shape d x d) for every
-            set of gradients and model output given
+            normalized_fisher: A numpy array of shape (num_inputs * num_params, num_weights, num_weights)
+                with the average Jacobian  for every set of gradients and model output given.
         """
 
         if model_outputs.shape < gradients.shape:
@@ -244,7 +240,7 @@ class EffectiveDimension:
             normalized_fisher: The Fisher Information Matrix to be normalized.
         Returns:
              normalized_fisher: The normalized Fisher Information Matrix, a numpy array
-                    of size (num_inputs, d, d)
+                    of size (num_inputs, num_weights, num_weights)
              fisher_trace: The trace of the Fisher Information Matrix
                             (before normalizing).
         """
