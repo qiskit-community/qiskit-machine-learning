@@ -24,7 +24,7 @@ from ..exceptions import QiskitMachineLearningError
 class EffectiveDimension:
 
     """
-    This class computes the global effective dimension for Qiskit NeuralNetworks following the algorithm
+    This class computes the global effective dimension for Qiskit Neural Networks following the algorithm
     presented in "The Power of Quantum Neural Networks": https://arxiv.org/abs/2011.00027.
     """
 
