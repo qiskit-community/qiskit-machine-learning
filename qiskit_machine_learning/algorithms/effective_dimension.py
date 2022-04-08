@@ -20,6 +20,7 @@ from scipy.special import logsumexp
 from ..neural_networks import OpflowQNN, NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
 
+from qiskit.utils import algorithm_globals
 
 class EffectiveDimension:
 
@@ -36,8 +37,8 @@ class EffectiveDimension:
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_params: int = 1,
         num_inputs: int = 1,
-        fix_seed=False,
-        callback: Optional[Callable[[int, float, float], None]] = None,
+        seed: int = 0,
+        callback: Optional[Callable[[int, float, float], None]] = None
     ) -> None:
 
         """
@@ -65,26 +66,44 @@ class EffectiveDimension:
         # Store arguments
         self._params = None
         self._inputs = None
+        self._seed = seed
         self._num_params = num_params
         self._num_inputs = num_inputs
         self._model = qnn
         self._callback = callback
 
-        if fix_seed:
-            self._seed = 0
-        else:
-            self._seed = None
+
         # Define inputs and parameters
         self.params = params  # type: ignore
         # input setter uses self._model
         self.inputs = inputs  # type: ignore
 
+        np.random.seed(0)
+
     # keep d = num_weights for the sake of consistency with the
     # nomenclature in the original code/paper
+
     def d(self) -> int:  # pylint: disable=invalid-name
         """Returns the dimension of the model according to the definition
         from the original paper."""
         return self._model.num_weights
+
+    @property
+    def seed(self) -> int:
+        """
+        Get seed.
+        """
+        return self._seed
+
+    @seed.setter
+    def seed(self, seed: int) -> None:
+        """
+        Set seed.
+
+        Args:
+            seed (int): seed to use.
+        """
+        self._seed = seed
 
     @property
     def num_params(self) -> int:
@@ -108,9 +127,8 @@ class EffectiveDimension:
             self._params = np.asarray(params)
             self.num_params = len(self._params)
         else:
-            if self._seed is not None:
-                np.random.seed(self._seed)
             # random sampling from uniform distribution
+            np.random.seed(self._seed)
             params = np.random.uniform(0, 1, size=(self.num_params, self._model.num_weights))
             self._params = params
 
@@ -136,9 +154,8 @@ class EffectiveDimension:
             self._inputs = np.asarray(inputs)
             self.num_inputs = len(self._inputs)
         else:
-            if self._seed is not None:
-                np.random.seed(self._seed)
             # random sampling from normal distribution
+            np.random.seed(self._seed)
             self._inputs = np.random.normal(0, 1, size=(self.num_inputs, self._model.num_inputs))
 
     def run_montecarlo(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -184,7 +201,7 @@ class EffectiveDimension:
 
         return grads, outputs
 
-    def get_fishers(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
+    def get_normalized_fisher(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
 
         """
         This method computes the average Jacobian for every set of gradients and
@@ -196,7 +213,7 @@ class EffectiveDimension:
             gradients: A numpy array, result of the neural network's backward pass
             model_outputs: A numpy array, result of the neural networks' forward pass
         Returns:
-            fishers: A numpy array with the average Jacobian (of shape d x d) for every
+            normalized_fisher: A numpy array with the average Jacobian (of shape d x d) for every
             set of gradients and model output given
         """
 
@@ -210,30 +227,30 @@ class EffectiveDimension:
         gradvectors = np.sqrt(model_outputs) * gradients / model_outputs
 
         # compute sum of matrices obtained from outer product of grad-vectors
-        fishers = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
+        normalized_fisher = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
 
-        return fishers
+        return normalized_fisher
 
-    def get_fhat(self, fishers: np.ndarray) -> Tuple[np.ndarray, float]:
+    def get_normalized_fisher(self, normalized_fisher: np.ndarray) -> Tuple[np.ndarray, float]:
         """
         This method computes the normalized Fisher Information Matrix (f_hat)
         and extracts its trace.
         Args:
-            fishers: The Fisher Information Matrix to be normalized.
+            normalized_fisher: The Fisher Information Matrix to be normalized.
         Returns:
-             f_hat: The normalized Fisher Information Matrix, a numpy array
+             normalized_fisher: The normalized Fisher Information Matrix, a numpy array
                     of size (num_inputs, d, d)
              fisher_trace: The trace of the Fisher Information Matrix
                             (before normalizing).
         """
 
-        # compute the trace with all fishers
-        fisher_trace = np.trace(np.average(fishers, axis=0))
+        # compute the trace with all normalized_fisher
+        fisher_trace = np.trace(np.average(normalized_fisher, axis=0))
 
-        # average the fishers over the num_inputs to get the empirical fishers
+        # average the normalized_fisher over the num_inputs to get the empirical normalized_fisher
         fisher_avg = np.average(
             np.reshape(
-                fishers,
+                normalized_fisher,
                 (
                     self.num_params,
                     self.num_inputs,
@@ -244,17 +261,17 @@ class EffectiveDimension:
             axis=1,
         )
 
-        # calculate f_hats for all the empirical fishers
-        f_hat = self._model.num_weights * fisher_avg / fisher_trace
-        return f_hat, fisher_trace
+        # calculate normalized_normalized_fisher for all the empirical normalized_fisher
+        normalized_fisher = self._model.num_weights * fisher_avg / fisher_trace
+        return normalized_fisher, fisher_trace
 
-    def _get_eff_dim(
-        self, f_hat: Union[List[float], np.ndarray], n: Union[List[int], np.ndarray, int]
+    def _get_effective_dimension(
+        self, normalized_fisher: Union[List[float], np.ndarray], n: Union[List[int], np.ndarray, int]
     ) -> Union[np.ndarray, int]:
 
         if not isinstance(n, int) and len(n) > 1:
             # expand dims for broadcasting
-            f_hat = np.expand_dims(f_hat, axis=0)
+            normalized_fisher = np.expand_dims(normalized_fisher, axis=0)
             n_expanded = np.expand_dims(np.asarray(n), axis=(1, 2, 3))
             logsum_axis = 1
         else:
@@ -262,8 +279,8 @@ class EffectiveDimension:
             logsum_axis = None
 
         # calculate effective dimension for each data sample size "n" out
-        # of normalized fishers
-        f_mod = f_hat * n_expanded / (2 * np.pi * np.log(n_expanded))
+        # of normalized normalized_fisher
+        f_mod = normalized_fisher * n_expanded / (2 * np.pi * np.log(n_expanded))
         one_plus_fmod = np.eye(self._model.num_weights) + f_mod
         # take log. of the determinant because of overflow
         dets = np.linalg.slogdet(one_plus_fmod)[1]
@@ -277,7 +294,7 @@ class EffectiveDimension:
 
         return np.squeeze(effective_dims)
 
-    def get_eff_dim(self, n: Union[List[int], np.ndarray, int]) -> Union[np.ndarray, int]:
+    def get_effective_dimension(self, n: Union[List[int], np.ndarray, int]) -> Union[np.ndarray, int]:
         """
         This method compute the effective dimension for a data sample size ``n``.
 
@@ -291,15 +308,15 @@ class EffectiveDimension:
         grads, output = self.run_montecarlo()
 
         # step 2: compute as many fisher info. matrices as (input, params) sets
-        fishers = self.get_fishers(gradients=grads, model_outputs=output)
+        normalized_fisher = self.get_fisher(gradients=grads, model_outputs=output)
 
         # step 3: get normalized fisher info matrices
-        f_hat, _ = self.get_fhat(fishers)
+        normalized_fisher, _ = self.get_normalized_fisher(normalized_fisher)
 
         # step 4: compute eff. dim
-        effective_dims = self._get_eff_dim(f_hat, n)
+        effective_dimensions = self._get_effective_dimension(normalized_fisher, n)
 
-        return effective_dims
+        return effective_dimensions
 
 
 class LocalEffectiveDimension(EffectiveDimension):
@@ -313,7 +330,6 @@ class LocalEffectiveDimension(EffectiveDimension):
         params: Optional[Union[List[float], np.ndarray, float]] = None,
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_inputs: int = 1,
-        fix_seed=False,
         callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
         """
@@ -328,13 +344,13 @@ class LocalEffectiveDimension(EffectiveDimension):
                 (num_inputs, qnn_input_size).
 
         Raises:
-            QiskitMachineLearningError: If ``len(params) > 1``
+            QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
         params = np.asarray(params)
         if params is not None and len(params.shape) > 1 and params.shape[0] > 1:
-            raise QiskitMachineLearningError(
-                "The local effective dimension algorithm uses only 1 set of parameters."
+            raise ValueError(
+                f'The local effective dimension algorithm uses only 1 set of parameters, '
+                f'got {params.shape[0]}'
             )
 
-        super().__init__(qnn, params, inputs, 1, num_inputs, fix_seed, callback)
-        
+        super().__init__(qnn, params, inputs, 1, num_inputs, callback)
