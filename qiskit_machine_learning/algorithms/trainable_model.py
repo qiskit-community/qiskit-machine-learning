@@ -91,7 +91,9 @@ class TrainableModel(SerializableModelMixin):
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
-        self._optimizer = optimizer or SLSQP()
+        # call the setter that has some additional checks
+        self.optimizer = optimizer
+
         self._warm_start = warm_start
         self._fit_result = None
         self._initial_point = initial_point
@@ -115,7 +117,9 @@ class TrainableModel(SerializableModelMixin):
     @optimizer.setter
     def optimizer(self, optimizer: Optional[Optimizer] = None):
         """Sets the optimizer to use in training process."""
-        self._optimizer = optimizer or SLSQP()
+        if optimizer is None:
+            optimizer = SLSQP()
+        self._optimizer = optimizer
 
     @property
     def warm_start(self) -> bool:
