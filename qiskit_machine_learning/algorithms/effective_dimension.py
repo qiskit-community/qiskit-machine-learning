@@ -39,7 +39,7 @@ class EffectiveDimension:
         num_params: int = 1,
         num_inputs: int = 1,
         seed: int = 0,
-        callback: Optional[Callable[[int, float, float], None]] = None,
+        callback: Optional[Callable[[str], None]] = None,
     ) -> None:
 
         """
@@ -319,7 +319,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         params: Optional[Union[List[float], np.ndarray, float]] = None,
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_inputs: int = 1,
-        callback: Optional[Callable[[int, float, float], None]] = None,
+        callback: Optional[Callable[[str], None]] = None,
     ) -> None:
         """
         Args:
