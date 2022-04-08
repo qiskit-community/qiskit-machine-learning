@@ -51,6 +51,7 @@ endian
 entangler
 et
 eval
+expressibility
 formatter
 func
 gambetta
@@ -73,9 +74,9 @@ isometry
 iten
 iterable
 iteratively
+jacobian
 jm
 jupyter
-jacobian
 kandala
 kernelized
 kwarg
