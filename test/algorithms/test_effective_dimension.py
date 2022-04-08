@@ -13,6 +13,7 @@
 """ Unit Tests for Effective Dimension Algorithm """
 
 import unittest
+from qiskit.utils import optionals
 
 from test import QiskitMachineLearningTestCase
 
@@ -23,7 +24,6 @@ from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
 from qiskit.utils import QuantumInstance, algorithm_globals
 
 from qiskit.opflow import PauliSumOp
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
 from qiskit_machine_learning.algorithms.effective_dimension import (
     EffectiveDimension,
@@ -92,44 +92,33 @@ class TestEffDim(QiskitMachineLearningTestCase):
         self.n_list = [5000, 8000, 10000, 40000, 60000, 100000, 150000, 200000, 500000, 1000000]
         self.n = 5000
 
-        # define results
-        self.result1 = 4.68447003  # 3,10,10
-        self.result2 = 1.39529449  # 3,1,1
-        self.result3 = 4.62026643 # 3,10,1
-        self.result4 = 5.88157388  # circuitqnn2 with 3,10,10
-
     @data(
         # num_inputs, num_params
-        ("circuit1", 10, 10),
-        ("circuit1", 1, 1),
-        ("circuit1", 10, 1),
-        ("circuit2", 10, 10),
+        ("circuit1", 10, 10, 4.62355184),
+        ("circuit1", 1, 1, 1.39529449),
+        ("circuit1", 10, 1, 4.92825034),
+        ("circuit2", 10, 10,  5.93064171),
     )
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_alg_results(self, config):
         """Test that the algorithm results match the original code's."""
 
-        qnn_name, num_inputs, num_params = config
+        qnn_name, num_inputs, num_params, result = config
 
         if qnn_name == "circuit2":
             qnn = self.circuit_qnn_2
-            result = self.result4
         else:
             qnn = self.circuit_qnn_1
-            if num_inputs == 1:
-                result = self.result2
-            elif num_params == 10:
-                result = self.result1
-            else:
-                result = self.result3
 
         global_ed = EffectiveDimension(
-            qnn=qnn, num_params=num_params, num_inputs=num_inputs,
+            qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed=0
         )
 
-        effdim = global_ed.get_eff_dim(self.n)
+        effdim = global_ed.get_effective_dimension(self.n)
 
         self.assertAlmostEqual(effdim, result, 5)
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_qnn_type(self):
         """Test that the results are equivalent for opflow and circuit qnn."""
 
@@ -145,11 +134,12 @@ class TestEffDim(QiskitMachineLearningTestCase):
             qnn=qnn2, num_params=num_params, num_inputs=num_inputs,
         )
 
-        effdim1 = global_ed1.get_eff_dim(self.n)
-        effdim2 = global_ed2.get_eff_dim(self.n)
+        effdim1 = global_ed1.get_effective_dimension(self.n)
+        effdim2 = global_ed2.get_effective_dimension(self.n)
 
         self.assertAlmostEqual(effdim1, effdim2, 5)
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_custom_data(self):
         """Test that the results are equivalent for equal custom and generated data."""
 
@@ -166,14 +156,15 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         global_ed2 = EffectiveDimension(qnn=qnn, params=params, inputs=inputs, seed = 0)
 
-        effdim1 = global_ed1.get_eff_dim(self.n)
-        effdim2 = global_ed2.get_eff_dim(self.n)
+        effdim1 = global_ed1.get_effective_dimension(self.n)
+        effdim2 = global_ed2.get_effective_dimension(self.n)
 
         np.testing.assert_array_equal(global_ed1._inputs, global_ed2._inputs)
         np.testing.assert_array_equal(global_ed1._params, global_ed2._params)
 
         self.assertAlmostEqual(effdim1, effdim2, 5)
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_multiple_samples(self):
         """Test results for a list of sampling sizes."""
 
@@ -184,16 +175,17 @@ class TestEffDim(QiskitMachineLearningTestCase):
             qnn=qnn, num_params=num_params, num_inputs=num_inputs,
         )
 
-        effdim1 = global_ed1.get_eff_dim(self.n_list)
-        effdim2 = global_ed1.get_eff_dim(np.asarray(self.n_list))
+        effdim1 = global_ed1.get_effective_dimension(self.n_list)
+        effdim2 = global_ed1.get_effective_dimension(np.asarray(self.n_list))
 
         np.testing.assert_array_equal(effdim1,  effdim2)
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_local_ed_error(self):
         """Test that QiskitMachineLearningError is raised for wrong use
         of LocalEffectiveDimension class."""
 
-        with self.assertRaises(QiskitMachineLearningError):
+        with self.assertRaises(ValueError):
 
             qnn = self.circuit_qnn_1
             inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
@@ -202,7 +194,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
             local_ed1 = LocalEffectiveDimension(
                 qnn=qnn, inputs=inputs, params=params,
             )
-            local_ed1.get_eff_dim(self.n)
+            local_ed1.get_effective_dimension(self.n)
 
 
 if __name__ == "__main__":
