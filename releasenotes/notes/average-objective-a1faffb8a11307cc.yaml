@@ -4,6 +4,5 @@ features:
     Objective functions constructed by the neural network classifiers and regressors now include an
     averaging factor that is evaluated as ``1 / number_of_samples``. Computed averaged objective
     values are passed to a user specified callback if any. Users may notice a dramatical
-    decrease in the objective values in their callbacks. This is due to the averaging factor applied
-    to objective functions.
+    decrease in the objective values in their callbacks. This is due to this averaging factor.
 
