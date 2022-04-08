@@ -180,7 +180,7 @@ class EffectiveDimension:
 
         return grads, outputs
 
-    def get_normalized_fisher(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
+    def get_fisher(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
 
         """
         This method computes the average Jacobian for every set of gradients and
@@ -206,9 +206,9 @@ class EffectiveDimension:
         gradvectors = np.sqrt(model_outputs) * gradients / model_outputs
 
         # compute sum of matrices obtained from outer product of grad-vectors
-        normalized_fisher = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
+        fisher = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
 
-        return normalized_fisher
+        return fisher
 
     def get_normalized_fisher(self, normalized_fisher: np.ndarray) -> Tuple[np.ndarray, float]:
         """
@@ -339,13 +339,13 @@ class LocalEffectiveDimension(EffectiveDimension):
         if params is not None:
             params = np.asarray(params)
             if len(params.shape) > 1 and params.shape[0] > 1:
-                self._params = params
-                self._num_params = len(self._params)
-            else:
                 raise ValueError(
                     f'The local effective dimension algorithm uses only 1 set of parameters, '
                     f'got {params.shape[0]}'
                 )
+            else:
+                self._params = params
+                self._num_params = len(self._params)
         else:
             # random sampling from uniform distribution
             np.random.seed(self._seed)
