@@ -38,7 +38,6 @@ class TestEffDim(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
 
-        # fix seeds
         algorithm_globals.random_seed = 1234
         qi_sv = QuantumInstance(
             Aer.get_backend("aer_simulator_statevector"),
