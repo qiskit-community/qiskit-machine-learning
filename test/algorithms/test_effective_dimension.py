@@ -33,7 +33,7 @@ from qiskit_machine_learning.algorithms.effective_dimension import (
 
 @ddt
 class TestEffDim(QiskitMachineLearningTestCase):
-    """Test the Effective Dimension algorithm"""
+    """Test the Effective Dimension algorithm."""
 
     def setUp(self):
         super().setUp()
