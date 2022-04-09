@@ -79,7 +79,7 @@ class EffectiveDimension:
 
     def num_weights(self) -> int:
         """Returns the dimension of the model according to the definition
-        from the original paper."""
+        from [1]."""
         return self._model.num_weights
 
     @property
