@@ -99,11 +99,10 @@ class TestEffDim(QiskitMachineLearningTestCase):
         ("circuit1", 10, 1, 4.92825034),
         ("circuit2", 10, 10, 5.93064171),
     )
+    @unpack
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    def test_alg_results(self, config):
+    def test_alg_results(self, qnn_name, num_inputs, num_params, result):
         """Test that the algorithm results match the original code's."""
-
-        qnn_name, num_inputs, num_params, result = config
 
         if qnn_name == "circuit2":
             qnn = self.circuit_qnn_2
