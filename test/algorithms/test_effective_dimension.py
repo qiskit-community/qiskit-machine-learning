@@ -95,10 +95,10 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
     @data(
         # num_inputs, num_params
-        ("circuit1", 10, 10, 4.58756645),
+        ("circuit1", 10, 10, 4.51202148),
         ("circuit1", 1, 1, 1.39529449),
-        ("circuit1", 10, 1, 4.85503422),
-        ("circuit2", 10, 10, 5.86389594),
+        ("circuit1", 10, 1, 3.97371533),
+        ("circuit2", 10, 10, 5.90859124),
     )
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_alg_results(self, config):
@@ -107,9 +107,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         qnn_name, num_inputs, num_params, result = config
 
         qnn = self.qnns[qnn_name]
-        global_ed = EffectiveDimension(
-            qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed=0
-        )
+        global_ed = EffectiveDimension(qnn=qnn, num_params=num_params, num_inputs=num_inputs)
 
         effdim = global_ed.get_effective_dimension(self.n)
 
@@ -137,31 +135,6 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         effdim1 = global_ed1.get_effective_dimension(self.n)
         effdim2 = global_ed2.get_effective_dimension(self.n)
-
-        self.assertAlmostEqual(effdim1, effdim2, 5)
-
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    def test_custom_data(self):
-        """Test that the results are equivalent for equal custom and generated data."""
-
-        num_inputs, num_params = 10, 10
-        qnn = self.qnns["circuit1"]
-        algorithm_globals.random_seed = 0
-        inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
-        algorithm_globals.random_seed = 0  # if seed not set again, test fails
-        params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
-
-        global_ed1 = EffectiveDimension(
-            qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed=0
-        )
-
-        global_ed2 = EffectiveDimension(qnn=qnn, params=params, inputs=inputs, seed=0)
-
-        effdim1 = global_ed1.get_effective_dimension(self.n)
-        effdim2 = global_ed2.get_effective_dimension(self.n)
-
-        np.testing.assert_array_equal(global_ed1._inputs, global_ed2._inputs)
-        np.testing.assert_array_equal(global_ed1._params, global_ed2._params)
 
         self.assertAlmostEqual(effdim1, effdim2, 5)
 

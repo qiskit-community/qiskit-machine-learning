@@ -347,8 +347,7 @@ class LocalEffectiveDimension(EffectiveDimension):
                         f"The local effective dimension algorithm uses only 1 set of parameters, "
                         f"got {params.shape[0]}"
                     )
-                else:
-                    params = np.expand_dims(params, 0)
+                params = np.expand_dims(params, 0)
             self._params = params
             self._num_params = len(self._params)
 
