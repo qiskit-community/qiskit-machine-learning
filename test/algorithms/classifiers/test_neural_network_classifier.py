@@ -11,15 +11,17 @@
 # that they have been altered from the originals.
 """ Test Neural Network Classifier """
 import itertools
-
 import os
 import tempfile
 import unittest
+
 from test import QiskitMachineLearningTestCase
 
 from typing import Tuple, Optional, Callable
 
 import numpy as np
+import scipy
+
 from ddt import ddt, data, idata, unpack
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
@@ -30,7 +32,6 @@ from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, NeuralNetwork
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
-
 
 OPTIMIZERS = ["cobyla", "bfgs", None]
 L1L2_ERRORS = ["absolute_error", "squared_error"]
