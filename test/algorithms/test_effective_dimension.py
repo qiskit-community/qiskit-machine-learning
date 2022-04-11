@@ -58,7 +58,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         def parity(x):
             return f"{x:b}".count("1") % 2
 
-        self.circuit_qnn_1 = CircuitQNN(
+        circuit_qnn_1 = CircuitQNN(
             qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
@@ -69,7 +69,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         )
 
         # qnn2 for checking result without parity
-        self.circuit_qnn_2 = CircuitQNN(
+        circuit_qnn_2 = CircuitQNN(
             qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
@@ -79,13 +79,19 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         # OpflowQNN
         observable = PauliSumOp.from_list([("Z" * num_qubits, 1)])
-        self.opflow_qnn = TwoLayerQNN(
+        opflow_qnn = TwoLayerQNN(
             num_qubits,
             feature_map=feature_map,
             ansatz=ansatz,
             observable=observable,
             quantum_instance=qi_sv,
         )
+
+        self.qnns = {
+            "circuit1": circuit_qnn_1,
+            "circuit2": circuit_qnn_2,
+            "opflow": opflow_qnn
+        }
 
         # define sample numbers
         self.n_list = [5000, 8000, 10000, 40000, 60000, 100000, 150000, 200000, 500000, 1000000]
@@ -98,16 +104,13 @@ class TestEffDim(QiskitMachineLearningTestCase):
         ("circuit1", 10, 1, 4.92825034),
         ("circuit2", 10, 10, 5.93064171),
     )
-    @unpack
+
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    def test_alg_results(self, qnn_name, num_inputs, num_params, result):
+    def test_alg_results(self, config):
         """Test that the algorithm results match the original code's."""
 
-        if qnn_name == "circuit2":
-            qnn = self.circuit_qnn_2
-        else:
-            qnn = self.circuit_qnn_1
-
+        qnn_name, num_inputs, num_params, result = config
+        qnn = self.qnns[qnn_name]
         global_ed = EffectiveDimension(
             qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed=0
         )
@@ -121,8 +124,8 @@ class TestEffDim(QiskitMachineLearningTestCase):
         """Test that the results are equivalent for opflow and circuit qnn."""
 
         num_inputs, num_params = 1, 1
-        qnn1 = self.circuit_qnn_1
-        qnn2 = self.opflow_qnn
+        qnn1 = self.qnns['circuit1']
+        qnn2 = self.qnns['opflow']
 
         global_ed1 = EffectiveDimension(
             qnn=qnn1,
@@ -146,7 +149,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         """Test that the results are equivalent for equal custom and generated data."""
 
         num_inputs, num_params = 10, 10
-        qnn = self.circuit_qnn_1
+        qnn = self.qnns['circuit1']
         np.random.seed(0)
         inputs = np.random.normal(0, 1, size=(10, qnn.num_inputs))
         np.random.seed(0)  # if seed not set again, test fails
@@ -191,7 +194,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         with self.assertRaises(ValueError):
 
-            qnn = self.circuit_qnn_1
+            qnn = self.qnns['circuit1']
             inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
             params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
 
