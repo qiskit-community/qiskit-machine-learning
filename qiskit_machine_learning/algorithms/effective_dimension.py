@@ -214,7 +214,7 @@ class EffectiveDimension:
         # after Einstein summation
         gradvectors = np.sqrt(model_outputs) * gradients / model_outputs
 
-        # compute sum of matrices obtained from outer product of grad-vectors
+        # compute the sum of matrices obtained from outer product of grad-vectors
         fisher = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
 
         return fisher
