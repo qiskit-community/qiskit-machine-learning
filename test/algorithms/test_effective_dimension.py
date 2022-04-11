@@ -110,6 +110,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         """Test that the algorithm results match the original code's."""
 
         qnn_name, num_inputs, num_params, result = config
+
         qnn = self.qnns[qnn_name]
         global_ed = EffectiveDimension(
             qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed=0
