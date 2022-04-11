@@ -25,11 +25,10 @@ from qiskit.utils import optionals
 
 from qiskit.opflow import PauliSumOp
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
-from qiskit_machine_learning.algorithms.effective_dimension import (
+from qiskit_machine_learning.algorithms import (
     EffectiveDimension,
     LocalEffectiveDimension,
 )
-
 
 @ddt
 class TestEffDim(QiskitMachineLearningTestCase):
@@ -87,11 +86,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
             quantum_instance=qi_sv,
         )
 
-        self.qnns = {
-            "circuit1": circuit_qnn_1,
-            "circuit2": circuit_qnn_2,
-            "opflow": opflow_qnn
-        }
+        self.qnns = {"circuit1": circuit_qnn_1, "circuit2": circuit_qnn_2, "opflow": opflow_qnn}
 
         # define sample numbers
         self.n_list = [5000, 8000, 10000, 40000, 60000, 100000, 150000, 200000, 500000, 1000000]
@@ -104,7 +99,6 @@ class TestEffDim(QiskitMachineLearningTestCase):
         ("circuit1", 10, 1, 4.85503422),
         ("circuit2", 10, 10, 5.86389594),
     )
-
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_alg_results(self, config):
         """Test that the algorithm results match the original code's."""
@@ -125,8 +119,8 @@ class TestEffDim(QiskitMachineLearningTestCase):
         """Test that the results are equivalent for opflow and circuit qnn."""
 
         num_inputs, num_params = 1, 1
-        qnn1 = self.qnns['circuit1']
-        qnn2 = self.qnns['opflow']
+        qnn1 = self.qnns["circuit1"]
+        qnn2 = self.qnns["opflow"]
 
         global_ed1 = EffectiveDimension(
             qnn=qnn1,
@@ -150,10 +144,10 @@ class TestEffDim(QiskitMachineLearningTestCase):
         """Test that the results are equivalent for equal custom and generated data."""
 
         num_inputs, num_params = 10, 10
-        qnn = self.qnns['circuit1']
+        qnn = self.qnns["circuit1"]
         algorithm_globals.random_seed = 0
         inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
-        algorithm_globals.random_seed = 0 #if seed not set again, test fails
+        algorithm_globals.random_seed = 0  # if seed not set again, test fails
         params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
 
         global_ed1 = EffectiveDimension(
@@ -175,7 +169,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         """Test results for a list of sampling sizes."""
 
         num_inputs, num_params = 10, 10
-        qnn = self.qnns['circuit1']
+        qnn = self.qnns["circuit1"]
 
         global_ed1 = EffectiveDimension(
             qnn=qnn,
@@ -195,7 +189,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         with self.assertRaises(ValueError):
 
-            qnn = self.qnns['circuit1']
+            qnn = self.qnns["circuit1"]
             inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
             params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
 

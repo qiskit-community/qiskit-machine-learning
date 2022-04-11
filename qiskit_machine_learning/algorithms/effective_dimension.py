@@ -17,6 +17,8 @@ from typing import Optional, Union, List, Callable, Tuple
 import numpy as np
 from scipy.special import logsumexp
 
+from qiskit.utils import algorithm_globals
+
 from ..neural_networks import OpflowQNN, NeuralNetwork
 
 
@@ -61,6 +63,8 @@ class EffectiveDimension:
                 randomly sample ``num_inputs`` input sets
                 from a normal distribution. By default, ``num_inputs = 1``.
             callback: A callback function for the Monte Carlo sampling.
+            seed: seed for random generation of ``inputs``/``params``.
+                By default, seed = 0.
         """
 
         # Store arguments
@@ -98,6 +102,7 @@ class EffectiveDimension:
             seed (int): seed to use.
         """
         self._seed = seed
+        algorithm_globals.random_seed = self._seed
 
     @property
     def params(self) -> np.ndarray:
@@ -112,8 +117,10 @@ class EffectiveDimension:
             self._num_params = len(self._params)
         else:
             # random sampling from uniform distribution
-            np.random.seed(self._seed)
-            self._params = np.random.uniform(0, 1, size=(self._num_params, self._model.num_weights))
+            algorithm_globals.random_seed = self._seed
+            self._params = algorithm_globals.random.uniform(
+                0, 1, size=(self._num_params, self._model.num_weights)
+            )
 
     @property
     def inputs(self) -> np.ndarray:
@@ -128,8 +135,10 @@ class EffectiveDimension:
             self._num_inputs = len(self._inputs)
         else:
             # random sampling from normal distribution
-            np.random.seed(self._seed)
-            self._inputs = np.random.normal(0, 1, size=(self._num_inputs, self._model.num_inputs))
+            algorithm_globals.random_seed = self._seed
+            self._inputs = algorithm_globals.random.normal(
+                0, 1, size=(self._num_inputs, self._model.num_inputs)
+            )
 
     def run_monte_carlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -247,16 +256,16 @@ class EffectiveDimension:
     def _get_effective_dimension(
         self,
         normalized_fisher: Union[List[float], np.ndarray],
-        n: Union[List[int], np.ndarray, int],
+        num_samples: Union[List[int], np.ndarray, int],
     ) -> Union[np.ndarray, int]:
 
-        if not isinstance(n, int) and len(n) > 1:
+        if not isinstance(num_samples, int) and len(num_samples) > 1:
             # expand dims for broadcasting
             normalized_fisher = np.expand_dims(normalized_fisher, axis=0)
-            n_expanded = np.expand_dims(np.asarray(n), axis=(1, 2, 3))
+            n_expanded = np.expand_dims(np.asarray(num_samples), axis=(1, 2, 3))
             logsum_axis = 1
         else:
-            n_expanded = n
+            n_expanded = num_samples
             logsum_axis = None
 
         # calculate effective dimension for each data sample size "n" out
@@ -270,19 +279,19 @@ class EffectiveDimension:
         effective_dims = (
             2
             * (logsumexp(dets_div, axis=logsum_axis) - np.log(self._num_params))
-            / np.log(n / (2 * np.pi * np.log(n)))
+            / np.log(num_samples / (2 * np.pi * np.log(num_samples)))
         )
 
         return np.squeeze(effective_dims)
 
     def get_effective_dimension(
-        self, n: Union[List[int], np.ndarray, int]
+        self, num_samples: Union[List[int], np.ndarray, int]
     ) -> Union[np.ndarray, int]:
         """
         This method compute the effective dimension for a data sample size ``n``.
 
         Args:
-            n: array of sample sizes
+            num_samples: array of sample sizes
         Returns:
              effective_dim: array of effective dimensions for each sample size in n.
         """
@@ -297,7 +306,7 @@ class EffectiveDimension:
         normalized_fisher, _ = self.get_normalized_fisher(fisher)
 
         # step 4: compute eff. dim
-        effective_dimensions = self._get_effective_dimension(normalized_fisher, n)
+        effective_dimensions = self._get_effective_dimension(normalized_fisher, num_samples)
 
         return effective_dimensions
 
@@ -339,6 +348,8 @@ class LocalEffectiveDimension(EffectiveDimension):
                 randomly sample ``num_inputs`` input sets
                 from a normal distribution. By default, ``num_inputs = 1``.
             callback: A callback function for the Monte Carlo sampling.
+            seed: seed for random generation of ``inputs``/``params``.
+                By default, seed = 0.
 
         Raises:
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
@@ -366,5 +377,5 @@ class LocalEffectiveDimension(EffectiveDimension):
             self._num_params = len(self._params)
         else:
             # random sampling from uniform distribution
-            np.random.seed(self._seed)
-            self._params = np.random.uniform(0, 1, size=(1, self._model.num_weights))
+            algorithm_globals.random_seed = self._seed
+            self._params = algorithm_globals.random.uniform(0, 1, size=(1, self._model.num_weights))
