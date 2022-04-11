@@ -241,7 +241,7 @@ class EffectiveDimension:
             n_expanded = np.expand_dims(np.asarray(num_samples), axis=(1, 2, 3))
             logsum_axis = 1
         else:
-            n_expanded = num_samples
+            n_expanded = np.asarray(num_samples)
             logsum_axis = None
 
         # calculate effective dimension for each data sample size "n" out
@@ -349,7 +349,7 @@ class LocalEffectiveDimension(EffectiveDimension):
                     )
                 params = np.expand_dims(params, 0)
             self._params = params
-            self._num_params = len(self._params)
+            self._num_params = self._params.shape[0]
 
         else:
             # random sampling from uniform distribution
