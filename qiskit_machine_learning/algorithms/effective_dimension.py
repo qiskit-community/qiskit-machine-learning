@@ -40,8 +40,7 @@ class EffectiveDimension:
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_params: int = 1,
         num_inputs: int = 1,
-        callback: Optional[Callable[[str], None]] = None,
-        seed: int = 0,
+        callback: Optional[Callable[[str], None]] = None
     ) -> None:
 
         """
@@ -63,14 +62,11 @@ class EffectiveDimension:
                 randomly sample ``num_inputs`` input sets
                 from a normal distribution. By default, ``num_inputs = 1``.
             callback: A callback function for the Monte Carlo sampling.
-            seed: seed for random generation of ``inputs``/``params``.
-                By default, seed = 0.
         """
 
         # Store arguments
         self._params = None
         self._inputs = None
-        self._seed = seed
         self._num_params = num_params
         self._num_inputs = num_inputs
         self._model = qnn
@@ -87,24 +83,6 @@ class EffectiveDimension:
         return self._model.num_weights
 
     @property
-    def seed(self) -> int:
-        """
-        Get seed.
-        """
-        return self._seed
-
-    @seed.setter
-    def seed(self, seed: int) -> None:
-        """
-        Set seed.
-
-        Args:
-            seed (int): seed to use.
-        """
-        self._seed = seed
-        algorithm_globals.random_seed = self._seed
-
-    @property
     def params(self) -> np.ndarray:
         """Returns network parameters."""
         return self._params
@@ -117,7 +95,6 @@ class EffectiveDimension:
             self._num_params = len(self._params)
         else:
             # random sampling from uniform distribution
-            algorithm_globals.random_seed = self._seed
             self._params = algorithm_globals.random.uniform(
                 0, 1, size=(self._num_params, self._model.num_weights)
             )
@@ -135,7 +112,6 @@ class EffectiveDimension:
             self._num_inputs = len(self._inputs)
         else:
             # random sampling from normal distribution
-            algorithm_globals.random_seed = self._seed
             self._inputs = algorithm_globals.random.normal(
                 0, 1, size=(self._num_inputs, self._model.num_inputs)
             )
@@ -328,8 +304,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         params: Optional[Union[List[float], np.ndarray, float]] = None,
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
         num_inputs: int = 1,
-        callback: Optional[Callable[[str], None]] = None,
-        seed: int = 0,
+        callback: Optional[Callable[[str], None]] = None
     ) -> None:
         """
         Args:
@@ -348,14 +323,12 @@ class LocalEffectiveDimension(EffectiveDimension):
                 randomly sample ``num_inputs`` input sets
                 from a normal distribution. By default, ``num_inputs = 1``.
             callback: A callback function for the Monte Carlo sampling.
-            seed: seed for random generation of ``inputs``/``params``.
-                By default, seed = 0.
 
         Raises:
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
 
-        super().__init__(qnn, params, inputs, 1, num_inputs, callback, seed)
+        super().__init__(qnn, params, inputs, 1, num_inputs, callback)
 
     # override setter to enforce 1 set of parameters
     @property
@@ -381,5 +354,4 @@ class LocalEffectiveDimension(EffectiveDimension):
 
         else:
             # random sampling from uniform distribution
-            algorithm_globals.random_seed = self._seed
             self._params = algorithm_globals.random.uniform(0, 1, size=(1, self._model.num_weights))
