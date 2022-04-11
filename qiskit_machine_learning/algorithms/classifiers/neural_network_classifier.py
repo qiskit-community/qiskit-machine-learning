@@ -11,7 +11,9 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network classifier."""
 
-from typing import Union, Optional, Callable, Tuple, cast
+from __future__ import annotations
+
+from typing import Callable, cast
 
 import numpy as np
 import scipy.sparse
@@ -41,12 +43,12 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def __init__(
         self,
         neural_network: NeuralNetwork,
-        loss: Union[str, Loss] = "squared_error",
+        loss: str | Loss = "squared_error",
         one_hot: bool = False,
-        optimizer: Optional[Optimizer] = None,
+        optimizer: Optimizer | None = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
-        callback: Optional[Callable[[np.ndarray, float], None]] = None,
+        callback: Callable[[np.ndarray, float], None] | None = None,
     ):
         """
         Args:
@@ -87,7 +89,20 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         # encodes the target data if categorical
         self._target_encoder = OneHotEncoder(sparse=False) if one_hot else LabelEncoder()
 
-    def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
+        # For ensuring the number of classes matches those of the previous
+        # batch when training from a warm start.
+        self._num_classes: int | None = None
+
+    @property
+    def num_classes(self) -> int | None:
+        """The number of classes found in the most recent fit.
+
+        If called before :meth:`fit`, this will return ``None``.
+        """
+        # For user checking and validation.
+        return self._num_classes
+
+    def fit(self, X: np.ndarray, y: np.ndarray) -> NeuralNetworkClassifier:
         if not self._warm_start:
             self._fit_result = None
         X, y = self._validate_input(X, y)
@@ -95,13 +110,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         # mypy definition
         function: ObjectiveFunction = None
         if self._neural_network.output_shape == (1,):
-            if len(y.shape) != 1 or len(np.unique(y)) != 2:
-                raise QiskitMachineLearningError(
-                    f"Current settings only applicable to binary classification! Got labels: {y}"
-                )
+            self._validate_binary_targets(y)
             function = BinaryObjectiveFunction(X, y, self._neural_network, self._loss)
         else:
             if self._one_hot:
+                self._validate_one_hot_targets(y)
                 function = OneHotObjectiveFunction(X, y, self._neural_network, self._loss)
             else:
                 function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
@@ -135,13 +148,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         return predict
 
     # pylint: disable=invalid-name
-    def score(
-        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
-    ) -> float:
+    def score(self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None) -> float:
         X, y = self._validate_input(X, y)
         return ClassifierMixin.score(self, X, y, sample_weight)
 
-    def _validate_input(self, X: np.ndarray, y: np.ndarray = None) -> Tuple[np.ndarray, np.ndarray]:
+    def _validate_input(self, X: np.ndarray, y: np.ndarray = None) -> tuple[np.ndarray, np.ndarray]:
         """
         Validates and transforms if required features and labels. If arrays are sparse, they are
         converted to dense as the numpy math in the loss/objective functions does not work with
@@ -175,3 +186,64 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 y = cast(spmatrix, y).toarray()  # cast is required by mypy
 
         return X, y
+
+    def _validate_binary_targets(self, y: np.ndarray) -> None:
+        """Validate binary encoded targets.
+
+        Raises:
+            QiskitMachineLearningError: If targets are invalid.
+        """
+        if len(y.shape) != 1:
+            raise QiskitMachineLearningError(
+                "The shape of the targets does not match the shape of neural network output."
+            )
+        if len(np.unique(y)) != 2:
+            raise QiskitMachineLearningError(
+                "The target values appear to be multi-classified. "
+                "The neural network output shape is only suitable for binary classification."
+            )
+
+    def _validate_one_hot_targets(self, targets: np.ndarray) -> None:
+        """Validate one-hot encoded targets.
+
+        Ensure one-hot encoded data is valid and not multi-label.
+
+        Raises:
+            QiskitMachineLearningError: If targets are invalid.
+        """
+        if not np.isin(targets, [0, 1]).all():
+            raise QiskitMachineLearningError(
+                "Invalid one-hot targets. The targets must contain only 0's and 1's."
+            )
+
+        if not np.isin(np.sum(targets, axis=-1), 1).all():
+            raise QiskitMachineLearningError(
+                "The target values appear to be multi-labelled. "
+                "Multi-label classification is not supported."
+            )
+
+    def _get_num_classes(self, y: np.ndarray) -> int:
+        """Infers the number of classes from the targets.
+
+        Args:
+            y: The target values.
+
+        Raises:
+            QiskitMachineLearningError: If the number of classes differs from
+            the previous batch when using a warm start.
+
+        Returns:
+            The number of inferred classes.
+        """
+        if self._one_hot:
+            num_classes = y.shape[-1]
+        else:
+            num_classes = len(np.unique(y))
+
+        if self._warm_start and self._num_classes is not None and self._num_classes != num_classes:
+            raise QiskitMachineLearningError(
+                f"The number of classes ({num_classes}) is different to the previous batch "
+                f"({self._num_classes})."
+            )
+        self._num_classes = num_classes
+        return num_classes
