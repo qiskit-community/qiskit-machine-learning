@@ -99,10 +99,10 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
     @data(
         # num_inputs, num_params
-        ("circuit1", 10, 10, 4.62355184),
+        ("circuit1", 10, 10, 4.58756645),
         ("circuit1", 1, 1, 1.39529449),
-        ("circuit1", 10, 1, 4.92825034),
-        ("circuit2", 10, 10, 5.93064171),
+        ("circuit1", 10, 1, 4.85503422),
+        ("circuit2", 10, 10, 5.86389594),
     )
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
@@ -151,10 +151,10 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         num_inputs, num_params = 10, 10
         qnn = self.qnns['circuit1']
-        np.random.seed(0)
-        inputs = np.random.normal(0, 1, size=(10, qnn.num_inputs))
-        np.random.seed(0)  # if seed not set again, test fails
-        params = np.random.uniform(0, 1, size=(10, qnn.num_weights))
+        algorithm_globals.random_seed = 0
+        inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
+        algorithm_globals.random_seed = 0 #if seed not set again, test fails
+        params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
 
         global_ed1 = EffectiveDimension(
             qnn=qnn, num_params=num_params, num_inputs=num_inputs, seed=0
@@ -175,7 +175,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         """Test results for a list of sampling sizes."""
 
         num_inputs, num_params = 10, 10
-        qnn = self.circuit_qnn_1
+        qnn = self.qnns['circuit1']
 
         global_ed1 = EffectiveDimension(
             qnn=qnn,
