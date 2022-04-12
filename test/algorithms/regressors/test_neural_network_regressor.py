@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -9,17 +9,23 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
 """ Test Neural Network Regressor """
+
+import os
+import tempfile
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import data, ddt
-
+from ddt import ddt, data
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.opflow import PauliSumOp
 from qiskit.utils import QuantumInstance, algorithm_globals
+
+from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 
@@ -128,3 +134,43 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             for weights in history["weights"]:
                 self.assertEqual(len(weights), regression_opflow_qnn.num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
+
+    def test_save_load(self):
+        """Tests save and load models."""
+        features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
+        labels = np.array([0, 0.1, 0.4, 1])
+        num_inputs = 2
+        qnn = TwoLayerQNN(
+            num_inputs,
+            feature_map=ZZFeatureMap(num_inputs),
+            ansatz=RealAmplitudes(num_inputs),
+            observable=PauliSumOp.from_list([("Z" * num_inputs, 1)]),
+            quantum_instance=self.qasm_quantum_instance,
+        )
+        regressor = NeuralNetworkRegressor(qnn, optimizer=COBYLA())
+        regressor.fit(features, labels)
+
+        # predicted labels from the newly trained model
+        test_features = np.array([[0.5, 0.5]])
+        original_predicts = regressor.predict(test_features)
+
+        # save/load, change the quantum instance and check if predicted values are the same
+        file_name = os.path.join(tempfile.gettempdir(), "regressor.model")
+        regressor.save(file_name)
+        try:
+            regressor_load = NeuralNetworkRegressor.load(file_name)
+            loaded_model_predicts = regressor_load.predict(test_features)
+
+            np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
+
+            # test loading warning
+            class FakeModel(SerializableModelMixin):
+                """Fake model class for test purposes."""
+
+                pass
+
+            with self.assertRaises(TypeError):
+                FakeModel.load(file_name)
+
+        finally:
+            os.remove(file_name)

@@ -88,6 +88,8 @@ maxiter
 mcrx
 mcry
 mcrz
+misclassified
+mixin
 mpl
 multiclass
 multioutput
@@ -150,6 +152,7 @@ readme
 regressor
 regressors
 regs
+reproducibility
 rescale
 rhs
 runtime
