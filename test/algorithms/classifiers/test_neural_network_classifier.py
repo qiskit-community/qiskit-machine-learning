@@ -9,28 +9,29 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
 """ Test Neural Network Classifier """
 import itertools
+import os
+import tempfile
 import unittest
 
 from test import QiskitMachineLearningTestCase
 
 from typing import Tuple, Optional, Callable
 
-import scipy.sparse
-
 import numpy as np
+import scipy
+
 from ddt import ddt, data, idata, unpack
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 
+from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, NeuralNetwork
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
-
 
 OPTIMIZERS = ["cobyla", "bfgs", None]
 L1L2_ERRORS = ["absolute_error", "squared_error"]
@@ -106,7 +107,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         classifier = self._create_classifier(qnn, ansatz.num_parameters, optimizer, loss, callback)
 
         # construct data
-        num_samples = 5
+        num_samples = 6
         X = algorithm_globals.random.random(  # pylint: disable=invalid-name
             (num_samples, num_inputs)
         )
@@ -157,7 +158,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     def _generate_data(self, num_inputs: int) -> Tuple[np.ndarray, np.ndarray]:
         # construct data
-        num_samples = 5
+        num_samples = 6
         features = algorithm_globals.random.random((num_samples, num_inputs))
         labels = 1.0 * (np.sum(features, axis=1) <= 1)
 
@@ -282,6 +283,56 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # score
         score = classifier.score(features, labels)
         self.assertGreater(score, 0.5)
+
+    @idata(["opflow", "circuit_qnn"])
+    def test_save_load(self, qnn_type):
+        """Tests save and load models."""
+        features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
+
+        if qnn_type == "opflow":
+            labels = np.array([-1, -1, 1, 1])
+
+            num_qubits = 2
+            ansatz = RealAmplitudes(num_qubits, reps=1)
+            qnn = TwoLayerQNN(
+                num_qubits, ansatz=ansatz, quantum_instance=self.qasm_quantum_instance
+            )
+            num_parameters = ansatz.num_parameters
+        elif qnn_type == "circuit_qnn":
+            labels = np.array([0, 0, 1, 1])
+            qnn, _, num_parameters = self._create_circuit_qnn(self.qasm_quantum_instance)
+        else:
+            raise ValueError(f"Unsupported QNN type: {qnn_type}")
+
+        classifier = self._create_classifier(
+            qnn, num_parameters=num_parameters, optimizer=COBYLA(), loss="squared_error"
+        )
+        classifier.fit(features, labels)
+
+        # predicted labels from the newly trained model
+        test_features = np.array([[0.2, 0.1], [0.8, 0.9]])
+        original_predicts = classifier.predict(test_features)
+
+        # save/load, change the quantum instance and check if predicted values are the same
+        file_name = os.path.join(tempfile.gettempdir(), "classifier.model")
+        classifier.save(file_name)
+        try:
+            classifier_load = NeuralNetworkClassifier.load(file_name)
+            loaded_model_predicts = classifier_load.predict(test_features)
+
+            np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
+
+            # test loading warning
+            class FakeModel(SerializableModelMixin):
+                """Fake model class for test purposes."""
+
+                pass
+
+            with self.assertRaises(TypeError):
+                FakeModel.load(file_name)
+
+        finally:
+            os.remove(file_name)
 
 
 if __name__ == "__main__":

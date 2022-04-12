@@ -29,10 +29,11 @@ from qiskit_machine_learning.utils.loss_functions import (
 )
 
 from .objective_functions import ObjectiveFunction
+from .serializable_model import SerializableModelMixin
 from ..deprecation import deprecate_values
 
 
-class TrainableModel:
+class TrainableModel(SerializableModelMixin):
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
 
     @deprecate_values("0.4.0", {"loss": {"cross_entropy_sigmoid": "<unsupported>"}})
@@ -90,9 +91,9 @@ class TrainableModel:
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
-        if optimizer is None:
-            optimizer = SLSQP()
-        self._optimizer = optimizer
+        # call the setter that has some additional checks
+        self.optimizer = optimizer
+
         self._warm_start = warm_start
         self._fit_result = None
         self._initial_point = initial_point
@@ -112,6 +113,13 @@ class TrainableModel:
     def optimizer(self) -> Optimizer:
         """Returns an optimizer to be used in training."""
         return self._optimizer
+
+    @optimizer.setter
+    def optimizer(self, optimizer: Optional[Optimizer] = None):
+        """Sets the optimizer to use in training process."""
+        if optimizer is None:
+            optimizer = SLSQP()
+        self._optimizer = optimizer
 
     @property
     def warm_start(self) -> bool:
