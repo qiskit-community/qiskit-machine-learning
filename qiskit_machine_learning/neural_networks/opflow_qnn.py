@@ -26,7 +26,7 @@ from qiskit.opflow import (
     OpflowError,
     ComposedOp,
 )
-from qiskit.providers import BaseBackend, Backend
+from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
 import qiskit_machine_learning.optionals as _optionals
@@ -59,7 +59,7 @@ class OpflowQNN(NeuralNetwork):
         weight_params: Optional[List[Parameter]] = None,
         exp_val: Optional[ExpectationBase] = None,
         gradient: Optional[Gradient] = None,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
         input_gradients: bool = False,
     ):
         """
@@ -150,14 +150,12 @@ class OpflowQNN(NeuralNetwork):
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(
-        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
-    ) -> None:
+    def quantum_instance(self, quantum_instance: Optional[Union[QuantumInstance, Backend]]) -> None:
         """Sets the quantum instance to evaluate the operator."""
         self._set_quantum_instance(quantum_instance)
 
     def _set_quantum_instance(
-        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
+        self, quantum_instance: Optional[Union[QuantumInstance, Backend]]
     ) -> None:
         """
         Internal method to set a quantum instance and compute/initialize a sampler.
@@ -169,7 +167,7 @@ class OpflowQNN(NeuralNetwork):
             None.
         """
 
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
+        if isinstance(quantum_instance, Backend):
             quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 

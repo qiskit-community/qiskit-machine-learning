@@ -22,7 +22,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import Parameter, ParameterVector, ParameterExpression
 from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.providers import Backend, BaseBackend
+from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 from ..exceptions import QiskitMachineLearningError
 
@@ -52,7 +52,7 @@ class QuantumKernel:
         feature_map: Optional[QuantumCircuit] = None,
         enforce_psd: bool = True,
         batch_size: int = 900,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
         user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
         """
@@ -110,11 +110,9 @@ class QuantumKernel:
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(
-        self, quantum_instance: Union[Backend, BaseBackend, QuantumInstance]
-    ) -> None:
+    def quantum_instance(self, quantum_instance: Union[Backend, QuantumInstance]) -> None:
         """Set quantum instance"""
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
+        if isinstance(quantum_instance, Backend):
             self._quantum_instance = QuantumInstance(quantum_instance)
         else:
             self._quantum_instance = quantum_instance
@@ -395,7 +393,7 @@ class QuantumKernel:
             raise QiskitMachineLearningError(
                 "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel."
             )
-        if isinstance(self._quantum_instance, (BaseBackend, Backend)):
+        if isinstance(self._quantum_instance, Backend):
             self._quantum_instance = QuantumInstance(self._quantum_instance)
 
         if not isinstance(x_vec, np.ndarray):
