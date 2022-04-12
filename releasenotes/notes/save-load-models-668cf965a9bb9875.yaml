@@ -1,0 +1,20 @@
+---
+features:
+  - |
+    Added support for saving and loading machine learning models. This support is introduced in
+    ``TrainableModel``, so all sub-classes can be saved and loaded. Also, kernel based models can
+    be saved and loaded. A list of models that support saving and loading models:
+
+    * ``NeuralNetworkClassifier``
+    * ``NeuralNetworkRegressor``
+    * ``VQC``
+    * ``VQR``
+    * ``QSVC``
+    * ``QSVR``
+    * ``PegasosQSVC``
+
+    When model is saved all model parameters are saved to a file, including a quantum instance
+    that is referenced by internal objects. That means if a model is loaded from a file and is
+    used, for instance, for inference, the same quantum instance and a corresponding backend
+    will be used even if a cloud backend was used.
+

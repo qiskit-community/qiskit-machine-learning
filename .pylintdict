@@ -22,6 +22,7 @@ clbits
 codec
 config
 contravariance
+cpu
 creg
 crossentropyloss
 csr
@@ -87,6 +88,8 @@ maxiter
 mcrx
 mcry
 mcrz
+misclassified
+mixin
 mpl
 multiclass
 multioutput
@@ -149,6 +152,7 @@ readme
 regressor
 regressors
 regs
+reproducibility
 rescale
 rhs
 runtime
