@@ -349,7 +349,6 @@ class LocalEffectiveDimension(EffectiveDimension):
                     )
                 params = np.expand_dims(params, 0)
             self._params = params
-            self._num_params = self._params.shape[0]
 
         else:
             # random sampling from uniform distribution
