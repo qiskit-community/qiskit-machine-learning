@@ -30,7 +30,6 @@ from qiskit_machine_learning.neural_networks import (
     LocalEffectiveDimension,
 )
 
-
 @ddt
 class TestEffectiveDimension(QiskitMachineLearningTestCase):
     """Test the Effective Dimension algorithm"""

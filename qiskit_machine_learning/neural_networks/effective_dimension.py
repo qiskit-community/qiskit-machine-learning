@@ -19,8 +19,8 @@ from scipy.special import logsumexp
 
 from qiskit.utils import algorithm_globals
 
-from qiskit_machine_learning.neural_networks import OpflowQNN, NeuralNetwork
-
+from .opflow_qnn import OpflowQNN
+from .neural_network import NeuralNetwork
 
 class EffectiveDimension:
     """
@@ -142,7 +142,7 @@ class EffectiveDimension:
                 msg = f"iteration {i}, time forward pass: {t_after_forward - t_before_forward}"
                 self._callback(msg)
 
-            back_pass = np.asarray(
+            backward_pass = np.asarray(
                 self._model.backward(input_data=self.inputs, weights=param_set)[1]
             )
             t_after_backward = time.time()
@@ -152,7 +152,7 @@ class EffectiveDimension:
                 self._callback(msg)
 
             grads[self._num_inputs * i : self._num_inputs * (i + 1)] = backward_pass
-            outputs[self._num_inputs * i : self._num_inputs * (i + 1)] = fwd_pass
+            outputs[self._num_inputs * i : self._num_inputs * (i + 1)] = forward_pass
 
         # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
         if isinstance(self._model, OpflowQNN):
@@ -190,7 +190,7 @@ class EffectiveDimension:
         # compute the sum of matrices obtained from outer product of grad-vectors
         fisher_information = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
 
-        return fisher
+        return fisher_information
 
     def get_normalized_fisher(self, normalized_fisher: np.ndarray) -> Tuple[np.ndarray, float]:
         """
@@ -273,7 +273,7 @@ class EffectiveDimension:
         grads, output = self.run_monte_carlo()
 
         # step 2: compute as many fisher info. matrices as (input, params) sets
-        fisher = self.get_fisher(gradients=grads, model_outputs=output)
+        fisher = self.get_fisher_information(gradients=grads, model_outputs=output)
 
         # step 3: get normalized fisher info matrices
         normalized_fisher, _ = self.get_normalized_fisher(fisher)
