@@ -16,6 +16,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from ...deprecation import warn_deprecated, DeprecatedType
 from ...exceptions import QiskitMachineLearningError
 
 
@@ -181,6 +182,10 @@ class CrossEntropySigmoidLoss(Loss):
     """
     This class computes the cross entropy sigmoid loss and should be used for binary classification.
     """
+
+    def __init__(self) -> None:
+        warn_deprecated("0.4.0", DeprecatedType.CLASS, "CrossEntropySigmoidLoss")
+        super().__init__()
 
     def evaluate(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
         self._validate_shapes(predict, target)

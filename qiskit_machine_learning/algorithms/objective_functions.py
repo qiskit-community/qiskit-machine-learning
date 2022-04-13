@@ -52,6 +52,7 @@ class ObjectiveFunction:
         """
         super().__init__()
         self._X = X
+        self._num_samples = X.shape[0]
         self._y = y
         self._neural_network = neural_network
         self._loss = loss
@@ -114,7 +115,7 @@ class BinaryObjectiveFunction(ObjectiveFunction):
         predict = self._neural_network_forward(weights)
         target = np.array(self._y).reshape(predict.shape)
         # float(...) is for mypy compliance
-        return float(np.sum(self._loss(predict, target)))
+        return float(np.sum(self._loss(predict, target)) / self._num_samples)
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
         # check that we have supported output shape
@@ -135,7 +136,7 @@ class BinaryObjectiveFunction(ObjectiveFunction):
         # and weights for this output.
         grad = loss_gradient[:, 0] @ weight_grad[:, 0, :]
         # we keep the shape of (1, num_weights)
-        grad = grad.reshape(1, -1)
+        grad = grad.reshape(1, -1) / self._num_samples
 
         return grad
 
@@ -159,6 +160,7 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
             # loss vector is a loss of a particular output value(value of i) versus true labels.
             # we do this across all samples.
             val += probs[:, i] @ self._loss(np.full(num_samples, i), self._y)
+        val = val / self._num_samples
 
         return val
 
@@ -174,6 +176,7 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
             # weight probability gradients and a loss vector.
             grad += weight_prob_grad[:, i, :].T @ self._loss(np.full(num_samples, i), self._y)
 
+        grad = grad / self._num_samples
         return grad
 
 
@@ -187,7 +190,8 @@ class OneHotObjectiveFunction(ObjectiveFunction):
         # probabilities is of shape (N, num_outputs)
         probs = self._neural_network_forward(weights)
         # float(...) is for mypy compliance
-        return float(np.sum(self._loss(probs, self._y)))
+        value = float(np.sum(self._loss(probs, self._y)) / self._num_samples)
+        return value
 
     def gradient(self, weights: np.ndarray) -> np.ndarray:
         # predict is of shape (N, num_outputs)
@@ -204,4 +208,5 @@ class OneHotObjectiveFunction(ObjectiveFunction):
             # samples for an output.
             grad += loss_gradient[:, i] @ weight_prob_grad[:, i, :]
 
+        grad = grad / self._num_samples
         return grad

@@ -27,17 +27,16 @@ from qiskit_machine_learning.utils.loss_functions import (
     CrossEntropyLoss,
     CrossEntropySigmoidLoss,
 )
-from qiskit_machine_learning.deprecation import deprecate_values
 
 from .objective_functions import ObjectiveFunction
+from .serializable_model import SerializableModelMixin
+from ..deprecation import deprecate_values
 
 
-class TrainableModel:
+class TrainableModel(SerializableModelMixin):
     """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
 
-    @deprecate_values(
-        "0.2.0", {"loss": {"l1": "absolute_error", "l2": "squared_error"}}, stack_level=4
-    )
+    @deprecate_values("0.4.0", {"loss": {"cross_entropy_sigmoid": "<unsupported>"}})
     def __init__(
         self,
         neural_network: NeuralNetwork,
@@ -89,16 +88,12 @@ class TrainableModel:
                 self._loss = CrossEntropyLoss()
             elif loss == "cross_entropy_sigmoid":
                 self._loss = CrossEntropySigmoidLoss()
-            elif loss == "l1":
-                self._loss = L1Loss()
-            elif loss == "l2":
-                self._loss = L2Loss()
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
-        if optimizer is None:
-            optimizer = SLSQP()
-        self._optimizer = optimizer
+        # call the setter that has some additional checks
+        self.optimizer = optimizer
+
         self._warm_start = warm_start
         self._fit_result = None
         self._initial_point = initial_point
@@ -118,6 +113,13 @@ class TrainableModel:
     def optimizer(self) -> Optimizer:
         """Returns an optimizer to be used in training."""
         return self._optimizer
+
+    @optimizer.setter
+    def optimizer(self, optimizer: Optional[Optimizer] = None):
+        """Sets the optimizer to use in training process."""
+        if optimizer is None:
+            optimizer = SLSQP()
+        self._optimizer = optimizer
 
     @property
     def warm_start(self) -> bool:
