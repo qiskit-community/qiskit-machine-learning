@@ -36,10 +36,8 @@ class EffectiveDimension:
     def __init__(
         self,
         qnn: NeuralNetwork,
-        params: Optional[Union[List[float], np.ndarray, float]] = None,
-        inputs: Optional[Union[List[float], np.ndarray, float]] = None,
-        num_params: int = 1,
-        num_inputs: int = 1,
+        params: Optional[Union[List[float], np.ndarray, int]] = 1,
+        inputs: Optional[Union[List[float], np.ndarray, int]] = 1,
         callback: Optional[Callable[[str], None]] = None,
     ) -> None:
 
@@ -52,23 +50,19 @@ class EffectiveDimension:
                 of shape ``(num_inputs, qnn_input_size)``,
                 and ``params``, of shape ``(num_params, num_weights)``.
             params: An array of neural network parameters (weights), of shape
-                ``(num_params, num_weights)``.
+                ``(num_params, num_weights)``, or an ``int`` to indicate the number of parameter
+                sets to sample randomly from a uniform distribution. By default, ``params = 1``.
             inputs: An array of inputs to the neural network, of shape
-                ``(num_inputs, qnn_input_size)``.
-            num_params: If ``params`` is not provided, the algorithm will
-                randomly sample ``num_params`` parameter sets from a
-                uniform distribution. By default, ``num_params = 1``.
-            num_inputs:  If ``inputs`` is not provided, the algorithm will
-                randomly sample ``num_inputs`` input sets
-                from a normal distribution. By default, ``num_inputs = 1``.
+                ``(num_inputs, qnn_input_size)``, or an ``int`` to indicate the number of input
+                sets to sample randomly from a normal distribution. By default, ``inputs = 1``.
             callback: A callback function for the Monte Carlo sampling.
         """
 
         # Store arguments
         self._params = None
         self._inputs = None
-        self._num_params = num_params
-        self._num_inputs = num_inputs
+        self._num_params = 1
+        self._num_inputs = 1
         self._model = qnn
         self._callback = callback
 
@@ -88,16 +82,17 @@ class EffectiveDimension:
         return self._params
 
     @params.setter
-    def params(self, params: Optional[Union[List[float], np.ndarray, float]]) -> None:
+    def params(self, params: Optional[Union[List[float], np.ndarray, int]]) -> None:
         """Sets network parameters."""
-        if params is not None:
-            self._params = np.asarray(params)
-            self._num_params = len(self._params)
-        else:
+        if isinstance(params, int):
             # random sampling from uniform distribution
             self._params = algorithm_globals.random.uniform(
-                0, 1, size=(self._num_params, self._model.num_weights)
+                0, 1, size=(params, self._model.num_weights)
             )
+        else:
+            self._params = np.asarray(params)
+
+        self._num_params = len(self._params)
 
     @property
     def inputs(self) -> np.ndarray:
@@ -105,16 +100,18 @@ class EffectiveDimension:
         return self._inputs
 
     @inputs.setter
-    def inputs(self, inputs: Optional[Union[List[float], np.ndarray, float]]) -> None:
+    def inputs(self, inputs: Optional[Union[List[float], np.ndarray, int]]) -> None:
         """Sets network inputs."""
-        if inputs is not None:
-            self._inputs = np.asarray(inputs)
-            self._num_inputs = len(self._inputs)
-        else:
+        if isinstance(inputs, int):
             # random sampling from normal distribution
             self._inputs = algorithm_globals.random.normal(
-                0, 1, size=(self._num_inputs, self._model.num_inputs)
+                0, 1, size=(inputs, self._model.num_inputs)
             )
+        else:
+            self._inputs = np.asarray(inputs)
+
+        self._num_inputs = len(self._inputs)
+
 
     def run_monte_carlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -308,27 +305,19 @@ class LocalEffectiveDimension(EffectiveDimension):
     ) -> None:
         """
         Args:
-            qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,
-                with a specific dimension ``(num_weights)`` that will determine the shape of the
-                Fisher Information Matrix ``(num_inputs, num_weights, num_weights)``
-                used to compute the global effective dimension for a set of ``inputs``,
-                of shape ``(num_inputs, qnn_input_size)``,
-                and 1 set of ``params``, of shape ``(1, num_weights)``.
             params: An array of neural network parameters (weights), of shape
-                ``(1, num_weights)``. If ``params`` is not provided, the algorithm will
-                randomly sample 1 param set from a uniform distribution.
+                ``(1, num_weights)``, or ``None`` to sample one parameter set
+                randomly from a uniform distribution.
             inputs: An array of inputs to the neural network, of shape
-                ``(num_inputs, qnn_input_size)``.
-            num_inputs:  If ``inputs`` is not provided, the algorithm will
-                randomly sample ``num_inputs`` input sets
-                from a normal distribution. By default, ``num_inputs = 1``.
+                ``(num_inputs, qnn_input_size)``, or an ``int`` to indicate the number of input
+                sets to sample randomly from a normal distribution. By default, ``inputs = 1``.
             callback: A callback function for the Monte Carlo sampling.
 
         Raises:
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
 
-        super().__init__(qnn, params, inputs, 1, num_inputs, callback)
+        super().__init__(qnn, params, inputs)
 
     # override setter to enforce 1 set of parameters
     @property
@@ -353,3 +342,5 @@ class LocalEffectiveDimension(EffectiveDimension):
         else:
             # random sampling from uniform distribution
             self._params = algorithm_globals.random.uniform(0, 1, size=(1, self._model.num_weights))
+
+        self._num_params = 1
