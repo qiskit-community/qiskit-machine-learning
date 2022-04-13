@@ -107,7 +107,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         classifier = self._create_classifier(qnn, ansatz.num_parameters, optimizer, loss, callback)
 
         # construct data
-        num_samples = 5
+        num_samples = 6
         X = algorithm_globals.random.random(  # pylint: disable=invalid-name
             (num_samples, num_inputs)
         )
@@ -158,7 +158,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     def _generate_data(self, num_inputs: int) -> Tuple[np.ndarray, np.ndarray]:
         # construct data
-        num_samples = 5
+        num_samples = 6
         features = algorithm_globals.random.random((num_samples, num_inputs))
         labels = 1.0 * (np.sum(features, axis=1) <= 1)
 
