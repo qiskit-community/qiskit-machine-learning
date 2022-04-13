@@ -25,7 +25,7 @@ from qiskit.utils import optionals
 
 from qiskit.opflow import PauliSumOp
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
-from qiskit_machine_learning.algorithms import (
+from qiskit_machine_learning.neural_networks import (
     EffectiveDimension,
     LocalEffectiveDimension,
 )

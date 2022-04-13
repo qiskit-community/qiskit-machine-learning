@@ -19,7 +19,7 @@ from scipy.special import logsumexp
 
 from qiskit.utils import algorithm_globals
 
-from ..neural_networks import OpflowQNN, NeuralNetwork
+from qiskit_machine_learning.neural_networks import OpflowQNN, NeuralNetwork
 
 
 class EffectiveDimension:
@@ -300,7 +300,6 @@ class LocalEffectiveDimension(EffectiveDimension):
         qnn: NeuralNetwork,
         params: Optional[Union[List[float], np.ndarray, float]] = None,
         inputs: Optional[Union[List[float], np.ndarray, float]] = None,
-        num_inputs: int = 1,
         callback: Optional[Callable[[str], None]] = None,
     ) -> None:
         """
@@ -317,7 +316,7 @@ class LocalEffectiveDimension(EffectiveDimension):
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
 
-        super().__init__(qnn, params, inputs)
+        super().__init__(qnn, params, inputs, callback)
 
     # override setter to enforce 1 set of parameters
     @property
