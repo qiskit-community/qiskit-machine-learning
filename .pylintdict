@@ -84,6 +84,7 @@ kwarg
 kwargs
 langle
 macos
+main
 makefile
 matmul
 matplotlib
@@ -91,6 +92,8 @@ maxiter
 mcrx
 mcry
 mcrz
+misclassified
+mixin
 monte
 mpl
 multiclass
@@ -154,6 +157,7 @@ readme
 regressor
 regressors
 regs
+reproducibility
 rescale
 rhs
 runtime
