@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021,2022.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -24,6 +24,7 @@ Machine Learning Base Classes
 
    TrainableModel
    ObjectiveFunction
+   SerializableModelMixin
 
 Machine Learning Objective Functions
 ====================================
@@ -81,6 +82,7 @@ Distribution Learners
 """
 from .effective_dimension import EffectiveDimension, LocalEffectiveDimension
 from .trainable_model import TrainableModel
+from .serializable_model import SerializableModelMixin
 from .objective_functions import (
     ObjectiveFunction,
     BinaryObjectiveFunction,
@@ -100,6 +102,7 @@ from .distribution_learners import (
 
 __all__ = [
     "TrainableModel",
+    "SerializableModelMixin",
     "ObjectiveFunction",
     "BinaryObjectiveFunction",
     "MultiClassObjectiveFunction",

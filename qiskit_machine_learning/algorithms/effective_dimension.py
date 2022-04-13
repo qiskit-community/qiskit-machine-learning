@@ -120,9 +120,9 @@ class EffectiveDimension:
 
         Returns:
              grads: QNN gradient vector, result of backward passes, of shape
-                ``(num_inputs * num_params, output_size, num_weights)``
+                ``(num_inputs * num_params, output_size, num_weights)``.
              outputs: QNN output vector, result of forward passes, of shape
-                ``(num_inputs * num_params, output_size)``
+                ``(num_inputs * num_params, output_size)``.
         """
         grads = np.zeros(
             (
@@ -135,7 +135,7 @@ class EffectiveDimension:
 
         for (i, param_set) in enumerate(self.params):
             t_before_forward = time.time()
-            fwd_pass = np.asarray(self._model.forward(input_data=self.inputs, weights=param_set))
+            forward_pass = np.asarray(self._model.forward(input_data=self.inputs, weights=param_set))
             t_after_forward = time.time()
 
             if self._callback is not None:
@@ -151,7 +151,7 @@ class EffectiveDimension:
                 msg = f"iteration {i}, time backward pass: {t_after_backward - t_after_forward}"
                 self._callback(msg)
 
-            grads[self._num_inputs * i : self._num_inputs * (i + 1)] = back_pass
+            grads[self._num_inputs * i : self._num_inputs * (i + 1)] = backward_pass
             outputs[self._num_inputs * i : self._num_inputs * (i + 1)] = fwd_pass
 
         # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
@@ -161,7 +161,7 @@ class EffectiveDimension:
 
         return grads, outputs
 
-    def get_fisher(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
+    def get_fisher_information(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
 
         """
         This method computes the average Jacobian for every set of gradients and
@@ -169,9 +169,9 @@ class EffectiveDimension:
 
         Args:
             gradients: A numpy array, result of the neural network's backward pass, of
-                shape ``(num_inputs * num_params, output_size, num_weights)``
+                shape ``(num_inputs * num_params, output_size, num_weights)``.
             model_outputs: A numpy array, result of the neural networks' forward pass,
-                of shape ``(num_inputs * num_params, output_size)``
+                of shape ``(num_inputs * num_params, output_size)``.
         Returns:
             fisher: A numpy array of shape
                 ``(num_inputs * num_params, num_weights, num_weights)``
@@ -188,19 +188,19 @@ class EffectiveDimension:
         gradvectors = np.sqrt(model_outputs) * gradients / model_outputs
 
         # compute the sum of matrices obtained from outer product of grad-vectors
-        fisher = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
+        fisher_information = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
 
         return fisher
 
     def get_normalized_fisher(self, normalized_fisher: np.ndarray) -> Tuple[np.ndarray, float]:
         """
-        This method computes the normalized Fisher Information Matrix (f_hat)
+        This method computes the normalized Fisher Information Matrix
         and extracts its trace.
         Args:
             normalized_fisher: The Fisher Information Matrix to be normalized.
         Returns:
              normalized_fisher: The normalized Fisher Information Matrix, a numpy array
-                    of size ``(num_inputs, num_weights, num_weights)``
+                 of size ``(num_inputs, num_weights, num_weights)``
              fisher_trace: The trace of the Fisher Information Matrix
                             (before normalizing).
         """
