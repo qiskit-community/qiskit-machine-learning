@@ -154,7 +154,7 @@ class EffectiveDimension:
                 msg = f"iteration {i}, time backward pass: {t_after_backward - t_after_forward}"
                 self._callback(msg)
 
-            grads[self._num_inputs * i : self._num_inputs * (i + 1)] = back_pass
+            grads[self._num_inputs * i : self._num_inputs * (i + 1)] = backward_pass
             outputs[self._num_inputs * i : self._num_inputs * (i + 1)] = fwd_pass
 
         # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
