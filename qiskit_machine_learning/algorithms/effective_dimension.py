@@ -138,7 +138,7 @@ class EffectiveDimension:
 
         for (i, param_set) in enumerate(self.params):
             t_before_forward = time.time()
-            fwd_pass = np.asarray(self._model.forward(input_data=self.inputs, weights=param_set))
+            forward_pass = np.asarray(self._model.forward(input_data=self.inputs, weights=param_set))
             t_after_forward = time.time()
 
             if self._callback is not None:
