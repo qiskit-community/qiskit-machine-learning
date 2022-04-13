@@ -197,7 +197,7 @@ class EffectiveDimension:
 
     def get_normalized_fisher(self, normalized_fisher: np.ndarray) -> Tuple[np.ndarray, float]:
         """
-        This method computes the normalized Fisher Information Matrix (f_hat)
+        This method computes the normalized Fisher Information Matrix
         and extracts its trace.
         Args:
             normalized_fisher: The Fisher Information Matrix to be normalized.
