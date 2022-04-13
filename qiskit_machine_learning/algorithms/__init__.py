@@ -80,7 +80,6 @@ Distribution Learners
    QGAN
 
 """
-from .effective_dimension import EffectiveDimension, LocalEffectiveDimension
 from .trainable_model import TrainableModel
 from .serializable_model import SerializableModelMixin
 from .objective_functions import (
@@ -120,6 +119,4 @@ __all__ = [
     "PyTorchDiscriminator",
     "QuantumGenerator",
     "QGAN",
-    "EffectiveDimension",
-    "LocalEffectiveDimension",
 ]
