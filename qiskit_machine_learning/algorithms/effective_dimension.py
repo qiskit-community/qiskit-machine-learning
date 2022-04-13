@@ -164,7 +164,7 @@ class EffectiveDimension:
 
         return grads, outputs
 
-    def get_fisher(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
+    def get_fisher_information(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
 
         """
         This method computes the average Jacobian for every set of gradients and
