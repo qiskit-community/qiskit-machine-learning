@@ -47,6 +47,16 @@ Neural Networks
    TwoLayerQNN
    CircuitQNN
 
+Neural Network Metrics
+======================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   EffectiveDimension
+   LocalEffectiveDimension
+
 """
 
 from .circuit_qnn import CircuitQNN
