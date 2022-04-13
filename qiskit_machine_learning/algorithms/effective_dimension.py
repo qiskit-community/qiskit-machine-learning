@@ -172,9 +172,9 @@ class EffectiveDimension:
 
         Args:
             gradients: A numpy array, result of the neural network's backward pass, of
-                shape ``(num_inputs * num_params, output_size, num_weights)``
+                shape ``(num_inputs * num_params, output_size, num_weights)``.
             model_outputs: A numpy array, result of the neural networks' forward pass,
-                of shape ``(num_inputs * num_params, output_size)``
+                of shape ``(num_inputs * num_params, output_size)``.
         Returns:
             fisher: A numpy array of shape
                 ``(num_inputs * num_params, num_weights, num_weights)``
