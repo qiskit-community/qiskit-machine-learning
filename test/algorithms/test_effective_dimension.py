@@ -107,7 +107,7 @@ class TestEffDim(QiskitMachineLearningTestCase):
         qnn_name, num_inputs, num_params, result = config
 
         qnn = self.qnns[qnn_name]
-        global_ed = EffectiveDimension(qnn=qnn, num_params=num_params, num_inputs=num_inputs)
+        global_ed = EffectiveDimension(qnn=qnn, params=num_params, inputs=num_inputs)
 
         effdim = global_ed.get_effective_dimension(self.n)
 
@@ -123,14 +123,14 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         global_ed1 = EffectiveDimension(
             qnn=qnn1,
-            num_params=num_params,
-            num_inputs=num_inputs,
+            params=num_params,
+            inputs=num_inputs,
         )
 
         global_ed2 = EffectiveDimension(
             qnn=qnn2,
-            num_params=num_params,
-            num_inputs=num_inputs,
+            params=num_params,
+            inputs=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n)
@@ -147,8 +147,8 @@ class TestEffDim(QiskitMachineLearningTestCase):
 
         global_ed1 = EffectiveDimension(
             qnn=qnn,
-            num_params=num_params,
-            num_inputs=num_inputs,
+            params=num_params,
+            inputs=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n_list)
