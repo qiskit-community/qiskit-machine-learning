@@ -68,9 +68,9 @@ class EffectiveDimension:
         self._callback = callback
 
         # Define samples and parameters
-        self.params = params
+        self.params = params  # type: ignore
         # input setter uses self._model
-        self.samples = samples
+        self.samples = samples  # type: ignore
 
     def num_weights(self) -> int:
         """Returns the dimension of the model according to the definition
@@ -302,8 +302,8 @@ class LocalEffectiveDimension(EffectiveDimension):
     def __init__(
         self,
         qnn: NeuralNetwork,
-        params: Optional[Union[List[float], np.ndarray, int]] = None,
-        samples: Optional[Union[List[float], np.ndarray, int]] = None,
+        params: Union[List[float], np.ndarray, int] = 1,
+        samples: Union[List[float], np.ndarray, int] = 1,
         callback: Optional[Callable[[str], None]] = None,
     ) -> None:
         """
@@ -329,7 +329,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         return self._params
 
     @params.setter
-    def params(self, params: Optional[Union[List[float], np.ndarray, float]]) -> None:
+    def params(self, params: Union[List[float], np.ndarray, float]) -> None:
         """Sets network parameters."""
         if params is not None:
             params = np.asarray(params)
