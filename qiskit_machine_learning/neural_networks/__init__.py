@@ -50,6 +50,7 @@ Neural Networks
 """
 
 from .circuit_qnn import CircuitQNN
+from .effective_dimension import EffectiveDimension, LocalEffectiveDimension
 from .neural_network import NeuralNetwork
 from .opflow_qnn import OpflowQNN
 from .sampling_neural_network import SamplingNeuralNetwork
@@ -61,4 +62,6 @@ __all__ = [
     "TwoLayerQNN",
     "SamplingNeuralNetwork",
     "CircuitQNN",
+    "EffectiveDimension",
+    "LocalEffectiveDimension",
 ]
