@@ -26,7 +26,7 @@ from .neural_network import NeuralNetwork
 class EffectiveDimension:
     """
     This class computes the global effective dimension for Qiskit
-    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`\s.
+    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`.
     following the definition used in [1].
 
         **References**
@@ -37,8 +37,8 @@ class EffectiveDimension:
     def __init__(
         self,
         qnn: NeuralNetwork,
-        params: Optional[Union[List[float], np.ndarray, int]] = 1,
-        inputs: Optional[Union[List[float], np.ndarray, int]] = 1,
+        params: Union[List[float], np.ndarray, int] = 1,
+        samples: Union[List[float], np.ndarray, int] = 1,
         callback: Optional[Callable[[str], None]] = None,
     ) -> None:
 
@@ -46,31 +46,31 @@ class EffectiveDimension:
         Args:
             qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,
                 with a specific dimension ``(num_weights)`` that will determine the shape of the
-                Fisher Information Matrix ``(num_inputs * num_params, num_weights, num_weights)``
-                used to compute the global effective dimension for a set of ``inputs``,
-                of shape ``(num_inputs, qnn_input_size)``,
+                Fisher Information Matrix ``(num_samples * num_params, num_weights, num_weights)``
+                used to compute the global effective dimension for a set of ``samples``,
+                of shape ``(num_samples, qnn_input_size)``,
                 and ``params``, of shape ``(num_params, num_weights)``.
             params: An array of neural network parameters (weights), of shape
                 ``(num_params, num_weights)``, or an ``int`` to indicate the number of parameter
                 sets to sample randomly from a uniform distribution. By default, ``params = 1``.
-            inputs: An array of inputs to the neural network, of shape
-                ``(num_inputs, qnn_input_size)``, or an ``int`` to indicate the number of input
-                sets to sample randomly from a normal distribution. By default, ``inputs = 1``.
+            samples: An array of samples to the neural network, of shape
+                ``(num_samples, qnn_input_size)``, or an ``int`` to indicate the number of input
+                sets to sample randomly from a normal distribution. By default, ``samples = 1``.
             callback: A callback function for the Monte Carlo sampling.
         """
 
         # Store arguments
         self._params = None
-        self._inputs = None
+        self._samples = None
         self._num_params = 1
-        self._num_inputs = 1
+        self._num_samples = 1
         self._model = qnn
         self._callback = callback
 
-        # Define inputs and parameters
-        self.params = params  # type: ignore
+        # Define samples and parameters
+        self.params = params
         # input setter uses self._model
-        self.inputs = inputs  # type: ignore
+        self.samples = samples
 
     def num_weights(self) -> int:
         """Returns the dimension of the model according to the definition
@@ -83,7 +83,7 @@ class EffectiveDimension:
         return self._params
 
     @params.setter
-    def params(self, params: Optional[Union[List[float], np.ndarray, int]]) -> None:
+    def params(self, params: Union[List[float], np.ndarray, int]) -> None:
         """Sets network parameters."""
         if isinstance(params, int):
             # random sampling from uniform distribution
@@ -96,47 +96,47 @@ class EffectiveDimension:
         self._num_params = len(self._params)
 
     @property
-    def inputs(self) -> np.ndarray:
-        """Returns network inputs."""
-        return self._inputs
+    def samples(self) -> np.ndarray:
+        """Returns network samples."""
+        return self._samples
 
-    @inputs.setter
-    def inputs(self, inputs: Optional[Union[List[float], np.ndarray, int]]) -> None:
-        """Sets network inputs."""
-        if isinstance(inputs, int):
+    @samples.setter
+    def samples(self, samples: Union[List[float], np.ndarray, int]) -> None:
+        """Sets network samples."""
+        if isinstance(samples, int):
             # random sampling from normal distribution
-            self._inputs = algorithm_globals.random.normal(
-                0, 1, size=(inputs, self._model.num_inputs)
+            self._samples = algorithm_globals.random.normal(
+                0, 1, size=(samples, self._model.num_inputs)
             )
         else:
-            self._inputs = np.asarray(inputs)
+            self._samples = np.asarray(samples)
 
-        self._num_inputs = len(self._inputs)
+        self._num_samples = len(self._samples)
 
     def run_monte_carlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         This method computes the model's Monte Carlo sampling for a set of
-        inputs and parameters (params).
+        samples and parameters (params).
 
         Returns:
              grads: QNN gradient vector, result of backward passes, of shape
-                ``(num_inputs * num_params, output_size, num_weights)``.
+                ``(num_samples * num_params, output_size, num_weights)``.
              outputs: QNN output vector, result of forward passes, of shape
-                ``(num_inputs * num_params, output_size)``.
+                ``(num_samples * num_params, output_size)``.
         """
         grads = np.zeros(
             (
-                self._num_inputs * self._num_params,
+                self._num_samples * self._num_params,
                 self._model.output_shape[0],
                 self._model.num_weights,
             )
         )
-        outputs = np.zeros((self._num_inputs * self._num_params, self._model.output_shape[0]))
+        outputs = np.zeros((self._num_samples * self._num_params, self._model.output_shape[0]))
 
         for (i, param_set) in enumerate(self.params):
             t_before_forward = time.time()
             forward_pass = np.asarray(
-                self._model.forward(input_data=self.inputs, weights=param_set)
+                self._model.forward(input_data=self.samples, weights=param_set)
             )
             t_after_forward = time.time()
 
@@ -145,7 +145,7 @@ class EffectiveDimension:
                 self._callback(msg)
 
             backward_pass = np.asarray(
-                self._model.backward(input_data=self.inputs, weights=param_set)[1]
+                self._model.backward(input_data=self.samples, weights=param_set)[1]
             )
             t_after_backward = time.time()
 
@@ -153,8 +153,8 @@ class EffectiveDimension:
                 msg = f"iteration {i}, time backward pass: {t_after_backward - t_after_forward}"
                 self._callback(msg)
 
-            grads[self._num_inputs * i : self._num_inputs * (i + 1)] = backward_pass
-            outputs[self._num_inputs * i : self._num_inputs * (i + 1)] = forward_pass
+            grads[self._num_samples * i : self._num_samples * (i + 1)] = backward_pass
+            outputs[self._num_samples * i : self._num_samples * (i + 1)] = forward_pass
 
         # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
         if isinstance(self._model, OpflowQNN):
@@ -173,12 +173,12 @@ class EffectiveDimension:
 
         Args:
             gradients: A numpy array, result of the neural network's backward pass, of
-                shape ``(num_inputs * num_params, output_size, num_weights)``.
+                shape ``(num_samples * num_params, output_size, num_weights)``.
             model_outputs: A numpy array, result of the neural networks' forward pass,
-                of shape ``(num_inputs * num_params, output_size)``.
+                of shape ``(num_samples * num_params, output_size)``.
         Returns:
             fisher: A numpy array of shape
-                ``(num_inputs * num_params, num_weights, num_weights)``
+                ``(num_samples * num_params, num_weights, num_weights)``
                 with the average Jacobian  for every set of gradients and model output given.
         """
 
@@ -204,7 +204,7 @@ class EffectiveDimension:
             normalized_fisher: The Fisher Information Matrix to be normalized.
         Returns:
              normalized_fisher: The normalized Fisher Information Matrix, a numpy array
-                 of size ``(num_inputs, num_weights, num_weights)``.
+                 of size ``(num_samples, num_weights, num_weights)``.
              fisher_trace: The trace of the Fisher Information Matrix
                             (before normalizing).
         """
@@ -212,13 +212,13 @@ class EffectiveDimension:
         # compute the trace with all normalized_fisher
         fisher_trace = np.trace(np.average(normalized_fisher, axis=0))
 
-        # average the normalized_fisher over the num_inputs to get the empirical normalized_fisher
+        # average the normalized_fisher over the num_samples to get the empirical normalized_fisher
         fisher_avg = np.average(
             np.reshape(
                 normalized_fisher,
                 (
                     self._num_params,
-                    self._num_inputs,
+                    self._num_samples,
                     self._model.num_weights,
                     self._model.num_weights,
                 ),
@@ -233,16 +233,16 @@ class EffectiveDimension:
     def _get_effective_dimension(
         self,
         normalized_fisher: Union[List[float], np.ndarray],
-        num_samples: Union[List[int], np.ndarray, int],
+        num_data: Union[List[int], np.ndarray, int],
     ) -> Union[np.ndarray, int]:
 
-        if not isinstance(num_samples, int) and len(num_samples) > 1:
+        if not isinstance(num_data, int) and len(num_data) > 1:
             # expand dims for broadcasting
             normalized_fisher = np.expand_dims(normalized_fisher, axis=0)
-            n_expanded = np.expand_dims(np.asarray(num_samples), axis=(1, 2, 3))
+            n_expanded = np.expand_dims(np.asarray(num_data), axis=(1, 2, 3))
             logsum_axis = 1
         else:
-            n_expanded = np.asarray(num_samples)
+            n_expanded = np.asarray(num_data)
             logsum_axis = None
 
         # calculate effective dimension for each data sample size "n" out
@@ -256,21 +256,21 @@ class EffectiveDimension:
         effective_dims = (
             2
             * (logsumexp(dets_div, axis=logsum_axis) - np.log(self._num_params))
-            / np.log(num_samples / (2 * np.pi * np.log(num_samples)))
+            / np.log(num_data / (2 * np.pi * np.log(num_data)))
         )
 
         return np.squeeze(effective_dims)
 
     def get_effective_dimension(
-        self, num_samples: Union[List[int], np.ndarray, int]
+        self, num_data: Union[List[int], np.ndarray, int]
     ) -> Union[np.ndarray, int]:
         """
-        This method compute the effective dimension for a data sample size ``n``.
+        This method compute the effective dimension for a data sample size ``num_data``.
 
         Args:
-            num_samples: array of sample sizes
+            num_data: array of data sizes
         Returns:
-             effective_dim: array of effective dimensions for each sample size in n.
+             effective_dim: array of effective dimensions for each sample size in ``num_data``.
         """
 
         # step 1: Monte Carlo sampling
@@ -283,7 +283,7 @@ class EffectiveDimension:
         normalized_fisher, _ = self.get_normalized_fisher(fisher)
 
         # step 4: compute eff. dim
-        effective_dimensions = self._get_effective_dimension(normalized_fisher, num_samples)
+        effective_dimensions = self._get_effective_dimension(normalized_fisher, num_data)
 
         return effective_dimensions
 
@@ -291,7 +291,7 @@ class EffectiveDimension:
 class LocalEffectiveDimension(EffectiveDimension):
     """
     This class computes the local effective dimension for Qiskit
-    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`\s
+    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`
     following the definition used in [1].
 
         **References**
@@ -303,24 +303,24 @@ class LocalEffectiveDimension(EffectiveDimension):
         self,
         qnn: NeuralNetwork,
         params: Optional[Union[List[float], np.ndarray, int]] = None,
-        inputs: Optional[Union[List[float], np.ndarray, int]] = None,
+        samples: Optional[Union[List[float], np.ndarray, int]] = None,
         callback: Optional[Callable[[str], None]] = None,
     ) -> None:
         """
         Args:
             params: An array of neural network parameters (weights), of shape
-                ``(1, num_weights)``, or ``None`` to sample one parameter set
+                ``(1, qnn.num_weights)``, or ``None`` to sample one parameter set
                 randomly from a uniform distribution.
-            inputs: An array of inputs to the neural network, of shape
-                ``(num_inputs, qnn_input_size)``, or an ``int`` to indicate the number of input
-                sets to sample randomly from a normal distribution. By default, ``inputs = 1``.
+            samples: An array of samples to the neural network, of shape
+                ``(num_samples, qnn.num_samples)``, or an ``int`` to indicate the number of input
+                sets to sample randomly from a normal distribution. By default, ``samples = 1``.
             callback: A callback function for the Monte Carlo sampling.
 
         Raises:
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
 
-        super().__init__(qnn, params, inputs, callback)
+        super().__init__(qnn, params, samples, callback)
 
     # override setter to enforce 1 set of parameters
     @property

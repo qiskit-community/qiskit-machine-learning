@@ -107,7 +107,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         qnn_name, num_inputs, num_params, result = config
 
         qnn = self.qnns[qnn_name]
-        global_ed = EffectiveDimension(qnn=qnn, params=num_params, inputs=num_inputs)
+        global_ed = EffectiveDimension(qnn=qnn, params=num_params, samples=num_inputs)
 
         effdim = global_ed.get_effective_dimension(self.n)
 
@@ -124,13 +124,13 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         global_ed1 = EffectiveDimension(
             qnn=qnn1,
             params=num_params,
-            inputs=num_inputs,
+            samples=num_inputs,
         )
 
         global_ed2 = EffectiveDimension(
             qnn=qnn2,
             params=num_params,
-            inputs=num_inputs,
+            samples=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n)
@@ -139,7 +139,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         self.assertAlmostEqual(effdim1, effdim2, 5)
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    def test_multiple_samples(self):
+    def test_multiple_data(self):
         """Test results for a list of sampling sizes."""
 
         num_inputs, num_params = 10, 10
@@ -148,7 +148,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         global_ed1 = EffectiveDimension(
             qnn=qnn,
             params=num_params,
-            inputs=num_inputs,
+            samples=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n_list)
@@ -169,13 +169,13 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         global_ed1 = EffectiveDimension(
             qnn=qnn,
             params=num_params,
-            inputs=num_inputs,
+            samples=num_inputs,
         )
 
         global_ed2 = EffectiveDimension(
             qnn=qnn,
             params=params,
-            inputs=inputs,
+            samples=inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n_list)
@@ -196,7 +196,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
             local_ed1 = LocalEffectiveDimension(
                 qnn=qnn,
-                inputs=inputs,
+                samples=inputs,
                 params=params,
             )
             local_ed1.get_effective_dimension(self.n)
