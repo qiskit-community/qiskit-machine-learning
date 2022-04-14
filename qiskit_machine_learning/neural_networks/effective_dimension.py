@@ -26,12 +26,12 @@ from .neural_network import NeuralNetwork
 class EffectiveDimension:
     """
     This class computes the global effective dimension for Qiskit
-    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`s
+    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`\s.
     following the definition used in [1].
 
-    **References**
-        [1]: Abbas et al., The power of quantum neural networks. `The power of QNNs
-            <https://arxiv.org/pdf/2011.00027.pdf>`_
+        **References**
+        [1]: Abbas et al., The power of quantum neural networks.
+        `The power of QNNs <https://arxiv.org/pdf/2011.00027.pdf>`__.
     """
 
     def __init__(
@@ -204,7 +204,7 @@ class EffectiveDimension:
             normalized_fisher: The Fisher Information Matrix to be normalized.
         Returns:
              normalized_fisher: The normalized Fisher Information Matrix, a numpy array
-                 of size ``(num_inputs, num_weights, num_weights)``
+                 of size ``(num_inputs, num_weights, num_weights)``.
              fisher_trace: The trace of the Fisher Information Matrix
                             (before normalizing).
         """
@@ -291,12 +291,12 @@ class EffectiveDimension:
 class LocalEffectiveDimension(EffectiveDimension):
     """
     This class computes the local effective dimension for Qiskit
-    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`s
+    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`\s
     following the definition used in [1].
 
-    **References**
-        [1]: Abbas et al., Effective dimension of machine learning models.
-            `Local Effective Dimension <https://arxiv.org/abs/2112.04807>`_
+        **References**
+        [1]: Abbas et al., The power of quantum neural networks.
+        `The power of QNNs <https://arxiv.org/pdf/2011.00027.pdf>`__.
     """
 
     def __init__(

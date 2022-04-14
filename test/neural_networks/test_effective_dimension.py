@@ -157,6 +157,33 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         np.testing.assert_array_equal(effdim1, effdim2)
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    def test_inputs(self):
+        """Test results for different input combinations."""
+
+        qnn = self.qnns["circuit1"]
+
+        num_inputs, num_params = 10, 10
+        inputs = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
+        params = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
+
+        global_ed1 = EffectiveDimension(
+            qnn=qnn,
+            params=num_params,
+            inputs=num_inputs,
+        )
+
+        global_ed2 = EffectiveDimension(
+            qnn=qnn,
+            params=params,
+            inputs=inputs,
+        )
+
+        effdim1 = global_ed1.get_effective_dimension(self.n_list)
+        effdim2 = global_ed2.get_effective_dimension(self.n_list)
+
+        np.testing.assert_array_almost_equal(effdim1, effdim2, 0.2)
+
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_local_ed_error(self):
         """Test that QiskitMachineLearningError is raised for wrong use
         of LocalEffectiveDimension class."""
