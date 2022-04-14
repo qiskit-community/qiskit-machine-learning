@@ -22,6 +22,7 @@ from qiskit.utils import algorithm_globals
 from .opflow_qnn import OpflowQNN
 from .neural_network import NeuralNetwork
 
+
 class EffectiveDimension:
     """
     This class computes the global effective dimension for Qiskit
@@ -112,7 +113,6 @@ class EffectiveDimension:
 
         self._num_inputs = len(self._inputs)
 
-
     def run_monte_carlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         This method computes the model's Monte Carlo sampling for a set of
@@ -135,7 +135,9 @@ class EffectiveDimension:
 
         for (i, param_set) in enumerate(self.params):
             t_before_forward = time.time()
-            forward_pass = np.asarray(self._model.forward(input_data=self.inputs, weights=param_set))
+            forward_pass = np.asarray(
+                self._model.forward(input_data=self.inputs, weights=param_set)
+            )
             t_after_forward = time.time()
 
             if self._callback is not None:
@@ -161,7 +163,9 @@ class EffectiveDimension:
 
         return grads, outputs
 
-    def get_fisher_information(self, gradients: np.ndarray, model_outputs: np.ndarray) -> np.ndarray:
+    def get_fisher_information(
+        self, gradients: np.ndarray, model_outputs: np.ndarray
+    ) -> np.ndarray:
 
         """
         This method computes the average Jacobian for every set of gradients and
