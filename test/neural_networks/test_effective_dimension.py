@@ -33,7 +33,6 @@ from qiskit_machine_learning.neural_networks import (
 from qiskit_machine_learning import QiskitMachineLearningError
 
 
-
 @ddt
 class TestEffectiveDimension(QiskitMachineLearningTestCase):
     """Test the Effective Dimension algorithm"""
@@ -236,6 +235,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         """Test that callback works as expected."""
 
         history = {}
+
         def callback(i, t_forward, t_backward):
             history[i] = [t_forward, t_backward]
 
