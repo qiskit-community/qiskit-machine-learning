@@ -1,8 +1,8 @@
 ---
 features:
   - |
-    Introduced two new classes, :class:`~qiskit_machine_learning.algorithms.EffectiveDimension`
-    and :class:`~qiskit_machine_learning.algorithms.LocalEffectiveDimension`,
+    Introduced two new classes, :class:`~qiskit_machine_learning.neural_networks.EffectiveDimension`
+    and :class:`~qiskit_machine_learning.neural_networks.LocalEffectiveDimension`,
     for calculating the capacity of quantum neural network models through the 
     computation of the Fisher Information Matrix. The local effective dimension bounds 
     the generalization error of QNNs and only accepts single parameter sets as inputs. 
