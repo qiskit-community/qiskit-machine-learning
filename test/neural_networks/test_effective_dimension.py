@@ -13,6 +13,7 @@
 """ Unit Tests for Effective Dimension Algorithm """
 
 import unittest
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
@@ -29,6 +30,7 @@ from qiskit_machine_learning.neural_networks import (
     EffectiveDimension,
     LocalEffectiveDimension,
 )
+from qiskit_machine_learning import QiskitMachineLearningError
 
 
 @ddt
@@ -184,11 +186,38 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         np.testing.assert_array_almost_equal(effdim1, effdim2, 0.2)
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    def test_inputs_shapes(self):
+        """Test results for different input combinations."""
+
+        qnn = self.qnns["circuit1"]
+
+        num_inputs, num_params = 10, 10
+        inputs_ok = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
+        params_ok = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
+
+        inputs_wrong = algorithm_globals.random.uniform(0, 1, size=(num_inputs, 1))
+        params_wrong = algorithm_globals.random.uniform(0, 1, size=(num_params, 1))
+
+        with self.assertRaises(QiskitMachineLearningError):
+            EffectiveDimension(
+                qnn=qnn,
+                params=params_ok,
+                samples=inputs_wrong,
+            )
+
+        with self.assertRaises(QiskitMachineLearningError):
+            EffectiveDimension(
+                qnn=qnn,
+                params=params_wrong,
+                samples=inputs_ok,
+            )
+
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_local_ed_error(self):
         """Test that QiskitMachineLearningError is raised for wrong use
         of LocalEffectiveDimension class."""
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(QiskitMachineLearningError):
 
             qnn = self.qnns["circuit1"]
             inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
@@ -200,6 +229,22 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
                 params=params,
             )
             local_ed1.get_effective_dimension(self.n)
+
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    def test_callback(self):
+        """Test that callback works as expected."""
+
+        history = {}
+        def callback(i, t_forward, t_backward):
+            history[i] = [t_forward, t_backward]
+
+        qnn = self.qnns["circuit1"]
+        inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
+        params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
+
+        local_ed1 = EffectiveDimension(qnn=qnn, samples=inputs, params=params, callback=callback)
+        local_ed1.get_effective_dimension(self.n)
+        self.assertEqual(len(history.keys()), len(params))
 
 
 if __name__ == "__main__":

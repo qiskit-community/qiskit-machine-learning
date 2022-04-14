@@ -18,6 +18,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 from qiskit.utils import algorithm_globals
+from qiskit_machine_learning import QiskitMachineLearningError
 
 from .opflow_qnn import OpflowQNN
 from .neural_network import NeuralNetwork
@@ -39,7 +40,7 @@ class EffectiveDimension:
         qnn: NeuralNetwork,
         params: Union[List[float], np.ndarray, int] = 1,
         samples: Union[List[float], np.ndarray, int] = 1,
-        callback: Optional[Callable[[str], None]] = None,
+        callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
 
         """
@@ -91,7 +92,14 @@ class EffectiveDimension:
                 0, 1, size=(params, self._model.num_weights)
             )
         else:
-            self._params = np.asarray(params)
+            params = np.asarray(params)
+            if len(params.shape) > 2 or params.shape[1] is not self._model.num_weights:
+                raise QiskitMachineLearningError(
+                    f"The Effective Dimension class expects"
+                    f" a parameter array of shape (M, qnn.num_weights)."
+                    f" Got {params.shape}."
+                )
+            self._params = params
 
         self._num_params = len(self._params)
 
@@ -109,7 +117,14 @@ class EffectiveDimension:
                 0, 1, size=(samples, self._model.num_inputs)
             )
         else:
-            self._samples = np.asarray(samples)
+            samples = np.asarray(samples)
+            if len(samples.shape) > 2 or samples.shape[1] is not self._model.num_inputs:
+                raise QiskitMachineLearningError(
+                    f"The Effective Dimension class expects"
+                    f" an input sample array of shape (N, qnn.num_inputs)."
+                    f" Got {samples.shape}."
+                )
+            self._samples = samples
 
         self._num_samples = len(self._samples)
 
@@ -140,18 +155,15 @@ class EffectiveDimension:
             )
             t_after_forward = time.time()
 
-            if self._callback is not None:
-                msg = f"iteration {i}, time forward pass: {t_after_forward - t_before_forward}"
-                self._callback(msg)
-
             backward_pass = np.asarray(
                 self._model.backward(input_data=self.samples, weights=param_set)[1]
             )
             t_after_backward = time.time()
 
             if self._callback is not None:
-                msg = f"iteration {i}, time backward pass: {t_after_backward - t_after_forward}"
-                self._callback(msg)
+                self._callback(
+                    i, t_after_forward - t_before_forward, t_after_backward - t_after_forward
+                )
 
             grads[self._num_samples * i : self._num_samples * (i + 1)] = backward_pass
             outputs[self._num_samples * i : self._num_samples * (i + 1)] = forward_pass
@@ -245,7 +257,7 @@ class EffectiveDimension:
             n_expanded = np.asarray(num_data)
             logsum_axis = None
 
-        # calculate effective dimension for each data sample size "n" out
+        # calculate effective dimension for each data sample size out
         # of normalized normalized_fisher
         f_mod = normalized_fisher * n_expanded / (2 * np.pi * np.log(n_expanded))
         one_plus_fmod = np.eye(self._model.num_weights) + f_mod
@@ -304,7 +316,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         qnn: NeuralNetwork,
         params: Union[List[float], np.ndarray, int] = 1,
         samples: Union[List[float], np.ndarray, int] = 1,
-        callback: Optional[Callable[[str], None]] = None,
+        callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
         """
         Args:
@@ -319,7 +331,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         Raises:
             QiskitMachineLearningError: If more than 1 set of parameters is inputted.
         """
-
+        # pylint: disable=W0235
         super().__init__(qnn, params, samples, callback)
 
     # override setter to enforce 1 set of parameters
@@ -329,17 +341,26 @@ class LocalEffectiveDimension(EffectiveDimension):
         return self._params
 
     @params.setter
-    def params(self, params: Union[List[float], np.ndarray, float]) -> None:
+    def params(self, params: Union[List[float], np.ndarray, int]) -> None:
         """Sets network parameters."""
-        if params is not None:
+        if not isinstance(params, int):
             params = np.asarray(params)
+            # keep original check for 2D arrays
+            if len(params.shape) > 2 or params.shape[1] is not self._model.num_weights:
+                raise QiskitMachineLearningError(
+                    f"The Local Effective Dimension class expects"
+                    f" a parameter array of shape (1, qnn.num_weights) or (qnn.num_weights)."
+                    f" Got {params.shape}."
+                )
+            # additional check to accept 1D arrays
             if params.shape[0] > 1:
                 if len(params.shape) > 1:
-                    raise ValueError(
-                        f"The local effective dimension algorithm uses only 1 set of parameters, "
-                        f"got {params.shape[0]}"
+                    raise QiskitMachineLearningError(
+                        f"The Local Effective Dimension algorithm uses only 1 set of "
+                        f"parameters, got {params.shape[0]}."
                     )
                 params = np.expand_dims(params, 0)
+
             self._params = params
 
         else:
