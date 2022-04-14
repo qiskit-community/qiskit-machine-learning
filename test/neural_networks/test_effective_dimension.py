@@ -33,6 +33,7 @@ from qiskit_machine_learning.neural_networks import (
 from qiskit_machine_learning import QiskitMachineLearningError
 
 
+
 @ddt
 class TestEffectiveDimension(QiskitMachineLearningTestCase):
     """Test the Effective Dimension algorithm"""
