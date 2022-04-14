@@ -298,8 +298,8 @@ class LocalEffectiveDimension(EffectiveDimension):
     def __init__(
         self,
         qnn: NeuralNetwork,
-        params: Optional[Union[List[float], np.ndarray, float]] = None,
-        inputs: Optional[Union[List[float], np.ndarray, float]] = None,
+        params: Optional[Union[List[float], np.ndarray, int]] = None,
+        inputs: Optional[Union[List[float], np.ndarray, int]] = None,
         callback: Optional[Callable[[str], None]] = None,
     ) -> None:
         """
