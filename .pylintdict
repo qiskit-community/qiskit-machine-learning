@@ -15,6 +15,7 @@ bitstrings
 bool
 boolean
 cargs
+carlo
 cbit
 chuang
 clbit
@@ -92,6 +93,7 @@ mcry
 mcrz
 misclassified
 mixin
+monte
 mpl
 multiclass
 multioutput
