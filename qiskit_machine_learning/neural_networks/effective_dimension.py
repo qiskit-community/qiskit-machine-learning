@@ -345,24 +345,16 @@ class LocalEffectiveDimension(EffectiveDimension):
         """Sets network parameters."""
         if not isinstance(params, int):
             params = np.asarray(params)
-            # keep original check for 2D arrays
-            if len(params.shape) > 2 or params.shape[1] is not self._model.num_weights:
+            # additional check to accept 1D arrays
+            if len(params.shape) < 2:
+                params = np.expand_dims(params, 0)
+            if params.shape[0] != 1 or params.shape[1] != self._model.num_weights:
                 raise QiskitMachineLearningError(
                     f"The Local Effective Dimension class expects"
                     f" a parameter array of shape (1, qnn.num_weights) or (qnn.num_weights)."
                     f" Got {params.shape}."
                 )
-            # additional check to accept 1D arrays
-            if params.shape[0] > 1:
-                if len(params.shape) > 1:
-                    raise QiskitMachineLearningError(
-                        f"The Local Effective Dimension algorithm uses only 1 set of "
-                        f"parameters, got {params.shape[0]}."
-                    )
-                params = np.expand_dims(params, 0)
-
             self._params = params
-
         else:
             # random sampling from uniform distribution
             self._params = algorithm_globals.random.uniform(0, 1, size=(1, self._model.num_weights))

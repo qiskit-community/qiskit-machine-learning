@@ -213,22 +213,36 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
             )
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    def test_local_ed_error(self):
-        """Test that QiskitMachineLearningError is raised for wrong use
-        of LocalEffectiveDimension class."""
+    def test_local_ed_params(self):
+        """Test that QiskitMachineLearningError is raised for wrong parameters sizes."""
+
+        qnn = self.qnns["circuit1"]
+
+        num_inputs, num_params = 10, 10
+        inputs_ok = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
+        params_ok = algorithm_globals.random.uniform(0, 1, size=(1, qnn.num_weights))
+        params_ok2 = algorithm_globals.random.uniform(0, 1, size=(qnn.num_weights))
+        params_wrong = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
+
+        # test ok params
+        LocalEffectiveDimension(
+            qnn=qnn,
+            params=params_ok,
+            samples=inputs_ok,
+        )
+
+        LocalEffectiveDimension(
+            qnn=qnn,
+            params=params_ok2,
+            samples=inputs_ok,
+        )
 
         with self.assertRaises(QiskitMachineLearningError):
-
-            qnn = self.qnns["circuit1"]
-            inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
-            params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
-
-            local_ed1 = LocalEffectiveDimension(
+            LocalEffectiveDimension(
                 qnn=qnn,
-                samples=inputs,
-                params=params,
+                params=params_wrong,
+                samples=inputs_ok,
             )
-            local_ed1.get_effective_dimension(self.n)
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_callback(self):
