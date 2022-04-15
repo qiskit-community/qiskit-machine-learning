@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -61,16 +61,16 @@ test_ci:
 
 spell:
 	pylint -rn --disable=all --enable=spelling --spelling-dict=en_US --spelling-private-dict-file=.pylintdict qiskit_machine_learning test tools
-	sphinx-build -M spelling docs docs/_build -W $(SPHINXOPTS)
+	sphinx-build -M spelling docs docs/_build -W -T --keep-going $(SPHINXOPTS)
 
 copyright:
 	python tools/check_copyright.py
 
 html:
-	sphinx-build -M html docs docs/_build $(SPHINXOPTS)
+	sphinx-build -M html docs docs/_build -W -T --keep-going $(SPHINXOPTS)
 
 doctest:
-	sphinx-build -M doctest docs docs/_build $(SPHINXOPTS)
+	sphinx-build -M doctest docs docs/_build -W -T --keep-going $(SPHINXOPTS)
 
 clean_sphinx:
 	make -C docs clean
