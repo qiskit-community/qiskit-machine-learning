@@ -84,7 +84,7 @@ jobs:
       - name: Run make html
         run:  |
           make clean_sphinx
-          make html SPHINXOPTS=-W
+          make html
           cd docs/_build/html
           mkdir artifacts
           tar -zcvf artifacts/documentation.tar.gz --exclude=./artifacts .
@@ -197,7 +197,7 @@ jobs:
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
           echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
-          make html SPHINXOPTS=-W
+          make html
           cd docs/_build/html
           mkdir artifacts
           tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
@@ -226,7 +226,7 @@ jobs:
           echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
           # ignore unreleased/untagged notes
           tools/ignore_untagged_notes.sh
-          make html SPHINXOPTS=-W
+          make html
           cd docs/_build/html
           mkdir artifacts
           tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
