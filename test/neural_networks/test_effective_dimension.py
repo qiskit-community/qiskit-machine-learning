@@ -224,7 +224,6 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         params_ok2 = algorithm_globals.random.uniform(0, 1, size=(qnn.num_weights))
         params_wrong = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
 
-        # test ok params
         LocalEffectiveDimension(
             qnn=qnn,
             params=params_ok,
