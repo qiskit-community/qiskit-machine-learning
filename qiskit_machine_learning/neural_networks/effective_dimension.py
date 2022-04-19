@@ -252,16 +252,16 @@ class EffectiveDimension:
     def _get_effective_dimension(
         self,
         normalized_fisher: Union[List[float], np.ndarray],
-        num_data: Union[List[int], np.ndarray, int],
+        dataset_size: Union[List[int], np.ndarray, int],
     ) -> Union[np.ndarray, int]:
 
-        if not isinstance(num_data, int) and len(num_data) > 1:
+        if not isinstance(dataset_size, int) and len(dataset_size) > 1:
             # expand dims for broadcasting
             normalized_fisher = np.expand_dims(normalized_fisher, axis=0)
-            n_expanded = np.expand_dims(np.asarray(num_data), axis=(1, 2, 3))
+            n_expanded = np.expand_dims(np.asarray(dataset_size), axis=(1, 2, 3))
             logsum_axis = 1
         else:
-            n_expanded = np.asarray(num_data)
+            n_expanded = np.asarray(dataset_size)
             logsum_axis = None
 
         # calculate effective dimension for each data sample size out
@@ -275,21 +275,23 @@ class EffectiveDimension:
         effective_dims = (
             2
             * (logsumexp(dets_div, axis=logsum_axis) - np.log(self._num_weight_samples))
-            / np.log(num_data / (2 * np.pi * np.log(num_data)))
+            / np.log(dataset_size / (2 * np.pi * np.log(dataset_size)))
         )
 
         return np.squeeze(effective_dims)
 
     def get_effective_dimension(
-        self, num_data: Union[List[int], np.ndarray, int]
+        self, dataset_size: Union[List[int], np.ndarray, int]
     ) -> Union[np.ndarray, int]:
         """
-        This method compute the effective dimension for a data sample of size ``num_data``.
+        This method computes the effective dimension for a dataset of size ``dataset_size``. If an
+        array is passed, then effective dimension computed for each value in the array.
 
         Args:
-            num_data: array of data sizes.
+            dataset_size: array of data sizes or a single integer value.
+
         Returns:
-             effective_dim: array of effective dimensions for each sample size in ``num_data``.
+             effective_dim: array of effective dimensions for each dataset size in ``num_data``.
         """
 
         # step 1: Monte Carlo sampling
@@ -302,7 +304,7 @@ class EffectiveDimension:
         normalized_fisher, _ = self.get_normalized_fisher(fisher)
 
         # step 4: compute eff. dim
-        effective_dimensions = self._get_effective_dimension(normalized_fisher, num_data)
+        effective_dimensions = self._get_effective_dimension(normalized_fisher, dataset_size)
 
         return effective_dimensions
 
