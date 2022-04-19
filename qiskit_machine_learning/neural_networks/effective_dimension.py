@@ -100,7 +100,7 @@ class EffectiveDimension:
             ):
                 raise QiskitMachineLearningError(
                     f"The Effective Dimension class expects"
-                    f" a parameter array of shape (M, qnn.num_weights)."
+                    f" a weight_samples array of shape (M, qnn.num_weights)."
                     f" Got {weight_samples.shape}."
                 )
             self._weight_samples = weight_samples
