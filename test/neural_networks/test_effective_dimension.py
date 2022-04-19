@@ -109,7 +109,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         qnn_name, num_inputs, num_params, result = config
 
         qnn = self.qnns[qnn_name]
-        global_ed = EffectiveDimension(qnn=qnn, params=num_params, samples=num_inputs)
+        global_ed = EffectiveDimension(qnn=qnn, weight_samples=num_params, input_samples=num_inputs)
 
         effdim = global_ed.get_effective_dimension(self.n)
 
@@ -125,14 +125,14 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
         global_ed1 = EffectiveDimension(
             qnn=qnn1,
-            params=num_params,
-            samples=num_inputs,
+            weight_samples=num_params,
+            input_samples=num_inputs,
         )
 
         global_ed2 = EffectiveDimension(
             qnn=qnn2,
-            params=num_params,
-            samples=num_inputs,
+            weight_samples=num_params,
+            input_samples=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n)
@@ -149,8 +149,8 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
         global_ed1 = EffectiveDimension(
             qnn=qnn,
-            params=num_params,
-            samples=num_inputs,
+            weight_samples=num_params,
+            input_samples=num_inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n_list)
@@ -170,14 +170,14 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
         global_ed1 = EffectiveDimension(
             qnn=qnn,
-            params=num_params,
-            samples=num_inputs,
+            weight_samples=num_params,
+            input_samples=num_inputs,
         )
 
         global_ed2 = EffectiveDimension(
             qnn=qnn,
-            params=params,
-            samples=inputs,
+            weight_samples=params,
+            input_samples=inputs,
         )
 
         effdim1 = global_ed1.get_effective_dimension(self.n_list)
@@ -201,15 +201,15 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         with self.assertRaises(QiskitMachineLearningError):
             EffectiveDimension(
                 qnn=qnn,
-                params=params_ok,
-                samples=inputs_wrong,
+                weight_samples=params_ok,
+                input_samples=inputs_wrong,
             )
 
         with self.assertRaises(QiskitMachineLearningError):
             EffectiveDimension(
                 qnn=qnn,
-                params=params_wrong,
-                samples=inputs_ok,
+                weight_samples=params_wrong,
+                input_samples=inputs_ok,
             )
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
@@ -226,21 +226,21 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
         LocalEffectiveDimension(
             qnn=qnn,
-            params=params_ok,
-            samples=inputs_ok,
+            weight_samples=params_ok,
+            input_samples=inputs_ok,
         )
 
         LocalEffectiveDimension(
             qnn=qnn,
-            params=params_ok2,
-            samples=inputs_ok,
+            weight_samples=params_ok2,
+            input_samples=inputs_ok,
         )
 
         with self.assertRaises(QiskitMachineLearningError):
             LocalEffectiveDimension(
                 qnn=qnn,
-                params=params_wrong,
-                samples=inputs_ok,
+                weight_samples=params_wrong,
+                input_samples=inputs_ok,
             )
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
@@ -256,7 +256,9 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
         params = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
 
-        local_ed1 = EffectiveDimension(qnn=qnn, samples=inputs, params=params, callback=callback)
+        local_ed1 = EffectiveDimension(
+            qnn=qnn, input_samples=inputs, weight_samples=params, callback=callback
+        )
         local_ed1.get_effective_dimension(self.n)
         self.assertEqual(len(history.keys()), len(params))
 
