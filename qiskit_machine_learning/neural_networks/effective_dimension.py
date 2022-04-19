@@ -346,7 +346,7 @@ class LocalEffectiveDimension(EffectiveDimension):
             if weights.shape[0] != 1 or weights.shape[1] != self._model.num_weights:
                 raise QiskitMachineLearningError(
                     f"The Local Effective Dimension class expects"
-                    f" a parameter array of shape (1, qnn.num_weights) or (qnn.num_weights)."
+                    f" a weight_samples array of shape (1, qnn.num_weights) or (qnn.num_weights)."
                     f" Got {weights.shape}."
                 )
             self._weight_samples = weights
