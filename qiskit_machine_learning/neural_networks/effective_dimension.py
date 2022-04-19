@@ -219,10 +219,12 @@ class EffectiveDimension:
 
         Args:
             normalized_fisher: The Fisher Information Matrix to be normalized.
+
         Returns:
-             normalized_fisher: The normalized Fisher Information Matrix, a numpy array
-                 of size ``(num_input_samples, num_weights, num_weights)``.
-             fisher_trace: The trace of the Fisher Information Matrix (before normalizing).
+             normalized_fisher: The normalized Fisher Information Matrix, a numpy array of size
+                ``(num_input_samples, num_weights, num_weights)``.
+             fisher_trace: The trace of the Fisher Information Matrix
+                (before normalizing).
         """
 
         # compute the trace with all normalized_fisher
