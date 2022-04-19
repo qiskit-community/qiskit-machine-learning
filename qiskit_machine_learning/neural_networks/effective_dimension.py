@@ -311,7 +311,7 @@ class EffectiveDimension:
 
 class LocalEffectiveDimension(EffectiveDimension):
     """
-    This class computes the local effective dimension for Qiskit
+    This class computes the local effective dimension for a Qiskit
     :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`
     following the definition used in [1].
 
