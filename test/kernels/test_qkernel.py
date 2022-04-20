@@ -680,25 +680,5 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         self.assertEqual(sum(self.circuit_counts), num_circuits)
 
 
-class TestQuantumKernelCustomPassManager(QiskitMachineLearningTestCase):
-    """Test quantum kernel with a bound pass manager."""
-
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    def setUp(self):
-        super().setUp()
-
-        algorithm_globals.random_seed = 10598
-
-        backend = qiskit.providers.aer.AerSimulator()
-        self.quantum_instance_pm = QuantumInstance(
-            backend,
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-            pass_manager=level_1_pass_manager(PassManagerConfig.from_backend(backend)),
-            bound_pass_manager=level_1_pass_manager(PassManagerConfig.from_backend(backend)),
-        )
-
-
 if __name__ == "__main__":
     unittest.main()
