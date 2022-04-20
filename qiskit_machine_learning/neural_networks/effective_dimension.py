@@ -90,10 +90,7 @@ class EffectiveDimension:
             )
         else:
             weight_samples = np.asarray(weight_samples)
-            if (
-                len(weight_samples.shape) > 2
-                or weight_samples.shape[1] != self._model.num_weights
-            ):
+            if len(weight_samples.shape) > 2 or weight_samples.shape[1] != self._model.num_weights:
                 raise QiskitMachineLearningError(
                     f"The Effective Dimension class expects"
                     f" a weight_samples array of shape (M, qnn.num_weights)."
