@@ -134,6 +134,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         effdim1 = global_ed1.get_effective_dimension(self.n)
         effdim2 = global_ed2.get_effective_dimension(self.n)
 
+        self.assertAlmostEqual(effdim1, 1.395, 3)
         self.assertAlmostEqual(effdim1, effdim2, 5)
 
     def test_multiple_data(self):
@@ -177,8 +178,6 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         effdim1 = global_ed1.get_effective_dimension(self.n_list)
         effdim2 = global_ed2.get_effective_dimension(self.n_list)
 
-        print(effdim1)
-        print(effdim2)
         np.testing.assert_array_almost_equal(effdim1, effdim2, 0.2)
 
     def test_inputs_shapes(self):

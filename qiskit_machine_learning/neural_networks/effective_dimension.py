@@ -75,18 +75,14 @@ class EffectiveDimension:
         # input setter uses self._model
         self.input_samples = input_samples  # type: ignore
 
-    def num_weights(self) -> int:
-        """Returns the dimension of the model according to the definition from [1]."""
-        return self._model.num_weights
-
     @property
     def weight_samples(self) -> np.ndarray:
-        """Returns network parameters (weights)."""
+        """Returns network weight samples."""
         return self._weight_samples
 
     @weight_samples.setter
     def weight_samples(self, weight_samples: Union[List[float], np.ndarray, int]) -> None:
-        """Sets network parameters (weights)."""
+        """Sets network weight samples."""
         if isinstance(weight_samples, int):
             # random sampling from uniform distribution
             self._weight_samples = algorithm_globals.random.uniform(
@@ -96,7 +92,7 @@ class EffectiveDimension:
             weight_samples = np.asarray(weight_samples)
             if (
                 len(weight_samples.shape) > 2
-                or weight_samples.shape[1] is not self._model.num_weights
+                or weight_samples.shape[1] != self._model.num_weights
             ):
                 raise QiskitMachineLearningError(
                     f"The Effective Dimension class expects"
@@ -135,13 +131,13 @@ class EffectiveDimension:
     def run_monte_carlo(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         This method computes the model's Monte Carlo sampling for a set of input samples and
-        parameters (weights).
+        weight samples.
 
         Returns:
              grads: QNN gradient vector, result of backward passes, of shape
-                ``(num_samples * num_params, output_size, num_weights)``.
+                ``(num_input_samples * num_weight_samples, output_size, num_weights)``.
              outputs: QNN output vector, result of forward passes, of shape
-                ``(num_samples * num_params, output_size)``.
+                ``(num_input_samples * num_weight_samples, output_size)``.
         """
         grads = np.zeros(
             (
