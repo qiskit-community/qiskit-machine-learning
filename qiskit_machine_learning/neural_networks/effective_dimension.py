@@ -38,8 +38,8 @@ class EffectiveDimension:
     def __init__(
         self,
         qnn: NeuralNetwork,
-        weight_samples: Union[List[float], np.ndarray, int] = 1,
-        input_samples: Union[List[float], np.ndarray, int] = 1,
+        weight_samples: Union[np.ndarray, int] = 1,
+        input_samples: Union[np.ndarray, int] = 1,
         callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
 
@@ -81,7 +81,7 @@ class EffectiveDimension:
         return self._weight_samples
 
     @weight_samples.setter
-    def weight_samples(self, weight_samples: Union[List[float], np.ndarray, int]) -> None:
+    def weight_samples(self, weight_samples: Union[np.ndarray, int]) -> None:
         """Sets network weight samples."""
         if isinstance(weight_samples, int):
             # random sampling from uniform distribution
@@ -89,6 +89,7 @@ class EffectiveDimension:
                 0, 1, size=(weight_samples, self._model.num_weights)
             )
         else:
+            # to be sure we have an array
             weight_samples = np.asarray(weight_samples)
             if len(weight_samples.shape) != 2 or weight_samples.shape[1] != self._model.num_weights:
                 raise QiskitMachineLearningError(
@@ -106,7 +107,7 @@ class EffectiveDimension:
         return self._input_samples
 
     @input_samples.setter
-    def input_samples(self, input_samples: Union[List[float], np.ndarray, int]) -> None:
+    def input_samples(self, input_samples: Union[np.ndarray, int]) -> None:
         """Sets network input samples."""
         if isinstance(input_samples, int):
             # random sampling from normal distribution
@@ -114,6 +115,7 @@ class EffectiveDimension:
                 0, 1, size=(input_samples, self._model.num_inputs)
             )
         else:
+            # to be sure we have an array
             input_samples = np.asarray(input_samples)
             if len(input_samples.shape) > 2 or input_samples.shape[1] != self._model.num_inputs:
                 raise QiskitMachineLearningError(
@@ -244,7 +246,7 @@ class EffectiveDimension:
 
     def _get_effective_dimension(
         self,
-        normalized_fisher: Union[List[float], np.ndarray],
+        normalized_fisher: np.ndarray,
         dataset_size: Union[List[int], np.ndarray, int],
     ) -> Union[np.ndarray, int]:
 
@@ -323,7 +325,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         return self._weight_samples
 
     @weight_samples.setter
-    def weight_samples(self, weight_samples: Union[List[float], np.ndarray, int]) -> None:
+    def weight_samples(self, weight_samples: Union[np.ndarray, int]) -> None:
         """Sets network parameters."""
         if isinstance(weight_samples, int):
             # random sampling from uniform distribution
