@@ -96,7 +96,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         self.n = 5000
 
     @data(
-        # qnn_name, num_inputs, num_params, result
+        # qnn_name, num_inputs, num_weights, result
         ("circuit1", 10, 10, 4.51202148),
         ("circuit1", 1, 1, 1.39529449),
         ("circuit1", 10, 1, 3.97371533),

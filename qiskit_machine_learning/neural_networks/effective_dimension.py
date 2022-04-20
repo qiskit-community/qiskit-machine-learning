@@ -26,7 +26,7 @@ from .neural_network import NeuralNetwork
 
 class EffectiveDimension:
     """
-    This class computes the global effective dimension for Qiskit
+    This class computes the global effective dimension for a Qiskit
     :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`
     following the definition used in [1].
 
@@ -96,7 +96,7 @@ class EffectiveDimension:
             ):
                 raise QiskitMachineLearningError(
                     f"The Effective Dimension class expects"
-                    f" a parameter array of shape (M, qnn.num_weights)."
+                    f" a weight_samples array of shape (M, qnn.num_weights)."
                     f" Got {weight_samples.shape}."
                 )
             self._weight_samples = weight_samples
@@ -307,7 +307,7 @@ class EffectiveDimension:
 
 class LocalEffectiveDimension(EffectiveDimension):
     """
-    This class computes the local effective dimension for Qiskit
+    This class computes the local effective dimension for a Qiskit
     :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`
     following the definition used in [1].
 
@@ -342,7 +342,7 @@ class LocalEffectiveDimension(EffectiveDimension):
             if weights.shape[0] != 1 or weights.shape[1] != self._model.num_weights:
                 raise QiskitMachineLearningError(
                     f"The Local Effective Dimension class expects"
-                    f" a parameter array of shape (1, qnn.num_weights) or (qnn.num_weights)."
+                    f" a weight_samples array of shape (1, qnn.num_weights) or (qnn.num_weights)."
                     f" Got {weights.shape}."
                 )
             self._weight_samples = weights
