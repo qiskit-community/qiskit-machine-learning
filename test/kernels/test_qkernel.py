@@ -12,23 +12,27 @@
 
 """ Test QuantumKernel """
 
-import unittest
 import functools
+import unittest
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-
-from sklearn.svm import SVC
-
+import qiskit
+from ddt import data, ddt
 from qiskit import BasicAer, QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit.transpiler import PassManagerConfig
+from qiskit.transpiler.preset_passmanagers import level_1_pass_manager
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from sklearn.svm import SVC
+
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.kernels import QuantumKernel
 
 
+@ddt
 class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
     """Test QuantumKernel for Classification using SKLearn"""
 
@@ -83,6 +87,28 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
         svc = SVC(kernel="precomputed")
         svc.fit(kernel_train, self.label_train)
         score = svc.score(kernel_test, self.label_test)
+
+        self.assertEqual(score, 0.5)
+
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    @data(qiskit.providers.aer.AerSimulator(), BasicAer.get_backend("statevector_simulator"))
+    def test_custom_pass_manager(self, backend):
+        """Test quantum kernel with a custom pass manager."""
+
+        quantum_instance = QuantumInstance(
+            backend,
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+            pass_manager=level_1_pass_manager(PassManagerConfig(basis_gates=["u3", "cx"])),
+            bound_pass_manager=level_1_pass_manager(PassManagerConfig(basis_gates=["u3", "cx"])),
+        )
+
+        kernel = QuantumKernel(feature_map=self.feature_map, quantum_instance=quantum_instance)
+
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(self.sample_train, self.label_train)
+        score = svc.score(self.sample_test, self.label_test)
 
         self.assertEqual(score, 0.5)
 
@@ -652,6 +678,26 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         num_circuits = num_train * (num_train - 1) / 2
 
         self.assertEqual(sum(self.circuit_counts), num_circuits)
+
+
+class TestQuantumKernelCustomPassManager(QiskitMachineLearningTestCase):
+    """Test quantum kernel with a bound pass manager."""
+
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    def setUp(self):
+        super().setUp()
+
+        algorithm_globals.random_seed = 10598
+
+        backend = qiskit.providers.aer.AerSimulator()
+        self.quantum_instance_pm = QuantumInstance(
+            backend,
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+            pass_manager=level_1_pass_manager(PassManagerConfig.from_backend(backend)),
+            bound_pass_manager=level_1_pass_manager(PassManagerConfig.from_backend(backend)),
+        )
 
 
 if __name__ == "__main__":
