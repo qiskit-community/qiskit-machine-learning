@@ -117,7 +117,7 @@ class EffectiveDimension:
         else:
             # to be sure we have an array
             input_samples = np.asarray(input_samples)
-            if len(input_samples.shape) > 2 or input_samples.shape[1] != self._model.num_inputs:
+            if len(input_samples.shape) != 2 or input_samples.shape[1] != self._model.num_inputs:
                 raise QiskitMachineLearningError(
                     f"The Effective Dimension class expects"
                     f" an input sample array of shape (N, qnn.num_inputs)."
