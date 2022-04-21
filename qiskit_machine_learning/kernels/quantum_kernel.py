@@ -487,7 +487,7 @@ class QuantumKernel:
                     parameterized_circuit.assign_parameters({feature_map_params: x})
                     for x in to_be_computed_data[min_idx:max_idx]
                 ]
-                if self._quantum_instance.bound_pass_manager:
+                if self._quantum_instance.bound_pass_manager is not None:
                     circuits = self._quantum_instance.transpile(
                         circuits, pass_manager=self._quantum_instance.bound_pass_manager
                     )
