@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2021.
+# (C) Copyright IBM 2019, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -22,7 +22,7 @@ import numpy as np
 from scipy.stats import entropy
 
 from qiskit.circuit import QuantumCircuit
-from qiskit.providers import Backend, BaseBackend
+from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms.optimizers import Optimizer
 from qiskit.opflow.gradients import Gradient
@@ -75,7 +75,7 @@ class QGAN:
         generator: Optional[GenerativeNetwork] = None,
         tol_rel_ent: Optional[float] = None,
         snapshot_dir: Optional[str] = None,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
     ) -> None:
         """
 
@@ -178,7 +178,7 @@ class QGAN:
 
     def run(
         self,
-        quantum_instance: Optional[Union[QuantumInstance, Backend, BaseBackend]] = None,
+        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
         **kwargs,
     ) -> Dict:
         """Execute the algorithm with selected backend.
@@ -195,7 +195,7 @@ class QGAN:
             raise QiskitMachineLearningError(
                 "A QuantumInstance or Backend must be supplied to run the quantum algorithm."
             )
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
+        if isinstance(quantum_instance, Backend):
             self.set_backend(quantum_instance, **kwargs)
         else:
             if quantum_instance is not None:
@@ -209,26 +209,24 @@ class QGAN:
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(
-        self, quantum_instance: Union[QuantumInstance, BaseBackend, Backend]
-    ) -> None:
+    def quantum_instance(self, quantum_instance: Union[QuantumInstance, Backend]) -> None:
         """Sets quantum instance."""
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
+        if isinstance(quantum_instance, Backend):
             quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 
-    def set_backend(self, backend: Union[Backend, BaseBackend], **kwargs) -> None:
+    def set_backend(self, backend: Backend, **kwargs) -> None:
         """Sets backend with configuration."""
         self.quantum_instance = QuantumInstance(backend)
         self.quantum_instance.set_config(**kwargs)
 
     @property
-    def backend(self) -> Union[Backend, BaseBackend]:
+    def backend(self) -> Backend:
         """Returns backend."""
         return self.quantum_instance.backend
 
     @backend.setter
-    def backend(self, backend: Union[Backend, BaseBackend]):
+    def backend(self, backend: Backend):
         """Sets backend without additional configuration."""
         self.set_backend(backend)
 

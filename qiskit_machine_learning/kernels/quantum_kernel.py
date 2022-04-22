@@ -22,7 +22,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit import Parameter, ParameterVector, ParameterExpression
 from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.providers import Backend, BaseBackend
+from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 from ..exceptions import QiskitMachineLearningError
 
@@ -52,7 +52,7 @@ class QuantumKernel:
         feature_map: Optional[QuantumCircuit] = None,
         enforce_psd: bool = True,
         batch_size: int = 900,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
         user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
         """
@@ -110,11 +110,9 @@ class QuantumKernel:
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(
-        self, quantum_instance: Union[Backend, BaseBackend, QuantumInstance]
-    ) -> None:
+    def quantum_instance(self, quantum_instance: Union[Backend, QuantumInstance]) -> None:
         """Set quantum instance"""
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
+        if isinstance(quantum_instance, Backend):
             self._quantum_instance = QuantumInstance(quantum_instance)
         else:
             self._quantum_instance = quantum_instance
@@ -395,7 +393,7 @@ class QuantumKernel:
             raise QiskitMachineLearningError(
                 "A QuantumInstance or Backend must be supplied to evaluate a quantum kernel."
             )
-        if isinstance(self._quantum_instance, (BaseBackend, Backend)):
+        if isinstance(self._quantum_instance, Backend):
             self._quantum_instance = QuantumInstance(self._quantum_instance)
 
         if not isinstance(x_vec, np.ndarray):
@@ -478,7 +476,9 @@ class QuantumKernel:
                 measurement=measurement,
                 is_statevector_sim=is_statevector_sim,
             )
-            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
+            parameterized_circuit = self._quantum_instance.transpile(
+                parameterized_circuit, pass_manager=self._quantum_instance.unbound_pass_manager
+            )[0]
             statevectors = []
 
             for min_idx in range(0, len(to_be_computed_data), self._batch_size):
@@ -487,6 +487,10 @@ class QuantumKernel:
                     parameterized_circuit.assign_parameters({feature_map_params: x})
                     for x in to_be_computed_data[min_idx:max_idx]
                 ]
+                if self._quantum_instance.bound_pass_manager is not None:
+                    circuits = self._quantum_instance.transpile(
+                        circuits, pass_manager=self._quantum_instance.bound_pass_manager
+                    )
                 results = self._quantum_instance.execute(circuits, had_transpiled=True)
                 for j in range(max_idx - min_idx):
                     statevectors.append(results.get_statevector(j))
@@ -511,7 +515,9 @@ class QuantumKernel:
                 measurement=measurement,
                 is_statevector_sim=is_statevector_sim,
             )
-            parameterized_circuit = self._quantum_instance.transpile(parameterized_circuit)[0]
+            parameterized_circuit = self._quantum_instance.transpile(
+                parameterized_circuit, pass_manager=self._quantum_instance.unbound_pass_manager
+            )[0]
 
             for idx in range(0, len(mus), self._batch_size):
                 to_be_computed_data_pair = []
@@ -531,6 +537,10 @@ class QuantumKernel:
                     )
                     for x, y in to_be_computed_data_pair
                 ]
+                if self._quantum_instance.bound_pass_manager is not None:
+                    circuits = self._quantum_instance.transpile(
+                        circuits, pass_manager=self._quantum_instance.bound_pass_manager
+                    )
 
                 results = self._quantum_instance.execute(circuits, had_transpiled=True)
 

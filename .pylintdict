@@ -15,6 +15,7 @@ bitstrings
 bool
 boolean
 cargs
+carlo
 cbit
 chuang
 clbit
@@ -51,6 +52,7 @@ endian
 entangler
 et
 eval
+expressibility
 formatter
 func
 gambetta
@@ -73,6 +75,7 @@ isometry
 iten
 iterable
 iteratively
+jacobian
 jm
 jupyter
 kandala
@@ -90,6 +93,7 @@ mcry
 mcrz
 misclassified
 mixin
+monte
 mpl
 multiclass
 multioutput
@@ -186,10 +190,12 @@ sx
 sy
 temme
 tensored
+terra
 th
 toctree
 todo
 traceback
+trainability
 transpilation
 transpile
 transpiled
