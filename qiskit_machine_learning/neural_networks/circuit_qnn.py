@@ -357,7 +357,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        if self._quantum_instance.bound_pass_manager:
+        if self._quantum_instance.bound_pass_manager is not None:
             circuits = self._quantum_instance.transpile(
                 circuits, pass_manager=self._quantum_instance.bound_pass_manager
             )
@@ -392,7 +392,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        if self._quantum_instance.bound_pass_manager:
+        if self._quantum_instance.bound_pass_manager is not None:
             circuits = self._quantum_instance.transpile(
                 circuits, pass_manager=self._quantum_instance.bound_pass_manager
             )
