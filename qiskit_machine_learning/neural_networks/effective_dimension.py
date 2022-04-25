@@ -11,8 +11,9 @@
 # that they have been altered from the originals.
 """An implementation of the effective dimension algorithm."""
 
+import logging
 import time
-from typing import Optional, Union, List, Callable, Tuple
+from typing import Union, List, Tuple
 
 import numpy as np
 from scipy.special import logsumexp
@@ -22,6 +23,8 @@ from qiskit_machine_learning import QiskitMachineLearningError
 
 from .opflow_qnn import OpflowQNN
 from .neural_network import NeuralNetwork
+
+logger = logging.getLogger(__name__)
 
 
 class EffectiveDimension:
@@ -40,7 +43,6 @@ class EffectiveDimension:
         qnn: NeuralNetwork,
         weight_samples: Union[np.ndarray, int] = 1,
         input_samples: Union[np.ndarray, int] = 1,
-        callback: Optional[Callable[[int, float, float], None]] = None,
     ) -> None:
 
         """
@@ -59,7 +61,6 @@ class EffectiveDimension:
                 ``(num_input_samples, qnn_input_size)``, or an ``int`` to indicate the number of
                 input sets to sample randomly from a normal distribution. By default,
                 ``input_samples = 1``.
-            callback: A callback function for the Monte Carlo sampling.
         """
 
         # Store arguments
@@ -68,7 +69,6 @@ class EffectiveDimension:
         self._num_weight_samples = 1
         self._num_input_samples = 1
         self._model = qnn
-        self._callback = callback
 
         # Define weight samples and input samples
         self.weight_samples = weight_samples  # type: ignore
@@ -161,10 +161,14 @@ class EffectiveDimension:
             )
             t_after_backward = time.time()
 
-            if self._callback is not None:
-                self._callback(
-                    i, t_after_forward - t_before_forward, t_after_backward - t_after_forward
-                )
+            t_forward = t_after_forward - t_before_forward
+            t_backward = t_after_backward - t_after_forward
+            logger.debug(
+                "Weight sample: %d, forward time: %.3f (s), backward time: %.3f (s)",
+                i,
+                t_forward,
+                t_backward,
+            )
 
             grads[self._num_input_samples * i : self._num_input_samples * (i + 1)] = backward_pass
             outputs[self._num_input_samples * i : self._num_input_samples * (i + 1)] = forward_pass
@@ -335,6 +339,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         else:
             # there is a weird mypy error if we keep the same variable name, so there's 'weights'
             weights = np.asarray(weight_samples)
+            # additional check to accept 1D arrays
             # additional check to accept 1D arrays
             if len(weights.shape) < 2:
                 weights = np.expand_dims(weight_samples, 0)
