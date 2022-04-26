@@ -340,7 +340,6 @@ class LocalEffectiveDimension(EffectiveDimension):
             # there is a weird mypy error if we keep the same variable name, so there's 'weights'
             weights = np.asarray(weight_samples)
             # additional check to accept 1D arrays
-            # additional check to accept 1D arrays
             if len(weights.shape) < 2:
                 weights = np.expand_dims(weight_samples, 0)
             if weights.shape[0] != 1 or weights.shape[1] != self._model.num_weights:
