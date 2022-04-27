@@ -236,24 +236,6 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
                 input_samples=inputs_ok,
             )
 
-    def test_callback(self):
-        """Test that callback works as expected."""
-
-        history = {}
-
-        def callback(i, t_forward, t_backward):
-            history[i] = [t_forward, t_backward]
-
-        qnn = self.qnns["circuit1"]
-        inputs = algorithm_globals.random.normal(0, 1, size=(10, qnn.num_inputs))
-        weights = algorithm_globals.random.uniform(0, 1, size=(10, qnn.num_weights))
-
-        local_ed1 = EffectiveDimension(
-            qnn=qnn, input_samples=inputs, weight_samples=weights, callback=callback
-        )
-        local_ed1.get_effective_dimension(self.n)
-        self.assertEqual(len(history.keys()), len(weights))
-
 
 if __name__ == "__main__":
     unittest.main()
