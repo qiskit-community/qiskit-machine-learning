@@ -50,7 +50,7 @@ class QuantumKernel:
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    @deprecate_arguments("0.4.1", {"user_parameters": "training_parameters"})
+    @deprecate_arguments("0.5.1", {"user_parameters": "training_parameters"})
     def __init__(
         self,
         feature_map: Optional[QuantumCircuit] = None,
@@ -129,13 +129,10 @@ class QuantumKernel:
         return copy.copy(self._training_parameters)
 
     @training_parameters.setter
-    def training_parameters(
-        self, training_params: Union[ParameterVector, Sequence[Parameter]]
-    ) -> None:
+    def training_parameters(self, training_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
         """Set the training parameters"""
-        self._training_param_binds = {
-            training_params[i]: training_params[i] for i, _ in enumerate(training_params)
-        }
+        self._training_param_binds = {training_params[i]: training_params[i]
+                                      for i, _ in enumerate(training_params)}
         self._training_parameters = copy.deepcopy(training_params)
 
     def assign_training_parameters(
@@ -165,9 +162,7 @@ class QuantumKernel:
             )
 
         # Get the input parameters. These should remain unaffected by assigning of user parameters.
-        input_params = list(
-            set(self._unbound_feature_map.parameters) - set(self._training_parameters)
-        )
+        input_params = list(set(self._unbound_feature_map.parameters) - set(self._training_parameters))
 
         # If iterable of values is passed, the length must match length of training_parameters field
         if isinstance(values, (Sequence, np.ndarray)):
