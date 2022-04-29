@@ -56,10 +56,10 @@ class QuantumKernelTrainer:
 
         # Vectors of input and trainable user parameters
         input_params = ParameterVector("x_par", 2)
-        user_params = ParameterVector("θ_par", 2)
+        training_params = ParameterVector("θ_par", 2)
 
         # Create an initial rotation layer of trainable parameters
-        for i, param in enumerate(user_params):
+        for i, param in enumerate(training_params):
             qc.ry(param, qc.qubits[i])
 
         # Create a rotation layer of input parameters
@@ -68,7 +68,7 @@ class QuantumKernelTrainer:
 
         quant_kernel = QuantumKernel(
             feature_map=qc,
-            user_parameters=user_params,
+            training_parameters=training_params,
             quantum_instance=...
         )
 
@@ -186,7 +186,7 @@ class QuantumKernelTrainer:
             ValueError: No trainable user parameters specified in quantum kernel
         """
         # Number of parameters to tune
-        num_params = len(self._quantum_kernel.user_parameters)
+        num_params = len(self._quantum_kernel.training_parameters)
         if num_params == 0:
             msg = "Quantum kernel cannot be fit because there are no user parameters specified."
             raise ValueError(msg)
@@ -212,10 +212,10 @@ class QuantumKernelTrainer:
         result.optimizer_evals = opt_results.nfev
         result.optimal_value = opt_results.fun
         result.optimal_point = opt_results.x
-        result.optimal_parameters = dict(zip(output_kernel.user_parameters, opt_results.x))
+        result.optimal_parameters = dict(zip(output_kernel.training_parameters, opt_results.x))
 
         # Return the QuantumKernel in optimized state
-        output_kernel.assign_user_parameters(result.optimal_parameters)
+        output_kernel.assign_training_parameters(result.optimal_parameters)
         result.quantum_kernel = output_kernel
 
         return result

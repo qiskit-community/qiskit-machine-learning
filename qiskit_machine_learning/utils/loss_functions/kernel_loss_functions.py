@@ -103,7 +103,7 @@ class SVCLoss(KernelLoss):
         labels: np.ndarray,
     ) -> float:
         # Bind training parameters
-        quantum_kernel.assign_user_parameters(parameter_values)
+        quantum_kernel.assign_training_parameters(parameter_values)
 
         # Get estimated kernel matrix
         kmatrix = quantum_kernel.evaluate(np.array(data))
