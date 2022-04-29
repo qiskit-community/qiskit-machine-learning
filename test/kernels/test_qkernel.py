@@ -456,7 +456,9 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             qkclass.bind_training_parameters(param_binds)
 
             # Ensure the values are properly bound
-            self.assertEqual(list(qkclass.training_param_binds.values()), list(param_binds.values()))
+            self.assertEqual(
+                list(qkclass.training_param_binds.values()), list(param_binds.values())
+            )
             self.assertEqual(qkclass.get_unbound_training_parameters(), [])
             self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
 
@@ -473,7 +475,8 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
         with self.subTest("test unassign and assign to parameter expression"):
             param_binds = {
                 self.training_parameters[0]: self.training_parameters[0],
-                self.training_parameters[1]: self.training_parameters[0] + self.training_parameters[2],
+                self.training_parameters[1]: self.training_parameters[0]
+                + self.training_parameters[2],
                 self.training_parameters[2]: self.training_parameters[2],
             }
             qkclass.assign_training_parameters(param_binds)
@@ -484,7 +487,8 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
                 [self.training_parameters[0], self.training_parameters[2]],
             )
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()), list(qkclass.training_param_binds.values())
+                list(qkclass.training_param_binds.keys()),
+                list(qkclass.training_param_binds.values()),
             )
             self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
 
@@ -499,7 +503,8 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             # Create partial param binds with immediate reassignments to param expressions
             param_binds = {
                 self.training_parameters[0]: new_param,
-                self.training_parameters[1]: self.training_parameters[0] + self.training_parameters[2],
+                self.training_parameters[1]: self.training_parameters[0]
+                + self.training_parameters[2],
             }
             qkclass.assign_training_parameters(param_binds)
 
@@ -508,7 +513,8 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
                 [new_param, self.training_parameters[0], self.training_parameters[2]],
             )
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()), list(qkclass.training_param_binds.values())
+                list(qkclass.training_param_binds.keys()),
+                list(qkclass.training_param_binds.values()),
             )
             self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
 
@@ -520,10 +526,15 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             qkclass.assign_training_parameters(param_binds)
             self.assertEqual(
                 list(qkclass.training_param_binds.keys()),
-                [self.training_parameters[0], self.training_parameters[1], self.training_parameters[2]],
+                [
+                    self.training_parameters[0],
+                    self.training_parameters[1],
+                    self.training_parameters[2],
+                ],
             )
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()), list(qkclass.training_param_binds.values())
+                list(qkclass.training_param_binds.keys()),
+                list(qkclass.training_param_binds.values()),
             )
             self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
 
@@ -558,7 +569,9 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
                 self.training_parameters[0]: 1.7,
             }
             qkclass.assign_training_parameters(param_binds)
-            self.assertEqual(list(qkclass.training_param_binds.keys()), [self.training_parameters[0]])
+            self.assertEqual(
+                list(qkclass.training_param_binds.keys()), [self.training_parameters[0]]
+            )
             self.assertEqual(list(qkclass.training_param_binds.values()), [1.7])
             self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
 

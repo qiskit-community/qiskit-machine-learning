@@ -24,10 +24,10 @@ from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
-from ..exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.deprecation import (
     deprecate_arguments,
 )
+from ..exceptions import QiskitMachineLearningError
 
 
 class QuantumKernel:
@@ -58,7 +58,6 @@ class QuantumKernel:
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
         *,
-        user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
         training_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
         """
@@ -130,9 +129,13 @@ class QuantumKernel:
         return copy.copy(self._training_parameters)
 
     @training_parameters.setter
-    def training_parameters(self, training_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
+    def training_parameters(
+        self, training_params: Union[ParameterVector, Sequence[Parameter]]
+    ) -> None:
         """Set the training parameters"""
-        self._training_param_binds = {training_params[i]: training_params[i] for i, _ in enumerate(training_params)}
+        self._training_param_binds = {
+            training_params[i]: training_params[i] for i, _ in enumerate(training_params)
+        }
         self._training_parameters = copy.deepcopy(training_params)
 
     def assign_training_parameters(
@@ -162,7 +165,9 @@ class QuantumKernel:
             )
 
         # Get the input parameters. These should remain unaffected by assigning of user parameters.
-        input_params = list(set(self._unbound_feature_map.parameters) - set(self._training_parameters))
+        input_params = list(
+            set(self._unbound_feature_map.parameters) - set(self._training_parameters)
+        )
 
         # If iterable of values is passed, the length must match length of training_parameters field
         if isinstance(values, (Sequence, np.ndarray)):
