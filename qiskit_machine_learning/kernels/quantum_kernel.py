@@ -52,7 +52,7 @@ class QuantumKernel:
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    @deprecate_arguments("0.5.1", {"user_parameters": "training_parameters"})
+    @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
     def __init__(
         self,
         feature_map: Optional[QuantumCircuit] = None,
@@ -289,18 +289,18 @@ class QuantumKernel:
         return unbound_training_params
 
     @property  # type: ignore
-    @deprecate_property("0.5.1", new_name="training_parameters")
+    @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
         """[Deprecated property]Return the vector of training parameters."""
         return self.training_parameters
 
     @user_parameters.setter  # type: ignore
-    @deprecate_property("0.5.1", new_name="training_parameters")
+    @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self, training_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
         """[Deprecated property setter]Set the training parameters"""
         self.training_parameters = training_params
 
-    @deprecate_method("0.5.1", new_name="assign_training_parameters")
+    @deprecate_method("0.5.0", new_name="assign_training_parameters")
     def assign_user_parameters(
         self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
@@ -312,7 +312,7 @@ class QuantumKernel:
         self.assign_training_parameters(values)
 
     @property  # type: ignore
-    @deprecate_property("0.5.1", new_name="training_param_binds")
+    @deprecate_property("0.5.0", new_name="training_param_binds")
     def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
         """
         [Deprecated property]Return a copy of the current training parameter mappings
@@ -320,7 +320,7 @@ class QuantumKernel:
         """
         return self.training_param_binds
 
-    @deprecate_method("0.5.1", new_name="bind_training_parameters")
+    @deprecate_method("0.5.0", new_name="bind_training_parameters")
     def bind_user_parameters(
         self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
@@ -329,7 +329,7 @@ class QuantumKernel:
         """
         self.bind_training_parameters(values)
 
-    @deprecate_method("0.5.1", new_name="get_unbound_training_parameters")
+    @deprecate_method("0.5.0", new_name="get_unbound_training_parameters")
     def get_unbound_user_parameters(self) -> List[Parameter]:
         """
         [Deprecated method]Return a list of any unbound training parameters in the feature
