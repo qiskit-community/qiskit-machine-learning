@@ -1,0 +1,15 @@
+---
+issues:
+  - |
+    Rename ``user_parameters`` in class ``QuantumKernel`` to ``training_parameters``.
+    This means rename the keyword-argument in the constructor, the properties
+    ``user_parameters``, ``user_param_binds``, the methods ``assign_user_parameters``
+    ``bind_user_parameters``, ``get_unbound_user_parameters``, to
+    ``training_parameters``, ``trainin_param_binds``, ``assign_training_parameters``
+    ``bind_training_parameters``, ``get_unbound_training_parameters``.
+
+deprecations:
+  - |
+    The existing keyword-argument ``user_parameters`` and the properties
+    ``user_parameters``, ``user_param_binds``, the methods ``assign_user_parameters``
+    ``bind_user_parameters``, ``get_unbound_user_parameters`` are all deprecated.
