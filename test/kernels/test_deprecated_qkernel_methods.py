@@ -427,6 +427,35 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.user_parameters = user_params
 
+    def test_positional_user_parameters(self):
+        """Test assigning user parameters with positional argument"""
+
+        with self.subTest("check positional argument"):
+            # Ensure we can instantiate a QuantumKernel with positional user parameters
+            qkclass = QuantumKernel(
+                self.feature_map,
+                True,
+                900,
+                None,
+                self.user_parameters,
+            )
+            self.assertEqual(qkclass.user_parameters, self.user_parameters)
+
+    def test_positional_and_keyword_user_parameters(self):
+        """Test assigning user parameters with positional *and* keyword argument"""
+
+        with self.subTest("check positional and keyword arguments"):
+            # Ensure we can instantiate a QuantumKernel with positional user parameters
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = QuantumKernel(
+                    self.feature_map,
+                    True,
+                    900,
+                    None,
+                    self.user_parameters,
+                    training_parameters=self.user_parameters,
+                )
+
     def test_user_parameters(self):
         """Test assigning/re-assigning user parameters"""
 

@@ -59,6 +59,7 @@ class QuantumKernel:
         enforce_psd: bool = True,
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
+        user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
         *,
         training_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
@@ -74,6 +75,9 @@ class QuantumKernel:
                  quantum gates on the feature map circuit which may be tuned. If users intend to
                  tune feature map parameters to find optimal values, this field should be set.
             user_parameters: deprecated keyword alias for training_parameters
+
+        Raises:
+            QiskitMachineLearningError: if invoker supplies both user_parameters and training_parameters.
         """
         # Class fields
         self._feature_map = None
@@ -86,8 +90,14 @@ class QuantumKernel:
 
         # Setters
         self.feature_map = feature_map if feature_map is not None else ZZFeatureMap(2)
+        if user_parameters is not None and training_parameters is not None:
+            raise QiskitMachineLearningError(
+                "Must not supply both user_parameters and training_parameters."
+            )
         if training_parameters is not None:
             self.training_parameters = training_parameters
+        elif user_parameters is not None:
+            self.training_parameters = user_parameters
 
     @property
     def feature_map(self) -> QuantumCircuit:
