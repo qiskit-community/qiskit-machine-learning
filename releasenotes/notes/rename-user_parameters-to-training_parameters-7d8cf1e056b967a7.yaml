@@ -12,5 +12,4 @@ deprecations:
   - |
     The existing keyword-argument ``user_parameters`` and the properties
     ``user_parameters``, ``user_param_binds``, the methods ``assign_user_parameters``
-    ``bind_user_parameters``, ``get_unbound_user_parameters`` are all deprecated
-    and will be removed after three months.
+    ``bind_user_parameters``, ``get_unbound_user_parameters`` are all deprecated.
