@@ -11,8 +11,8 @@
 # that they have been altered from the originals.
 
 # NOTE WELL that this file of tests should disappear when we remove the
-# ``user_param`` deprecations in quantum_kernel.py.  These tests exist
-# ONLY to ensure that the deprecations function correctly.
+# deprecated ``user_param`` argument/property/methods in quantum_kernel.py.
+# These tests exist ONLY to ensure that these deprecated objects correctly.
 
 """ Test QuantumKernel """
 
