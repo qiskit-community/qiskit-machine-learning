@@ -155,7 +155,9 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         original_predicts = regressor.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = os.path.join(tempfile.gettempdir(), "regressor.model")
+        file_name = os.path.join(
+            tempfile.gettempdir(), "regressor" + str(np.random.randint(1000)) + ".model"
+        )
         regressor.save(file_name)
         try:
             regressor_load = NeuralNetworkRegressor.load(file_name)
