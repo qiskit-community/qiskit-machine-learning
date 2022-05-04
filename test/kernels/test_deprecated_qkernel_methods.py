@@ -18,6 +18,7 @@
 
 import functools
 import unittest
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -439,7 +440,10 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
                 None,
                 self.user_parameters,
             )
-            self.assertEqual(qkclass.user_parameters, self.user_parameters)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+
+                self.assertEqual(qkclass.user_parameters, self.user_parameters)
 
     def test_user_parameters(self):
         """Test assigning/re-assigning user parameters"""
@@ -449,7 +453,10 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             qkclass = QuantumKernel(
                 feature_map=self.feature_map, training_parameters=self.user_parameters
             )
-            self.assertEqual(qkclass.user_parameters, self.user_parameters)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+
+                self.assertEqual(qkclass.user_parameters, self.user_parameters)
 
         with self.subTest("test invalid parameter assignment"):
             # Instantiate a QuantumKernel
@@ -459,10 +466,14 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
             # Try to set the user parameters using an incorrect number of values
             user_param_values = [2.0, 4.0, 6.0, 8.0]
-            with self.assertRaises(ValueError):
-                qkclass.assign_user_parameters(user_param_values)
 
-            self.assertEqual(qkclass.get_unbound_user_parameters(), qkclass.user_parameters)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+
+                with self.assertRaises(ValueError):
+                    qkclass.assign_user_parameters(user_param_values)
+
+                    self.assertEqual(qkclass.get_unbound_user_parameters(), qkclass.user_parameters)
 
         with self.subTest("test parameter assignment"):
             # Assign params to some new values, and also test the bind_user_parameters interface
@@ -471,17 +482,24 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
                 self.user_parameters[1]: 0.2,
                 self.user_parameters[2]: 0.3,
             }
-            qkclass.bind_user_parameters(param_binds)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
 
-            # Ensure the values are properly bound
-            self.assertEqual(list(qkclass.user_param_binds.values()), list(param_binds.values()))
-            self.assertEqual(qkclass.get_unbound_user_parameters(), [])
-            self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
+                qkclass.bind_user_parameters(param_binds)
+
+                # Ensure the values are properly bound
+                self.assertEqual(list(qkclass.user_param_binds.values()), list(param_binds.values()))
+                self.assertEqual(qkclass.get_unbound_user_parameters(), [])
+                self.assertEqual(list(qkclass.user_param_binds.keys()), qkclass.user_parameters)
 
         with self.subTest("test partial parameter assignment"):
             # Assign params to some new values, and also test the bind_user_parameters interface
             param_binds = {self.user_parameters[0]: 0.5, self.user_parameters[1]: 0.4}
-            qkclass.bind_user_parameters(param_binds)
+
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+
+                qkclass.bind_user_parameters(param_binds)
 
             # Ensure values were properly bound and param 2 was unchanged
             self.assertEqual(list(qkclass.user_param_binds.values()), [0.5, 0.4, 0.3])
