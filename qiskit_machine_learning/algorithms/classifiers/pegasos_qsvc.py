@@ -18,7 +18,7 @@ from typing import Optional, Dict
 
 import numpy as np
 from qiskit.utils import algorithm_globals
-from sklearn.svm import SVC
+from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
@@ -27,7 +27,7 @@ from ...kernels.quantum_kernel import QuantumKernel
 logger = logging.getLogger(__name__)
 
 
-class PegasosQSVC(SVC, SerializableModelMixin):
+class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     """
     This class implements Pegasos Quantum Support Vector Classifier algorithm developed in [1]
     and includes overridden methods ``fit`` and ``predict`` from the ``SVC`` super-class. This
@@ -85,7 +85,6 @@ class PegasosQSVC(SVC, SerializableModelMixin):
             TypeError:
                 - if ``quantum_instance`` neither instance of ``QuantumKernel`` nor ``None``.
         """
-        super().__init__(C=C)
 
         if precomputed:
             if quantum_kernel is not None:
@@ -101,6 +100,11 @@ class PegasosQSVC(SVC, SerializableModelMixin):
         self._num_steps = num_steps
         if seed is not None:
             algorithm_globals.random_seed = seed
+        
+        if C > 0:
+            self.C = C
+        else:
+            raise ValueError("C has to be a positive number.")
 
         # these are the parameters being fit and are needed for prediction
         self._alphas: Optional[Dict[int, int]] = None
@@ -215,6 +219,34 @@ class PegasosQSVC(SVC, SerializableModelMixin):
             ValueError:
                 - Pre-computed kernel matrix has the wrong shape and/or dimension.
         """
+        
+        t_0 = datetime.now()
+        h = self.decision_function(X)
+        y = np.array([self._label_pos if h_i > 0 else self._label_neg for h_i in h])
+        logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
+
+        return y
+    
+    def decision_function(self, X: np.ndarray) -> np.ndarray:
+        """
+        Evaluate the decision function for the samples in X.
+
+        Args:
+            X: Features. For a callable kernel (an instance of ``QuantumKernel``) the shape
+               should be ``(m_samples, n_features)``, for a precomputed kernel the shape should be
+               ``(m_samples, n_samples)``. Where ``m`` denotes the set to be predicted and ``n`` the
+               size of the training set. In that case, the kernel values in X have to be calculated
+               with respect to the elements of the set to be predicted and the training set.
+
+        Returns:
+            An array of the shape (n_samples), the decision function of the sample.
+
+        Raises:
+            QiskitMachineLearningError:
+                - decision_function is called before the model has been fit.
+            ValueError:
+                - Pre-computed kernel matrix has the wrong shape and/or dimension.
+        """
         if self.fit_status_ == PegasosQSVC.UNFITTED:
             raise QiskitMachineLearningError("The PegasosQSVC has to be fit first")
         if np.ndim(X) != 2:
@@ -224,19 +256,12 @@ class PegasosQSVC(SVC, SerializableModelMixin):
                 "For a precomputed kernel, X should be in shape (m_samples, n_samples)"
             )
 
-        t_0 = datetime.now()
-        y = np.zeros(X.shape[0])
+        h = np.zeros(X.shape[0])
         for i in range(X.shape[0]):
-            value = self._compute_weighted_kernel_sum(i, X, training=False)
+            h[i] = self._compute_weighted_kernel_sum(i, X, training=False)
+        
+        return h
 
-            if value > 0:
-                y[i] = self._label_pos
-            else:
-                y[i] = self._label_neg
-
-        logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
-
-        return y
 
     def _compute_weighted_kernel_sum(self, index: int, X: np.ndarray, training: bool) -> float:
         """Helper function to compute the weighted sum over support vectors used for both training
