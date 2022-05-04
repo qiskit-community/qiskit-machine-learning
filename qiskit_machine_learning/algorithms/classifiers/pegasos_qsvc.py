@@ -105,7 +105,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         if C > 0:
             self.C = C
         else:
-            raise ValueError("C has to be a positive number.")
+            raise ValueError(f"C has to be a positive number, found {C}.")
 
         # these are the parameters being fit and are needed for prediction
         self._alphas: Optional[Dict[int, int]] = None
