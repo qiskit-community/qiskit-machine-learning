@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Calling `PegasosQSVC.decision_function()` raises an error. Fixed by writing
+    own method instead of inheriting from `SVC`. The inheritance from `SVC` in
+    the `PegasosQSVC` class is removed. To keep the `score` method, inheritance
+    to the mixin class `ClassifierMixin` from scikit-learn is added.
+
