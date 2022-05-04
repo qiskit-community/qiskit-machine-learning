@@ -28,10 +28,11 @@ logger = logging.getLogger(__name__)
 
 
 class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
-    """
+    r"""
     This class implements Pegasos Quantum Support Vector Classifier algorithm developed in [1]
-    and includes overridden methods ``fit`` and ``predict`` from the ``SVC`` super-class. This
-    implementation is adapted to work with quantum kernels.
+    and includes methods ``fit``, ``predict`` and ``decision_function`` following the signatures
+    of `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`.
+    This implementation is adapted to work with quantum kernels.
 
     **Example**
 
