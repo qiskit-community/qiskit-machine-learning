@@ -52,6 +52,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     FITTED = 0
     UNFITTED = 1
 
+    # pylint: disable=invalid-name
     def __init__(
         self,
         quantum_kernel: Optional[QuantumKernel] = None,
@@ -100,7 +101,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         self._num_steps = num_steps
         if seed is not None:
             algorithm_globals.random_seed = seed
-        
+
         if C > 0:
             self.C = C
         else:
@@ -219,14 +220,14 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
             ValueError:
                 - Pre-computed kernel matrix has the wrong shape and/or dimension.
         """
-        
+
         t_0 = datetime.now()
-        h = self.decision_function(X)
-        y = np.array([self._label_pos if h_i > 0 else self._label_neg for h_i in h])
+        values = self.decision_function(X)
+        y = np.array([self._label_pos if val > 0 else self._label_neg for val in values])
         logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
 
         return y
-    
+
     def decision_function(self, X: np.ndarray) -> np.ndarray:
         """
         Evaluate the decision function for the samples in X.
@@ -256,12 +257,11 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
                 "For a precomputed kernel, X should be in shape (m_samples, n_samples)"
             )
 
-        h = np.zeros(X.shape[0])
+        values = np.zeros(X.shape[0])
         for i in range(X.shape[0]):
-            h[i] = self._compute_weighted_kernel_sum(i, X, training=False)
-        
-        return h
+            values[i] = self._compute_weighted_kernel_sum(i, X, training=False)
 
+        return values
 
     def _compute_weighted_kernel_sum(self, index: int, X: np.ndarray, training: bool) -> float:
         """Helper function to compute the weighted sum over support vectors used for both training
