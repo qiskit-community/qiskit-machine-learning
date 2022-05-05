@@ -11,4 +11,11 @@ deprecations:
     ``training_param_binds`` respectively. The methods ``assign_user_parameters``,
     ``bind_user_parameters`` and ``get_unbound_user_parameters`` are deprecated and
     replaced by ``assign_training_parameters``, ``bind_training_parameters`` and
-    ``get_unbound_training_parameters``.
+    ``get_unbound_training_parameters``.  That is to say:
+
+    - argument ``user_parameters`` -> ``training_parameters``
+    - property ``user_parameters`` -> ``training_parameters``
+    - property ``user_param_binds`` -> ``training_param_binds``
+    - method  ``assign_user_parameters`` ->  ``assign_training_parameters``
+    - method ``bind_user_parameters`` -> ``bind_training_parameters``
+    - method ``get_unbound_user_parameters`` -> ``get_unbound_training_parameters``
