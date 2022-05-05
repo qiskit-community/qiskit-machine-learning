@@ -6,12 +6,7 @@ deprecations:
     renamed to ``training_parameters``; current behavior is retained. For this
     change the constructor parameter ``user_parameters`` is now deprecated and
     replaced by ``training_parameters``. The related properties and methods are
-    renamed to match. Thus the properties ``user_parameters`` and ``user_param_binds`
-    are both deprecated and replaced by ``training_parameters`` and
-    ``training_param_binds`` respectively. The methods ``assign_user_parameters``,
-    ``bind_user_parameters`` and ``get_unbound_user_parameters`` are deprecated and
-    replaced by ``assign_training_parameters``, ``bind_training_parameters`` and
-    ``get_unbound_training_parameters``.  That is to say:
+    renamed to match. That is to say:
 
     - argument ``user_parameters`` -> ``training_parameters``
     - property ``user_parameters`` -> ``training_parameters``
