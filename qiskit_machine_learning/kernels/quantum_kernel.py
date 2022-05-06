@@ -77,7 +77,7 @@ class QuantumKernel:
         self._feature_map = None
         self._unbound_feature_map = None
         self._training_parameters = None
-        self._training_param_binds = None
+        self._training_parameter_binds = None
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
@@ -98,12 +98,12 @@ class QuantumKernel:
         Set feature map.
 
         The ``unbound_feature_map`` field will be automatically updated when this field is set,
-        and ``training_parameters`` and ``training_param_binds`` fields will be reset to ``None``.
+        and ``training_parameters`` and ``training_parameter_binds`` fields will be reset to ``None``.
         """
         self._feature_map = feature_map
         self._unbound_feature_map = copy.deepcopy(self._feature_map)
         self._training_parameters = None
-        self._training_param_binds = None
+        self._training_parameter_binds = None
 
     @property
     def unbound_feature_map(self) -> QuantumCircuit:
@@ -133,7 +133,7 @@ class QuantumKernel:
         self, training_params: Union[ParameterVector, Sequence[Parameter]]
     ) -> None:
         """Set the training parameters"""
-        self._training_param_binds = {
+        self._training_parameter_binds = {
             training_params[i]: training_params[i] for i, _ in enumerate(training_params)
         }
         self._training_parameters = copy.deepcopy(training_params)
@@ -217,21 +217,21 @@ class QuantumKernel:
 
                 # Remove param if it was overwritten
                 if param not in self._training_parameters:
-                    del self._training_param_binds[param]
+                    del self._training_parameter_binds[param]
 
                 # Add new parameters
                 for sub_param in bind.parameters:
-                    if sub_param not in self._training_param_binds.keys():
-                        self._training_param_binds[sub_param] = sub_param
+                    if sub_param not in self._training_parameter_binds.keys():
+                        self._training_parameter_binds[sub_param] = sub_param
 
-                # If parameter is being set to expression of itself, training_param_binds
+                # If parameter is being set to expression of itself, training_parameter_binds
                 # reflects a self-bind
                 if param in bind.parameters:
-                    self._training_param_binds[param] = param
+                    self._training_parameter_binds[param] = param
 
             # If assignment is numerical, update the param_binds
             elif isinstance(bind, numbers.Number):
-                self._training_param_binds[param] = bind
+                self._training_parameter_binds[param] = bind
 
             else:
                 raise ValueError(
@@ -243,17 +243,19 @@ class QuantumKernel:
                 )
 
         # Reorder dict according to self._training_parameters
-        self._training_param_binds = {
-            param: self._training_param_binds[param] for param in self._training_parameters
+        self._training_parameter_binds = {
+            param: self._training_parameter_binds[param] for param in self._training_parameters
         }
 
         # Update feature map with numerical parameter assignments
-        self._feature_map = self._unbound_feature_map.assign_parameters(self._training_param_binds)
+        self._feature_map = self._unbound_feature_map.assign_parameters(
+            self._training_parameter_binds
+        )
 
     @property
-    def training_param_binds(self) -> Optional[Mapping[Parameter, float]]:
+    def training_parameter_binds(self) -> Optional[Mapping[Parameter, float]]:
         """Return a copy of the current training parameter mappings for the feature map circuit."""
-        return copy.deepcopy(self._training_param_binds)
+        return copy.deepcopy(self._training_parameter_binds)
 
     def bind_training_parameters(
         self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
@@ -266,11 +268,11 @@ class QuantumKernel:
     def get_unbound_training_parameters(self) -> List[Parameter]:
         """Return a list of any unbound training parameters in the feature map circuit."""
         unbound_training_params = []
-        if self._training_param_binds is not None:
+        if self._training_parameter_binds is not None:
             # Get all training parameters not associated with numerical values
             unbound_training_params = [
                 val
-                for val in self._training_param_binds.values()
+                for val in self._training_parameter_binds.values()
                 if not isinstance(val, numbers.Number)
             ]
 
@@ -300,13 +302,13 @@ class QuantumKernel:
         self.assign_training_parameters(values)
 
     @property  # type: ignore
-    @deprecate_property("0.5.0", new_name="training_param_binds")
+    @deprecate_property("0.5.0", new_name="training_parameter_binds")
     def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
         """
         [Deprecated property]Return a copy of the current training parameter mappings
         for the feature map circuit.
         """
-        return self.training_param_binds
+        return self.training_parameter_binds
 
     @deprecate_method("0.5.0", new_name="bind_training_parameters")
     def bind_user_parameters(

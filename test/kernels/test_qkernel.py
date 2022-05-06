@@ -457,10 +457,12 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
             # Ensure the values are properly bound
             self.assertEqual(
-                list(qkclass.training_param_binds.values()), list(param_binds.values())
+                list(qkclass.training_parameter_binds.values()), list(param_binds.values())
             )
             self.assertEqual(qkclass.get_unbound_training_parameters(), [])
-            self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
+            self.assertEqual(
+                list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
+            )
 
         with self.subTest("test partial parameter assignment"):
             # Assign params to some new values, and also test the bind_training_parameters interface
@@ -468,9 +470,11 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             qkclass.bind_training_parameters(param_binds)
 
             # Ensure values were properly bound and param 2 was unchanged
-            self.assertEqual(list(qkclass.training_param_binds.values()), [0.5, 0.4, 0.3])
+            self.assertEqual(list(qkclass.training_parameter_binds.values()), [0.5, 0.4, 0.3])
             self.assertEqual(qkclass.get_unbound_training_parameters(), [])
-            self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
+            self.assertEqual(
+                list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
+            )
 
         with self.subTest("test unassign and assign to parameter expression"):
             param_binds = {
@@ -483,14 +487,16 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
             # Ensure quantum kernel forgets unused param 1 and unbinds param 0 and 2
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()),
+                list(qkclass.training_parameter_binds.keys()),
                 [self.training_parameters[0], self.training_parameters[2]],
             )
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()),
-                list(qkclass.training_param_binds.values()),
+                list(qkclass.training_parameter_binds.keys()),
+                list(qkclass.training_parameter_binds.values()),
             )
-            self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
+            self.assertEqual(
+                list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
+            )
 
         with self.subTest("test immediate reassignment to parameter expression"):
             # Create a new quantum kernel
@@ -509,14 +515,16 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             qkclass.assign_training_parameters(param_binds)
 
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()),
+                list(qkclass.training_parameter_binds.keys()),
                 [new_param, self.training_parameters[0], self.training_parameters[2]],
             )
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()),
-                list(qkclass.training_param_binds.values()),
+                list(qkclass.training_parameter_binds.keys()),
+                list(qkclass.training_parameter_binds.values()),
             )
-            self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
+            self.assertEqual(
+                list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
+            )
 
         with self.subTest("test bringing back old parameters"):
             param_binds = {
@@ -525,7 +533,7 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             }
             qkclass.assign_training_parameters(param_binds)
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()),
+                list(qkclass.training_parameter_binds.keys()),
                 [
                     self.training_parameters[0],
                     self.training_parameters[1],
@@ -533,10 +541,12 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
                 ],
             )
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()),
-                list(qkclass.training_param_binds.values()),
+                list(qkclass.training_parameter_binds.keys()),
+                list(qkclass.training_parameter_binds.values()),
             )
-            self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
+            self.assertEqual(
+                list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
+            )
 
         with self.subTest("test assign with immediate reassign"):
             # Create a new quantum kernel
@@ -550,13 +560,15 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             }
             qkclass.assign_training_parameters(param_binds)
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()),
+                list(qkclass.training_parameter_binds.keys()),
                 [self.training_parameters[0], self.training_parameters[1]],
             )
             self.assertEqual(
-                list(qkclass.training_param_binds.values()), [0.9, self.training_parameters[1]]
+                list(qkclass.training_parameter_binds.values()), [0.9, self.training_parameters[1]]
             )
-            self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
+            self.assertEqual(
+                list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
+            )
 
         with self.subTest("test unordered assigns"):
             # Create a new quantum kernel
@@ -570,10 +582,12 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             }
             qkclass.assign_training_parameters(param_binds)
             self.assertEqual(
-                list(qkclass.training_param_binds.keys()), [self.training_parameters[0]]
+                list(qkclass.training_parameter_binds.keys()), [self.training_parameters[0]]
             )
-            self.assertEqual(list(qkclass.training_param_binds.values()), [1.7])
-            self.assertEqual(list(qkclass.training_param_binds.keys()), qkclass.training_parameters)
+            self.assertEqual(list(qkclass.training_parameter_binds.values()), [1.7])
+            self.assertEqual(
+                list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
+            )
 
 
 class TestQuantumKernelBatching(QiskitMachineLearningTestCase):

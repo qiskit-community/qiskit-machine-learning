@@ -10,7 +10,7 @@ deprecations:
 
     - argument ``user_parameters`` -> ``training_parameters``
     - property ``user_parameters`` -> ``training_parameters``
-    - property ``user_param_binds`` -> ``training_param_binds``
+    - property ``user_param_binds`` -> ``training_parameter_binds``
     - method  ``assign_user_parameters`` ->  ``assign_training_parameters``
     - method ``bind_user_parameters`` -> ``bind_training_parameters``
     - method ``get_unbound_user_parameters`` -> ``get_unbound_training_parameters``
