@@ -5,4 +5,13 @@ fixes:
     own method instead of inheriting from `SVC`. The inheritance from `SVC` in
     the `PegasosQSVC` class is removed. To keep the `score` method, inheritance
     to the mixin class `ClassifierMixin` from scikit-learn is added.
-
+upgrade:
+  - |
+    Inheriting from `sklearn.svm.SVC` resulted in errors when calling some inherited
+    methods such as `decision_function` due to the overridden `fit` implementation. 
+    For that reason, the inheritance has been replaced by a much lighter inheritance
+    from `ClassifierMixin` providing the `score` method and a new method `decision_function`
+    has been implemented. The class is still `sklearn` compatible due to duck typing.
+    This means that for the user everything that has been working in the previous
+    release still works. The only methods that are no longer supported (such as `predict_proba`)
+    were only raising errors in the previous release in practice.
