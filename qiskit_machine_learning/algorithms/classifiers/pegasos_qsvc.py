@@ -245,7 +245,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
 
         Raises:
             QiskitMachineLearningError:
-                - decision_function is called before the model has been fit.
+                - the method is called before the model has been fit.
             ValueError:
                 - Pre-computed kernel matrix has the wrong shape and/or dimension.
         """
