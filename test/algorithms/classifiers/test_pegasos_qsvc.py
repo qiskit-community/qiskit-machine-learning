@@ -94,7 +94,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         self.assertEqual(score, 1.0)
 
     def test_decision_function(self):
-        """Test PegasosQSVC"""
+        """Test PegasosQSVC."""
         qkernel = QuantumKernel(
             feature_map=self.feature_map, quantum_instance=self.statevector_simulator
         )
