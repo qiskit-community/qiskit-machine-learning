@@ -31,7 +31,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     r"""
     This class implements Pegasos Quantum Support Vector Classifier algorithm developed in [1]
     and includes methods ``fit``, ``predict`` and ``decision_function`` following the signatures
-    of `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`.
+    of `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_.
     This implementation is adapted to work with quantum kernels.
 
     **Example**
