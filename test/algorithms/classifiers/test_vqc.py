@@ -38,35 +38,35 @@ RANDOM_SEED = 1111111
 algorithm_globals.random_seed = RANDOM_SEED
 
 # Set-up the quantum instances.
-SV_QUANTUM_INSTANCE_ = QuantumInstance(
+SV_QUANTUM_INSTANCE = QuantumInstance(
     Aer.get_backend("aer_simulator_statevector"),
     seed_simulator=algorithm_globals.random_seed,
     seed_transpiler=algorithm_globals.random_seed,
 )
-QASM_QUANTUM_INSTANCE_ = QuantumInstance(
+QASM_QUANTUM_INSTANCE = QuantumInstance(
     Aer.get_backend("aer_simulator"),
     shots=100,
     seed_simulator=algorithm_globals.random_seed,
     seed_transpiler=algorithm_globals.random_seed,
 )
-QUANTUM_INSTANCES_ = [SV_QUANTUM_INSTANCE_, QASM_QUANTUM_INSTANCE_]
+QUANTUM_INSTANCES_ = [SV_QUANTUM_INSTANCE, QASM_QUANTUM_INSTANCE]
 
 # Set-up the numbers of qubits.
 NUM_QUBITS_LIST = [2, None]
 
 # Set-up the feature maps.
-NUM_FEATURES_ = 2
-ZZ_FEATURE_MAP_ = ZZFeatureMap(NUM_FEATURES_)
-FEATURE_MAPS_ = [ZZ_FEATURE_MAP_, None]
+NUM_FEATURES = 2
+ZZ_FEATURE_MAP = ZZFeatureMap(NUM_FEATURES)
+FEATURE_MAPS = [ZZ_FEATURE_MAP, None]
 
 # Set-up the ansatzes
-REAL_AMPLITUDES_ = RealAmplitudes(NUM_FEATURES_, reps=1)
-ANSATZES_ = [REAL_AMPLITUDES_, None]
+REAL_AMPLITUDES_ = RealAmplitudes(NUM_FEATURES, reps=1)
+ANSATZES = [REAL_AMPLITUDES_, None]
 
 # Set-up the optimizers.
-BFGS_ = L_BFGS_B(maxiter=3)
+BFGS = L_BFGS_B(maxiter=3)
 COBYLA_ = COBYLA(maxiter=15)
-OPTIMIZERS_ = [BFGS_, COBYLA_]
+OPTIMIZERS = [BFGS, COBYLA_]
 
 # Set-up the loss functions.
 LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
@@ -81,7 +81,7 @@ def _one_hot_encode(y: np.ndarray) -> np.ndarray:
 # Set-up the datasets.
 BINARY_X, BINARY_Y = make_classification(
     n_samples=6,
-    n_features=NUM_FEATURES_,
+    n_features=NUM_FEATURES,
     n_classes=2,
     n_redundant=0,
     n_clusters_per_class=1,
@@ -94,7 +94,7 @@ BINARY_DATASET = (BINARY_X, BINARY_Y)
 
 MULTICLASS_X, MULTICLASS_Y = make_classification(
     n_samples=9,
-    n_features=NUM_FEATURES_,
+    n_features=NUM_FEATURES,
     n_classes=3,
     n_redundant=0,
     n_clusters_per_class=1,
@@ -105,7 +105,7 @@ MULTICLASS_X = MinMaxScaler().fit_transform(MULTICLASS_X)
 MULTICLASS_Y = _one_hot_encode(MULTICLASS_Y)
 MULTICLASS_DATASET = (MULTICLASS_X, MULTICLASS_Y)
 
-DATASETS_ = [BINARY_DATASET, MULTICLASS_DATASET]
+DATASETS = [BINARY_DATASET, MULTICLASS_DATASET]
 
 
 @ddt
@@ -119,7 +119,7 @@ class TestVQC(QiskitMachineLearningTestCase):
 
     @idata(
         itertools.product(
-            QUANTUM_INSTANCES_, NUM_QUBITS_LIST, FEATURE_MAPS_, ANSATZES_, OPTIMIZERS_, DATASETS_
+            QUANTUM_INSTANCES_, NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS
         )
     )
     @unpack
@@ -157,7 +157,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         classifier = VQC(
             num_qubits=2,
             optimizer=None,
-            quantum_instance=SV_QUANTUM_INSTANCE_,
+            quantum_instance=SV_QUANTUM_INSTANCE,
         )
         classifier.fit(BINARY_X, BINARY_Y)
         score = classifier.score(BINARY_X, BINARY_Y)
@@ -165,9 +165,9 @@ class TestVQC(QiskitMachineLearningTestCase):
 
     @idata(
         itertools.product(
-            [SV_QUANTUM_INSTANCE_],
-            [ZZ_FEATURE_MAP_],
-            DATASETS_,
+            [SV_QUANTUM_INSTANCE],
+            [ZZ_FEATURE_MAP],
+            DATASETS,
         )
     )
     @unpack
@@ -208,7 +208,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         return wrapper
 
     @data(
-        (ZZ_FEATURE_MAP_, REAL_AMPLITUDES_, SV_QUANTUM_INSTANCE_),
+        (ZZ_FEATURE_MAP, REAL_AMPLITUDES_, SV_QUANTUM_INSTANCE),
     )
     @unpack
     def test_batches_with_incomplete_labels(self, feature_map, ansatz, quantum_instance):
@@ -228,14 +228,21 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         classifier._get_interpret = self._get_num_classes(classifier._get_interpret)
 
+        num_classes_list = []
         classifier.fit(x[:2, :], y_one_hot[:2])
+        num_classes_list.append(classifier.num_classes)
         classifier.fit(x[2:4, :], y_one_hot[2:4])
+        num_classes_list.append(classifier.num_classes)
         classifier.fit(x[4:, :], y_one_hot[4:])
+        num_classes_list.append(classifier.num_classes)
 
-        # Check all batches assume the correct number of classes.
-        self.assertTrue((np.asarray(self.num_classes_by_batch) == 3).all())
+        with self.subTest("Test all batches assume the correct number of classes."):
+            self.assertTrue((np.asarray(num_classes_list) == 3).all())
 
-    @data(SV_QUANTUM_INSTANCE_)
+        with self.subTest("Check correct number of classes is used to build CircuitQNN."):
+            self.assertTrue((np.asarray(self.num_classes_by_batch) == 3).all())
+
+    @data(SV_QUANTUM_INSTANCE)
     def test_multilabel_targets_raise_an_error(self, quantum_instance):
         """Tests VQC multi-label input raises an error."""
 
@@ -247,7 +254,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         with self.assertRaises(QiskitMachineLearningError):
             classifier.fit(x, y)
 
-    @data(SV_QUANTUM_INSTANCE_)
+    @data(SV_QUANTUM_INSTANCE)
     def test_changing_classes_raises_error(self, quantum_instance):
         """Tests VQC raises an error when fitting new data with a different number of classes."""
 
