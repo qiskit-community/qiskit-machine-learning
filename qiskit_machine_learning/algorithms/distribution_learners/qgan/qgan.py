@@ -76,6 +76,7 @@ class QGAN:
         tol_rel_ent: Optional[float] = None,
         snapshot_dir: Optional[str] = None,
         quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
+        penalty: Optional[bool] = False,
     ) -> None:
         """
 
@@ -96,6 +97,7 @@ class QGAN:
             snapshot_dir: Directory in to which to store cvs file with parameters,
                 if None (default) then no cvs file is created.
             quantum_instance: Quantum Instance or Backend
+            penalty : enable or not the gradient penalty in the discriminator
         Raises:
             QiskitMachineLearningError: invalid input
         """
@@ -155,6 +157,7 @@ class QGAN:
         self._d_loss = []  # type: List[float]
         self._rel_entr = []  # type: List[float]
         self._tol_rel_ent = tol_rel_ent
+        self._penalty = penalty
 
         self._random_seed = seed
 
@@ -269,6 +272,11 @@ class QGAN:
     def generator(self):
         """Returns generator"""
         return self._generator
+
+    @property
+    def penalty(self):
+        """Returns penalty parameter for the discriminator training"""
+        return self._penalty
 
     # pylint: disable=unused-argument
     def set_generator(
@@ -418,6 +426,7 @@ class QGAN:
                 ret_d = self._discriminator.train(
                     [real_batch, generated_batch],
                     [np.ones(len(real_batch)) / len(real_batch), generated_prob],
+                    penalty=self._penalty,
                 )
                 d_loss_min = ret_d["loss"]
 

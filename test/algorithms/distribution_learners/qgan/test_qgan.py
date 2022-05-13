@@ -339,6 +339,44 @@ class TestQGAN(QiskitMachineLearningTestCase):
         analytic_results = self.qgan.run(q_inst)
         self.assertAlmostEqual(numeric_results["rel_entr"], analytic_results["rel_entr"], delta=0.1)
 
+    @unittest.skipIf(not _optionals.HAS_TORCH, "PyTorch not available.")
+    def test_qgan_gradient_penalty_pytorch(self):
+        """
+        Test QGAN training with gradient penalty for the discriminator
+        """
+        num_qubits = [2]
+        # Batch size
+        batch_size = 100
+        # Set number of training epochs
+        num_epochs = 5
+        _qgan = QGAN(
+            self._real_data,
+            self._bounds,
+            num_qubits,
+            batch_size,
+            num_epochs,
+            discriminator=PyTorchDiscriminator(n_features=len(num_qubits)),
+            snapshot_dir=None,
+            penalty=True,
+        )
+        _qgan.seed = self.seed
+        _qgan.set_generator()
+        trained_statevector = _qgan.run(
+            QuantumInstance(
+                BasicAer.get_backend("statevector_simulator"),
+                seed_simulator=algorithm_globals.random_seed,
+                seed_transpiler=algorithm_globals.random_seed,
+            )
+        )
+        trained_qasm = _qgan.run(
+            QuantumInstance(
+                BasicAer.get_backend("qasm_simulator"),
+                seed_simulator=algorithm_globals.random_seed,
+                seed_transpiler=algorithm_globals.random_seed,
+            )
+        )
+        self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
+
 
 if __name__ == "__main__":
     unittest.main()
