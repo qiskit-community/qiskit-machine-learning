@@ -9,4 +9,4 @@ features:
 fixes:
   - |
     Previously in the ``pytorch_discriminator`` class of the ``QGAN`` algorithm, if the gradient penalty parameter was enabled, 
-    the latent variable z was not properly initialised : Variable module was used instead of torch.autograd.Variable. 
+    the latent variable z was not properly initialized : Variable module was used instead of torch.autograd.Variable. 
