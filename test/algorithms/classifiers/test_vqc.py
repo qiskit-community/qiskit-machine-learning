@@ -13,6 +13,7 @@
 """ Test Neural Network Classifier """
 
 from __future__ import annotations
+from dataclasses import dataclass
 
 from test import QiskitMachineLearningTestCase
 import functools
@@ -21,7 +22,6 @@ import unittest
 
 import numpy as np
 import scipy
-from ddt import ddt, idata, data, unpack
 
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler
@@ -34,42 +34,12 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
-RANDOM_SEED = 1111111
-algorithm_globals.random_seed = RANDOM_SEED
 
-# Set-up the quantum instances.
-SV_QUANTUM_INSTANCE = QuantumInstance(
-    Aer.get_backend("aer_simulator_statevector"),
-    seed_simulator=algorithm_globals.random_seed,
-    seed_transpiler=algorithm_globals.random_seed,
-)
-QASM_QUANTUM_INSTANCE = QuantumInstance(
-    Aer.get_backend("aer_simulator"),
-    shots=100,
-    seed_simulator=algorithm_globals.random_seed,
-    seed_transpiler=algorithm_globals.random_seed,
-)
-QUANTUM_INSTANCES_ = [SV_QUANTUM_INSTANCE, QASM_QUANTUM_INSTANCE]
-
-# Set-up the numbers of qubits.
-NUM_QUBITS_LIST = [2, None]
-
-# Set-up the feature maps.
-NUM_FEATURES = 2
-ZZ_FEATURE_MAP = ZZFeatureMap(NUM_FEATURES)
-FEATURE_MAPS = [ZZ_FEATURE_MAP, None]
-
-# Set-up the ansatzes
-REAL_AMPLITUDES_ = RealAmplitudes(NUM_FEATURES, reps=1)
-ANSATZES = [REAL_AMPLITUDES_, None]
-
-# Set-up the optimizers.
-BFGS = L_BFGS_B(maxiter=3)
-COBYLA_ = COBYLA(maxiter=15)
-OPTIMIZERS = [BFGS, COBYLA_]
-
-# Set-up the loss functions.
-LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
+@dataclass
+class _Dataset:
+    name: str | None = "dataset"
+    x: np.ndarray | None = None
+    y: np.ndarray | None = None
 
 
 def _one_hot_encode(y: np.ndarray) -> np.ndarray:
@@ -78,77 +48,126 @@ def _one_hot_encode(y: np.ndarray) -> np.ndarray:
     return y_one_hot
 
 
-# Set-up the datasets.
-BINARY_X, BINARY_Y = make_classification(
-    n_samples=6,
-    n_features=NUM_FEATURES,
-    n_classes=2,
-    n_redundant=0,
-    n_clusters_per_class=1,
-    class_sep=5.0,
-    random_state=algorithm_globals.random_seed,
-)
-BINARY_X = MinMaxScaler().fit_transform(BINARY_X)
-BINARY_Y = _one_hot_encode(BINARY_Y)
-BINARY_DATASET = (BINARY_X, BINARY_Y)
-
-MULTICLASS_X, MULTICLASS_Y = make_classification(
-    n_samples=9,
-    n_features=NUM_FEATURES,
-    n_classes=3,
-    n_redundant=0,
-    n_clusters_per_class=1,
-    class_sep=5.0,
-    random_state=algorithm_globals.random_seed,
-)
-MULTICLASS_X = MinMaxScaler().fit_transform(MULTICLASS_X)
-MULTICLASS_Y = _one_hot_encode(MULTICLASS_Y)
-MULTICLASS_DATASET = (MULTICLASS_X, MULTICLASS_Y)
-
-DATASETS = [BINARY_DATASET, MULTICLASS_DATASET]
-
-
-@ddt
 class TestVQC(QiskitMachineLearningTestCase):
     """VQC Tests."""
 
     def setUp(self):
         super().setUp()
-        algorithm_globals.random_seed = RANDOM_SEED
+        algorithm_globals.random_seed = 1111111
+
+        # Set-up the quantum instances.
+        self.sv_quantum_instance = QuantumInstance(
+            Aer.get_backend("aer_simulator_statevector"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+        self.qasm_quantum_instance = QuantumInstance(
+            Aer.get_backend("aer_simulator"),
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+        self.quantum_instances = [self.sv_quantum_instance, self.qasm_quantum_instance]
+
+        # Set-up the numbers of qubits.
+        self.num_qubits_list = [2, None]
+
+        # Set-up the feature maps.
+        self.num_features = 2
+        self.zz_feature_map = ZZFeatureMap(self.num_features)
+        self.feature_maps = [self.zz_feature_map, None]
+
+        # Set-up the ansatzes
+        self.real_amplitudes = RealAmplitudes(self.num_features, reps=1)
+        self.ansatzes = [self.real_amplitudes, None]
+
+        # Set-up the optimizers.
+        bfgs = L_BFGS_B(maxiter=3)
+        cobyla = COBYLA(maxiter=15)
+        self.optimizers = [bfgs, cobyla]
+
+        # Set-up the loss functions.
+        self.losses = ["squared_error", "absolute_error", "cross_entropy"]
+
+        # Set-up the datasets.
+        binary_x, binary_y = make_classification(
+            n_samples=6,
+            n_features=self.num_features,
+            n_classes=2,
+            n_redundant=0,
+            n_clusters_per_class=1,
+            class_sep=5.0,
+            random_state=algorithm_globals.random_seed,
+        )
+        self.binary_dataset = _Dataset(
+            "binary", MinMaxScaler().fit_transform(binary_x), _one_hot_encode(binary_y)
+        )
+
+        multiclass_x, multiclass_y = make_classification(
+            n_samples=9,
+            n_features=self.num_features,
+            n_classes=3,
+            n_redundant=0,
+            n_clusters_per_class=1,
+            class_sep=5.0,
+            random_state=algorithm_globals.random_seed,
+        )
+        self.multiclass_dataset = _Dataset(
+            "multiclass", MinMaxScaler().fit_transform(multiclass_x), _one_hot_encode(multiclass_y)
+        )
+
+        self.datasets = [self.binary_dataset, self.multiclass_dataset]
         self.num_classes_by_batch = []
 
-    @idata(
-        itertools.product(
-            QUANTUM_INSTANCES_, NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS
-        )
-    )
-    @unpack
-    def test_VQC(self, quantum_instance, num_qubits, feature_map, ansatz, optimizer, dataset):
+    def test_VQC(self):
         """
         Test VQC with binary and multiclass data using a range of quantum
-        instances, numbers of qubits, feature maps, and OPTIMIZERS.
+        instances, numbers of qubits, feature maps, and optimizers.
         """
-        if num_qubits is None and feature_map is None and ansatz is None:
-            self.skipTest(
-                "At least one of num_qubits, feature_map, or ansatz must be set by the user."
+
+        for (
+            quantum_instance,
+            num_qubits,
+            feature_map,
+            ansatz,
+            optimizer,
+            dataset,
+        ) in itertools.product(
+            self.quantum_instances,
+            self.num_qubits_list,
+            self.feature_maps,
+            self.ansatzes,
+            self.optimizers,
+            self.datasets,
+        ):
+            subtest_name = (
+                f"{quantum_instance.backend_name}, {num_qubits}, "
+                f"{type(feature_map).__name__}, {type(optimizer).__name__}, "
+                f"{dataset.name}"
             )
+            with self.subTest(subtest_name):
+                if num_qubits is None and feature_map is None and ansatz is None:
+                    self.skipTest(
+                        "At least one of num_qubits, feature_map, or ansatz must be set by the user."
+                    )
 
-        initial_point = np.array([0.5] * ansatz.num_parameters) if ansatz is not None else None
+                initial_point = (
+                    np.array([0.5] * ansatz.num_parameters) if ansatz is not None else None
+                )
 
-        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
-        classifier = VQC(
-            num_qubits=num_qubits,
-            feature_map=feature_map,
-            ansatz=ansatz,
-            optimizer=optimizer,
-            quantum_instance=quantum_instance,
-            initial_point=initial_point,
-        )
+                # construct classifier - note: CrossEntropy requires eval_probabilities=True!
+                classifier = VQC(
+                    num_qubits=num_qubits,
+                    feature_map=feature_map,
+                    ansatz=ansatz,
+                    optimizer=optimizer,
+                    quantum_instance=quantum_instance,
+                    initial_point=initial_point,
+                )
 
-        x, y = dataset
-        classifier.fit(x, y)
-        score = classifier.score(x, y)
-        self.assertGreater(score, 0.5)
+                classifier.fit(dataset.x, dataset.y)
+                score = classifier.score(dataset.x, dataset.y)
+                self.assertGreater(score, 0.5)
 
     def test_VQC_non_parameterized(self):
         """
@@ -157,45 +176,36 @@ class TestVQC(QiskitMachineLearningTestCase):
         classifier = VQC(
             num_qubits=2,
             optimizer=None,
-            quantum_instance=SV_QUANTUM_INSTANCE,
+            quantum_instance=self.sv_quantum_instance,
         )
-        classifier.fit(BINARY_X, BINARY_Y)
-        score = classifier.score(BINARY_X, BINARY_Y)
+        classifier.fit(self.binary_dataset.x, self.binary_dataset.y)
+        score = classifier.score(self.binary_dataset.x, self.binary_dataset.y)
         self.assertGreater(score, 0.5)
 
-    @idata(
-        itertools.product(
-            [SV_QUANTUM_INSTANCE],
-            [ZZ_FEATURE_MAP],
-            DATASETS,
-        )
-    )
-    @unpack
-    def test_warm_start(self, quantum_instance, feature_map, dataset):
+    def test_warm_start(self):
         """Test VQC when training from a warm start."""
 
-        classifier = VQC(
-            feature_map=feature_map,
-            quantum_instance=quantum_instance,
-            warm_start=True,
-        )
+        for dataset in self.datasets:
+            classifier = VQC(
+                feature_map=self.zz_feature_map,
+                quantum_instance=self.sv_quantum_instance,
+                warm_start=True,
+            )
 
-        x, y = dataset
+            # Fit the VQC to the first half of the data.
+            num_start = len(dataset.y) // 2
+            classifier.fit(dataset.x[:num_start, :], dataset.y[:num_start])
+            first_fit_final_point = classifier._fit_result.x
 
-        # Fit the VQC to the first half of the data.
-        num_start = len(y) // 2
-        classifier.fit(x[:num_start, :], y[:num_start])
-        first_fit_final_point = classifier._fit_result.x
+            # Fit the VQC to the second half of the data with a warm start.
+            classifier.fit(dataset.x[num_start:, :], dataset.y[num_start:])
+            second_fit_initial_point = classifier._initial_point
 
-        # Fit the VQC to the second half of the data with a warm start.
-        classifier.fit(x[num_start:, :], y[num_start:])
-        second_fit_initial_point = classifier._initial_point
+            # Check the final optimization point from the first fit was used to start the second fit.
+            np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
 
-        # Check the final optimization point from the first fit was used to start the second fit.
-        np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
-
-        score = classifier.score(x, y)
-        self.assertGreater(score, 0.5)
+            score = classifier.score(dataset.x, dataset.y)
+            self.assertGreater(score, 0.5)
 
     def _get_num_classes(self, func):
         """Wrapper to record the number of classes assumed when building CircuitQNN."""
@@ -207,11 +217,7 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         return wrapper
 
-    @data(
-        (ZZ_FEATURE_MAP, REAL_AMPLITUDES_, SV_QUANTUM_INSTANCE),
-    )
-    @unpack
-    def test_batches_with_incomplete_labels(self, feature_map, ansatz, quantum_instance):
+    def test_batches_with_incomplete_labels(self):
         """Test VQC when targets are one-hot and some batches don't have all possible labels."""
 
         # Generate data with batches that have incomplete labels.
@@ -220,10 +226,10 @@ class TestVQC(QiskitMachineLearningTestCase):
         y_one_hot = _one_hot_encode(y)
 
         classifier = VQC(
-            feature_map=feature_map,
-            ansatz=ansatz,
+            feature_map=self.zz_feature_map,
+            ansatz=self.real_amplitudes,
             warm_start=True,
-            quantum_instance=quantum_instance,
+            quantum_instance=self.sv_quantum_instance,
         )
 
         classifier._get_interpret = self._get_num_classes(classifier._get_interpret)
@@ -242,20 +248,18 @@ class TestVQC(QiskitMachineLearningTestCase):
         with self.subTest("Check correct number of classes is used to build CircuitQNN."):
             self.assertTrue((np.asarray(self.num_classes_by_batch) == 3).all())
 
-    @data(SV_QUANTUM_INSTANCE)
-    def test_multilabel_targets_raise_an_error(self, quantum_instance):
+    def test_multilabel_targets_raise_an_error(self):
         """Tests VQC multi-label input raises an error."""
 
         # Generate multi-label data.
         x = algorithm_globals.random.random((3, 2))
         y = np.asarray([[1, 1, 0], [1, 0, 1], [0, 1, 1]])
 
-        classifier = VQC(num_qubits=2, quantum_instance=quantum_instance)
+        classifier = VQC(num_qubits=2, quantum_instance=self.sv_quantum_instance)
         with self.assertRaises(QiskitMachineLearningError):
             classifier.fit(x, y)
 
-    @data(SV_QUANTUM_INSTANCE)
-    def test_changing_classes_raises_error(self, quantum_instance):
+    def test_changing_classes_raises_error(self):
         """Tests VQC raises an error when fitting new data with a different number of classes."""
 
         targets1 = np.asarray([[0, 0, 1], [0, 1, 0]])
@@ -263,23 +267,22 @@ class TestVQC(QiskitMachineLearningTestCase):
         features1 = algorithm_globals.random.random((len(targets1), 2))
         features2 = algorithm_globals.random.random((len(targets2), 2))
 
-        classifier = VQC(num_qubits=2, warm_start=True, quantum_instance=quantum_instance)
+        classifier = VQC(num_qubits=2, warm_start=True, quantum_instance=self.sv_quantum_instance)
         classifier.fit(features1, targets1)
         with self.assertRaises(QiskitMachineLearningError):
             classifier.fit(features2, targets2)
 
-    @idata(itertools.product(QUANTUM_INSTANCES_, LOSSES))
-    @unpack
-    def test_sparse_arrays(self, quantum_instance, loss):
+    def test_sparse_arrays(self):
         """Tests VQC on sparse features and labels."""
-        classifier = VQC(num_qubits=2, loss=loss, quantum_instance=quantum_instance)
-        x = scipy.sparse.csr_matrix([[0, 0], [1, 1]])
-        y = scipy.sparse.csr_matrix([[1, 0], [0, 1]])
+        for quantum_instance, loss in itertools.product(self.quantum_instances, self.losses):
+            classifier = VQC(num_qubits=2, loss=loss, quantum_instance=quantum_instance)
+            x = scipy.sparse.csr_matrix([[0, 0], [1, 1]])
+            y = scipy.sparse.csr_matrix([[1, 0], [0, 1]])
 
-        classifier.fit(x, y)
+            classifier.fit(x, y)
 
-        score = classifier.score(x, y)
-        self.assertGreaterEqual(score, 0.5)
+            score = classifier.score(x, y)
+            self.assertGreaterEqual(score, 0.5)
 
 
 if __name__ == "__main__":
