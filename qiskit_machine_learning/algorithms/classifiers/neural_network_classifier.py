@@ -172,6 +172,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             X = cast(spmatrix, X).toarray()  # cast is required by mypy
 
         if y is not None:
+            self._num_classes = self._get_num_classes(y)
             if isinstance(y[0], str):
                 # string data is assumed to be categorical
 
@@ -245,5 +246,4 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 f"The number of classes ({num_classes}) is different to the previous batch "
                 f"({self._num_classes})."
             )
-        self._num_classes = num_classes
         return num_classes

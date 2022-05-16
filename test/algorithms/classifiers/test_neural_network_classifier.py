@@ -39,6 +39,12 @@ QUANTUM_INSTANCES = ["statevector", "qasm"]
 CALLBACKS = [True, False]
 
 
+def _one_hot_encode(y: np.ndarray) -> np.ndarray:
+    y_one_hot = np.zeros((y.size, int(y.max() + 1)), dtype=int)
+    y_one_hot[np.arange(y.size), y] = 1
+    return y_one_hot
+
+
 @ddt
 class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
     """Neural Network Classifier Tests."""
@@ -331,6 +337,35 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
             with self.assertRaises(TypeError):
                 FakeModel.load(file_name)
+
+    def test_num_classes_data(self):
+        """Test the number of assumed classes for one-hot and not one-hot data."""
+
+        optimizer = L_BFGS_B(maxiter=5)
+
+        qnn, num_inputs, num_parameters = self._create_circuit_qnn(self.sv_quantum_instance)
+
+        features, labels = self._generate_data(num_inputs)
+
+        # convert to categorical
+        str_labels = labels.astype(str)
+        str_labels[str_labels == "0.0"] = "A"
+        str_labels[str_labels == "1.0"] = "B"
+
+        # convert to one-hot
+        one_hot_labels = _one_hot_encode(labels.astype(int))
+
+        for one_hot, labels in zip([True, False], [one_hot_labels, str_labels]):
+            with self.subTest(one_hot):
+                classifier = self._create_classifier(
+                    qnn, num_parameters, optimizer, loss="absolute_error", one_hot=one_hot
+                )
+
+                # fit to data
+                classifier.fit(features, labels)
+                num_classes = classifier.num_classes
+
+                self.assertEqual(num_classes, 2)
 
 
 if __name__ == "__main__":
