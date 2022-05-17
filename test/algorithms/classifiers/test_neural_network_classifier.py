@@ -32,6 +32,8 @@ from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, NeuralNetwork
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
+from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+
 
 OPTIMIZERS = ["cobyla", "bfgs", None]
 L1L2_ERRORS = ["absolute_error", "squared_error"]
@@ -135,7 +137,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                 self.assertEqual(len(weights), num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
-    def _create_circuit_qnn(self, quantum_instance: QuantumInstance) -> Tuple[CircuitQNN, int, int]:
+    def _create_circuit_qnn(
+        self, quantum_instance: QuantumInstance, output_shape=2
+    ) -> Tuple[CircuitQNN, int, int]:
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, reps=1)
@@ -149,7 +153,6 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         def parity(x):
             return f"{x:b}".count("1") % 2
 
-        output_shape = 2
         qnn = CircuitQNN(
             qc,
             input_params=feature_map.parameters,
@@ -342,9 +345,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         """Test the number of assumed classes for one-hot and not one-hot data."""
 
         optimizer = L_BFGS_B(maxiter=5)
-
         qnn, num_inputs, num_parameters = self._create_circuit_qnn(self.sv_quantum_instance)
-
         features, labels = self._generate_data(num_inputs)
 
         # convert to categorical
@@ -366,6 +367,69 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                 num_classes = classifier.num_classes
 
                 self.assertEqual(num_classes, 2)
+
+    def test_binary_classification_with_multiclass_data(self):
+        """Test that trying to train a binary classifier with multiclass data raises an error."""
+
+        optimizer = L_BFGS_B(maxiter=5)
+        qnn, num_inputs, num_parameters = self._create_circuit_qnn(
+            self.sv_quantum_instance, output_shape=1
+        )
+        classifier = self._create_classifier(
+            qnn,
+            num_parameters,
+            optimizer,
+            loss="absolute_error",
+        )
+
+        # construct data
+        num_samples = 3
+        x = algorithm_globals.random.random((num_samples, num_inputs))
+        y = np.asarray([0, 1, 2])
+
+        with self.assertRaises(QiskitMachineLearningError):
+            classifier.fit(x, y)
+
+    def test_bad_binary_shape(self):
+        """Test that trying to train a binary classifier with misshaped data raises an error."""
+
+        optimizer = L_BFGS_B(maxiter=5)
+        qnn, num_inputs, num_parameters = self._create_circuit_qnn(
+            self.sv_quantum_instance, output_shape=1
+        )
+        classifier = self._create_classifier(
+            qnn,
+            num_parameters,
+            optimizer,
+            loss="absolute_error",
+        )
+
+        # construct data
+        num_samples = 2
+        x = algorithm_globals.random.random((num_samples, num_inputs))
+        y = np.array([[0, 1], [1, 0]])
+
+        with self.assertRaises(QiskitMachineLearningError):
+            classifier.fit(x, y)
+
+    def test_bad_one_hot_data(self):
+        """Test that trying to train a one-hot classifier with incompatible data raises an error."""
+
+        optimizer = L_BFGS_B(maxiter=5)
+        qnn, num_inputs, num_parameters = self._create_circuit_qnn(
+            self.sv_quantum_instance, output_shape=2
+        )
+        classifier = self._create_classifier(
+            qnn, num_parameters, optimizer, loss="absolute_error", one_hot=True
+        )
+
+        # construct data
+        num_samples = 2
+        x = algorithm_globals.random.random((num_samples, num_inputs))
+        y = np.array([[0, 1], [2, 0]])
+
+        with self.assertRaises(QiskitMachineLearningError):
+            classifier.fit(x, y)
 
 
 if __name__ == "__main__":
