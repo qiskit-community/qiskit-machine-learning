@@ -146,6 +146,7 @@ class TestVQC(QiskitMachineLearningTestCase):
                 f"{dataset.name}"
             )
             with self.subTest(subtest_name):
+                self.setUp()
                 if num_qubits is None and feature_map is None and ansatz is None:
                     self.skipTest(
                         "At least one of num_qubits, feature_map, or ansatz must be set by the user."
@@ -168,6 +169,7 @@ class TestVQC(QiskitMachineLearningTestCase):
                 classifier.fit(dataset.x, dataset.y)
                 score = classifier.score(dataset.x, dataset.y)
                 self.assertGreater(score, 0.5)
+                self.tearDown()
 
     def test_VQC_non_parameterized(self):
         """
@@ -186,26 +188,29 @@ class TestVQC(QiskitMachineLearningTestCase):
         """Test VQC when training from a warm start."""
 
         for dataset in self.datasets:
-            classifier = VQC(
-                feature_map=self.zz_feature_map,
-                quantum_instance=self.sv_quantum_instance,
-                warm_start=True,
-            )
+            with self.subTest(dataset.name):
+                self.setUp()
+                classifier = VQC(
+                    feature_map=self.zz_feature_map,
+                    quantum_instance=self.sv_quantum_instance,
+                    warm_start=True,
+                )
 
-            # Fit the VQC to the first half of the data.
-            num_start = len(dataset.y) // 2
-            classifier.fit(dataset.x[:num_start, :], dataset.y[:num_start])
-            first_fit_final_point = classifier._fit_result.x
+                # Fit the VQC to the first half of the data.
+                num_start = len(dataset.y) // 2
+                classifier.fit(dataset.x[:num_start, :], dataset.y[:num_start])
+                first_fit_final_point = classifier._fit_result.x
 
-            # Fit the VQC to the second half of the data with a warm start.
-            classifier.fit(dataset.x[num_start:, :], dataset.y[num_start:])
-            second_fit_initial_point = classifier._initial_point
+                # Fit the VQC to the second half of the data with a warm start.
+                classifier.fit(dataset.x[num_start:, :], dataset.y[num_start:])
+                second_fit_initial_point = classifier._initial_point
 
-            # Check the final optimization point from the first fit was used to start the second fit.
-            np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
+                # Check the final optimization point from the first fit was used to start the second fit.
+                np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
 
-            score = classifier.score(dataset.x, dataset.y)
-            self.assertGreater(score, 0.5)
+                score = classifier.score(dataset.x, dataset.y)
+                self.assertGreater(score, 0.5)
+                self.tearDown()
 
     def _get_num_classes(self, func):
         """Wrapper to record the number of classes assumed when building CircuitQNN."""

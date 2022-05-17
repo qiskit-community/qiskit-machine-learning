@@ -1,10 +1,8 @@
 ---
 features:
   - |
-    :class:`~qiskit_machine_learning.algorithms.classifiers.vqc.VQC` will now
-    raise an error when training from a warm start when encountering targets
-    with a different number of classes to the previous dataset.
+    :class:`~qiskit_machine_learning.algorithms.VQC` will now raise an error when training from a
+    warm start when encountering targets with a different number of classes to the previous dataset.
   - |
-    :class:`~qiskit_machine_learning.algorithms.classifiers.vqc.VQC` will now
-    raise an error when a user attempts multi-label classification, which is
-    not supported.
+    :class:`~qiskit_machine_learning.algorithms.VQC` will now raise an error when a user attempts
+    multi-label classification, which is not supported.
