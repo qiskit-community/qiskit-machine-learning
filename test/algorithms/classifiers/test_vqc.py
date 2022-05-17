@@ -37,7 +37,7 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 @dataclass
 class _Dataset:
-    name: str | None = "dataset"
+    name: str | None = None
     x: np.ndarray | None = None
     y: np.ndarray | None = None
 
