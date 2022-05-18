@@ -1,5 +1,6 @@
 include LICENSE.txt
 include requirements.txt
+include qiskit_machine_learning/py.typed
 recursive-include qiskit_machine_learning *.txt
 graft test
 prune docs
