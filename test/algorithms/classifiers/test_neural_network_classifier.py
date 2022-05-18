@@ -341,32 +341,32 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             with self.assertRaises(TypeError):
                 FakeModel.load(file_name)
 
-    def test_num_classes_data(self):
+    @idata((True, False))
+    def test_num_classes_data(self, one_hot):
         """Test the number of assumed classes for one-hot and not one-hot data."""
 
         optimizer = L_BFGS_B(maxiter=5)
         qnn, num_inputs, num_parameters = self._create_circuit_qnn(self.sv_quantum_instance)
         features, labels = self._generate_data(num_inputs)
 
-        # convert to categorical
-        str_labels = labels.astype(str)
-        str_labels[str_labels == "0.0"] = "A"
-        str_labels[str_labels == "1.0"] = "B"
+        if one_hot:
+            # convert to one-hot
+            labels = _one_hot_encode(labels.astype(int))
+        else:
+            # convert to categorical
+            labels = labels.astype(str)
+            labels[labels == "0.0"] = "A"
+            labels[labels == "1.0"] = "B"
 
-        # convert to one-hot
-        one_hot_labels = _one_hot_encode(labels.astype(int))
+        classifier = self._create_classifier(
+            qnn, num_parameters, optimizer, loss="absolute_error", one_hot=one_hot
+        )
 
-        for one_hot, labels in zip([True, False], [one_hot_labels, str_labels]):
-            with self.subTest(one_hot):
-                classifier = self._create_classifier(
-                    qnn, num_parameters, optimizer, loss="absolute_error", one_hot=one_hot
-                )
+        # fit to data
+        classifier.fit(features, labels)
+        num_classes = classifier.num_classes
 
-                # fit to data
-                classifier.fit(features, labels)
-                num_classes = classifier.num_classes
-
-                self.assertEqual(num_classes, 2)
+        self.assertEqual(num_classes, 2)
 
     def test_binary_classification_with_multiclass_data(self):
         """Test that trying to train a binary classifier with multiclass data raises an error."""
