@@ -1,0 +1,12 @@
+---
+
+features:
+  - |
+    In the previous releases, in the ``QGAN`` class, the gradient penalty could not be enabled to train the discriminator
+    with a penalty function. Thus, a gradient penalty parameter was added during the initialization of the QGAN algorithm. 
+    This parameter indicates whether or not penalty function is applied to the loss function of the discriminator during training.
+
+fixes:
+  - |
+    Previously in the ``pytorch_discriminator`` class of the ``QGAN`` algorithm, if the gradient penalty parameter was enabled, 
+    the latent variable z was not properly initialized : Variable module was used instead of torch.autograd.Variable. 

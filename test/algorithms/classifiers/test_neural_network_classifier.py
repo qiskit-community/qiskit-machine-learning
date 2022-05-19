@@ -107,7 +107,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         classifier = self._create_classifier(qnn, ansatz.num_parameters, optimizer, loss, callback)
 
         # construct data
-        num_samples = 5
+        num_samples = 6
         X = algorithm_globals.random.random(  # pylint: disable=invalid-name
             (num_samples, num_inputs)
         )
@@ -158,7 +158,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     def _generate_data(self, num_inputs: int) -> Tuple[np.ndarray, np.ndarray]:
         # construct data
-        num_samples = 5
+        num_samples = 6
         features = algorithm_globals.random.random((num_samples, num_inputs))
         labels = 1.0 * (np.sum(features, axis=1) <= 1)
 
@@ -314,9 +314,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         original_predicts = classifier.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = os.path.join(tempfile.gettempdir(), "classifier.model")
-        classifier.save(file_name)
-        try:
+        with tempfile.TemporaryDirectory() as dir_name:
+            file_name = os.path.join(dir_name, "classifier.model")
+            classifier.save(file_name)
+
             classifier_load = NeuralNetworkClassifier.load(file_name)
             loaded_model_predicts = classifier_load.predict(test_features)
 
@@ -330,9 +331,6 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
             with self.assertRaises(TypeError):
                 FakeModel.load(file_name)
-
-        finally:
-            os.remove(file_name)
 
 
 if __name__ == "__main__":
