@@ -22,7 +22,7 @@ from scipy.sparse import coo_matrix
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError, OperatorBase
-from qiskit.providers import BaseBackend, Backend
+from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 
 import qiskit_machine_learning.optionals as _optionals
@@ -58,7 +58,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]] = None,
         output_shape: Union[int, Tuple[int, ...]] = None,
         gradient: Gradient = None,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
+        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
         input_gradients: bool = False,
     ) -> None:
         """
@@ -241,9 +241,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(
-        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]]
-    ) -> None:
+    def quantum_instance(self, quantum_instance: Optional[Union[QuantumInstance, Backend]]) -> None:
         """Sets the quantum instance to evaluate the circuit and make sure circuit has
         measurements or not depending on the type of backend used.
         """
@@ -253,7 +251,7 @@ class CircuitQNN(SamplingNeuralNetwork):
 
     def _set_quantum_instance(
         self,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]],
+        quantum_instance: Optional[Union[QuantumInstance, Backend]],
         output_shape: Union[int, Tuple[int, ...]],
         interpret: Optional[Callable[[int], Union[int, Tuple[int, ...]]]],
     ) -> None:
@@ -267,7 +265,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers.
         """
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
+        if isinstance(quantum_instance, Backend):
             quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 
@@ -359,7 +357,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        if self._quantum_instance.bound_pass_manager:
+        if self._quantum_instance.bound_pass_manager is not None:
             circuits = self._quantum_instance.transpile(
                 circuits, pass_manager=self._quantum_instance.bound_pass_manager
             )
@@ -394,7 +392,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             )
             circuits.append(self._circuit.bind_parameters(param_values))
 
-        if self._quantum_instance.bound_pass_manager:
+        if self._quantum_instance.bound_pass_manager is not None:
             circuits = self._quantum_instance.transpile(
                 circuits, pass_manager=self._quantum_instance.bound_pass_manager
             )

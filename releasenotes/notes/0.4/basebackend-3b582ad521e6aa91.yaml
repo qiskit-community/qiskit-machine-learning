@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The previously deprecated ``BaseBackend`` class has been removed. 
+    It was originally deprecated in the Qiskit Terra 0.18.0 release.

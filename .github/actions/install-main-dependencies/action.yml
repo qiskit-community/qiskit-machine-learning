@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,25 +16,116 @@ inputs:
   os:
     description: 'OS'
     required: true
+  python-version:
+    description: 'Python version'
+    required: true
 runs:
   using: "composite"
   steps:
-    - name: Install Dependencies from Main
+    - name: Get main last commit ids
       run: |
-        pip install git+https://github.com/Qiskit/qiskit-terra
+        echo "TERRA_HASH=$(git ls-remote --heads https://github.com/Qiskit/qiskit-terra.git refs/heads/main  | awk '{print $1}')" >> $GITHUB_ENV
+        echo "AER_HASH=$(git ls-remote --heads https://github.com/Qiskit/qiskit-aer.git refs/heads/main  | awk '{print $1}')" >> $GITHUB_ENV
+      shell: bash
+    - name: Terra Cache
+      env:
+        CACHE_VERSION: v1
+      id: terra-cache
+      uses: actions/cache@v3
+      with:
+        path: terra-cache
+        key: terra-cache-${{ inputs.os }}-${{ inputs.python-version }}-${{ env.TERRA_HASH }}-${{ env.CACHE_VERSION }}
+    - name: Aer Cache
+      env:
+        CACHE_VERSION: v1
+      id: aer-cache
+      uses: actions/cache@v3
+      with:
+        path: aer-cache
+        key: aer-cache-${{ inputs.os }}-${{ inputs.python-version }}-${{ env.AER_HASH }}-${{ env.CACHE_VERSION }}
+    - name: Install Terra from Main
+      env:
+        MACOSX_DEPLOYMENT_TARGET: 10.9
+      run: |
+        echo 'Install Terra from Main'
+        BASE_DIR=terra-cache
+        build_from_main=true
+        cache_hit=${{ steps.terra-cache.outputs.cache-hit }}
+        echo "cache hit: ${cache_hit}"
+        if [ "$cache_hit" == "true" ]; then
+          pip_result=0
+          pushd "${BASE_DIR}"
+          python -m pip install *.whl && pip_result=$? || pip_result=$?
+          popd
+          if [ $pip_result == 0 ]; then
+            build_from_main=false
+          fi
+        else
+          mkdir -p ${BASE_DIR}
+        fi
+        if [ "$build_from_main" == "true" ]; then
+          echo 'Create wheel file from main'
+          pip install -U wheel setuptools_rust
+          git clone --depth 1 --branch main https://github.com/Qiskit/qiskit-terra.git /tmp/qiskit-terra
+          pushd /tmp/qiskit-terra
+          python setup.py bdist_wheel
+          popd
+          cp -rf /tmp/qiskit-terra/dist/*.whl "${BASE_DIR}"
+          pushd "${BASE_DIR}"
+          python -m pip install *.whl
+          popd
+        fi
+      shell: bash
+    - name: Install Aer from Main
+      env:
+        MACOSX_DEPLOYMENT_TARGET: 10.16
+      run: |
+        echo 'Install Aer from Main'
         if [ "${{ inputs.os }}" == "ubuntu-latest" ]; then
           export DISABLE_CONAN=1
           sudo apt-get -y install nlohmann-json3-dev
           sudo apt-get -y install libspdlog-dev
           sudo apt-get -y install libmuparserx-dev
         fi
-        if [ "${{ inputs.os }}" == "windows-2019" ]; then
-          git clone https://github.com/Qiskit/qiskit-aer.git /tmp/qiskit-aer
-          pushd /tmp/qiskit-aer
-          python setup.py bdist_wheel -- -G 'Visual Studio 16 2019'
-          pip install --find-links=dist qiskit-aer
+        git clone --depth 1 --branch main https://github.com/Qiskit/qiskit-aer.git /tmp/qiskit-aer
+        BASE_DIR=aer-cache
+        build_from_main=true
+        cache_hit=${{ steps.aer-cache.outputs.cache-hit }}
+        echo "cache hit: ${cache_hit}"
+        if [ "$cache_hit" == "true" ]; then
+          pip_result=0
+          pushd "${BASE_DIR}"
+          python -m pip install *.whl && pip_result=$? || pip_result=$?
           popd
+          if [ $pip_result == 0 ]; then
+            echo 'Verifying cached Aer with tools/verify_wheels.py ...'
+            verify_result=0
+            pushd /tmp/qiskit-aer
+            python tools/verify_wheels.py && verify_result=$? || verify_result=$?
+            popd
+            if [ $verify_result == 0 ]; then
+              echo 'Cached Aer passed verification.'
+              build_from_main=false
+            else
+              echo 'Cached Aer failed verification.'
+            fi
+          fi
         else
-          pip install git+https://github.com/Qiskit/qiskit-aer
+          mkdir -p ${BASE_DIR}
+        fi
+        if [ "$build_from_main" == "true" ]; then
+          echo 'Create wheel file from main'
+          pip install -U wheel
+          pushd /tmp/qiskit-aer
+          if [ "${{ inputs.os }}" == "windows-2019" ]; then
+            python setup.py bdist_wheel -- -G 'Visual Studio 16 2019'
+          else
+            python setup.py bdist_wheel
+          fi
+          popd
+          cp -rf /tmp/qiskit-aer/dist/*.whl "${BASE_DIR}"
+          pushd "${BASE_DIR}"
+          python -m pip install *.whl
+          popd
         fi
       shell: bash
