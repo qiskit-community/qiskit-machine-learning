@@ -26,13 +26,11 @@ from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 
-from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
+from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, NeuralNetwork
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
-
 
 OPTIMIZERS = ["cobyla", "bfgs", None]
 L1L2_ERRORS = ["absolute_error", "squared_error"]
