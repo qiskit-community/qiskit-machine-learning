@@ -14,20 +14,19 @@ import itertools
 import os
 import tempfile
 import unittest
+from typing import Tuple, Optional, Callable
 
 from test import QiskitMachineLearningTestCase
 
-from typing import Tuple, Optional, Callable
-
 import numpy as np
 import scipy
-
 from ddt import ddt, data, idata, unpack
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, NeuralNetwork
@@ -122,6 +121,11 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         self._verify_callback_values(callback, history, qnn.num_weights)
 
+        self.assertIsNotNone(classifier.fit_result)
+        self.assertIsNotNone(classifier.weights)
+        np.testing.assert_array_equal(classifier.fit_result.x, classifier.weights)
+        self.assertEqual(len(classifier.weights), ansatz.num_parameters)
+
     def _verify_callback_values(self, callback, history, num_weights):
         if callback is not None:
             self.assertTrue(all(isinstance(value, float) for value in history["values"]))
@@ -209,6 +213,11 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         self.assertGreater(score, 0.5)
 
         self._verify_callback_values(callback, history, qnn.num_weights)
+
+        self.assertIsNotNone(classifier.fit_result)
+        self.assertIsNotNone(classifier.weights)
+        np.testing.assert_array_equal(classifier.fit_result.x, classifier.weights)
+        self.assertEqual(len(classifier.weights), num_parameters)
 
     @idata(itertools.product(OPTIMIZERS, QUANTUM_INSTANCES))
     @unpack
@@ -333,6 +342,19 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         finally:
             os.remove(file_name)
+
+    def test_untrained(self):
+        """Test untrained classifier."""
+        qnn, _, _ = self._create_circuit_qnn(self.sv_quantum_instance)
+        classifier = NeuralNetworkClassifier(qnn)
+        with self.assertRaises(QiskitMachineLearningError, msg="classifier.predict()"):
+            classifier.predict(np.asarray([]))
+
+        with self.assertRaises(QiskitMachineLearningError, msg="classifier.fit_result"):
+            _ = classifier.fit_result
+
+        with self.assertRaises(QiskitMachineLearningError, msg="classifier.weights"):
+            _ = classifier.weights
 
 
 if __name__ == "__main__":

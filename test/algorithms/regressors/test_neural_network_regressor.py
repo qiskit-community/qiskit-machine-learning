@@ -25,6 +25,7 @@ from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
 from qiskit.utils import QuantumInstance, algorithm_globals
 
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
@@ -135,6 +136,11 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
                 self.assertEqual(len(weights), regression_opflow_qnn.num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
+        self.assertIsNotNone(regressor.fit_result)
+        self.assertIsNotNone(regressor.weights)
+        np.testing.assert_array_equal(regressor.fit_result.x, regressor.weights)
+        self.assertEqual(len(regressor.weights), ansatz.num_parameters)
+
     def test_save_load(self):
         """Tests save and load models."""
         features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
@@ -174,3 +180,16 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         finally:
             os.remove(file_name)
+
+    def test_untrained(self):
+        """Test untrained regressor."""
+        qnn = TwoLayerQNN(2)
+        regressor = NeuralNetworkRegressor(qnn)
+        with self.assertRaises(QiskitMachineLearningError, msg="regressor.predict()"):
+            regressor.predict(np.asarray([]))
+
+        with self.assertRaises(QiskitMachineLearningError, msg="regressor.fit_result"):
+            _ = regressor.fit_result
+
+        with self.assertRaises(QiskitMachineLearningError, msg="regressor.weights"):
+            _ = regressor.weights
