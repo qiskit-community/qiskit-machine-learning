@@ -24,6 +24,11 @@ from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
+from qiskit_machine_learning.deprecation import (
+    deprecate_arguments,
+    deprecate_method,
+    deprecate_property,
+)
 from ..exceptions import QiskitMachineLearningError
 
 
@@ -47,13 +52,14 @@ class QuantumKernel:
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
+    @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
     def __init__(
         self,
         feature_map: Optional[QuantumCircuit] = None,
         enforce_psd: bool = True,
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
-        user_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
+        training_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
     ) -> None:
         """
         Args:
@@ -63,23 +69,23 @@ class QuantumKernel:
                 Only enforced when not using the state vector simulator. Default True.
             batch_size: Number of circuits to batch together for computation. Default 900.
             quantum_instance: Quantum Instance or Backend
-            user_parameters: Iterable containing ``Parameter`` objects which correspond to
+            training_parameters: Iterable containing ``Parameter`` objects which correspond to
                  quantum gates on the feature map circuit which may be tuned. If users intend to
                  tune feature map parameters to find optimal values, this field should be set.
         """
         # Class fields
         self._feature_map = None
         self._unbound_feature_map = None
-        self._user_parameters = None
-        self._user_param_binds = None
+        self._training_parameters = None
+        self._training_parameter_binds = None
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
 
         # Setters
         self.feature_map = feature_map if feature_map is not None else ZZFeatureMap(2)
-        if user_parameters is not None:
-            self.user_parameters = user_parameters
+        if training_parameters is not None:
+            self.training_parameters = training_parameters
 
     @property
     def feature_map(self) -> QuantumCircuit:
@@ -92,12 +98,12 @@ class QuantumKernel:
         Set feature map.
 
         The ``unbound_feature_map`` field will be automatically updated when this field is set,
-        and ``user_parameters`` and ``user_param_binds`` fields will be reset to ``None``.
+        and ``training_parameters`` and ``training_parameter_binds`` fields will be reset to ``None``.
         """
         self._feature_map = feature_map
         self._unbound_feature_map = copy.deepcopy(self._feature_map)
-        self._user_parameters = None
-        self._user_param_binds = None
+        self._training_parameters = None
+        self._training_parameter_binds = None
 
     @property
     def unbound_feature_map(self) -> QuantumCircuit:
@@ -118,56 +124,62 @@ class QuantumKernel:
             self._quantum_instance = quantum_instance
 
     @property
-    def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
-        """Return the vector of user parameters."""
-        return copy.copy(self._user_parameters)
+    def training_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+        """Return the vector of training parameters."""
+        return copy.copy(self._training_parameters)
 
-    @user_parameters.setter
-    def user_parameters(self, user_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
-        """Set the user parameters"""
-        self._user_param_binds = {user_params[i]: user_params[i] for i, _ in enumerate(user_params)}
-        self._user_parameters = copy.deepcopy(user_params)
+    @training_parameters.setter
+    def training_parameters(
+        self, training_params: Union[ParameterVector, Sequence[Parameter]]
+    ) -> None:
+        """Set the training parameters"""
+        self._training_parameter_binds = {
+            training_params[i]: training_params[i] for i, _ in enumerate(training_params)
+        }
+        self._training_parameters = copy.deepcopy(training_params)
 
-    def assign_user_parameters(
+    def assign_training_parameters(
         self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
         """
-        Assign user parameters in the ``QuantumKernel`` feature map.
+        Assign training parameters in the ``QuantumKernel`` feature map.
 
         Args:
             values (dict or iterable): Either a dictionary or iterable specifying the new
             parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
             ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
             numeric value. If an iterable, the elements are assigned to the existing parameters
-            in the order of ``QuantumKernel.user_parameters``.
+            in the order of ``QuantumKernel.training_parameters``.
 
         Raises:
-            ValueError: Incompatible number of user parameters and values
+            ValueError: Incompatible number of training parameters and values
 
         """
-        if self._user_parameters is None:
+        if self._training_parameters is None:
             raise ValueError(
                 f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of user parameters tracked by the QuantumKernel
+                match the number of training parameters tracked by the QuantumKernel
                 (None).
                 """
             )
 
-        # Get the input parameters. These should remain unaffected by assigning of user parameters.
-        input_params = list(set(self._unbound_feature_map.parameters) - set(self._user_parameters))
+        # Get the input parameters. These should remain unaffected by assigning of training parameters.
+        input_params = list(
+            set(self._unbound_feature_map.parameters) - set(self._training_parameters)
+        )
 
-        # If iterable of values is passed, the length must match length of user_parameters field
+        # If iterable of values is passed, the length must match length of training_parameters field
         if isinstance(values, (Sequence, np.ndarray)):
-            if len(values) != len(self._user_parameters):
+            if len(values) != len(self._training_parameters):
                 raise ValueError(
                     f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of user parameters tracked by the QuantumKernel
-                ({len(self._user_parameters)}).
+                match the number of training parameters tracked by the QuantumKernel
+                ({len(self._training_parameters)}).
                 """
                 )
-            values = {p: values[i] for i, p in enumerate(self._user_parameters)}
+            values = {p: values[i] for i, p in enumerate(self._training_parameters)}
         else:
             if not isinstance(values, dict):
                 raise ValueError(
@@ -181,7 +193,7 @@ class QuantumKernel:
             # This check actually catches some well defined assignments;
             # however; we throw an error to be consistent with the behavior
             # of QuantumCircuit's parameter binding.
-            unknown_parameters = list(set(values.keys()) - set(self._user_parameters))
+            unknown_parameters = list(set(values.keys()) - set(self._training_parameters))
             if len(unknown_parameters) > 0:
                 raise ValueError(
                     f"Cannot bind parameters ({unknown_parameters}) not tracked by the quantum kernel."
@@ -196,30 +208,30 @@ class QuantumKernel:
             if isinstance(bind, ParameterExpression):
                 self._unbound_feature_map.assign_parameters({param: bind}, inplace=True)
 
-                # User params are all non-input params in the unbound feature map
-                # This list comprehension ensures that self._user_parameters is ordered
+                # Training params are all non-input params in the unbound feature map
+                # This list comprehension ensures that self._training_parameters is ordered
                 # in a way that is consistent with self.feature_map.parameters
-                self._user_parameters = [
+                self._training_parameters = [
                     p for p in self._unbound_feature_map.parameters if (p not in input_params)
                 ]
 
                 # Remove param if it was overwritten
-                if param not in self._user_parameters:
-                    del self._user_param_binds[param]
+                if param not in self._training_parameters:
+                    del self._training_parameter_binds[param]
 
                 # Add new parameters
                 for sub_param in bind.parameters:
-                    if sub_param not in self._user_param_binds.keys():
-                        self._user_param_binds[sub_param] = sub_param
+                    if sub_param not in self._training_parameter_binds.keys():
+                        self._training_parameter_binds[sub_param] = sub_param
 
-                # If parameter is being set to expression of itself, user_param_binds
+                # If parameter is being set to expression of itself, training_parameter_binds
                 # reflects a self-bind
                 if param in bind.parameters:
-                    self._user_param_binds[param] = param
+                    self._training_parameter_binds[param] = param
 
             # If assignment is numerical, update the param_binds
             elif isinstance(bind, numbers.Number):
-                self._user_param_binds[param] = bind
+                self._training_parameter_binds[param] = bind
 
             else:
                 raise ValueError(
@@ -230,39 +242,90 @@ class QuantumKernel:
                     """
                 )
 
-        # Reorder dict according to self._user_parameters
-        self._user_param_binds = {
-            param: self._user_param_binds[param] for param in self._user_parameters
+        # Reorder dict according to self._training_parameters
+        self._training_parameter_binds = {
+            param: self._training_parameter_binds[param] for param in self._training_parameters
         }
 
         # Update feature map with numerical parameter assignments
-        self._feature_map = self._unbound_feature_map.assign_parameters(self._user_param_binds)
+        self._feature_map = self._unbound_feature_map.assign_parameters(
+            self._training_parameter_binds
+        )
 
     @property
-    def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
-        """Return a copy of the current user parameter mappings for the feature map circuit."""
-        return copy.deepcopy(self._user_param_binds)
+    def training_parameter_binds(self) -> Optional[Mapping[Parameter, float]]:
+        """Return a copy of the current training parameter mappings for the feature map circuit."""
+        return copy.deepcopy(self._training_parameter_binds)
 
+    def bind_training_parameters(
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+    ) -> None:
+        """
+        Alternate function signature for ``assign_training_parameters``
+        """
+        self.assign_training_parameters(values)
+
+    def get_unbound_training_parameters(self) -> List[Parameter]:
+        """Return a list of any unbound training parameters in the feature map circuit."""
+        unbound_training_params = []
+        if self._training_parameter_binds is not None:
+            # Get all training parameters not associated with numerical values
+            unbound_training_params = [
+                val
+                for val in self._training_parameter_binds.values()
+                if not isinstance(val, numbers.Number)
+            ]
+
+        return unbound_training_params
+
+    @property  # type: ignore
+    @deprecate_property("0.5.0", new_name="training_parameters")
+    def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+        """[Deprecated property]Return the vector of training parameters."""
+        return self.training_parameters
+
+    @user_parameters.setter  # type: ignore
+    @deprecate_property("0.5.0", new_name="training_parameters")
+    def user_parameters(self, training_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
+        """[Deprecated property setter]Set the training parameters"""
+        self.training_parameters = training_params
+
+    @deprecate_method("0.5.0", new_name="assign_training_parameters")
+    def assign_user_parameters(
+        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+    ) -> None:
+        """
+        [Deprecated method]Assign training parameters in the ``QuantumKernel`` feature map.
+        Otherwise, just like ``assign_training_parameters``.
+
+        """
+        self.assign_training_parameters(values)
+
+    @property  # type: ignore
+    @deprecate_property("0.5.0", new_name="training_parameter_binds")
+    def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
+        """
+        [Deprecated property]Return a copy of the current training parameter mappings
+        for the feature map circuit.
+        """
+        return self.training_parameter_binds
+
+    @deprecate_method("0.5.0", new_name="bind_training_parameters")
     def bind_user_parameters(
         self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
     ) -> None:
         """
-        Alternate function signature for ``assign_user_parameters``
+        [Deprecated method]Alternate function signature for ``assign_training_parameters``
         """
-        self.assign_user_parameters(values)
+        self.bind_training_parameters(values)
 
+    @deprecate_method("0.5.0", new_name="get_unbound_training_parameters")
     def get_unbound_user_parameters(self) -> List[Parameter]:
-        """Return a list of any unbound user parameters in the feature map circuit."""
-        unbound_user_params = []
-        if self._user_param_binds is not None:
-            # Get all user parameters not associated with numerical values
-            unbound_user_params = [
-                val
-                for val in self._user_param_binds.values()
-                if not isinstance(val, numbers.Number)
-            ]
-
-        return unbound_user_params
+        """
+        [Deprecated method]Return a list of any unbound training parameters in the feature
+        map circuit.
+        """
+        return self.get_unbound_training_parameters()
 
     def construct_circuit(
         self,
@@ -290,15 +353,15 @@ class QuantumKernel:
         Raises:
             ValueError:
                 - x and/or y have incompatible dimension with feature map
-                - unbound user parameters in the feature map circuit
+                - unbound training parameters in the feature map circuit
         """
-        # Ensure all user parameters have been bound in the feature map circuit.
-        unbound_params = self.get_unbound_user_parameters()
+        # Ensure all training parameters have been bound in the feature map circuit.
+        unbound_params = self.get_unbound_training_parameters()
         if unbound_params:
             raise ValueError(
                 f"""
-                The feature map circuit contains unbound user parameters ({unbound_params}).
-                All user parameters must be bound to numerical values before constructing
+                The feature map circuit contains unbound training parameters ({unbound_params}).
+                All training parameters must be bound to numerical values before constructing
                 inner product circuit.
                 """
             )
@@ -372,19 +435,19 @@ class QuantumKernel:
             QiskitMachineLearningError:
                 - A quantum instance or backend has not been provided
             ValueError:
-                - unbound user parameters in the feature map circuit
+                - unbound training parameters in the feature map circuit
                 - x_vec and/or y_vec are not one or two dimensional arrays
                 - x_vec and y_vec have have incompatible dimensions
                 - x_vec and/or y_vec have incompatible dimension with feature map and
                     and feature map can not be modified to match.
         """
-        # Ensure all user parameters have been bound in the feature map circuit.
-        unbound_params = self.get_unbound_user_parameters()
+        # Ensure all training parameters have been bound in the feature map circuit.
+        unbound_params = self.get_unbound_training_parameters()
         if unbound_params:
             raise ValueError(
                 f"""
-                The feature map circuit contains unbound user parameters ({unbound_params}).
-                All user parameters must be bound to numerical values before evaluating
+                The feature map circuit contains unbound training parameters ({unbound_params}).
+                All training parameters must be bound to numerical values before evaluating
                 the kernel matrix.
                 """
             )

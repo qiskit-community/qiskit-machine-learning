@@ -18,7 +18,7 @@ from typing import Optional, Dict
 
 import numpy as np
 from qiskit.utils import algorithm_globals
-from sklearn.svm import SVC
+from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
@@ -27,11 +27,12 @@ from ...kernels.quantum_kernel import QuantumKernel
 logger = logging.getLogger(__name__)
 
 
-class PegasosQSVC(SVC, SerializableModelMixin):
-    """
+class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
+    r"""
     This class implements Pegasos Quantum Support Vector Classifier algorithm developed in [1]
-    and includes overridden methods ``fit`` and ``predict`` from the ``SVC`` super-class. This
-    implementation is adapted to work with quantum kernels.
+    and includes methods ``fit``, ``predict`` and ``decision_function`` following the signatures
+    of `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_.
+    This implementation is adapted to work with quantum kernels.
 
     **Example**
 
@@ -52,6 +53,7 @@ class PegasosQSVC(SVC, SerializableModelMixin):
     FITTED = 0
     UNFITTED = 1
 
+    # pylint: disable=invalid-name
     def __init__(
         self,
         quantum_kernel: Optional[QuantumKernel] = None,
@@ -85,7 +87,6 @@ class PegasosQSVC(SVC, SerializableModelMixin):
             TypeError:
                 - if ``quantum_instance`` neither instance of ``QuantumKernel`` nor ``None``.
         """
-        super().__init__(C=C)
 
         if precomputed:
             if quantum_kernel is not None:
@@ -101,6 +102,11 @@ class PegasosQSVC(SVC, SerializableModelMixin):
         self._num_steps = num_steps
         if seed is not None:
             algorithm_globals.random_seed = seed
+
+        if C > 0:
+            self.C = C
+        else:
+            raise ValueError(f"C has to be a positive number, found {C}.")
 
         # these are the parameters being fit and are needed for prediction
         self._alphas: Optional[Dict[int, int]] = None
@@ -215,6 +221,34 @@ class PegasosQSVC(SVC, SerializableModelMixin):
             ValueError:
                 - Pre-computed kernel matrix has the wrong shape and/or dimension.
         """
+
+        t_0 = datetime.now()
+        values = self.decision_function(X)
+        y = np.array([self._label_pos if val > 0 else self._label_neg for val in values])
+        logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
+
+        return y
+
+    def decision_function(self, X: np.ndarray) -> np.ndarray:
+        """
+        Evaluate the decision function for the samples in X.
+
+        Args:
+            X: Features. For a callable kernel (an instance of ``QuantumKernel``) the shape
+               should be ``(m_samples, n_features)``, for a precomputed kernel the shape should be
+               ``(m_samples, n_samples)``. Where ``m`` denotes the set to be predicted and ``n`` the
+               size of the training set. In that case, the kernel values in X have to be calculated
+               with respect to the elements of the set to be predicted and the training set.
+
+        Returns:
+            An array of the shape (n_samples), the decision function of the sample.
+
+        Raises:
+            QiskitMachineLearningError:
+                - the method is called before the model has been fit.
+            ValueError:
+                - Pre-computed kernel matrix has the wrong shape and/or dimension.
+        """
         if self.fit_status_ == PegasosQSVC.UNFITTED:
             raise QiskitMachineLearningError("The PegasosQSVC has to be fit first")
         if np.ndim(X) != 2:
@@ -224,19 +258,11 @@ class PegasosQSVC(SVC, SerializableModelMixin):
                 "For a precomputed kernel, X should be in shape (m_samples, n_samples)"
             )
 
-        t_0 = datetime.now()
-        y = np.zeros(X.shape[0])
+        values = np.zeros(X.shape[0])
         for i in range(X.shape[0]):
-            value = self._compute_weighted_kernel_sum(i, X, training=False)
+            values[i] = self._compute_weighted_kernel_sum(i, X, training=False)
 
-            if value > 0:
-                y[i] = self._label_pos
-            else:
-                y[i] = self._label_neg
-
-        logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
-
-        return y
+        return values
 
     def _compute_weighted_kernel_sum(self, index: int, X: np.ndarray, training: bool) -> float:
         """Helper function to compute the weighted sum over support vectors used for both training

@@ -171,7 +171,7 @@ class PyTorchDiscriminator(DiscriminativeNetwork):
             x = Variable(x)
         # pylint: disable=no-member
         delta_ = torch.rand(x.size()) * c
-        z = Variable(x + delta_, requires_grad=True)
+        z = torch.autograd.Variable(x + delta_, requires_grad=True)
         o_l = self.get_label(z)
         # pylint: disable=no-member
         d_g = torch.autograd.grad(o_l, z, grad_outputs=torch.ones(o_l.size()), create_graph=True)[

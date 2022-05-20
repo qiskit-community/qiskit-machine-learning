@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -103,7 +103,7 @@ class SVCLoss(KernelLoss):
         labels: np.ndarray,
     ) -> float:
         # Bind training parameters
-        quantum_kernel.assign_user_parameters(parameter_values)
+        quantum_kernel.assign_training_parameters(parameter_values)
 
         # Get estimated kernel matrix
         kmatrix = quantum_kernel.evaluate(np.array(data))
