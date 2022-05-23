@@ -144,10 +144,8 @@ class TrainableModel(SerializableModelMixin):
 
     @property
     def weights(self) -> np.ndarray:
-        """
-        Returns:
-            an array of trained weights. This property is for convenience only, it does the same
-            as `model.fit_result.x`.
+        """Returns trained weights as a numpy array. The weights can be also queried by calling
+        `model.fit_result.x`, but in this case their representation depends on the optimizer used.
 
         Raises:
             QiskitMachineLearningError: If the model has not been fit.
@@ -157,12 +155,10 @@ class TrainableModel(SerializableModelMixin):
 
     @property
     def fit_result(self) -> OptimizerResult:
-        """
-        Returns:
-            A resulting object from the optimization procedure. Please refer to the documentation of
-            the `OptimizerResult
-            <https://qiskit.org/documentation/stubs/qiskit.algorithms.optimizers.OptimizerResult.html>`_
-            class for more details.
+        """Returns a resulting object from the optimization procedure. Please refer to the
+        documentation of the `OptimizerResult
+        <https://qiskit.org/documentation/stubs/qiskit.algorithms.optimizers.OptimizerResult.html>`_
+        class for more details.
 
         Raises:
             QiskitMachineLearningError: If the model has not been fit.
@@ -172,7 +168,7 @@ class TrainableModel(SerializableModelMixin):
 
     def _is_fit(self) -> bool:
         if self._fit_result is None:
-            raise QiskitMachineLearningError("The model has not been fit yet")
+            raise QiskitMachineLearningError("The model has not been fitted yet")
         return True
 
     @abstractmethod
