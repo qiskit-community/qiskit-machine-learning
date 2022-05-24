@@ -316,7 +316,8 @@ class QuantumGenerator(GenerativeNetwork):
         keys = np.vectorize(np.binary_repr)(
             np.arange(0, 2 ** int(sum(self._num_qubits))), width=int(sum(self._num_qubits))
         )
-        # TODO In order to ensure scalability, the above line needs to be refactored into a sparse format.
+        # TODO In order to ensure scalability, the above line needs
+        # to be refactored into a sparse format.
         generated_samples_weights = values
         for i, _ in enumerate(keys):
             index = 0
@@ -431,9 +432,9 @@ class QuantumGenerator(GenerativeNetwork):
                     analytical_gradients = np.array(grad_object)
                 else:
                     analytical_gradients = np.zeros((len(grad_object), grad_object[0].shape[1]))
-                    for i in range(len(grad_object)):
-                        for j in range(grad_object[0].shape[1]):
-                            analytical_gradients[i, j] = grad_object[i][0, j].real
+                    for i, _ in enumerate(grad_object):
+                        for j, grad in enumerate(grad_object[i][0, :].data):
+                            analytical_gradients[i, j] = grad.real
 
             else:
                 analytical_gradients = np.array(grad_object.assign_parameters(value_dict).eval())

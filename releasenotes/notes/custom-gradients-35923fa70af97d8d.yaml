@@ -5,10 +5,10 @@ fixes:
     This release note solves two issues : 
     - Previously in the :class:`~qiskit_machine_learning.algorithms.QuantumGenerator` of 
     the :class:`~qiskit_machine_learning.algorithms.QGAN` algorithm, if we used
-    a simulator other than the `statevector_simulator` the result dictionnary had not the 
+    a simulator other than the `statevector_simulator` the result dictionary had not the 
     correct size to compute both the gradient and the loss functions. Now, 
     the `values` output are stored in a vector of size `2^n` and each key is mapped 
-    to its value from the result dicitionnay in the new value array. Also, each key 
+    to its value from the result dictionary in the new value array. Also, each key 
     is stored in a vector of size 2^n where each element of the vector `keys[i]` 
     corresponds to the binary representation of `i`. 
     -Previously in the :class:`~qiskit_machine_learning.algorithms.QuantumGenerator` of 
