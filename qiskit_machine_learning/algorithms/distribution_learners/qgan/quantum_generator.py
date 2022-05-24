@@ -433,8 +433,8 @@ class QuantumGenerator(GenerativeNetwork):
                 else:
                     analytical_gradients = np.zeros((len(grad_object), grad_object[0].shape[1]))
                     for i, _ in enumerate(grad_object):
-                        for j, grad in enumerate(grad_object[i][0, :].data):
-                            analytical_gradients[i, j] = grad.real
+                        sparse_gradients = grad_object[i].tocoo()
+                        analytical_gradients[i, sparse_gradients.col] = sparse_gradients.data
 
             else:
                 analytical_gradients = np.array(grad_object.assign_parameters(value_dict).eval())
