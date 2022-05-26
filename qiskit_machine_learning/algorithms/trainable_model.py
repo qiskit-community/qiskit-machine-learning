@@ -10,12 +10,13 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """A base ML model with a Scikit-Learn like interface."""
+from __future__ import annotations
 
 from abc import abstractmethod
 from typing import Union, Optional, Callable
 
 import numpy as np
-from qiskit.algorithms.optimizers import Optimizer, SLSQP
+from qiskit.algorithms.optimizers import Optimizer, SLSQP, OptimizerResult
 from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -95,7 +96,7 @@ class TrainableModel(SerializableModelMixin):
         self.optimizer = optimizer
 
         self._warm_start = warm_start
-        self._fit_result = None
+        self._fit_result: OptimizerResult | None = None
         self._initial_point = initial_point
         self._callback = callback
 
@@ -141,9 +142,38 @@ class TrainableModel(SerializableModelMixin):
         """Sets the initial point"""
         self._initial_point = initial_point
 
+    @property
+    def weights(self) -> np.ndarray:
+        """Returns trained weights as a numpy array. The weights can be also queried by calling
+        `model.fit_result.x`, but in this case their representation depends on the optimizer used.
+
+        Raises:
+            QiskitMachineLearningError: If the model has not been fit.
+        """
+        self._is_fit()
+        return np.asarray(self._fit_result.x)
+
+    @property
+    def fit_result(self) -> OptimizerResult:
+        """Returns a resulting object from the optimization procedure. Please refer to the
+        documentation of the `OptimizerResult
+        <https://qiskit.org/documentation/stubs/qiskit.algorithms.optimizers.OptimizerResult.html>`_
+        class for more details.
+
+        Raises:
+            QiskitMachineLearningError: If the model has not been fit.
+        """
+        self._is_fit()
+        return self._fit_result
+
+    def _is_fit(self) -> bool:
+        if self._fit_result is None:
+            raise QiskitMachineLearningError("The model has not been fitted yet")
+        return True
+
     @abstractmethod
     # pylint: disable=invalid-name
-    def fit(self, X: np.ndarray, y: np.ndarray) -> "TrainableModel":
+    def fit(self, X: np.ndarray, y: np.ndarray) -> TrainableModel:
         """
         Fit the model to data matrix X and target(s) y.
 
