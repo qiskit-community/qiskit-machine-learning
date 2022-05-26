@@ -14,6 +14,7 @@
 from typing import Optional
 
 import numpy as np
+from qiskit.algorithms.optimizers import OptimizerResult
 from sklearn.base import RegressorMixin
 
 from ..objective_functions import (
@@ -31,7 +32,7 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
     for more details.
     """
 
-    def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
+    def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult: # pylint: disable=invalid-name
         # mypy definition
         function: ObjectiveFunction = None
         if self._neural_network.output_shape == (1,):
@@ -41,12 +42,11 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
 
         objective = self._get_objective(function)
 
-        self._fit_result = self._optimizer.minimize(
+        return self._optimizer.minimize(
             fun=objective,
             x0=self._choose_initial_point(),
             jac=function.gradient,
         )
-        return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
         if self._fit_result is None:

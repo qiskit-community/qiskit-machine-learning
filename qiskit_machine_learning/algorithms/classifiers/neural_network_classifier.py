@@ -17,7 +17,7 @@ from typing import Callable, cast
 
 import numpy as np
 import scipy.sparse
-from qiskit.algorithms.optimizers import Optimizer
+from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
 from scipy.sparse import spmatrix
 from sklearn.base import ClassifierMixin
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
@@ -102,7 +102,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         # For user checking and validation.
         return self._num_classes
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> NeuralNetworkClassifier:
+    def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
         if not self._warm_start:
             self._fit_result = None
         X, y = self._validate_input(X, y)
@@ -121,12 +121,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
         objective = self._get_objective(function)
 
-        self._fit_result = self._optimizer.minimize(
+        return self._optimizer.minimize(
             fun=objective,
             x0=self._choose_initial_point(),
             jac=function.gradient,
         )
-        return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
         if self._fit_result is None:

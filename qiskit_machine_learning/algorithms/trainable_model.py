@@ -15,7 +15,7 @@ from abc import abstractmethod
 from typing import Union, Optional, Callable
 
 import numpy as np
-from qiskit.algorithms.optimizers import Optimizer, SLSQP
+from qiskit.algorithms.optimizers import Optimizer, SLSQP, OptimizerResult
 from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -157,6 +157,11 @@ class TrainableModel(SerializableModelMixin):
         Raises:
             QiskitMachineLearningError: In case of invalid data (e.g. incompatible with network)
         """
+        self._fit_result = self._fit_internal(X, y)
+        return self
+
+    @abstractmethod
+    def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
         raise NotImplementedError
 
     @abstractmethod
