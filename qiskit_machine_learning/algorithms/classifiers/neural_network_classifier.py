@@ -103,8 +103,6 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         return self._num_classes
 
     def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
-        if not self._warm_start:
-            self._fit_result = None
         X, y = self._validate_input(X, y)
 
         # mypy definition
@@ -128,8 +126,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         )
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
-        if self._fit_result is None:
-            raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
+        self._check_fitted()
 
         X, _ = self._validate_input(X)
 

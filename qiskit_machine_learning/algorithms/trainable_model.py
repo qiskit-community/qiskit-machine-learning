@@ -150,7 +150,7 @@ class TrainableModel(SerializableModelMixin):
         Raises:
             QiskitMachineLearningError: If the model has not been fit.
         """
-        self._is_fit()
+        self._check_fitted()
         return np.asarray(self._fit_result.x)
 
     @property
@@ -163,15 +163,13 @@ class TrainableModel(SerializableModelMixin):
         Raises:
             QiskitMachineLearningError: If the model has not been fit.
         """
-        self._is_fit()
+        self._check_fitted()
         return self._fit_result
 
-    def _is_fit(self) -> bool:
+    def _check_fitted(self) -> None:
         if self._fit_result is None:
             raise QiskitMachineLearningError("The model has not been fitted yet")
-        return True
 
-    @abstractmethod
     # pylint: disable=invalid-name
     def fit(self, X: np.ndarray, y: np.ndarray) -> TrainableModel:
         """
@@ -187,15 +185,18 @@ class TrainableModel(SerializableModelMixin):
         Raises:
             QiskitMachineLearningError: In case of invalid data (e.g. incompatible with network)
         """
+        if not self._warm_start:
+            self._fit_result = None
+
         self._fit_result = self._fit_internal(X, y)
         return self
 
     @abstractmethod
+    # pylint: disable=invalid-name
     def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
         raise NotImplementedError
 
     @abstractmethod
-    # pylint: disable=invalid-name
     def predict(self, X: np.ndarray) -> np.ndarray:
         """
         Predict using the network specified to the model.

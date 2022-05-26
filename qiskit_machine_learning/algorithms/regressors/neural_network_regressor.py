@@ -23,7 +23,6 @@ from ..objective_functions import (
     ObjectiveFunction,
 )
 from ..trainable_model import TrainableModel
-from ...exceptions import QiskitMachineLearningError
 
 
 class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
@@ -32,7 +31,9 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
     for more details.
     """
 
-    def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult: # pylint: disable=invalid-name
+    def _fit_internal(
+        self, X: np.ndarray, y: np.ndarray
+    ) -> OptimizerResult:  # pylint: disable=invalid-name
         # mypy definition
         function: ObjectiveFunction = None
         if self._neural_network.output_shape == (1,):
@@ -49,8 +50,7 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
         )
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
-        if self._fit_result is None:
-            raise QiskitMachineLearningError("Model needs to be fit to some training data first!")
+        self._check_fitted()
 
         return self._neural_network.forward(X, self._fit_result.x)
 
