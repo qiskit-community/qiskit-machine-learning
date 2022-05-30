@@ -378,16 +378,13 @@ class TestQGAN(QiskitMachineLearningTestCase):
         self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
 
     @data("param_shift", "fin_diff", "lin_comb")
-    def test_qgan_training_custom_gradients_statevector(self, gradient_method: str):
+    def test_qgan_training_custom_gradients_statevector(self, gradient_method: str = "param_shift"):
         """
         Test qGAN different gradient methods for the statevector simulator
 
         Args:
             gradient_method (str): custom gradient method
         """
-        if gradient_method is None:
-            gradient_method = "param_shift"
-
         generator_gradient = Gradient(gradient_method)
         self.qgan.set_generator(self.generator_circuit)
         numeric_results = self.qgan.run(self.qi_statevector)
@@ -396,16 +393,13 @@ class TestQGAN(QiskitMachineLearningTestCase):
         self.assertAlmostEqual(numeric_results["rel_entr"], custom_results["rel_entr"], delta=0.1)
 
     @data("param_shift", "fin_diff", "lin_comb")
-    def test_qgan_training_custom_gradients_qasm(self, gradient_method: str):
+    def test_qgan_training_custom_gradients_qasm(self, gradient_method: str = "param_shift"):
         """
         Test qGAN different gradient methods for the qasm simulator
 
         Args:
             gradient_method (str): custom gradient method
         """
-        if gradient_method is None:
-            gradient_method = "param_shift"
-
         generator_gradient = Gradient(gradient_method)
         self.qgan.set_generator(self.generator_circuit)
         numeric_results = self.qgan.run(self.qi_qasm)

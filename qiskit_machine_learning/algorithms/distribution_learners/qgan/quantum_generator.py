@@ -435,7 +435,6 @@ class QuantumGenerator(GenerativeNetwork):
                     for i, _ in enumerate(grad_object):
                         sparse_gradients = grad_object[i].tocoo()
                         analytical_gradients[i, sparse_gradients.col] = sparse_gradients.data
-
             else:
                 analytical_gradients = np.array(grad_object.assign_parameters(value_dict).eval())
             loss_gradients = self.loss(

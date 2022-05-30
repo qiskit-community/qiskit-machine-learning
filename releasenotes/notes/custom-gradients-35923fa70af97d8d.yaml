@@ -3,6 +3,7 @@
 fixes:
   - |
     This release note solves two issues : 
+    
     - Previously in the :class:`~qiskit_machine_learning.algorithms.QuantumGenerator` of 
     the :class:`~qiskit_machine_learning.algorithms.QGAN` algorithm, if we used
     a simulator other than the `statevector_simulator` the result dictionary had not the 
