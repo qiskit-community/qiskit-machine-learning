@@ -10,15 +10,18 @@ fixes:
     correct size to compute both the gradient and the loss functions. Now, 
     the `values` output are stored in a vector of size `2^n` and each key is mapped 
     to its value from the result dictionary in the new value array. Also, each key 
-    is stored in a vector of size 2^n where each element of the vector `keys[i]` 
+    is stored in a vector of size `2^n` where each element of the vector `keys[i]` 
     corresponds to the binary representation of `i`. 
+  - |
     * Previously in the :class:`~qiskit_machine_learning.algorithms.QuantumGenerator` of 
     the :class:`~qiskit_machine_learning.algorithms.QGAN` algorithm, the gradients were
     computed using the `statevector` backend even if we specified another backend. To solve
     this issue, the gradient object is converted into a `CircuitStateFn` instead of its adjoint 
     as in the previous version. The gradients are converted into the backend-dependent structure using 
     `CircuitSampler`. After the evaluation of the object, the `gradient_function` is stored in a 
-    dense array to fix a dimension incompatibility when computing the loss function. 
+    dense array to fix a dimension incompatibility when computing the loss function.
+
+
 
 
     
