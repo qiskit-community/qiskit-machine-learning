@@ -19,7 +19,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.utils import QuantumInstance
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit.algorithms.optimizers import Optimizer
+from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import CircuitQNN
@@ -162,7 +162,7 @@ class VQC(NeuralNetworkClassifier):
         """Returns the number of qubits used by ansatz and feature map."""
         return self.circuit.num_qubits
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> NeuralNetworkClassifier:
+    def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
         """
         Fit the model to data matrix X and targets y.
 
@@ -177,7 +177,7 @@ class VQC(NeuralNetworkClassifier):
         cast(CircuitQNN, self._neural_network).set_interpret(
             self._get_interpret(num_classes), num_classes
         )
-        return super().fit(X, y)
+        return super()._fit_internal(X, y)
 
     def _get_interpret(self, num_classes: int):
         def parity(x: int, num_classes: int = num_classes) -> int:
