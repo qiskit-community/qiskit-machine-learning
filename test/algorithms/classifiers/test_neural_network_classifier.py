@@ -84,7 +84,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         return quantum_instance
 
     def _create_callback(self, cb_flag):
-        if cb_flag is True:
+        if cb_flag:
             history = {"weights": [], "values": []}
 
             def callback(objective_weights, objective_value):

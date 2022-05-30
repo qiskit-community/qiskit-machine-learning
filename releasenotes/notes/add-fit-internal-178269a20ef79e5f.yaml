@@ -1,0 +1,12 @@
+---
+upgrade:
+  - |
+    The method :meth:`~qiskit_machine_learning.algorithms.TrainableModel.fit` is not abstract 
+    any more. Now, it implements basic checks, keeps track of the 
+    :attr:`~qiskit_machine_learning.algorithms.TrainableModel.fit_result` property, and calls 
+    a new abstract method :meth:`~qiskit_machine_learning.algorithms.TrainableModel._fit_internal` 
+    internally. Thus, any sub-class of :class:`~qiskit_machine_learning.algorithms.TrainableModel` 
+    must implement this new method. Classes 
+    :class:`~qiskit_machine_learning.algorithms.NeuralNetworkClassifier` and 
+    :class:`~qiskit_machine_learning.algorithms.NeuralNetworkRegressor` have been updated 
+    correspondingly.

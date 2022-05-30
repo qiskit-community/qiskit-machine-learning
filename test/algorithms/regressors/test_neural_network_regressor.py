@@ -116,7 +116,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
     @unpack
     def test_regressor_with_opflow_qnn(self, opt, q_i, cb_flag):
         """Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
-        if cb_flag is True:
+        if cb_flag:
             history = {"weights": [], "values": []}
 
             def callback(objective_weights, objective_value):
