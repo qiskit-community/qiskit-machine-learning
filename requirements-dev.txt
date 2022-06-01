@@ -1,7 +1,7 @@
 coverage>=4.4.0
 matplotlib>=2.1
 black[jupyter]~=22.0
-pylint>=2.8.3
+pylint>=2.8.3,<2.14.0
 pylatexenc>=1.4
 stestr>=2.0.0
 ddt>=1.2.0,!=1.4.0
