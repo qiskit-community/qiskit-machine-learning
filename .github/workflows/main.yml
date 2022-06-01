@@ -144,7 +144,7 @@ jobs:
         shell: bash
       - name: Run make lint latest version
         run: |
-          pip install -U pylint
+          pip install -U -r requirements-dev.txt
           make lint
         shell: bash
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
