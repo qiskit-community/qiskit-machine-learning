@@ -424,17 +424,16 @@ class QuantumGenerator(GenerativeNetwork):
             op = CircuitStateFn(primitive=self.generator_circuit)
             grad_object = gradient_object.convert(operator=op, params=free_params)
             value_dict = {free_params[i]: current_point[i] for i in range(len(free_params))}
-            if quantum_instance.backend is not None:
+            if quantum_instance is not None:
                 grad_object = (
-                    CircuitSampler(quantum_instance.backend).convert(grad_object, value_dict).eval()
+                    CircuitSampler(quantum_instance).convert(grad_object, value_dict).eval()
                 )
                 if quantum_instance.is_statevector:
-                    analytical_gradients = np.array(grad_object)
+                    analytical_gradients = np.asarray(grad_object)
                 else:
                     analytical_gradients = np.zeros((len(grad_object), grad_object[0].shape[1]))
                     for i, _ in enumerate(grad_object):
-                        sparse_gradients = grad_object[i].tocoo()
-                        analytical_gradients[i, sparse_gradients.col] = sparse_gradients.data
+                        analytical_gradients[i, :] = grad_object[i].todense()
             else:
                 analytical_gradients = np.array(grad_object.assign_parameters(value_dict).eval())
             loss_gradients = self.loss(
