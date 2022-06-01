@@ -319,14 +319,14 @@ class QuantumGenerator(GenerativeNetwork):
         # TODO In order to ensure scalability, the above line needs
         # to be refactored into a sparse format.
         generated_samples_weights = values
-        for i, _ in enumerate(keys):
+        for key in keys:
             index = 0
             temp = []
             for k, p in enumerate(self._num_qubits):
                 bin_rep = 0
                 j = 0
                 while j < p:
-                    bin_rep += int(keys[i][index]) * 2 ** (int(p) - j - 1)
+                    bin_rep += int(key[index]) * 2 ** (int(p) - j - 1)
                     j += 1
                     index += 1
                 if len(self._num_qubits) > 1:
