@@ -17,7 +17,7 @@ import warnings
 import tempfile
 from test import QiskitMachineLearningTestCase
 
-from ddt import ddt, data
+from ddt import ddt, data, unpack
 
 from qiskit import BasicAer, QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
@@ -376,6 +376,32 @@ class TestQGAN(QiskitMachineLearningTestCase):
             )
         )
         self.assertAlmostEqual(trained_qasm["rel_entr"], trained_statevector["rel_entr"], delta=0.1)
+
+    @data(
+        ("param_shift", "qasm"),
+        ("fin_diff", "qasm"),
+        ("lin_comb", "qasm"),
+        ("param_shift", "sv"),
+        ("fin_diff", "sv"),
+        ("lin_comb", "sv"),
+    )
+    @unpack
+    def test_qgan_training_custom_gradients(self, gradient_method: str, qi_type: str):
+        """
+        Test qGAN different gradient methods
+        """
+        if qi_type == "qasm":
+            q_i = self.qi_qasm
+        elif qi_type == "sv":
+            q_i = self.qi_statevector
+        else:
+            raise ValueError(f"Unsupported type of quantum instance: {qi_type}")
+        generator_gradient = Gradient(gradient_method)
+        self.qgan.set_generator(self.generator_circuit)
+        numeric_results = self.qgan.run(q_i)
+        self.qgan.set_generator(self.generator_circuit, generator_gradient=generator_gradient)
+        custom_results = self.qgan.run(q_i)
+        self.assertAlmostEqual(numeric_results["rel_entr"], custom_results["rel_entr"], delta=0.1)
 
 
 if __name__ == "__main__":
