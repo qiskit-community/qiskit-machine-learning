@@ -1,7 +1,7 @@
 ---
 features:
   - |
-    Add getters and setters for the callback on
+    Expose the callback attribute as public property on
     :class:`~qiskit_machine_learning.algorithms.TrainableModel`. This for instance allows setting
     the callback between optimizations and store the history in separate objects.
 
