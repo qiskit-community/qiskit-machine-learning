@@ -458,6 +458,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         classifier = NeuralNetworkClassifier(qnn, optimizer=single_step_opt)
 
         loss_history = []
+
         def store_loss(_, loss):
             loss_history.append(loss)
 
@@ -469,7 +470,6 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         classifier.fit(features, labels)
 
         self.assertEqual(len(loss_history), 3)
-
 
 
 if __name__ == "__main__":

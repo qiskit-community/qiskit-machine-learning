@@ -220,7 +220,6 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         with self.assertRaises(QiskitMachineLearningError, msg="regressor.weights"):
             _ = regressor.weights
 
-
     def test_callback_setter(self):
         """Test the callback setter."""
         qnn = TwoLayerQNN(2, quantum_instance=self.qasm_quantum_instance)
@@ -228,6 +227,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         regressor = NeuralNetworkRegressor(qnn, optimizer=single_step_opt)
 
         loss_history = []
+
         def store_loss(_, loss):
             loss_history.append(loss)
 
@@ -239,5 +239,3 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         regressor.fit(features, labels)
 
         self.assertEqual(len(loss_history), 3)
-
-
