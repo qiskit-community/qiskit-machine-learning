@@ -231,7 +231,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         def store_loss(_, loss):
             loss_history.append(loss)
 
-        # use setter for the callback instead of providing in the initializer
+        # use setter for the callback instead of providing in the initialize method
         regressor.callback = store_loss
 
         features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])

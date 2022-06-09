@@ -462,7 +462,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         def store_loss(_, loss):
             loss_history.append(loss)
 
-        # use setter for the callback instead of providing in the initializer
+        # use setter for the callback instead of providing in the initialize method
         classifier.callback = store_loss
 
         features = np.array([[0, 0], [1, 1]])
