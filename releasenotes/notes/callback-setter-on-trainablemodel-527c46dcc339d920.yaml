@@ -1,0 +1,15 @@
+---
+features:
+  - |
+    Add getters and setters for the callback on
+    :class:`~qiskit_machine_learning.algorithms.TrainableModel`. This for instance allows setting
+    the callback between optimizations and store the history in separate objects.
+
+    .. code-block::python
+
+      algo = NeuralNetworkRegressor(...)
+      algo.callback = callback1
+      algo.fit(X1, y1)
+
+      algo.callback = callback2
+      algo.fit(X2, y2)
