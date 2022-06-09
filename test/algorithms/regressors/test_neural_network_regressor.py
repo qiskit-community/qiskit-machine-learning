@@ -20,7 +20,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import ddt, unpack, idata
 from qiskit import Aer, QuantumCircuit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
@@ -219,3 +219,25 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         with self.assertRaises(QiskitMachineLearningError, msg="regressor.weights"):
             _ = regressor.weights
+
+
+    def test_callback_setter(self):
+        """Test the callback setter."""
+        qnn = TwoLayerQNN(2, quantum_instance=self.qasm_quantum_instance)
+        single_step_opt = SPSA(maxiter=1, learning_rate=0.01, perturbation=0.1)
+        regressor = NeuralNetworkRegressor(qnn, optimizer=single_step_opt)
+
+        loss_history = []
+        def store_loss(_, loss):
+            loss_history.append(loss)
+
+        # use setter for the callback instead of providing in the initializer
+        regressor.callback = store_loss
+
+        features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
+        labels = np.array([0, 0.1, 0.4, 1])
+        regressor.fit(features, labels)
+
+        self.assertEqual(len(loss_history), 3)
+
+

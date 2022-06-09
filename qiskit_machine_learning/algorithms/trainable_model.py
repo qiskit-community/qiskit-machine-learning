@@ -66,7 +66,7 @@ class TrainableModel(SerializableModelMixin):
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
-            callback: a reference to a user's callback function that has two parameters and
+            callback: A reference to a user's callback function that has two parameters and
                 returns ``None``. The callback can access intermediate data during training.
                 On each iteration an optimizer invokes the callback and passes current weights
                 as an array and a computed value as a float of the objective function being
@@ -166,6 +166,16 @@ class TrainableModel(SerializableModelMixin):
         self._check_fitted()
         return self._fit_result
 
+    @property
+    def callback(self) -> Optional[Callable[[np.ndarray, float], None]]:
+        """Return the callback."""
+        return self._callback
+
+    @callback.setter
+    def callback(self, callback: Optional[Callable[[np.ndarray, float], None]]) -> None:
+        """Set the callback."""
+        self._callback = callback
+
     def _check_fitted(self) -> None:
         if self._fit_result is None:
             raise QiskitMachineLearningError("The model has not been fitted yet")
@@ -258,12 +268,12 @@ class TrainableModel(SerializableModelMixin):
         Returns:
             Objective function to evaluate objective value and optionally invoke callback calls.
         """
-        if self._callback is None:
+        if self.callback is None:
             return function.objective
 
         def objective(objective_weights):
             objective_value = function.objective(objective_weights)
-            self._callback(objective_weights, objective_value)
+            self.callback(objective_weights, objective_value)
             return objective_value
 
         return objective
