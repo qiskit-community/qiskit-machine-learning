@@ -268,12 +268,12 @@ class TrainableModel(SerializableModelMixin):
         Returns:
             Objective function to evaluate objective value and optionally invoke callback calls.
         """
-        if self.callback is None:
+        if self._callback is None:
             return function.objective
 
         def objective(objective_weights):
             objective_value = function.objective(objective_weights)
-            self.callback(objective_weights, objective_value)
+            self._callback(objective_weights, objective_value)
             return objective_value
 
         return objective
