@@ -22,7 +22,7 @@ import numpy as np
 import scipy
 from ddt import ddt, data, idata, unpack
 from qiskit import Aer, QuantumCircuit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 
@@ -450,6 +450,26 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         with self.assertRaises(QiskitMachineLearningError, msg="classifier.weights"):
             _ = classifier.weights
+
+    def test_callback_setter(self):
+        """Test the callback setter."""
+        qnn = TwoLayerQNN(2, quantum_instance=self.qasm_quantum_instance)
+        single_step_opt = SPSA(maxiter=1, learning_rate=0.01, perturbation=0.1)
+        classifier = NeuralNetworkClassifier(qnn, optimizer=single_step_opt)
+
+        loss_history = []
+
+        def store_loss(_, loss):
+            loss_history.append(loss)
+
+        # use setter for the callback instead of providing in the initialize method
+        classifier.callback = store_loss
+
+        features = np.array([[0, 0], [1, 1]])
+        labels = np.array([0, 1])
+        classifier.fit(features, labels)
+
+        self.assertEqual(len(loss_history), 3)
 
 
 if __name__ == "__main__":
