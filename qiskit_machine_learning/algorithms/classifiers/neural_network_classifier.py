@@ -239,6 +239,9 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 are not one hot encoded. If set to ``False``, returns ``False`` if labels are not
                 one hot encoded and no errors are raised.
 
+        Returns:
+            ``True`` when targets are one hot encoded, ``False`` otherwise.
+
         Raises:
             QiskitMachineLearningError: If targets are invalid.
         """
