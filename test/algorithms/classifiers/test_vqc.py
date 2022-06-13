@@ -25,7 +25,7 @@ import numpy as np
 import scipy
 
 from sklearn.datasets import make_classification
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 from qiskit import Aer
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
@@ -40,7 +40,7 @@ NUM_QUBITS_LIST = [2, None]
 FEATURE_MAPS = ["zz_feature_map", None]
 ANSATZES = ["real_amplitudes", None]
 OPTIMIZERS = ["cobyla", "bfgs", None]
-DATASETS = ["binary", "multiclass"]
+DATASETS = ["binary", "multiclass", "no_one_hot"]
 LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
 
 
@@ -50,13 +50,7 @@ class _Dataset:
     y: np.ndarray | None = None
 
 
-def _one_hot_encode(y: np.ndarray) -> np.ndarray:
-    y_one_hot = np.zeros((y.size, int(y.max() + 1)), dtype=int)
-    y_one_hot[np.arange(y.size), y] = 1
-    return y_one_hot
-
-
-def _create_dataset(n_samples: int, n_classes: int) -> _Dataset:
+def _create_dataset(n_samples: int, n_classes: int, one_hot=True) -> _Dataset:
     x, y = make_classification(
         n_samples=n_samples,
         n_features=2,
@@ -67,7 +61,8 @@ def _create_dataset(n_samples: int, n_classes: int) -> _Dataset:
         random_state=algorithm_globals.random_seed,
     )
     x = MinMaxScaler().fit_transform(x)
-    y = _one_hot_encode(y)
+    if one_hot:
+        y = OneHotEncoder(sparse=False).fit_transform(y.reshape(-1, 1))
     return _Dataset(x, y)
 
 
@@ -102,7 +97,8 @@ class TestVQC(QiskitMachineLearningTestCase):
             "real_amplitudes": RealAmplitudes(num_qubits=2, reps=1),
             "zz_feature_map": ZZFeatureMap(2),
             "binary": _create_dataset(6, 2),
-            "multiclass": _create_dataset(9, 3),
+            "multiclass": _create_dataset(10, 3),
+            "no_one_hot": _create_dataset(6, 2, one_hot=False),
         }
 
     @idata(
@@ -129,7 +125,6 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         initial_point = np.array([0.5] * ansatz.num_parameters) if ansatz is not None else None
 
-        # construct classifier - note: CrossEntropy requires eval_probabilities=True!
         classifier = VQC(
             quantum_instance=quantum_instance,
             num_qubits=num_qubits,
@@ -141,6 +136,14 @@ class TestVQC(QiskitMachineLearningTestCase):
         classifier.fit(dataset.x, dataset.y)
         score = classifier.score(dataset.x, dataset.y)
         self.assertGreater(score, 0.5)
+
+        predict = classifier.predict(dataset.x[0, :])
+        unique_labels = np.unique(dataset.y, axis=0)
+        # we want to have labels as a column array, either 1D or 2D(one hot)
+        # thus, the assert works with plain and one hot labels
+        unique_labels = unique_labels.reshape(len(unique_labels), -1)
+        # the predicted value should be in the labels
+        self.assertTrue(np.all(predict == unique_labels, axis=1).any())
 
     def test_VQC_non_parameterized(self):
         """
@@ -198,7 +201,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         # Generate data with batches that have incomplete labels.
         x = algorithm_globals.random.random((6, 2))
         y = np.asarray([0, 0, 1, 1, 2, 2])
-        y_one_hot = _one_hot_encode(y)
+        y_one_hot = OneHotEncoder().fit_transform(y.reshape(-1, 1))
 
         classifier = VQC(
             feature_map=self.properties.get("zz_feature_map"),
@@ -264,6 +267,26 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         score = classifier.score(x, y)
         self.assertGreaterEqual(score, 0.5)
+
+    def test_categorical(self):
+        """Test VQC on categorical labels."""
+        classifier = VQC(
+            num_qubits=2,
+            optimizer=COBYLA(25),
+            quantum_instance=self.properties.get("statevector"),
+        )
+        dataset = self.properties.get("no_one_hot")
+        features = dataset.x
+        labels = np.empty(dataset.y.shape, dtype=str)
+        labels[dataset.y == 0] = "A"
+        labels[dataset.y == 1] = "B"
+
+        classifier.fit(features, labels)
+        score = classifier.score(features, labels)
+        self.assertGreater(score, 0.5)
+
+        predict = classifier.predict(features[0, :])
+        self.assertIn(predict, ["A", "B"])
 
 
 if __name__ == "__main__":

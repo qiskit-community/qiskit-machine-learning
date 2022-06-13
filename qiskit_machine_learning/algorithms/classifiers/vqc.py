@@ -38,6 +38,10 @@ class VQC(NeuralNetworkClassifier):
     neural network classifier.
 
     Requires one-hot-encoded labels. E.g., :math:`[[1, 0, 0], [0, 1, 0], [0, 0, 1]]`.
+    Labels can be passed in various formats, they can be plain labels, a one dimensional numpy
+    array that contains integer labels like `[0, 1, 2, ...]`, or a numpy array with categorical
+    string labels. One hot encoded labels are also supported. Internally, labels are transformed
+    to one hot encoding and the classifier is always trained on one hot labels.
 
     Multi-label classification is not supported. E.g., :math:`[[1, 1, 0], [0, 1, 1], [1, 0, 1]]`.
     """
@@ -173,11 +177,13 @@ class VQC(NeuralNetworkClassifier):
         Returns:
             Trained classifier.
         """
-        num_classes = self._get_num_classes(y)
+        X, y = self._validate_input(X, y)
+        num_classes = self._num_classes
         cast(CircuitQNN, self._neural_network).set_interpret(
             self._get_interpret(num_classes), num_classes
         )
-        return super()._fit_internal(X, y)
+
+        return super()._minimize(X, y)
 
     def _get_interpret(self, num_classes: int):
         def parity(x: int, num_classes: int = num_classes) -> int:

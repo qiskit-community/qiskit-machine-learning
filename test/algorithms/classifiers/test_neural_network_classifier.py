@@ -281,6 +281,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         score = classifier.score(features, labels)
         self.assertGreater(score, 0.5)
 
+        predict = classifier.predict(features[0, :])
+        self.assertIn(predict, ["A", "B"])
+
     @idata(itertools.product(QUANTUM_INSTANCES, L1L2_ERRORS + ["cross_entropy"]))
     @unpack
     def test_sparse_arrays(self, q_i, loss):
