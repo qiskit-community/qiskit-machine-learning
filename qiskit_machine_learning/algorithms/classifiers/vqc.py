@@ -37,7 +37,6 @@ class VQC(NeuralNetworkClassifier):
     Constructs a quantum circuit and corresponding neural network, then uses it to instantiate a
     neural network classifier.
 
-    Requires one-hot-encoded labels. E.g., :math:`[[1, 0, 0], [0, 1, 0], [0, 0, 1]]`.
     Labels can be passed in various formats, they can be plain labels, a one dimensional numpy
     array that contains integer labels like `[0, 1, 2, ...]`, or a numpy array with categorical
     string labels. One hot encoded labels are also supported. Internally, labels are transformed
