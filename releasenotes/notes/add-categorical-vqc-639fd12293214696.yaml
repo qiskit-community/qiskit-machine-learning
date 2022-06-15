@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Added support for categorical and ordinal labels to 
+    :class:`~qiskit_machine_learning.algorithms.VQC`. Now labels can be passed in different formats, 
+    they can be plain ordinal labels, a one dimensional array that contains integer labels like 
+    `0, 1, 2, ...`, or an array with categorical string labels. One-hot encoded labels are still 
+    supported. Internally, labels are transformed to one hot encoding and the classifier is always 
+    trained on one hot labels.
