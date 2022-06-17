@@ -51,11 +51,7 @@ please ensure that:
    
    The documentation will be built/tested using Sphinx and should be free
    from errors and warnings.
-   Make sure you have `pandoc` installed:
-   ```
-   MacOS: brew install pandoc
-   Ubuntu: sudo apt-get -y install pandoc
-   ```
+   You will need to [install pandoc](https://pandoc.org/installing.html) first.
    
    Then you can run
    ```shell script
