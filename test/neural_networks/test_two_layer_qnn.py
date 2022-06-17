@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import ddt, data
 from qiskit import Aer
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
@@ -120,6 +120,18 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
             self.assertIsNone(result[0])
 
         self.assertEqual(result[1].shape, (batch_size, *qnn.output_shape, qnn.num_weights))
+
+    @data(1, 2)
+    def test_default_construction(self, num_features):
+        """Test the default construction for 1 feature and more than 1 feature."""
+        qnn = TwoLayerQNN(num_features)
+
+        with self.subTest(msg="Check ansatz"):
+            self.assertIsInstance(qnn.ansatz, RealAmplitudes)
+
+        with self.subTest(msg="Check feature map"):
+            expected_cls = ZZFeatureMap if num_features > 1 else ZFeatureMap
+            self.assertIsInstance(qnn.feature_map, expected_cls)
 
 
 if __name__ == "__main__":
