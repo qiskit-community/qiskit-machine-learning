@@ -40,13 +40,13 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self.backend = qiskit.providers.aer.AerSimulator(method="statevector")
         data_block = ZZFeatureMap(2)
         trainable_block = ZZFeatureMap(2)
-        user_parameters = trainable_block.parameters
+        training_parameters = trainable_block.parameters
 
-        for i, _ in enumerate(user_parameters):
-            user_parameters[i]._name = f"θ[{i}]"
+        for i, training_parameter in enumerate(training_parameters):
+            training_parameter._name = f"θ[{i}]"
 
         self.feature_map = data_block.compose(trainable_block).compose(data_block)
-        self.user_parameters = user_parameters
+        self.training_parameters = training_parameters
 
         self.sample_train = np.asarray(
             [
@@ -63,7 +63,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
         self.quantum_kernel = QuantumKernel(
             feature_map=self.feature_map,
-            user_parameters=self.user_parameters,
+            training_parameters=self.training_parameters,
             quantum_instance=self.backend,
         )
 
@@ -85,7 +85,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             qkt_result = qkt.fit(self.sample_train, self.label_train)
 
             # Ensure user parameters are bound to real values
-            self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_user_parameters()), 0)
+            self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_training_parameters()), 0)
 
             # Ensure kernel training functions and is deterministic
             qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
