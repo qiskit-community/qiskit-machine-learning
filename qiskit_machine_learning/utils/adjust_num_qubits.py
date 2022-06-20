@@ -14,7 +14,7 @@
 from typing import Tuple
 
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
 
 from qiskit_machine_learning import QiskitMachineLearningError
 
@@ -29,7 +29,8 @@ def derive_num_qubits_feature_map_ansatz(
     If the number of qubits is not ``None``, then the feature map and ansatz are adjusted to this
     number of qubits if required. If such an adjustment fails, an error is raised.
     Also, if the feature map or ansatz or both are ``None``, then ``ZZFeatureMap`` and
-    ``RealAmplitudes`` are created respectively.
+    ``RealAmplitudes`` are created respectively. If there's just one qubit, ``ZFeatureMap`` is
+    created instead.
 
     If the number of qubits is ``None``, then the number of qubits is derived from the feature map
     or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
@@ -61,7 +62,10 @@ def derive_num_qubits_feature_map_ansatz(
             if feature_map.num_qubits != num_qubits:
                 _adjust_num_qubits(feature_map, "feature map", num_qubits)
         else:
-            feature_map = ZZFeatureMap(num_qubits)
+            if num_qubits == 1:
+                feature_map = ZFeatureMap(1)
+            else:
+                feature_map = ZZFeatureMap(num_qubits)
         if ansatz is not None:
             if ansatz.num_qubits != num_qubits:
                 _adjust_num_qubits(ansatz, "ansatz", num_qubits)
