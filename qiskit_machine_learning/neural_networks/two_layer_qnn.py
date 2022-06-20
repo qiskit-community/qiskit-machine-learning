@@ -32,9 +32,9 @@ class TwoLayerQNN(OpflowQNN):
 
     def __init__(
         self,
-        num_qubits: int = None,
-        feature_map: QuantumCircuit = None,
-        ansatz: QuantumCircuit = None,
+        num_qubits: Optional[int] = None,
+        feature_map: Optional[QuantumCircuit] = None,
+        ansatz: Optional[QuantumCircuit] = None,
         observable: Optional[OperatorBase] = None,
         exp_val: Optional[ExpectationBase] = None,
         quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
@@ -45,11 +45,12 @@ class TwoLayerQNN(OpflowQNN):
             num_qubits: The number of qubits to represent the network, if None and neither the
                 feature_map not the ansatz are given, raise exception.
             feature_map: The (parametrized) circuit to be used as feature map. If None is given,
-                the `ZZFeatureMap` is used.
+                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For
+                a single qubit two-layer QNN the ``ZFeatureMap`` is used per default.
             ansatz: The (parametrized) circuit to be used as ansatz. If None is given,
-                the `RealAmplitudes` circuit is used.
+                the ``RealAmplitudes`` circuit is used.
             observable: observable to be measured to determine the output of the network. If None
-                is given, the `Z^{\otimes num_qubits}` observable is used.
+                is given, the :math:`Z^{\otimes num_qubits}` observable is used.
             exp_val: The Expected Value converter to be used for the operator obtained from the
                 feature map and ansatz.
             quantum_instance: The quantum instance to evaluate the network.
@@ -77,11 +78,11 @@ class TwoLayerQNN(OpflowQNN):
 
         # construct observable
         self.observable = (
-            observable if observable else PauliSumOp.from_list([("Z" * num_qubits, 1)])
+            observable if observable is not None else PauliSumOp.from_list([("Z" * num_qubits_, 1)])
         )
 
         # combine all to operator
-        operator = ~StateFn(self.observable) @ StateFn(self._circuit)
+        operator = StateFn(self.observable, is_measurement=True) @ StateFn(self._circuit)
 
         super().__init__(
             operator=operator,
