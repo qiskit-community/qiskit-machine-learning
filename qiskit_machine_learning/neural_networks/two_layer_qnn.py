@@ -78,7 +78,7 @@ class TwoLayerQNN(OpflowQNN):
 
         # construct observable
         self.observable = (
-            observable if observable is not None else PauliSumOp.from_list([("Z" * num_qubits_, 1)])
+            observable if observable is not None else PauliSumOp.from_list([("Z" * num_qubits, 1)])
         )
 
         # combine all to operator
