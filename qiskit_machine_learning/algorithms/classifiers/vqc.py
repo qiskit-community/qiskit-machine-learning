@@ -18,11 +18,10 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.utils import QuantumInstance
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
 
-from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import CircuitQNN
+from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 
 from .neural_network_classifier import NeuralNetworkClassifier
@@ -78,48 +77,14 @@ class VQC(NeuralNetworkClassifier):
                 ansatz to be given.
         """
 
-        # check num_qubits, feature_map, and ansatz
-        if num_qubits is None and feature_map is None and ansatz is None:
-            raise QiskitMachineLearningError(
-                "Need at least one of num_qubits, feature_map, or ansatz!"
-            )
-        num_qubits_: int = None
-        feature_map_: QuantumCircuit = None
-        ansatz_: QuantumCircuit = None
-        if num_qubits:
-            num_qubits_ = num_qubits
-            if feature_map:
-                if feature_map.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError("Incompatible num_qubits and feature_map!")
-                feature_map_ = feature_map
-            else:
-                feature_map_ = ZZFeatureMap(num_qubits)
-            if ansatz:
-                if ansatz.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError("Incompatible num_qubits and ansatz!")
-                ansatz_ = ansatz
-            else:
-                ansatz_ = RealAmplitudes(num_qubits)
-        else:
-            if feature_map and ansatz:
-                if feature_map.num_qubits != ansatz.num_qubits:
-                    raise QiskitMachineLearningError("Incompatible feature_map and ansatz!")
-                feature_map_ = feature_map
-                ansatz_ = ansatz
-                num_qubits_ = feature_map.num_qubits
-            elif feature_map:
-                num_qubits_ = feature_map.num_qubits
-                feature_map_ = feature_map
-                ansatz_ = RealAmplitudes(num_qubits_)
-            elif ansatz:
-                num_qubits_ = ansatz.num_qubits
-                ansatz_ = ansatz
-                feature_map_ = ZZFeatureMap(num_qubits_)
+        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
+            num_qubits, feature_map, ansatz
+        )
 
         # construct circuit
-        self._feature_map = feature_map_
-        self._ansatz = ansatz_
-        self._num_qubits = num_qubits_
+        self._feature_map = feature_map
+        self._ansatz = ansatz
+        self._num_qubits = num_qubits
         self._circuit = QuantumCircuit(self._num_qubits)
         self._circuit.compose(self.feature_map, inplace=True)
         self._circuit.compose(self.ansatz, inplace=True)

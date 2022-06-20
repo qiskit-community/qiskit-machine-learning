@@ -13,16 +13,16 @@
 """A Two Layer Neural Network consisting of a first parametrized circuit representing a feature map
 to map the input data to a quantum states and a second one representing a ansatz that can
 be trained to solve a particular tasks."""
+
 from typing import Optional, Union
 
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.opflow import PauliSumOp, StateFn, OperatorBase, ExpectationBase
 from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 
 from .opflow_qnn import OpflowQNN
-from ..exceptions import QiskitMachineLearningError
+from ..utils import derive_num_qubits_feature_map_ansatz
 
 
 class TwoLayerQNN(OpflowQNN):
@@ -60,58 +60,24 @@ class TwoLayerQNN(OpflowQNN):
             QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
         """
 
-        # check num_qubits, feature_map, and ansatz
-        if num_qubits is None and feature_map is None and ansatz is None:
-            raise QiskitMachineLearningError(
-                "Need at least one of num_qubits, feature_map, or ansatz!"
-            )
-        num_qubits_: int = None
-        feature_map_: QuantumCircuit = None
-        ansatz_: QuantumCircuit = None
-        if num_qubits:
-            num_qubits_ = num_qubits
-            if feature_map:
-                if feature_map.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError("Incompatible num_qubits and feature_map!")
-                feature_map_ = feature_map
-            else:
-                feature_map_ = ZZFeatureMap(num_qubits)
-            if ansatz:
-                if ansatz.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError("Incompatible num_qubits and ansatz!")
-                ansatz_ = ansatz
-            else:
-                ansatz_ = RealAmplitudes(num_qubits)
-        else:
-            if feature_map and ansatz:
-                if feature_map.num_qubits != ansatz.num_qubits:
-                    raise QiskitMachineLearningError("Incompatible feature_map and ansatz!")
-                feature_map_ = feature_map
-                ansatz_ = ansatz
-                num_qubits_ = feature_map.num_qubits
-            elif feature_map:
-                num_qubits_ = feature_map.num_qubits
-                feature_map_ = feature_map
-                ansatz_ = RealAmplitudes(num_qubits_)
-            elif ansatz:
-                num_qubits_ = ansatz.num_qubits
-                ansatz_ = ansatz
-                feature_map_ = ZZFeatureMap(num_qubits_)
+        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
+            num_qubits, feature_map, ansatz
+        )
 
-        self._feature_map = feature_map_
+        self._feature_map = feature_map
         input_params = list(self._feature_map.parameters)
 
-        self._ansatz = ansatz_
+        self._ansatz = ansatz
         weight_params = list(self._ansatz.parameters)
 
         # construct circuit
-        self._circuit = QuantumCircuit(num_qubits_)
-        self._circuit.append(self._feature_map, range(num_qubits_))
-        self._circuit.append(self._ansatz, range(num_qubits_))
+        self._circuit = QuantumCircuit(num_qubits)
+        self._circuit.append(self._feature_map, range(num_qubits))
+        self._circuit.append(self._ansatz, range(num_qubits))
 
         # construct observable
         self.observable = (
-            observable if observable else PauliSumOp.from_list([("Z" * num_qubits_, 1)])
+            observable if observable else PauliSumOp.from_list([("Z" * num_qubits, 1)])
         )
 
         # combine all to operator
