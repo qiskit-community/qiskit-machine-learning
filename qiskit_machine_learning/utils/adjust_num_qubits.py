@@ -75,10 +75,10 @@ def derive_num_qubits_feature_map_ansatz(
                     f"and the ansatz ({ansatz.num_qubits})!"
                 )
             num_qubits = feature_map.num_qubits
-        elif feature_map:
+        elif feature_map is not None:
             num_qubits = feature_map.num_qubits
             ansatz = RealAmplitudes(num_qubits)
-        elif ansatz:
+        elif ansatz is not None:
             num_qubits = ansatz.num_qubits
             feature_map = ZZFeatureMap(num_qubits)
 
