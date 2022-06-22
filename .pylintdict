@@ -121,6 +121,7 @@ optimizers
 orthonormal
 otimes
 overfits
+overfitted
 overfitting
 ovo
 ovr
@@ -169,6 +170,7 @@ rz
 scalability
 scikit
 scipy
+seaborn
 semidefinite
 shalev
 shende
@@ -206,6 +208,7 @@ transpiled
 transpiler
 transpiles
 transpiling
+tunable
 uncompiled
 unitaries
 univariate
