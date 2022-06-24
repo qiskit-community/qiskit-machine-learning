@@ -28,7 +28,7 @@ from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 import qiskit
-from qiskit import Aer, QuantumCircuit
+from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
