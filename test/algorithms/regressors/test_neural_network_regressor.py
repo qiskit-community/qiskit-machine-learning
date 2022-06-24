@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """ Test Neural Network Regressor """
+import unittest
 import itertools
 import os
 import tempfile
@@ -19,12 +20,12 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, unpack, idata
-from qiskit import Aer, QuantumCircuit
+import qiskit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
-from qiskit.circuit import Parameter
+from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
@@ -40,18 +41,19 @@ CALLBACKS = [True, False]
 class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
     """Test Neural Network Regressor."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
@@ -239,3 +241,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         regressor.fit(features, labels)
 
         self.assertEqual(len(loss_history), 3)
+
+
+if __name__ == "__main__":
+    unittest.main()
