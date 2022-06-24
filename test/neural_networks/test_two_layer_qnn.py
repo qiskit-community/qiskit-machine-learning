@@ -18,9 +18,15 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, data
+<<<<<<< HEAD
 from qiskit import Aer
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
+=======
+import qiskit
+from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+>>>>>>> 505495f (Fix FakeToronto import (#424))
 
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 
@@ -29,12 +35,13 @@ from qiskit_machine_learning.neural_networks import TwoLayerQNN
 class TestTwoLayerQNN(QiskitMachineLearningTestCase):
     """Two Layer QNN Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
         # specify "run configuration"
         quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
