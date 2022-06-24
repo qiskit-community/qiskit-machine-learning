@@ -18,9 +18,9 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, data
-from qiskit import Aer, QuantumCircuit
+import qiskit
 from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
@@ -30,12 +30,13 @@ from qiskit_machine_learning.neural_networks import TwoLayerQNN
 class TestTwoLayerQNN(QiskitMachineLearningTestCase):
     """Two Layer QNN Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
         # specify "run configuration"
         self.quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )

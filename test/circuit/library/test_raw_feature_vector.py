@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,13 +17,13 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from qiskit import transpile, Aer
+import qiskit
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector
@@ -45,7 +45,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         with self.subTest("check unrolling fails"):
             with self.assertRaises(QiskitError):
-                _ = transpile(circuit, basis_gates=["u", "cx"], optimization_level=0)
+                _ = qiskit.transpile(circuit, basis_gates=["u", "cx"], optimization_level=0)
 
     def test_fully_bound(self):
         """Test fully binding the circuit works."""
@@ -90,13 +90,14 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_qubits, bound.num_qubits)
             self.assertEqual(circuit.feature_dimension, bound.feature_dimension)
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_usage_in_vqc(self):
         """Test using the circuit the a single VQC iteration works."""
 
         # specify quantum instance and random seed
         algorithm_globals.random_seed = 12345
         quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
