@@ -27,10 +27,10 @@ import scipy
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-from qiskit import Aer
+import qiskit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -70,6 +70,7 @@ def _create_dataset(n_samples: int, n_classes: int, one_hot=True) -> _Dataset:
 class TestVQC(QiskitMachineLearningTestCase):
     """VQC Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 1111111
@@ -77,12 +78,12 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         # Set-up the quantum instances.
         statevector = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         qasm = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
