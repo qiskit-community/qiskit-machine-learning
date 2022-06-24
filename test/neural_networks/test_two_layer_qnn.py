@@ -17,8 +17,9 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt, data
 import qiskit
+from ddt import ddt, data
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 

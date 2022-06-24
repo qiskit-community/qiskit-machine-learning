@@ -31,7 +31,7 @@ import qiskit
 from qiskit import Aer, QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
