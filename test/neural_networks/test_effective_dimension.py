@@ -18,10 +18,10 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import ddt, data, unpack
 
-from qiskit import Aer, QuantumCircuit
+import qiskit
+from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
-from qiskit.utils import QuantumInstance, algorithm_globals
-from qiskit.utils import optionals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit.opflow import PauliSumOp
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN
@@ -42,7 +42,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 1234
         qi_sv = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
