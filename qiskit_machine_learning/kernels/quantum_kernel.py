@@ -626,3 +626,106 @@ class QuantumKernel:
                 kernel = U @ np.diag(np.maximum(0, D)) @ U.transpose()
 
         return kernel
+
+    def _calculate_kernel_statevector(self, x_vec, y_vec):
+        # todo: this is always true!
+        is_statevector_sim = True
+        measurement = False
+
+        if is_symmetric:
+            to_be_computed_data = x_vec
+        else:  # not symmetric
+            to_be_computed_data = np.concatenate((x_vec, y_vec))
+
+        feature_map_params = ParameterVector("par_x", self._feature_map.num_parameters)
+        parameterized_circuit = self.construct_circuit(
+            feature_map_params,
+            feature_map_params,
+            measurement=measurement,
+            is_statevector_sim=is_statevector_sim,
+        )
+        parameterized_circuit = self._quantum_instance.transpile(
+            parameterized_circuit, pass_manager=self._quantum_instance.unbound_pass_manager
+        )[0]
+        statevectors = []
+
+        for min_idx in range(0, len(to_be_computed_data), self._batch_size):
+            max_idx = min(min_idx + self._batch_size, len(to_be_computed_data))
+            circuits = [
+                parameterized_circuit.assign_parameters({feature_map_params: x})
+                for x in to_be_computed_data[min_idx:max_idx]
+            ]
+            if self._quantum_instance.bound_pass_manager is not None:
+                circuits = self._quantum_instance.transpile(
+                    circuits, pass_manager=self._quantum_instance.bound_pass_manager
+                )
+            results = self._quantum_instance.execute(circuits, had_transpiled=True)
+            for j in range(max_idx - min_idx):
+                statevectors.append(results.get_statevector(j))
+
+        offset = 0 if is_symmetric else len(x_vec)
+        matrix_elements = [
+            self._compute_overlap(idx, statevectors, is_statevector_sim, measurement_basis)
+            for idx in list(zip(mus, nus + offset))
+        ]
+
+        for i, j, value in zip(mus, nus, matrix_elements):
+            kernel[i, j] = value
+            if is_symmetric:
+                kernel[j, i] = kernel[i, j]
+
+    def _calculate_kernel_device(self, x_vec, y_vec):
+        feature_map_params_x = ParameterVector("par_x", self._feature_map.num_parameters)
+        feature_map_params_y = ParameterVector("par_y", self._feature_map.num_parameters)
+        parameterized_circuit = self.construct_circuit(
+            feature_map_params_x,
+            feature_map_params_y,
+            measurement=measurement,
+            is_statevector_sim=is_statevector_sim,
+        )
+        parameterized_circuit = self._quantum_instance.transpile(
+            parameterized_circuit, pass_manager=self._quantum_instance.unbound_pass_manager
+        )[0]
+
+        for idx in range(0, len(mus), self._batch_size):
+            to_be_computed_data_pair = []
+            to_be_computed_index = []
+            for sub_idx in range(idx, min(idx + self._batch_size, len(mus))):
+                i = mus[sub_idx]
+                j = nus[sub_idx]
+                x_i = x_vec[i]
+                y_j = y_vec[j]
+                if not np.all(x_i == y_j):
+                    to_be_computed_data_pair.append((x_i, y_j))
+                    to_be_computed_index.append((i, j))
+
+            circuits = [
+                parameterized_circuit.assign_parameters(
+                    {feature_map_params_x: x, feature_map_params_y: y}
+                )
+                for x, y in to_be_computed_data_pair
+            ]
+            if self._quantum_instance.bound_pass_manager is not None:
+                circuits = self._quantum_instance.transpile(
+                    circuits, pass_manager=self._quantum_instance.bound_pass_manager
+                )
+
+            results = self._quantum_instance.execute(circuits, had_transpiled=True)
+
+            matrix_elements = [
+                self._compute_overlap(circuit, results, is_statevector_sim, measurement_basis)
+                for circuit in range(len(circuits))
+            ]
+
+            for (i, j), value in zip(to_be_computed_index, matrix_elements):
+                kernel[i, j] = value
+                if is_symmetric:
+                    kernel[j, i] = kernel[i, j]
+
+        if self._enforce_psd and is_symmetric:
+            # Find the closest positive semi-definite approximation to symmetric kernel matrix.
+            # The (symmetric) matrix should always be positive semi-definite by construction,
+            # but this can be violated in case of noise, such as sampling noise, thus the
+            # adjustment is only done if NOT using the statevector simulation.
+            D, U = np.linalg.eig(kernel)  # pylint: disable=invalid-name
+            kernel = U @ np.diag(np.maximum(0, D)) @ U.transpose()
