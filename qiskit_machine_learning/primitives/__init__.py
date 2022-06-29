@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,22 +11,14 @@
 # that they have been altered from the originals.
 
 """
-Utilities (:mod:`qiskit_machine_learning.utils`)
-========================================================================
-A collection of utilities provided by Qiskit Machine Learning.
+Primitives (:mod:`qiskit_machine_learning.primitives`)
+===============================================================
 
-.. currentmodule:: qiskit_machine_learning.utils
-
-Utilities
-==========
-
-.. autosummary::
-   :toctree:
-
-   loss_functions
+.. currentmodule:: qiskit_machine_learning.primitives
 
 """
 
-from .utils import make_2d
+from .kernels import BaseKernel, QuantumKernel, TrainableQuantumKernel, PseudoKernel
 
-__all__ = ["make_2d"]
+
+__all__ = ["BaseKernel", "QuantumKernel", "TrainableQuantumKernel", "PseudoKernel"]

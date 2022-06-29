@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,23 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
-Utilities (:mod:`qiskit_machine_learning.utils`)
-========================================================================
-A collection of utilities provided by Qiskit Machine Learning.
+import numpy as np
 
-.. currentmodule:: qiskit_machine_learning.utils
 
-Utilities
-==========
-
-.. autosummary::
-   :toctree:
-
-   loss_functions
-
-"""
-
-from .utils import make_2d
-
-__all__ = ["make_2d"]
+def make_2d(array: np.ndarray, n_copies: int):
+    """
+    Takes a 1D numpy array and copies n times it along a second axis.
+    """
+    return np.repeat(array[np.newaxis, :], n_copies, axis=0)
