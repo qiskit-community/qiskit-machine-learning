@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -103,7 +103,7 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx.ext.extlinks",
-    "sphinx_panels",
+    "sphinx_design",
     "jupyter_sphinx",
     "sphinx_autodoc_typehints",
     "reno.sphinxext",
@@ -154,7 +154,7 @@ numfig_format = {"table": "Table %s"}
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # For Adding Locale
 locale_dirs = ["locale/"]  # path is example but recommended.
