@@ -17,8 +17,3 @@ Primitives (:mod:`qiskit_machine_learning.primitives`)
 .. currentmodule:: qiskit_machine_learning.primitives
 
 """
-
-from .kernels import BaseKernel, QuantumKernel, TrainableQuantumKernel, PseudoKernel
-
-
-__all__ = ["BaseKernel", "QuantumKernel", "TrainableQuantumKernel", "PseudoKernel"]

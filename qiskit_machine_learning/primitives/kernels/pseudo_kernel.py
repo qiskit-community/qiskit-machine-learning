@@ -19,7 +19,7 @@ from qiskit import QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity
 
-from qiskit_machine_learning.primitives import QuantumKernel
+from qiskit_machine_learning.primitives.kernels import QuantumKernel
 from qiskit_machine_learning.utils import make_2d
 
 SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]

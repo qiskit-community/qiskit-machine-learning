@@ -19,7 +19,7 @@ from qiskit.circuit.library import ZZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity, Fidelity
 
-from qiskit_machine_learning.primitives import BaseKernel
+from qiskit_machine_learning.primitives.kernels import BaseKernel
 
 
 SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]
