@@ -58,10 +58,15 @@ class VQC(NeuralNetworkClassifier):
     ) -> None:
         """
         Args:
-            num_qubits: The number of qubits for the underlying CircuitQNN. If None, derive from
-                feature_map or ansatz. If neither of those is given, raise exception.
-            feature_map: The feature map for underlying CircuitQNN. If None, use ZZFeatureMap.
-            ansatz: The ansatz for the underlying CircuitQNN. If None, use RealAmplitudes.
+            num_qubits: The number of qubits for the underlying ``CircuitQNN``. If ``None``,
+                the number of qubits is derived from the feature_map or ansatz. If neither of those
+                is given, raises an exception. The number of qubits in the feature map and ansatz
+                are adjusted to this number if required.
+            feature_map: The feature map for underlying ``CircuitQNN``. If ``None`` is given then
+                ``ZZFeatureMap`` or ``ZFeatureMap``(if only one qubit) is created with the
+                ``num_qubits`` qubits.
+            ansatz: The ansatz for the underlying CircuitQNN. If ``None``, is given then
+                ``RealAmplitudes`` is created.
             loss: A target loss function to be used in training. Default is cross entropy.
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
@@ -73,8 +78,9 @@ class VQC(NeuralNetworkClassifier):
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
         Raises:
-            QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
-                ansatz to be given.
+            QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
+                ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
+                can't be adjusted to ``num_qubits``.
         """
 
         num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(

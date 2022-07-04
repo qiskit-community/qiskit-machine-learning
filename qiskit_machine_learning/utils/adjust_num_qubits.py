@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Helper functions to adjust number of qubits."""
+from __future__ import annotations
 
 from typing import Tuple
 
@@ -21,7 +22,9 @@ from qiskit_machine_learning import QiskitMachineLearningError
 
 # pylint: disable=invalid-name
 def derive_num_qubits_feature_map_ansatz(
-    num_qubits: int = None, feature_map: QuantumCircuit = None, ansatz: QuantumCircuit = None
+    num_qubits: int | None = None,
+    feature_map: QuantumCircuit | None = None,
+    ansatz: QuantumCircuit | None = None,
 ) -> Tuple[int, QuantumCircuit, QuantumCircuit]:
     """
     Derives a correct number of qubits, feature map, and ansatz from the parameters.
@@ -82,7 +85,7 @@ def derive_num_qubits_feature_map_ansatz(
         elif feature_map is not None:
             num_qubits = feature_map.num_qubits
             ansatz = RealAmplitudes(num_qubits)
-        elif ansatz is not None:
+        else:
             num_qubits = ansatz.num_qubits
             feature_map = ZZFeatureMap(num_qubits)
 
