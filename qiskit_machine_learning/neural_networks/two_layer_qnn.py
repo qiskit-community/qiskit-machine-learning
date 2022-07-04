@@ -13,8 +13,7 @@
 """A Two Layer Neural Network consisting of a first parametrized circuit representing a feature map
 to map the input data to a quantum states and a second one representing a ansatz that can
 be trained to solve a particular tasks."""
-
-from typing import Optional, Union
+from __future__ import annotations
 
 from qiskit import QuantumCircuit
 from qiskit.opflow import PauliSumOp, StateFn, OperatorBase, ExpectationBase
@@ -32,33 +31,38 @@ class TwoLayerQNN(OpflowQNN):
 
     def __init__(
         self,
-        num_qubits: Optional[int] = None,
-        feature_map: Optional[QuantumCircuit] = None,
-        ansatz: Optional[QuantumCircuit] = None,
-        observable: Optional[OperatorBase] = None,
-        exp_val: Optional[ExpectationBase] = None,
-        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
+        num_qubits: int | None = None,
+        feature_map: QuantumCircuit | None = None,
+        ansatz: QuantumCircuit | None = None,
+        observable: OperatorBase | QuantumCircuit | None = None,
+        exp_val: ExpectationBase | None = None,
+        quantum_instance: QuantumInstance | Backend | None = None,
         input_gradients: bool = False,
     ):
         r"""
         Args:
-            num_qubits: The number of qubits to represent the network, if None and neither the
-                feature_map not the ansatz are given, raise exception.
-            feature_map: The (parametrized) circuit to be used as feature map. If None is given,
+            num_qubits: The number of qubits to represent the network. If ``None`` is given,
+                the number of qubits is derived from the feature map or ansatz. If neither of those
+                is given, raises an exception. The number of qubits in the feature map and ansatz
+                are adjusted to this number if required.
+            feature_map: The (parametrized) circuit to be used as a feature map. If ``None`` is given,
                 the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For
-                a single qubit two-layer QNN the ``ZFeatureMap`` is used per default.
-            ansatz: The (parametrized) circuit to be used as ansatz. If None is given,
+                a single qubit two-layer QNN the ``ZFeatureMap`` circuit is used per default.
+            ansatz: The (parametrized) circuit to be used as an ansatz. If ``None`` is given,
                 the ``RealAmplitudes`` circuit is used.
-            observable: observable to be measured to determine the output of the network. If None
-                is given, the :math:`Z^{\otimes num_qubits}` observable is used.
+            observable: observable to be measured to determine the output of the network. If
+                ``None`` is given, the :math:`Z^{\otimes num\_qubits}` observable is used.
             exp_val: The Expected Value converter to be used for the operator obtained from the
                 feature map and ansatz.
             quantum_instance: The quantum instance to evaluate the network.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
-                ``True`` for a proper gradient computation when using ``TorchConnector``.
+                ``True`` for a proper gradient computation when using
+                :class:`~qiskit_machine_learning.connectors.TorchConnector`.
         Raises:
-            QiskitMachineLearningError: In case of inconsistent num_qubits, feature_map, ansatz.
+            QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
+                ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
+                can't be adjusted to ``num_qubits``.
         """
 
         num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(

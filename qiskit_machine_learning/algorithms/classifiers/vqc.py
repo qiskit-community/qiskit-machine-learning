@@ -17,6 +17,7 @@ from typing import Callable, cast
 import numpy as np
 
 from qiskit import QuantumCircuit
+from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
 
@@ -52,23 +53,27 @@ class VQC(NeuralNetworkClassifier):
         loss: str | Loss = "cross_entropy",
         optimizer: Optimizer | None = None,
         warm_start: bool = False,
-        quantum_instance: QuantumInstance | None = None,
+        quantum_instance: QuantumInstance | Backend | None = None,
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
     ) -> None:
         """
         Args:
-            num_qubits: The number of qubits for the underlying ``CircuitQNN``. If ``None``,
-                the number of qubits is derived from the feature_map or ansatz. If neither of those
+            num_qubits: The number of qubits for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given,
+                the number of qubits is derived from the feature map or ansatz. If neither of those
                 is given, raises an exception. The number of qubits in the feature map and ansatz
                 are adjusted to this number if required.
-            feature_map: The feature map for underlying ``CircuitQNN``. If ``None`` is given then
-                ``ZZFeatureMap`` or ``ZFeatureMap``(if only one qubit) is created with the
-                ``num_qubits`` qubits.
-            ansatz: The ansatz for the underlying CircuitQNN. If ``None``, is given then
-                ``RealAmplitudes`` is created.
-            loss: A target loss function to be used in training. Default is cross entropy.
-            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
+            feature_map: The (parametrized) circuit to be used as a feature map for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given,
+                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For a single
+                qubit classification problem the ``ZFeatureMap`` is used per default.
+            ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given
+                then the ``RealAmplitudes`` circuit is used.
+            loss: A target loss function to be used in training. Default value is ``cross_entropy``.
+            optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
+                to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             quantum_instance: The quantum instance to execute circuits on.
             initial_point: Initial point for the optimizer to start from.

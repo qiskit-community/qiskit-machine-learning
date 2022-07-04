@@ -10,8 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """An implementation of quantum neural network regressor."""
+from __future__ import annotations
 
-from typing import Union, Optional, Callable, cast
+from typing import Callable, cast
 
 import numpy as np
 
@@ -30,29 +31,36 @@ class VQR(NeuralNetworkRegressor):
 
     def __init__(
         self,
-        num_qubits: int = None,
-        feature_map: QuantumCircuit = None,
-        ansatz: QuantumCircuit = None,
-        observable: Union[QuantumCircuit, OperatorBase] = None,
-        loss: Union[str, Loss] = "squared_error",
-        optimizer: Optional[Optimizer] = None,
+        num_qubits: int | None = None,
+        feature_map: QuantumCircuit | None = None,
+        ansatz: QuantumCircuit | None = None,
+        observable: QuantumCircuit | OperatorBase | None = None,
+        loss: str | Loss = "squared_error",
+        optimizer: Optimizer | None = None,
         warm_start: bool = False,
-        quantum_instance: QuantumInstance = None,
-        initial_point: np.ndarray = None,
-        callback: Optional[Callable[[np.ndarray, float], None]] = None,
+        quantum_instance: QuantumInstance | None = None,
+        initial_point: np.ndarray | None = None,
+        callback: Callable[[np.ndarray, float], None] | None = None,
     ) -> None:
         r"""
         Args:
-            num_qubits: The number of qubits to be used. If None, and neither feature_map nor
-                ansatz are given, it is initially set to 2, i.e., the default of the TwoLayerQNN.
-            feature_map: The feature map to be used to construct a TwoLayerQNN. If None, use the
-                ZZFeatureMap, i.e., the default of the TwoLayerQNN.
-            ansatz: The ansatz to be used to construct a TwoLayerQNN. If None, use the
-                RealAmplitudes, i.e., the default of the TwoLayerQNN.
-            observable: The observable to be measured in the underlying TwoLayerQNN. If  None, use
-                the default from the TwoLayerQNN, i.e., `Z^{\otimes num_qubits}`.
+            num_qubits: The number of qubits for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN`. If ``None`` is given,
+                the number of qubits is derived from the feature map or ansatz. If neither of those
+                is given, raises an exception. The number of qubits in the feature map and ansatz
+                are adjusted to this number if required.
+            feature_map: The (parametrized) circuit to be used as a feature map for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN`. If ``None`` is given,
+                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For a single
+                qubit regression problem the ``ZFeatureMap`` circuit is used per default.
+            ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN`. If ``None`` is given
+                then the ``RealAmplitudes`` circuit is used.
+            observable: The observable to be measured in the underlying TwoLayerQNN. If ``None``,
+                use the default from the TwoLayerQNN, i.e., :math:`Z^{\otimes num\_qubits}`.
             loss: A target loss function to be used in training. Default is squared error.
-            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
+            optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
+                to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             quantum_instance: The quantum instance to execute circuits on.
             initial_point: Initial point for the optimizer to start from.
@@ -62,7 +70,9 @@ class VQR(NeuralNetworkRegressor):
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
         Raises:
-            QiskitMachineLearningError: Neither num_qubits, nor feature_map, nor ansatz given.
+            QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
+                ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
+                can't be adjusted to ``num_qubits``.
         """
 
         # construct QNN
