@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Quantum Kernel Algorithm"""
+from __future__ import annotations
 
 from typing import Optional, Union, Sequence, Mapping, List
 import copy
@@ -60,6 +61,7 @@ class QuantumKernel:
         batch_size: int = 900,
         quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
         training_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
+        evaluate_duplicates: str | None = "non_diagonal",
     ) -> None:
         """
         Args:
@@ -72,6 +74,22 @@ class QuantumKernel:
             training_parameters: Iterable containing ``Parameter`` objects which correspond to
                  quantum gates on the feature map circuit which may be tuned. If users intend to
                  tune feature map parameters to find optimal values, this field should be set.
+            evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
+                identical samples are found. The parameter does not apply on the statevector
+                simulator. Possible values are:
+
+                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
+                        ones when training. This may introduce additional noise in the matrix.
+                    - ``non_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                        elements are fully evaluated, e.g., for two identical samples in the
+                        dataset. When inferring, all elements are evaluated. This is the default
+                        value.
+                    - ``none`` when training the diagonal is set to `1` and if two identical samples
+                        are found in the dataset the corresponding matrix element is set to `1`.
+                        When inferring, matrix elements for identical samples are set to `1`.
+
+        Raises:
+            ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
         # Class fields
         self._feature_map = None
@@ -81,6 +99,12 @@ class QuantumKernel:
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
+        eval_duplicates = str(evaluate_duplicates).lower()
+        if eval_duplicates not in ("all", "non_diagonal", "none"):
+            raise ValueError(
+                f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
+            )
+        self._evaluate_duplicates = eval_duplicates
 
         # Setters
         self.feature_map = feature_map if feature_map is not None else ZZFeatureMap(2)
@@ -509,13 +533,9 @@ class QuantumKernel:
         # initialize kernel matrix
         kernel = np.zeros((x_vec.shape[0], y_vec.shape[0]))
 
-        # set diagonal to 1 if symmetric
-        if is_symmetric:
-            np.fill_diagonal(kernel, 1)
-
         # get indices to calculate
         if is_symmetric:
-            mus, nus = np.triu_indices(x_vec.shape[0], k=1)  # remove diagonal
+            mus, nus = np.triu_indices(x_vec.shape[0])
         else:
             mus, nus = np.indices((x_vec.shape[0], y_vec.shape[0]))
             mus = np.asarray(mus.flat)
@@ -590,7 +610,18 @@ class QuantumKernel:
                     j = nus[sub_idx]
                     x_i = x_vec[i]
                     y_j = y_vec[j]
-                    if not np.all(x_i == y_j):
+
+                    # fill in 1s on the diagonal in the symmetrical case
+                    if (i == j and is_symmetric and self._evaluate_duplicates != "all") or (
+                        # or fill in elements for identical samples
+                        np.all(x_i == y_j)
+                        and self._evaluate_duplicates == "none"
+                    ):
+                        kernel[i, j] = 1
+                        if is_symmetric:
+                            kernel[j, i] = 1
+                    else:
+                        # otherwise evaluate the element
                         to_be_computed_data_pair.append((x_i, y_j))
                         to_be_computed_index.append((i, j))
 
