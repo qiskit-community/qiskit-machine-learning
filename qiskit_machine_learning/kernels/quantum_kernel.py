@@ -583,7 +583,10 @@ class QuantumKernel:
                     statevectors.append(results.get_statevector(j))
 
             offset = 0 if is_symmetric else len(x_vec)
-            for i, j, in zip(mus, nus):
+            for (
+                i,
+                j,
+            ) in zip(mus, nus):
                 x_i = x_vec[i]
                 y_j = y_vec[j]
 
@@ -591,7 +594,9 @@ class QuantumKernel:
                 if np.all(x_i == y_j) and self._evaluate_duplicates == "none":
                     kernel_value = 1
                 else:
-                    kernel_value = self._compute_overlap([i, j + offset], statevectors, is_statevector_sim, measurement_basis)
+                    kernel_value = self._compute_overlap(
+                        [i, j + offset], statevectors, is_statevector_sim, measurement_basis
+                    )
 
                 kernel[i, j] = kernel_value
                 if is_symmetric:
