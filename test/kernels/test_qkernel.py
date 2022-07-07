@@ -709,7 +709,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
 
 @ddt
-class TestQuantumKernelEvaluateDuplicated(QiskitMachineLearningTestCase):
+class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
     """Test QuantumKernel for duplicate evaluation."""
 
     def count_circuits(self, func):

@@ -75,8 +75,7 @@ class QuantumKernel:
                  quantum gates on the feature map circuit which may be tuned. If users intend to
                  tune feature map parameters to find optimal values, this field should be set.
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
-                identical samples are found. The parameter does not apply on the statevector
-                simulator. Possible values are:
+                identical samples are found. Possible values are:
 
                     - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
                         ones when training. This may introduce additional noise in the matrix.
@@ -535,7 +534,12 @@ class QuantumKernel:
 
         # get indices to calculate
         if is_symmetric:
-            mus, nus = np.triu_indices(x_vec.shape[0])
+            if self._evaluate_duplicates == "all":
+                mus, nus = np.triu_indices(x_vec.shape[0])
+            else:
+                # exclude diagonal and fill it with ones
+                mus, nus = np.triu_indices(x_vec.shape[0], k=1)
+                np.fill_diagonal(kernel, 1)
         else:
             mus, nus = np.indices((x_vec.shape[0], y_vec.shape[0]))
             mus = np.asarray(mus.flat)
@@ -579,15 +583,19 @@ class QuantumKernel:
                     statevectors.append(results.get_statevector(j))
 
             offset = 0 if is_symmetric else len(x_vec)
-            matrix_elements = [
-                self._compute_overlap(idx, statevectors, is_statevector_sim, measurement_basis)
-                for idx in list(zip(mus, nus + offset))
-            ]
+            for i, j, in zip(mus, nus):
+                x_i = x_vec[i]
+                y_j = y_vec[j]
 
-            for i, j, value in zip(mus, nus, matrix_elements):
-                kernel[i, j] = value
+                # fill in ones for identical samples
+                if np.all(x_i == y_j) and self._evaluate_duplicates == "none":
+                    kernel_value = 1
+                else:
+                    kernel_value = self._compute_overlap([i, j + offset], statevectors, is_statevector_sim, measurement_basis)
+
+                kernel[i, j] = kernel_value
                 if is_symmetric:
-                    kernel[j, i] = kernel[i, j]
+                    kernel[j, i] = kernel_value
 
         else:  # not using state vector simulator
             feature_map_params_x = ParameterVector("par_x", self._feature_map.num_parameters)
@@ -611,12 +619,8 @@ class QuantumKernel:
                     x_i = x_vec[i]
                     y_j = y_vec[j]
 
-                    # fill in 1s on the diagonal in the symmetrical case
-                    if (i == j and is_symmetric and self._evaluate_duplicates != "all") or (
-                        # or fill in elements for identical samples
-                        np.all(x_i == y_j)
-                        and self._evaluate_duplicates == "none"
-                    ):
+                    # fill in ones for identical samples
+                    if np.all(x_i == y_j) and self._evaluate_duplicates == "none":
                         kernel[i, j] = 1
                         if is_symmetric:
                             kernel[j, i] = 1

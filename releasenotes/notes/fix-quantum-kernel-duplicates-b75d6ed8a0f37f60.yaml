@@ -3,8 +3,8 @@ features:
   - |
     Introduced a new parameter `evaluate_duplicates` in
     :class:`~qiskit_machine_learning.kernels.QuantumKernel`. This parameter defines a strategy how
-    kernel matrix elements are evaluated if identical samples are found. The parameter does not
-    apply on the statevector simulator. Possible values are:
+    kernel matrix elements are evaluated if identical samples are found.
+    Possible values are:
 
       - ``all`` means that all kernel matrix elements are evaluated, even the diagonal ones when
           training. This may introduce additional noise in the matrix.
