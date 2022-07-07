@@ -515,7 +515,7 @@ class QuantumKernel:
 
         Args:
             vec: A vector to validate.
-            vec_name: A vector name, if an error is raised it ise used in the error message.
+            vec_name: A vector name, if an error is raised it is used to format the error message.
             adjust_feature_map: If ``True`` tried to adjust the number of qubits of the feature map.
 
         Raises:
