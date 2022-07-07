@@ -592,7 +592,7 @@ class QuantumKernel:
 
                 # fill in ones for identical samples
                 if np.all(x_i == y_j) and self._evaluate_duplicates == "none":
-                    kernel_value = 1
+                    kernel_value = 1.0
                 else:
                     kernel_value = self._compute_overlap(
                         [i, j + offset], statevectors, is_statevector_sim, measurement_basis
