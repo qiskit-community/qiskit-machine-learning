@@ -25,7 +25,7 @@ from qiskit.circuit import QuantumCircuit, Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from qiskit.compiler.transpiler import PassManagerConfig, level_1_pass_manager, level_2_pass_manager
-from qiskit.test.mock import FakeToronto
+from qiskit.providers.fake_provider import FakeToronto
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
@@ -52,7 +52,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 12345
         # specify "run configuration"
         self.quantum_instance_sv = QuantumInstance(
-            qiskit.Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
@@ -88,7 +88,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
         # define interpret functions
         def interpret_1d(x):
-            return sum([s == "1" for s in f"{x:0b}"]) % 2
+            return sum((s == "1" for s in f"{x:0b}")) % 2
 
         self.interpret_1d = interpret_1d
         self.output_shape_1d = 2  # takes values in {0, 1}

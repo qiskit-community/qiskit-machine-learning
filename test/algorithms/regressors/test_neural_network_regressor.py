@@ -10,42 +10,50 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """ Test Neural Network Regressor """
-
+import unittest
+import itertools
 import os
 import tempfile
+from typing import Tuple
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt, data
-from qiskit import Aer, QuantumCircuit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit.circuit import Parameter
+from ddt import ddt, unpack, idata
+import qiskit
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
+from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
+
+QUANTUM_INSTANCES = ["statevector", "qasm"]
+OPTIMIZERS = ["cobyla", "bfgs", None]
+CALLBACKS = [True, False]
 
 
 @ddt
 class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
     """Test Neural Network Regressor."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
@@ -59,20 +67,11 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
 
-    @data(
-        # optimizer, loss, quantum instance
-        ("cobyla", "statevector", False),
-        ("cobyla", "qasm", False),
-        ("bfgs", "statevector", False),
-        ("bfgs", "qasm", False),
-        (None, "statevector", False),
-        (None, "qasm", False),
-    )
-    def test_regressor_with_opflow_qnn(self, config):
-        """Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
-        opt, q_i, cb_flag = config
-
+    def _create_regressor(
+        self, opt, q_i, callback=None
+    ) -> Tuple[NeuralNetworkRegressor, TwoLayerQNN, QuantumCircuit]:
         num_qubits = 1
+
         # construct simple feature map
         param_x = Parameter("x")
         feature_map = QuantumCircuit(num_qubits, name="fm")
@@ -85,8 +84,10 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         if q_i == "statevector":
             quantum_instance = self.sv_quantum_instance
-        else:
+        elif q_i == "qasm":
             quantum_instance = self.qasm_quantum_instance
+        else:
+            raise ValueError(f"Unsupported quantum instance: {q_i}")
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -94,16 +95,6 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             optimizer = COBYLA(maxiter=25)
         else:
             optimizer = None
-
-        if cb_flag is True:
-            history = {"weights": [], "values": []}
-
-            def callback(objective_weights, objective_value):
-                history["weights"].append(objective_weights)
-                history["values"].append(objective_value)
-
-        else:
-            callback = None
 
         # construct QNN
         regression_opflow_qnn = TwoLayerQNN(
@@ -121,6 +112,24 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             callback=callback,
         )
 
+        return regressor, regression_opflow_qnn, ansatz
+
+    @idata(itertools.product(OPTIMIZERS, QUANTUM_INSTANCES, CALLBACKS))
+    @unpack
+    def test_regressor_with_opflow_qnn(self, opt, q_i, cb_flag):
+        """Test Neural Network Regressor with Opflow QNN (Two Layer QNN)."""
+        if cb_flag:
+            history = {"weights": [], "values": []}
+
+            def callback(objective_weights, objective_value):
+                history["weights"].append(objective_weights)
+                history["values"].append(objective_value)
+
+        else:
+            callback = None
+
+        regressor, qnn, ansatz = self._create_regressor(opt, q_i, callback)
+
         # fit to data
         regressor.fit(self.X, self.y)
 
@@ -132,8 +141,35 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         if callback is not None:
             self.assertTrue(all(isinstance(value, float) for value in history["values"]))
             for weights in history["weights"]:
-                self.assertEqual(len(weights), regression_opflow_qnn.num_weights)
+                self.assertEqual(len(weights), qnn.num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
+
+        self.assertIsNotNone(regressor.fit_result)
+        self.assertIsNotNone(regressor.weights)
+        np.testing.assert_array_equal(regressor.fit_result.x, regressor.weights)
+        self.assertEqual(len(regressor.weights), ansatz.num_parameters)
+
+    @idata(itertools.product(OPTIMIZERS, QUANTUM_INSTANCES))
+    @unpack
+    def test_warm_start(self, opt, q_i):
+        """Test VQC when training from a warm start."""
+        regressor, _, _ = self._create_regressor(opt, q_i)
+        regressor.warm_start = True
+
+        # Fit the regressor to the first half of the data.
+        num_start = len(self.y) // 2
+        regressor.fit(self.X[:num_start, :], self.y[:num_start])
+        first_fit_final_point = regressor.weights
+
+        # Fit the regressor to the second half of the data with a warm start.
+        regressor.fit(self.X[num_start:, :], self.y[num_start:])
+        second_fit_initial_point = regressor._initial_point
+
+        # Check the final optimization point from the first fit was used to start the second fit.
+        np.testing.assert_allclose(first_fit_final_point, second_fit_initial_point)
+
+        score = regressor.score(self.X, self.y)
+        self.assertGreater(score, 0.5)
 
     def test_save_load(self):
         """Tests save and load models."""
@@ -172,3 +208,40 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
             with self.assertRaises(TypeError):
                 FakeModel.load(file_name)
+
+    def test_untrained(self):
+        """Test untrained regressor."""
+        qnn = TwoLayerQNN(2)
+        regressor = NeuralNetworkRegressor(qnn)
+        with self.assertRaises(QiskitMachineLearningError, msg="regressor.predict()"):
+            regressor.predict(np.asarray([]))
+
+        with self.assertRaises(QiskitMachineLearningError, msg="regressor.fit_result"):
+            _ = regressor.fit_result
+
+        with self.assertRaises(QiskitMachineLearningError, msg="regressor.weights"):
+            _ = regressor.weights
+
+    def test_callback_setter(self):
+        """Test the callback setter."""
+        qnn = TwoLayerQNN(2, quantum_instance=self.qasm_quantum_instance)
+        single_step_opt = SPSA(maxiter=1, learning_rate=0.01, perturbation=0.1)
+        regressor = NeuralNetworkRegressor(qnn, optimizer=single_step_opt)
+
+        loss_history = []
+
+        def store_loss(_, loss):
+            loss_history.append(loss)
+
+        # use setter for the callback instead of providing in the initialize method
+        regressor.callback = store_loss
+
+        features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
+        labels = np.array([0, 0.1, 0.4, 1])
+        regressor.fit(features, labels)
+
+        self.assertEqual(len(loss_history), 3)
+
+
+if __name__ == "__main__":
+    unittest.main()

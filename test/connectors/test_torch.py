@@ -34,7 +34,7 @@ class TestTorch(ABC):
         algorithm_globals.random_seed = 12345
         # specify quantum instances
         self._sv_quantum_instance = QuantumInstance(
-            qiskit.Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
