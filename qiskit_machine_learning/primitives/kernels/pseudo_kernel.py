@@ -19,10 +19,11 @@ from qiskit import QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity
 
-from qiskit_machine_learning.primitives.kernels import QuantumKernel
 from qiskit_machine_learning.utils import make_2d
+from .quantum_kernel import QuantumKernel
 
 SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]
+FidelityFactory = Callable[[List[QuantumCircuit], SamplerFactory], BaseFidelity]
 
 
 class PseudoKernel(QuantumKernel):
@@ -36,7 +37,7 @@ class PseudoKernel(QuantumKernel):
         feature_map: Optional[QuantumCircuit] = None,
         *,
         num_training_parameters: int = 0,
-        fidelity: Union[str, BaseFidelity] = "zero_prob",
+        fidelity: Union[str, FidelityFactory] = "zero_prob",
         enforce_psd: bool = True,
     ) -> None:
         super().__init__(sampler_factory, feature_map, fidelity=fidelity, enforce_psd=enforce_psd)
@@ -78,11 +79,11 @@ class PseudoKernel(QuantumKernel):
 
         Raises:
             QiskitMachineLearningError:
-                - A quantum instance or backend has not been provided
+                A quantum instance or backend has not been provided
             ValueError:
-                - x_vec and/or y_vec are not one or two dimensional arrays
-                - x_vec and y_vec have have incompatible dimensions
-                - x_vec and/or y_vec have incompatible dimension with feature map and
+                x_vec and/or y_vec are not one or two dimensional arrays
+                x_vec and y_vec have have incompatible dimensions
+                x_vec and/or y_vec have incompatible dimension with feature map and
                     and feature map can not be modified to match.
         """
         if x_parameters is None:
@@ -108,24 +109,28 @@ class PseudoKernel(QuantumKernel):
                 x_parameters = make_2d(x_parameters, x_vec.shape[0])
             else:
                 raise ValueError(
-                    f"Number of x data points ({x_vec.shape[0]}) does not coincide with number of parameter vectors {x_parameters.shape[0]}."
+                    f"Number of x data points ({x_vec.shape[0]}) does not coincide"
+                    f"with number of parameter vectors {x_parameters.shape[0]}."
                 )
         if y_vec.shape[0] != y_parameters.shape[0]:
             if y_parameters.shape[0] == 1:
                 x_parameters = make_2d(y_parameters, y_vec.shape[0])
             else:
                 raise ValueError(
-                    f"Number of y data points ({y_vec.shape[0]}) does not coincide with number of parameter vectors {y_parameters.shape[0]}."
+                    f"Number of y data points ({y_vec.shape[0]}) does not coincide"
+                    f"with number of parameter vectors {y_parameters.shape[0]}."
                 )
 
         if x_parameters.shape[1] != self.num_parameters:
             raise ValueError(
-                f"Number of parameters provided ({x_parameters.shape[0]}) does not coincide with the number provided in the feature map ({self.num_parameters})."
+                f"Number of parameters provided ({x_parameters.shape[0]}) does not"
+                f"coincide with the number provided in the feature map ({self.num_parameters})."
             )
 
         if y_parameters.shape[1] != self.num_parameters:
             raise ValueError(
-                f"Number of parameters provided ({y_parameters.shape[0]}) does not coincide with the number provided in the feature map ({self.num_parameters})."
+                f"Number of parameters provided ({y_parameters.shape[0]}) does not coincide"
+                f"with the number provided in the feature map ({self.num_parameters})."
             )
 
         return self.evaluate(np.hstack((x_vec, x_parameters)), np.hstack((y_vec, y_parameters)))

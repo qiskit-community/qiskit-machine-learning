@@ -9,15 +9,13 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
+"""Base kernel"""
+
 from abc import abstractmethod
-from typing import Tuple, Callable, List
+from typing import Tuple
 
 import numpy as np
-
-from qiskit import QuantumCircuit
-from qiskit.primitives import Sampler
-
-SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]
 
 
 class BaseKernel:
@@ -25,16 +23,16 @@ class BaseKernel:
     Abstract class providing the interface for the quantum kernel classes.
     """
 
-    def __init__(self, sampler_factory: SamplerFactory, *, enforce_psd: bool = True) -> None:
+    def __init__(self, *, enforce_psd: bool = True) -> None:
         """
         Args:
-            sampler_factory: A callable that creates a qiskit primitives sampler given a list of circuits.
+            sampler_factory: A callable that creates a qiskit primitives sampler
+                given a list of circuits.
             enforce_psd: Project to closest positive semidefinite matrix if x = y.
-                Only enforced when not using the state vector simulator. Default True.
+                Default True.
         """
         self._num_features: int = 0
         self._enforce_psd = enforce_psd
-        self._sampler_factory = sampler_factory
 
     @abstractmethod
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
@@ -54,11 +52,11 @@ class BaseKernel:
 
         Raises:
             QiskitMachineLearningError:
-                - A quantum instance or backend has not been provided
+                A quantum instance or backend has not been provided
             ValueError:
-                - x_vec and/or y_vec are not one or two dimensional arrays
-                - x_vec and y_vec have have incompatible dimensions
-                - x_vec and/or y_vec have incompatible dimension with feature map and
+                x_vec and/or y_vec are not one or two dimensional arrays
+                x_vec and y_vec have have incompatible dimensions
+                x_vec and/or y_vec have incompatible dimension with feature map and
                     and feature map can not be modified to match.
         """
         raise NotImplementedError()
@@ -104,6 +102,7 @@ class BaseKernel:
 
         return x_vec, y_vec
 
+    # pylint: disable=invalid-name
     def _make_psd(self, kernel_matrix: np.ndarray) -> np.ndarray:
         r"""
         Find the closest positive semi-definite approximation to symmetric kernel matrix.

@@ -19,10 +19,11 @@ from qiskit.circuit.library import ZZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity, Fidelity
 
-from qiskit_machine_learning.primitives.kernels import BaseKernel
+from .base_kernel import BaseKernel
 
 
 SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]
+FidelityFactory = Callable[[List[QuantumCircuit], SamplerFactory], BaseFidelity]
 
 
 class QuantumKernel(BaseKernel):
@@ -35,10 +36,11 @@ class QuantumKernel(BaseKernel):
         sampler_factory: SamplerFactory,
         feature_map: Optional[QuantumCircuit] = None,
         *,
-        fidelity: Union[str, BaseFidelity] = "zero_prob",
+        fidelity: Union[str, FidelityFactory] = "zero_prob",
         enforce_psd: bool = True,
     ) -> None:
-        super().__init__(sampler_factory, enforce_psd=enforce_psd)
+        super().__init__(enforce_psd=enforce_psd)
+        self._sampler_factory = sampler_factory
 
         if feature_map is None:
             feature_map = ZZFeatureMap(2).decompose()
@@ -46,10 +48,18 @@ class QuantumKernel(BaseKernel):
         self._num_features = feature_map.num_parameters
 
         if isinstance(fidelity, str) and fidelity == "zero_prob":
-            self._fidelity = Fidelity()
+            self._fidelity = Fidelity(
+                left_circuit=feature_map,
+                right_circuit=feature_map,
+                sampler_factory=sampler_factory,
+            )
         else:
-            self._fidelity = fidelity
-        self._fidelity.set_circuits(feature_map, feature_map)
+            self._fidelity = fidelity(
+                left_circuit=feature_map,
+                right_circuit=feature_map,
+                sampler_factory=sampler_factory,
+            )
+        self._shots = 10000
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
         x_vec, y_vec = self._check_and_reshape(x_vec, y_vec)
@@ -143,7 +153,6 @@ class QuantumKernel(BaseKernel):
         """
         Creates the full fidelity class by creating the sampler from the factory.
         """
-        self._fidelity.sampler_from_factory(self._sampler_factory)
         return self
 
     def __exit__(self, *args):

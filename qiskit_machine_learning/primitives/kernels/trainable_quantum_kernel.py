@@ -19,11 +19,11 @@ from qiskit import QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity
 
-
-from qiskit_machine_learning.primitives.kernels import QuantumKernel
 from qiskit_machine_learning.utils import make_2d
+from .quantum_kernel import QuantumKernel
 
 SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]
+FidelityFactory = Callable[[List[QuantumCircuit], SamplerFactory], BaseFidelity]
 
 
 class TrainableQuantumKernel(QuantumKernel):
@@ -36,7 +36,7 @@ class TrainableQuantumKernel(QuantumKernel):
         sampler_factory: SamplerFactory,
         feature_map: Optional[QuantumCircuit] = None,
         *,
-        fidelity: Union[str, BaseFidelity] = "zero_prob",
+        fidelity: Union[str, FidelityFactory] = "zero_prob",
         num_training_parameters: int = 0,
         enforce_psd: bool = True,
     ) -> None:
@@ -54,7 +54,8 @@ class TrainableQuantumKernel(QuantumKernel):
             self.parameter_values = parameter_values
         else:
             raise ValueError(
-                f"The given parameters are in the wrong shape {parameter_values.shape}, expected {self.parameter_values.shape}."
+                f"The given parameters are in the wrong shape {parameter_values.shape},"
+                f"expected {self.parameter_values.shape}."
             )
 
     def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> Tuple[np.ndarray]:
