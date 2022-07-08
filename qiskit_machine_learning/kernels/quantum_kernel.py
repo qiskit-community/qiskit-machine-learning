@@ -373,7 +373,9 @@ class QuantumKernel:
 
         return qc
 
-    def _construct_circuit_with_feature_map(self, x: ParameterVector, y: ParameterVector = None):
+    def _construct_circuit_with_feature_map(
+        self, x: ParameterVector, y: ParameterVector = None
+    ) -> QuantumCircuit:
         self._check_training_parameters_bound()
 
         if len(x) != self._feature_map.num_parameters:
@@ -392,17 +394,21 @@ class QuantumKernel:
 
         return qc
 
-    # just a synonym
-    def _construct_circuit_statevector(self, x: ParameterVector, y: ParameterVector = None):
+    # just a synonym for consistency with other "*_statevector()" methods
+    def _construct_circuit_statevector(
+        self, x: ParameterVector, y: ParameterVector = None
+    ) -> QuantumCircuit:
         """This is just a synonym for ``_construct_circuit_with_feature_map``"""
         return self._construct_circuit_with_feature_map(x, y)
 
-    def _compute_overlap_statevector(self, idx: Tuple[int, int], results: List) -> float:
+    def _compute_overlap_statevector(
+        self, idx1: int, idx2: int, results: List[np.ndarray]
+    ) -> float:
         """
         Helper function to compute overlap for given input if a statevector simulator is used.
         """
         # |<0|Psi^dagger(y) x Psi(x)|0>|^2, take the amplitude
-        v_a, v_b = [results[int(i)] for i in idx]
+        v_a, v_b = results[idx1], results[idx2]
         tmp = np.vdot(v_a, v_b)
         kernel_value = np.vdot(tmp, tmp).real  # pylint: disable=no-member
 
@@ -470,16 +476,17 @@ class QuantumKernel:
         if is_symmetric:
             np.fill_diagonal(kernel, 1)
 
-        is_statevector_sim = self._quantum_instance.is_statevector
         # calculate kernel
-        if is_statevector_sim:
+        if self._quantum_instance.is_statevector:
             kernel = self._calculate_kernel_statevector(x_vec, y_vec, is_symmetric, kernel)
         else:
             kernel = self._calculate_kernel(x_vec, y_vec, is_symmetric, kernel)
 
         return kernel
 
-    def _validate_input(self, x_vec: np.ndarray, y_vec: np.ndarray):
+    def _validate_input(
+        self, x_vec: np.ndarray, y_vec: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         x_vec = np.asarray(x_vec)
 
         if x_vec.ndim > 2:
@@ -489,6 +496,8 @@ class QuantumKernel:
             x_vec = np.reshape(x_vec, (-1, len(x_vec)))
 
         if x_vec.shape[1] != self._feature_map.num_parameters:
+            # before raising an error we try to adjust the feature map
+            # to the required number of qubit.
             try:
                 self._feature_map.num_qubits = x_vec.shape[1]
             except AttributeError:
@@ -516,7 +525,7 @@ class QuantumKernel:
 
     def _calculate_kernel_statevector(
         self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool, kernel: np.ndarray
-    ):
+    ) -> np.ndarray:
         # get indices to calculate
         row_indices, col_indices = self._get_indices(x_vec, y_vec, is_symmetric)
 
@@ -551,8 +560,8 @@ class QuantumKernel:
 
         offset = 0 if is_symmetric else len(x_vec)
         matrix_elements = [
-            self._compute_overlap_statevector(idx, statevectors)
-            for idx in list(zip(row_indices, col_indices + offset))
+            self._compute_overlap_statevector(i, j, statevectors)
+            for i, j in zip(row_indices, col_indices + offset)
         ]
 
         for i, j, value in zip(row_indices, col_indices, matrix_elements):
@@ -564,7 +573,7 @@ class QuantumKernel:
 
     def _calculate_kernel(
         self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool, kernel: np.ndarray
-    ):
+    ) -> np.ndarray:
         # get indices to calculate
         row_indices, col_indices = self._get_indices(x_vec, y_vec, is_symmetric)
 
@@ -619,7 +628,9 @@ class QuantumKernel:
 
         return kernel
 
-    def _get_indices(self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool):
+    def _get_indices(
+        self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool
+    ) -> Tuple[np.ndarray, np.ndarray]:
         # get indices to calculate
         if is_symmetric:
             row_indices, col_indices = np.triu_indices(x_vec.shape[0], k=1)  # remove diagonal
@@ -629,7 +640,7 @@ class QuantumKernel:
             col_indices = np.asarray(col_indices.flat)
         return row_indices, col_indices
 
-    def _check_training_parameters_bound(self):
+    def _check_training_parameters_bound(self) -> None:
         # Ensure all training parameters have been bound in the feature map circuit.
         unbound_params = self.get_unbound_training_parameters()
         if unbound_params:
@@ -641,7 +652,7 @@ class QuantumKernel:
                 """
             )
 
-    def _raise_incompatible_feature_map(self, vec_name: str, vec_len: int):
+    def _raise_incompatible_feature_map(self, vec_name: str, vec_len: int) -> None:
         raise ValueError(
             f"{vec_name} and class feature map have incompatible dimensions.\n"
             f"{vec_name} has {vec_len} dimensions, "
