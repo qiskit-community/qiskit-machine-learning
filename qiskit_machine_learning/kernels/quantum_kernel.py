@@ -359,7 +359,8 @@ class QuantumKernel:
         """
         qc = self._construct_circuit_with_feature_map(x, y)
 
-        y = x if y is None
+        if y is None:
+            y = x
 
         if not is_statevector_sim:
             y_dict = dict(zip(self._feature_map.parameters, y))
