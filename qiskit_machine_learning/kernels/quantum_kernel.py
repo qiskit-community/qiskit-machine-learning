@@ -134,7 +134,7 @@ class QuantumKernel:
     ) -> None:
         """Set the training parameters"""
         self._training_parameter_binds = {
-            training_params[i]: training_params[i] for i, _ in enumerate(training_params)
+            training_param: training_param for training_param in training_params
         }
         self._training_parameters = copy.deepcopy(training_params)
 

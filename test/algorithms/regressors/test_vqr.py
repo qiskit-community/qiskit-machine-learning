@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,10 +18,10 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import data, ddt
 
-from qiskit import Aer, QuantumCircuit
+import qiskit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit.circuit import Parameter
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from qiskit_machine_learning.algorithms import VQR
 
 
@@ -29,18 +29,19 @@ from qiskit_machine_learning.algorithms import VQR
 class TestVQR(QiskitMachineLearningTestCase):
     """VQR Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

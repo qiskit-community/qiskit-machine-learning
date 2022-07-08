@@ -90,6 +90,7 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 0.5)
 
+    # pylint: disable=no-member
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     @data(qiskit.providers.aer.AerSimulator(), BasicAer.get_backend("statevector_simulator"))
     def test_custom_pass_manager(self, backend):
@@ -417,8 +418,8 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
         circ1 = ZZFeatureMap(3)
         circ2 = ZZFeatureMap(3)
         training_params = circ2.parameters
-        for i, _ in enumerate(training_params):
-            training_params[i]._name = f"θ[{i}]"
+        for i, training_param in enumerate(training_params):
+            training_param._name = f"θ[{i}]"
 
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.training_parameters = training_params

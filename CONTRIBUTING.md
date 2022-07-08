@@ -10,7 +10,12 @@ https://qiskit.org/documentation/contributing_to_qiskit.html
 ## Contributing to Qiskit Machine Learning
 
 In addition to the general guidelines above there are specific details for
-contributing to Qiskit Machine Learning, these are documented below.
+contributing to Qiskit Machine Learning.
+
+You should first install the python development libraries by running
+`pip install -r requirements-dev.txt` from the root of the
+Machine Learning repository clone and then
+follow the  guidelines below.
 
 ### Project Code Style.
 
@@ -46,12 +51,13 @@ please ensure that:
    
    The documentation will be built/tested using Sphinx and should be free
    from errors and warnings.
+   You will need to [install pandoc](https://pandoc.org/installing.html) first.
    
-   You can run
+   Then you can run
    ```shell script
     make html
    ```
-   in the 'docs' folder. You might also like to check the html output
+   from the root of the Machine Learning repository clone. You might also like to check the html output
    to see the changes formatted output is as expected. You will find an index.html
    file in docs\_build\html and you can navigate from there.
    
