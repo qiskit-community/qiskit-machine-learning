@@ -376,8 +376,11 @@ class QuantumKernel:
     def _construct_circuit_with_feature_map(self, x: ParameterVector, y: ParameterVector = None):
         self._check_training_parameters_bound()
 
-        self._validate_length(x, "x")
-        self._validate_length(y, "y")
+        if len(x) != self._feature_map.num_parameters:
+            self._raise_incompatible_feature_map("x", len(x))
+
+        if y is not None and len(y) != self._feature_map.num_parameters:
+            self._raise_incompatible_feature_map("y", len(y))
 
         q = QuantumRegister(self._feature_map.num_qubits, "q")
         c = ClassicalRegister(self._feature_map.num_qubits, "c")
@@ -485,7 +488,11 @@ class QuantumKernel:
         if x_vec.ndim == 1:
             x_vec = np.reshape(x_vec, (-1, len(x_vec)))
 
-        self._validate_length(x_vec[0, :], "x_vec", adjust_feature_map=True)
+        if x_vec.shape[1] != self._feature_map.num_parameters:
+            try:
+                self._feature_map.num_qubits = x_vec.shape[1]
+            except AttributeError:
+                self._raise_incompatible_feature_map("x_vec", x_vec.shape[1])
 
         if y_vec is not None:
             y_vec = np.asarray(y_vec)
@@ -502,42 +509,10 @@ class QuantumKernel:
                     f"x_vec has {x_vec.shape[1]} dimensions, but y_vec has {y_vec.shape[1]}."
                 )
 
-            self._validate_length(y_vec[0, :], "y_vec")
+            if y_vec is not None and y_vec.shape[1] != self._feature_map.num_parameters:
+                self._raise_incompatible_feature_map("y_vec", y_vec.shape[1])
 
         return x_vec, y_vec
-
-    def _validate_length(
-        self, vec: ParameterVector | np.ndarray, vec_name: str, adjust_feature_map: bool = False
-    ) -> None:
-        """
-        Validates the size (length) of the vector against the number of parameters of the feature
-        map. Updates the feature map if required to the size of the vector.
-
-        Args:
-            vec: A vector to validate.
-            vec_name: A vector name, if an error is raised it is used to format the error message.
-            adjust_feature_map: If ``True`` tried to adjust the number of qubits of the feature map.
-
-        Raises:
-            ValueError: If the size of the vector is not the same as the number of parameters of the
-                feature map or when the feature map does not allow to change the number of qubits.
-        """
-        if vec is not None and len(vec) != self._feature_map.num_parameters:
-            raise_error = True
-            if adjust_feature_map:
-                try:
-                    # an attempt to update the feature map with the required number of qubits
-                    self._feature_map.num_qubits = vec
-                    raise_error = False
-                except AttributeError:
-                    pass
-
-            if raise_error:
-                raise ValueError(
-                    f"{vec_name} and class feature map have incompatible dimensions.\n"
-                    f"{vec_name} has {len(vec)} dimensions, "
-                    f"but feature map has {self._feature_map.num_parameters}."
-                )
 
     def _calculate_kernel_statevector(
         self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool, kernel: np.ndarray
@@ -665,3 +640,10 @@ class QuantumKernel:
                 the kernel matrix.
                 """
             )
+
+    def _raise_incompatible_feature_map(self, vec_name: str, vec_len: int):
+        raise ValueError(
+            f"{vec_name} and class feature map have incompatible dimensions.\n"
+            f"{vec_name} has {vec_len} dimensions, "
+            f"but feature map has {self._feature_map.num_parameters}."
+        )
