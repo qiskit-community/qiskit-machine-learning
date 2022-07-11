@@ -26,7 +26,3 @@ Utilities
    loss_functions
 
 """
-
-from .utils import make_2d
-
-__all__ = ["make_2d"]
