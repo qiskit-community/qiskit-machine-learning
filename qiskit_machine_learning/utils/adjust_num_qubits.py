@@ -92,7 +92,7 @@ def derive_num_qubits_feature_map_ansatz(
     return num_qubits, feature_map, ansatz
 
 
-def _adjust_num_qubits(circuit: QuantumCircuit, circuit_name: str, num_qubits: int):
+def _adjust_num_qubits(circuit: QuantumCircuit, circuit_name: str, num_qubits: int) -> None:
     """
     Tries to adjust the number of qubits of the circuit by trying to set ``num_qubits`` properties.
 
