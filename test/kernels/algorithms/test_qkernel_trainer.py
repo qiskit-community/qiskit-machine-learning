@@ -42,8 +42,8 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         trainable_block = ZZFeatureMap(2)
         training_parameters = trainable_block.parameters
 
-        for i, _ in enumerate(training_parameters):
-            training_parameters[i]._name = f"θ[{i}]"
+        for i, training_parameter in enumerate(training_parameters):
+            training_parameter._name = f"θ[{i}]"
 
         self.feature_map = data_block.compose(trainable_block).compose(data_block)
         self.training_parameters = training_parameters

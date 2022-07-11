@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Added two new properties to the :class:`~.TrainableModel` class:
+      - :attr:`~.TrainableModel.fit_result` returns a resulting object from the optimization procedure. Please refers to
+        the Terra's documentation of the `OptimizerResult` class. 
+      - :attr:`~.TrainableModel.weights` returns an array of trained weights, this is a convenient way to get access to 
+        the weights, it is the same as calling ``model.fit_result.x``.

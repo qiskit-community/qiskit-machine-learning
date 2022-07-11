@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Enable the default construction of the ``ZFeatureMap`` in the 
+    :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN` if the number of qubits is 1.
+    Previously, not providing a feature map for the single qubit case raised an error as default
+    construction assumed 2 or more qubits.
