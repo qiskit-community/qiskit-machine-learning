@@ -13,7 +13,7 @@
 """Quantum Kernel Algorithm"""
 from __future__ import annotations
 
-from typing import Optional, Union, Sequence, Mapping, List
+from typing import Sequence, Mapping, List
 import copy
 import numbers
 
@@ -56,12 +56,12 @@ class QuantumKernel:
     @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
     def __init__(
         self,
-        feature_map: Optional[QuantumCircuit] = None,
+        feature_map: QuantumCircuit | None = None,
         enforce_psd: bool = True,
         batch_size: int = 900,
-        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
-        training_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
-        evaluate_duplicates: str | None = "non_diagonal",
+        quantum_instance: QuantumInstance | Backend | None = None,
+        training_parameters: ParameterVector | Sequence[Parameter] | None = None,
+        evaluate_duplicates: str | None = "off_diagonal",
     ) -> None:
         """
         Args:
@@ -79,7 +79,7 @@ class QuantumKernel:
 
                     - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
                         ones when training. This may introduce additional noise in the matrix.
-                    - ``non_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
                         elements are fully evaluated, e.g., for two identical samples in the
                         dataset. When inferring, all elements are evaluated. This is the default
                         value.
@@ -99,7 +99,7 @@ class QuantumKernel:
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
         eval_duplicates = str(evaluate_duplicates).lower()
-        if eval_duplicates not in ("all", "non_diagonal", "none"):
+        if eval_duplicates not in ("all", "off_diagonal", "none"):
             raise ValueError(
                 f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
             )
@@ -139,7 +139,7 @@ class QuantumKernel:
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(self, quantum_instance: Union[Backend, QuantumInstance]) -> None:
+    def quantum_instance(self, quantum_instance: Backend | QuantumInstance) -> None:
         """Set quantum instance"""
         if isinstance(quantum_instance, Backend):
             self._quantum_instance = QuantumInstance(quantum_instance)
@@ -147,14 +147,12 @@ class QuantumKernel:
             self._quantum_instance = quantum_instance
 
     @property
-    def training_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+    def training_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """Return the vector of training parameters."""
         return copy.copy(self._training_parameters)
 
     @training_parameters.setter
-    def training_parameters(
-        self, training_params: Union[ParameterVector, Sequence[Parameter]]
-    ) -> None:
+    def training_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
         """Set the training parameters"""
         self._training_parameter_binds = {
             training_param: training_param for training_param in training_params
@@ -162,7 +160,7 @@ class QuantumKernel:
         self._training_parameters = copy.deepcopy(training_params)
 
     def assign_training_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         Assign training parameters in the ``QuantumKernel`` feature map.
@@ -276,12 +274,12 @@ class QuantumKernel:
         )
 
     @property
-    def training_parameter_binds(self) -> Optional[Mapping[Parameter, float]]:
+    def training_parameter_binds(self) -> Mapping[Parameter, float] | None:
         """Return a copy of the current training parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._training_parameter_binds)
 
     def bind_training_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         Alternate function signature for ``assign_training_parameters``
@@ -303,19 +301,19 @@ class QuantumKernel:
 
     @property  # type: ignore
     @deprecate_property("0.5.0", new_name="training_parameters")
-    def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+    def user_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """[Deprecated property]Return the vector of training parameters."""
         return self.training_parameters
 
     @user_parameters.setter  # type: ignore
     @deprecate_property("0.5.0", new_name="training_parameters")
-    def user_parameters(self, training_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
+    def user_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
         """[Deprecated property setter]Set the training parameters"""
         self.training_parameters = training_params
 
     @deprecate_method("0.5.0", new_name="assign_training_parameters")
     def assign_user_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         [Deprecated method]Assign training parameters in the ``QuantumKernel`` feature map.
@@ -326,7 +324,7 @@ class QuantumKernel:
 
     @property  # type: ignore
     @deprecate_property("0.5.0", new_name="training_parameter_binds")
-    def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
+    def user_param_binds(self) -> Mapping[Parameter, float] | None:
         """
         [Deprecated property]Return a copy of the current training parameter mappings
         for the feature map circuit.
@@ -335,7 +333,7 @@ class QuantumKernel:
 
     @deprecate_method("0.5.0", new_name="bind_training_parameters")
     def bind_user_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         [Deprecated method]Alternate function signature for ``assign_training_parameters``
@@ -583,10 +581,7 @@ class QuantumKernel:
                     statevectors.append(results.get_statevector(j))
 
             offset = 0 if is_symmetric else len(x_vec)
-            for (
-                i,
-                j,
-            ) in zip(mus, nus):
+            for (i, j) in zip(mus, nus):
                 x_i = x_vec[i]
                 y_j = y_vec[j]
 

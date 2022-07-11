@@ -754,10 +754,10 @@ class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
     @idata(
         [
             ("no_dups", "all", 6),
-            ("no_dups", "non_diagonal", 3),
+            ("no_dups", "off_diagonal", 3),
             ("no_dups", "none", 3),
             ("dups", "all", 6),
-            ("dups", "non_diagonal", 3),
+            ("dups", "off_diagonal", 3),
             ("dups", "none", 2),
         ]
     )
@@ -776,7 +776,7 @@ class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
     @idata(
         [
             ("no_dups", "all", 6),
-            ("no_dups", "non_diagonal", 6),
+            ("no_dups", "off_diagonal", 6),
             ("no_dups", "none", 5),
         ]
     )
