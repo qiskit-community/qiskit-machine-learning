@@ -145,7 +145,7 @@ def ad_hoc_data(
     for x in it.product(*[xvals] * n):
         x = np.array(x)
         phi = np.sum(x[:, None, None] * z_i, axis=0)
-        phi += sum([(np.pi - x[i1]) * (np.pi - x[i2]) * z_i[i1] @ z_i[i2] for i1, i2 in ind_pairs])
+        phi += sum(((np.pi - x[i1]) * (np.pi - x[i2]) * z_i[i1] @ z_i[i2] for i1, i2 in ind_pairs))
         u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
         psi = u_u @ h_n @ u_u @ psi_0
         exp_val = np.real(psi.conj().T @ m_m @ psi)

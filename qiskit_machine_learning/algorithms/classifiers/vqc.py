@@ -11,13 +11,15 @@
 # that they have been altered from the originals.
 """An implementation of variational quantum classifier."""
 
-from typing import Union, Optional, Callable, cast
+from __future__ import annotations
+from typing import Callable, cast
+
 import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.utils import QuantumInstance
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit.algorithms.optimizers import Optimizer
+from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
 
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import CircuitQNN
@@ -27,29 +29,33 @@ from .neural_network_classifier import NeuralNetworkClassifier
 
 
 class VQC(NeuralNetworkClassifier):
-    """Variational quantum classifier.
+    r"""Variational quantum classifier.
 
-    The variational quantum classifier is a variational algorithm where the
-    measured expectation value is interpreted as the output of a classifier.
+    The variational quantum classifier (VQC) is a variational algorithm where the measured
+    expectation value is interpreted as the output of a classifier.
 
-    Only supports one-hot encoded labels;
-    e.g., data like ``[1, 0, 0]``, ``[0, 1, 0]``, ``[0, 0, 1]``.
+    Constructs a quantum circuit and corresponding neural network, then uses it to instantiate a
+    neural network classifier.
 
-    Multi-label classification is not supported;
-    e.g., data like ``[1, 1, 0]``, ``[0, 1, 1]``, ``[1, 0, 1]``, ``[1, 1, 1]``.
+    Labels can be passed in various formats, they can be plain labels, a one dimensional numpy
+    array that contains integer labels like `[0, 1, 2, ...]`, or a numpy array with categorical
+    string labels. One hot encoded labels are also supported. Internally, labels are transformed
+    to one hot encoding and the classifier is always trained on one hot labels.
+
+    Multi-label classification is not supported. E.g., :math:`[[1, 1, 0], [0, 1, 1], [1, 0, 1]]`.
     """
 
     def __init__(
         self,
-        num_qubits: int = None,
-        feature_map: QuantumCircuit = None,
-        ansatz: QuantumCircuit = None,
-        loss: Union[str, Loss] = "cross_entropy",
-        optimizer: Optional[Optimizer] = None,
+        num_qubits: int | None = None,
+        feature_map: QuantumCircuit | None = None,
+        ansatz: QuantumCircuit | None = None,
+        loss: str | Loss = "cross_entropy",
+        optimizer: Optimizer | None = None,
         warm_start: bool = False,
-        quantum_instance: QuantumInstance = None,
-        initial_point: np.ndarray = None,
-        callback: Optional[Callable[[np.ndarray, float], None]] = None,
+        quantum_instance: QuantumInstance | None = None,
+        initial_point: np.ndarray | None = None,
+        callback: Callable[[np.ndarray, float], None] | None = None,
     ) -> None:
         """
         Args:
@@ -121,8 +127,8 @@ class VQC(NeuralNetworkClassifier):
         # construct circuit QNN
         neural_network = CircuitQNN(
             self._circuit,
-            self.feature_map.parameters,
-            self.ansatz.parameters,
+            input_params=self.feature_map.parameters,
+            weight_params=self.ansatz.parameters,
             interpret=self._get_interpret(2),
             output_shape=2,
             quantum_instance=quantum_instance,
@@ -159,22 +165,24 @@ class VQC(NeuralNetworkClassifier):
         """Returns the number of qubits used by ansatz and feature map."""
         return self.circuit.num_qubits
 
-    def fit(self, X: np.ndarray, y: np.ndarray):  # pylint: disable=invalid-name
+    def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
         """
         Fit the model to data matrix X and targets y.
 
         Args:
-            X: The input data.
-            y: The target values. Required to be one-hot encoded.
+            X: The input feature values.
+            y: The input target values. Required to be one-hot encoded.
 
         Returns:
-            self: returns a trained classifier.
+            Trained classifier.
         """
-        num_classes = y.shape[-1]
+        X, y = self._validate_input(X, y)
+        num_classes = self._num_classes
         cast(CircuitQNN, self._neural_network).set_interpret(
             self._get_interpret(num_classes), num_classes
         )
-        return super().fit(X, y)
+
+        return super()._minimize(X, y)
 
     def _get_interpret(self, num_classes: int):
         def parity(x: int, num_classes: int = num_classes) -> int:
