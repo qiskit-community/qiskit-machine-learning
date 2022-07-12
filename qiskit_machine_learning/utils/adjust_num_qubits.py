@@ -65,10 +65,7 @@ def derive_num_qubits_feature_map_ansatz(
             if feature_map.num_qubits != num_qubits:
                 _adjust_num_qubits(feature_map, "feature map", num_qubits)
         else:
-            if num_qubits == 1:
-                feature_map = ZFeatureMap(1)
-            else:
-                feature_map = ZZFeatureMap(num_qubits)
+            feature_map = ZFeatureMap(num_qubits) if num_qubits == 1 else ZZFeatureMap(num_qubits)
         if ansatz is not None:
             if ansatz.num_qubits != num_qubits:
                 _adjust_num_qubits(ansatz, "ansatz", num_qubits)
@@ -87,7 +84,7 @@ def derive_num_qubits_feature_map_ansatz(
             ansatz = RealAmplitudes(num_qubits)
         else:
             num_qubits = ansatz.num_qubits
-            feature_map = ZZFeatureMap(num_qubits)
+            feature_map = ZFeatureMap(num_qubits) if num_qubits == 1 else ZZFeatureMap(num_qubits)
 
     return num_qubits, feature_map, ansatz
 
