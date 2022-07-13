@@ -75,7 +75,7 @@ class QuantumKernel:
                  quantum gates on the feature map circuit which may be tuned. If users intend to
                  tune feature map parameters to find optimal values, this field should be set.
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
-                identical samples are found. Possible values are:
+               duplicate samples are found. Possible values are:
 
                     - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
                         ones when training. This may introduce additional noise in the matrix.
