@@ -51,7 +51,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             interpret=parity,
             output_shape=output_shape,
             quantum_instance=self.qi_qasm,
-            )
+        )
 
         inputs = np.asarray(algorithm_globals.random.random(size=(1, circuit_qnn._num_inputs)))
         weights = algorithm_globals.random.random(circuit_qnn._num_weights)
@@ -59,18 +59,16 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         sampler_factory = Sampler
         with SamplerQNN(
-                circuit=self.qc,
-                input_params=self.qc.parameters[:3],
-                weight_params=self.qc.parameters[3:],
-                sampler_factory=sampler_factory,
-                interpret = parity,
-                output_shape = output_shape,
-            ) as qnn:
+            circuit=self.qc,
+            input_params=self.qc.parameters[:3],
+            weight_params=self.qc.parameters[3:],
+            sampler_factory=sampler_factory,
+            interpret=parity,
+            output_shape=output_shape,
+        ) as qnn:
 
-            sampler_qnn_fwd  = qnn.forward(inputs, weights)
+            sampler_qnn_fwd = qnn.forward(inputs, weights)
 
-            np.testing.assert_array_almost_equal(np.asarray(sampler_qnn_fwd),
-                                                 np.asarray(circuit_qnn_fwd),0.1)
-
-
-
+            np.testing.assert_array_almost_equal(
+                np.asarray(sampler_qnn_fwd), np.asarray(circuit_qnn_fwd), 0.1
+            )
