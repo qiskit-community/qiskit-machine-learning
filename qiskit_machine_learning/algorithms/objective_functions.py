@@ -130,7 +130,7 @@ class BinaryObjectiveFunction(ObjectiveFunction):
 
         # we reshape _y since the output has the shape (N, 1) and _y has (N,)
         # loss_gradient is of shape (N, 1)
-        loss_gradient = self._loss.gradient(output, self._y.reshape(-1, 1))
+        loss_gradient = self._loss.gradient(output, self._y.values.reshape(-1, 1))
 
         # for the output we compute a dot product(matmul) of loss gradient for this output
         # and weights for this output.
