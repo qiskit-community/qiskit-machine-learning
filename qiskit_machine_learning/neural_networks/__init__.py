@@ -57,6 +57,15 @@ Neural Network Metrics
    EffectiveDimension
    LocalEffectiveDimension
 
+Neural Networks using Primitives
+================================
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   SamplerQNN
+
 """
 
 from .circuit_qnn import CircuitQNN
@@ -65,6 +74,7 @@ from .neural_network import NeuralNetwork
 from .opflow_qnn import OpflowQNN
 from .sampling_neural_network import SamplingNeuralNetwork
 from .two_layer_qnn import TwoLayerQNN
+from .sampler_qnn import SamplerQNN
 
 __all__ = [
     "NeuralNetwork",
@@ -74,4 +84,5 @@ __all__ = [
     "CircuitQNN",
     "EffectiveDimension",
     "LocalEffectiveDimension",
+    "SamplerQNN"
 ]
