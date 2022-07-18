@@ -61,7 +61,7 @@ class QuantumKernel:
         batch_size: int = 900,
         quantum_instance: QuantumInstance | Backend | None = None,
         training_parameters: ParameterVector | Sequence[Parameter] | None = None,
-        evaluate_duplicates: str | None = "off_diagonal",
+        evaluate_duplicates: str = "off_diagonal",
     ) -> None:
         """
         Args:
