@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import copy
 import numbers
-from typing import Optional, Union, Sequence, Mapping, List, Tuple
+from typing import Optional, Union, Sequence, Mapping, List, Tuple, NoReturn
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
@@ -518,9 +518,6 @@ class QuantumKernel:
                     f"x_vec has {x_vec.shape[1]} dimensions, but y_vec has {y_vec.shape[1]}."
                 )
 
-            if y_vec is not None and y_vec.shape[1] != self._feature_map.num_parameters:
-                self._raise_incompatible_feature_map("y_vec", y_vec.shape[1])
-
         return x_vec, y_vec
 
     def _calculate_kernel_statevector(
@@ -652,7 +649,7 @@ class QuantumKernel:
                 """
             )
 
-    def _raise_incompatible_feature_map(self, vec_name: str, vec_len: int) -> None:
+    def _raise_incompatible_feature_map(self, vec_name: str, vec_len: int) -> NoReturn:
         raise ValueError(
             f"{vec_name} and class feature map have incompatible dimensions.\n"
             f"{vec_name} has {vec_len} dimensions, "
