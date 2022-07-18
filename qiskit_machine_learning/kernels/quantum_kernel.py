@@ -98,7 +98,7 @@ class QuantumKernel:
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
         self._quantum_instance = quantum_instance
-        eval_duplicates = str(evaluate_duplicates).lower()
+        eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
             raise ValueError(
                 f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
