@@ -32,7 +32,6 @@ class TrainableQuantumKernel(QuantumKernel):
         self,
         sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
-        *,
         fidelity: str | BaseFidelity = "zero_prob",
         num_training_parameters: int = 0,
         enforce_psd: bool = True,
@@ -43,7 +42,7 @@ class TrainableQuantumKernel(QuantumKernel):
 
         self.parameter_values = np.zeros(self.num_parameters)
 
-    def bind_parameters_values(self, parameter_values: np.ndarray) -> None:
+    def assign_training_parameters(self, parameter_values: np.ndarray) -> None:
         """
         Fix the training parameters to numerical values.
         """
