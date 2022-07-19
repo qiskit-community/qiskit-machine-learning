@@ -55,7 +55,7 @@ class TrainableQuantumKernel(QuantumKernel):
                 f"expected {self.parameter_values.shape}."
             )
 
-    def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> Tuple[np.ndarray]:
+    def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> tuple[np.ndarray]:
         new_x_vec = np.hstack((x_vec, make_2d(self.parameter_values, len(x_vec))))
         new_y_vec = np.hstack((y_vec, make_2d(self.parameter_values, len(y_vec))))
 

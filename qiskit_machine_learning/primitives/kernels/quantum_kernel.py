@@ -86,7 +86,7 @@ class QuantumKernel(BaseKernel):
             kernel_matrix = self._make_psd(kernel_matrix)
         return kernel_matrix
 
-    def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> Tuple[np.ndarray]:
+    def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> tuple[np.ndarray]:
         """
         Combines x_vec and y_vec to get all the combinations needed to evaluate the kernel entries.
         """
@@ -104,7 +104,7 @@ class QuantumKernel(BaseKernel):
 
         return left_parameters, right_parameters
 
-    def _get_symmetric_parametrization(self, x_vec: np.ndarray) -> Tuple[np.ndarray]:
+    def _get_symmetric_parametrization(self, x_vec: np.ndarray) -> tuple[np.ndarray]:
         """
         Combines two copies of x_vec to get all the combinations needed to evaluate the kernel entries.
         """
@@ -123,12 +123,12 @@ class QuantumKernel(BaseKernel):
         return left_parameters, right_parameters
 
     def _get_kernel_matrix(
-        self, left_parameters: np.ndarray, right_parameters: np.ndarray, shape: Tuple
+        self, left_parameters: np.ndarray, right_parameters: np.ndarray, shape: tuple[int]
     ) -> np.ndarray:
         """
         Given a parametrization, this computes the symmetric kernel matrix.
         """
-        kernel_entries = self._fidelity.compute(left_parameters, right_parameters)
+        kernel_entries = self._fidelity(left_parameters, right_parameters)
         kernel_matrix = np.zeros(shape)
 
         index = 0
@@ -139,7 +139,7 @@ class QuantumKernel(BaseKernel):
         return kernel_matrix
 
     def _get_symmetric_kernel_matrix(
-        self, left_parameters: np.ndarray, right_parameters: np.ndarray, shape: Tuple
+        self, left_parameters: np.ndarray, right_parameters: np.ndarray, shape: tuple[int]
     ) -> np.ndarray:
         """
         Given a set of parametrization, this computes the kernel matrix.
