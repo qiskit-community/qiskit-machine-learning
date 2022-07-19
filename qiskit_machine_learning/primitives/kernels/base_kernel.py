@@ -19,8 +19,24 @@ import numpy as np
 
 
 class BaseKernel:
-    """
-    Abstract class providing the interface for the quantum kernel classes.
+    r"""
+    Abstract class defining the Kernel interface.
+
+    The general task of machine learning is to find and study patterns in data. For many
+    algorithms, the datapoints are better understood in a higher dimensional feature space,
+    through the use of a kernel function:
+
+    .. math::
+
+        K(x, y) = \langle f(x), f(y)\rangle.
+
+    Here K is the kernel function, x, y are n dimensional inputs. f is a map from n-dimension
+    to m-dimension space. :math:`\langle x, y \rangle` denotes the dot product.
+    Usually m is much larger than n.
+
+    The quantum kernel algorithm calculates a kernel matrix, given datapoints x and y and feature
+    map f, all of n dimension. This kernel matrix can then be used in classical machine learning
+    algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
     def __init__(self, *, enforce_psd: bool = True) -> None:
