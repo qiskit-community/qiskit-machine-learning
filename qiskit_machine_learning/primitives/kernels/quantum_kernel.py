@@ -144,7 +144,7 @@ class QuantumKernel(BaseKernel):
         """
         Given a set of parametrization, this computes the kernel matrix.
         """
-        kernel_entries = self._fidelity.compute(left_parameters, right_parameters)
+        kernel_entries = self._fidelity(left_parameters, right_parameters)
         kernel_matrix = np.zeros(shape)
         index = 0
         for i in range(shape[0]):
