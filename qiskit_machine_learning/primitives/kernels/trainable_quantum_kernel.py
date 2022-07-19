@@ -12,7 +12,7 @@
 
 """Trainable Quantum Kernel"""
 
-from typing import Tuple, Optional, Callable, List, Union
+from __future__ import annotations
 import numpy as np
 
 from qiskit import QuantumCircuit
@@ -22,9 +22,6 @@ from qiskit.primitives.fidelity import BaseFidelity
 from qiskit_machine_learning.utils import make_2d
 from .quantum_kernel import QuantumKernel
 
-SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]
-FidelityFactory = Callable[[List[QuantumCircuit], SamplerFactory], BaseFidelity]
-
 
 class TrainableQuantumKernel(QuantumKernel):
     """
@@ -33,14 +30,14 @@ class TrainableQuantumKernel(QuantumKernel):
 
     def __init__(
         self,
-        sampler_factory: SamplerFactory,
-        feature_map: Optional[QuantumCircuit] = None,
+        sampler: Sampler | None = None,
+        feature_map: QuantumCircuit | None = None,
         *,
-        fidelity: Union[str, FidelityFactory] = "zero_prob",
+        fidelity: str | BaseFidelity = "zero_prob",
         num_training_parameters: int = 0,
         enforce_psd: bool = True,
     ) -> None:
-        super().__init__(sampler_factory, feature_map, fidelity=fidelity, enforce_psd=enforce_psd)
+        super().__init__(sampler, feature_map, fidelity=fidelity, enforce_psd=enforce_psd)
         self.num_parameters = num_training_parameters
         self._num_features = self._num_features - self.num_parameters
 

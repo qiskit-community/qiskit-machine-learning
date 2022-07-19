@@ -11,7 +11,8 @@
 # that they have been altered from the originals.
 """Overlap Quantum Kernel"""
 
-from typing import Optional, Tuple, Callable, List, Union
+from __future__ import annotations
+import warnings
 import numpy as np
 
 from qiskit import QuantumCircuit
@@ -22,10 +23,6 @@ from qiskit.primitives.fidelity import BaseFidelity, Fidelity
 from .base_kernel import BaseKernel
 
 
-SamplerFactory = Callable[[List[QuantumCircuit]], Sampler]
-FidelityFactory = Callable[[List[QuantumCircuit], SamplerFactory], BaseFidelity]
-
-
 class QuantumKernel(BaseKernel):
     """
     Overlap Kernel
@@ -33,32 +30,41 @@ class QuantumKernel(BaseKernel):
 
     def __init__(
         self,
-        sampler_factory: SamplerFactory,
-        feature_map: Optional[QuantumCircuit] = None,
+        sampler: Sampler | None = None,
+        feature_map: QuantumCircuit | None = None,
         *,
-        fidelity: Union[str, FidelityFactory] = "zero_prob",
+        fidelity: str | BaseFidelity = "zero_prob",
         enforce_psd: bool = True,
     ) -> None:
         super().__init__(enforce_psd=enforce_psd)
-        self._sampler_factory = sampler_factory
 
         if feature_map is None:
             feature_map = ZZFeatureMap(2).decompose()
 
         self._num_features = feature_map.num_parameters
 
-        if isinstance(fidelity, str) and fidelity == "zero_prob":
-            self._fidelity = Fidelity(
-                left_circuit=feature_map,
-                right_circuit=feature_map,
-                sampler_factory=sampler_factory,
-            )
+        if isinstance(fidelity, str):
+            if sampler is None:
+                raise ValueError(
+                    "If the fidelity is passed as a string, a sampler has to be provided (currently set to None)."
+                )
+            if fidelity == "zero_prob":
+                self._fidelity = Fidelity(
+                    sampler=sampler, left_circuit=feature_map, right_circuit=feature_map
+                )
+            else:
+                raise ValueError(
+                    f"{fidelity} is not a valid string for a fidelity. Currently supported: 'zero_prob'."
+                )
         else:
-            self._fidelity = fidelity(
-                left_circuit=feature_map,
-                right_circuit=feature_map,
-                sampler_factory=sampler_factory,
-            )
+            if sampler is not None:
+                warnings.warn(
+                    "Passed both a sampler and a fidelity instance. If passing a fidelity instance for `fidelity`,"
+                    "the sampler will not be used.",
+                )
+            self._fidelity = fidelity
+            fidelity.set_circuits(left_circuit=feature_map, right_circuit=feature_map)
+
         self._shots = 10000
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:

@@ -34,7 +34,7 @@ from qiskit_machine_learning.primitives.kernels import (
 
 
 @ddt
-class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
+class TestPrimitivesQuantumKernelClassify(QiskitMachineLearningTestCase):
     """Test QuantumKernel primitives for Classification using SKLearn"""
 
     def setUp(self):
@@ -85,7 +85,7 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
             self.assertEqual(score, 0.5)
 
 
-class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
+class TestPrimitivesQuantumKernelEvaluate(QiskitMachineLearningTestCase):
     """Test QuantumKernel primitives Evaluate Method"""
 
     def setUp(self):
