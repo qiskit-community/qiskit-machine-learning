@@ -39,11 +39,9 @@ class BaseKernel:
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    def __init__(self, *, enforce_psd: bool = True) -> None:
+    def __init__(self, enforce_psd: bool = True) -> None:
         """
         Args:
-            sampler_factory: A callable that creates a qiskit primitives sampler
-                given a list of circuits.
             enforce_psd: Project to closest positive semidefinite matrix if x = y.
                 Default True.
         """

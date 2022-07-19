@@ -55,7 +55,6 @@ class QuantumKernel(BaseKernel):
         self,
         sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
-        *,
         fidelity: str | BaseFidelity = "zero_prob",
         enforce_psd: bool = True,
     ) -> None:
