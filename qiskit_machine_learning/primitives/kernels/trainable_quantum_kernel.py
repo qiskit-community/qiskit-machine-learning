@@ -16,6 +16,7 @@ from __future__ import annotations
 import numpy as np
 
 from qiskit import QuantumCircuit
+from qiskit.circuit import Parameter, ParameterVector
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity
 
@@ -44,34 +45,63 @@ class TrainableQuantumKernel(QuantumKernel):
         feature_map: QuantumCircuit | None = None,
         *,
         fidelity: str | BaseFidelity = "zero_prob",
-        num_training_parameters: int = 0,
+        training_parameters: ParameterVector | list[Parameter],
         enforce_psd: bool = True,
     ) -> None:
         super().__init__(sampler, feature_map, fidelity=fidelity, enforce_psd=enforce_psd)
-        self.num_parameters = num_training_parameters
+        self.num_parameters = len(training_parameters)
         self._num_features = self._num_features - self.num_parameters
+        self._training_parameters = training_parameters
+        self._feature_parameters = feature_map.parameters - training_parameters
+        self._parameter_dict = {parameter: None for parameter in feature_map.parameters}
 
-        self.parameter_values = np.zeros(self.num_parameters)
-
-    def bind_parameters_values(self, parameter_values: np.ndarray) -> None:
+    def bind_parameters_values(
+        self, parameter_values: list[float] | dict[Parameter, float]
+    ) -> None:
         """
         Fix the training parameters to numerical values.
         """
-        if parameter_values.shape == self.parameter_values.shape:
-            self.parameter_values = parameter_values
-        else:
-            raise ValueError(
-                f"The given parameters are in the wrong shape {parameter_values.shape},"
-                f"expected {self.parameter_values.shape}."
+        if not isinstance(parameter_values, dict):
+            if len(parameter_values) != self.num_parameters:
+                raise ValueError(
+                    f"The number of given parameters is wrong ({len(parameter_values)}),"
+                    f"expected {self.num_parameters}."
+                )
+            self._parameter_dict.update(
+                {
+                    parameter: parameter_values[i]
+                    for i, parameter in enumerate(self._training_parameters)
+                }
             )
+        else:
+            for key in parameter_values:
+                if key not in self._training_parameters:
+                    raise ValueError(
+                        f"Parameter {key} is not a trainable parameter of the feature map and"
+                        f"thus cannot be bound. Make sure {key} is provided in the the trainable"
+                        "parameters when initializing the kernel."
+                    )
+                self._parameter_dict[key] = parameter_values[key]
+
+    def _parameter_array(self, x_vec: np.ndarray) -> np.ndarray:
+        """
+        Combines the feature values and the trainable parameters into one array.
+        """
+        full_array = np.zeros((x_vec.shape[0], self._num_features + self.num_parameters))
+        for i, x in enumerate(x_vec):
+            self._parameter_dict.update(
+                {feature_param: x[j] for j, feature_param in enumerate(self._feature_parameters)}
+            )
+            full_array[i, :] = self._parameter_dict.values()
+        return full_array
 
     def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> tuple[np.ndarray]:
-        new_x_vec = np.hstack((x_vec, make_2d(self.parameter_values, len(x_vec))))
-        new_y_vec = np.hstack((y_vec, make_2d(self.parameter_values, len(y_vec))))
+        new_x_vec = self._parameter_array(x_vec)
+        new_y_vec = self._parameter_array(y_vec)
 
         return super()._get_parametrization(new_x_vec, new_y_vec)
 
     def _get_symmetric_parametrization(self, x_vec: np.ndarray) -> np.ndarray:
-        new_x_vec = np.hstack((x_vec, make_2d(self.parameter_values, len(x_vec))))
+        new_x_vec = self._parameter_array(x_vec)
 
         return super()._get_symmetric_parametrization(new_x_vec)
