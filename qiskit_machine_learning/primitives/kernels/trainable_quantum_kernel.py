@@ -94,7 +94,7 @@ class TrainableQuantumKernel(QuantumKernel):
             self._parameter_dict.update(
                 {feature_param: x[j] for j, feature_param in enumerate(self._feature_parameters)}
             )
-            full_array[i, :] = self._parameter_dict.values()
+            full_array[i, :] = list(self._parameter_dict.values())
         return full_array
 
     def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> tuple[np.ndarray]:
