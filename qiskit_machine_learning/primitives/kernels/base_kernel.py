@@ -51,7 +51,7 @@ class BaseKernel(ABC):
     @abstractmethod
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
         r"""
-        Construct kernel matrix for given data
+        Construct kernel matrix for given data.
 
         If y_vec is None, self inner product is calculated.
 
