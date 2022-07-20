@@ -64,7 +64,6 @@ class QuantumKernel(BaseKernel):
             self._fidelity = fidelity
             fidelity.set_circuits(left_circuit=feature_map, right_circuit=feature_map)
 
-        self._shots = 10000
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
         x_vec, y_vec = self._check_and_reshape(x_vec, y_vec)
@@ -153,15 +152,3 @@ class QuantumKernel(BaseKernel):
 
         kernel_matrix = kernel_matrix + kernel_matrix.T - np.diag(kernel_matrix.diagonal())
         return kernel_matrix
-
-    def __enter__(self):
-        """
-        Creates the full fidelity class by creating the sampler from the factory.
-        """
-        return self
-
-    def __exit__(self, *args):
-        """
-        Closes the sampler session.
-        """
-        self._fidelity.sampler.close()
