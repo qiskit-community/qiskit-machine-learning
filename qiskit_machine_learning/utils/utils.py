@@ -17,6 +17,6 @@ import numpy as np
 
 def make_2d(array: np.ndarray, n_copies: int):
     """
-    Takes a 1D numpy array and copies n times it along a second axis.
+    Takes a 1D numpy array and copies it n times along a second axis.
     """
     return np.repeat(array[np.newaxis, :], n_copies, axis=0)
