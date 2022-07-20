@@ -18,7 +18,7 @@ from typing import Tuple
 import numpy as np
 
 
-class BaseKernel:
+class BaseKernel(ABC):
     r"""
     Abstract class defining the Kernel interface.
 
