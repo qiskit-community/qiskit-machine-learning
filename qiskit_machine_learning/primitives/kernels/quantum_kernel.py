@@ -61,7 +61,7 @@ class QuantumKernel(BaseKernel):
         super().__init__(enforce_psd=enforce_psd)
 
         if feature_map is None:
-            feature_map = ZZFeatureMap(2).decompose()
+            feature_map = ZZFeatureMap(2)
 
         self._num_features = feature_map.num_parameters
 
@@ -86,7 +86,6 @@ class QuantumKernel(BaseKernel):
                 )
             self._fidelity = fidelity
             fidelity.set_circuits(left_circuit=feature_map, right_circuit=feature_map)
-
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
         x_vec, y_vec = self._check_and_reshape(x_vec, y_vec)
