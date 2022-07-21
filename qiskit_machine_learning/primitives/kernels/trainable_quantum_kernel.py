@@ -15,7 +15,7 @@
 from __future__ import annotations
 import numpy as np
 
-from qiskit import QiskitError, QuantumCircuit
+from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity
@@ -90,7 +90,7 @@ class TrainableQuantumKernel(QuantumKernel):
             if self._parameter_dict[param] is None:
                 raise QiskitMachineLearningError(
                     f"Trainable parameter {param} has not been bound. Make sure to bind all"
-                    "trainable parameters to numerical values using `.bind_training_parameters()`"
+                    "trainable parameters to numerical values using `.assign_training_parameters()`"
                     "before calling `.evaluate()`."
                 )
         return super().evaluate(x_vec, y_vec)
