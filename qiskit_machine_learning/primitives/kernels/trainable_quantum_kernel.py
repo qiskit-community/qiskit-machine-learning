@@ -15,12 +15,12 @@
 from __future__ import annotations
 import numpy as np
 
-from qiskit import QuantumCircuit
+from qiskit import QiskitError, QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.primitives import Sampler
 from qiskit.primitives.fidelity import BaseFidelity
 
-from qiskit_machine_learning.utils import make_2d
+from qiskit_machine_learning import QiskitMachineLearningError
 from .quantum_kernel import QuantumKernel
 
 
@@ -84,6 +84,16 @@ class TrainableQuantumKernel(QuantumKernel):
                         "parameters when initializing the kernel."
                     )
                 self._parameter_dict[key] = parameter_values[key]
+
+    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
+        for param in self._training_parameters:
+            if self._parameter_dict[param] is None:
+                raise QiskitMachineLearningError(
+                    f"Trainable parameter {param} has not been bound. Make sure to bind all"
+                    "trainable parameters to numerical values using `.bind_training_parameters()`"
+                    "before calling `.evaluate()`."
+                )
+        return super().evaluate(x_vec, y_vec)
 
     def _parameter_array(self, x_vec: np.ndarray) -> np.ndarray:
         """

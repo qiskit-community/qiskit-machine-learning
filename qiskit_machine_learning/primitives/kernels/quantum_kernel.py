@@ -176,15 +176,3 @@ class QuantumKernel(BaseKernel):
 
         kernel_matrix = kernel_matrix + kernel_matrix.T - np.diag(kernel_matrix.diagonal())
         return kernel_matrix
-
-    def __enter__(self):
-        """
-        Creates the full fidelity class by creating the sampler from the factory.
-        """
-        return self
-
-    def __exit__(self, *args):
-        """
-        Closes the sampler session.
-        """
-        self._fidelity.sampler.close()
