@@ -81,7 +81,8 @@ class OpflowQNN(NeuralNetwork):
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
         self._gradient = gradient
         self._input_gradients = input_gradients
-        self._construct_gradient_operator()
+        self._gradient_operator = None
+        self._gradient_operator_constructed = False
 
         output_shape = self._compute_output_shape(operator)
         super().__init__(
@@ -93,6 +94,9 @@ class OpflowQNN(NeuralNetwork):
         )
 
     def _construct_gradient_operator(self):
+        if self._gradient_operator_constructed:
+            return
+
         self._gradient_operator: OperatorBase = None
         try:
             gradient = self._gradient or Gradient()
@@ -104,6 +108,8 @@ class OpflowQNN(NeuralNetwork):
             self._gradient_operator = gradient.convert(self._operator, params)
         except (ValueError, TypeError, OpflowError, QiskitError):
             logger.warning("Cannot compute gradient operator! Continuing without gradients!")
+
+        self._gradient_operator_constructed = True
 
     def _compute_output_shape(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
@@ -203,6 +209,8 @@ class OpflowQNN(NeuralNetwork):
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
+
+        self._construct_gradient_operator()
 
         # check whether gradient circuit could be constructed
         if self._gradient_operator is None:
