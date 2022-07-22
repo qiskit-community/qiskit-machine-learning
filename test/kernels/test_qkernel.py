@@ -416,10 +416,8 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
         # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
-        circ2 = ZZFeatureMap(3)
+        circ2 = ZZFeatureMap(3, parameter_prefix="θ")
         training_params = circ2.parameters
-        for i, training_param in enumerate(training_params):
-            training_param._name = f"θ[{i}]"
 
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.training_parameters = training_params
