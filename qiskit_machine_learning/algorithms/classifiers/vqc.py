@@ -17,12 +17,12 @@ from typing import Callable, cast
 import numpy as np
 
 from qiskit import QuantumCircuit
+from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
 
-from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import CircuitQNN
+from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 
 from .neural_network_classifier import NeuralNetworkClassifier
@@ -53,18 +53,27 @@ class VQC(NeuralNetworkClassifier):
         loss: str | Loss = "cross_entropy",
         optimizer: Optimizer | None = None,
         warm_start: bool = False,
-        quantum_instance: QuantumInstance | None = None,
+        quantum_instance: QuantumInstance | Backend | None = None,
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
     ) -> None:
         """
         Args:
-            num_qubits: The number of qubits for the underlying CircuitQNN. If None, derive from
-                feature_map or ansatz. If neither of those is given, raise exception.
-            feature_map: The feature map for underlying CircuitQNN. If None, use ZZFeatureMap.
-            ansatz: The ansatz for the underlying CircuitQNN. If None, use RealAmplitudes.
-            loss: A target loss function to be used in training. Default is cross entropy.
-            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
+            num_qubits: The number of qubits for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given,
+                the number of qubits is derived from the feature map or ansatz. If neither of those
+                is given, raises an exception. The number of qubits in the feature map and ansatz
+                are adjusted to this number if required.
+            feature_map: The (parametrized) circuit to be used as a feature map for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given,
+                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For a single
+                qubit classification problem the ``ZFeatureMap`` is used per default.
+            ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
+                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given
+                then the ``RealAmplitudes`` circuit is used.
+            loss: A target loss function to be used in training. Default value is ``cross_entropy``.
+            optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
+                to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
             quantum_instance: The quantum instance to execute circuits on.
             initial_point: Initial point for the optimizer to start from.
@@ -74,52 +83,19 @@ class VQC(NeuralNetworkClassifier):
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
         Raises:
-            QiskitMachineLearningError: Needs at least one out of num_qubits, feature_map or
-                ansatz to be given.
+            QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
+                ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
+                can't be adjusted to ``num_qubits``.
         """
 
-        # check num_qubits, feature_map, and ansatz
-        if num_qubits is None and feature_map is None and ansatz is None:
-            raise QiskitMachineLearningError(
-                "Need at least one of num_qubits, feature_map, or ansatz!"
-            )
-        num_qubits_: int = None
-        feature_map_: QuantumCircuit = None
-        ansatz_: QuantumCircuit = None
-        if num_qubits:
-            num_qubits_ = num_qubits
-            if feature_map:
-                if feature_map.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError("Incompatible num_qubits and feature_map!")
-                feature_map_ = feature_map
-            else:
-                feature_map_ = ZZFeatureMap(num_qubits)
-            if ansatz:
-                if ansatz.num_qubits != num_qubits:
-                    raise QiskitMachineLearningError("Incompatible num_qubits and ansatz!")
-                ansatz_ = ansatz
-            else:
-                ansatz_ = RealAmplitudes(num_qubits)
-        else:
-            if feature_map and ansatz:
-                if feature_map.num_qubits != ansatz.num_qubits:
-                    raise QiskitMachineLearningError("Incompatible feature_map and ansatz!")
-                feature_map_ = feature_map
-                ansatz_ = ansatz
-                num_qubits_ = feature_map.num_qubits
-            elif feature_map:
-                num_qubits_ = feature_map.num_qubits
-                feature_map_ = feature_map
-                ansatz_ = RealAmplitudes(num_qubits_)
-            elif ansatz:
-                num_qubits_ = ansatz.num_qubits
-                ansatz_ = ansatz
-                feature_map_ = ZZFeatureMap(num_qubits_)
+        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
+            num_qubits, feature_map, ansatz
+        )
 
         # construct circuit
-        self._feature_map = feature_map_
-        self._ansatz = ansatz_
-        self._num_qubits = num_qubits_
+        self._feature_map = feature_map
+        self._ansatz = ansatz
+        self._num_qubits = num_qubits
         self._circuit = QuantumCircuit(self._num_qubits)
         self._circuit.compose(self.feature_map, inplace=True)
         self._circuit.compose(self.ansatz, inplace=True)
