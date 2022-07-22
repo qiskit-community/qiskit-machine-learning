@@ -68,7 +68,8 @@ class QuantumKernel(BaseKernel):
         if isinstance(fidelity, str):
             if sampler is None:
                 raise ValueError(
-                    "If the fidelity is passed as a string, a sampler has to be provided (currently set to None)."
+                    "If the fidelity is passed as a string, a sampler has to be provided"
+                    "(currently set to None)."
                 )
             if fidelity == "zero_prob":
                 self._fidelity = Fidelity(
@@ -81,8 +82,8 @@ class QuantumKernel(BaseKernel):
         else:
             if sampler is not None:
                 warnings.warn(
-                    "Passed both a sampler and a fidelity instance. If passing a fidelity instance for `fidelity`,"
-                    "the sampler will not be used.",
+                    "Passed both a sampler and a fidelity instance. If passing a fidelity instance"
+                    " for `fidelity`, the sampler will not be used.",
                 )
             self._fidelity = fidelity
             fidelity.set_circuits(left_circuit=feature_map, right_circuit=feature_map)

@@ -10,8 +10,8 @@
 # # copyright notice, and modified files need to carry a notice indicating
 # # that they have been altered from the originals.
 
-# """ Test QuantumKernel """
-
+""" Test QuantumKernel using primitives """
+from __future__ import annotations
 import functools
 import itertools
 import unittest
@@ -33,7 +33,11 @@ from qiskit_machine_learning.primitives.kernels import QuantumKernel
 class MockFidelity(BaseFidelity):
     """Custom fidelity that returns -0.5 for any input."""
 
-    def __call__(self, values_left, values_right) -> np.ndarray:
+    def __call__(
+        self,
+        values_left: np.ndarray | list[np.ndarray] | None = None,
+        values_right: np.ndarray | list[np.ndarray] | None = None,
+    ) -> np.ndarray:
         return np.zeros(values_left.shape[0]) - 0.5
 
 
@@ -96,7 +100,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
     @unpack
     def test_evaluate_symmetric(self, params, fidelity, feature_map, enforce_psd):
         """Test QuantumKernel.evaluate(x) for a symmetric kernel."""
-        solution = self.get_symmetric_solution(params, fidelity, feature_map, enforce_psd)
+        solution = self._get_symmetric_solution(params, fidelity, feature_map, enforce_psd)
 
         if params == "1_param":
             x_vec = self.sample_train[0]
@@ -144,7 +148,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
     @unpack
     def test_evaluate_asymmetric(self, params_x, params_y, fidelity, feature_map, enforce_psd):
         """Test QuantumKernel.evaluate(x,y) for an asymmetric kernel."""
-        solution = self.get_asymmetric_solution(
+        solution = self._get_asymmetric_solution(
             params_x, params_y, fidelity, feature_map, enforce_psd
         )
 
@@ -196,22 +200,26 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
             kernel_matrix = kernel.evaluate(x_vec, y_vec)
             np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
 
-    def get_symmetric_solution(self, params, fidelity, feature_map, enforce_psd):
+    def _get_symmetric_solution(self, params, fidelity, feature_map, enforce_psd):
         if fidelity == "mock_fidelity":
             if params == "1_param":
                 if enforce_psd:
-                    return np.array([[0.0]])
-                return np.array([[-0.5]])
-            if params == "4_params" and enforce_psd:
-                return np.zeros((4, 4))
-            return np.zeros((4, 4)) - 0.5
+                    solution = np.array([[0.0]])
+                else:
+                    solution = np.array([[-0.5]])
+            else:
+                if enforce_psd:
+                    solution = np.zeros((4, 4))
+                else:
+                    solution = np.zeros((4, 4)) - 0.5
+            return solution
 
         # all other fidelities have the same result
         if params == "1_param":
-            return np.array([[1.0]])
+            solution = np.array([[1.0]])
 
-        if params == "4_params" and feature_map == "Z":
-            return np.array(
+        elif params == "4_params" and feature_map == "Z":
+            solution = np.array(
                 [
                     [1.0, 0.78883982, 0.15984355, 0.06203766],
                     [0.78883982, 1.0, 0.49363215, 0.32128356],
@@ -219,22 +227,24 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                     [0.06203766, 0.32128356, 0.91953051, 1.0],
                 ]
             )
-        # ZZFeatureMap with 4 params
-        return np.array(
-            [
-                [1.0, 0.81376617, 0.05102078, 0.06033439],
-                [0.81376617, 1.0, 0.14750292, 0.09980414],
-                [0.05102078, 0.14750292, 1.0, 0.26196463],
-                [0.06033439, 0.09980414, 0.26196463, 1.0],
-            ]
-        )
+        else:
+            # ZZFeatureMap with 4 params
+            solution = np.array(
+                [
+                    [1.0, 0.81376617, 0.05102078, 0.06033439],
+                    [0.81376617, 1.0, 0.14750292, 0.09980414],
+                    [0.05102078, 0.14750292, 1.0, 0.26196463],
+                    [0.06033439, 0.09980414, 0.26196463, 1.0],
+                ]
+            )
+        return solution
 
-    def get_asymmetric_solution(self, params_x, params_y, fidelity, feature_map, enforce_psd):
+    def _get_asymmetric_solution(self, params_x, params_y, fidelity, feature_map, enforce_psd):
         if params_x == "wrong" or params_y == "wrong":
             return "wrong"
         # check if hidden symmetric case
         if params_x == params_y:
-            return self.get_symmetric_solution(params_x, fidelity, feature_map, enforce_psd)
+            return self._get_symmetric_solution(params_x, fidelity, feature_map, enforce_psd)
 
         if fidelity == "mock_fidelity":
             len_x = int(re.search(r"\d+", params_x).group())
@@ -244,36 +254,40 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
         # all other fidelities have the same result
         if feature_map == "Z":
             if params_x == "1_param" and params_y == "4_params":
-                return np.array([[1.0, 0.78883982, 0.15984355, 0.06203766]])
+                solution = np.array([[1.0, 0.78883982, 0.15984355, 0.06203766]])
             elif params_x == "1_param" and params_y == "2_params":
-                return np.array([[0.30890363, 0.04543022]])
+                solution = np.array([[0.30890363, 0.04543022]])
             elif params_x == "4_params" and params_y == "1_param":
-                return np.array([[1.0, 0.78883982, 0.15984355, 0.06203766]]).T
-            # 4_param and 2_param
-            return np.array(
-                [
-                    [0.30890363, 0.04543022],
-                    [0.39666513, 0.23044328],
-                    [0.11826802, 0.58742761],
-                    [0.10665779, 0.7650088],
-                ]
-            )
-        # ZZFeatureMap
-        if params_x == "1_param" and params_y == "4_params":
-            return np.array([[1.0, 0.81376617, 0.05102078, 0.06033439]])
-        elif params_x == "1_param" and params_y == "2_params":
-            return np.array([[0.24610242, 0.17510262]])
-        elif params_x == "4_params" and params_y == "1_param":
-            return np.array([[1.0, 0.81376617, 0.05102078, 0.06033439]]).T
-        # 4_param and 2_param
-        return np.array(
-            [
-                [0.24610242, 0.17510262],
-                [0.36660828, 0.06476594],
-                [0.13924611, 0.48450828],
-                [0.24435258, 0.31099496],
-            ]
-        )
+                solution = np.array([[1.0, 0.78883982, 0.15984355, 0.06203766]]).T
+            else:
+                # 4_param and 2_param
+                solution = np.array(
+                    [
+                        [0.30890363, 0.04543022],
+                        [0.39666513, 0.23044328],
+                        [0.11826802, 0.58742761],
+                        [0.10665779, 0.7650088],
+                    ]
+                )
+        else:
+            # ZZFeatureMap
+            if params_x == "1_param" and params_y == "4_params":
+                solution = np.array([[1.0, 0.81376617, 0.05102078, 0.06033439]])
+            elif params_x == "1_param" and params_y == "2_params":
+                solution = np.array([[0.24610242, 0.17510262]])
+            elif params_x == "4_params" and params_y == "1_param":
+                solution = np.array([[1.0, 0.81376617, 0.05102078, 0.06033439]]).T
+            else:
+                # 4_param and 2_param
+                solution = np.array(
+                    [
+                        [0.24610242, 0.17510262],
+                        [0.36660828, 0.06476594],
+                        [0.13924611, 0.48450828],
+                        [0.24435258, 0.31099496],
+                    ]
+                )
+        return solution
 
 
 if __name__ == "__main__":
