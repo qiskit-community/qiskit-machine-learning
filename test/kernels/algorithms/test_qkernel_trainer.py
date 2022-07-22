@@ -39,11 +39,8 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         # pylint: disable=no-member
         self.backend = qiskit.providers.aer.AerSimulator(method="statevector")
         data_block = ZZFeatureMap(2)
-        trainable_block = ZZFeatureMap(2)
+        trainable_block = ZZFeatureMap(2, parameter_prefix="θ")
         training_parameters = trainable_block.parameters
-
-        for i, training_parameter in enumerate(training_parameters):
-            training_parameter._name = f"θ[{i}]"
 
         self.feature_map = data_block.compose(trainable_block).compose(data_block)
         self.training_parameters = training_parameters
