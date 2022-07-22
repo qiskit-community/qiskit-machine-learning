@@ -87,6 +87,7 @@ kernelized
 kwarg
 kwargs
 labelled
+lagrange
 langle
 macos
 makefile
@@ -173,7 +174,6 @@ rz
 scalability
 scikit
 scipy
-seaborn
 semidefinite
 shalev
 shende
