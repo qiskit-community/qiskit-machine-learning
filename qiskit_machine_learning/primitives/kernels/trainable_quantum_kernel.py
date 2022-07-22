@@ -54,7 +54,11 @@ class TrainableQuantumKernel(QuantumKernel):
         self.num_parameters = len(training_parameters)
         self._num_features = self._num_features - self.num_parameters
         self._training_parameters = training_parameters
-        self._feature_parameters = feature_map.parameters - training_parameters
+        self._feature_parameters = [
+            parameter
+            for parameter in feature_map.parameters
+            if parameter not in training_parameters
+        ]
         self._parameter_dict = {parameter: None for parameter in feature_map.parameters}
 
     def assign_training_parameters(self, parameter_values: np.ndarray) -> None:

@@ -18,12 +18,11 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt
+from ddt import ddt, data
+from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import algorithm_globals
 from qiskit.primitives import Sampler
-from qiskit.primitives.fidelity import Fidelity
-from sklearn.svm import SVC
+
 
 from qiskit_machine_learning.primitives.kernels import TrainableQuantumKernel
 
@@ -42,24 +41,35 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         self.training_parameters = circ2.parameters
         self.sampler_factory = functools.partial(Sampler)
 
-        self.kernel = TrainableQuantumKernel(
+        self.sample_train = np.array(
+            [[0.53833689, 0.44832616, 0.74399926], [0.43359057, 0.11213606, 0.97568932]]
+        )
+        self.sample_test = np.array([0.0, 1.0, 2.0])
+
+    def test_training_parameters(self):
+        """Test assigning/re-assigning user parameters"""
+
+        kernel = TrainableQuantumKernel(
             sampler=self.sampler_factory,
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
 
-    def test_training_parameters(self):
-        """Test assigning/re-assigning user parameters"""
-
         with self.subTest("check basic instantiation"):
             # Ensure we can instantiate a QuantumKernel with user parameters
-            self.assertEqual(self.kernel._training_parameters, self.training_parameters)
+            self.assertEqual(kernel._training_parameters, self.training_parameters)
 
-        with self.subTest("test invalid parameter assignment"):
+        with self.subTest("test wrong number of parameters"):
             # Try to set the user parameters using an incorrect number of values
             training_param_values = [2.0, 4.0, 6.0, 8.0]
             with self.assertRaises(ValueError):
-                self.kernel.assign_training_parameters(training_param_values)
+                kernel.assign_training_parameters(training_param_values)
+
+        with self.subTest("test invalid parameter assignment"):
+            # Try to set the user parameters using incorrect parameter
+            param_binds = {Parameter("x"): 0.5}
+            with self.assertRaises(ValueError):
+                kernel.assign_training_parameters(param_binds)
 
         with self.subTest("test parameter assignment"):
             # Assign params to some new values, and also test the bind_training_parameters interface
@@ -68,34 +78,88 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
                 self.training_parameters[1]: 0.2,
                 self.training_parameters[2]: 0.3,
             }
-            self.kernel.assign_training_parameters(param_binds)
+            kernel.assign_training_parameters(param_binds)
 
             # Ensure the values are properly bound
-            np.testing.assert_array_equal(self.kernel.parameter_values, list(param_binds.values()))
+            np.testing.assert_array_equal(kernel.parameter_values, list(param_binds.values()))
 
         with self.subTest("test partial parameter assignment"):
             # Assign params to some new values, and also test the bind_training_parameters interface
             param_binds = {self.training_parameters[0]: 0.5, self.training_parameters[1]: 0.4}
-            self.kernel.assign_training_parameters(param_binds)
+            kernel.assign_training_parameters(param_binds)
 
             # Ensure values were properly bound and param 2 was unchanged
-            np.testing.assert_array_equal(self.kernel.parameter_values, [0.5, 0.4, 0.3])
+            np.testing.assert_array_equal(kernel.parameter_values, [0.5, 0.4, 0.3])
 
         with self.subTest("test parameter list assignment"):
             # Assign params to some new values, and also test the bind_training_parameters interface
             param_binds = [0.1, 0.7, 1.7]
-            self.kernel.assign_training_parameters(param_binds)
+            kernel.assign_training_parameters(param_binds)
 
             # Ensure the values are properly bound
-            np.testing.assert_array_equal(self.kernel.parameter_values, param_binds)
+            np.testing.assert_array_equal(kernel.parameter_values, param_binds)
 
         with self.subTest("test parameter array assignment"):
             # Assign params to some new values, and also test the bind_training_parameters interface
             param_binds = np.array([0.1, 0.7, 1.7])
-            self.kernel.assign_training_parameters(param_binds)
+            kernel.assign_training_parameters(param_binds)
 
             # Ensure the values are properly bound
-            np.testing.assert_array_equal(self.kernel.parameter_values, param_binds)
+            np.testing.assert_array_equal(kernel.parameter_values, param_binds)
+
+    @data("params_1", "params_2")
+    def test_evaluate_symmetric(self, params):
+        """Test kernel evaluations for different training parameters"""
+        if params == "params_1":
+            training_params = [0.0, 0.0, 0.0]
+        else:
+            training_params = [0.1, 0.531, 4.12]
+
+        kernel = TrainableQuantumKernel(
+            sampler=self.sampler_factory,
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        kernel.assign_training_parameters(training_params)
+        kernel_matrix = kernel.evaluate(self.sample_train)
+
+        # Ensure that the calculations are correct
+        np.testing.assert_allclose(
+            kernel_matrix, self._get_symmetric_solution(params), rtol=1e-7, atol=1e-7
+        )
+
+    def _get_symmetric_solution(self, params):
+        if params == "params_1":
+            return np.array([[1.0, 0.03351197], [0.03351197, 1.0]])
+        return np.array([[1.0, 0.082392], [0.082392, 1.0]])
+
+    @data("params_1", "params_2")
+    def test_evaluate_asymmetric(self, params):
+        """Test kernel evaluations for different training parameters"""
+        if params == "params_1":
+            training_params = [0.0, 0.0, 0.0]
+        else:
+            training_params = [0.1, 0.531, 4.12]
+
+        kernel = TrainableQuantumKernel(
+            sampler=self.sampler_factory,
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        kernel.assign_training_parameters(training_params)
+        kernel_matrix = kernel.evaluate(self.sample_train, self.sample_test)
+
+        # Ensure that the calculations are correct
+        np.testing.assert_allclose(
+            kernel_matrix, self._get_asymmetric_solution(params), rtol=1e-7, atol=1e-7
+        )
+
+    def _get_asymmetric_solution(self, params):
+        if params == "params_1":
+            return np.array([[0.00569059], [0.07038205]])
+        return np.array([[0.10568674], [0.122404]])
 
 
 if __name__ == "__main__":
