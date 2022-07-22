@@ -17,11 +17,13 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt, data
 import qiskit
+from ddt import ddt, data
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 
 
@@ -34,7 +36,7 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.random_seed = 12345
         # specify "run configuration"
-        quantum_instance = QuantumInstance(
+        self.quantum_instance = QuantumInstance(
             qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
@@ -48,7 +50,7 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
             num_qubits,
             feature_map=feature_map,
             ansatz=ansatz,
-            quantum_instance=quantum_instance,
+            quantum_instance=self.quantum_instance,
         )
 
         self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map, ansatz=ansatz)
@@ -133,6 +135,28 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         with self.subTest(msg="Check feature map"):
             expected_cls = ZZFeatureMap if num_features > 1 else ZFeatureMap
             self.assertIsInstance(qnn.feature_map, expected_cls)
+
+    def test_circuit_extensions(self):
+        """Test TwoLayerQNN when the number of qubits is different compared to
+        the feature map/ansatz."""
+        num_qubits = 2
+        classifier = TwoLayerQNN(
+            num_qubits=num_qubits,
+            feature_map=ZFeatureMap(1),
+            ansatz=RealAmplitudes(1),
+            quantum_instance=self.quantum_instance,
+        )
+        self.assertEqual(classifier.feature_map.num_qubits, num_qubits)
+        self.assertEqual(classifier.ansatz.num_qubits, num_qubits)
+
+        qc = QuantumCircuit(1)
+        with self.assertRaises(QiskitMachineLearningError):
+            _ = TwoLayerQNN(
+                num_qubits=num_qubits,
+                feature_map=qc,
+                ansatz=qc,
+                quantum_instance=self.quantum_instance,
+            )
 
 
 if __name__ == "__main__":
