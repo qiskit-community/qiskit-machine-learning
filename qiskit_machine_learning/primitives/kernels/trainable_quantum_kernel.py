@@ -57,8 +57,6 @@ class TrainableQuantumKernel(QuantumKernel):
         self._feature_parameters = feature_map.parameters - training_parameters
         self._parameter_dict = {parameter: None for parameter in feature_map.parameters}
 
-        self.parameter_values = np.zeros(self.num_parameters)
-
     def assign_training_parameters(self, parameter_values: np.ndarray) -> None:
         """
         Fix the training parameters to numerical values.
@@ -84,6 +82,13 @@ class TrainableQuantumKernel(QuantumKernel):
                         "parameters when initializing the kernel."
                     )
                 self._parameter_dict[key] = parameter_values[key]
+
+    @property
+    def parameter_values(self):
+        """
+        Numerical values assigned to the training parameters.
+        """
+        return np.array([self._parameter_dict[param] for param in self._training_parameters])
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
         for param in self._training_parameters:

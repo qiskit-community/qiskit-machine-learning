@@ -39,7 +39,7 @@ class MockFidelity(BaseFidelity):
 
 @ddt
 class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
-    """Test QuantumKernel primitives for Classification using SKLearn"""
+    """Test QuantumKernel primitives."""
 
     def setUp(self):
         super().setUp()
@@ -134,8 +134,8 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
     @idata(
         itertools.product(
-            ["1_param", "4_params"],
-            ["1_param", "4_params", "2_params"],
+            ["1_param", "4_params", "wrong"],
+            ["1_param", "4_params", "2_params", "wrong"],
             ["default", "zero_prob", "fidelity_instance", "mock_fidelity"],
             ["ZZ", "Z"],
             [True, False],
@@ -150,15 +150,19 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
         if params_x == "1_param":
             x_vec = self.sample_train[0]
-        else:
+        elif params_x == "4_params":
             x_vec = self.sample_train
+        else:
+            x_vec = np.zeros((2, 3))
 
         if params_y == "1_param":
             y_vec = self.sample_train[0]
         elif params_y == "4_params":
             y_vec = self.sample_train
-        else:
+        elif params_y == "2_params":
             y_vec = self.sample_test
+        else:
+            y_vec = np.zeros((2, 3))
 
         if feature_map == "Z":
             feature_map = self.feature_map
@@ -185,11 +189,14 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 feature_map=feature_map, fidelity=MockFidelity(), enforce_psd=enforce_psd
             )
 
-        kernel_matrix = kernel.evaluate(x_vec, y_vec)
+        if solution == "wrong":
+            with self.assertRaises(ValueError):
+                _ = kernel.evaluate(x_vec, y_vec)
+        else:
+            kernel_matrix = kernel.evaluate(x_vec, y_vec)
+            np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
 
-        np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
-
-    def get_symmetric_solution(self, params, fidelity, feature_map, enforce_psd) -> np.ndarray:
+    def get_symmetric_solution(self, params, fidelity, feature_map, enforce_psd):
         if fidelity == "mock_fidelity":
             if params == "1_param":
                 if enforce_psd:
@@ -222,9 +229,9 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
             ]
         )
 
-    def get_asymmetric_solution(
-        self, params_x, params_y, fidelity, feature_map, enforce_psd
-    ) -> np.ndarray:
+    def get_asymmetric_solution(self, params_x, params_y, fidelity, feature_map, enforce_psd):
+        if params_x == "wrong" or params_y == "wrong":
+            return "wrong"
         # check if hidden symmetric case
         if params_x == params_y:
             return self.get_symmetric_solution(params_x, fidelity, feature_map, enforce_psd)
