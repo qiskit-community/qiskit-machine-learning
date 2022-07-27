@@ -42,6 +42,7 @@ all_check: spell style lint copyright mypy clean_sphinx html doctest
 lint:
 	pylint -rn qiskit_machine_learning test tools
 	python tools/verify_headers.py qiskit_machine_learning test tools
+	python tools/find_stray_release_notes.py
 
 mypy:
 	mypy qiskit_machine_learning test tools
