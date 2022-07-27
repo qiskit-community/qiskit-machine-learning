@@ -12,6 +12,7 @@
 
 """Base kernel"""
 
+from __future__ import annotations
 from abc import abstractmethod, ABC
 from typing import Tuple
 
