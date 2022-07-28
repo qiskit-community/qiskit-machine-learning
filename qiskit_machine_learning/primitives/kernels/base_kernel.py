@@ -67,7 +67,7 @@ class BaseKernel(ABC):
 
         Raises:
             QiskitMachineLearningError:
-                A quantum instance or backend has not been provided
+                A quantum instance or backend has not been provided.
             ValueError:
                 x_vec and/or y_vec are not one or two dimensional arrays
                 x_vec and y_vec have have incompatible dimensions
