@@ -58,9 +58,9 @@ class BaseKernel(ABC):
 
         Args:
             x_vec: 1D or 2D array of datapoints, NxD, where N is the number of datapoints,
-                                                            D is the feature dimension
+                D is the feature dimension
             y_vec: 1D or 2D array of datapoints, MxD, where M is the number of datapoints,
-                                                            D is the feature dimension
+                D is the feature dimension
 
         Returns:
             2D matrix, NxM
