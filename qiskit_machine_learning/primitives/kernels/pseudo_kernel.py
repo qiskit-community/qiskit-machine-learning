@@ -70,7 +70,6 @@ class PseudoKernel(QuantumKernel):
                                                         P is the number of trainable parameters
             y_parameters: 1D or 2D array of parameters, MxP
 
-
         Returns:
             2D matrix, NxM
 
