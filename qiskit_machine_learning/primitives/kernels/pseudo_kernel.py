@@ -17,7 +17,7 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.primitives import Sampler
-from qiskit.primitives.fidelity import BaseFidelity
+from qiskit.algorithms.fidelities import BaseFidelity
 
 from qiskit_machine_learning.utils import make_2d
 from .quantum_kernel import QuantumKernel

@@ -19,17 +19,6 @@ from qiskit.circuit import Parameter, ParameterVector
 
 class TrainableKernelMixin:
     r"""
-    Finding good quantum kernels for a specific machine learning task
-    is a big challenge in quantum machine learning. One way to choose
-    the kernel is to add trainable parameters to the feature map, which
-    can be used to fine-tune the kernel.
-
-    This kernel has trainable parameters :math:`\theta` that can be bound
-    using training algorithms. The kernel entries are given as
-
-    .. math::
-
-        K_{\theta}(x,y) = |\langle \phi_{\theta}(x) | \phi_{\theta}(y) \rangle|^2
     """
 
     def __init__(

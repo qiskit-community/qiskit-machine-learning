@@ -18,7 +18,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.primitives import Sampler
-from qiskit.primitives.fidelity import BaseFidelity, Fidelity
+from qiskit.algorithms.fidelities import BaseFidelity, Fidelity
 
 from .base_kernel import BaseKernel
 
