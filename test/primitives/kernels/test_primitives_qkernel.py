@@ -14,6 +14,7 @@
 from __future__ import annotations
 import functools
 import itertools
+from os import dup
 import unittest
 import re
 
@@ -24,7 +25,7 @@ from ddt import ddt, idata, unpack
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.utils import algorithm_globals
 from qiskit.primitives import Sampler
-from qiskit.primitives.fidelity import Fidelity, BaseFidelity
+from qiskit.algorithms.fidelities import Fidelity, BaseFidelity
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.primitives.kernels import QuantumKernel
@@ -95,10 +96,11 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
             ["default", "zero_prob", "fidelity_instance", "mock_fidelity"],
             ["ZZ", "Z"],
             [True, False],
+            ["none", "off_diagonal", "all"],
         )
     )
     @unpack
-    def test_evaluate_symmetric(self, params, fidelity, feature_map, enforce_psd):
+    def test_evaluate_symmetric(self, params, fidelity, feature_map, enforce_psd, duplicates):
         """Test QuantumKernel.evaluate(x) for a symmetric kernel."""
         solution = self._get_symmetric_solution(params, fidelity, feature_map, enforce_psd)
 
@@ -114,7 +116,10 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
         if fidelity == "default":
             kernel = QuantumKernel(
-                sampler=self.sampler_factory, feature_map=feature_map, enforce_psd=enforce_psd
+                sampler=self.sampler_factory,
+                feature_map=feature_map,
+                enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
         elif fidelity == "zero_prob":
             kernel = QuantumKernel(
@@ -122,14 +127,21 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 feature_map=feature_map,
                 fidelity="zero_prob",
                 enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
         elif fidelity == "fidelity_instance":
             kernel = QuantumKernel(
-                feature_map=feature_map, fidelity=self.fidelity, enforce_psd=enforce_psd
+                feature_map=feature_map,
+                fidelity=self.fidelity,
+                enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
         else:
             kernel = QuantumKernel(
-                feature_map=feature_map, fidelity=MockFidelity(), enforce_psd=enforce_psd
+                feature_map=feature_map,
+                fidelity=MockFidelity(),
+                enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
 
         kernel_matrix = kernel.evaluate(x_vec)
@@ -143,10 +155,13 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
             ["default", "zero_prob", "fidelity_instance", "mock_fidelity"],
             ["ZZ", "Z"],
             [True, False],
+            ["none", "off_diagonal", "all"],
         )
     )
     @unpack
-    def test_evaluate_asymmetric(self, params_x, params_y, fidelity, feature_map, enforce_psd):
+    def test_evaluate_asymmetric(
+        self, params_x, params_y, fidelity, feature_map, enforce_psd, duplicates
+    ):
         """Test QuantumKernel.evaluate(x,y) for an asymmetric kernel."""
         solution = self._get_asymmetric_solution(
             params_x, params_y, fidelity, feature_map, enforce_psd
@@ -175,7 +190,10 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
         if fidelity == "default":
             kernel = QuantumKernel(
-                sampler=self.sampler_factory, feature_map=feature_map, enforce_psd=enforce_psd
+                sampler=self.sampler_factory,
+                feature_map=feature_map,
+                enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
         elif fidelity == "zero_prob":
             kernel = QuantumKernel(
@@ -183,14 +201,21 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 feature_map=feature_map,
                 fidelity="zero_prob",
                 enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
         elif fidelity == "fidelity_instance":
             kernel = QuantumKernel(
-                feature_map=feature_map, fidelity=self.fidelity, enforce_psd=enforce_psd
+                feature_map=feature_map,
+                fidelity=self.fidelity,
+                enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
         else:
             kernel = QuantumKernel(
-                feature_map=feature_map, fidelity=MockFidelity(), enforce_psd=enforce_psd
+                feature_map=feature_map,
+                fidelity=MockFidelity(),
+                enforce_psd=enforce_psd,
+                evaluate_duplicates=duplicates,
             )
 
         if solution == "wrong":

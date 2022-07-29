@@ -48,8 +48,13 @@ class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
         training_parameters: ParameterVector | list[Parameter] | None = None,
         enforce_psd: bool = True,
     ) -> None:
-        super().__init__(sampler, feature_map, fidelity=fidelity,
-                         training_parameters=training_parameters, enforce_psd=enforce_psd)
+        super().__init__(
+            sampler,
+            feature_map,
+            fidelity=fidelity,
+            training_parameters=training_parameters,
+            enforce_psd=enforce_psd,
+        )
 
         self._num_features = self._num_features - self.num_parameters
         self._feature_parameters = [
@@ -81,13 +86,17 @@ class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
             full_array[i, :] = list(self._parameter_dict.values())
         return full_array
 
-    def _get_parametrization(self, x_vec: np.ndarray, y_vec: np.ndarray) -> tuple[np.ndarray]:
+    def _get_parametrization(
+        self, x_vec: np.ndarray, y_vec: np.ndarray, trivial_entries: np.ndarray
+    ) -> tuple[np.ndarray]:
         new_x_vec = self._parameter_array(x_vec)
         new_y_vec = self._parameter_array(y_vec)
 
-        return super()._get_parametrization(new_x_vec, new_y_vec)
+        return super()._get_parametrization(new_x_vec, new_y_vec, trivial_entries)
 
-    def _get_symmetric_parametrization(self, x_vec: np.ndarray) -> np.ndarray:
+    def _get_symmetric_parametrization(
+        self, x_vec: np.ndarray, trivial_entries: np.ndarray
+    ) -> np.ndarray:
         new_x_vec = self._parameter_array(x_vec)
 
-        return super()._get_symmetric_parametrization(new_x_vec)
+        return super()._get_symmetric_parametrization(new_x_vec, trivial_entries)
