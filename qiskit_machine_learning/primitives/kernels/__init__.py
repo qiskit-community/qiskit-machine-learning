@@ -25,7 +25,6 @@ Quantum Kernels
    BaseKernel
    QuantumKernel
    TrainableKernel
-   PseudoKernel
 
 Submodules
 ==========
@@ -39,6 +38,5 @@ Submodules
 from .base_kernel import BaseKernel
 from .quantum_kernel import QuantumKernel
 from .trainable_quantum_kernel import TrainableQuantumKernel
-from .pseudo_kernel import PseudoKernel
 
-__all__ = ["BaseKernel", "QuantumKernel", "TrainableQuantumKernel", "PseudoKernel"]
+__all__ = ["BaseKernel", "QuantumKernel", "TrainableQuantumKernel"]
