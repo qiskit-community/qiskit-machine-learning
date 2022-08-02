@@ -13,6 +13,7 @@
 """Quantum Kernel Algorithm"""
 from __future__ import annotations
 
+from typing import Sequence, Mapping, List
 import copy
 import numbers
 from typing import Optional, Union, Sequence, Mapping, List, Tuple, NoReturn
@@ -57,11 +58,12 @@ class QuantumKernel:
     @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
     def __init__(
         self,
-        feature_map: Optional[QuantumCircuit] = None,
+        feature_map: QuantumCircuit | None = None,
         enforce_psd: bool = True,
         batch_size: int = 900,
-        quantum_instance: Optional[Union[QuantumInstance, Backend]] = None,
-        training_parameters: Optional[Union[ParameterVector, Sequence[Parameter]]] = None,
+        quantum_instance: QuantumInstance | Backend | None = None,
+        training_parameters: ParameterVector | Sequence[Parameter] | None = None,
+        evaluate_duplicates: str = "off_diagonal",
     ) -> None:
         """
         Args:
@@ -74,6 +76,21 @@ class QuantumKernel:
             training_parameters: Iterable containing ``Parameter`` objects which correspond to
                  quantum gates on the feature map circuit which may be tuned. If users intend to
                  tune feature map parameters to find optimal values, this field should be set.
+            evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
+               duplicate samples are found. Possible values are:
+
+                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
+                        ones when training. This may introduce additional noise in the matrix.
+                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                        elements are fully evaluated, e.g., for two identical samples in the
+                        dataset. When inferring, all elements are evaluated. This is the default
+                        value.
+                    - ``none`` when training the diagonal is set to `1` and if two identical samples
+                        are found in the dataset the corresponding matrix element is set to `1`.
+                        When inferring, matrix elements for identical samples are set to `1`.
+
+        Raises:
+            ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
         # Class fields
         self._feature_map = None
@@ -82,8 +99,16 @@ class QuantumKernel:
         self._training_parameter_binds = None
         self._enforce_psd = enforce_psd
         self._batch_size = batch_size
+
         # convert to QuantumInstance if an instance of Backend is passed
         self.quantum_instance = quantum_instance
+
+        eval_duplicates = evaluate_duplicates.lower()
+        if eval_duplicates not in ("all", "off_diagonal", "none"):
+            raise ValueError(
+                f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
+            )
+        self._evaluate_duplicates = eval_duplicates
 
         # Setters
         self.feature_map = feature_map if feature_map is not None else ZZFeatureMap(2)
@@ -119,21 +144,19 @@ class QuantumKernel:
         return self._quantum_instance
 
     @quantum_instance.setter
-    def quantum_instance(self, quantum_instance: Union[Backend, QuantumInstance]) -> None:
+    def quantum_instance(self, quantum_instance: Backend | QuantumInstance) -> None:
         """Set quantum instance"""
         if isinstance(quantum_instance, Backend):
             quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 
     @property
-    def training_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+    def training_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """Return the vector of training parameters."""
         return copy.copy(self._training_parameters)
 
     @training_parameters.setter
-    def training_parameters(
-        self, training_params: Union[ParameterVector, Sequence[Parameter]]
-    ) -> None:
+    def training_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
         """Set the training parameters"""
         self._training_parameter_binds = {
             training_param: training_param for training_param in training_params
@@ -141,7 +164,7 @@ class QuantumKernel:
         self._training_parameters = copy.deepcopy(training_params)
 
     def assign_training_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         Assign training parameters in the ``QuantumKernel`` feature map.
@@ -255,12 +278,12 @@ class QuantumKernel:
         )
 
     @property
-    def training_parameter_binds(self) -> Optional[Mapping[Parameter, float]]:
+    def training_parameter_binds(self) -> Mapping[Parameter, float] | None:
         """Return a copy of the current training parameter mappings for the feature map circuit."""
         return copy.deepcopy(self._training_parameter_binds)
 
     def bind_training_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         Alternate function signature for ``assign_training_parameters``
@@ -282,19 +305,19 @@ class QuantumKernel:
 
     @property  # type: ignore
     @deprecate_property("0.5.0", new_name="training_parameters")
-    def user_parameters(self) -> Optional[Union[ParameterVector, Sequence[Parameter]]]:
+    def user_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """[Deprecated property]Return the vector of training parameters."""
         return self.training_parameters
 
     @user_parameters.setter  # type: ignore
     @deprecate_property("0.5.0", new_name="training_parameters")
-    def user_parameters(self, training_params: Union[ParameterVector, Sequence[Parameter]]) -> None:
+    def user_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
         """[Deprecated property setter]Set the training parameters"""
         self.training_parameters = training_params
 
     @deprecate_method("0.5.0", new_name="assign_training_parameters")
     def assign_user_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         [Deprecated method]Assign training parameters in the ``QuantumKernel`` feature map.
@@ -305,7 +328,7 @@ class QuantumKernel:
 
     @property  # type: ignore
     @deprecate_property("0.5.0", new_name="training_parameter_binds")
-    def user_param_binds(self) -> Optional[Mapping[Parameter, float]]:
+    def user_param_binds(self) -> Mapping[Parameter, float] | None:
         """
         [Deprecated property]Return a copy of the current training parameter mappings
         for the feature map circuit.
@@ -314,7 +337,7 @@ class QuantumKernel:
 
     @deprecate_method("0.5.0", new_name="bind_training_parameters")
     def bind_user_parameters(
-        self, values: Union[Mapping[Parameter, ParameterValueType], Sequence[ParameterValueType]]
+        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
     ) -> None:
         """
         [Deprecated method]Alternate function signature for ``assign_training_parameters``
@@ -556,15 +579,19 @@ class QuantumKernel:
                 statevectors.append(results.get_statevector(j))
 
         offset = 0 if is_symmetric else len(x_vec)
-        matrix_elements = [
-            self._compute_overlap_statevector(i, j, statevectors)
-            for i, j in zip(row_indices, col_indices + offset)
-        ]
+        for (i, j) in zip(row_indices, col_indices):
+            x_i = x_vec[i]
+            y_j = y_vec[j]
 
-        for i, j, value in zip(row_indices, col_indices, matrix_elements):
-            kernel[i, j] = value
+            # fill in ones for identical samples
+            if np.all(x_i == y_j) and self._evaluate_duplicates == "none":
+                kernel_value = 1.0
+            else:
+                kernel_value = self._compute_overlap_statevector(i, j + offset, statevectors)
+
+            kernel[i, j] = kernel_value
             if is_symmetric:
-                kernel[j, i] = kernel[i, j]
+                kernel[j, i] = kernel_value
 
         return kernel
 
@@ -589,7 +616,14 @@ class QuantumKernel:
                 j = col_indices[sub_idx]
                 x_i = x_vec[i]
                 y_j = y_vec[j]
-                if not np.all(x_i == y_j):
+
+                # fill in ones for identical samples
+                if np.all(x_i == y_j) and self._evaluate_duplicates == "none":
+                    kernel[i, j] = 1
+                    if is_symmetric:
+                        kernel[j, i] = 1
+                else:
+                    # otherwise evaluate the element
                     to_be_computed_data_pair.append((x_i, y_j))
                     to_be_computed_index.append((i, j))
 
