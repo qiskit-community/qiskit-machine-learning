@@ -436,6 +436,32 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 ],
             )
 
+    def test_delayed_gradient_initialization(self):
+        """Test delayed gradient initialization."""
+        qc = QuantumCircuit(1)
+        input_param = Parameter("x")
+        qc.ry(input_param, 0)
+
+        weight_param = Parameter("w")
+        qc.rx(weight_param, 0)
+
+        # define QNN
+        qnn = CircuitQNN(
+            qc, [input_param], [weight_param], quantum_instance=self.quantum_instance_sv
+        )
+        self.assertIsNone(qnn._gradient_circuit)
+
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_qc1 = qnn._gradient_circuit
+        self.assertIsNotNone(grad_qc1)
+
+        qnn.input_gradients = True
+        self.assertIsNone(qnn._gradient_circuit)
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_qc2 = qnn._gradient_circuit
+        self.assertIsNotNone(grad_qc1)
+        self.assertNotEqual(grad_qc1, grad_qc2)
+
 
 if __name__ == "__main__":
     unittest.main()
