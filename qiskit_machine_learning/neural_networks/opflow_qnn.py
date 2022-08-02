@@ -80,9 +80,9 @@ class OpflowQNN(NeuralNetwork):
         self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
         self._gradient = gradient
-        self._input_gradients = input_gradients
-        self._gradient_operator = None
-        self._gradient_operator_constructed = False
+
+        # initialize gradient properties
+        self.input_gradients = input_gradients
 
         output_shape = self._compute_output_shape(operator)
         super().__init__(
@@ -148,7 +148,10 @@ class OpflowQNN(NeuralNetwork):
     def input_gradients(self, input_gradients: bool) -> None:
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
-        self._construct_gradient_operator()
+
+        # reset gradient operator
+        self._gradient_operator = None
+        self._gradient_operator_constructed = False
 
     @property
     def quantum_instance(self) -> QuantumInstance:
