@@ -92,7 +92,7 @@ class QuantumKernel:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
         # Class fields
-        self._feature_map = None
+        self._feature_map: QuantumCircuit | None = None  # type is required by mypy
         self._unbound_feature_map = None
         self._training_parameters = None
         self._training_parameter_binds = None
