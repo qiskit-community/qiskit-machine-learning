@@ -13,10 +13,9 @@
 """Quantum Kernel Algorithm"""
 from __future__ import annotations
 
-from typing import Sequence, Mapping, List
 import copy
 import numbers
-from typing import Optional, Union, Sequence, Mapping, List, Tuple, NoReturn
+from typing import Sequence, Mapping, List, Tuple, NoReturn
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
@@ -494,9 +493,7 @@ class QuantumKernel:
 
         # initialize kernel matrix
         kernel = np.zeros((x_vec.shape[0], y_vec.shape[0]))
-
-        # set diagonal to 1 if symmetric
-        if is_symmetric:
+        if is_symmetric and self._evaluate_duplicates != "all":
             np.fill_diagonal(kernel, 1)
 
         # calculate kernel
@@ -664,11 +661,16 @@ class QuantumKernel:
     ) -> Tuple[np.ndarray, np.ndarray]:
         # get indices to calculate
         if is_symmetric:
-            row_indices, col_indices = np.triu_indices(x_vec.shape[0], k=1)  # remove diagonal
+            if self._evaluate_duplicates == "all":
+                row_indices, col_indices = np.triu_indices(x_vec.shape[0])
+            else:
+                # exclude diagonal
+                row_indices, col_indices = np.triu_indices(x_vec.shape[0], k=1)
         else:
             row_indices, col_indices = np.indices((x_vec.shape[0], y_vec.shape[0]))
             row_indices = np.asarray(row_indices.flat)
             col_indices = np.asarray(col_indices.flat)
+
         return row_indices, col_indices
 
     def _check_training_parameters_bound(self) -> None:
