@@ -19,10 +19,10 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import qiskit
-from ddt import data, ddt
+from ddt import data, ddt, idata, unpack
 from qiskit import BasicAer, QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import ZZFeatureMap, ZFeatureMap
 from qiskit.transpiler import PassManagerConfig
 from qiskit.transpiler.preset_passmanagers import level_1_pass_manager
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -416,10 +416,8 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
         # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
-        circ2 = ZZFeatureMap(3)
+        circ2 = ZZFeatureMap(3, parameter_prefix="θ")
         training_params = circ2.parameters
-        for i, training_param in enumerate(training_params):
-            training_param._name = f"θ[{i}]"
 
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.training_parameters = training_params
@@ -706,6 +704,93 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         num_circuits = num_train * (num_train - 1) / 2
 
         self.assertEqual(sum(self.circuit_counts), num_circuits)
+
+
+@ddt
+class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
+    """Test QuantumKernel for duplicate evaluation."""
+
+    def count_circuits(self, func):
+        """Wrapper to record the number of circuits passed to QuantumInstance.execute.
+
+        Args:
+            func (Callable): execute function to be wrapped
+
+        Returns:
+            Callable: function wrapper
+        """
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwds):
+            self.circuit_counts += len(args[0])
+            return func(*args, **kwds)
+
+        return wrapper
+
+    def setUp(self):
+        super().setUp()
+        algorithm_globals.random_seed = 10598
+        self.circuit_counts = 0
+
+        self.qasm_simulator = QuantumInstance(
+            BasicAer.get_backend("qasm_simulator"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        # monkey patch the qasm simulator
+        self.qasm_simulator.execute = self.count_circuits(self.qasm_simulator.execute)
+
+        self.feature_map = ZFeatureMap(feature_dimension=2, reps=1)
+
+        self.properties = {
+            "no_dups": np.array([[1, 2], [2, 3], [3, 4]]),
+            "dups": np.array([[1, 2], [1, 2], [3, 4]]),
+            "y_vec": np.array([[0, 1], [1, 2]]),
+        }
+
+    @idata(
+        [
+            ("no_dups", "all", 6),
+            ("no_dups", "off_diagonal", 3),
+            ("no_dups", "none", 3),
+            ("dups", "all", 6),
+            ("dups", "off_diagonal", 3),
+            ("dups", "none", 2),
+        ]
+    )
+    @unpack
+    def test_evaluate_duplicates(self, dataset_name, evaluate_duplicates, expected_num_circuits):
+        """Tests symmetric quantum kernel evaluation with duplicate samples."""
+        self.circuit_counts = 0
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map,
+            evaluate_duplicates=evaluate_duplicates,
+            quantum_instance=self.qasm_simulator,
+        )
+        qkernel.evaluate(self.properties.get(dataset_name))
+        self.assertEqual(self.circuit_counts, expected_num_circuits)
+
+    @idata(
+        [
+            ("no_dups", "all", 6),
+            ("no_dups", "off_diagonal", 6),
+            ("no_dups", "none", 5),
+        ]
+    )
+    @unpack
+    def test_evaluate_duplicates_not_symmetric(
+        self, dataset_name, evaluate_duplicates, expected_num_circuits
+    ):
+        """Tests non-symmetric quantum kernel evaluation with duplicate samples."""
+        self.circuit_counts = 0
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map,
+            evaluate_duplicates=evaluate_duplicates,
+            quantum_instance=self.qasm_simulator,
+        )
+        qkernel.evaluate(self.properties.get(dataset_name), self.properties.get("y_vec"))
+        self.assertEqual(self.circuit_counts, expected_num_circuits)
 
 
 if __name__ == "__main__":
