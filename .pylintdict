@@ -41,6 +41,7 @@ datapoints
 dataset
 datasets
 deepcopy
+deterministically
 diag
 dicts
 dimensionality
@@ -226,6 +227,7 @@ vqr
 vx
 vy
 vz
+wikipedia
 wrt
 zoufal
 zsh
