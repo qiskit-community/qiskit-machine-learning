@@ -28,6 +28,7 @@ from qiskit.transpiler.preset_passmanagers import level_1_pass_manager
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from sklearn.svm import SVC
 
+from qiskit_machine_learning.algorithms import QSVC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.kernels import QuantumKernel
 
@@ -329,6 +330,20 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_feature_dim)
 
+    def test_adjust_feature_map(self):
+        """Test adjust feature map"""
+        qkclass = QuantumKernel(
+            feature_map=ZZFeatureMap(feature_dimension=3), quantum_instance=self.qasm_simulator
+        )
+        _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_test)
+
+    def test_fail_adjust_feature_map(self):
+        """Test feature map adjustment failed"""
+        feature_map = QuantumCircuit(3)
+        qkclass = QuantumKernel(feature_map=feature_map, quantum_instance=self.qasm_simulator)
+        with self.assertRaises(ValueError):
+            _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_test)
+
 
 class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
     """Test QuantumKernel ConstructCircuit Method"""
@@ -421,6 +436,23 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.training_parameters = training_params
+
+        self.statevector_simulator = QuantumInstance(
+            BasicAer.get_backend("statevector_simulator"),
+            shots=1,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        self.sample_train = np.asarray(
+            [
+                [3.07876080, 1.75929189],
+                [6.03185789, 5.27787566],
+                [6.22035345, 2.70176968],
+                [0.18849556, 2.82743339],
+            ]
+        )
+        self.label_train = np.asarray([0, 0, 1, 1])
 
     def test_training_parameters(self):
         """Test assigning/re-assigning user parameters"""
@@ -587,6 +619,19 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             self.assertEqual(
                 list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
             )
+
+    def test_unbound_parameters(self):
+        """Test unbound parameters."""
+        qc = QuantumCircuit(2)
+        parameters = [Parameter("x")]
+        qc.ry(parameters[0], 0)
+
+        qkernel = QuantumKernel(
+            qc, training_parameters=parameters, quantum_instance=self.statevector_simulator
+        )
+
+        qsvc = QSVC(quantum_kernel=qkernel)
+        self.assertRaises(ValueError, qsvc.fit, self.sample_train, self.label_train)
 
 
 class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
