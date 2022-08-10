@@ -21,10 +21,10 @@ from typing import Callable
 import numpy as np
 import scipy
 from ddt import ddt, data
-from qiskit import Aer
+import qiskit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning.algorithms import VQC
 
@@ -33,6 +33,7 @@ from qiskit_machine_learning.algorithms import VQC
 class TestVQC(QiskitMachineLearningTestCase):
     """VQC Tests."""
 
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
 
@@ -41,12 +42,12 @@ class TestVQC(QiskitMachineLearningTestCase):
         # specify quantum instances
         algorithm_globals.random_seed = 12345
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
+            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
