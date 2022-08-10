@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,15 +18,9 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, data
-<<<<<<< HEAD
-from qiskit import Aer
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
-=======
 import qiskit
-from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
->>>>>>> 505495f (Fix FakeToronto import (#424))
 
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 

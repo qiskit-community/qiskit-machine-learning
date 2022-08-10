@@ -20,16 +20,8 @@ from typing import Callable
 
 import numpy as np
 import scipy
-<<<<<<< HEAD
 from ddt import ddt, data
-from qiskit import Aer
-=======
-
-from sklearn.datasets import make_classification
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
-
 import qiskit
->>>>>>> 505495f (Fix FakeToronto import (#424))
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -47,26 +39,15 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         self.num_classes_by_batch = []
 
-<<<<<<< HEAD
         # specify quantum instances
         algorithm_globals.random_seed = 12345
         self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
-=======
-        # Set-up the quantum instances.
-        statevector = QuantumInstance(
             qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
-        qasm = QuantumInstance(
+        self.qasm_quantum_instance = QuantumInstance(
             qiskit.providers.aer.Aer.get_backend("aer_simulator"),
->>>>>>> 505495f (Fix FakeToronto import (#424))
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

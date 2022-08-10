@@ -23,14 +23,9 @@ import numpy as np
 import scipy
 
 from ddt import ddt, data, idata, unpack
-<<<<<<< HEAD
-from qiskit import Aer, QuantumCircuit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
-=======
 import qiskit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
 from qiskit.circuit import QuantumCircuit
->>>>>>> 505495f (Fix FakeToronto import (#424))
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 

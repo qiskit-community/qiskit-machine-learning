@@ -10,29 +10,18 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """ Test Neural Network Regressor """
-<<<<<<< HEAD
 
-=======
 import unittest
-import itertools
->>>>>>> 505495f (Fix FakeToronto import (#424))
 import os
 import tempfile
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-<<<<<<< HEAD
 from ddt import ddt, data
-from qiskit import Aer, QuantumCircuit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit.circuit import Parameter
-=======
-from ddt import ddt, unpack, idata
 import qiskit
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter, QuantumCircuit
->>>>>>> 505495f (Fix FakeToronto import (#424))
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -185,44 +174,9 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             with self.assertRaises(TypeError):
                 FakeModel.load(file_name)
 
-<<<<<<< HEAD
         finally:
             os.remove(file_name)
-=======
-    def test_untrained(self):
-        """Test untrained regressor."""
-        qnn = TwoLayerQNN(2)
-        regressor = NeuralNetworkRegressor(qnn)
-        with self.assertRaises(QiskitMachineLearningError, msg="regressor.predict()"):
-            regressor.predict(np.asarray([]))
-
-        with self.assertRaises(QiskitMachineLearningError, msg="regressor.fit_result"):
-            _ = regressor.fit_result
-
-        with self.assertRaises(QiskitMachineLearningError, msg="regressor.weights"):
-            _ = regressor.weights
-
-    def test_callback_setter(self):
-        """Test the callback setter."""
-        qnn = TwoLayerQNN(2, quantum_instance=self.qasm_quantum_instance)
-        single_step_opt = SPSA(maxiter=1, learning_rate=0.01, perturbation=0.1)
-        regressor = NeuralNetworkRegressor(qnn, optimizer=single_step_opt)
-
-        loss_history = []
-
-        def store_loss(_, loss):
-            loss_history.append(loss)
-
-        # use setter for the callback instead of providing in the initialize method
-        regressor.callback = store_loss
-
-        features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
-        labels = np.array([0, 0.1, 0.4, 1])
-        regressor.fit(features, labels)
-
-        self.assertEqual(len(loss_history), 3)
 
 
 if __name__ == "__main__":
     unittest.main()
->>>>>>> 505495f (Fix FakeToronto import (#424))
