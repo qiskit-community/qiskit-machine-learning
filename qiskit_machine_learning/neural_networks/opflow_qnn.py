@@ -80,8 +80,9 @@ class OpflowQNN(NeuralNetwork):
         self._operator = operator
         self._forward_operator = exp_val.convert(operator) if exp_val else operator
         self._gradient = gradient
-        self._input_gradients = input_gradients
-        self._construct_gradient_operator()
+
+        # initialize gradient properties
+        self.input_gradients = input_gradients
 
         output_shape = self._compute_output_shape(operator)
         super().__init__(
@@ -93,6 +94,9 @@ class OpflowQNN(NeuralNetwork):
         )
 
     def _construct_gradient_operator(self):
+        if self._gradient_operator_constructed:
+            return
+
         self._gradient_operator: OperatorBase = None
         try:
             gradient = self._gradient or Gradient()
@@ -104,6 +108,8 @@ class OpflowQNN(NeuralNetwork):
             self._gradient_operator = gradient.convert(self._operator, params)
         except (ValueError, TypeError, OpflowError, QiskitError):
             logger.warning("Cannot compute gradient operator! Continuing without gradients!")
+
+        self._gradient_operator_constructed = True
 
     def _compute_output_shape(self, op: OperatorBase) -> Tuple[int, ...]:
         """Determines the output shape of a given operator."""
@@ -142,7 +148,10 @@ class OpflowQNN(NeuralNetwork):
     def input_gradients(self, input_gradients: bool) -> None:
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
-        self._construct_gradient_operator()
+
+        # reset gradient operator
+        self._gradient_operator = None
+        self._gradient_operator_constructed = False
 
     @property
     def quantum_instance(self) -> QuantumInstance:
@@ -203,6 +212,8 @@ class OpflowQNN(NeuralNetwork):
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Tuple[Optional[Union[np.ndarray, SparseArray]], Optional[Union[np.ndarray, SparseArray]],]:
+
+        self._construct_gradient_operator()
 
         # check whether gradient circuit could be constructed
         if self._gradient_operator is None:

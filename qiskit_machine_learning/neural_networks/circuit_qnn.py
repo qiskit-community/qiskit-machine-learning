@@ -103,7 +103,10 @@ class CircuitQNN(SamplingNeuralNetwork):
         """
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
-        self._input_gradients = input_gradients
+
+        # initialize gradient properties
+        self.input_gradients = input_gradients
+
         sparse = False if sampling else sparse
         if sparse:
             _optionals.HAS_SPARSE.require_now("DOK")
@@ -141,10 +144,10 @@ class CircuitQNN(SamplingNeuralNetwork):
         # use given gradient or default
         self._gradient = gradient or Gradient()
 
-        # prepare probability gradient opflow object
-        self._construct_gradient_circuit()
-
     def _construct_gradient_circuit(self):
+        if self._gradient_circuit_constructed:
+            return
+
         self._gradient_circuit: OperatorBase = None
         try:
             # todo: avoid copying the circuit
@@ -157,6 +160,8 @@ class CircuitQNN(SamplingNeuralNetwork):
             self._gradient_circuit = self._gradient.convert(StateFn(grad_circuit), params)
         except (ValueError, TypeError, OpflowError, QiskitError):
             logger.warning("Cannot compute gradient operator! Continuing without gradients!")
+
+        self._gradient_circuit_constructed = True
 
     def _compute_output_shape(self, interpret, output_shape, sampling) -> Tuple[int, ...]:
         """Validate and compute the output shape."""
@@ -306,7 +311,10 @@ class CircuitQNN(SamplingNeuralNetwork):
     def input_gradients(self, input_gradients: bool) -> None:
         """Turn on/off gradient with respect to input data."""
         self._input_gradients = input_gradients
-        self._construct_gradient_circuit()
+
+        # reset gradient circuit
+        self._gradient_circuit = None
+        self._gradient_circuit_constructed = False
 
     def set_interpret(
         self,
@@ -428,6 +436,8 @@ class CircuitQNN(SamplingNeuralNetwork):
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Tuple[Union[np.ndarray, SparseArray], Union[np.ndarray, SparseArray]]:
         self._check_quantum_instance("probability gradients")
+
+        self._construct_gradient_circuit()
 
         # check whether gradient circuit could be constructed
         if self._gradient_circuit is None:
