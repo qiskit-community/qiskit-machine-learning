@@ -1,3 +1,4 @@
+adam
 adjoint
 al
 ancilla
@@ -9,7 +10,9 @@ asmatrix
 autograd
 autosummary
 backend
+backends
 backpropagation
+benchmarking
 bergholm
 bitstring
 bitstrings
