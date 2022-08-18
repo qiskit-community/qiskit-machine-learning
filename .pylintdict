@@ -41,8 +41,10 @@ datapoints
 dataset
 datasets
 deepcopy
+deterministically
 diag
 dicts
+dimensionality
 dir
 discretize
 discretized
@@ -68,6 +70,7 @@ hilbert
 hoc
 html
 hyperparameter
+hyperparameters
 init
 inlier
 inplace
@@ -84,6 +87,7 @@ kandala
 kernelized
 kwarg
 kwargs
+labelled
 lagrange
 langle
 macos
@@ -122,6 +126,7 @@ optimizers
 orthonormal
 otimes
 overfits
+overfitted
 overfitting
 ovo
 ovr
@@ -207,6 +212,7 @@ transpiled
 transpiler
 transpiles
 transpiling
+tunable
 uncompiled
 unitaries
 univariate
@@ -221,6 +227,7 @@ vqr
 vx
 vy
 vz
+wikipedia
 wrt
 zoufal
 zsh

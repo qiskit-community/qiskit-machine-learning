@@ -318,6 +318,33 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         qnn.forward(input_data, weights)
         qnn.backward(input_data, weights)
 
+    def test_delayed_gradient_initialization(self):
+        """Test delayed gradient initialization."""
+        qc = QuantumCircuit(1)
+        input_param = Parameter("x")
+        qc.ry(input_param, 0)
+
+        weight_param = Parameter("w")
+        qc.rx(weight_param, 0)
+
+        observable = StateFn(PauliSumOp.from_list([("Z", 1)]))
+        op = ~observable @ StateFn(qc)
+
+        # define QNN
+        qnn = OpflowQNN(op, [input_param], [weight_param])
+        self.assertIsNone(qnn._gradient_operator)
+
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_op1 = qnn._gradient_operator
+        self.assertIsNotNone(grad_op1)
+
+        qnn.input_gradients = True
+        self.assertIsNone(qnn._gradient_operator)
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_op2 = qnn._gradient_operator
+        self.assertIsNotNone(grad_op1)
+        self.assertNotEqual(grad_op1, grad_op2)
+
 
 if __name__ == "__main__":
     unittest.main()
