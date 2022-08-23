@@ -19,10 +19,12 @@ cargs
 carlo
 cbit
 centroid
+choi
 chuang
 clbit
 clbits
 codec
+colin
 config
 cong
 contravariance
@@ -59,6 +61,7 @@ entangler
 et
 eval
 expressibility
+farrokh
 formatter
 func
 gambetta
@@ -93,6 +96,7 @@ kwargs
 labelled
 lagrange
 langle
+lukin
 macos
 makefile
 matmul
@@ -110,6 +114,7 @@ multiclass
 multioutput
 mxd
 mypy
+nat
 ndarray
 nielsen
 nn
@@ -225,6 +230,7 @@ unsymmetric
 utf
 utils
 variational
+vatan
 vec
 vqc
 vqe
@@ -233,6 +239,7 @@ vx
 vy
 vz
 wikipedia
+williams
 wrt
 zoufal
 zsh
