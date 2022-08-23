@@ -24,7 +24,9 @@ clbit
 clbits
 codec
 config
+cong
 contravariance
+convolutional
 cpu
 creg
 crossentropyloss
@@ -61,6 +63,7 @@ formatter
 func
 gambetta
 gaussian
+gellmann
 getter
 gpu
 hamiltonian
@@ -101,6 +104,7 @@ mcrz
 misclassified
 mixin
 monte
+modelling
 mpl
 multiclass
 multioutput
@@ -136,6 +140,7 @@ parametrized
 params
 pauli
 pegasos
+pixelated
 pre
 precomputed
 precomputes
