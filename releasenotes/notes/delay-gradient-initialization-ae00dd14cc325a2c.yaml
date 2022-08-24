@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Gradient operator/circuit initialization in
+    :class:`~qiskit_machine_learning.neural_networks.OpflowQNN` and
+    :class:`~qiskit_machine_learning.neural_networks.CircuitQNN` respectively is now delayed until
+    the first call of the ``backward`` method. Thus, the networks are created faster and gradient
+    framework objects are not created until they are required.
