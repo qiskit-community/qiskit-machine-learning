@@ -17,12 +17,20 @@ boolean
 cargs
 carlo
 cbit
+<<<<<<< HEAD
+=======
+centroid
+choi
+>>>>>>> 31cc26c (Quantum Convolutional Neural Network (#462))
 chuang
 clbit
 clbits
 codec
+colin
 config
+cong
 contravariance
+convolutional
 cpu
 creg
 crossentropyloss
@@ -53,10 +61,12 @@ entangler
 et
 eval
 expressibility
+farrokh
 formatter
 func
 gambetta
 gaussian
+gellmann
 getter
 gpu
 hamiltonian
@@ -83,6 +93,7 @@ kernelized
 kwarg
 kwargs
 langle
+lukin
 macos
 makefile
 matmul
@@ -99,6 +110,7 @@ multiclass
 multioutput
 mxd
 mypy
+nat
 ndarray
 nielsen
 nn
@@ -128,6 +140,7 @@ parametrized
 params
 pauli
 pegasos
+pixelated
 pre
 precomputed
 precomputes
@@ -210,6 +223,7 @@ unsymmetric
 utf
 utils
 variational
+vatan
 vec
 vqc
 vqe
@@ -217,6 +231,11 @@ vqr
 vx
 vy
 vz
+<<<<<<< HEAD
+=======
+wikipedia
+williams
+>>>>>>> 31cc26c (Quantum Convolutional Neural Network (#462))
 wrt
 zoufal
 zsh
