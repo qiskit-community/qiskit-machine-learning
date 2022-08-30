@@ -17,11 +17,8 @@ boolean
 cargs
 carlo
 cbit
-<<<<<<< HEAD
-=======
 centroid
 choi
->>>>>>> 31cc26c (Quantum Convolutional Neural Network (#462))
 chuang
 clbit
 clbits
@@ -231,11 +228,8 @@ vqr
 vx
 vy
 vz
-<<<<<<< HEAD
-=======
 wikipedia
 williams
->>>>>>> 31cc26c (Quantum Convolutional Neural Network (#462))
 wrt
 zoufal
 zsh
