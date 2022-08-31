@@ -17,6 +17,10 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
+<<<<<<< HEAD
+=======
+
+>>>>>>> 03912b2 (Load Aer dynamically in unit tests (#466))
 from ddt import ddt, data
 import qiskit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
@@ -33,9 +37,17 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
+        import importlib
+
+        aer = importlib.import_module("qiskit.providers.aer")
         # specify "run configuration"
+<<<<<<< HEAD
         quantum_instance = QuantumInstance(
             qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+=======
+        self.quantum_instance = QuantumInstance(
+            aer.Aer.get_backend("aer_simulator_statevector"),
+>>>>>>> 03912b2 (Load Aer dynamically in unit tests (#466))
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )

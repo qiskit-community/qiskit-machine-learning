@@ -18,9 +18,15 @@ import tempfile
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
+<<<<<<< HEAD
 from ddt import ddt, data
 import qiskit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
+=======
+from ddt import ddt, unpack, idata
+
+from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
+>>>>>>> 03912b2 (Load Aer dynamically in unit tests (#466))
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
@@ -41,13 +47,16 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
+        import importlib
+
+        aer = importlib.import_module("qiskit.providers.aer")
         self.sv_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
+            aer.Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
