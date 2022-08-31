@@ -20,7 +20,6 @@ from ddt import ddt, data, idata, unpack
 
 import numpy as np
 
-import qiskit
 from qiskit.circuit import QuantumCircuit, Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -50,21 +49,25 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
+        import importlib
+
+        aer = importlib.import_module("qiskit.providers.aer")
+
         # specify "run configuration"
         self.quantum_instance_sv = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         # pylint: disable=no-member
         self.quantum_instance_qasm = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
+            aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.quantum_instance_pm = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
+            aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
