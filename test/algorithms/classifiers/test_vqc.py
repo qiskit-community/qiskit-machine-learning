@@ -20,16 +20,7 @@ from typing import Callable
 
 import numpy as np
 import scipy
-<<<<<<< HEAD
 from ddt import ddt, data
-import qiskit
-=======
-
-from sklearn.datasets import make_classification
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
-
-from qiskit import QuantumCircuit
->>>>>>> 03912b2 (Load Aer dynamically in unit tests (#466))
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -46,29 +37,19 @@ class TestVQC(QiskitMachineLearningTestCase):
         super().setUp()
 
         self.num_classes_by_batch = []
-        import importlib
 
-<<<<<<< HEAD
         # specify quantum instances
         algorithm_globals.random_seed = 12345
-        self.sv_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        self.qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
-=======
+        import importlib
+
         aer = importlib.import_module("qiskit.providers.aer")
-        # Set-up the quantum instances.
-        statevector = QuantumInstance(
+        self.sv_quantum_instance = QuantumInstance(
             aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
-        qasm = QuantumInstance(
+        self.qasm_quantum_instance = QuantumInstance(
             aer.Aer.get_backend("aer_simulator"),
->>>>>>> 03912b2 (Load Aer dynamically in unit tests (#466))
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

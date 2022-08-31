@@ -18,15 +18,8 @@ import tempfile
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-<<<<<<< HEAD
 from ddt import ddt, data
-import qiskit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
-=======
-from ddt import ddt, unpack, idata
-
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
->>>>>>> 03912b2 (Load Aer dynamically in unit tests (#466))
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp

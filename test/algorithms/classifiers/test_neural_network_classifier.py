@@ -23,13 +23,7 @@ import numpy as np
 import scipy
 
 from ddt import ddt, data, idata, unpack
-<<<<<<< HEAD
-import qiskit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, Optimizer
-=======
-
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
->>>>>>> 03912b2 (Load Aer dynamically in unit tests (#466))
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
