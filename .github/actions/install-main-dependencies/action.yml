@@ -74,6 +74,7 @@ runs:
           pushd "${BASE_DIR}"
           python -m pip install *.whl
           popd
+          pip uninstall -y setuptools_rust
         fi
       shell: bash
     - name: Install Aer from Main
