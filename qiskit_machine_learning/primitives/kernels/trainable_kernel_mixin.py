@@ -17,15 +17,12 @@ import numpy as np
 
 from qiskit.circuit import Parameter, ParameterVector
 
+
 class TrainableKernelMixin:
-    r"""
-    """
+    r""" """
 
     def __init__(
-        self,
-        training_parameters: ParameterVector | list[Parameter] | None = None,
-        *args,
-        **kwargs
+        self, training_parameters: ParameterVector | list[Parameter] | None = None, *args, **kwargs
     ) -> None:
         super().__init__(*args, **kwargs)
 
@@ -69,4 +66,3 @@ class TrainableKernelMixin:
         Numerical values assigned to the training parameters.
         """
         return np.array([self._parameter_dict[param] for param in self._training_parameters])
-
