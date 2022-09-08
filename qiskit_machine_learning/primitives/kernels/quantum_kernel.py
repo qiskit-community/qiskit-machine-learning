@@ -126,6 +126,7 @@ class QuantumKernel(BaseKernel):
 
         if is_symmetric and self._enforce_psd:
             kernel_matrix = self._make_psd(kernel_matrix)
+        # todo: 1x1 no psd, none for duplicates returns [[True]]
         return kernel_matrix
 
     def _get_parametrization(
