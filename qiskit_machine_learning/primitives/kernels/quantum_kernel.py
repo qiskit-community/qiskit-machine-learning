@@ -63,8 +63,9 @@ class QuantumKernel(BaseKernel):
 
         if feature_map is None:
             feature_map = ZZFeatureMap(2)
+        self._feature_map = feature_map
 
-        self._num_features = feature_map.num_parameters
+        self._num_features = self._feature_map.num_parameters
         eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
             raise ValueError(
@@ -79,9 +80,7 @@ class QuantumKernel(BaseKernel):
                     "(currently set to None)."
                 )
             if fidelity == "zero_prob":
-                self._fidelity = ComputeUncompute(
-                    sampler=sampler, left_circuit=feature_map, right_circuit=feature_map
-                )
+                self._fidelity = ComputeUncompute(sampler=sampler)
             else:
                 raise ValueError(
                     f"{fidelity} is not a valid string for a fidelity. Currently supported: 'zero_prob'."
@@ -93,7 +92,6 @@ class QuantumKernel(BaseKernel):
                     " for `fidelity`, the sampler will not be used.",
                 )
             self._fidelity = fidelity
-            fidelity.set_circuits(left_circuit=feature_map, right_circuit=feature_map)
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
         x_vec, y_vec = self._check_and_reshape(x_vec, y_vec)
@@ -132,7 +130,7 @@ class QuantumKernel(BaseKernel):
 
     def _get_parametrization(
         self, x_vec: np.ndarray, y_vec: np.ndarray, trivial_entries: np.ndarray
-    ) -> tuple[np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Combines x_vec and y_vec to get all the combinations needed to evaluate the kernel entries.
         """
@@ -157,7 +155,7 @@ class QuantumKernel(BaseKernel):
 
     def _get_symmetric_parametrization(
         self, x_vec: np.ndarray, trivial_entries: np.ndarray
-    ) -> tuple[np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Combines two copies of x_vec to get all the combinations needed to evaluate the kernel entries.
         """
@@ -189,7 +187,9 @@ class QuantumKernel(BaseKernel):
         """
         if np.all(trivial_entries):
             return trivial_entries
-        kernel_entries = self._fidelity(left_parameters, right_parameters)
+        kernel_entries = self._fidelity.run(
+            [self._feature_map], [self._feature_map], [left_parameters], [right_parameters]
+        ).result()
         kernel_matrix = np.zeros(trivial_entries.shape)
 
         index = 0
@@ -210,7 +210,15 @@ class QuantumKernel(BaseKernel):
         """
         if np.all(trivial_entries):
             return trivial_entries
-        kernel_entries = self._fidelity(left_parameters, right_parameters)
+        # todo: a quick fix
+        size = left_parameters.shape[0]
+        job = self._fidelity.run(
+            [self._feature_map] * size,
+            [self._feature_map] * size,
+            left_parameters,
+            right_parameters,
+        )
+        kernel_entries = job.result().fidelities
         kernel_matrix = np.zeros(trivial_entries.shape)
         index = 0
         for i in range(trivial_entries.shape[0]):

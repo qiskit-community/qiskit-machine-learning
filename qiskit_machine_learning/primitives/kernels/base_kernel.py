@@ -13,8 +13,8 @@
 """Base kernel"""
 
 from __future__ import annotations
+
 from abc import abstractmethod, ABC
-from typing import Tuple
 
 import numpy as np
 
@@ -76,7 +76,9 @@ class BaseKernel(ABC):
         """
         raise NotImplementedError()
 
-    def _check_and_reshape(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> Tuple[np.ndarray]:
+    def _check_and_reshape(
+        self, x_vec: np.ndarray, y_vec: np.ndarray = None
+    ) -> tuple[np.ndarray, np.ndarray]:
         r"""
         Performs checks on the dimensions of the input data x_vec and y_vec.
         Reshapes the arrays so that `x_vec.shape = (N,D)` and `y_vec.shape = (M,D)`.
