@@ -187,9 +187,15 @@ class QuantumKernel(BaseKernel):
         """
         if np.all(trivial_entries):
             return trivial_entries
-        kernel_entries = self._fidelity.run(
-            [self._feature_map], [self._feature_map], [left_parameters], [right_parameters]
-        ).result()
+        # todo: a quick fix
+        size = left_parameters.shape[0]
+        job = self._fidelity.run(
+            [self._feature_map] * size,
+            [self._feature_map] * size,
+            left_parameters,
+            right_parameters,
+        )
+        kernel_entries = job.result().fidelities
         kernel_matrix = np.zeros(trivial_entries.shape)
 
         index = 0
