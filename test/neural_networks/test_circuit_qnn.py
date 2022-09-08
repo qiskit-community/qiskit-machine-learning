@@ -20,7 +20,6 @@ from ddt import ddt, data, idata, unpack
 
 import numpy as np
 
-import qiskit
 from qiskit.circuit import QuantumCircuit, Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -50,21 +49,25 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
+        import importlib
+
+        aer = importlib.import_module("qiskit.providers.aer")
+
         # specify "run configuration"
         self.quantum_instance_sv = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         # pylint: disable=no-member
         self.quantum_instance_qasm = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
+            aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.quantum_instance_pm = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
+            aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
@@ -435,6 +438,32 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                     "from the number of samples and interpret function, if provided."
                 ],
             )
+
+    def test_delayed_gradient_initialization(self):
+        """Test delayed gradient initialization."""
+        qc = QuantumCircuit(1)
+        input_param = Parameter("x")
+        qc.ry(input_param, 0)
+
+        weight_param = Parameter("w")
+        qc.rx(weight_param, 0)
+
+        # define QNN
+        qnn = CircuitQNN(
+            qc, [input_param], [weight_param], quantum_instance=self.quantum_instance_sv
+        )
+        self.assertIsNone(qnn._gradient_circuit)
+
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_qc1 = qnn._gradient_circuit
+        self.assertIsNotNone(grad_qc1)
+
+        qnn.input_gradients = True
+        self.assertIsNone(qnn._gradient_circuit)
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_qc2 = qnn._gradient_circuit
+        self.assertIsNotNone(grad_qc1)
+        self.assertNotEqual(grad_qc1, grad_qc2)
 
 
 if __name__ == "__main__":

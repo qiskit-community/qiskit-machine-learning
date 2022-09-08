@@ -19,12 +19,16 @@ cargs
 carlo
 cbit
 centroid
+choi
 chuang
 clbit
 clbits
 codec
+colin
 config
+cong
 contravariance
+convolutional
 cpu
 creg
 crossentropyloss
@@ -41,8 +45,10 @@ datapoints
 dataset
 datasets
 deepcopy
+deterministically
 diag
 dicts
+dimensionality
 dir
 discretize
 discretized
@@ -55,10 +61,12 @@ entangler
 et
 eval
 expressibility
+farrokh
 formatter
 func
 gambetta
 gaussian
+gellmann
 getter
 gpu
 hamiltonian
@@ -68,6 +76,7 @@ hilbert
 hoc
 html
 hyperparameter
+hyperparameters
 init
 inlier
 inplace
@@ -84,7 +93,10 @@ kandala
 kernelized
 kwarg
 kwargs
+labelled
+lagrange
 langle
+lukin
 macos
 makefile
 matmul
@@ -101,6 +113,7 @@ multiclass
 multioutput
 mxd
 mypy
+nat
 ndarray
 nielsen
 nn
@@ -121,6 +134,7 @@ optimizers
 orthonormal
 otimes
 overfits
+overfitted
 overfitting
 ovo
 ovr
@@ -130,6 +144,7 @@ parametrized
 params
 pauli
 pegasos
+pixelated
 pre
 precomputed
 precomputes
@@ -206,6 +221,7 @@ transpiled
 transpiler
 transpiles
 transpiling
+tunable
 uncompiled
 unitaries
 univariate
@@ -213,6 +229,7 @@ unsymmetric
 utf
 utils
 variational
+vatan
 vec
 vqc
 vqe
@@ -220,6 +237,8 @@ vqr
 vx
 vy
 vz
+wikipedia
+williams
 wrt
 zoufal
 zsh

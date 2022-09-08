@@ -20,7 +20,7 @@ import unittest
 from ddt import ddt, data
 
 import numpy as np
-import qiskit
+
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliExpectation, Gradient, StateFn, PauliSumOp, ListOp
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -41,15 +41,18 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
         super().setUp()
 
         algorithm_globals.random_seed = 12345
+        import importlib
+
+        aer = importlib.import_module("qiskit.providers.aer")
         # specify quantum instances
         self.sv_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         # pylint: disable=no-member
         self.qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
+            aer.AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
@@ -317,6 +320,33 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
 
         qnn.forward(input_data, weights)
         qnn.backward(input_data, weights)
+
+    def test_delayed_gradient_initialization(self):
+        """Test delayed gradient initialization."""
+        qc = QuantumCircuit(1)
+        input_param = Parameter("x")
+        qc.ry(input_param, 0)
+
+        weight_param = Parameter("w")
+        qc.rx(weight_param, 0)
+
+        observable = StateFn(PauliSumOp.from_list([("Z", 1)]))
+        op = ~observable @ StateFn(qc)
+
+        # define QNN
+        qnn = OpflowQNN(op, [input_param], [weight_param])
+        self.assertIsNone(qnn._gradient_operator)
+
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_op1 = qnn._gradient_operator
+        self.assertIsNotNone(grad_op1)
+
+        qnn.input_gradients = True
+        self.assertIsNone(qnn._gradient_operator)
+        qnn.backward(np.asarray([1]), np.asarray([1]))
+        grad_op2 = qnn._gradient_operator
+        self.assertIsNotNone(grad_op1)
+        self.assertNotEqual(grad_op1, grad_op2)
 
 
 if __name__ == "__main__":

@@ -27,9 +27,9 @@ import scipy
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-import qiskit
+from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning.algorithms import VQC
@@ -75,15 +75,17 @@ class TestVQC(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.random_seed = 1111111
         self.num_classes_by_batch = []
+        import importlib
 
+        aer = importlib.import_module("qiskit.providers.aer")
         # Set-up the quantum instances.
         statevector = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            aer.Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         qasm = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
+            aer.Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
@@ -288,6 +290,27 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         predict = classifier.predict(features[0, :])
         self.assertIn(predict, ["A", "B"])
+
+    def test_circuit_extensions(self):
+        """Test VQC when the number of qubits is different compared to the feature map/ansatz."""
+        num_qubits = 2
+        classifier = VQC(
+            num_qubits=num_qubits,
+            feature_map=ZFeatureMap(1),
+            ansatz=RealAmplitudes(1),
+            quantum_instance=self.properties.get("statevector"),
+        )
+        self.assertEqual(classifier.feature_map.num_qubits, num_qubits)
+        self.assertEqual(classifier.ansatz.num_qubits, num_qubits)
+
+        qc = QuantumCircuit(1)
+        with self.assertRaises(QiskitMachineLearningError):
+            _ = VQC(
+                num_qubits=num_qubits,
+                feature_map=qc,
+                ansatz=qc,
+                quantum_instance=self.properties.get("statevector"),
+            )
 
 
 if __name__ == "__main__":

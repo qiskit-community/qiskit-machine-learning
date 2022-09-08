@@ -25,6 +25,7 @@
 #
 import os
 import sys
+from datetime import date
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.append(os.path.abspath("."))
@@ -49,9 +50,7 @@ os.environ["QISKIT_DOCS"] = "TRUE"
 
 # -- Project information -----------------------------------------------------
 project = "Qiskit Machine Learning"
-copyright = (
-    "2018, 2021, Qiskit Machine Learning Development Team"  # pylint: disable=redefined-builtin
-)
+copyright = f"2018, {date.today().year}, Qiskit Machine Learning Development Team"  # pylint: disable=redefined-builtin
 author = "Qiskit Machine Learning Development Team"
 
 # The short X.Y version
@@ -211,7 +210,11 @@ html_theme_options = {
 }
 
 intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
+    "qiskit": ("https://qiskit.org/documentation/", None),
 }
 
 import sphinx
