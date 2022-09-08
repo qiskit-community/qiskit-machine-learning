@@ -14,7 +14,6 @@
 from __future__ import annotations
 import functools
 import itertools
-from os import dup
 import unittest
 import re
 
@@ -25,13 +24,13 @@ from ddt import ddt, idata, unpack
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.utils import algorithm_globals
 from qiskit.primitives import Sampler
-from qiskit.algorithms.fidelities import Fidelity, BaseFidelity
+from qiskit.algorithms.state_fidelities import BaseStateFidelity, ComputeUncompute
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.primitives.kernels import QuantumKernel
 
 
-class MockFidelity(BaseFidelity):
+class MockFidelity(BaseStateFidelity):
     """Custom fidelity that returns -0.5 for any input."""
 
     def __call__(
@@ -67,7 +66,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
         self.label_test = np.asarray([0, 1])
 
         self.sampler_factory = functools.partial(Sampler)
-        self.fidelity = Fidelity(self.sampler_factory)
+        self.fidelity = ComputeUncompute(self.sampler_factory)
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""

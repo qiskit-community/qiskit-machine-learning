@@ -19,10 +19,10 @@ from qiskit.circuit import Parameter, ParameterVector
 
 
 class TrainableKernelMixin:
-    r""" """
+    """A mixin that adds ability to train kernel."""
 
     def __init__(
-        self, training_parameters: ParameterVector | list[Parameter] | None = None, *args, **kwargs
+        self, *args, training_parameters: ParameterVector | list[Parameter] | None = None,  **kwargs
     ) -> None:
         super().__init__(*args, **kwargs)
 

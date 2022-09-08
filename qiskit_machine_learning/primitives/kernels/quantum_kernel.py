@@ -18,7 +18,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.primitives import Sampler
-from qiskit.algorithms.fidelities import BaseFidelity, Fidelity
+from qiskit.algorithms.state_fidelities import BaseStateFidelity, ComputeUncompute
 
 from .base_kernel import BaseKernel
 
@@ -55,7 +55,7 @@ class QuantumKernel(BaseKernel):
         self,
         sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
-        fidelity: str | BaseFidelity = "zero_prob",
+        fidelity: str | BaseStateFidelity = "zero_prob",
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
     ) -> None:
@@ -79,7 +79,7 @@ class QuantumKernel(BaseKernel):
                     "(currently set to None)."
                 )
             if fidelity == "zero_prob":
-                self._fidelity = Fidelity(
+                self._fidelity = ComputeUncompute(
                     sampler=sampler, left_circuit=feature_map, right_circuit=feature_map
                 )
             else:

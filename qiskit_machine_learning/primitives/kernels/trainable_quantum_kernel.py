@@ -18,7 +18,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.primitives import Sampler
-from qiskit.algorithms.fidelities import BaseFidelity
+from qiskit.algorithms.state_fidelities import BaseStateFidelity
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from .quantum_kernel import QuantumKernel
@@ -44,7 +44,7 @@ class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
         self,
         sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
-        fidelity: str | BaseFidelity = "zero_prob",
+        fidelity: str | BaseStateFidelity = "zero_prob",
         training_parameters: ParameterVector | list[Parameter] | None = None,
         enforce_psd: bool = True,
     ) -> None:
