@@ -16,6 +16,9 @@ import functools
 import itertools
 import unittest
 import re
+from typing import Sequence
+
+from qiskit import QuantumCircuit
 
 from test import QiskitMachineLearningTestCase
 
@@ -24,7 +27,11 @@ from ddt import ddt, idata, unpack
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.utils import algorithm_globals
 from qiskit.primitives import Sampler
-from qiskit.algorithms.state_fidelities import BaseStateFidelity, ComputeUncompute
+from qiskit.algorithms.state_fidelities import (
+    BaseStateFidelity,
+    ComputeUncompute,
+    StateFidelityResult,
+)
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.primitives.kernels import QuantumKernel
@@ -33,12 +40,20 @@ from qiskit_machine_learning.primitives.kernels import QuantumKernel
 class MockFidelity(BaseStateFidelity):
     """Custom fidelity that returns -0.5 for any input."""
 
-    def __call__(
+    def create_fidelity_circuit(
+        self, circuit_1: QuantumCircuit, circuit_2: QuantumCircuit
+    ) -> QuantumCircuit:
+        raise NotImplementedError()
+
+    def _run(
         self,
-        values_left: np.ndarray | list[np.ndarray] | None = None,
-        values_right: np.ndarray | list[np.ndarray] | None = None,
-    ) -> np.ndarray:
-        return np.zeros(values_left.shape[0]) - 0.5
+        circuits_1: QuantumCircuit | Sequence[QuantumCircuit],
+        circuits_2: QuantumCircuit | Sequence[QuantumCircuit],
+        values_1: Sequence[float] | Sequence[Sequence[float]] | None = None,
+        values_2: Sequence[float] | Sequence[Sequence[float]] | None = None,
+        **run_options,
+    ) -> StateFidelityResult:
+        return StateFidelityResult(np.zeros(len(values_1)) - 0.5, [], [{}], {})
 
 
 @ddt
@@ -65,12 +80,12 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
 
-        self.sampler_factory = functools.partial(Sampler)
-        self.fidelity = ComputeUncompute(self.sampler_factory)
+        self.sampler = Sampler()
+        self.fidelity = ComputeUncompute(self.sampler)
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""
-        kernel = QuantumKernel(sampler=self.sampler_factory, feature_map=self.feature_map)
+        kernel = QuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         score = svc.score(self.sample_test, self.label_test)
@@ -79,7 +94,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
     def test_svc_precomputed(self):
         """Test precomputed kernel in sklearn."""
-        kernel = QuantumKernel(sampler=self.sampler_factory, feature_map=self.feature_map)
+        kernel = QuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
         kernel_train = kernel.evaluate(x_vec=self.sample_train)
         kernel_test = kernel.evaluate(x_vec=self.sample_test, y_vec=self.sample_train)
 
@@ -115,14 +130,14 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
         if fidelity == "default":
             kernel = QuantumKernel(
-                sampler=self.sampler_factory,
+                sampler=self.sampler,
                 feature_map=feature_map,
                 enforce_psd=enforce_psd,
                 evaluate_duplicates=duplicates,
             )
         elif fidelity == "zero_prob":
             kernel = QuantumKernel(
-                sampler=self.sampler_factory,
+                sampler=self.sampler,
                 feature_map=feature_map,
                 fidelity="zero_prob",
                 enforce_psd=enforce_psd,
@@ -189,14 +204,14 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
         if fidelity == "default":
             kernel = QuantumKernel(
-                sampler=self.sampler_factory,
+                sampler=self.sampler,
                 feature_map=feature_map,
                 enforce_psd=enforce_psd,
                 evaluate_duplicates=duplicates,
             )
         elif fidelity == "zero_prob":
             kernel = QuantumKernel(
-                sampler=self.sampler_factory,
+                sampler=self.sampler,
                 feature_map=feature_map,
                 fidelity="zero_prob",
                 enforce_psd=enforce_psd,
@@ -217,7 +232,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 evaluate_duplicates=duplicates,
             )
 
-        if solution == "wrong":
+        if isinstance(solution, str) and solution == "wrong":
             with self.assertRaises(ValueError):
                 _ = kernel.evaluate(x_vec, y_vec)
         else:
