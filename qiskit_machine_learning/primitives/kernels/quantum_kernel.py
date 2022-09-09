@@ -12,13 +12,13 @@
 """Overlap Quantum Kernel"""
 
 from __future__ import annotations
-import warnings
-import numpy as np
 
+import warnings
+
+import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap
-from qiskit.primitives import Sampler
 from qiskit.algorithms.state_fidelities import BaseStateFidelity, ComputeUncompute
+from qiskit.primitives import Sampler
 
 from .base_kernel import BaseKernel
 
@@ -59,13 +59,14 @@ class QuantumKernel(BaseKernel):
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
     ) -> None:
-        super().__init__(enforce_psd=enforce_psd)
+        super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
 
-        if feature_map is None:
-            feature_map = ZZFeatureMap(2)
-        self._feature_map = feature_map
+        # if feature_map is None:
+        #     feature_map = ZZFeatureMap(2)
+        # self._feature_map = feature_map
+        #
+        # self._num_features = self._feature_map.num_parameters
 
-        self._num_features = self._feature_map.num_parameters
         eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
             raise ValueError(
@@ -94,8 +95,15 @@ class QuantumKernel(BaseKernel):
             self._fidelity = fidelity
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
-        x_vec, y_vec = self._check_and_reshape(x_vec, y_vec)
-        is_symmetric = np.all(x_vec == y_vec)
+        x_vec, y_vec = self._validate_input(x_vec, y_vec)
+
+        # determine if calculating self inner product
+        is_symmetric = True
+        if y_vec is None:
+            y_vec = x_vec
+        elif not np.array_equal(x_vec, y_vec):
+            is_symmetric = False
+
         shape = len(x_vec), len(y_vec)
 
         if self._evaluate_duplicates == "off_diagonal" and is_symmetric:
@@ -107,6 +115,8 @@ class QuantumKernel(BaseKernel):
         else:
             # no entries are trivial
             trivial_entries = np.zeros(shape, dtype=bool)
+
+        # todo: check if all entries are trivial and return here
 
         if is_symmetric:
             left_parameters, right_parameters = self._get_symmetric_parametrization(
@@ -126,7 +136,6 @@ class QuantumKernel(BaseKernel):
 
         if is_symmetric and self._enforce_psd:
             kernel_matrix = self._make_psd(kernel_matrix)
-        # todo: 1x1 no psd, none for duplicates returns [[True]]
         return kernel_matrix
 
     def _get_parametrization(
@@ -184,7 +193,7 @@ class QuantumKernel(BaseKernel):
         self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
     ) -> np.ndarray:
         """
-        Given a parametrization, this computes the symmetric kernel matrix.
+        Given a parameterization, this computes the symmetric kernel matrix.
         """
         if np.all(trivial_entries):
             return trivial_entries
@@ -213,9 +222,10 @@ class QuantumKernel(BaseKernel):
         self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
     ) -> np.ndarray:
         """
-        Given a set of parametrization, this computes the kernel matrix.
+        Given a set of parameterization, this computes the kernel matrix.
         """
         if np.all(trivial_entries):
+            # todo: this returns a matrix of bool values!
             return trivial_entries
         # todo: a quick fix
         size = left_parameters.shape[0]

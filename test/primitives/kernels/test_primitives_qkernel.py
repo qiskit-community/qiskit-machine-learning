@@ -163,8 +163,8 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
     @idata(
         itertools.product(
-            ["1_param", "4_params", "wrong"],
-            ["1_param", "4_params", "2_params", "wrong"],
+            ["1_param", "4_params"],
+            ["1_param", "4_params", "2_params"],
             ["default", "zero_prob", "fidelity_instance"],  # "mock_fidelity"
             ["ZZ", "Z"],
             [True, False],
@@ -184,8 +184,6 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
             x_vec = self.sample_train[0]
         elif params_x == "4_params":
             x_vec = self.sample_train
-        else:
-            x_vec = np.zeros((2, 3))
 
         if params_y == "1_param":
             y_vec = self.sample_train[0]
@@ -193,8 +191,6 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
             y_vec = self.sample_train
         elif params_y == "2_params":
             y_vec = self.sample_test
-        else:
-            y_vec = np.zeros((2, 3))
 
         if feature_map == "Z":
             feature_map = self.feature_map

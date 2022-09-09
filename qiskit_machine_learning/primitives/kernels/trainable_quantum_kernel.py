@@ -56,7 +56,8 @@ class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
             enforce_psd=enforce_psd,
         )
 
-        self._num_features = self._num_features - self.num_parameters
+        # self._num_features = self._num_features - self.num_parameters
+        self._num_features = feature_map.num_parameters - self.num_parameters
         self._feature_parameters = [
             parameter
             for parameter in feature_map.parameters
