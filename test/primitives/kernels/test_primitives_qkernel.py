@@ -12,26 +12,24 @@
 
 """ Test QuantumKernel using primitives """
 from __future__ import annotations
-import functools
+
 import itertools
-import unittest
 import re
+import unittest
 from typing import Sequence
-
-from qiskit import QuantumCircuit
-
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, idata, unpack
-from qiskit.circuit.library import ZFeatureMap
-from qiskit.utils import algorithm_globals
-from qiskit.primitives import Sampler
+from qiskit import QuantumCircuit
 from qiskit.algorithms.state_fidelities import (
     BaseStateFidelity,
     ComputeUncompute,
     StateFidelityResult,
 )
+from qiskit.circuit.library import ZFeatureMap
+from qiskit.primitives import Sampler
+from qiskit.utils import algorithm_globals
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.primitives.kernels import QuantumKernel
@@ -238,12 +236,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 _ = kernel.evaluate(x_vec, y_vec)
         else:
             kernel_matrix = kernel.evaluate(x_vec, y_vec)
-            try:
-                np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
-            except Exception as e:
-                print(f"Kernel matrix: {kernel_matrix}")
-                print(f"Solution {solution}")
-                raise e
+            np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
 
     def _get_symmetric_solution(self, params, fidelity, feature_map, enforce_psd):
         if fidelity == "mock_fidelity":

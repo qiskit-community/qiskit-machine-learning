@@ -13,6 +13,7 @@
 """ Test TrainableQuantumKernel using primitives """
 
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, data
@@ -21,7 +22,6 @@ from qiskit.circuit.library import ZZFeatureMap
 from qiskit.primitives import Sampler
 
 from qiskit_machine_learning.primitives.kernels import TrainableQuantumKernel
-from test import QiskitMachineLearningTestCase
 
 
 @ddt
