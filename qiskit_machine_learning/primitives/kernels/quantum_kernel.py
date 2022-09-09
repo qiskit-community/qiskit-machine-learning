@@ -119,7 +119,7 @@ class QuantumKernel(BaseKernel):
         # todo: check if all entries are trivial and return here
 
         if is_symmetric:
-            left_parameters, right_parameters = self._get_symmetric_parametrization(
+            left_parameters, right_parameters = self._get_symmetric_parameterization(
                 x_vec, trivial_entries
             )
             kernel_matrix = self._get_symmetric_kernel_matrix(
@@ -127,7 +127,7 @@ class QuantumKernel(BaseKernel):
             )
 
         else:
-            left_parameters, right_parameters = self._get_parametrization(
+            left_parameters, right_parameters = self._get_parameterization(
                 x_vec, y_vec, trivial_entries
             )
             kernel_matrix = self._get_kernel_matrix(
@@ -138,7 +138,7 @@ class QuantumKernel(BaseKernel):
             kernel_matrix = self._make_psd(kernel_matrix)
         return kernel_matrix
 
-    def _get_parametrization(
+    def _get_parameterization(
         self, x_vec: np.ndarray, y_vec: np.ndarray, trivial_entries: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray]:
         """
@@ -163,7 +163,7 @@ class QuantumKernel(BaseKernel):
 
         return left_parameters, right_parameters
 
-    def _get_symmetric_parametrization(
+    def _get_symmetric_parameterization(
         self, x_vec: np.ndarray, trivial_entries: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray]:
         """
