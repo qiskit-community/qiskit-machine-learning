@@ -104,99 +104,105 @@ class QuantumKernel(BaseKernel):
         elif not np.array_equal(x_vec, y_vec):
             is_symmetric = False
 
-        shape = len(x_vec), len(y_vec)
-
-        if self._evaluate_duplicates == "off_diagonal" and is_symmetric:
-            # diagonal entries are trivial
-            trivial_entries = np.eye(shape[0], dtype=bool)
-        elif self._evaluate_duplicates == "none":
-            # entries with same parameters are trivial
-            trivial_entries = np.array([[np.all(x_i == y_j) for y_j in y_vec] for x_i in x_vec])
-        else:
-            # no entries are trivial
-            trivial_entries = np.zeros(shape, dtype=bool)
-
-        # todo: check if all entries are trivial and return here
+        kernel_shape = (x_vec.shape[0], y_vec.shape[0])
 
         if is_symmetric:
-            left_parameters, right_parameters = self._get_symmetric_parameterization(
-                x_vec, trivial_entries
-            )
+            left_parameters, right_parameters, indices = self._get_symmetric_parameterization(x_vec)
             kernel_matrix = self._get_symmetric_kernel_matrix(
-                left_parameters, right_parameters, trivial_entries
+                kernel_shape, left_parameters, right_parameters, indices
             )
-
         else:
-            left_parameters, right_parameters = self._get_parameterization(
-                x_vec, y_vec, trivial_entries
+            left_parameters, right_parameters, indices = self._get_parameterization(
+                x_vec, y_vec
             )
             kernel_matrix = self._get_kernel_matrix(
-                left_parameters, right_parameters, trivial_entries
+                kernel_shape, left_parameters, right_parameters, indices
             )
 
         if is_symmetric and self._enforce_psd:
             kernel_matrix = self._make_psd(kernel_matrix)
+
         return kernel_matrix
 
     def _get_parameterization(
-        self, x_vec: np.ndarray, y_vec: np.ndarray, trivial_entries: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, x_vec: np.ndarray, y_vec: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, list[tuple[int, int]]]:
         """
         Combines x_vec and y_vec to get all the combinations needed to evaluate the kernel entries.
         """
-        x_count = x_vec.shape[0]
-        y_count = y_vec.shape[0]
+        num_features = x_vec.shape[1]
+        left_parameters = np.zeros((0, num_features))
+        right_parameters = np.zeros((0, num_features))
 
-        num_trivials = np.sum(trivial_entries)
-
-        left_parameters = np.zeros((x_count * y_count - num_trivials, x_vec.shape[1]))
-        right_parameters = np.zeros((x_count * y_count - num_trivials, y_vec.shape[1]))
-        index = 0
+        indices = []
         for i, x_i in enumerate(x_vec):
             for j, y_j in enumerate(y_vec):
-                if trivial_entries[i, j]:
-                    # trivial entries are not sent to the parameter lists
+                if self._is_trivial(i, j, x_i, y_j, False):
                     continue
-                left_parameters[index, :] = x_i
-                right_parameters[index, :] = y_j
-                index += 1
 
-        return left_parameters, right_parameters
+                left_parameters = np.vstack((left_parameters, x_i))
+                right_parameters = np.vstack((right_parameters, y_j))
+                indices.append((i, j))
+
+        return left_parameters, right_parameters, indices
 
     def _get_symmetric_parameterization(
-        self, x_vec: np.ndarray, trivial_entries: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, x_vec: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, list[tuple[int, int]]]:
         """
         Combines two copies of x_vec to get all the combinations needed to evaluate the kernel entries.
         """
-        x_count = x_vec.shape[0]
+        num_features = x_vec.shape[1]
+        left_parameters = np.zeros((0, num_features))
+        right_parameters = np.zeros((0, num_features))
 
-        # count the trivial entries on the upper triangular matrix
-        num_trivials = np.sum(np.triu(trivial_entries))
-
-        left_parameters = np.zeros((x_count * (x_count + 1) // 2 - num_trivials, x_vec.shape[1]))
-        right_parameters = np.zeros((x_count * (x_count + 1) // 2 - num_trivials, x_vec.shape[1]))
-
-        index = 0
+        indices = []
         for i, x_i in enumerate(x_vec):
             for j, x_j in enumerate(x_vec[i:]):
-                if trivial_entries[i, j + i]:
-                    # trivial entries are not sent to the parameter lists
+                if self._is_trivial(i, i + j, x_i, x_j, True):
                     continue
-                left_parameters[index, :] = x_i
-                right_parameters[index, :] = x_j
-                index += 1
 
-        return left_parameters, right_parameters
+                left_parameters = np.vstack((left_parameters, x_i))
+                right_parameters = np.vstack((right_parameters, x_j))
+                indices.append((i, i + j))
+
+        return left_parameters, right_parameters, indices
+
+    # def _get_kernel_matrix(
+    #     self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
+    # ) -> np.ndarray:
+    #     """
+    #     Given a parameterization, this computes the symmetric kernel matrix.
+    #     """
+    #     if np.all(trivial_entries):
+    #         return trivial_entries
+    #     # todo: a quick fix
+    #     size = left_parameters.shape[0]
+    #     job = self._fidelity.run(
+    #         [self._feature_map] * size,
+    #         [self._feature_map] * size,
+    #         left_parameters,
+    #         right_parameters,
+    #     )
+    #     kernel_entries = job.result().fidelities
+    #     kernel_matrix = np.zeros(trivial_entries.shape)
+    #
+    #     index = 0
+    #     for i in range(trivial_entries.shape[0]):
+    #         for j in range(trivial_entries.shape[1]):
+    #             if trivial_entries[i, j]:
+    #                 kernel_matrix[i, j] = 1.0
+    #             else:
+    #                 kernel_matrix[i, j] = kernel_entries[index]
+    #                 index += 1
+    #     return kernel_matrix
 
     def _get_kernel_matrix(
-        self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
+        self, kernel_shape, left_parameters: np.ndarray, right_parameters: np.ndarray, indices
     ) -> np.ndarray:
         """
         Given a parameterization, this computes the symmetric kernel matrix.
         """
-        if np.all(trivial_entries):
-            return trivial_entries
         # todo: a quick fix
         size = left_parameters.shape[0]
         job = self._fidelity.run(
@@ -206,45 +212,87 @@ class QuantumKernel(BaseKernel):
             right_parameters,
         )
         kernel_entries = job.result().fidelities
-        kernel_matrix = np.zeros(trivial_entries.shape)
 
-        index = 0
-        for i in range(trivial_entries.shape[0]):
-            for j in range(trivial_entries.shape[1]):
-                if trivial_entries[i, j]:
-                    kernel_matrix[i, j] = 1.0
-                else:
-                    kernel_matrix[i, j] = kernel_entries[index]
-                    index += 1
+        kernel_matrix = np.ones(kernel_shape)
+
+        for i, (col, row) in enumerate(indices):
+            kernel_matrix[col, row] = kernel_entries[i]
+
         return kernel_matrix
 
+    # def _get_symmetric_kernel_matrix(
+    #     self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
+    # ) -> np.ndarray:
+    #     """
+    #     Given a set of parameterization, this computes the kernel matrix.
+    #     """
+    #     if np.all(trivial_entries):
+    #         # todo: this returns a matrix of bool values!
+    #         return trivial_entries
+    #     # todo: a quick fix
+    #     size = left_parameters.shape[0]
+    #     job = self._fidelity.run(
+    #         [self._feature_map] * size,
+    #         [self._feature_map] * size,
+    #         left_parameters,
+    #         right_parameters,
+    #     )
+    #     kernel_entries = job.result().fidelities
+    #     kernel_matrix = np.zeros(trivial_entries.shape)
+    #     index = 0
+    #     for i in range(trivial_entries.shape[0]):
+    #         for j in range(i, trivial_entries.shape[1]):
+    #             if trivial_entries[i, j]:
+    #                 kernel_matrix[i, j] = 1.0
+    #             else:
+    #                 kernel_matrix[i, j] = kernel_entries[index]
+    #                 index += 1
+    #
+    #     kernel_matrix = kernel_matrix + kernel_matrix.T - np.diag(kernel_matrix.diagonal())
+    #     return kernel_matrix
+
     def _get_symmetric_kernel_matrix(
-        self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
+        self, kernel_shape, left_parameters: np.ndarray, right_parameters: np.ndarray, indices
     ) -> np.ndarray:
         """
         Given a set of parameterization, this computes the kernel matrix.
         """
-        if np.all(trivial_entries):
-            # todo: this returns a matrix of bool values!
-            return trivial_entries
         # todo: a quick fix
-        size = left_parameters.shape[0]
-        job = self._fidelity.run(
-            [self._feature_map] * size,
-            [self._feature_map] * size,
-            left_parameters,
-            right_parameters,
-        )
-        kernel_entries = job.result().fidelities
-        kernel_matrix = np.zeros(trivial_entries.shape)
-        index = 0
-        for i in range(trivial_entries.shape[0]):
-            for j in range(i, trivial_entries.shape[1]):
-                if trivial_entries[i, j]:
-                    kernel_matrix[i, j] = 1.0
-                else:
-                    kernel_matrix[i, j] = kernel_entries[index]
-                    index += 1
+        num_circuits = left_parameters.shape[0]
+        if num_circuits != 0:
+            job = self._fidelity.run(
+                [self._feature_map] * num_circuits,
+                [self._feature_map] * num_circuits,
+                left_parameters,
+                right_parameters,
+            )
+            kernel_entries = job.result().fidelities
+        else:
+            # trivial case, only identical samples
+            kernel_entries = []
 
-        kernel_matrix = kernel_matrix + kernel_matrix.T - np.diag(kernel_matrix.diagonal())
+        kernel_matrix = np.ones(kernel_shape)
+
+        for i, (col, row) in enumerate(indices):
+            kernel_matrix[col, row] = kernel_entries[i]
+            kernel_matrix[row, col] = kernel_entries[i]
+
         return kernel_matrix
+
+    def _is_trivial(self, i, j, x_i, y_j, symmetric):
+        # ("all", "off_diagonal", "none")
+
+        # if we evaluate all combinations, then non trivial
+        if self._evaluate_duplicates == "all":
+            return False
+
+        # if we are on the diagonal and we don't evaluate it, it is trivial
+        if symmetric and i == j and self._evaluate_duplicates == "off_diagonal":
+            return True
+
+        # if don't evaluate any duplicates
+        if np.array_equal(x_i, y_j) and self._evaluate_duplicates == "none":
+            return True
+
+        # otherwise evaluate
+        return False
