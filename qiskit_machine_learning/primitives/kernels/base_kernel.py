@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 from abc import abstractmethod, ABC
-from typing import NoReturn
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -83,49 +82,6 @@ class BaseKernel(ABC):
         """
         raise NotImplementedError()
 
-    # def _check_and_reshape(
-    #     self, x_vec: np.ndarray, y_vec: np.ndarray = None
-    # ) -> tuple[np.ndarray, np.ndarray]:
-    #     r"""
-    #     Performs checks on the dimensions of the input data x_vec and y_vec.
-    #     Reshapes the arrays so that `x_vec.shape = (N,D)` and `y_vec.shape = (M,D)`.
-    #     """
-    #     if not isinstance(x_vec, np.ndarray):
-    #         x_vec = np.asarray(x_vec)
-    #
-    #     if y_vec is not None and not isinstance(y_vec, np.ndarray):
-    #         y_vec = np.asarray(y_vec)
-    #
-    #     if x_vec.ndim > 2:
-    #         raise ValueError("x_vec must be a 1D or 2D array")
-    #
-    #     if x_vec.ndim == 1:
-    #         x_vec = x_vec.reshape(1, -1)
-    #
-    #     if y_vec is not None and y_vec.ndim > 2:
-    #         raise ValueError("y_vec must be a 1D or 2D array")
-    #
-    #     if y_vec is not None and y_vec.ndim == 1:
-    #         y_vec = y_vec.reshape(1, -1)
-    #
-    #     if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
-    #         raise ValueError(
-    #             "x_vec and y_vec have incompatible dimensions.\n"
-    #             f"x_vec has {x_vec.shape[1]} dimensions, but y_vec has {y_vec.shape[1]}."
-    #         )
-    #
-    #     if x_vec.shape[1] != self._num_features:
-    #         raise ValueError(
-    #             "x_vec and class feature map have incompatible dimensions.\n"
-    #             f"x_vec has {x_vec.shape[1]} dimensions, "
-    #             f"but feature map has {self._num_features}."
-    #         )
-    #
-    #     if y_vec is None:
-    #         y_vec = x_vec
-    #
-    #     return x_vec, y_vec
-
     def _validate_input(
         self, x_vec: np.ndarray, y_vec: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -142,8 +98,12 @@ class BaseKernel(ABC):
             # to the required number of qubit.
             try:
                 self._feature_map.num_qubits = x_vec.shape[1]
-            except AttributeError:
-                self._raise_incompatible_feature_map("x_vec", x_vec.shape[1])
+            except AttributeError as a_e:
+                raise ValueError(
+                    f"x_vec and class feature map have incompatible dimensions.\n"
+                    f"x_vec has {x_vec.shape[1]} dimensions, "
+                    f"but feature map has {self._feature_map.num_parameters}."
+                ) from a_e
 
         if y_vec is not None:
             y_vec = np.asarray(y_vec)
@@ -179,11 +139,3 @@ class BaseKernel(ABC):
         # todo: in some cases we get a complex matrix
         d, u = np.linalg.eig(kernel_matrix)
         return u @ np.diag(np.maximum(0, d)) @ u.transpose()
-
-    # todo: inline the function if used only once
-    def _raise_incompatible_feature_map(self, vec_name: str, vec_len: int) -> NoReturn:
-        raise ValueError(
-            f"{vec_name} and class feature map have incompatible dimensions.\n"
-            f"{vec_name} has {vec_len} dimensions, "
-            f"but feature map has {self._feature_map.num_parameters}."
-        )
