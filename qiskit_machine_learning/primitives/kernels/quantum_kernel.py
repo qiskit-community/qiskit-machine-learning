@@ -79,21 +79,20 @@ class QuantumKernel(BaseKernel):
 
         if isinstance(fidelity, str):
             if sampler is None:
-                raise ValueError(
-                    "If the fidelity is passed as a string, a sampler has to be provided"
-                    "(currently set to None)."
-                )
+                # Falling back to the reference implementation from Terra
+                sampler = Sampler()
             if fidelity == "zero_prob":
                 self._fidelity = ComputeUncompute(sampler=sampler)
             else:
                 raise ValueError(
-                    f"{fidelity} is not a valid string for a fidelity. Currently supported: 'zero_prob'."
+                    f"Fidelity value of '{fidelity}' is not a valid string for a fidelity. "
+                    f"Currently supported only 'zero_prob'."
                 )
         else:
             if sampler is not None:
                 warnings.warn(
                     "Passed both a sampler and a fidelity instance. If passing a fidelity instance"
-                    " for `fidelity`, the sampler will not be used.",
+                    " for 'fidelity', the sampler instance will not be used.",
                 )
             self._fidelity = fidelity
 

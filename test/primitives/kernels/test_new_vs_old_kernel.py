@@ -32,7 +32,7 @@ from qiskit_machine_learning.primitives.kernels import QuantumKernel
 class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
     """
     Test new quantum kernel versus the old one. The old one is evaluated on a statevector
-    simulator.
+    simulator. To be removed when old quantum kernel is removed.
     """
 
     def setUp(self):

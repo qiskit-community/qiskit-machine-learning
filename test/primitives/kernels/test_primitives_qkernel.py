@@ -13,45 +13,21 @@
 
 from __future__ import annotations
 
+import functools
 import itertools
-import re
 import unittest
-from typing import Sequence
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, idata, unpack
-from qiskit import QuantumCircuit
-from qiskit.algorithms.state_fidelities import (
-    BaseStateFidelity,
-    ComputeUncompute,
-    StateFidelityResult,
-)
+from qiskit.algorithms.state_fidelities import ComputeUncompute
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.primitives.kernels import QuantumKernel
-
-
-class MockFidelity(BaseStateFidelity):
-    """Custom fidelity that returns -0.5 for any input."""
-
-    def create_fidelity_circuit(
-        self, circuit_1: QuantumCircuit, circuit_2: QuantumCircuit
-    ) -> QuantumCircuit:
-        raise NotImplementedError()
-
-    def _run(
-        self,
-        circuits_1: QuantumCircuit | Sequence[QuantumCircuit],
-        circuits_2: QuantumCircuit | Sequence[QuantumCircuit],
-        values_1: Sequence[float] | Sequence[Sequence[float]] | None = None,
-        values_2: Sequence[float] | Sequence[Sequence[float]] | None = None,
-        **run_options,
-    ) -> StateFidelityResult:
-        return StateFidelityResult(np.full(len(values_1), -0.5), [], [{}], {})
 
 
 @ddt
@@ -81,6 +57,14 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
         self.sampler = Sampler()
         self.fidelity = ComputeUncompute(self.sampler)
 
+        self.properties = dict(
+            samples_1=self.sample_train[0],
+            samples_4=self.sample_train,
+            samples_test=self.sample_test,
+            z_fm=self.feature_map,
+            no_fm=None,
+        )
+
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""
         kernel = QuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
@@ -102,12 +86,36 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 1.0)
 
+    def test_defaults(self):
+        """Test quantum kernel with all default values."""
+        features = algorithm_globals.random.random((10, 2)) - 0.5
+        labels = np.sign(features[:, 0])
+
+        kernel = QuantumKernel()
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(features, labels)
+        score = svc.score(features, labels)
+        print(score)
+
+        self.assertGreaterEqual(score, 0.5)
+
+    def test_exceptions(self):
+        """Test quantum kernel raises exceptions and warnings."""
+        with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
+            _ = QuantumKernel(evaluate_duplicates="wrong")
+
+        with self.assertRaises(ValueError, msg="Unsupported value of 'fidelity'."):
+            _ = QuantumKernel(fidelity="wrong")
+
+        with self.assertWarns(UserWarning, msg="Both fidelity and samples are passed"):
+            _ = QuantumKernel(sampler=self.sampler, fidelity=self.fidelity)
+
     @idata(
         # params, fidelity, feature map, enforce_psd, duplicate
         itertools.product(
-            ["1_param", "4_params"],
-            ["default", "zero_prob", "fidelity_instance"],  # "mock_fidelity"
-            ["ZZ", "Z"],
+            ["samples_1", "samples_4"],
+            ["default_fidelity", "zero_prob", "fidelity_instance"],
+            ["no_fm", "z_fm"],
             [True, False],
             ["none", "off_diagonal", "all"],
         )
@@ -115,47 +123,11 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
     @unpack
     def test_evaluate_symmetric(self, params, fidelity, feature_map, enforce_psd, duplicates):
         """Test QuantumKernel.evaluate(x) for a symmetric kernel."""
-        solution = self._get_symmetric_solution(params, fidelity, feature_map, enforce_psd)
+        solution = self._get_symmetric_solution(params, feature_map)
 
-        if params == "1_param":
-            x_vec = self.sample_train[0]
-        else:
-            x_vec = self.sample_train
-
-        if feature_map == "Z":
-            feature_map = self.feature_map
-        else:
-            feature_map = None
-
-        if fidelity == "default":
-            kernel = QuantumKernel(
-                sampler=self.sampler,
-                feature_map=feature_map,
-                enforce_psd=enforce_psd,
-                evaluate_duplicates=duplicates,
-            )
-        elif fidelity == "zero_prob":
-            kernel = QuantumKernel(
-                sampler=self.sampler,
-                feature_map=feature_map,
-                fidelity="zero_prob",
-                enforce_psd=enforce_psd,
-                evaluate_duplicates=duplicates,
-            )
-        elif fidelity == "fidelity_instance":
-            kernel = QuantumKernel(
-                feature_map=feature_map,
-                fidelity=self.fidelity,
-                enforce_psd=enforce_psd,
-                evaluate_duplicates=duplicates,
-            )
-        else:
-            kernel = QuantumKernel(
-                feature_map=feature_map,
-                fidelity=MockFidelity(),
-                enforce_psd=enforce_psd,
-                evaluate_duplicates=duplicates,
-            )
+        x_vec = self.properties[params]
+        feature_map = self.properties[feature_map]
+        kernel = self._create_kernel(fidelity, feature_map, enforce_psd, duplicates)
 
         kernel_matrix = kernel.evaluate(x_vec)
 
@@ -163,10 +135,10 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
     @idata(
         itertools.product(
-            ["1_param", "4_params"],
-            ["1_param", "4_params", "2_params"],
-            ["default", "zero_prob", "fidelity_instance"],  # "mock_fidelity"
-            ["ZZ", "Z"],
+            ["samples_1", "samples_4"],
+            ["samples_1", "samples_4", "samples_test"],
+            ["default_fidelity", "zero_prob", "fidelity_instance"],
+            ["no_fm", "z_fm"],
             [True, False],
             ["none", "off_diagonal", "all"],
         )
@@ -176,28 +148,22 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
         self, params_x, params_y, fidelity, feature_map, enforce_psd, duplicates
     ):
         """Test QuantumKernel.evaluate(x,y) for an asymmetric kernel."""
-        solution = self._get_asymmetric_solution(
-            params_x, params_y, fidelity, feature_map, enforce_psd
-        )
+        solution = self._get_asymmetric_solution(params_x, params_y, feature_map)
 
-        if params_x == "1_param":
-            x_vec = self.sample_train[0]
-        elif params_x == "4_params":
-            x_vec = self.sample_train
+        x_vec = self.properties[params_x]
+        y_vec = self.properties[params_y]
+        feature_map = self.properties[feature_map]
+        kernel = self._create_kernel(fidelity, feature_map, enforce_psd, duplicates)
 
-        if params_y == "1_param":
-            y_vec = self.sample_train[0]
-        elif params_y == "4_params":
-            y_vec = self.sample_train
-        elif params_y == "2_params":
-            y_vec = self.sample_test
-
-        if feature_map == "Z":
-            feature_map = self.feature_map
+        if isinstance(solution, str) and solution == "wrong":
+            with self.assertRaises(ValueError):
+                _ = kernel.evaluate(x_vec, y_vec)
         else:
-            feature_map = None
+            kernel_matrix = kernel.evaluate(x_vec, y_vec)
+            np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
 
-        if fidelity == "default":
+    def _create_kernel(self, fidelity, feature_map, enforce_psd, duplicates):
+        if fidelity == "default_fidelity":
             kernel = QuantumKernel(
                 sampler=self.sampler,
                 feature_map=feature_map,
@@ -220,39 +186,14 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 evaluate_duplicates=duplicates,
             )
         else:
-            kernel = QuantumKernel(
-                feature_map=feature_map,
-                fidelity=MockFidelity(),
-                enforce_psd=enforce_psd,
-                evaluate_duplicates=duplicates,
-            )
+            raise ValueError("Unsupported configuration!")
+        return kernel
 
-        if isinstance(solution, str) and solution == "wrong":
-            with self.assertRaises(ValueError):
-                _ = kernel.evaluate(x_vec, y_vec)
-        else:
-            kernel_matrix = kernel.evaluate(x_vec, y_vec)
-            np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
-
-    def _get_symmetric_solution(self, params, fidelity, feature_map, enforce_psd):
-        if fidelity == "mock_fidelity":
-            if params == "1_param":
-                if enforce_psd:
-                    solution = np.array([[0.0]])
-                else:
-                    solution = np.array([[-0.5]])
-            else:
-                if enforce_psd:
-                    solution = np.zeros((4, 4))
-                else:
-                    solution = np.full((4, 4), -0.5)
-            return solution
-
-        # all other fidelities have the same result
-        if params == "1_param":
+    def _get_symmetric_solution(self, params, feature_map):
+        if params == "samples_1":
             solution = np.array([[1.0]])
 
-        elif params == "4_params" and feature_map == "Z":
+        elif params == "samples_4" and feature_map == "z_fm":
             solution = np.array(
                 [
                     [1.0, 0.78883982, 0.15984355, 0.06203766],
@@ -273,25 +214,19 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
             )
         return solution
 
-    def _get_asymmetric_solution(self, params_x, params_y, fidelity, feature_map, enforce_psd):
+    def _get_asymmetric_solution(self, params_x, params_y, feature_map):
         if params_x == "wrong" or params_y == "wrong":
             return "wrong"
         # check if hidden symmetric case
         if params_x == params_y:
-            return self._get_symmetric_solution(params_x, fidelity, feature_map, enforce_psd)
+            return self._get_symmetric_solution(params_x, feature_map)
 
-        if fidelity == "mock_fidelity":
-            len_x = int(re.search(r"\d+", params_x).group())
-            len_y = int(re.search(r"\d+", params_y).group())
-            return np.zeros((len_x, len_y)) - 0.5
-
-        # all other fidelities have the same result
-        if feature_map == "Z":
-            if params_x == "1_param" and params_y == "4_params":
+        if feature_map == "z_fm":
+            if params_x == "samples_1" and params_y == "samples_4":
                 solution = np.array([[1.0, 0.78883982, 0.15984355, 0.06203766]])
-            elif params_x == "1_param" and params_y == "2_params":
+            elif params_x == "samples_1" and params_y == "samples_test":
                 solution = np.array([[0.30890363, 0.04543022]])
-            elif params_x == "4_params" and params_y == "1_param":
+            elif params_x == "samples_4" and params_y == "samples_1":
                 solution = np.array([[1.0, 0.78883982, 0.15984355, 0.06203766]]).T
             else:
                 # 4_param and 2_param
@@ -305,11 +240,11 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 )
         else:
             # ZZFeatureMap
-            if params_x == "1_param" and params_y == "4_params":
+            if params_x == "samples_1" and params_y == "samples_4":
                 solution = np.array([[1.0, 0.81376617, 0.05102078, 0.06033439]])
-            elif params_x == "1_param" and params_y == "2_params":
+            elif params_x == "samples_1" and params_y == "samples_test":
                 solution = np.array([[0.24610242, 0.17510262]])
-            elif params_x == "4_params" and params_y == "1_param":
+            elif params_x == "samples_4" and params_y == "samples_1":
                 solution = np.array([[1.0, 0.81376617, 0.05102078, 0.06033439]]).T
             else:
                 # 4_param and 2_param
@@ -322,6 +257,88 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                     ]
                 )
         return solution
+
+
+@ddt
+class TestDuplicates(QiskitMachineLearningTestCase):
+    """Test quantum kernel with duplicate entries."""
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.feature_map = ZFeatureMap(feature_dimension=2, reps=1)
+
+        self.properties = {
+            "no_dups": np.array([[1, 2], [2, 3], [3, 4]]),
+            "dups": np.array([[1, 2], [1, 2], [3, 4]]),
+            "y_vec": np.array([[0, 1], [1, 2]]),
+        }
+
+        counting_sampler = Sampler()
+        counting_sampler.run = self.count_circuits(counting_sampler.run)
+        self.counting_sampler = counting_sampler
+        self.circuit_counts = 0
+
+    def count_circuits(self, func):
+        """Wrapper to record the number of circuits passed to QuantumInstance.execute.
+
+        Args:
+            func (Callable): execute function to be wrapped
+
+        Returns:
+            Callable: function wrapper
+        """
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            self.circuit_counts += len(kwargs["circuits"])
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    @idata(
+        [
+            ("no_dups", "all", 6),
+            ("no_dups", "off_diagonal", 3),
+            ("no_dups", "none", 3),
+            ("dups", "all", 6),
+            ("dups", "off_diagonal", 3),
+            ("dups", "none", 2),
+        ]
+    )
+    @unpack
+    def test_evaluate_duplicates(self, dataset_name, evaluate_duplicates, expected_num_circuits):
+        """Tests quantum kernel evaluation with duplicate samples."""
+        self.circuit_counts = 0
+        kernel = QuantumKernel(
+            sampler=self.counting_sampler,
+            feature_map=self.feature_map,
+            evaluate_duplicates=evaluate_duplicates,
+        )
+        kernel.evaluate(self.properties.get(dataset_name))
+
+        self.assertEqual(self.circuit_counts, expected_num_circuits)
+
+    @idata(
+        [
+            ("no_dups", "all", 6),
+            ("no_dups", "off_diagonal", 6),
+            ("no_dups", "none", 5),
+        ]
+    )
+    @unpack
+    def test_evaluate_duplicates_asymmetric(
+        self, dataset_name, evaluate_duplicates, expected_num_circuits
+    ):
+        """Tests asymmetric quantum kernel evaluation with duplicate samples."""
+        self.circuit_counts = 0
+        kernel = QuantumKernel(
+            sampler=self.counting_sampler,
+            feature_map=self.feature_map,
+            evaluate_duplicates=evaluate_duplicates,
+        )
+        kernel.evaluate(self.properties.get(dataset_name), self.properties.get("y_vec"))
+        self.assertEqual(self.circuit_counts, expected_num_circuits)
 
 
 if __name__ == "__main__":
