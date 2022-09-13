@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import warnings
+from typing import List, Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -21,6 +22,8 @@ from qiskit.algorithms.state_fidelities import BaseStateFidelity, ComputeUncompu
 from qiskit.primitives import Sampler
 
 from .base_kernel import BaseKernel
+
+KernelIndices = List[Tuple[int, int]]
 
 
 class QuantumKernel(BaseKernel):
@@ -112,9 +115,7 @@ class QuantumKernel(BaseKernel):
                 kernel_shape, left_parameters, right_parameters, indices
             )
         else:
-            left_parameters, right_parameters, indices = self._get_parameterization(
-                x_vec, y_vec
-            )
+            left_parameters, right_parameters, indices = self._get_parameterization(x_vec, y_vec)
             kernel_matrix = self._get_kernel_matrix(
                 kernel_shape, left_parameters, right_parameters, indices
             )
@@ -126,7 +127,7 @@ class QuantumKernel(BaseKernel):
 
     def _get_parameterization(
         self, x_vec: np.ndarray, y_vec: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, list[tuple[int, int]]]:
+    ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
         """
         Combines x_vec and y_vec to get all the combinations needed to evaluate the kernel entries.
         """
@@ -148,7 +149,7 @@ class QuantumKernel(BaseKernel):
 
     def _get_symmetric_parameterization(
         self, x_vec: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, list[tuple[int, int]]]:
+    ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
         """
         Combines two copies of x_vec to get all the combinations needed to evaluate the kernel entries.
         """
@@ -168,51 +169,19 @@ class QuantumKernel(BaseKernel):
 
         return left_parameters, right_parameters, indices
 
-    # def _get_kernel_matrix(
-    #     self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
-    # ) -> np.ndarray:
-    #     """
-    #     Given a parameterization, this computes the symmetric kernel matrix.
-    #     """
-    #     if np.all(trivial_entries):
-    #         return trivial_entries
-    #     # todo: a quick fix
-    #     size = left_parameters.shape[0]
-    #     job = self._fidelity.run(
-    #         [self._feature_map] * size,
-    #         [self._feature_map] * size,
-    #         left_parameters,
-    #         right_parameters,
-    #     )
-    #     kernel_entries = job.result().fidelities
-    #     kernel_matrix = np.zeros(trivial_entries.shape)
-    #
-    #     index = 0
-    #     for i in range(trivial_entries.shape[0]):
-    #         for j in range(trivial_entries.shape[1]):
-    #             if trivial_entries[i, j]:
-    #                 kernel_matrix[i, j] = 1.0
-    #             else:
-    #                 kernel_matrix[i, j] = kernel_entries[index]
-    #                 index += 1
-    #     return kernel_matrix
-
     def _get_kernel_matrix(
-        self, kernel_shape, left_parameters: np.ndarray, right_parameters: np.ndarray, indices
+        self,
+        kernel_shape: tuple[int, int],
+        left_parameters: np.ndarray,
+        right_parameters: np.ndarray,
+        indices: KernelIndices,
     ) -> np.ndarray:
         """
         Given a parameterization, this computes the symmetric kernel matrix.
         """
-        # todo: a quick fix
-        size = left_parameters.shape[0]
-        job = self._fidelity.run(
-            [self._feature_map] * size,
-            [self._feature_map] * size,
-            left_parameters,
-            right_parameters,
-        )
-        kernel_entries = job.result().fidelities
+        kernel_entries = self._get_kernel_entries(left_parameters, right_parameters)
 
+        # fill in trivial entries and then update with fidelity values
         kernel_matrix = np.ones(kernel_shape)
 
         for i, (col, row) in enumerate(indices):
@@ -220,44 +189,26 @@ class QuantumKernel(BaseKernel):
 
         return kernel_matrix
 
-    # def _get_symmetric_kernel_matrix(
-    #     self, left_parameters: np.ndarray, right_parameters: np.ndarray, trivial_entries: np.ndarray
-    # ) -> np.ndarray:
-    #     """
-    #     Given a set of parameterization, this computes the kernel matrix.
-    #     """
-    #     if np.all(trivial_entries):
-    #         # todo: this returns a matrix of bool values!
-    #         return trivial_entries
-    #     # todo: a quick fix
-    #     size = left_parameters.shape[0]
-    #     job = self._fidelity.run(
-    #         [self._feature_map] * size,
-    #         [self._feature_map] * size,
-    #         left_parameters,
-    #         right_parameters,
-    #     )
-    #     kernel_entries = job.result().fidelities
-    #     kernel_matrix = np.zeros(trivial_entries.shape)
-    #     index = 0
-    #     for i in range(trivial_entries.shape[0]):
-    #         for j in range(i, trivial_entries.shape[1]):
-    #             if trivial_entries[i, j]:
-    #                 kernel_matrix[i, j] = 1.0
-    #             else:
-    #                 kernel_matrix[i, j] = kernel_entries[index]
-    #                 index += 1
-    #
-    #     kernel_matrix = kernel_matrix + kernel_matrix.T - np.diag(kernel_matrix.diagonal())
-    #     return kernel_matrix
-
     def _get_symmetric_kernel_matrix(
-        self, kernel_shape, left_parameters: np.ndarray, right_parameters: np.ndarray, indices
+        self,
+        kernel_shape: tuple[int, int],
+        left_parameters: np.ndarray,
+        right_parameters: np.ndarray,
+        indices: KernelIndices,
     ) -> np.ndarray:
         """
         Given a set of parameterization, this computes the kernel matrix.
         """
-        # todo: a quick fix
+        kernel_entries = self._get_kernel_entries(left_parameters, right_parameters)
+        kernel_matrix = np.ones(kernel_shape)
+
+        for i, (col, row) in enumerate(indices):
+            kernel_matrix[col, row] = kernel_entries[i]
+            kernel_matrix[row, col] = kernel_entries[i]
+
+        return kernel_matrix
+
+    def _get_kernel_entries(self, left_parameters: np.ndarray, right_parameters: np.ndarray):
         num_circuits = left_parameters.shape[0]
         if num_circuits != 0:
             job = self._fidelity.run(
@@ -270,19 +221,12 @@ class QuantumKernel(BaseKernel):
         else:
             # trivial case, only identical samples
             kernel_entries = []
+        return kernel_entries
 
-        kernel_matrix = np.ones(kernel_shape)
-
-        for i, (col, row) in enumerate(indices):
-            kernel_matrix[col, row] = kernel_entries[i]
-            kernel_matrix[row, col] = kernel_entries[i]
-
-        return kernel_matrix
-
-    def _is_trivial(self, i, j, x_i, y_j, symmetric):
-        # ("all", "off_diagonal", "none")
-
-        # if we evaluate all combinations, then non trivial
+    def _is_trivial(
+        self, i: int, j: int, x_i: np.ndarray, y_j: np.ndarray, symmetric: bool
+    ) -> bool:
+        # if we evaluate all combinations, then it is non-trivial
         if self._evaluate_duplicates == "all":
             return False
 

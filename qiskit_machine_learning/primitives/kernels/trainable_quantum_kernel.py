@@ -21,7 +21,7 @@ from qiskit.primitives import Sampler
 from qiskit.algorithms.state_fidelities import BaseStateFidelity
 
 from qiskit_machine_learning import QiskitMachineLearningError
-from .quantum_kernel import QuantumKernel
+from .quantum_kernel import QuantumKernel, KernelIndices
 from .trainable_kernel_mixin import TrainableKernelMixin
 
 
@@ -88,16 +88,16 @@ class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
         return full_array
 
     def _get_parameterization(
-        self, x_vec: np.ndarray, y_vec: np.ndarray, trivial_entries: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, x_vec: np.ndarray, y_vec: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
         new_x_vec = self._parameter_array(x_vec)
         new_y_vec = self._parameter_array(y_vec)
 
-        return super()._get_parameterization(new_x_vec, new_y_vec, trivial_entries)
+        return super()._get_parameterization(new_x_vec, new_y_vec)
 
     def _get_symmetric_parameterization(
-        self, x_vec: np.ndarray, trivial_entries: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, x_vec: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
         new_x_vec = self._parameter_array(x_vec)
 
-        return super()._get_symmetric_parameterization(new_x_vec, trivial_entries)
+        return super()._get_symmetric_parameterization(new_x_vec)
