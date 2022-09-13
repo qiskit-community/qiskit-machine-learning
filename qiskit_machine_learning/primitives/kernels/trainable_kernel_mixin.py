@@ -26,9 +26,9 @@ class TrainableKernelMixin:
     ) -> None:
         super().__init__(*args, **kwargs)
 
-        self._training_parameters = training_parameters
         if training_parameters is None:
-            self._training_parameters = []
+            training_parameters = []
+        self._training_parameters = training_parameters
 
         self.num_parameters = len(self._training_parameters)
 
@@ -65,4 +65,5 @@ class TrainableKernelMixin:
         """
         Numerical values assigned to the training parameters.
         """
-        return np.array([self._parameter_dict[param] for param in self._training_parameters])
+        # todo: may not work if not all parameters are assigned.
+        return np.asarray([self._parameter_dict[param] for param in self._training_parameters])

@@ -27,13 +27,12 @@ from .trainable_kernel_mixin import TrainableKernelMixin
 
 class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
     r"""
-    Finding good quantum kernels for a specific machine learning task
-    is a big challenge in quantum machine learning. One way to choose
-    the kernel is to add trainable parameters to the feature map, which
-    can be used to fine-tune the kernel.
+    Finding good quantum kernels for a specific machine learning task is a big challenge in quantum
+    machine learning. One way to choose the kernel is to add trainable parameters to the feature
+    map, which can be used to fine-tune the kernel.
 
-    This kernel has trainable parameters :math:`\theta` that can be bound
-    using training algorithms. The kernel entries are given as
+    This kernel has trainable parameters :math:`\theta` that can be bound using training algorithms.
+    The kernel entries are given as
 
     .. math::
 
