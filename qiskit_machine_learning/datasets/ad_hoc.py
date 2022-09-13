@@ -18,7 +18,6 @@ from typing import Union, Tuple
 import itertools as it
 from functools import reduce
 import numpy as np
-import scipy
 from qiskit.utils import algorithm_globals, optionals
 
 from qiskit_machine_learning.datasets.dataset_helper import (
@@ -146,7 +145,11 @@ def ad_hoc_data(
         x = np.array(x)
         phi = np.sum(x[:, None, None] * z_i, axis=0)
         phi += sum(((np.pi - x[i1]) * (np.pi - x[i2]) * z_i[i1] @ z_i[i2] for i1, i2 in ind_pairs))
-        u_u = scipy.linalg.expm(1j * phi)  # pylint: disable=no-member
+        # u_u was actually scipy.linalg.expm(1j * phi), but this method is
+        # faster because phi is always a diagonal matrix.
+        # We first extract the diagonal elements, then do exponentiation, then
+        # construct a diagonal matrix from them.
+        u_u = np.diag(np.exp(1j * np.diag(phi)))
         psi = u_u @ h_n @ u_u @ psi_0
         exp_val = np.real(psi.conj().T @ m_m @ psi)
         if np.abs(exp_val) > gap:
