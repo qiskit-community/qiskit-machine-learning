@@ -19,15 +19,16 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import qiskit
-from ddt import data, ddt
+from ddt import data, ddt, idata, unpack
 from qiskit import BasicAer, QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import ZZFeatureMap, ZFeatureMap
 from qiskit.transpiler import PassManagerConfig
 from qiskit.transpiler.preset_passmanagers import level_1_pass_manager
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 from sklearn.svm import SVC
 
+from qiskit_machine_learning.algorithms import QSVC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.kernels import QuantumKernel
 
@@ -329,6 +330,20 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
         with self.assertRaises(ValueError):
             _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_feature_dim)
 
+    def test_adjust_feature_map(self):
+        """Test adjust feature map"""
+        qkclass = QuantumKernel(
+            feature_map=ZZFeatureMap(feature_dimension=3), quantum_instance=self.qasm_simulator
+        )
+        _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_test)
+
+    def test_fail_adjust_feature_map(self):
+        """Test feature map adjustment failed"""
+        feature_map = QuantumCircuit(3)
+        qkclass = QuantumKernel(feature_map=feature_map, quantum_instance=self.qasm_simulator)
+        with self.assertRaises(ValueError):
+            _ = qkclass.evaluate(x_vec=self.sample_train, y_vec=self.sample_test)
+
 
 class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
     """Test QuantumKernel ConstructCircuit Method"""
@@ -416,13 +431,28 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
         # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
-        circ2 = ZZFeatureMap(3)
+        circ2 = ZZFeatureMap(3, parameter_prefix="θ")
         training_params = circ2.parameters
-        for i, training_param in enumerate(training_params):
-            training_param._name = f"θ[{i}]"
 
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.training_parameters = training_params
+
+        self.statevector_simulator = QuantumInstance(
+            BasicAer.get_backend("statevector_simulator"),
+            shots=1,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        self.sample_train = np.asarray(
+            [
+                [3.07876080, 1.75929189],
+                [6.03185789, 5.27787566],
+                [6.22035345, 2.70176968],
+                [0.18849556, 2.82743339],
+            ]
+        )
+        self.label_train = np.asarray([0, 0, 1, 1])
 
     def test_training_parameters(self):
         """Test assigning/re-assigning user parameters"""
@@ -590,6 +620,19 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
                 list(qkclass.training_parameter_binds.keys()), qkclass.training_parameters
             )
 
+    def test_unbound_parameters(self):
+        """Test unbound parameters."""
+        qc = QuantumCircuit(2)
+        parameters = [Parameter("x")]
+        qc.ry(parameters[0], 0)
+
+        qkernel = QuantumKernel(
+            qc, training_parameters=parameters, quantum_instance=self.statevector_simulator
+        )
+
+        qsvc = QSVC(quantum_kernel=qkernel)
+        self.assertRaises(ValueError, qsvc.fit, self.sample_train, self.label_train)
+
 
 class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
     """Test QuantumKernel circuit batching
@@ -706,6 +749,93 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
         num_circuits = num_train * (num_train - 1) / 2
 
         self.assertEqual(sum(self.circuit_counts), num_circuits)
+
+
+@ddt
+class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
+    """Test QuantumKernel for duplicate evaluation."""
+
+    def count_circuits(self, func):
+        """Wrapper to record the number of circuits passed to QuantumInstance.execute.
+
+        Args:
+            func (Callable): execute function to be wrapped
+
+        Returns:
+            Callable: function wrapper
+        """
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwds):
+            self.circuit_counts += len(args[0])
+            return func(*args, **kwds)
+
+        return wrapper
+
+    def setUp(self):
+        super().setUp()
+        algorithm_globals.random_seed = 10598
+        self.circuit_counts = 0
+
+        self.qasm_simulator = QuantumInstance(
+            BasicAer.get_backend("qasm_simulator"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        # monkey patch the qasm simulator
+        self.qasm_simulator.execute = self.count_circuits(self.qasm_simulator.execute)
+
+        self.feature_map = ZFeatureMap(feature_dimension=2, reps=1)
+
+        self.properties = {
+            "no_dups": np.array([[1, 2], [2, 3], [3, 4]]),
+            "dups": np.array([[1, 2], [1, 2], [3, 4]]),
+            "y_vec": np.array([[0, 1], [1, 2]]),
+        }
+
+    @idata(
+        [
+            ("no_dups", "all", 6),
+            ("no_dups", "off_diagonal", 3),
+            ("no_dups", "none", 3),
+            ("dups", "all", 6),
+            ("dups", "off_diagonal", 3),
+            ("dups", "none", 2),
+        ]
+    )
+    @unpack
+    def test_evaluate_duplicates(self, dataset_name, evaluate_duplicates, expected_num_circuits):
+        """Tests symmetric quantum kernel evaluation with duplicate samples."""
+        self.circuit_counts = 0
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map,
+            evaluate_duplicates=evaluate_duplicates,
+            quantum_instance=self.qasm_simulator,
+        )
+        qkernel.evaluate(self.properties.get(dataset_name))
+        self.assertEqual(self.circuit_counts, expected_num_circuits)
+
+    @idata(
+        [
+            ("no_dups", "all", 6),
+            ("no_dups", "off_diagonal", 6),
+            ("no_dups", "none", 5),
+        ]
+    )
+    @unpack
+    def test_evaluate_duplicates_not_symmetric(
+        self, dataset_name, evaluate_duplicates, expected_num_circuits
+    ):
+        """Tests non-symmetric quantum kernel evaluation with duplicate samples."""
+        self.circuit_counts = 0
+        qkernel = QuantumKernel(
+            feature_map=self.feature_map,
+            evaluate_duplicates=evaluate_duplicates,
+            quantum_instance=self.qasm_simulator,
+        )
+        qkernel.evaluate(self.properties.get(dataset_name), self.properties.get("y_vec"))
+        self.assertEqual(self.circuit_counts, expected_num_circuits)
 
 
 if __name__ == "__main__":
