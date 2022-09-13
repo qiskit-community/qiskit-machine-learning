@@ -209,6 +209,10 @@ class QuantumKernel(BaseKernel):
         return kernel_matrix
 
     def _get_kernel_entries(self, left_parameters: np.ndarray, right_parameters: np.ndarray):
+        """
+        Gets kernel entries by executing the underlying fidelity instance and getting the results
+        back from the async job.
+        """
         num_circuits = left_parameters.shape[0]
         if num_circuits != 0:
             job = self._fidelity.run(
@@ -226,6 +230,19 @@ class QuantumKernel(BaseKernel):
     def _is_trivial(
         self, i: int, j: int, x_i: np.ndarray, y_j: np.ndarray, symmetric: bool
     ) -> bool:
+        """
+        Verifies if the kernel entry is trivial (to be set to `1.0`) or not.
+
+        Args:
+            i: row index of the entry in the kernel matrix.
+            j: column index of the entry in the kernel matrix.
+            x_i: a sample from the dataset that corresponds to the row in the kernel matrix.
+            y_j: a sample from the dataset that corresponds to the column in the kernel matrix.
+            symmetric: whether it is a symmetric case or not.
+
+        Returns:
+            `True` if the entry is trivial, `False` otherwise.
+        """
         # if we evaluate all combinations, then it is non-trivial
         if self._evaluate_duplicates == "all":
             return False
