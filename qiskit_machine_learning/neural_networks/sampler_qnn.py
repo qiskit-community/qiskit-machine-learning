@@ -21,23 +21,27 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
+from qiskit.primitives import BaseSampler
+from qiskit.algorithms.gradients import BaseSamplerGradient
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError, QiskitError
+from .neural_network import NeuralNetwork
 
 logger = logging.getLogger(__name__)
 
 
-class SamplerQNN:
+class SamplerQNN(NeuralNetwork):
     """A Neural Network implementation based on the Sampler primitive."""
 
     def __init__(
         self,
+        sampler: BaseSampler,
         circuit: QuantumCircuit,
         input_params: List[Parameter] | None = None,
         weight_params: List[Parameter] | None = None,
         interpret: Callable[[int], int | Tuple[int, ...]] | None = None,
         output_shape: int | Tuple[int, ...] | None = None,
-        sampler_factory: Callable | None = None,
-        gradient_factory: Callable | str | None = None,
+        gradient: BaseSamplerGradient | None = None,
+        input_gradients: bool = False
     )-> None:
         """
 
@@ -57,73 +61,42 @@ class SamplerQNN:
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
-
-        self._circuit = circuit
-
-        self._gradient_factory = gradient_factory
-        self._sampler_factory = sampler_factory
-
-        self._sampler = None
-        self._gradient = None
+        # set sampler --> make property?
+        self.sampler = sampler
+        # use given gradient or default
+        self.gradient = gradient
 
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
 
-        self.output_shape = None
-        self._num_inputs = len(self._input_params)
-        self._num_weights = len(self._weight_params)
+        # initialize gradient properties
+        self.input_gradients = input_gradients # TODO
 
-        self.num_weights = self._num_weights
+        # sparse = False --> Hard coded TODO: look into sparse
 
-        # the circuit must always have measurements...
-        # add measurements in case none are given
+        self._circuit = circuit.copy()
         if len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
+        # self._circuit_transpiled = False TODO: look into transpilation
 
-        self._interpret = interpret
+        # these original values may be re-used when a quantum instance is set,
+        # but initially it was None
+        self._original_output_shape = output_shape
+        self._output_shape = output_shape
+
+        self.set_interpret(interpret, output_shape)
+        # next line is required by pylint only
+        # self._interpret = interpret
         self._original_interpret = interpret
 
-        # set interpret and compute output shape
-        self.set_interpret(interpret, output_shape)
-
-        # not implemented yet
-        # self._input_gradients = None
-
-    def __enter__(self):
-        """
-        QNN used with context managers.
-        """
-        self.open()
-        return self
-
-    def __exit__(self, *exc_info) -> None:
-        """
-        QNN used with context managers.
-        """
-        self.close()
-
-    def open(self) -> None:
-        """
-        Open sampler/gradient session.
-        """
-        # we should delay instantiation of the primitives until they are really required
-        self._sampler = self._sampler_factory(
-            circuits=self._circuit, parameters=[self._input_params + self._weight_params]
+        # init super clas
+        super().__init__(
+            len(self._input_params),
+            len(self._weight_params),
+            False, # sparse
+            self._output_shape,
+            self._input_gradients,
         )
-
-        if self._gradient_factory is not None:
-            # if gradient method -> sampler with gradient functionality
-            # self._gradient = ParamShiftSamplerGradient(
-            #     circuit = self._circuit,
-            #     sampler = self._sampler_factory
-            # )
-            pass  # waiting for gradients
-
-    def close(self) -> None:
-        """
-        Close sampler/gradient session.
-        """
-        self._sampler.__exit__()
 
     def set_interpret(
         self,
@@ -147,7 +120,7 @@ class SamplerQNN:
         # derive target values to be used in computations
         self._output_shape = self._compute_output_shape(interpret, output_shape)
         self._interpret = interpret if interpret is not None else lambda x: x
-        self.output_shape = self._output_shape
+        # self.output_shape = self._compute_output_shape(self._interpret, output_shape)
 
     def _compute_output_shape(
         self,
@@ -181,18 +154,6 @@ class SamplerQNN:
 
         return output_shape_
 
-    def forward(
-        self,
-        input_data: List[float] | np.ndarray | float | None,
-        weights: List[float] | np.ndarray | float | None,
-    ) -> np.ndarray:
-        """
-        Forward pass of the network. Returns the probabilities.
-        Format depends on the set interpret function.
-        """
-        result = self._forward(input_data, weights)
-        return result
-
     def _preprocess(
         self,
         input_data: List[float] | np.ndarray | float | None,
@@ -223,7 +184,7 @@ class SamplerQNN:
         prob = np.zeros((num_samples, *self._output_shape))
 
         for i in range(num_samples):
-            counts = result.quasi_dists[i]
+            counts = result[i]
             print(counts)
             shots = sum(counts.values())
 
@@ -242,25 +203,13 @@ class SamplerQNN:
         """
         parameter_values, num_samples = self._preprocess(input_data, weights)
 
-        # sampler allows batching (gradient doesn't)
-        results = self._sampler([0] * num_samples, parameter_values)
+        # sampler allows batching
+        job = self.sampler.run([self._circuit] * num_samples, parameter_values)
+        results = job.result().quasi_dists
 
         result = self._postprocess(num_samples, results)
 
         return result
-
-    def backward(
-        self,
-        input_data: Optional[Union[List[float], np.ndarray, float]],
-        weights: Optional[Union[List[float], np.ndarray, float]],
-    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray],]:
-        """Backward pass of the network. Returns (None, None) when no gradient is
-         provided and the corresponding here probability gradients otherwise.
-        """
-        if self._gradient:
-            return self._backward(input_data, weights)
-        else:
-            return None, None
 
     def _preprocess_gradient(self, input_data, weights):
         """
@@ -276,7 +225,6 @@ class SamplerQNN:
 
         parameters = []
         for i in range(num_samples):
-
             param_values = [input_data[i, j] for j, input_param in enumerate(self._input_params)]
             param_values += [weights[j] for j, weight_param in enumerate(self._weight_params)]
             parameters.append(param_values)
@@ -287,7 +235,7 @@ class SamplerQNN:
         """
         Post-processing during backward pass of the network.
         """
-        input_grad = np.zeros((num_samples, 1, self._num_inputs)) if self._input_gradients else None
+        input_grad = np.zeros((num_samples, *self._output_shape, self._num_inputs)) if self._input_gradients else None
         weights_grad = np.zeros((num_samples, *self._output_shape, self._num_weights))
 
         if self._input_gradients:
@@ -298,9 +246,9 @@ class SamplerQNN:
         for sample in range(num_samples):
 
             for i in range(num_grad_vars):
-                grad = results[sample].quasi_dists[i + self._num_inputs]
+                grad = results.gradients[sample][i]
                 for k in grad.keys():
-                    val = results[sample].quasi_dists[i + self._num_inputs][k]
+                    val = results.gradients[sample][i][k]
                     # get index for input or weights gradients
                     if self._input_gradients:
                         grad_index = i if i < self._num_inputs else i - self._num_inputs
@@ -335,17 +283,14 @@ class SamplerQNN:
         # prepare parameters in the required format
         parameter_values, num_samples = self._preprocess_gradient(input_data, weights)
 
-        results = []
-        for sample in range(num_samples):
-            if self._input_gradients:
-                result = self._gradient(parameter_values[sample])
-            else:
-                result = self._gradient(
-                    parameter_values[sample],
-                    partial=self._sampler._circuit.parameters[self._num_inputs :],
-                )
+        if self._input_gradients:
+            job = self.gradient.run([self._circuit] * num_samples, parameter_values)
+        else:
+            job = self.gradient.run([self._circuit] * num_samples, parameter_values,
+                                    parameters=[self._circuit.parameters[self._num_inputs:]])
 
-            results.append(result)
+        results = job.result()
+
         input_grad, weights_grad = self._postprocess_gradient(num_samples, results)
 
-        return None, weights_grad  # `None` for gradients wrt input data, see TorchConnector
+        return input_grad, weights_grad  # `None` for gradients wrt input data, see TorchConnector

@@ -490,7 +490,6 @@ class CircuitQNN(SamplingNeuralNetwork):
             num_grad_vars = self._num_inputs + self._num_weights
         else:
             num_grad_vars = self._num_weights
-
         # construct gradients
         for sample in range(num_samples):
             for i in range(num_grad_vars):
