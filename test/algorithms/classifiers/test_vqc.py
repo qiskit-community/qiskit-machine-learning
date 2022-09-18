@@ -75,17 +75,16 @@ class TestVQC(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.random_seed = 1111111
         self.num_classes_by_batch = []
-        import importlib
+        from qiskit_aer import Aer
 
-        aer = importlib.import_module("qiskit.providers.aer")
         # Set-up the quantum instances.
         statevector = QuantumInstance(
-            aer.Aer.get_backend("aer_simulator_statevector"),
+            Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         qasm = QuantumInstance(
-            aer.Aer.get_backend("aer_simulator"),
+            Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
