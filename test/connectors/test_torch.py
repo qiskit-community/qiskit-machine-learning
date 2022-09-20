@@ -32,17 +32,16 @@ class TestTorch(ABC):
         """Base setup."""
         algorithm_globals.random_seed = 12345
         # specify quantum instances
-        import importlib
+        from qiskit_aer import Aer, AerSimulator
 
-        aer = importlib.import_module("qiskit.providers.aer")
         self._sv_quantum_instance = QuantumInstance(
-            aer.Aer.get_backend("aer_simulator_statevector"),
+            Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         # pylint: disable=no-member
         self._qasm_quantum_instance = QuantumInstance(
-            aer.AerSimulator(),
+            AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

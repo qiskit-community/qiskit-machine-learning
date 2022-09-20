@@ -55,16 +55,15 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
-        import importlib
+        from qiskit_aer import Aer
 
-        aer = importlib.import_module("qiskit.providers.aer")
         self.sv_quantum_instance = QuantumInstance(
-            aer.Aer.get_backend("aer_simulator_statevector"),
+            Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            aer.Aer.get_backend("aer_simulator"),
+            Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

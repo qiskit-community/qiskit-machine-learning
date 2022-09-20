@@ -14,7 +14,7 @@ sphinx-autodoc-typehints<1.14.0
 sphinxcontrib-spelling
 jupyter-sphinx
 discover
-qiskit-aer
+qiskit-aer>=0.11
 mypy>=0.780
 mypy-extensions>=0.4.3
 nbsphinx
