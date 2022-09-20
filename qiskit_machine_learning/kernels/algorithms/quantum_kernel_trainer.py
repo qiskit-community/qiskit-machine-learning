@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Quantum Kernel Trainer"""
+
 import copy
 from functools import partial
 from typing import Union, Optional, Sequence
@@ -22,7 +23,11 @@ from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
 
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
+from qiskit_machine_learning.primitives.kernels import TrainableQuantumKernel as QuantumKernelNew
+
+
+QuantumKernel = Union[QuantumKernelOld, QuantumKernelNew]
 
 
 class QuantumKernelTrainerResult(VariationalResult):

@@ -13,9 +13,10 @@
 """Trainable Quantum Kernel"""
 
 from __future__ import annotations
-import numpy as np
 
+import numpy as np
 from qiskit.circuit import Parameter, ParameterVector
+from qiskit.circuit.parameterexpression import ParameterValueType
 
 
 class TrainableKernelMixin:
@@ -30,19 +31,21 @@ class TrainableKernelMixin:
             training_parameters = []
         self._training_parameters = training_parameters
 
-        self.num_parameters = len(self._training_parameters)
+        self._num_trainable_parameters = len(self._training_parameters)
 
         self._parameter_dict = {parameter: None for parameter in training_parameters}
 
-    def assign_training_parameters(self, parameter_values: np.ndarray) -> None:
+    def assign_training_parameters(
+        self, parameter_values: dict[Parameter, ParameterValueType] | list[ParameterValueType]
+    ) -> None:
         """
         Fix the training parameters to numerical values.
         """
         if not isinstance(parameter_values, dict):
-            if len(parameter_values) != self.num_parameters:
+            if len(parameter_values) != self._num_trainable_parameters:
                 raise ValueError(
-                    f"The number of given parameters is wrong ({len(parameter_values)}),"
-                    f"expected {self.num_parameters}."
+                    f"The number of given parameters is wrong: {len(parameter_values)}, "
+                    f"expected {self._num_trainable_parameters}."
                 )
             self._parameter_dict.update(
                 {
@@ -54,8 +57,8 @@ class TrainableKernelMixin:
             for key in parameter_values:
                 if key not in self._training_parameters:
                     raise ValueError(
-                        f"Parameter {key} is not a trainable parameter of the feature map and"
-                        f"thus cannot be bound. Make sure {key} is provided in the the trainable"
+                        f"Parameter {key} is not a trainable parameter of the feature map and "
+                        f"thus cannot be bound. Make sure {key} is provided in the the trainable "
                         "parameters when initializing the kernel."
                     )
                 self._parameter_dict[key] = parameter_values[key]
@@ -65,5 +68,11 @@ class TrainableKernelMixin:
         """
         Numerical values assigned to the training parameters.
         """
-        # todo: may not work if not all parameters are assigned.
         return np.asarray([self._parameter_dict[param] for param in self._training_parameters])
+
+    @property
+    def training_parameters(self) -> ParameterVector | list[Parameter] | None:
+        """
+        Return the vector of training parameters.
+        """
+        return self._training_parameters

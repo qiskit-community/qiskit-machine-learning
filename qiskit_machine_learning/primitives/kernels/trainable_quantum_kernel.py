@@ -55,8 +55,7 @@ class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
             enforce_psd=enforce_psd,
         )
 
-        # self._num_features = self._num_features - self.num_parameters
-        self._num_features = feature_map.num_parameters - self.num_parameters
+        self._num_features = feature_map.num_parameters - self._num_trainable_parameters
         self._feature_parameters = [
             parameter
             for parameter in feature_map.parameters
@@ -78,7 +77,7 @@ class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
         """
         Combines the feature values and the trainable parameters into one array.
         """
-        full_array = np.zeros((x_vec.shape[0], self._num_features + self.num_parameters))
+        full_array = np.zeros((x_vec.shape[0], self._num_features + self._num_trainable_parameters))
         for i, x in enumerate(x_vec):
             self._parameter_dict.update(
                 {feature_param: x[j] for j, feature_param in enumerate(self._feature_parameters)}
