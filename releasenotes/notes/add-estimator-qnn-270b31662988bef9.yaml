@@ -1,0 +1,16 @@
+---
+features:
+  - |
+    New quantum neural network class using :class:`~qiskit.primitives.BaseEstimator` has been added.
+    It internally uses the estimator to calculate the forward pass and it requires
+    :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to calculate the backward pass.
+
+    Example::
+    .. code-block:: python
+
+      estimator = Estimator(...)
+      gradient = ParamShiftEstimatorGradient(estimator)
+      estimator_qnn = EstimatorQNN(estimator, qc, [op], [input_param], [weight_param], gradient=gradient)
+      res = estimator_qnn.forward(inputs, weights)
+      input_grad, weights_grad = estimator_qnn.backward(inputs, weights)
+
