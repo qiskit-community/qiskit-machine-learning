@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-""" Test QuantumKernel using primitives """
+"""Test FidelityQuantumKernel."""
 
 from __future__ import annotations
 
@@ -27,12 +27,12 @@ from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
 from sklearn.svm import SVC
 
-from qiskit_machine_learning.primitives.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 
 @ddt
-class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
-    """Test QuantumKernel primitives."""
+class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
+    """Test FidelityQuantumKernel."""
 
     def setUp(self):
         super().setUp()
@@ -67,7 +67,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""
-        kernel = QuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        kernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         score = svc.score(self.sample_test, self.label_test)
@@ -76,7 +76,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
     def test_svc_precomputed(self):
         """Test precomputed kernel in sklearn."""
-        kernel = QuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        kernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
         kernel_train = kernel.evaluate(x_vec=self.sample_train)
         kernel_test = kernel.evaluate(x_vec=self.sample_test, y_vec=self.sample_train)
 
@@ -91,7 +91,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
-        kernel = QuantumKernel()
+        kernel = FidelityQuantumKernel()
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
@@ -102,13 +102,13 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
     def test_exceptions(self):
         """Test quantum kernel raises exceptions and warnings."""
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
-            _ = QuantumKernel(evaluate_duplicates="wrong")
+            _ = FidelityQuantumKernel(evaluate_duplicates="wrong")
 
         with self.assertRaises(ValueError, msg="Unsupported value of 'fidelity'."):
-            _ = QuantumKernel(fidelity="wrong")
+            _ = FidelityQuantumKernel(fidelity="wrong")
 
         with self.assertWarns(UserWarning, msg="Both fidelity and samples are passed"):
-            _ = QuantumKernel(sampler=self.sampler, fidelity=self.fidelity)
+            _ = FidelityQuantumKernel(sampler=self.sampler, fidelity=self.fidelity)
 
     @idata(
         # params, fidelity, feature map, enforce_psd, duplicate
@@ -164,14 +164,14 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
 
     def _create_kernel(self, fidelity, feature_map, enforce_psd, duplicates):
         if fidelity == "default_fidelity":
-            kernel = QuantumKernel(
+            kernel = FidelityQuantumKernel(
                 sampler=self.sampler,
                 feature_map=feature_map,
                 enforce_psd=enforce_psd,
                 evaluate_duplicates=duplicates,
             )
         elif fidelity == "zero_prob":
-            kernel = QuantumKernel(
+            kernel = FidelityQuantumKernel(
                 sampler=self.sampler,
                 feature_map=feature_map,
                 fidelity="zero_prob",
@@ -179,7 +179,7 @@ class TestPrimitivesQuantumKernel(QiskitMachineLearningTestCase):
                 evaluate_duplicates=duplicates,
             )
         elif fidelity == "fidelity_instance":
-            kernel = QuantumKernel(
+            kernel = FidelityQuantumKernel(
                 feature_map=feature_map,
                 fidelity=self.fidelity,
                 enforce_psd=enforce_psd,
@@ -310,7 +310,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
     def test_evaluate_duplicates(self, dataset_name, evaluate_duplicates, expected_num_circuits):
         """Tests quantum kernel evaluation with duplicate samples."""
         self.circuit_counts = 0
-        kernel = QuantumKernel(
+        kernel = FidelityQuantumKernel(
             sampler=self.counting_sampler,
             feature_map=self.feature_map,
             evaluate_duplicates=evaluate_duplicates,
@@ -332,7 +332,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
     ):
         """Tests asymmetric quantum kernel evaluation with duplicate samples."""
         self.circuit_counts = 0
-        kernel = QuantumKernel(
+        kernel = FidelityQuantumKernel(
             sampler=self.counting_sampler,
             feature_map=self.feature_map,
             evaluate_duplicates=evaluate_duplicates,

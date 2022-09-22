@@ -22,7 +22,7 @@ from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms.classifiers import QSVC
 from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
-from qiskit_machine_learning.primitives.kernels import TrainableQuantumKernel
+from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
 from qiskit_machine_learning.utils.loss_functions import SVCLoss
 
 
@@ -53,7 +53,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([1, 0])
 
-        self.quantum_kernel = TrainableQuantumKernel(
+        self.quantum_kernel = TrainableFidelityQuantumKernel(
             sampler=Sampler(),
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,

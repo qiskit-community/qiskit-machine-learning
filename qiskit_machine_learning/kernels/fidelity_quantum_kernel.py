@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Overlap Quantum Kernel"""
+"""Fidelity Quantum Kernel"""
 
 from __future__ import annotations
 
@@ -21,12 +21,12 @@ from qiskit import QuantumCircuit
 from qiskit.algorithms.state_fidelities import BaseStateFidelity, ComputeUncompute
 from qiskit.primitives import Sampler
 
-from .base_kernel import BaseKernel
+from qiskit_machine_learning.kernels.base_kernel import BaseKernel
 
 KernelIndices = List[Tuple[int, int]]
 
 
-class QuantumKernel(BaseKernel):
+class FidelityQuantumKernel(BaseKernel):
     r"""
     QuantumKernel
 

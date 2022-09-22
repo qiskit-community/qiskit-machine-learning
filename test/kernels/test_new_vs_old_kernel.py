@@ -24,8 +24,8 @@ from qiskit.circuit.library import ZFeatureMap, ZZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals, QuantumInstance
 
-from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
-from qiskit_machine_learning.primitives.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 
 @ddt
@@ -64,10 +64,10 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
         # add some duplicates
         features = np.concatenate((features, features[0, :].reshape(1, -1)))
 
-        new_qk = QuantumKernel(
+        new_qk = FidelityQuantumKernel(
             self.sampler, feature_map, enforce_psd=enforce_psd, evaluate_duplicates=duplicates
         )
-        old_qk = QuantumKernelOld(
+        old_qk = QuantumKernel(
             feature_map,
             enforce_psd=enforce_psd,
             quantum_instance=self.statevector_simulator,

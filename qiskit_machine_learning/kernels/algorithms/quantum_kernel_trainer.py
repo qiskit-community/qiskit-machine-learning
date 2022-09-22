@@ -24,10 +24,10 @@ from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
 
 from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
-from qiskit_machine_learning.primitives.kernels import TrainableQuantumKernel as QuantumKernelNew
+from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
 
 
-QuantumKernel = Union[QuantumKernelOld, QuantumKernelNew]
+QuantumKernel = Union[QuantumKernelOld, TrainableFidelityQuantumKernel]
 
 
 class QuantumKernelTrainerResult(VariationalResult):

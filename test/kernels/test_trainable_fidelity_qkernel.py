@@ -20,7 +20,7 @@ from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.primitives import Sampler
 
-from qiskit_machine_learning.primitives.kernels import TrainableQuantumKernel
+from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
 
 
 @ddt
@@ -45,7 +45,7 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
     def test_training_parameters(self):
         """Test assigning/re-assigning user parameters"""
 
-        kernel = TrainableQuantumKernel(
+        kernel = TrainableFidelityQuantumKernel(
             sampler=self.sampler,
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
@@ -111,7 +111,7 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         else:
             training_params = [0.1, 0.531, 4.12]
 
-        kernel = TrainableQuantumKernel(
+        kernel = TrainableFidelityQuantumKernel(
             sampler=self.sampler,
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
@@ -138,7 +138,7 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         else:
             training_params = [0.1, 0.531, 4.12]
 
-        kernel = TrainableQuantumKernel(
+        kernel = TrainableFidelityQuantumKernel(
             sampler=self.sampler,
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,

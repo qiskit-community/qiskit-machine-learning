@@ -23,6 +23,9 @@ Quantum Kernels
    :nosignatures:
 
    QuantumKernel
+   BaseKernel
+   FidelityQuantumKernel
+   TrainableFidelityQuantumKernel
 
 Submodules
 ==========
@@ -34,5 +37,8 @@ Submodules
 """
 
 from .quantum_kernel import QuantumKernel
+from .base_kernel import BaseKernel
+from .fidelity_quantum_kernel import FidelityQuantumKernel
+from .trainable_fidelity_quantum_kernel import TrainableFidelityQuantumKernel
 
-__all__ = ["QuantumKernel"]
+__all__ = ["QuantumKernel", "BaseKernel", "FidelityQuantumKernel", "TrainableFidelityQuantumKernel"]

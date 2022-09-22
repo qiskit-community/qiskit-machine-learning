@@ -45,6 +45,8 @@ class BaseKernel(ABC):
     def __init__(self, feature_map: QuantumCircuit = None, enforce_psd: bool = True) -> None:
         """
         Args:
+            feature_map: Parameterized circuit to be used as the feature map. If None is given,
+                the `ZZFeatureMap` is used with two qubits.
             enforce_psd: Project to closest positive semidefinite matrix if x = y.
                 Default True.
         """
@@ -70,15 +72,6 @@ class BaseKernel(ABC):
 
         Returns:
             2D matrix, NxM
-
-        Raises:
-            QiskitMachineLearningError:
-                A quantum instance or backend has not been provided.
-            ValueError:
-                x_vec and/or y_vec are not one or two dimensional arrays
-                x_vec and y_vec have have incompatible dimensions
-                x_vec and/or y_vec have incompatible dimension with feature map and
-                    and feature map can not be modified to match.
         """
         raise NotImplementedError()
 

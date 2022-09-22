@@ -21,11 +21,11 @@ from qiskit.primitives import Sampler
 from qiskit.algorithms.state_fidelities import BaseStateFidelity
 
 from qiskit_machine_learning import QiskitMachineLearningError
-from .quantum_kernel import QuantumKernel, KernelIndices
+from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
 from .trainable_kernel_mixin import TrainableKernelMixin
 
 
-class TrainableQuantumKernel(TrainableKernelMixin, QuantumKernel):
+class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel):
     r"""
     Finding good quantum kernels for a specific machine learning task is a big challenge in quantum
     machine learning. One way to choose the kernel is to add trainable parameters to the feature
