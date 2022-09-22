@@ -76,8 +76,8 @@ class BaseKernel(ABC):
         raise NotImplementedError()
 
     def _validate_input(
-        self, x_vec: np.ndarray, y_vec: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, x_vec: np.ndarray, y_vec: np.ndarray | None
+    ) -> tuple[np.ndarray, np.ndarray | None]:
         x_vec = np.asarray(x_vec)
 
         if x_vec.ndim > 2:

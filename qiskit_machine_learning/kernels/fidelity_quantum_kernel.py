@@ -64,12 +64,6 @@ class FidelityQuantumKernel(BaseKernel):
     ) -> None:
         super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
 
-        # if feature_map is None:
-        #     feature_map = ZZFeatureMap(2)
-        # self._feature_map = feature_map
-        #
-        # self._num_features = self._feature_map.num_parameters
-
         eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
             raise ValueError(
