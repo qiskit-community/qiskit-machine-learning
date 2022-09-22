@@ -54,7 +54,6 @@ class BaseKernel(ABC):
             feature_map = ZZFeatureMap(2)
 
         self._feature_map = feature_map
-        # self._num_features: int = 0
         self._enforce_psd = enforce_psd
 
     @abstractmethod
