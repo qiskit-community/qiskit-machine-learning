@@ -93,6 +93,8 @@ class FidelityQuantumKernel(BaseKernel):
                     - ``none`` when training the diagonal is set to `1` and if two identical samples
                       are found in the dataset the corresponding matrix element is set to `1`.
                       When inferring, matrix elements for identical samples are set to `1`.
+        Raises:
+            ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
         super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
 
