@@ -63,7 +63,7 @@ class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel
         ]
         self._parameter_dict = {parameter: None for parameter in feature_map.parameters}
 
-    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
+    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
         for param in self._training_parameters:
             if self._parameter_dict[param] is None:
                 raise QiskitMachineLearningError(

@@ -90,7 +90,7 @@ class FidelityQuantumKernel(BaseKernel):
                 )
             self._fidelity = fidelity
 
-    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
+    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
         x_vec, y_vec = self._validate_input(x_vec, y_vec)
 
         # determine if calculating self inner product

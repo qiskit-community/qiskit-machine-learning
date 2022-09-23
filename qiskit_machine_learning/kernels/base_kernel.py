@@ -57,7 +57,7 @@ class BaseKernel(ABC):
         self._enforce_psd = enforce_psd
 
     @abstractmethod
-    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray = None) -> np.ndarray:
+    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
         r"""
         Construct kernel matrix for given data.
 
