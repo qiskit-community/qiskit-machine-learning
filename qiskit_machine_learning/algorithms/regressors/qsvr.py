@@ -13,13 +13,16 @@
 """Quantum Support Vector Regressor"""
 
 import warnings
-from typing import Optional
+from typing import Optional, Union
 
 from sklearn.svm import SVR
 
-from ..serializable_model import SerializableModelMixin
-from ...exceptions import QiskitMachineLearningWarning
-from ...kernels.quantum_kernel import QuantumKernel
+from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
+from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
+from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
+
+QuantumKernel = Union[QuantumKernelOld, BaseKernel]
 
 
 class QSVR(SVR, SerializableModelMixin):
@@ -64,7 +67,7 @@ class QSVR(SVR, SerializableModelMixin):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
 
-        self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
+        self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 
         super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
 
