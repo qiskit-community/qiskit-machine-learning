@@ -13,14 +13,17 @@
 """Quantum Support Vector Classifier"""
 
 import warnings
-from typing import Optional
+from typing import Optional, Union
 
 from qiskit.utils.algorithm_globals import algorithm_globals
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
-from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
+from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
+
+QuantumKernel = Union[QuantumKernelOld, BaseKernel]
 
 
 class QSVC(SVC, SerializableModelMixin):
@@ -65,7 +68,7 @@ class QSVC(SVC, SerializableModelMixin):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
 
-        self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
+        self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
