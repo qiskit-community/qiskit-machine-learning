@@ -27,6 +27,5 @@ Utilities
 
 """
 from .adjust_num_qubits import derive_num_qubits_feature_map_ansatz
-from .utils import make_2d
 
-__all__ = ["derive_num_qubits_feature_map_ansatz", "make_2d"]
+__all__ = ["derive_num_qubits_feature_map_ansatz"]

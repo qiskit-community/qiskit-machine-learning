@@ -62,6 +62,38 @@ class FidelityQuantumKernel(BaseKernel):
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
     ) -> None:
+        """
+        Args:
+            sampler: An instance of the :class:`~qiskit.primitives.Sampler` primitive to be used to
+                evaluate fidelity. If ``None`` is given then a reference implementation will be
+                instantiated. If an instance of
+                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` is passed as
+                ``fidelity``, then the sampler value is not used.
+            feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
+                :class:`~qiskit.circuit.library.ZZFeatureMap` is used with two qubits. If there's
+                a mismatch in the number of qubits of the feature map and the number of features
+                in the dataset, then the kernel will try to adjust the feature map to reflect the
+                number of features.
+            fidelity: An instance of the
+                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` primitive or a string
+                value defining a fidelity algorithm. Currently, the only supported string value
+                is ``zero_prob`` which corresponds to the
+                :class:`~qiskit.algorithms.state_fidelities.ComputeUncompute` fidelity.
+            enforce_psd: Project to closest positive semidefinite matrix if ``x = y``.
+                Default ``True``.
+            evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
+               duplicate samples are found. Possible values are:
+
+                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
+                      ones when training. This may introduce additional noise in the matrix.
+                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                      elements are fully evaluated, e.g., for two identical samples in the
+                      dataset. When inferring, all elements are evaluated. This is the default
+                      value.
+                    - ``none`` when training the diagonal is set to `1` and if two identical samples
+                      are found in the dataset the corresponding matrix element is set to `1`.
+                      When inferring, matrix elements for identical samples are set to `1`.
+        """
         super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
 
         eval_duplicates = evaluate_duplicates.lower()
