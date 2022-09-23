@@ -1,0 +1,22 @@
+---
+features:
+  - |
+    Added a new implementation of quantum kernel. This implementation leverages the fidelity
+    primitive (see :class:`qiskit.algorithms.state_fidelities.BaseStateFidelity`) and provides more
+    flexibility to end users. A new hierarchy is introduced:
+
+      - A base and abstract class :class:`~qiskit_machine_learning.kernels.BaseKernel` is
+        introduced. All concrete implementation must inherit this class.
+      - A fidelity based quantum kernel
+        :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` is added. This is a direct
+        replacement of :class:`~qiskit_machine_learning.kernels.QuantumKernel`. The difference is
+        that the new class takes either a sampler or a fidelity instance to estimate overlaps and
+        construct kernel matrix.
+      - A new mixin class :class:`~qiskit_machine_learning.kernels.TrainableKernelMixin` is
+        introduced to generalize ability to train quantum kernels.
+      - A trainable quantum kernel
+        :class:`~qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel` is introduced. This
+        is a replacement of the existing :class:`~qiskit_machine_learning.kernels.QuantumKernel` if
+        a trainable kernel is required. The trainer
+        :class:`~qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer` now accepts both
+        quantum kernel implementations, the new one and the existing one.
