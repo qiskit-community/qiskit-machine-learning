@@ -122,8 +122,7 @@ class BaseKernel(ABC):
         r"""
         Find the closest positive semi-definite approximation to symmetric kernel matrix.
         The (symmetric) matrix should always be positive semi-definite by construction,
-        but this can be violated in case of noise, such as sampling noise, thus the
-        adjustment is only done if NOT using the statevector simulation.
+        but this can be violated in case of noise, such as sampling noise.
 
         Args:
             kernel_matrix: symmetric 2D array of the kernel entries
