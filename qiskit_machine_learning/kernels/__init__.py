@@ -25,6 +25,7 @@ Quantum Kernels
    QuantumKernel
    BaseKernel
    FidelityQuantumKernel
+   TrainableKernelMixin
    TrainableFidelityQuantumKernel
 
 Submodules
