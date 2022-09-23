@@ -17,11 +17,18 @@ import functools
 import itertools
 import unittest
 
+from typing import Sequence
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, idata, unpack
-from qiskit.algorithms.state_fidelities import ComputeUncompute
+from qiskit import QuantumCircuit
+from qiskit.algorithms.state_fidelities import (
+    ComputeUncompute,
+    BaseStateFidelity,
+    StateFidelityResult,
+)
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
@@ -95,7 +102,6 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
-        print(score)
 
         self.assertGreaterEqual(score, 0.5)
 
@@ -257,6 +263,43 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                     ]
                 )
         return solution
+
+    def test_enforce_psd(self):
+        """Test enforce_psd"""
+
+        class MockFidelity(BaseStateFidelity):
+            """Custom fidelity that returns -0.5 for any input."""
+
+            def create_fidelity_circuit(
+                self, circuit_1: QuantumCircuit, circuit_2: QuantumCircuit
+            ) -> QuantumCircuit:
+                raise NotImplementedError()
+
+            def _run(
+                self,
+                circuits_1: QuantumCircuit | Sequence[QuantumCircuit],
+                circuits_2: QuantumCircuit | Sequence[QuantumCircuit],
+                values_1: Sequence[float] | Sequence[Sequence[float]] | None = None,
+                values_2: Sequence[float] | Sequence[Sequence[float]] | None = None,
+                **run_options,
+            ) -> StateFidelityResult:
+                values = np.asarray(values_1)
+                fidelities = np.full(values.shape[0], -0.5)
+                return StateFidelityResult(fidelities, [], {}, {})
+
+        with self.subTest("No PSD enforcement"):
+            kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=False)
+            matrix = kernel.evaluate(self.sample_train)
+            eigen_values = np.linalg.eigvals(matrix)
+            # there's a negative eigenvalue
+            self.assertFalse(np.all(np.greater_equal(eigen_values, -1e-10)))
+
+        with self.subTest("PSD enforced"):
+            kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=True)
+            matrix = kernel.evaluate(self.sample_train)
+            eigen_values = np.linalg.eigvals(matrix)
+            # all eigenvalues are non-negative with some tolerance
+            self.assertTrue(np.all(np.greater_equal(eigen_values, -1e-10)))
 
 
 @ddt
