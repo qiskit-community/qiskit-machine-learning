@@ -112,7 +112,7 @@ class QuantumGenerator(GenerativeNetwork):
                 if len(self._num_qubits) > 1:
                     self._data_grid = [grid]
                 else:
-                    self._data_grid = grid  # type: ignore
+                    self._data_grid = cast(List, grid)
                 self._grid_elements = grid
             elif j == 1:
                 self._data_grid.append(grid)
@@ -122,7 +122,7 @@ class QuantumGenerator(GenerativeNetwork):
                         temp0 = [g_e]
                         temp0.append(g)
                         temp.append(temp0)
-                self._grid_elements = temp  # type: ignore
+                self._grid_elements = cast(np.ndarray, temp)
             else:
                 self._data_grid.append(grid)
                 temp = []
@@ -131,7 +131,7 @@ class QuantumGenerator(GenerativeNetwork):
                         temp0 = deepcopy(g_e)
                         temp0.append(g)
                         temp.append(temp0)
-                self._grid_elements = deepcopy(temp)  # type: ignore
+                self._grid_elements = cast(np.ndarray, deepcopy(temp))
         self._data_grid = np.array(self._data_grid, dtype=object)  # type: ignore
 
         self._seed = 7

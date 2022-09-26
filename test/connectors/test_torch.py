@@ -14,7 +14,6 @@
 
 import unittest
 from abc import ABC, abstractmethod
-import qiskit
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 import qiskit_machine_learning.optionals as _optionals
 
@@ -33,14 +32,16 @@ class TestTorch(ABC):
         """Base setup."""
         algorithm_globals.random_seed = 12345
         # specify quantum instances
+        from qiskit_aer import Aer, AerSimulator
+
         self._sv_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         # pylint: disable=no-member
         self._qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.AerSimulator(),
+            AerSimulator(),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

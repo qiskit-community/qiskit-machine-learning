@@ -20,7 +20,7 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, unpack, idata
-import qiskit
+
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
@@ -47,13 +47,15 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
+        from qiskit_aer import Aer
+
         self.sv_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
         self.qasm_quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator"),
+            Aer.get_backend("aer_simulator"),
             shots=100,
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,

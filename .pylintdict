@@ -19,12 +19,16 @@ cargs
 carlo
 cbit
 centroid
+choi
 chuang
 clbit
 clbits
 codec
+colin
 config
+cong
 contravariance
+convolutional
 cpu
 creg
 crossentropyloss
@@ -57,10 +61,12 @@ entangler
 et
 eval
 expressibility
+farrokh
 formatter
 func
 gambetta
 gaussian
+gellmann
 getter
 gpu
 hamiltonian
@@ -90,6 +96,7 @@ kwargs
 labelled
 lagrange
 langle
+lukin
 macos
 makefile
 matmul
@@ -106,6 +113,7 @@ multiclass
 multioutput
 mxd
 mypy
+nat
 ndarray
 nielsen
 nn
@@ -136,6 +144,7 @@ parametrized
 params
 pauli
 pegasos
+pixelated
 pre
 precomputed
 precomputes
@@ -220,6 +229,7 @@ unsymmetric
 utf
 utils
 variational
+vatan
 vec
 vqc
 vqe
@@ -228,6 +238,7 @@ vx
 vy
 vz
 wikipedia
+williams
 wrt
 zoufal
 zsh

@@ -302,13 +302,13 @@ class QuantumKernel:
 
         return unbound_training_params
 
-    @property  # type: ignore
+    @property
     @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """[Deprecated property]Return the vector of training parameters."""
         return self.training_parameters
 
-    @user_parameters.setter  # type: ignore
+    @user_parameters.setter
     @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
         """[Deprecated property setter]Set the training parameters"""
@@ -325,7 +325,7 @@ class QuantumKernel:
         """
         self.assign_training_parameters(values)
 
-    @property  # type: ignore
+    @property
     @deprecate_property("0.5.0", new_name="training_parameter_binds")
     def user_param_binds(self) -> Mapping[Parameter, float] | None:
         """

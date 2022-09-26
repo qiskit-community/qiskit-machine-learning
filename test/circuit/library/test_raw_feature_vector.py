@@ -96,8 +96,10 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         # specify quantum instance and random seed
         algorithm_globals.random_seed = 12345
+        from qiskit_aer import Aer
+
         quantum_instance = QuantumInstance(
-            qiskit.providers.aer.Aer.get_backend("aer_simulator_statevector"),
+            Aer.get_backend("aer_simulator_statevector"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
