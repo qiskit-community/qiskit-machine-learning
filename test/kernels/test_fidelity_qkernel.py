@@ -16,7 +16,6 @@ from __future__ import annotations
 import functools
 import itertools
 import unittest
-
 from typing import Sequence
 
 from test import QiskitMachineLearningTestCase
@@ -281,11 +280,11 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                 circuits_2: QuantumCircuit | Sequence[QuantumCircuit],
                 values_1: Sequence[float] | Sequence[Sequence[float]] | None = None,
                 values_2: Sequence[float] | Sequence[Sequence[float]] | None = None,
-                **run_options,
+                **options,
             ) -> StateFidelityResult:
                 values = np.asarray(values_1)
                 fidelities = np.full(values.shape[0], -0.5)
-                return StateFidelityResult(fidelities, [], {}, {})
+                return StateFidelityResult(fidelities, [], {}, options)
 
         with self.subTest("No PSD enforcement"):
             kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=False)
