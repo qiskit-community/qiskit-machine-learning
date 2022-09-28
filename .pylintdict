@@ -1,11 +1,15 @@
 adjoint
 al
+alan
 ancilla
 ancillas
 ansatz
 ansatzes
 args
 asmatrix
+aspuru
+autoencoder
+autoencoders
 autograd
 autosummary
 backend
@@ -45,6 +49,7 @@ datapoints
 dataset
 datasets
 deepcopy
+denoising
 deterministically
 diag
 dicts
@@ -69,6 +74,7 @@ gaussian
 gellmann
 getter
 gpu
+guzik
 hamiltonian
 hashable
 havlíček
@@ -88,6 +94,7 @@ iterable
 iteratively
 jacobian
 jm
+jonathan
 jupyter
 kandala
 kernelized
@@ -127,6 +134,7 @@ numpy
 nxd
 nxm
 observables
+olson
 opflow
 optim
 optimizer's
@@ -177,6 +185,7 @@ regs
 reproducibility
 rescale
 rhs
+romero
 runtime
 rx
 ry
@@ -223,6 +232,7 @@ transpiles
 transpiling
 tunable
 uncompiled
+uncompress
 unitaries
 univariate
 unsymmetric
