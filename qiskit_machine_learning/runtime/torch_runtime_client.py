@@ -14,12 +14,13 @@
 
 import base64
 from typing import Any, Callable, Dict, Optional, Union, List
-
+import warnings
 import dill
 
 from qiskit.exceptions import QiskitError
 from qiskit.providers import Provider
 from qiskit.providers.backend import Backend
+from qiskit_machine_learning.deprecation import warn_deprecated, deprecate_function, DeprecatedType
 from qiskit_machine_learning.runtime.hookbase import HookBase
 import qiskit_machine_learning.optionals as _optionals
 
@@ -69,13 +70,20 @@ else:
 
 
 class TorchRuntimeResult:
-    """The TorchRuntimeClient result object.
+    """Deprecation: TorchRuntimeClient result object.
 
     The result objects contains the state dictionary of the trained model,
     and the training history such as the value of loss function in each epoch.
     """
 
     def __init__(self) -> None:
+        warn_deprecated(
+            "0.5.0",
+            old_type=DeprecatedType.CLASS,
+            old_name="TorchRuntimeResult",
+            additional_msg=". You should use QiskitRuntimeService to leverage primitives and runtimes",
+            stack_level=3,
+        )
         self._job_id: Optional[str] = None
         self._train_history: Optional[List[Dict[str, float]]] = None
         self._val_history: Optional[List[Dict[str, float]]] = None
@@ -157,7 +165,9 @@ class TorchRuntimeResult:
 
 @_optionals.HAS_TORCH.require_in_instance
 class TorchRuntimeClient:
-    """The Qiskit Machine Learning Torch runtime client to call the Torch runtime."""
+    """Deprecation: TorchRuntimeClient
+
+    The Qiskit Machine Learning Torch runtime client to call the Torch runtime."""
 
     def __init__(
         self,
@@ -184,6 +194,13 @@ class TorchRuntimeClient:
             provider: IBMQ provider that supports runtime services.
             backend: Selected quantum backend.
         """
+        warn_deprecated(
+            "0.5.0",
+            old_type=DeprecatedType.CLASS,
+            old_name="TorchRuntimeClient",
+            additional_msg=". You should use QiskitRuntimeService to leverage primitives and runtimes",
+            stack_level=3,
+        )
         # Store settings
         self._provider = None
         self._model = None
@@ -346,22 +363,26 @@ class TorchRuntimeClient:
                 )
 
         # serialize using dill
-        serial_model = obj_to_str(self.model)
-        serial_optim = obj_to_str(self.optimizer)
-        serial_loss = obj_to_str(self.loss_func)
-        serial_train_data = obj_to_str(train_loader)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            serial_model = obj_to_str(self.model)
+            serial_optim = obj_to_str(self.optimizer)
+            serial_loss = obj_to_str(self.loss_func)
+            serial_train_data = obj_to_str(train_loader)
         serial_val_data: Optional[str] = None
         # check hooks
-        if val_loader:
-            serial_val_data = obj_to_str(val_loader)
-        if hooks is None:
-            serial_hooks = obj_to_str([])
-        elif isinstance(hooks, HookBase):
-            serial_hooks = obj_to_str([hooks])
-        elif isinstance(hooks, list) and all(isinstance(hook, HookBase) for hook in hooks):
-            serial_hooks = obj_to_str(hooks)
-        else:
-            raise ValueError("`hooks` must all be of the HookBase type")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            if val_loader:
+                serial_val_data = obj_to_str(val_loader)
+            if hooks is None:
+                serial_hooks = obj_to_str([])
+            elif isinstance(hooks, HookBase):
+                serial_hooks = obj_to_str([hooks])
+            elif isinstance(hooks, list) and all(isinstance(hook, HookBase) for hook in hooks):
+                serial_hooks = obj_to_str(hooks)
+            else:
+                raise ValueError("`hooks` must all be of the HookBase type")
         # combine the settings with the serialized buffers to runtime inputs
         inputs = {
             "model": serial_model,
@@ -394,14 +415,20 @@ class TorchRuntimeClient:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
         # Store trained model state for later prediction/scoring/further training
-        self._model.load_state_dict(str_to_obj(result["model_state_dict"]))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self._model.load_state_dict(str_to_obj(result["model_state_dict"]))
 
         # re-build result from serialized return value
-        torch_result = TorchRuntimeResult()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            torch_result = TorchRuntimeResult()
         torch_result.job_id = job.job_id()
         torch_result.train_history = result["train_history"]["train"]
         torch_result.val_history = result["train_history"]["validation"]
-        torch_result.model_state_dict = str_to_obj(result["model_state_dict"])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            torch_result.model_state_dict = str_to_obj(result["model_state_dict"])
         torch_result.execution_time = result["execution_time"]
         return torch_result
 
@@ -427,8 +454,10 @@ class TorchRuntimeClient:
             raise ValueError("The provider has not been set.")
 
         # Serialize inputs
-        serial_model = obj_to_str(self._model)
-        serial_data = obj_to_str(data_loader)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            serial_model = obj_to_str(self._model)
+            serial_data = obj_to_str(data_loader)
 
         # combine the settings with the serialized buffers to runtime inputs
         inputs = {
@@ -454,7 +483,9 @@ class TorchRuntimeClient:
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
-        torch_result = TorchRuntimeResult()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            torch_result = TorchRuntimeResult()
         torch_result.job_id = job.job_id()
         torch_result.prediction = Tensor(result["prediction"])
         torch_result.execution_time = result["execution_time"]
@@ -491,7 +522,9 @@ class TorchRuntimeClient:
             raise ValueError("The provider has not been set.")
 
         # serialize model using pickle + dill
-        serial_model = obj_to_str(self._model)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            serial_model = obj_to_str(self._model)
 
         if score_func == "classification":
             self._score_func = _score_classification
@@ -506,8 +539,11 @@ class TorchRuntimeClient:
             )
 
         # serialize loss function using pickle + dill
-        serial_score_func = obj_to_str(self._score_func)
-        serial_data = obj_to_str(data_loader)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            serial_score_func = obj_to_str(self._score_func)
+
+            serial_data = obj_to_str(data_loader)
 
         # define runtime options
         options = {"backend_name": self._backend.name()}
@@ -534,7 +570,9 @@ class TorchRuntimeClient:
         except Exception as exc:
             raise RuntimeError(f"The job {job.job_id()} failed unexpectedly.") from exc
 
-        torch_result = TorchRuntimeResult()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            torch_result = TorchRuntimeResult()
         torch_result.job_id = job.job_id()
         torch_result.prediction = Tensor(result["prediction"])
         torch_result.score = result["score"]
@@ -543,8 +581,11 @@ class TorchRuntimeClient:
         return torch_result
 
 
+@deprecate_function("0.5.0")
 def obj_to_str(obj: Any) -> str:
     """
+    Deprecation; obj_to_str
+
     Encodes any object into a JSON-compatible string using dill. The intermediate
     binary data must be converted to base 64 to be able to decode into utf-8 format.
 
@@ -555,8 +596,11 @@ def obj_to_str(obj: Any) -> str:
     return string
 
 
+@deprecate_function("0.5.0")
 def str_to_obj(string: str) -> Any:
     """
+    Deprecation; str_to_obj
+
     Decodes a previously encoded string using dill (with an intermediate step
     converting the binary data from base 64).
 
