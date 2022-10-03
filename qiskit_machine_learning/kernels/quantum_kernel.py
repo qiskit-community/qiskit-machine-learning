@@ -25,6 +25,7 @@ from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.providers import Backend
 from qiskit.result import Result
 from qiskit.utils import QuantumInstance
+from qiskit.utils.deprecation import deprecate_function
 
 from qiskit_machine_learning.deprecation import (
     deprecate_arguments,
@@ -35,7 +36,7 @@ from ..exceptions import QiskitMachineLearningError
 
 
 class QuantumKernel:
-    r"""Quantum Kernel.
+    r"""Pending deprecation: Quantum Kernel.
 
     The general task of machine learning is to find and study patterns in data. For many
     algorithms, the datapoints are better understood in a higher dimensional feature space,
@@ -55,6 +56,14 @@ class QuantumKernel:
     """
 
     @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
+    @deprecate_function(
+        "The QuantumKernel class has been superseded by the "
+        "qiskit_machine_learning.kernels.FidelityQuantumKernel class. "
+        "This class will be deprecated in a future release and subsequently "
+        "removed after that.",
+        stacklevel=3,
+        category=PendingDeprecationWarning,
+    )
     def __init__(
         self,
         feature_map: QuantumCircuit | None = None,
