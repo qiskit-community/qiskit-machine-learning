@@ -27,7 +27,7 @@ from qiskit.circuit.library import ZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import PegasosQSVC, SerializableModelMixin
 
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import QuantumKernel, FidelityQuantumKernel
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 
@@ -194,7 +194,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         """Tests properties of PegasosQSVC"""
         with self.subTest("Default parameters"):
             pegasos_qsvc = PegasosQSVC()
-            self.assertIsInstance(pegasos_qsvc.quantum_kernel, QuantumKernel)
+            self.assertIsInstance(pegasos_qsvc.quantum_kernel, FidelityQuantumKernel)
             self.assertFalse(pegasos_qsvc.precomputed)
             self.assertEqual(pegasos_qsvc.num_steps, 1000)
 
