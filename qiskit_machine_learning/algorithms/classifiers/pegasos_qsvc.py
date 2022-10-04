@@ -89,7 +89,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
                 - if ``quantum_kernel`` is passed and ``precomputed`` is set to ``True``. To use
                 a precomputed kernel, ``quantum_kernel`` has to be of the ``None`` type.
             TypeError:
-                - if ``quantum_instance`` neither instance of
+                - if ``quantum_kernel`` neither instance of
                   :class:`~qiskit_machine_learning.kernels.BaseKernel` nor ``None``.
         """
 
