@@ -1,16 +1,33 @@
 ---
 features:
   - |
-    New quantum neural network class using :class:`~qiskit.primitives.BaseEstimator` has been added.
-    It internally uses the estimator to calculate the forward pass and it requires
-    :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to calculate the backward pass.
+    New quantum neural network class, `~qiskit_machine_learning.neural_networks.EstimatorQNN`,
+    has been added. It internally uses :class:`~qiskit.primitives.Estimator` to calculate the
+    forward pass and it requires :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to
+    calculate the backward pass.
 
     Example::
     .. code-block:: python
+      import numpy as np
 
-      estimator = Estimator(...)
+      from qiskit.algorithms.gradients import ParamShiftEstimatorGradient
+      from qiskit.circuit import QuantumCircuit, Parameter
+      from qiskit.primitives import Estimator
+      from qiskit.quantum_info import SparsePauliOp
+      from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
+
+      estimator = Estimator()
       gradient = ParamShiftEstimatorGradient(estimator)
-      estimator_qnn = EstimatorQNN(estimator, qc, [op], [input_param], [weight_param], gradient=gradient)
+      params = [Parameter("input1"), Parameter("weight1")]
+      qc = QuantumCircuit(1)
+      qc.h(0)
+      qc.ry(params[0], 0)
+      qc.rx(params[1], 0)
+      op = SparsePauliOp.from_list([("Z", 1), ("X", 1.0)])
+      gradient = ParamShiftEstimatorGradient(estimator)
+
+      estimator_qnn = EstimatorQNN(estimator, qc, [op], [params[0]], [params[1]], gradient=gradient)
+      inputs = np.array([1])
+      weights = np.array([2])
       res = estimator_qnn.forward(inputs, weights)
       input_grad, weights_grad = estimator_qnn.backward(inputs, weights)
-
