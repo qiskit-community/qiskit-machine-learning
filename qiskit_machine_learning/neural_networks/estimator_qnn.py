@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,8 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""An Opflow Quantum Neural Network that allows to use a parametrized opflow object as a
-neural network."""
+"""Estimator quantum neural network class"""
 import logging
 from typing import Optional, Sequence, Tuple, Union
 
@@ -43,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class EstimatorQNN(NeuralNetwork):
-    """A Neural Network implementation based on the Sampler primitive."""
+    """A Neural Network implementation based on the Estimator primitive."""
 
     def __init__(
         self,
@@ -57,12 +56,12 @@ class EstimatorQNN(NeuralNetwork):
     ):
         """
         Args:
-            operator: The parametrized operator that represents the neural network.
-            input_params: The operator parameters that correspond to the input of the network.
-            weight_params: The operator parameters that correspond to the trainable weights.
-            exp_val: The Expected Value converter to be used for the operator.
-            gradient: The Gradient converter to be used for the operator's backward pass.
-            quantum_instance: The quantum instance to evaluate the network.
+            estimator: The estimator used to compute neural network's results.
+            circuit: The quantum circuit to represent the neural network.
+            observables: The observables for outputs of the neural network.
+            input_params: The parameters that correspond to the input of the network.
+            weight_params: The parameters that correspond to the trainable weights.
+            gradient: The estimator gradient to be used for the backward pass.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
@@ -73,7 +72,6 @@ class EstimatorQNN(NeuralNetwork):
         self._input_params = list(input_params) or []
         self._weight_params = list(weight_params) or []
         self._gradient = gradient
-        # initialize gradient properties
         self.input_gradients = input_gradients
 
         super().__init__(
@@ -83,11 +81,10 @@ class EstimatorQNN(NeuralNetwork):
             output_shape=len(observables),
             input_gradients=input_gradients,
         )
-        print(self.output_shape[0])
 
     @property
-    def operator(self):
-        """Returns the underlying operator of this QNN."""
+    def observables(self):
+        """Returns the underlying observables of this QNN."""
         return self._observables
 
     @property
@@ -129,29 +126,21 @@ class EstimatorQNN(NeuralNetwork):
     def _forward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Union[np.ndarray, SparseArray]:
-        # combine parameter dictionary
-        # take i-th column as values for the i-th param in a batch
+        """Forward pass of the neural network."""
         parameter_values_, num_samples = self._preprocess(input_data, weights)
         parameter_values = [
             param_values for param_values in parameter_values_ for _ in range(self.output_shape[0])
         ]
-        # print(f"parameter_values_: {parameter_values_}")
-        # print(f"parameter_values : {parameter_values}")
-        # print(self._observables * num_samples)
         job = self._estimator.run(
             [self._circuit] * num_samples * self.output_shape[0],
             self._observables * num_samples,
             parameter_values,
         )
         results = job.result()
-        print(results)
         return self._forward_postprocess(num_samples, results)
 
     def _backward_postprocess(self, num_samples, results):
-        """
-        Post-processing during backward pass of the network.
-        """
-        print(f"self._output_shape {self._output_shape}")
+        """Post-processing during backward pass of the network."""
         input_grad = (
             np.zeros((num_samples, *self.output_shape, self._num_inputs))
             if self._input_gradients
@@ -159,15 +148,11 @@ class EstimatorQNN(NeuralNetwork):
         )
         weights_grad = np.zeros((num_samples, *self.output_shape, self._num_weights))
 
-        print(f"input_grad {input_grad}")
-        print(f"weights_grad {weights_grad}")
-
         if self._input_gradients:
             num_grad_vars = self._num_inputs + self._num_weights
         else:
             num_grad_vars = self._num_weights
 
-        print(f"results {results}")
         for i in range(num_samples):
             for j in range(self.output_shape[0]):
                 for k in range(num_grad_vars):
@@ -186,15 +171,12 @@ class EstimatorQNN(NeuralNetwork):
     def _backward(
         self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
     ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray],]:
-
         """Backward pass of the network."""
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
         parameter_values = [
             param_values for param_values in parameter_values_ for _ in range(self.output_shape[0])
         ]
-        print(f"parameter_values_: {parameter_values_}")
-        print(f"parameter_values : {parameter_values}")
         if self._input_gradients:
             job = self._gradient.run(
                 [self._circuit] * num_samples * self.output_shape[0],
