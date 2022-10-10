@@ -130,6 +130,5 @@ class BaseKernel(ABC):
         Returns:
             the closest positive semi-definite matrix.
         """
-        # todo: in some cases we get a complex matrix
         d, u = np.linalg.eig(kernel_matrix)
         return u @ np.diag(np.maximum(0, d)) @ u.transpose()
