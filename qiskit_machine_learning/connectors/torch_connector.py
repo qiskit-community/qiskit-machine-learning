@@ -117,7 +117,7 @@ class TorchConnector(Module):
             return result_tensor
 
         @staticmethod
-        def backward(ctx: Any, grad_output: Tensor) -> Tuple:
+        def backward(ctx: Any, grad_output: Tensor) -> Tuple:  # type: ignore
             """Backward pass computation.
             Args:
                 ctx: context
