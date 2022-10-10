@@ -37,10 +37,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 DEFAULT = "default"
 SHOTS = "shots"
-SAMPLING = [True, False] # TODO
+SAMPLING = [True, False]  # TODO
 SAMPLERS = [DEFAULT, SHOTS]
 INTERPRET_TYPES = [0, 1, 2]
 BATCH_SIZES = [1, 2]
+
 
 @ddt
 class TestSamplerQNN(QiskitMachineLearningTestCase):
@@ -86,7 +87,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # define sampler primitives
         self.sampler = Sampler()
-        self.sampler_shots = Sampler(options={"shots":100})
+        self.sampler_shots = Sampler(options={"shots": 100})
 
     def _get_qnn(self, sampler_type, interpret_id):
         """Construct QNN from configuration."""
@@ -151,28 +152,69 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         self.assertIsNone(input_grad)
         # verify that input gradients are None if turned off
-        self.assertEqual(
-            weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
-        )
+        self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
 
         # verify that input gradients are not None if turned on
         qnn.input_gradients = True
         input_grad, weights_grad = qnn.backward(input_data, weights)
 
         self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
-        self.assertEqual(
-            weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
-            )
+        self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
 
     @idata(itertools.product(SAMPLERS, INTERPRET_TYPES, BATCH_SIZES))
     @unpack
-    def test_sampler_qnn(
-        self, sampler_type, interpret_type, batch_size
-    ):
+    def test_sampler_qnn(self, sampler_type, interpret_type, batch_size):
         """Sampler QNN Test."""
         qnn = self._get_qnn(sampler_type, interpret_type)
         self._verify_qnn(qnn, sampler_type, batch_size)
 
+    @idata(itertools.product(INTERPRET_TYPES, BATCH_SIZES))
+    def test_sampler_qnn_gradient(self, config):
+        """Circuit QNN Sampler Test."""
+
+        # get configuration
+        interpret_id, batch_size = config
+
+        # get QNN
+        qnn = self._get_qnn(DEFAULT, interpret_id)
+
+        # set input gradients to True
+        qnn.input_gradients = True
+        input_data = np.ones((batch_size, qnn.num_inputs))
+        weights = np.ones(qnn.num_weights)
+        input_grad, weights_grad = qnn.backward(input_data, weights)
+
+        # test input gradients
+        eps = 1e-2
+        for k in range(qnn.num_inputs):
+            delta = np.zeros(input_data.shape)
+            delta[:, k] = eps
+
+            f_1 = qnn.forward(input_data + delta, weights)
+            f_2 = qnn.forward(input_data - delta, weights)
+
+            grad = (f_1 - f_2) / (2 * eps)
+            input_grad_ = input_grad.reshape((batch_size, -1, qnn.num_inputs))[:, :, k].reshape(
+                grad.shape
+            )
+            diff = input_grad_ - grad
+            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+
+        # test weight gradients
+        eps = 1e-2
+        for k in range(qnn.num_weights):
+            delta = np.zeros(weights.shape)
+            delta[k] = eps
+
+            f_1 = qnn.forward(input_data, weights + delta)
+            f_2 = qnn.forward(input_data, weights - delta)
+
+            grad = (f_1 - f_2) / (2 * eps)
+            weights_grad_ = weights_grad.reshape((batch_size, -1, qnn.num_weights))[
+                :, :, k
+            ].reshape(grad.shape)
+            diff = weights_grad_ - grad
+            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
     #
     # def test_forward_pass(self):
