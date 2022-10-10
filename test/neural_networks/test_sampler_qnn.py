@@ -39,7 +39,7 @@ DEFAULT = "default"
 SHOTS = "shots"
 SAMPLING = [True, False]  # TODO
 SAMPLERS = [DEFAULT, SHOTS]
-INTERPRET_TYPES = [0, 1, 2]
+INTERPRET_TYPES = [2]
 BATCH_SIZES = [1, 2]
 
 
@@ -170,7 +170,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
     @idata(itertools.product(INTERPRET_TYPES, BATCH_SIZES))
     def test_sampler_qnn_gradient(self, config):
-        """Circuit QNN Sampler Test."""
+        """Sampler QNN Gradient Test."""
 
         # get configuration
         interpret_id, batch_size = config
@@ -216,142 +216,54 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
-    #
-    # def test_forward_pass(self):
-    #
-    #     parity = lambda x: "{:b}".format(x).count("1") % 2
-    #     output_shape = 2  # this is required in case of a callable with dense output
-    #
-    #     circuit_qnn = CircuitQNN(
-    #         self.qc,
-    #         input_params=self.qc.parameters[:3],
-    #         weight_params=self.qc.parameters[3:],
-    #         sparse=False,
-    #         interpret=parity,
-    #         output_shape=output_shape,
-    #         quantum_instance=self.qi_qasm,
-    #     )
-    #
-    #     sampler_qnn = SamplerQNN(
-    #         sampler=self.sampler,
-    #         circuit=self.qc,
-    #         input_params=self.qc.parameters[:3],
-    #         weight_params=self.qc.parameters[3:],
-    #         interpret=parity,
-    #         output_shape=output_shape,
-    #     )
-    #
-    #     inputs = np.asarray(algorithm_globals.random.random(size=(1, circuit_qnn._num_inputs)))
-    #     weights = algorithm_globals.random.random(circuit_qnn._num_weights)
-    #
-    #     circuit_qnn_fwd = circuit_qnn.forward(inputs, weights)
-    #     sampler_qnn_fwd = sampler_qnn.forward(inputs, weights)
-    #
-    #     np.testing.assert_array_almost_equal(
-    #         np.asarray(sampler_qnn_fwd), np.asarray(circuit_qnn_fwd), 0.1
-    #     )
-    #
-    # def test_backward_pass(self):
-    #
-    #     parity = lambda x: "{:b}".format(x).count("1") % 2
-    #     output_shape = 2  # this is required in case of a callable with dense output
-    #     from qiskit.opflow import Gradient
-    #
-    #     circuit_qnn = CircuitQNN(
-    #         self.qc,
-    #         input_params=self.qc.parameters[:3],
-    #         weight_params=self.qc.parameters[3:],
-    #         sparse=False,
-    #         interpret=parity,
-    #         output_shape=output_shape,
-    #         quantum_instance=self.qi_qasm,
-    #         gradient=Gradient("param_shift"),
-    #     )
-    #
-    #     sampler_qnn = SamplerQNN(
-    #         sampler=self.sampler,
-    #         circuit=self.qc,
-    #         input_params=self.qc.parameters[:3],
-    #         weight_params=self.qc.parameters[3:],
-    #         interpret=parity,
-    #         output_shape=output_shape,
-    #         gradient=ParamShiftSamplerGradient(self.sampler),
-    #     )
-    #
-    #     inputs = np.asarray(algorithm_globals.random.random(size=(1, circuit_qnn._num_inputs)))
-    #     weights = algorithm_globals.random.random(circuit_qnn._num_weights)
-    #
-    #     circuit_qnn_fwd = circuit_qnn.backward(inputs, weights)
-    #     sampler_qnn_fwd = sampler_qnn.backward(inputs, weights)
-    #
-    #     print(circuit_qnn_fwd)
-    #     print(sampler_qnn_fwd)
-    #     np.testing.assert_array_almost_equal(
-    #         np.asarray(sampler_qnn_fwd[1]), np.asarray(circuit_qnn_fwd[1]), 0.1
-    #     )
-    #
-    # def test_input_gradients(self):
-    #
-    #     parity = lambda x: "{:b}".format(x).count("1") % 2
-    #     output_shape = 2  # this is required in case of a callable with dense output
-    #     from qiskit.opflow import Gradient
-    #
-    #     circuit_qnn = CircuitQNN(
-    #         self.qc,
-    #         input_params=self.qc.parameters[:3],
-    #         weight_params=self.qc.parameters[3:],
-    #         sparse=False,
-    #         interpret=parity,
-    #         output_shape=output_shape,
-    #         quantum_instance=self.qi_qasm,
-    #         gradient=Gradient("param_shift"),
-    #         input_gradients=True,
-    #     )
-    #
-    #     sampler_qnn = SamplerQNN(
-    #         sampler=self.sampler,
-    #         circuit=self.qc,
-    #         input_params=self.qc.parameters[:3],
-    #         weight_params=self.qc.parameters[3:],
-    #         interpret=parity,
-    #         output_shape=output_shape,
-    #         gradient=ParamShiftSamplerGradient(self.sampler),
-    #         input_gradients=True,
-    #     )
-    #
-    #     inputs = np.asarray(algorithm_globals.random.random(size=(1, circuit_qnn._num_inputs)))
-    #     weights = algorithm_globals.random.random(circuit_qnn._num_weights)
-    #
-    #     circuit_qnn_fwd = circuit_qnn.backward(inputs, weights)
-    #     sampler_qnn_fwd = sampler_qnn.backward(inputs, weights)
-    #
-    #     print(circuit_qnn_fwd)
-    #     print(sampler_qnn_fwd)
-    #     np.testing.assert_array_almost_equal(
-    #         np.asarray(sampler_qnn_fwd), np.asarray(circuit_qnn_fwd), 0.1
-    #     )
-    #
-    #     from qiskit_machine_learning.connectors import TorchConnector
-    #     import torch
-    #
-    #     model = TorchConnector(sampler_qnn)
-    #     func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
-    #     input_data = (
-    #         torch.randn(
-    #             model.neural_network.num_inputs,
-    #             dtype=torch.double,
-    #             requires_grad=True,
-    #         ),
-    #         torch.randn(
-    #             model.neural_network.num_weights,
-    #             dtype=torch.double,
-    #             requires_grad=True,
-    #         ),
-    #         model.neural_network,
-    #         False,
-    #     )
-    #     test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)  # type: ignore
-    #     self.assertTrue(test)
 
-    # def test_torch_connector(self):
-    #     from qiskit_machine_learning.connectors import TorchConnector
+    def test_circuit_vs_sampler_qnn(self):
+        """Circuit vs Sampler QNN Test. To be removed once CircuitQNN is deprecated"""
+        from qiskit.opflow import Gradient
+        import importlib
+        aer = importlib.import_module("qiskit.providers.aer")
+
+        parity = lambda x: "{:b}".format(x).count("1") % 2
+        output_shape = 2  # this is required in case of a callable with dense output
+
+        qi_qasm = QuantumInstance(
+            aer.AerSimulator(),
+            shots=100,
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
+
+        circuit_qnn = CircuitQNN(
+            self.qc,
+            input_params=self.qc.parameters[:3],
+            weight_params=self.qc.parameters[3:],
+            sparse=False,
+            interpret=parity,
+            output_shape=output_shape,
+            quantum_instance=qi_qasm,
+            gradient=Gradient("param_shift"),
+            input_gradients=True,
+        )
+
+        sampler_qnn = SamplerQNN(
+            sampler=self.sampler,
+            circuit=self.qc,
+            input_params=self.qc.parameters[:3],
+            weight_params=self.qc.parameters[3:],
+            interpret=parity,
+            output_shape=output_shape,
+            gradient=ParamShiftSamplerGradient(self.sampler),
+            input_gradients=True,
+        )
+
+        inputs = np.asarray(algorithm_globals.random.random(size=(1, circuit_qnn._num_inputs)))
+        weights = algorithm_globals.random.random(circuit_qnn._num_weights)
+
+        circuit_qnn_fwd = circuit_qnn.backward(inputs, weights)
+        sampler_qnn_fwd = sampler_qnn.backward(inputs, weights)
+
+        print(circuit_qnn_fwd)
+        print(sampler_qnn_fwd)
+        np.testing.assert_array_almost_equal(
+            np.asarray(sampler_qnn_fwd), np.asarray(circuit_qnn_fwd), 0.1
+        )
