@@ -23,7 +23,7 @@ on:
       - 'stable/**'
   schedule:
     # run every day at 1AM
-     - cron: '0 1 * * *'
+    - cron: '0 1 * * *'
 
 concurrency:
   group: ${{ github.repository }}-${{ github.ref }}-${{ github.head_ref }}
