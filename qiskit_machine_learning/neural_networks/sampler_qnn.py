@@ -19,8 +19,7 @@ from numbers import Integral
 from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
-from qiskit.algorithms.gradients import BaseSamplerGradient
-from qiskit.algorithms.gradients import ParamShiftSamplerGradient
+from qiskit.algorithms.gradients import BaseSamplerGradient, ParamShiftSamplerGradient
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseSampler
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -80,7 +79,7 @@ class SamplerQNN(NeuralNetwork):
         # the final output shape will depend on the
         # interpret method, and it must be set before
         # applying the default to the latter
-        self.set_interpret_out_shape(interpret, output_shape)
+        self.set_interpret(interpret, output_shape)
 
         self._input_gradients = input_gradients
 
@@ -117,7 +116,7 @@ class SamplerQNN(NeuralNetwork):
         the constructor or can not be implicitly derived, then ``None`` is returned."""
         return self._interpret
 
-    def set_interpret_out_shape(
+    def set_interpret(
         self,
         interpret: Callable[[int], int | tuple[int, ...]] | None = None,
         output_shape: int | tuple[int, ...] | None = None,
@@ -143,8 +142,8 @@ class SamplerQNN(NeuralNetwork):
     ) -> tuple[int, ...]:
         """Validate and compute the output shape."""
 
-        # this definition is required by mypy
-        output_shape_: tuple[int, ...] = (-1,)
+        # # this definition is required by mypy
+        # output_shape_: tuple[int, ...] = (-1,)
 
         if interpret is not None:
             if output_shape is None:

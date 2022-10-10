@@ -20,8 +20,9 @@ from qiskit import QuantumCircuit
 from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
+from qiskit.primitives import BaseSampler
 
-from ...neural_networks import CircuitQNN
+from ...neural_networks import CircuitQNN, SamplerQNN
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 
@@ -47,6 +48,7 @@ class VQC(NeuralNetworkClassifier):
 
     def __init__(
         self,
+        sampler: BaseSampler = None,
         num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
@@ -100,16 +102,28 @@ class VQC(NeuralNetworkClassifier):
         self._circuit.compose(self.feature_map, inplace=True)
         self._circuit.compose(self.ansatz, inplace=True)
 
-        # construct circuit QNN
-        neural_network = CircuitQNN(
-            self._circuit,
-            input_params=self.feature_map.parameters,
-            weight_params=self.ansatz.parameters,
-            interpret=self._get_interpret(2),
-            output_shape=2,
-            quantum_instance=quantum_instance,
-            input_gradients=False,
-        )
+        if sampler is None:
+            # construct circuit QNN
+            neural_network = CircuitQNN(
+                self._circuit,
+                input_params=self.feature_map.parameters,
+                weight_params=self.ansatz.parameters,
+                interpret=self._get_interpret(2),
+                output_shape=2,
+                quantum_instance=quantum_instance,
+                input_gradients=False,
+            )
+        else:
+            # construct sampler QNN
+            neural_network = SamplerQNN(
+                sampler,
+                self._circuit,
+                input_params=self.feature_map.parameters,
+                weight_params=self.ansatz.parameters,
+                interpret=self._get_interpret(2),
+                output_shape=2,
+                input_gradients=False,
+            )
 
         super().__init__(
             neural_network=neural_network,

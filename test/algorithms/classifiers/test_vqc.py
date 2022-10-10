@@ -31,11 +31,12 @@ from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from qiskit.primitives import Sampler
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
-QUANTUM_INSTANCES = ["statevector", "qasm"]
+QUANTUM_INSTANCES = ["statevector", "sampler", "qasm"]
 NUM_QUBITS_LIST = [2, None]
 FEATURE_MAPS = ["zz_feature_map", None]
 ANSATZES = ["real_amplitudes", None]
@@ -90,11 +91,12 @@ class TestVQC(QiskitMachineLearningTestCase):
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
-
+        sampler = Sampler()
         # We want string keys to ensure DDT-generated tests have meaningful names.
         self.properties = {
             "statevector": statevector,
             "qasm": qasm,
+            "sampler": sampler,
             "bfgs": L_BFGS_B(maxiter=5),
             "cobyla": COBYLA(maxiter=25),
             "real_amplitudes": RealAmplitudes(num_qubits=2, reps=1),
@@ -119,8 +121,13 @@ class TestVQC(QiskitMachineLearningTestCase):
             self.skipTest(
                 "At least one of num_qubits, feature_map, or ansatz must be set by the user."
             )
+        if q_i != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(q_i)
+        else:
+            sampler = self.properties.get(q_i)
+            quantum_instance = None
 
-        quantum_instance = self.properties.get(q_i)
         feature_map = self.properties.get(f_m)
         optimizer = self.properties.get(opt)
         ansatz = self.properties.get(ans)
@@ -129,6 +136,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         initial_point = np.array([0.5] * ansatz.num_parameters) if ansatz is not None else None
 
         classifier = VQC(
+            sampler=sampler,
             quantum_instance=quantum_instance,
             num_qubits=num_qubits,
             feature_map=feature_map,
@@ -148,27 +156,45 @@ class TestVQC(QiskitMachineLearningTestCase):
         # the predicted value should be in the labels
         self.assertTrue(np.all(predict == unique_labels, axis=1).any())
 
-    def test_VQC_non_parameterized(self):
+    @idata(QUANTUM_INSTANCES[:-1])
+    def test_VQC_non_parameterized(self, test):
         """
         Test VQC without an optimizer set.
         """
+        if test != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(test)
+        else:
+            sampler = self.properties.get(test)
+            quantum_instance = None
+
         classifier = VQC(
+            sampler=sampler,
             num_qubits=2,
             optimizer=None,
-            quantum_instance=self.properties.get("statevector"),
+            quantum_instance=quantum_instance,
         )
         dataset = self.properties.get("binary")
         classifier.fit(dataset.x, dataset.y)
         score = classifier.score(dataset.x, dataset.y)
         self.assertGreater(score, 0.5)
 
-    @idata(DATASETS)
-    def test_warm_start(self, d_s):
+    @idata(itertools.product(DATASETS, QUANTUM_INSTANCES[:-1]))
+    @unpack
+    def test_warm_start(self, d_s, test):
         """Test VQC when training from a warm start."""
 
+        if test != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(test)
+        else:
+            sampler = self.properties.get(test)
+            quantum_instance = None
+
         classifier = VQC(
+            sampler=sampler,
             feature_map=self.properties.get("zz_feature_map"),
-            quantum_instance=self.properties.get("statevector"),
+            quantum_instance=quantum_instance,
             warm_start=True,
         )
         dataset = self.properties.get(d_s)
@@ -198,8 +224,16 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         return wrapper
 
-    def test_batches_with_incomplete_labels(self):
+    @idata(QUANTUM_INSTANCES[:-1])
+    def test_batches_with_incomplete_labels(self, test):
         """Test VQC when targets are one-hot and some batches don't have all possible labels."""
+
+        if test != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(test)
+        else:
+            sampler = self.properties.get(test)
+            quantum_instance = None
 
         # Generate data with batches that have incomplete labels.
         x = algorithm_globals.random.random((6, 2))
@@ -207,10 +241,11 @@ class TestVQC(QiskitMachineLearningTestCase):
         y_one_hot = OneHotEncoder().fit_transform(y.reshape(-1, 1))
 
         classifier = VQC(
+            sampler=sampler,
             feature_map=self.properties.get("zz_feature_map"),
             ansatz=self.properties.get("real_amplitudes"),
             warm_start=True,
-            quantum_instance=self.properties.get("statevector"),
+            quantum_instance=quantum_instance,
         )
 
         classifier._get_interpret = self._get_num_classes(classifier._get_interpret)
@@ -229,19 +264,35 @@ class TestVQC(QiskitMachineLearningTestCase):
         with self.subTest("Check correct number of classes is used to build CircuitQNN."):
             self.assertTrue((np.asarray(self.num_classes_by_batch) == 3).all())
 
-    def test_multilabel_targets_raise_an_error(self):
+    @idata(QUANTUM_INSTANCES[:-1])
+    def test_multilabel_targets_raise_an_error(self, test):
         """Tests VQC multi-label input raises an error."""
+
+        if test != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(test)
+        else:
+            sampler = self.properties.get(test)
+            quantum_instance = None
 
         # Generate multi-label data.
         x = algorithm_globals.random.random((3, 2))
         y = np.asarray([[1, 1, 0], [1, 0, 1], [0, 1, 1]])
 
-        classifier = VQC(num_qubits=2, quantum_instance=self.properties.get("statevector"))
+        classifier = VQC(sampler=sampler, num_qubits=2, quantum_instance=quantum_instance)
         with self.assertRaises(QiskitMachineLearningError):
             classifier.fit(x, y)
 
-    def test_changing_classes_raises_error(self):
+    @idata(QUANTUM_INSTANCES[:-1])
+    def test_changing_classes_raises_error(self, test):
         """Tests VQC raises an error when fitting new data with a different number of classes."""
+
+        if test != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(test)
+        else:
+            sampler = self.properties.get(test)
+            quantum_instance = None
 
         targets1 = np.asarray([[0, 0, 1], [0, 1, 0]])
         targets2 = np.asarray([[0, 1], [1, 0]])
@@ -249,9 +300,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         features2 = algorithm_globals.random.random((len(targets2), 2))
 
         classifier = VQC(
-            num_qubits=2,
-            warm_start=True,
-            quantum_instance=self.properties.get("statevector"),
+            sampler=sampler, num_qubits=2, warm_start=True, quantum_instance=quantum_instance
         )
         classifier.fit(features1, targets1)
         with self.assertRaises(QiskitMachineLearningError):
@@ -261,6 +310,9 @@ class TestVQC(QiskitMachineLearningTestCase):
     @unpack
     def test_sparse_arrays(self, q_i, loss):
         """Tests VQC on sparse features and labels."""
+        if q_i == "sampler":
+            self.skipTest("skipping test because SamplerQNN does not support sparse arrays")
+
         quantum_instance = self.properties.get(q_i)
         classifier = VQC(num_qubits=2, loss=loss, quantum_instance=quantum_instance)
         x = scipy.sparse.csr_matrix([[0, 0], [1, 1]])
@@ -271,12 +323,22 @@ class TestVQC(QiskitMachineLearningTestCase):
         score = classifier.score(x, y)
         self.assertGreaterEqual(score, 0.5)
 
-    def test_categorical(self):
+    @idata(QUANTUM_INSTANCES[:-1])
+    def test_categorical(self, test):
         """Test VQC on categorical labels."""
+
+        if test != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(test)
+        else:
+            sampler = self.properties.get(test)
+            quantum_instance = None
+
         classifier = VQC(
+            sampler=sampler,
             num_qubits=2,
             optimizer=COBYLA(25),
-            quantum_instance=self.properties.get("statevector"),
+            quantum_instance=quantum_instance,
         )
         dataset = self.properties.get("no_one_hot")
         features = dataset.x
@@ -291,14 +353,24 @@ class TestVQC(QiskitMachineLearningTestCase):
         predict = classifier.predict(features[0, :])
         self.assertIn(predict, ["A", "B"])
 
-    def test_circuit_extensions(self):
+    @idata(QUANTUM_INSTANCES[:-1])
+    def test_circuit_extensions(self, test):
         """Test VQC when the number of qubits is different compared to the feature map/ansatz."""
+
+        if test != "sampler":
+            sampler = None
+            quantum_instance = self.properties.get(test)
+        else:
+            sampler = self.properties.get(test)
+            quantum_instance = None
+
         num_qubits = 2
         classifier = VQC(
+            sampler=sampler,
             num_qubits=num_qubits,
             feature_map=ZFeatureMap(1),
             ansatz=RealAmplitudes(1),
-            quantum_instance=self.properties.get("statevector"),
+            quantum_instance=quantum_instance,
         )
         self.assertEqual(classifier.feature_map.num_qubits, num_qubits)
         self.assertEqual(classifier.ansatz.num_qubits, num_qubits)
@@ -306,10 +378,11 @@ class TestVQC(QiskitMachineLearningTestCase):
         qc = QuantumCircuit(1)
         with self.assertRaises(QiskitMachineLearningError):
             _ = VQC(
+                sampler=sampler,
                 num_qubits=num_qubits,
                 feature_map=qc,
                 ansatz=qc,
-                quantum_instance=self.properties.get("statevector"),
+                quantum_instance=quantum_instance,
             )
 
 
