@@ -20,9 +20,10 @@ from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
 from qiskit.algorithms.gradients import BaseSamplerGradient
+from qiskit.algorithms.gradients import ParamShiftSamplerGradient
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseSampler
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError, QiskitError
+from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
 
@@ -42,7 +43,7 @@ class SamplerQNN(NeuralNetwork):
         interpret: Callable[[int], int | tuple[int, ...]] | None = None,
         output_shape: int | tuple[int, ...] | None = None,
         gradient: BaseSamplerGradient | None = None,
-        input_gradients: bool = False
+        input_gradients: bool = False,
     ):
         """
         Args:
@@ -62,8 +63,12 @@ class SamplerQNN(NeuralNetwork):
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
+        # set primitive
         self.sampler = sampler
-        self.gradient = gradient
+
+        # set gradient
+        # TODO: provide default gradient?
+        self.gradient = gradient or ParamShiftSamplerGradient(self.sampler)
 
         self._circuit = circuit.copy()
         if len(self._circuit.clbits) == 0:
@@ -72,29 +77,50 @@ class SamplerQNN(NeuralNetwork):
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
 
+        # the final output shape will depend on the
+        # interpret method, and it must be set before
+        # applying the default to the latter
+        self.set_interpret_out_shape(interpret, output_shape)
+
         self._input_gradients = input_gradients
 
-        # sparse = False --> Hard coded TODO: look into sparse
-        # self._circuit_transpiled = False TODO: look into transpilation
+        # TODO: will primitives ever support sparse?
+        # TODO: look into custom transpilation
+        # TODO: sampling??
 
-        self._output_shape = output_shape
-
-        self.set_interpret(interpret, output_shape)
-        self._original_interpret = interpret
-
-        # init super clas
         super().__init__(
             len(self._input_params),
             len(self._weight_params),
-            False, # sparse
+            False,  # sparse
             self._output_shape,
             self._input_gradients,
         )
 
-    def set_interpret(
+    @property
+    def circuit(self) -> QuantumCircuit:
+        """Returns the underlying quantum circuit."""
+        return self._circuit
+
+    @property
+    def input_params(self) -> Sequence:
+        """Returns the list of input parameters."""
+        return self._input_params
+
+    @property
+    def weight_params(self) -> Sequence:
+        """Returns the list of trainable weights parameters."""
+        return self._weight_params
+
+    @property
+    def interpret(self) -> Callable[[int], int | tuple[int, ...]] | None:
+        """Returns interpret function to be used by the neural network. If it is not set in
+        the constructor or can not be implicitly derived, then ``None`` is returned."""
+        return self._interpret
+
+    def set_interpret_out_shape(
         self,
-        interpret: Callable[[int], int| tuple[int, ...]] | None = None,
-        output_shape: int | tuple[int, ...] | None = None
+        interpret: Callable[[int], int | tuple[int, ...]] | None = None,
+        output_shape: int | tuple[int, ...] | None = None,
     ) -> None:
         """Change 'interpret' and corresponding 'output_shape'.
 
@@ -106,10 +132,6 @@ class SamplerQNN(NeuralNetwork):
                 for more details.
         """
 
-        # save original values
-        self._original_output_shape = output_shape
-        self._original_interpret = interpret
-
         # derive target values to be used in computations
         self._output_shape = self._compute_output_shape(interpret, output_shape)
         self._interpret = interpret if interpret is not None else lambda x: x
@@ -117,7 +139,7 @@ class SamplerQNN(NeuralNetwork):
     def _compute_output_shape(
         self,
         interpret: Callable[[int], int | tuple[int, ...]] | None = None,
-        output_shape: int | tuple[int, ...] | None = None
+        output_shape: int | tuple[int, ...] | None = None,
     ) -> tuple[int, ...]:
         """Validate and compute the output shape."""
 
@@ -177,21 +199,19 @@ class SamplerQNN(NeuralNetwork):
 
         for i in range(num_samples):
             counts = result[i]
-            print(counts)
             shots = sum(counts.values())
 
             # evaluate probabilities
             for b, v in counts.items():
-                key = (i, int(self._interpret(b)))  # type: ignore
+                key = self._interpret(b)
+                if isinstance(key, Integral):
+                    key = (cast(int, key),)
+                key = (i, *key)  # type: ignore
                 prob[key] += v / shots
 
         return prob
 
-    def _forward(
-        self,
-        input_data: np.ndarray | None,
-        weights: np.ndarray | None
-    ) -> np.ndarray:
+    def _forward(self, input_data: np.ndarray | None, weights: np.ndarray | None) -> np.ndarray:
         """
         Forward pass of the network.
         """
@@ -229,7 +249,11 @@ class SamplerQNN(NeuralNetwork):
         """
         Post-processing during backward pass of the network.
         """
-        input_grad = np.zeros((num_samples, *self._output_shape, self._num_inputs)) if self._input_gradients else None
+        input_grad = (
+            np.zeros((num_samples, *self._output_shape, self._num_inputs))
+            if self._input_gradients
+            else None
+        )
         weights_grad = np.zeros((num_samples, *self._output_shape, self._num_weights))
 
         if self._input_gradients:
@@ -238,7 +262,6 @@ class SamplerQNN(NeuralNetwork):
             num_grad_vars = self._num_weights
 
         for sample in range(num_samples):
-
             for i in range(num_grad_vars):
                 grad = results.gradients[sample][i]
                 for k in grad.keys():
@@ -269,25 +292,24 @@ class SamplerQNN(NeuralNetwork):
         return input_grad, weights_grad
 
     def _backward(
-        self,
-        input_data: np.ndarray | None,
-        weights: np.ndarray | None
+        self, input_data: np.ndarray | None, weights: np.ndarray | None
     ) -> tuple[np.ndarray | None, np.ndarray | None]:
 
-        """Backward pass of the network.
-        """
+        """Backward pass of the network."""
         # prepare parameters in the required format
         parameter_values, num_samples = self._preprocess_gradient(input_data, weights)
 
         if self._input_gradients:
             job = self.gradient.run([self._circuit] * num_samples, parameter_values)
         else:
-            job = self.gradient.run([self._circuit] * num_samples, parameter_values,
-                                    parameters=[self._circuit.parameters[self._num_inputs:]])
+            job = self.gradient.run(
+                [self._circuit] * num_samples,
+                parameter_values,
+                parameters=[self._circuit.parameters[self._num_inputs :]] * num_samples,
+            )
 
         results = job.result()
 
         input_grad, weights_grad = self._postprocess_gradient(num_samples, results)
 
         return input_grad, weights_grad  # `None` for gradients wrt input data, see TorchConnector
-

@@ -75,5 +75,5 @@ __all__ = [
     "CircuitQNN",
     "EffectiveDimension",
     "LocalEffectiveDimension",
-    "SamplerQNN"
+    "SamplerQNN",
 ]
