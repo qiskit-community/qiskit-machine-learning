@@ -46,6 +46,7 @@ Neural Networks
    OpflowQNN
    TwoLayerQNN
    CircuitQNN
+   SamplerQNN
 
 Neural Network Metrics
 ======================
@@ -56,16 +57,6 @@ Neural Network Metrics
 
    EffectiveDimension
    LocalEffectiveDimension
-
-Neural Networks using Primitives
-================================
-
-.. autosummary::
-   :toctree: ../stubs/
-   :nosignatures:
-
-   SamplerQNN
-
 """
 
 from .circuit_qnn import CircuitQNN

@@ -14,16 +14,16 @@
 
 from __future__ import annotations
 import logging
+
 from numbers import Integral
-from typing import Optional, Union, List, Tuple, Callable, cast, Iterable
+from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
-
-from qiskit import QuantumCircuit
-from qiskit.circuit import Parameter
-from qiskit.primitives import BaseSampler
 from qiskit.algorithms.gradients import BaseSamplerGradient
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.primitives import BaseSampler
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError, QiskitError
+
 from .neural_network import NeuralNetwork
 
 logger = logging.getLogger(__name__)
@@ -36,16 +36,17 @@ class SamplerQNN(NeuralNetwork):
         self,
         sampler: BaseSampler,
         circuit: QuantumCircuit,
-        input_params: List[Parameter] | None = None,
-        weight_params: List[Parameter] | None = None,
-        interpret: Callable[[int], int | Tuple[int, ...]] | None = None,
-        output_shape: int | Tuple[int, ...] | None = None,
+        *,
+        input_params: Sequence[Parameter] | None = None,
+        weight_params: Sequence[Parameter] | None = None,
+        interpret: Callable[[int], int | tuple[int, ...]] | None = None,
+        output_shape: int | tuple[int, ...] | None = None,
         gradient: BaseSamplerGradient | None = None,
         input_gradients: bool = False
-    )-> None:
+    ):
         """
-
         Args:
+            sampler: The sampler primitive used to compute neural network's results.
             circuit: The parametrized quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
@@ -54,39 +55,31 @@ class SamplerQNN(NeuralNetwork):
                 sparse) output array. If no interpret function is
                 passed, then an identity function will be used by this neural network.
             output_shape: The output shape of the custom interpretation
-            sampler_factory: Factory for sampler primitive
-            gradient_factory: String indicating pre-implemented gradient method or factory for
-                gradient class
-            input_gradients: to be added
+            gradient: An optional sampler gradient to be used for the backward pass.
+            input_gradients: Determines whether to compute gradients with respect to input data.
+                 Note that this parameter is ``False`` by default, and must be explicitly set to
+                 ``True`` for a proper gradient computation when using ``TorchConnector``.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
-        # set sampler --> make property?
         self.sampler = sampler
-        # use given gradient or default
         self.gradient = gradient
-
-        self._input_params = list(input_params or [])
-        self._weight_params = list(weight_params or [])
-
-        # initialize gradient properties
-        self.input_gradients = input_gradients # TODO
-
-        # sparse = False --> Hard coded TODO: look into sparse
 
         self._circuit = circuit.copy()
         if len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
+
+        self._input_params = list(input_params or [])
+        self._weight_params = list(weight_params or [])
+
+        self._input_gradients = input_gradients
+
+        # sparse = False --> Hard coded TODO: look into sparse
         # self._circuit_transpiled = False TODO: look into transpilation
 
-        # these original values may be re-used when a quantum instance is set,
-        # but initially it was None
-        self._original_output_shape = output_shape
         self._output_shape = output_shape
 
         self.set_interpret(interpret, output_shape)
-        # next line is required by pylint only
-        # self._interpret = interpret
         self._original_interpret = interpret
 
         # init super clas
@@ -100,8 +93,8 @@ class SamplerQNN(NeuralNetwork):
 
     def set_interpret(
         self,
-        interpret: Callable[[int], int| Tuple[int, ...]] | None = None,
-        output_shape: int | Tuple[int, ...] | None = None
+        interpret: Callable[[int], int| tuple[int, ...]] | None = None,
+        output_shape: int | tuple[int, ...] | None = None
     ) -> None:
         """Change 'interpret' and corresponding 'output_shape'.
 
@@ -120,17 +113,16 @@ class SamplerQNN(NeuralNetwork):
         # derive target values to be used in computations
         self._output_shape = self._compute_output_shape(interpret, output_shape)
         self._interpret = interpret if interpret is not None else lambda x: x
-        # self.output_shape = self._compute_output_shape(self._interpret, output_shape)
 
     def _compute_output_shape(
         self,
-        interpret: Callable[[int], int | Tuple[int, ...]] | None = None,
-        output_shape: int | Tuple[int, ...] | None = None
-    ) -> Tuple[int, ...]:
+        interpret: Callable[[int], int | tuple[int, ...]] | None = None,
+        output_shape: int | tuple[int, ...] | None = None
+    ) -> tuple[int, ...]:
         """Validate and compute the output shape."""
 
         # this definition is required by mypy
-        output_shape_: Tuple[int, ...] = (-1,)
+        output_shape_: tuple[int, ...] = (-1,)
 
         if interpret is not None:
             if output_shape is None:
@@ -156,9 +148,9 @@ class SamplerQNN(NeuralNetwork):
 
     def _preprocess(
         self,
-        input_data: List[float] | np.ndarray | float | None,
-        weights: List[float] | np.ndarray | float | None,
-    ) -> Tuple[List[float], int]:
+        input_data: list[float] | np.ndarray | float | None,
+        weights: list[float] | np.ndarray | float | None,
+    ) -> tuple[list[float], int]:
         """
         Pre-processing during forward pass of the network.
         """
@@ -196,7 +188,9 @@ class SamplerQNN(NeuralNetwork):
         return prob
 
     def _forward(
-        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
+        self,
+        input_data: np.ndarray | None,
+        weights: np.ndarray | None
     ) -> np.ndarray:
         """
         Forward pass of the network.
@@ -211,7 +205,7 @@ class SamplerQNN(NeuralNetwork):
 
         return result
 
-    def _preprocess_gradient(self, input_data, weights):
+    def _preprocess_gradient(self, input_data: np.ndarray, weights: np.ndarray):
         """
         Pre-processing during backward pass of the network.
         """
@@ -275,8 +269,10 @@ class SamplerQNN(NeuralNetwork):
         return input_grad, weights_grad
 
     def _backward(
-        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray],]:
+        self,
+        input_data: np.ndarray | None,
+        weights: np.ndarray | None
+    ) -> tuple[np.ndarray | None, np.ndarray | None]:
 
         """Backward pass of the network.
         """
@@ -294,3 +290,4 @@ class SamplerQNN(NeuralNetwork):
         input_grad, weights_grad = self._postprocess_gradient(num_samples, results)
 
         return input_grad, weights_grad  # `None` for gradients wrt input data, see TorchConnector
+
