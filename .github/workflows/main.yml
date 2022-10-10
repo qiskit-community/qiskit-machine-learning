@@ -22,7 +22,7 @@ on:
       - main
       - 'stable/**'
   schedule:
-     # run every day at 1AM
+    # run every day at 1AM
      - cron: '0 1 * * *'
 
 concurrency:
