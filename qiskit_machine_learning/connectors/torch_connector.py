@@ -55,7 +55,7 @@ class TorchConnector(Module):
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
         @staticmethod
-        def forward(
+        def forward(  # type: ignore
             ctx: Any,
             input_data: Tensor,
             weights: Tensor,
