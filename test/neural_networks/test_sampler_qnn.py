@@ -11,29 +11,24 @@
 # that they have been altered from the originals.
 
 """Test Sampler QNN with Terra primitives."""
-import itertools
-import unittest
-import numpy as np
+
 from test import QiskitMachineLearningTestCase
 
-from ddt import ddt, data, idata, unpack
+import itertools
+import numpy as np
 
-from qiskit.circuit import QuantumCircuit, Parameter
+from ddt import ddt, idata, unpack
+
+from qiskit.circuit import QuantumCircuit
 from qiskit.primitives import Sampler
-from qiskit.algorithms.gradients import ParamShiftSamplerGradient, FiniteDiffSamplerGradient
+from qiskit.algorithms.gradients import ParamShiftSamplerGradient
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals
-from qiskit import Aer
-from qiskit.utils import QuantumInstance
 
 from qiskit_machine_learning.neural_networks import CircuitQNN
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
 
 algorithm_globals.random_seed = 42
-from test.connectors.test_torch import TestTorch
-import os
-
-os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 DEFAULT = "default"
 SHOTS = "shots"
@@ -124,7 +119,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
     def _verify_qnn(
         self,
         qnn: CircuitQNN,
-        sampler_type: str,
         batch_size: int,
     ) -> None:
         """
@@ -132,8 +126,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         Args:
             qnn: a QNN to check
-            sampler_type:
-            batch_size:
+            batch_size: batch size
 
         Returns:
             None.
@@ -166,7 +159,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
     def test_sampler_qnn(self, sampler_type, interpret_type, batch_size):
         """Sampler QNN Test."""
         qnn = self._get_qnn(sampler_type, interpret_type)
-        self._verify_qnn(qnn, sampler_type, batch_size)
+        self._verify_qnn(qnn, batch_size)
 
     @idata(itertools.product(INTERPRET_TYPES, BATCH_SIZES))
     def test_sampler_qnn_gradient(self, config):
@@ -216,11 +209,11 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
 
-
     def test_circuit_vs_sampler_qnn(self):
         """Circuit vs Sampler QNN Test. To be removed once CircuitQNN is deprecated"""
         from qiskit.opflow import Gradient
         import importlib
+
         aer = importlib.import_module("qiskit.providers.aer")
 
         parity = lambda x: "{:b}".format(x).count("1") % 2
@@ -262,8 +255,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         circuit_qnn_fwd = circuit_qnn.backward(inputs, weights)
         sampler_qnn_fwd = sampler_qnn.backward(inputs, weights)
 
-        print(circuit_qnn_fwd)
-        print(sampler_qnn_fwd)
         np.testing.assert_array_almost_equal(
             np.asarray(sampler_qnn_fwd), np.asarray(circuit_qnn_fwd), 0.1
         )

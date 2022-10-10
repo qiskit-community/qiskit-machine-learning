@@ -21,8 +21,14 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.primitives import Sampler
 
-from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN, NeuralNetwork, SamplerQNN
+from qiskit_machine_learning.neural_networks import (
+    CircuitQNN,
+    TwoLayerQNN,
+    NeuralNetwork,
+    SamplerQNN,
+)
 from qiskit_machine_learning.connectors import TorchConnector
+
 
 @ddt
 class TestTorchNetworks(TestTorch):
