@@ -85,8 +85,8 @@ class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel
                       When inferring, matrix elements for identical samples are set to `1`.
         """
         super().__init__(
-            sampler,
-            feature_map,
+            sampler=sampler,
+            feature_map=feature_map,
             fidelity=fidelity,
             training_parameters=training_parameters,
             enforce_psd=enforce_psd,
