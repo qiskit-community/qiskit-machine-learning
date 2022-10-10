@@ -16,16 +16,17 @@ on:
   push:
     branches:
       - main
-      - primitives
       - 'stable/**'
   pull_request:
     branches:
       - main
-      - primitives
       - 'stable/**'
+  schedule:
+     # run every day at 1AM
+     - cron: '0 1 * * *'
 
 concurrency:
-  group: ${{ github.repository }}-${{ github.ref }}-${{ github.head_ref }}-${{ github.workflow }}
+  group: ${{ github.repository }}-${{ github.ref }}-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
