@@ -123,13 +123,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
     ) -> None:
         """
         Verifies that a QNN functions correctly
-
-        Args:
-            qnn: a QNN to check
-            batch_size: batch size
-
-        Returns:
-            None.
         """
         input_data = np.zeros((batch_size, qnn.num_inputs))
         weights = np.zeros(qnn.num_weights)

@@ -122,7 +122,7 @@ class TestTorchNetworks(TestTorch):
         from torch.nn import MSELoss
         from torch.optim import SGD
 
-        qnn: Optional[Union[CircuitQNN, TwoLayerQNN]] = None
+        qnn: Optional[Union[CircuitQNN, TwoLayerQNN, SamplerQNN]] = None
         if qnn_type == "opflow":
             qnn = self._create_opflow_qnn()
             output_size = 1

@@ -55,7 +55,7 @@ class TorchConnector(Module):
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
         @staticmethod
-        def forward(  # type: ignore
+        def forward(
             ctx: Any,
             input_data: Tensor,
             weights: Tensor,
@@ -117,7 +117,7 @@ class TorchConnector(Module):
             return result_tensor
 
         @staticmethod
-        def backward(ctx: Any, grad_output: Tensor) -> Tuple:  # type: ignore
+        def backward(ctx: Any, grad_output: Tensor) -> Tuple:
             """Backward pass computation.
             Args:
                 ctx: context

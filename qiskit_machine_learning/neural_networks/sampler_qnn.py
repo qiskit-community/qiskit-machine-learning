@@ -19,9 +19,13 @@ from numbers import Integral
 from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
-from qiskit.algorithms.gradients import BaseSamplerGradient, ParamShiftSamplerGradient
+from qiskit.algorithms.gradients import (
+    BaseSamplerGradient,
+    ParamShiftSamplerGradient,
+    SamplerGradientResult,
+)
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import BaseSampler
+from qiskit.primitives import BaseSampler, SamplerResult
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
@@ -142,8 +146,8 @@ class SamplerQNN(NeuralNetwork):
     ) -> tuple[int, ...]:
         """Validate and compute the output shape."""
 
-        # # this definition is required by mypy
-        # output_shape_: tuple[int, ...] = (-1,)
+        # this definition is required by mypy
+        output_shape_: tuple[int, ...] = (-1,)
 
         if interpret is not None:
             if output_shape is None:
@@ -154,7 +158,7 @@ class SamplerQNN(NeuralNetwork):
                 output_shape = int(output_shape)
                 output_shape_ = (output_shape,)
             else:
-                output_shape_ = output_shape
+                output_shape_ = cast(tuple[int, ...], output_shape)
         else:
             if output_shape is not None:
                 # Warn user that output_shape parameter will be ignored
@@ -169,35 +173,35 @@ class SamplerQNN(NeuralNetwork):
 
     def _preprocess(
         self,
-        input_data: list[float] | np.ndarray | float | None,
-        weights: list[float] | np.ndarray | float | None,
-    ) -> tuple[list[float], int]:
+        input_data: list[float] | np.ndarray | float,
+        weights: list[float] | np.ndarray | float,
+    ) -> tuple[np.ndarray, int]:
         """
         Pre-processing during forward pass of the network.
         """
+
+        if not isinstance(input_data, np.ndarray):
+            input_data = np.asarray(input_data)
         if len(input_data.shape) == 1:
             input_data = np.expand_dims(input_data, 0)
-        num_samples = input_data.shape[0]
-        # quick fix for 0 inputs
-        if num_samples == 0:
-            num_samples = 1
 
-        parameters = []
-        for i in range(num_samples):
-            param_values = [input_data[i, j] for j, input_param in enumerate(self._input_params)]
-            param_values += [weights[j] for j, weight_param in enumerate(self._weight_params)]
-            parameters.append(param_values)
+        if not isinstance(weights, np.ndarray):
+            weights = np.asarray(weights)
+
+        num_samples = max(input_data.shape[0], 1)
+        weights = np.broadcast_to(weights, (num_samples, len(weights)))
+        parameters = np.concatenate((input_data, weights), axis=1)
 
         return parameters, num_samples
 
-    def _postprocess(self, num_samples, result):
+    def _postprocess(self, num_samples: int, result: SamplerResult) -> np.ndarray:
         """
         Post-processing during forward pass of the network.
         """
         prob = np.zeros((num_samples, *self._output_shape))
 
         for i in range(num_samples):
-            counts = result[i]
+            counts = result.quasi_dists[i]
             shots = sum(counts.values())
 
             # evaluate probabilities
@@ -210,7 +214,11 @@ class SamplerQNN(NeuralNetwork):
 
         return prob
 
-    def _forward(self, input_data: np.ndarray | None, weights: np.ndarray | None) -> np.ndarray:
+    def _forward(
+        self,
+        input_data: list[float] | np.ndarray | float,
+        weights: list[float] | np.ndarray | float,
+    ) -> np.ndarray:
         """
         Forward pass of the network.
         """
@@ -218,33 +226,15 @@ class SamplerQNN(NeuralNetwork):
 
         # sampler allows batching
         job = self.sampler.run([self._circuit] * num_samples, parameter_values)
-        results = job.result().quasi_dists
+        results = job.result()
 
         result = self._postprocess(num_samples, results)
 
         return result
 
-    def _preprocess_gradient(self, input_data: np.ndarray, weights: np.ndarray):
-        """
-        Pre-processing during backward pass of the network.
-        """
-        if len(input_data.shape) == 1:
-            input_data = np.expand_dims(input_data, 0)
-
-        num_samples = input_data.shape[0]
-        # quick fix for 0 inputs
-        if num_samples == 0:
-            num_samples = 1
-
-        parameters = []
-        for i in range(num_samples):
-            param_values = [input_data[i, j] for j, input_param in enumerate(self._input_params)]
-            param_values += [weights[j] for j, weight_param in enumerate(self._weight_params)]
-            parameters.append(param_values)
-
-        return parameters, num_samples
-
-    def _postprocess_gradient(self, num_samples, results):
+    def _postprocess_gradient(
+        self, num_samples: int, results: SamplerGradientResult
+    ) -> tuple[np.ndarray | None, np.ndarray]:
         """
         Post-processing during backward pass of the network.
         """
@@ -291,12 +281,14 @@ class SamplerQNN(NeuralNetwork):
         return input_grad, weights_grad
 
     def _backward(
-        self, input_data: np.ndarray | None, weights: np.ndarray | None
+        self,
+        input_data: list[float] | np.ndarray | float,
+        weights: list[float] | np.ndarray | float,
     ) -> tuple[np.ndarray | None, np.ndarray | None]:
 
         """Backward pass of the network."""
         # prepare parameters in the required format
-        parameter_values, num_samples = self._preprocess_gradient(input_data, weights)
+        parameter_values, num_samples = self._preprocess(input_data, weights)
 
         if self._input_gradients:
             job = self.gradient.run([self._circuit] * num_samples, parameter_values)

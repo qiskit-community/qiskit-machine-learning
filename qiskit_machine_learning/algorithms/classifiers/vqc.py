@@ -102,6 +102,8 @@ class VQC(NeuralNetworkClassifier):
         self._circuit.compose(self.feature_map, inplace=True)
         self._circuit.compose(self.ansatz, inplace=True)
 
+        # needed for mypy
+        neural_network: SamplerQNN | CircuitQNN = None
         if sampler is None:
             # construct circuit QNN
             neural_network = CircuitQNN(
@@ -168,9 +170,13 @@ class VQC(NeuralNetworkClassifier):
         """
         X, y = self._validate_input(X, y)
         num_classes = self._num_classes
-        cast(CircuitQNN, self._neural_network).set_interpret(
-            self._get_interpret(num_classes), num_classes
-        )
+
+        if isinstance(self._neural_network, SamplerQNN):
+            self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
+        else:
+            cast(CircuitQNN, self._neural_network).set_interpret(
+                self._get_interpret(num_classes), num_classes
+            )
 
         return super()._minimize(X, y)
 

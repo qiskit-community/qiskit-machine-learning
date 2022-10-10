@@ -107,7 +107,7 @@ class TestTorchConnector(TestTorch):
             model.neural_network,
             False,
         )
-        test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)  # type: ignore
+        test = torch.autograd.gradcheck(func, input_data, eps=1e-4, atol=1e-3)
         self.assertTrue(test)
 
     @data("sv", "qasm")
