@@ -209,7 +209,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         aer = importlib.import_module("qiskit.providers.aer")
 
-        parity = lambda x: "{:b}".format(x).count("1") % 2
+        parity = lambda x: f"{x:b}".count("1") % 2
         output_shape = 2  # this is required in case of a callable with dense output
 
         qi_qasm = QuantumInstance(
