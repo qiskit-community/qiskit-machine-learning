@@ -14,6 +14,8 @@
 
 from __future__ import annotations
 
+from typing import Mapping, Sequence
+
 import numpy as np
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.parameterexpression import ParameterValueType
@@ -31,21 +33,22 @@ class TrainableKernelMixin:
             training_parameters = []
         self._training_parameters = training_parameters
 
-        self._num_trainable_parameters = len(self._training_parameters)
+        self._num_training_parameters = len(self._training_parameters)
 
         self._parameter_dict = {parameter: None for parameter in training_parameters}
 
     def assign_training_parameters(
-        self, parameter_values: dict[Parameter, ParameterValueType] | list[ParameterValueType]
+        self,
+        parameter_values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType],
     ) -> None:
         """
         Fix the training parameters to numerical values.
         """
         if not isinstance(parameter_values, dict):
-            if len(parameter_values) != self._num_trainable_parameters:
+            if len(parameter_values) != self._num_training_parameters:
                 raise ValueError(
                     f"The number of given parameters is wrong: {len(parameter_values)}, "
-                    f"expected {self._num_trainable_parameters}."
+                    f"expected {self._num_training_parameters}."
                 )
             self._parameter_dict.update(
                 {

@@ -13,13 +13,15 @@
 """ Kernel Loss utilities """
 
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Sequence, Union
 
 import numpy as np
 from sklearn.svm import SVC
 
 # Prevent circular dependencies caused from type checking
-from ...kernels import QuantumKernel
+from ...kernels import QuantumKernel as QuantumKernelOld, TrainableFidelityQuantumKernel
+
+QuantumKernel = Union[QuantumKernelOld, TrainableFidelityQuantumKernel]
 
 
 class KernelLoss(ABC):

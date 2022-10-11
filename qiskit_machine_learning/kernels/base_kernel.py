@@ -56,6 +56,7 @@ class BaseKernel(ABC):
         if feature_map is None:
             feature_map = ZZFeatureMap(2)
 
+        self._num_features = feature_map.num_parameters
         self._feature_map = feature_map
         self._enforce_psd = enforce_psd
 
@@ -88,7 +89,7 @@ class BaseKernel(ABC):
         if x_vec.ndim == 1:
             x_vec = np.reshape(x_vec, (-1, len(x_vec)))
 
-        if x_vec.shape[1] != self._feature_map.num_parameters:
+        if x_vec.shape[1] != self._num_features:
             # before raising an error we try to adjust the feature map
             # to the required number of qubit.
             try:

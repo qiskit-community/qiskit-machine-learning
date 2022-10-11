@@ -13,16 +13,13 @@
 """Quantum Support Vector Regressor"""
 
 import warnings
-from typing import Optional, Union
+from typing import Optional
 
 from sklearn.svm import SVR
 
 from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
-from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
-
-QuantumKernel = Union[QuantumKernelOld, BaseKernel]
 
 
 class QSVR(SVR, SerializableModelMixin):
@@ -43,7 +40,7 @@ class QSVR(SVR, SerializableModelMixin):
         qsvr.predict(sample_test)
     """
 
-    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(self, *args, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for regression.
@@ -72,12 +69,12 @@ class QSVR(SVR, SerializableModelMixin):
         super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
 
     @property
-    def quantum_kernel(self) -> QuantumKernel:
+    def quantum_kernel(self) -> BaseKernel:
         """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+    def quantum_kernel(self, quantum_kernel: BaseKernel):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate

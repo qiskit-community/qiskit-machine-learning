@@ -14,7 +14,7 @@
 
 import logging
 from datetime import datetime
-from typing import Optional, Dict, Union
+from typing import Optional, Dict
 
 import numpy as np
 from qiskit.utils import algorithm_globals
@@ -23,9 +23,6 @@ from sklearn.base import ClassifierMixin
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
 from ...kernels import BaseKernel, FidelityQuantumKernel
-from ...kernels.quantum_kernel import QuantumKernel as QuantumKernelOld
-
-QuantumKernel = Union[QuantumKernelOld, BaseKernel]
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +57,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     # pylint: disable=invalid-name
     def __init__(
         self,
-        quantum_kernel: Optional[QuantumKernel] = None,
+        quantum_kernel: Optional[BaseKernel] = None,
         C: float = 1.0,
         num_steps: int = 1000,
         precomputed: bool = False,
@@ -99,9 +96,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         else:
             if quantum_kernel is None:
                 quantum_kernel = FidelityQuantumKernel()
-            elif not isinstance(quantum_kernel, QuantumKernelOld) and not isinstance(
-                quantum_kernel, BaseKernel
-            ):
+            elif not isinstance(quantum_kernel, BaseKernel):
                 raise TypeError("'quantum_kernel' has to be of type None or BaseKernel")
 
         self._quantum_kernel = quantum_kernel
@@ -312,12 +307,12 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         return value
 
     @property
-    def quantum_kernel(self) -> QuantumKernel:
+    def quantum_kernel(self) -> BaseKernel:
         """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+    def quantum_kernel(self, quantum_kernel: BaseKernel):
         """
         Sets quantum kernel. If previously a precomputed kernel was set, it is reset to ``False``.
         """

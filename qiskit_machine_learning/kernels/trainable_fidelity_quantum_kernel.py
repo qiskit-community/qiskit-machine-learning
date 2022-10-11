@@ -13,16 +13,16 @@
 """Trainable Quantum Kernel"""
 
 from __future__ import annotations
-import numpy as np
 
+import numpy as np
 from qiskit import QuantumCircuit
+from qiskit.algorithms.state_fidelities import BaseStateFidelity
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.primitives import Sampler
-from qiskit.algorithms.state_fidelities import BaseStateFidelity
 
-from qiskit_machine_learning import QiskitMachineLearningError
 from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
 from .trainable_kernel_mixin import TrainableKernelMixin
+from ..exceptions import QiskitMachineLearningError
 
 
 class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel):
@@ -93,7 +93,8 @@ class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel
             evaluate_duplicates=evaluate_duplicates,
         )
 
-        self._num_features = feature_map.num_parameters - self._num_trainable_parameters
+        # override the num of features defined in the base class
+        self._num_features = feature_map.num_parameters - self._num_training_parameters
         self._feature_parameters = [
             parameter
             for parameter in feature_map.parameters
@@ -115,7 +116,7 @@ class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel
         """
         Combines the feature values and the trainable parameters into one array.
         """
-        full_array = np.zeros((x_vec.shape[0], self._num_features + self._num_trainable_parameters))
+        full_array = np.zeros((x_vec.shape[0], self._num_features + self._num_training_parameters))
         for i, x in enumerate(x_vec):
             self._parameter_dict.update(
                 {feature_param: x[j] for j, feature_param in enumerate(self._feature_parameters)}

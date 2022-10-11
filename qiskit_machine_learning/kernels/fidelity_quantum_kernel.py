@@ -21,7 +21,7 @@ from qiskit import QuantumCircuit
 from qiskit.algorithms.state_fidelities import BaseStateFidelity, ComputeUncompute
 from qiskit.primitives import Sampler
 
-from qiskit_machine_learning.kernels.base_kernel import BaseKernel
+from .base_kernel import BaseKernel
 
 KernelIndices = List[Tuple[int, int]]
 

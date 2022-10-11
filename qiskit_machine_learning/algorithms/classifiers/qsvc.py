@@ -13,7 +13,7 @@
 """Quantum Support Vector Classifier"""
 
 import warnings
-from typing import Optional, Union
+from typing import Optional
 
 from qiskit.utils.algorithm_globals import algorithm_globals
 from sklearn.svm import SVC
@@ -21,9 +21,6 @@ from sklearn.svm import SVC
 from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
-from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
-
-QuantumKernel = Union[QuantumKernelOld, BaseKernel]
 
 
 class QSVC(SVC, SerializableModelMixin):
@@ -44,7 +41,7 @@ class QSVC(SVC, SerializableModelMixin):
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(self, *args, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: QuantumKernel to be used for classification.
@@ -76,12 +73,12 @@ class QSVC(SVC, SerializableModelMixin):
         super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
 
     @property
-    def quantum_kernel(self) -> QuantumKernel:
+    def quantum_kernel(self) -> BaseKernel:
         """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+    def quantum_kernel(self, quantum_kernel: BaseKernel):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
