@@ -180,7 +180,6 @@ class SamplerQNN(NeuralNetwork):
                     "No interpret function given, output_shape will be automatically "
                     "determined as 2^num_qubits."
                 )
-
             output_shape_ = (2**self._circuit.num_qubits,)
 
         return output_shape_
@@ -200,7 +199,7 @@ class SamplerQNN(NeuralNetwork):
             input_data = np.expand_dims(input_data, 0)
 
         num_samples = max(input_data.shape[0], 1)
-        weights = np.broadcast_to(weights, (num_samples, len(weights)))
+        weights = np.broadcast_to(weights, (num_samples, len(weights)))  # type: ignore
         parameters = np.concatenate((input_data, weights), axis=1)
 
         return parameters, num_samples
