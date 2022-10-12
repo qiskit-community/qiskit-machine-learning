@@ -65,7 +65,10 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
         features = np.concatenate((features, features[0, :].reshape(1, -1)))
 
         new_qk = FidelityQuantumKernel(
-            self.sampler, feature_map, enforce_psd=enforce_psd, evaluate_duplicates=duplicates
+            sampler=self.sampler,
+            feature_map=feature_map,
+            enforce_psd=enforce_psd,
+            evaluate_duplicates=duplicates,
         )
         old_qk = QuantumKernel(
             feature_map,

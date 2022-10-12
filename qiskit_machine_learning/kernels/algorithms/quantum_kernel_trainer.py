@@ -23,11 +23,7 @@ from qiskit.algorithms.optimizers import Optimizer, SPSA
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
 
-from qiskit_machine_learning.kernels import QuantumKernel as QuantumKernelOld
-from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
-
-
-QuantumKernel = Union[QuantumKernelOld, TrainableFidelityQuantumKernel]
+from qiskit_machine_learning.kernels import TrainableKernel
 
 
 class QuantumKernelTrainerResult(VariationalResult):
@@ -35,15 +31,15 @@ class QuantumKernelTrainerResult(VariationalResult):
 
     def __init__(self) -> None:
         super().__init__()
-        self._quantum_kernel: QuantumKernel = None
+        self._quantum_kernel: TrainableKernel = None
 
     @property
-    def quantum_kernel(self) -> Optional[QuantumKernel]:
+    def quantum_kernel(self) -> Optional[TrainableKernel]:
         """Return the optimized quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
+    def quantum_kernel(self, quantum_kernel: TrainableKernel) -> None:
         self._quantum_kernel = quantum_kernel
 
 
@@ -93,7 +89,7 @@ class QuantumKernelTrainer:
 
     def __init__(
         self,
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: TrainableKernel,
         loss: Optional[Union[str, KernelLoss]] = None,
         optimizer: Optional[Optimizer] = None,
         initial_point: Optional[Sequence[float]] = None,
@@ -123,12 +119,12 @@ class QuantumKernelTrainer:
         self._set_loss(loss)
 
     @property
-    def quantum_kernel(self) -> QuantumKernel:
+    def quantum_kernel(self) -> TrainableKernel:
         """Return the quantum kernel object."""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel) -> None:
+    def quantum_kernel(self, quantum_kernel: TrainableKernel) -> None:
         """Set the quantum kernel."""
         self._quantum_kernel = quantum_kernel
 

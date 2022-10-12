@@ -31,12 +31,12 @@ from qiskit_machine_learning.deprecation import (
     deprecate_method,
     deprecate_property,
 )
-from .trainable_kernel_mixin import TrainableKernelMixin
+from .trainable_kernel import TrainableKernel
 from .base_kernel import BaseKernel
 from ..exceptions import QiskitMachineLearningError
 
 
-class QuantumKernel(TrainableKernelMixin, BaseKernel):
+class QuantumKernel(TrainableKernel, BaseKernel):
     r"""Quantum Kernel.
 
     The general task of machine learning is to find and study patterns in data. For many

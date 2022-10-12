@@ -42,7 +42,7 @@ class BaseKernel(ABC):
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    def __init__(self, feature_map: QuantumCircuit = None, enforce_psd: bool = True) -> None:
+    def __init__(self, *, feature_map: QuantumCircuit = None, enforce_psd: bool = True) -> None:
         """
         Args:
             feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,

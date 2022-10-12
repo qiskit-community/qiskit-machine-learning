@@ -56,6 +56,7 @@ class FidelityQuantumKernel(BaseKernel):
 
     def __init__(
         self,
+        *,
         sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
         fidelity: str | BaseStateFidelity = "zero_prob",

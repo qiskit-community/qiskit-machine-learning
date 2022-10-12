@@ -14,25 +14,33 @@
 
 from __future__ import annotations
 
+from abc import ABC
 from typing import Mapping, Sequence
 
 import numpy as np
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.parameterexpression import ParameterValueType
 
+from .base_kernel import BaseKernel
 
-class TrainableKernelMixin:
-    """A mixin that adds ability to train kernel."""
+
+class TrainableKernel(BaseKernel, ABC):
+    """An abstract that adds ability to train kernel."""
 
     def __init__(
-        self, *args, training_parameters: ParameterVector | list[Parameter] | None = None, **kwargs
+        self, *, training_parameters: ParameterVector | Sequence[Parameter] | None = None, **kwargs
     ) -> None:
-        super().__init__(*args, **kwargs)
+        """
+        Args:
+            training_parameters: a sequence of training parameters.
+            **kwargs: Additional parameters may be used by the super class.
+        """
+        super().__init__(**kwargs)
 
         if training_parameters is None:
             training_parameters = []
-        self._training_parameters = training_parameters
 
+        self._training_parameters = training_parameters
         self._num_training_parameters = len(self._training_parameters)
 
         self._parameter_dict = {parameter: None for parameter in training_parameters}

@@ -21,11 +21,11 @@ from qiskit.circuit import Parameter, ParameterVector
 from qiskit.primitives import Sampler
 
 from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
-from .trainable_kernel_mixin import TrainableKernelMixin
+from .trainable_kernel import TrainableKernel
 from ..exceptions import QiskitMachineLearningError
 
 
-class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel):
+class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
     r"""
     Finding good quantum kernels for a specific machine learning task is a big challenge in quantum
     machine learning. One way to choose the kernel is to add trainable parameters to the feature
@@ -41,6 +41,7 @@ class TrainableFidelityQuantumKernel(TrainableKernelMixin, FidelityQuantumKernel
 
     def __init__(
         self,
+        *,
         sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
         fidelity: str | BaseStateFidelity = "zero_prob",
