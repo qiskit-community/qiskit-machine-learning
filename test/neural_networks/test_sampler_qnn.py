@@ -179,6 +179,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         qnn = self._get_qnn(sparse, sampler_type, interpret_type)
         self._verify_qnn(qnn, batch_size)
 
+    @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
     @idata(itertools.product(SPARSE, INTERPRET_TYPES, BATCH_SIZES))
     def test_sampler_qnn_gradient(self, config):
         """Sampler QNN Gradient Test."""
