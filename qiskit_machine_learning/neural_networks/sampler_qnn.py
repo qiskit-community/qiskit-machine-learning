@@ -172,7 +172,7 @@ class SamplerQNN(NeuralNetwork):
                 output_shape = int(output_shape)
                 output_shape_ = (output_shape,)
             else:
-                output_shape_ = cast(tuple[int, ...], output_shape)
+                output_shape_ = output_shape  # type: ignore
         else:
             if output_shape is not None:
                 # Warn user that output_shape parameter will be ignored
@@ -199,7 +199,7 @@ class SamplerQNN(NeuralNetwork):
         if len(input_data.shape) == 1:
             input_data = np.expand_dims(input_data, 0)
 
-        num_samples = max(input_data.shape[0], 1) # type: ignore
+        num_samples = max(input_data.shape[0], 1)
         weights = np.broadcast_to(weights, (num_samples, len(weights)))
         parameters = np.concatenate((input_data, weights), axis=1)
 
