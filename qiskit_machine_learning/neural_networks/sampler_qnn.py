@@ -193,14 +193,14 @@ class SamplerQNN(NeuralNetwork):
         Pre-processing during forward pass of the network.
         """
 
-        input_data = np.asarray(input_data)
-        weights = np.asarray(weights)
-        if len(input_data.shape) == 1:
-            input_data = np.expand_dims(input_data, 0)
+        np_input_data: np.ndarray = np.asarray(input_data)
+        np_weights: np.ndarray = np.asarray(weights)
+        if len(np_input_data.shape) == 1:
+            np_input_data = np.expand_dims(np_input_data, 0)
 
-        num_samples = max(input_data.shape[0], 1)
-        weights = np.broadcast_to(weights, (num_samples, len(weights)))  # type: ignore
-        parameters = np.concatenate((input_data, weights), axis=1)
+        num_samples = max(np_input_data.shape[0], 1)
+        np_weights = np.broadcast_to(np_weights, (num_samples, len(np_weights)))
+        parameters = np.concatenate((np_input_data, np_weights), axis=1)
 
         return parameters, num_samples
 
