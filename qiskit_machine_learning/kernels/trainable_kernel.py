@@ -9,7 +9,6 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
 """Trainable Quantum Kernel"""
 
 from __future__ import annotations
@@ -25,7 +24,7 @@ from .base_kernel import BaseKernel
 
 
 class TrainableKernel(BaseKernel, ABC):
-    """An abstract that adds ability to train kernel."""
+    """An abstract class that adds ability to train kernel."""
 
     def __init__(
         self, *, training_parameters: ParameterVector | Sequence[Parameter] | None = None, **kwargs
