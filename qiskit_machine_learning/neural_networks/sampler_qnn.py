@@ -199,7 +199,7 @@ class SamplerQNN(NeuralNetwork):
         if len(input_data.shape) == 1:
             input_data = np.expand_dims(input_data, 0)
 
-        num_samples = max(input_data.shape[0], 1)
+        num_samples = max(input_data.shape[0], 1) # type: ignore
         weights = np.broadcast_to(weights, (num_samples, len(weights)))
         parameters = np.concatenate((input_data, weights), axis=1)
 
