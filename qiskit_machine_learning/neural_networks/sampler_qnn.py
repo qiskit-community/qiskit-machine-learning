@@ -172,7 +172,7 @@ class SamplerQNN(NeuralNetwork):
                 output_shape = int(output_shape)
                 output_shape_ = (output_shape,)
             else:
-                output_shape_ = output_shape
+                output_shape_ = cast(tuple[int, ...], output_shape)
         else:
             if output_shape is not None:
                 # Warn user that output_shape parameter will be ignored
@@ -194,13 +194,10 @@ class SamplerQNN(NeuralNetwork):
         Pre-processing during forward pass of the network.
         """
 
-        if not isinstance(input_data, np.ndarray):
-            input_data = np.asarray(input_data)
+        input_data = np.asarray(input_data)
+        weights = np.asarray(weights)
         if len(input_data.shape) == 1:
             input_data = np.expand_dims(input_data, 0)
-
-        if not isinstance(weights, np.ndarray):
-            weights = np.asarray(weights)
 
         num_samples = max(input_data.shape[0], 1)
         weights = np.broadcast_to(weights, (num_samples, len(weights)))
@@ -308,15 +305,15 @@ class SamplerQNN(NeuralNetwork):
                     if self._input_gradients:
                         # we compute input gradients first
                         if i < self._num_inputs:
-                            input_grad[key] += np.real(val)
+                            input_grad[key] += val
                         else:
-                            weights_grad[key] += np.real(val)
+                            weights_grad[key] += val
                     else:
-                        weights_grad[key] += np.real(val)
+                        weights_grad[key] += val
 
         if self._sparse:
             if self._input_gradients:
-                input_grad = input_grad.to_coo()
+                input_grad = input_grad.to_coo()  # pylint: disable=no-member
             weights_grad = weights_grad.to_coo()
 
         return input_grad, weights_grad
