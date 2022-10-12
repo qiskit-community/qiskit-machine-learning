@@ -78,6 +78,24 @@ class BaseKernel(ABC):
         """
         raise NotImplementedError()
 
+    @property
+    def feature_map(self) -> QuantumCircuit:
+        """Returns the feature map of this kernel."""
+        return self._feature_map
+
+    @property
+    def num_features(self) -> int:
+        """Returns the number of features in this kernel."""
+        return self._num_features
+
+    @property
+    def enforce_psd(self) -> bool:
+        """
+        Returns ``True`` if the kernel matrix is required to project to the closest positive
+        semidefinite matrix.
+        """
+        return self._enforce_psd
+
     def _validate_input(
         self, x_vec: np.ndarray, y_vec: np.ndarray | None
     ) -> tuple[np.ndarray, np.ndarray | None]:

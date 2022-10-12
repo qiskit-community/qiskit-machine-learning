@@ -35,7 +35,6 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         circ2 = ZZFeatureMap(3, parameter_prefix="θ")
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.training_parameters = circ2.parameters
-        self.sampler = Sampler()
 
         self.sample_train = np.array(
             [[0.53833689, 0.44832616, 0.74399926], [0.43359057, 0.11213606, 0.97568932]]
@@ -46,7 +45,6 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         """Test assigning/re-assigning user parameters"""
 
         kernel = TrainableFidelityQuantumKernel(
-            sampler=self.sampler,
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
@@ -112,7 +110,6 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
             training_params = [0.1, 0.531, 4.12]
 
         kernel = TrainableFidelityQuantumKernel(
-            sampler=self.sampler,
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
@@ -139,7 +136,6 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
             training_params = [0.1, 0.531, 4.12]
 
         kernel = TrainableFidelityQuantumKernel(
-            sampler=self.sampler,
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )

@@ -59,7 +59,6 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self.label_test = np.asarray([1, 0])
 
         self.quantum_kernel = TrainableFidelityQuantumKernel(
-            sampler=Sampler(),
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
@@ -94,7 +93,6 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         qc.rz(feature_params[1], 1)
 
         quantum_kernel = TrainableFidelityQuantumKernel(
-            sampler=Sampler(),
             feature_map=qc,
             training_parameters=[training_parameters],
         )

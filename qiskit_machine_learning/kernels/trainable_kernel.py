@@ -74,15 +74,22 @@ class TrainableKernel(BaseKernel, ABC):
                 self._parameter_dict[key] = parameter_values[key]
 
     @property
-    def parameter_values(self):
+    def parameter_values(self) -> np.ndarray:
         """
-        Numerical values assigned to the training parameters.
+        Returns numerical values assigned to the training parameters as a numpy array.
         """
         return np.asarray([self._parameter_dict[param] for param in self._training_parameters])
 
     @property
-    def training_parameters(self) -> ParameterVector | list[Parameter] | None:
+    def training_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """
-        Return the vector of training parameters.
+        Returns the vector of training parameters.
         """
         return self._training_parameters
+
+    @property
+    def num_training_parameters(self) -> int:
+        """
+        Returns the number of training parameters.
+        """
+        return len(self._training_parameters)

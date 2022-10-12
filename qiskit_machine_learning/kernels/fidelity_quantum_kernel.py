@@ -57,30 +57,24 @@ class FidelityQuantumKernel(BaseKernel):
     def __init__(
         self,
         *,
-        sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
-        fidelity: str | BaseStateFidelity = "zero_prob",
+        fidelity: BaseStateFidelity | None = None,
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
     ) -> None:
         """
         Args:
-            sampler: An instance of the :class:`~qiskit.primitives.Sampler` primitive to be used to
-                evaluate fidelity. If ``None`` is given then a reference implementation will be
-                instantiated. If an instance of
-                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` is passed as
-                ``fidelity``, then the sampler value is not used.
             feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
                 :class:`~qiskit.circuit.library.ZZFeatureMap` is used with two qubits. If there's
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
             fidelity: An instance of the
-                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` primitive or a string
-                value defining a fidelity algorithm. Currently, the only supported string value
-                is ``zero_prob`` which corresponds to the
-                :class:`~qiskit.algorithms.state_fidelities.ComputeUncompute` fidelity.
-            enforce_psd: Project to closest positive semidefinite matrix if ``x = y``.
+                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` primitive to be used
+                to compute fidelity between states. Default is
+                :class:`~qiskit.algorithms.state_fidelities.ComputeUncompute` which is created on
+                top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
+            enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
                duplicate samples are found. Possible values are:
@@ -106,24 +100,9 @@ class FidelityQuantumKernel(BaseKernel):
             )
         self._evaluate_duplicates = eval_duplicates
 
-        if isinstance(fidelity, str):
-            if sampler is None:
-                # Falling back to the reference implementation from Terra
-                sampler = Sampler()
-            if fidelity == "zero_prob":
-                self._fidelity = ComputeUncompute(sampler=sampler)
-            else:
-                raise ValueError(
-                    f"Fidelity value of '{fidelity}' is not a valid string for a fidelity. "
-                    f"Currently supported only 'zero_prob'."
-                )
-        else:
-            if sampler is not None:
-                warnings.warn(
-                    "Passed both a sampler and a fidelity instance. If passing a fidelity instance"
-                    " for 'fidelity', the sampler instance will not be used.",
-                )
-            self._fidelity = fidelity
+        if fidelity is None:
+            fidelity = ComputeUncompute(sampler=Sampler())
+        self._fidelity = fidelity
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
         x_vec, y_vec = self._validate_input(x_vec, y_vec)

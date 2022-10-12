@@ -42,35 +42,29 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
     def __init__(
         self,
         *,
-        sampler: Sampler | None = None,
         feature_map: QuantumCircuit | None = None,
-        fidelity: str | BaseStateFidelity = "zero_prob",
+        fidelity: BaseStateFidelity | None = None,
         training_parameters: ParameterVector | list[Parameter] | None = None,
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
     ) -> None:
         """
         Args:
-            sampler: An instance of the :class:`~qiskit.primitives.Sampler` primitive to be used to
-                evaluate fidelity. If ``None`` is given then a reference implementation will be
-                instantiated. If an instance of
-                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` is passed as
-                ``fidelity``, then the sampler value is not used.
             feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
                 :class:`~qiskit.circuit.library.ZZFeatureMap` is used with two qubits. If there's
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
             fidelity: An instance of the
-                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` primitive or a string
-                value defining a fidelity algorithm. Currently, the only supported string value
-                is ``zero_prob`` which corresponds to the
-                :class:`~qiskit.algorithms.state_fidelities.ComputeUncompute` fidelity.
+                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` primitive to be used
+                to compute fidelity between states. Default is
+                :class:`~qiskit.algorithms.state_fidelities.ComputeUncompute` which is created on
+                top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
             training_parameters: Iterable containing :class:`~qiskit.circuit.Parameter` objects
                 which correspond to quantum gates on the feature map circuit which may be tuned.
                 If users intend to tune feature map parameters to find optimal values, this field
                 should be set.
-            enforce_psd: Project to closest positive semidefinite matrix if ``x = y``.
+            enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
                duplicate samples are found. Possible values are:
@@ -86,7 +80,6 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
                       When inferring, matrix elements for identical samples are set to `1`.
         """
         super().__init__(
-            sampler=sampler,
             feature_map=feature_map,
             fidelity=fidelity,
             training_parameters=training_parameters,

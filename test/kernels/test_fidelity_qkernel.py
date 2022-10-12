@@ -73,7 +73,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""
-        kernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        kernel = FidelityQuantumKernel(feature_map=self.feature_map)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         score = svc.score(self.sample_test, self.label_test)
@@ -82,7 +82,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
     def test_svc_precomputed(self):
         """Test precomputed kernel in sklearn."""
-        kernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        kernel = FidelityQuantumKernel(feature_map=self.feature_map)
         kernel_train = kernel.evaluate(x_vec=self.sample_train)
         kernel_test = kernel.evaluate(x_vec=self.sample_test, y_vec=self.sample_train)
 
@@ -109,17 +109,11 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
             _ = FidelityQuantumKernel(evaluate_duplicates="wrong")
 
-        with self.assertRaises(ValueError, msg="Unsupported value of 'fidelity'."):
-            _ = FidelityQuantumKernel(fidelity="wrong")
-
-        with self.assertWarns(UserWarning, msg="Both fidelity and samples are passed"):
-            _ = FidelityQuantumKernel(sampler=self.sampler, fidelity=self.fidelity)
-
     @idata(
         # params, fidelity, feature map, enforce_psd, duplicate
         itertools.product(
             ["samples_1", "samples_4"],
-            ["default_fidelity", "zero_prob", "fidelity_instance"],
+            ["default_fidelity", "fidelity_instance"],
             ["no_fm", "z_fm"],
             [True, False],
             ["none", "off_diagonal", "all"],
@@ -142,7 +136,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         itertools.product(
             ["samples_1", "samples_4"],
             ["samples_1", "samples_4", "samples_test"],
-            ["default_fidelity", "zero_prob", "fidelity_instance"],
+            ["default_fidelity", "fidelity_instance"],
             ["no_fm", "z_fm"],
             [True, False],
             ["none", "off_diagonal", "all"],
@@ -170,16 +164,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
     def _create_kernel(self, fidelity, feature_map, enforce_psd, duplicates):
         if fidelity == "default_fidelity":
             kernel = FidelityQuantumKernel(
-                sampler=self.sampler,
                 feature_map=feature_map,
-                enforce_psd=enforce_psd,
-                evaluate_duplicates=duplicates,
-            )
-        elif fidelity == "zero_prob":
-            kernel = FidelityQuantumKernel(
-                sampler=self.sampler,
-                feature_map=feature_map,
-                fidelity="zero_prob",
                 enforce_psd=enforce_psd,
                 evaluate_duplicates=duplicates,
             )
@@ -353,7 +338,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
         """Tests quantum kernel evaluation with duplicate samples."""
         self.circuit_counts = 0
         kernel = FidelityQuantumKernel(
-            sampler=self.counting_sampler,
+            fidelity=ComputeUncompute(sampler=self.counting_sampler),
             feature_map=self.feature_map,
             evaluate_duplicates=evaluate_duplicates,
         )
@@ -375,7 +360,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
         """Tests asymmetric quantum kernel evaluation with duplicate samples."""
         self.circuit_counts = 0
         kernel = FidelityQuantumKernel(
-            sampler=self.counting_sampler,
+            fidelity=ComputeUncompute(sampler=self.counting_sampler),
             feature_map=self.feature_map,
             evaluate_duplicates=evaluate_duplicates,
         )
