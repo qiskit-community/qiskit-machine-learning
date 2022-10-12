@@ -15,6 +15,7 @@
 from test import QiskitMachineLearningTestCase
 
 import itertools
+import unittest
 import numpy as np
 
 from ddt import ddt, idata, unpack
@@ -27,12 +28,13 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 
 from qiskit_machine_learning.neural_networks import CircuitQNN
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
+import qiskit_machine_learning.optionals as _optionals
 
 algorithm_globals.random_seed = 42
 
 DEFAULT = "default"
 SHOTS = "shots"
-SAMPLING = [True, False]  # TODO
+SPARSE = [True, False]
 SAMPLERS = [DEFAULT, SHOTS]
 INTERPRET_TYPES = [2]
 BATCH_SIZES = [1, 2]
@@ -84,7 +86,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.sampler = Sampler()
         self.sampler_shots = Sampler(options={"shots": 100})
 
-    def _get_qnn(self, sampler_type, interpret_id):
+    def _get_qnn(self, sparse, sampler_type, interpret_id):
         """Construct QNN from configuration."""
 
         # get quantum instance
@@ -111,6 +113,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             self.qc,
             input_params=self.input_params,
             weight_params=self.weight_params,
+            sparse=sparse,
             interpret=interpret,
             output_shape=output_shape,
         )
@@ -124,21 +127,35 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         """
         Verifies that a QNN functions correctly
         """
+        # pylint: disable=import-error
+        from sparse import SparseArray
+
         input_data = np.zeros((batch_size, qnn.num_inputs))
         weights = np.zeros(qnn.num_weights)
 
         # evaluate QNN forward pass
         result = qnn.forward(input_data, weights)
-        self.assertTrue(isinstance(result, np.ndarray))
+
+        # make sure forward result is sparse if it should be
+        if qnn.sparse:
+            self.assertTrue(isinstance(result, SparseArray))
+        else:
+            self.assertTrue(isinstance(result, np.ndarray))
+
         # check forward result shape
         self.assertEqual(result.shape, (batch_size, *qnn.output_shape))
 
         # evaluate QNN backward pass
         input_grad, weights_grad = qnn.backward(input_data, weights)
 
-        self.assertIsNone(input_grad)
         # verify that input gradients are None if turned off
+        self.assertIsNone(input_grad)
         self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
+
+        if qnn.sparse:
+            self.assertTrue(isinstance(weights_grad, SparseArray))
+        else:
+            self.assertTrue(isinstance(weights_grad, np.ndarray))
 
         # verify that input gradients are not None if turned on
         qnn.input_gradients = True
@@ -147,22 +164,30 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
         self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
 
-    @idata(itertools.product(SAMPLERS, INTERPRET_TYPES, BATCH_SIZES))
+        if qnn.sparse:
+            self.assertTrue(isinstance(weights_grad, SparseArray))
+            self.assertTrue(isinstance(input_grad, SparseArray))
+        else:
+            self.assertTrue(isinstance(weights_grad, np.ndarray))
+            self.assertTrue(isinstance(input_grad, np.ndarray))
+
+    @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
+    @idata(itertools.product(SPARSE, SAMPLERS, INTERPRET_TYPES, BATCH_SIZES))
     @unpack
-    def test_sampler_qnn(self, sampler_type, interpret_type, batch_size):
+    def test_sampler_qnn(self, sparse: bool, sampler_type, interpret_type, batch_size):
         """Sampler QNN Test."""
-        qnn = self._get_qnn(sampler_type, interpret_type)
+        qnn = self._get_qnn(sparse, sampler_type, interpret_type)
         self._verify_qnn(qnn, batch_size)
 
-    @idata(itertools.product(INTERPRET_TYPES, BATCH_SIZES))
+    @idata(itertools.product(SPARSE, INTERPRET_TYPES, BATCH_SIZES))
     def test_sampler_qnn_gradient(self, config):
         """Sampler QNN Gradient Test."""
 
         # get configuration
-        interpret_id, batch_size = config
+        sparse, interpret_id, batch_size = config
 
         # get QNN
-        qnn = self._get_qnn(DEFAULT, interpret_id)
+        qnn = self._get_qnn(sparse, DEFAULT, interpret_id)
 
         # set input gradients to True
         qnn.input_gradients = True
