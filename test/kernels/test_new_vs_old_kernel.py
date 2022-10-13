@@ -21,7 +21,6 @@ import numpy as np
 from ddt import ddt, idata, unpack
 from qiskit import BasicAer
 from qiskit.circuit.library import ZFeatureMap, ZZFeatureMap
-from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals, QuantumInstance
 
 from qiskit_machine_learning.kernels import QuantumKernel
@@ -40,7 +39,6 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(BasicAer.get_backend("statevector_simulator"))
-        self.sampler = Sampler()
         self.properties = dict(
             z1=ZFeatureMap(1),
             z2=ZFeatureMap(2),
@@ -65,7 +63,6 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
         features = np.concatenate((features, features[0, :].reshape(1, -1)))
 
         new_qk = FidelityQuantumKernel(
-            sampler=self.sampler,
             feature_map=feature_map,
             enforce_psd=enforce_psd,
             evaluate_duplicates=duplicates,

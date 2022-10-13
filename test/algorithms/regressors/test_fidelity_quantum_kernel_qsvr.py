@@ -53,7 +53,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def test_qsvr(self):
         """Test QSVR"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvr = QSVR(quantum_kernel=qkernel)
         qsvr.fit(self.sample_train, self.label_train)
@@ -63,7 +63,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def test_change_kernel(self):
         """Test QSVR with QuantumKernel later"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvr = QSVR()
         qsvr.quantum_kernel = qkernel
@@ -74,7 +74,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def test_qsvr_parameters(self):
         """Test QSVR with extra constructor parameters"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvr = QSVR(quantum_kernel=qkernel, tol=1e-4, C=0.5)
         qsvr.fit(self.sample_train, self.label_train)
@@ -97,7 +97,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
         labels = np.array([0, 0.1, 0.4, 1])
 
-        quantum_kernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=ZZFeatureMap(2))
+        quantum_kernel = FidelityQuantumKernel(feature_map=ZZFeatureMap(2))
         regressor = QSVR(quantum_kernel=quantum_kernel)
         regressor.fit(features, labels)
 

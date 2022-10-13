@@ -19,7 +19,6 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit.library import ZFeatureMap
-from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler
@@ -35,8 +34,6 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         super().setUp()
 
         algorithm_globals.random_seed = 10598
-
-        self.sampler = Sampler()
 
         # number of qubits is equal to the number of features
         self.q = 2
@@ -74,7 +71,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc(self):
         """Test PegasosQSVC"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -85,7 +82,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_decision_function(self):
         """Test PegasosQSVC."""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -96,7 +93,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc_4d(self):
         """Test PegasosQSVC with 4-dimensional input data"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map_4d)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map_4d)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -106,7 +103,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_precomputed_kernel(self):
         """Test PegasosQSVC with a precomputed kernel matrix"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
 
@@ -122,7 +119,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_change_kernel(self):
         """Test QSVC with QuantumKernel later"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau)
         pegasos_qsvc.quantum_kernel = qkernel
@@ -133,7 +130,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_wrong_parameters(self):
         """Tests PegasosQSVC with incorrect constructor parameter values."""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         with self.subTest("Both kernel and precomputed are passed"):
             self.assertRaises(ValueError, PegasosQSVC, quantum_kernel=qkernel, precomputed=True)
@@ -143,7 +140,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_labels(self):
         """Test PegasosQSVC with different integer labels than {0, 1}"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -169,7 +166,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             self.assertEqual(pegasos_qsvc.num_steps, 1000)
 
         with self.subTest("PegasosQSVC with QuantumKernel"):
-            qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+            qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
             pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
             self.assertIsInstance(pegasos_qsvc.quantum_kernel, FidelityQuantumKernel)
             self.assertFalse(pegasos_qsvc.precomputed)
@@ -180,7 +177,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             self.assertTrue(pegasos_qsvc.precomputed)
 
         with self.subTest("PegasosQSVC with wrong parameters"):
-            qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+            qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
             with self.assertRaises(ValueError):
                 _ = PegasosQSVC(quantum_kernel=qkernel, precomputed=True)
 
@@ -190,7 +187,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_change_kernel_types(self):
         """Test PegasosQSVC with a precomputed kernel matrix"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
 
@@ -199,9 +196,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         pegasos_qsvc.fit(kernel_matrix_train, self.label_train)
 
         # now train the same instance, but with a new quantum kernel
-        pegasos_qsvc.quantum_kernel = FidelityQuantumKernel(
-            sampler=self.sampler, feature_map=self.feature_map
-        )
+        pegasos_qsvc.quantum_kernel = FidelityQuantumKernel(feature_map=self.feature_map)
         pegasos_qsvc.fit(self.sample_train, self.label_train)
         score = pegasos_qsvc.score(self.sample_test, self.label_test)
 
@@ -212,7 +207,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
         labels = np.array([0, 0, 1, 1])
 
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         regressor = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
         regressor.fit(features, labels)

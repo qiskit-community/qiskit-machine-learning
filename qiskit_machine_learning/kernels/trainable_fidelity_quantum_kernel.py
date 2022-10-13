@@ -18,7 +18,6 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.algorithms.state_fidelities import BaseStateFidelity
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit.primitives import Sampler
 
 from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
 from .trainable_kernel import TrainableKernel

@@ -18,7 +18,6 @@ import numpy as np
 from ddt import ddt, data
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.primitives import Sampler
 
 from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
 

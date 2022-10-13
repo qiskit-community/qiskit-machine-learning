@@ -19,7 +19,6 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import QSVC, SerializableModelMixin
@@ -35,7 +34,6 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 10598
 
-        self.sampler = Sampler()
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
 
         self.sample_train = np.asarray(
@@ -53,7 +51,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc(self):
         """Test QSVC"""
-        qkernel = FidelityQuantumKernel(sampler=Sampler(), feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvc = QSVC(quantum_kernel=qkernel)
         qsvc.fit(self.sample_train, self.label_train)
@@ -63,7 +61,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def test_change_kernel(self):
         """Test QSVC with QuantumKernel later"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvc = QSVC()
         qsvc.quantum_kernel = qkernel
@@ -74,7 +72,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc_parameters(self):
         """Test QSVC with extra constructor parameters"""
-        qkernel = FidelityQuantumKernel(sampler=self.sampler, feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
         qsvc.fit(self.sample_train, self.label_train)
@@ -97,7 +95,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
         labels = np.array([0, 0, 1, 1])
 
-        quantum_kernel = FidelityQuantumKernel(sampler=self.sampler)
+        quantum_kernel = FidelityQuantumKernel()
         classifier = QSVC(quantum_kernel=quantum_kernel)
         classifier.fit(features, labels)
 

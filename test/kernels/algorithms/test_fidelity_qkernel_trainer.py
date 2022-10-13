@@ -22,7 +22,6 @@ from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms.classifiers import QSVC
