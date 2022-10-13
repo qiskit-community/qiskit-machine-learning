@@ -43,7 +43,7 @@ class QSVR(SVR, SerializableModelMixin):
     def __init__(self, *args, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: QuantumKernel to be used for regression.
+            quantum_kernel: Quantum kernel to be used for regression.
             *args: Variable length argument list to pass to SVR constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
         """
