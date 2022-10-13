@@ -48,6 +48,7 @@ class VQC(NeuralNetworkClassifier):
 
     def __init__(
         self,
+        *,
         sampler: BaseSampler = None,
         num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,

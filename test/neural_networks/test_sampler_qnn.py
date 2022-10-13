@@ -109,8 +109,8 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # construct QNN
         qnn = SamplerQNN(
-            sampler,
-            self.qc,
+            sampler=sampler,
+            circuit=self.qc,
             input_params=self.input_params,
             weight_params=self.weight_params,
             sparse=sparse,

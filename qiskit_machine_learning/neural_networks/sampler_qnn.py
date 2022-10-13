@@ -52,9 +52,9 @@ class SamplerQNN(NeuralNetwork):
 
     def __init__(
         self,
+        *,
         sampler: BaseSampler,
         circuit: QuantumCircuit,
-        *,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         sparse: bool = False,
