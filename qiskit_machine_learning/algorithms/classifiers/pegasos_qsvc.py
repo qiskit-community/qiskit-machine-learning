@@ -11,10 +11,11 @@
 # that they have been altered from the originals.
 
 """Pegasos Quantum Support Vector Classifier."""
+from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Dict
 
 import numpy as np
 from qiskit.utils import algorithm_globals
@@ -57,11 +58,11 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     # pylint: disable=invalid-name
     def __init__(
         self,
-        quantum_kernel: Optional[BaseKernel] = None,
+        quantum_kernel: BaseKernel | None = None,
         C: float = 1.0,
         num_steps: int = 1000,
         precomputed: bool = False,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ) -> None:
         """
         Args:
@@ -96,8 +97,6 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         else:
             if quantum_kernel is None:
                 quantum_kernel = FidelityQuantumKernel()
-            elif not isinstance(quantum_kernel, BaseKernel):
-                raise TypeError("'quantum_kernel' has to be of type None or BaseKernel")
 
         self._quantum_kernel = quantum_kernel
         self._precomputed = precomputed
@@ -111,13 +110,13 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
             raise ValueError(f"C has to be a positive number, found {C}.")
 
         # these are the parameters being fit and are needed for prediction
-        self._alphas: Optional[Dict[int, int]] = None
-        self._x_train: Optional[np.ndarray] = None
-        self._n_samples: Optional[int] = None
-        self._y_train: Optional[np.ndarray] = None
-        self._label_map: Optional[Dict[int, int]] = None
-        self._label_pos: Optional[int] = None
-        self._label_neg: Optional[int] = None
+        self._alphas: Dict[int, int] | None = None
+        self._x_train: np.ndarray | None = None
+        self._n_samples: int | None = None
+        self._y_train: np.ndarray | None = None
+        self._label_map: Dict[int, int] | None = None
+        self._label_pos: int | None = None
+        self._label_neg: int | None = None
 
         # added to all kernel values to include an implicit bias to the hyperplane
         self._kernel_offset = 1
@@ -127,7 +126,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
 
     # pylint: disable=invalid-name
     def fit(
-        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
+        self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None
     ) -> "PegasosQSVC":
         """Fit the model according to the given training data.
 
@@ -346,7 +345,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     def precomputed(self, precomputed: bool):
         """Sets the pre-computed kernel flag. If ``True`` is passed then the previous kernel is
         cleared. If ``False`` is passed then a new instance of
-        :class:`~qiskit_machine_learning.kernels.BaseKernel` is created."""
+        :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` is created."""
         self._precomputed = precomputed
         if precomputed:
             # remove the kernel, a precomputed will

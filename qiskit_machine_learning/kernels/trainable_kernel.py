@@ -81,7 +81,7 @@ class TrainableKernel(BaseKernel, ABC):
         return np.asarray([self._parameter_dict[param] for param in self._training_parameters])
 
     @property
-    def training_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
+    def training_parameters(self) -> ParameterVector | Sequence[Parameter]:
         """
         Returns the vector of training parameters.
         """

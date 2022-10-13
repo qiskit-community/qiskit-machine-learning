@@ -67,10 +67,9 @@ class QuantumKernelTrainer:
         for i, param in enumerate(input_params):
             qc.rz(param, qc.qubits[i])
 
-        quant_kernel = QuantumKernel(
+        quant_kernel = TrainableFidelityQuantumKernel(
             feature_map=qc,
             training_parameters=training_params,
-            quantum_instance=...
         )
 
         loss_func = ...

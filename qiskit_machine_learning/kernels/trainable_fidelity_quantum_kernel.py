@@ -14,6 +14,8 @@
 
 from __future__ import annotations
 
+from typing import Sequence
+
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.algorithms.state_fidelities import BaseStateFidelity
@@ -43,7 +45,7 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
         *,
         feature_map: QuantumCircuit | None = None,
         fidelity: BaseStateFidelity | None = None,
-        training_parameters: ParameterVector | list[Parameter] | None = None,
+        training_parameters: ParameterVector | Sequence[Parameter] | None = None,
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
     ) -> None:

@@ -188,7 +188,7 @@ class QuantumKernel(TrainableKernel, BaseKernel):
             raise ValueError(
                 f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of training parameters tracked by the QuantumKernel
+                match the number of training parameters tracked by the quantum kernel
                 (None).
                 """
             )
@@ -204,7 +204,7 @@ class QuantumKernel(TrainableKernel, BaseKernel):
                 raise ValueError(
                     f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of training parameters tracked by the QuantumKernel
+                match the number of training parameters tracked by the quantum kernel
                 ({len(self._training_parameters)}).
                 """
                 )
