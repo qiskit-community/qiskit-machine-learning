@@ -1,9 +1,9 @@
 ---
 features:
   - |
-    Added a new implementation of quantum kernel. This implementation leverages the fidelity
-    primitive (see :class:`qiskit.algorithms.state_fidelities.BaseStateFidelity`) and provides more
-    flexibility to end users. A new hierarchy is introduced:
+    Introduced Quantum Kernels based on (runtime) primitives. This implementation leverages the
+    fidelity primitive (see :class:`qiskit.algorithms.state_fidelities.BaseStateFidelity`) and
+    provides more flexibility to end users. A new hierarchy is introduced:
 
       - A base and abstract class :class:`~qiskit_machine_learning.kernels.BaseKernel` is
         introduced. All concrete implementation must inherit this class.
