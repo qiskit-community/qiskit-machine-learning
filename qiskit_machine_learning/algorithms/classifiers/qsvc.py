@@ -44,7 +44,7 @@ class QSVC(SVC, SerializableModelMixin):
     def __init__(self, *args, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: QuantumKernel to be used for classification.
+            quantum_kernel: Quantum kernel to be used for classification.
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
