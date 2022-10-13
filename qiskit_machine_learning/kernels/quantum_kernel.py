@@ -170,7 +170,7 @@ class QuantumKernel(TrainableKernel, BaseKernel):
         parameter_values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType],
     ) -> None:
         """
-        Assign training parameters in the ``QuantumKernel`` feature map.
+        Assign training parameters in the quantum kernel's feature map.
 
         Args:
             parameter_values (dict or iterable): Either a dictionary or iterable specifying the new
