@@ -105,8 +105,8 @@ class TestTorchNetworks(TestTorch):
         qc.append(ansatz, range(num_inputs))
 
         qnn = SamplerQNN(
-            Sampler(),
-            qc,
+            sampler=Sampler(),
+            circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
             input_gradients=True,  # for hybrid qnn

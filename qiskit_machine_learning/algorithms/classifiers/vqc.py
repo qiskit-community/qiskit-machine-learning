@@ -119,8 +119,8 @@ class VQC(NeuralNetworkClassifier):
         else:
             # construct sampler QNN
             neural_network = SamplerQNN(
-                sampler,
-                self._circuit,
+                sampler=sampler,
+                circuit=self._circuit,
                 input_params=self.feature_map.parameters,
                 weight_params=self.ansatz.parameters,
                 interpret=self._get_interpret(2),
