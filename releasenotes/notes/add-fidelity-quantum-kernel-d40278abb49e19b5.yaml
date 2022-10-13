@@ -30,8 +30,8 @@ features:
         :class:`~qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer` now accepts both
         quantum kernel implementations, the new one and the existing one.
 
-    The existing algorithms such as :class`~qiskit_machine_learning.algorithms.QSVC`,
-    :class`~qiskit_machine_learning.algorithms.QSVR` and other kernel-based algorithms are updated
+    The existing algorithms such as :class:`~qiskit_machine_learning.algorithms.QSVC`,
+    :class:`~qiskit_machine_learning.algorithms.QSVR` and other kernel-based algorithms are updated
     to accept both implementation.
 
     For example a QSVM classifier can be trained as follows:
