@@ -80,15 +80,15 @@ class QuantumKernel(TrainableKernel, BaseKernel):
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
                duplicate samples are found. Possible values are:
 
-                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
-                        ones when training. This may introduce additional noise in the matrix.
-                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
-                        elements are fully evaluated, e.g., for two identical samples in the
-                        dataset. When inferring, all elements are evaluated. This is the default
-                        value.
-                    - ``none`` when training the diagonal is set to `1` and if two identical samples
-                        are found in the dataset the corresponding matrix element is set to `1`.
-                        When inferring, matrix elements for identical samples are set to `1`.
+               - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
+                 ones when training. This may introduce additional noise in the matrix.
+               - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                 elements are fully evaluated, e.g., for two identical samples in the
+                 dataset. When inferring, all elements are evaluated. This is the default
+                 value.
+               - ``none`` when training the diagonal is set to `1` and if two identical samples
+                 are found in the dataset the corresponding matrix element is set to `1`.
+                 When inferring, matrix elements for identical samples are set to `1`.
 
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
