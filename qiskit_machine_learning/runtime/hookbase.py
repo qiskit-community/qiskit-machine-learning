@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,10 +13,13 @@
 """HookBase for the Torch Runtime"""
 
 from typing import Optional, Any
+from qiskit_machine_learning.deprecation import warn_deprecated, DeprecatedType
 
 
 class HookBase:
-    """A base class for hooks that is a set of callback functions used in the training process.
+    """Deprecation: HookBase.
+
+    A base class for hooks that is a set of callback functions used in the training process.
     Users can implement their own hook class from this base class.
     It will be sent to the sever side and will be executed during the training process on the server
     side. All its dependencies must be coded in the class including import statements.
@@ -26,6 +29,13 @@ class HookBase:
     """
 
     def __init__(self):
+        warn_deprecated(
+            "0.5.0",
+            old_type=DeprecatedType.CLASS,
+            old_name="HookBase",
+            additional_msg=". You should use QiskitRuntimeService to leverage primitives and runtimes",
+            stack_level=3,
+        )
         self._trainer: Optional["TorchTrainer"] = None
 
     @property

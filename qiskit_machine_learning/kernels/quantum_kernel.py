@@ -78,15 +78,15 @@ class QuantumKernel:
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
                duplicate samples are found. Possible values are:
 
-                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
-                        ones when training. This may introduce additional noise in the matrix.
-                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
-                        elements are fully evaluated, e.g., for two identical samples in the
-                        dataset. When inferring, all elements are evaluated. This is the default
-                        value.
-                    - ``none`` when training the diagonal is set to `1` and if two identical samples
-                        are found in the dataset the corresponding matrix element is set to `1`.
-                        When inferring, matrix elements for identical samples are set to `1`.
+               - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
+                 ones when training. This may introduce additional noise in the matrix.
+               - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                 elements are fully evaluated, e.g., for two identical samples in the
+                 dataset. When inferring, all elements are evaluated. This is the default
+                 value.
+               - ``none`` when training the diagonal is set to `1` and if two identical samples
+                 are found in the dataset the corresponding matrix element is set to `1`.
+                 When inferring, matrix elements for identical samples are set to `1`.
 
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
@@ -302,13 +302,13 @@ class QuantumKernel:
 
         return unbound_training_params
 
-    @property  # type: ignore
+    @property
     @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """[Deprecated property]Return the vector of training parameters."""
         return self.training_parameters
 
-    @user_parameters.setter  # type: ignore
+    @user_parameters.setter
     @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
         """[Deprecated property setter]Set the training parameters"""
@@ -325,7 +325,7 @@ class QuantumKernel:
         """
         self.assign_training_parameters(values)
 
-    @property  # type: ignore
+    @property
     @deprecate_property("0.5.0", new_name="training_parameter_binds")
     def user_param_binds(self) -> Mapping[Parameter, float] | None:
         """
