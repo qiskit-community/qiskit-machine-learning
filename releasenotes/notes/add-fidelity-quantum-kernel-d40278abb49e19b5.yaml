@@ -32,7 +32,7 @@ features:
 
     The existing algorithms such as :class:`~qiskit_machine_learning.algorithms.QSVC`,
     :class:`~qiskit_machine_learning.algorithms.QSVR` and other kernel-based algorithms are updated
-    to accept both implementation.
+    to accept both implementations.
 
     For example a QSVM classifier can be trained as follows:
 
