@@ -6,6 +6,7 @@ ansatz
 ansatzes
 args
 asmatrix
+async
 autograd
 autosummary
 backend
@@ -62,6 +63,7 @@ et
 eval
 expressibility
 farrokh
+fidelities
 formatter
 func
 gambetta
