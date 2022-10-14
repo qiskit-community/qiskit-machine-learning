@@ -18,26 +18,36 @@ import itertools
 import unittest
 import numpy as np
 
-from ddt import ddt, idata, unpack
+from ddt import ddt, idata
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.primitives import Sampler
-from qiskit.algorithms.gradients import ParamShiftSamplerGradient
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.utils import algorithm_globals
 
-from qiskit_machine_learning.neural_networks import CircuitQNN
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
 import qiskit_machine_learning.optionals as _optionals
 
-algorithm_globals.random_seed = 42
+if _optionals.HAS_SPARSE:
+    # pylint: disable=import-error
+    from sparse import SparseArray
+else:
+
+    class SparseArray:  # type: ignore
+        """Empty SparseArray class
+        Replacement if sparse.SparseArray is not present.
+        """
+
+        pass
+
 
 DEFAULT = "default"
 SHOTS = "shots"
 SPARSE = [True, False]
 SAMPLERS = [DEFAULT, SHOTS]
-INTERPRET_TYPES = [2]
-BATCH_SIZES = [1, 2]
+INTERPRET_TYPES = [0, 1, 2]
+BATCH_SIZES = [2]
+INPUT_GRADS = [True, False]
 
 
 @ddt
@@ -47,10 +57,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 12345
-
-        # # define test circuit
-        # num_qubits = 3
-        # self.qc = RealAmplitudes(num_qubits, entanglement="linear", reps=1)
 
         # define feature map and ansatz
         num_qubits = 2
@@ -84,9 +90,13 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # define sampler primitives
         self.sampler = Sampler()
-        self.sampler_shots = Sampler(options={"shots": 100})
+        self.sampler_shots = Sampler(options={"shots": 100, "seed": 42})
 
-    def _get_qnn(self, sparse, sampler_type, interpret_id):
+        self.array_type = {True: SparseArray, False: np.ndarray}
+
+    def _get_qnn(
+        self, sparse, sampler_type, interpret_id, input_params, weight_params, input_grads
+    ):
         """Construct QNN from configuration."""
 
         # get quantum instance
@@ -111,73 +121,103 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         qnn = SamplerQNN(
             sampler=sampler,
             circuit=self.qc,
-            input_params=self.input_params,
-            weight_params=self.weight_params,
+            input_params=input_params,
+            weight_params=weight_params,
             sparse=sparse,
             interpret=interpret,
             output_shape=output_shape,
+            input_gradients=input_grads,
         )
         return qnn
 
     def _verify_qnn(
-        self,
-        qnn: CircuitQNN,
-        batch_size: int,
+        self, qnn: SamplerQNN, batch_size: int, input_data: np.ndarray, weights: np.ndarray
     ) -> None:
         """
         Verifies that a QNN functions correctly
         """
-        # pylint: disable=import-error
-        from sparse import SparseArray
-
-        input_data = np.zeros((batch_size, qnn.num_inputs))
-        weights = np.zeros(qnn.num_weights)
-
         # evaluate QNN forward pass
         result = qnn.forward(input_data, weights)
 
-        # make sure forward result is sparse if it should be
-        if qnn.sparse:
-            self.assertTrue(isinstance(result, SparseArray))
-        else:
-            self.assertTrue(isinstance(result, np.ndarray))
+        if input_data is None:
+            batch_size = 1
 
+        self.assertTrue(isinstance(result, self.array_type[qnn.sparse]))
         # check forward result shape
         self.assertEqual(result.shape, (batch_size, *qnn.output_shape))
 
         # evaluate QNN backward pass
         input_grad, weights_grad = qnn.backward(input_data, weights)
 
-        # verify that input gradients are None if turned off
-        self.assertIsNone(input_grad)
-        self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
+        if qnn.input_gradients:
+            if input_data is not None:
+                self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
+                self.assertTrue(isinstance(input_grad, self.array_type[qnn.sparse]))
+            else:
+                # verify that input gradients are None if turned off
+                self.assertIsNone(input_grad)
+            if weights is not None:
+                self.assertEqual(
+                    weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
+                )
+                self.assertTrue(isinstance(weights_grad, self.array_type[qnn.sparse]))
+            else:
+                # verify that input gradients are None if turned off
+                self.assertIsNone(weights_grad)
 
-        if qnn.sparse:
-            self.assertTrue(isinstance(weights_grad, SparseArray))
         else:
-            self.assertTrue(isinstance(weights_grad, np.ndarray))
-
-        # verify that input gradients are not None if turned on
-        qnn.input_gradients = True
-        input_grad, weights_grad = qnn.backward(input_data, weights)
-
-        self.assertEqual(input_grad.shape, (batch_size, *qnn.output_shape, qnn.num_inputs))
-        self.assertEqual(weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights))
-
-        if qnn.sparse:
-            self.assertTrue(isinstance(weights_grad, SparseArray))
-            self.assertTrue(isinstance(input_grad, SparseArray))
-        else:
-            self.assertTrue(isinstance(weights_grad, np.ndarray))
-            self.assertTrue(isinstance(input_grad, np.ndarray))
+            # verify that input gradients are None if turned off
+            self.assertIsNone(input_grad)
+            if weights is not None:
+                self.assertEqual(
+                    weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
+                )
+                self.assertTrue(isinstance(weights_grad, self.array_type[qnn.sparse]))
 
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
-    @idata(itertools.product(SPARSE, SAMPLERS, INTERPRET_TYPES, BATCH_SIZES))
-    @unpack
-    def test_sampler_qnn(self, sparse: bool, sampler_type, interpret_type, batch_size):
+    @idata(itertools.product(SPARSE, SAMPLERS, INTERPRET_TYPES, BATCH_SIZES, INPUT_GRADS))
+    def test_sampler_qnn(self, config):
         """Sampler QNN Test."""
-        qnn = self._get_qnn(sparse, sampler_type, interpret_type)
-        self._verify_qnn(qnn, batch_size)
+
+        sparse, sampler_type, interpret_type, batch_size, input_grads = config
+        # Test QNN with input and weight params
+        qnn = self._get_qnn(
+            sparse,
+            sampler_type,
+            interpret_type,
+            input_params=self.input_params,
+            weight_params=self.weight_params,
+            input_grads=True,
+        )
+        input_data = np.zeros((batch_size, qnn.num_inputs))
+        weights = np.zeros(qnn.num_weights)
+        self._verify_qnn(qnn, batch_size, input_data, weights)
+
+        # Test QNN with no input params
+        qnn = self._get_qnn(
+            sparse,
+            sampler_type,
+            interpret_type,
+            input_params=None,
+            weight_params=self.weight_params + self.input_params,
+            input_grads=input_grads,
+        )
+        input_data = None
+        weights = np.zeros(qnn.num_weights)
+        self._verify_qnn(qnn, batch_size, input_data, weights)
+
+        # Test QNN with no weight params
+        qnn = self._get_qnn(
+            sparse,
+            sampler_type,
+            interpret_type,
+            input_params=self.weight_params + self.input_params,
+            weight_params=None,
+            input_grads=input_grads,
+        )
+        input_data = np.zeros((batch_size, qnn.num_inputs))
+        weights = None
+        self._verify_qnn(qnn, batch_size, input_data, weights)
 
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
     @idata(itertools.product(SPARSE, INTERPRET_TYPES, BATCH_SIZES))
@@ -188,10 +228,15 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         sparse, interpret_id, batch_size = config
 
         # get QNN
-        qnn = self._get_qnn(sparse, DEFAULT, interpret_id)
+        qnn = self._get_qnn(
+            sparse,
+            DEFAULT,
+            interpret_id,
+            input_params=self.input_params,
+            weight_params=self.weight_params,
+            input_grads=True,
+        )
 
-        # set input gradients to True
-        qnn.input_gradients = True
         input_data = np.ones((batch_size, qnn.num_inputs))
         weights = np.ones(qnn.num_weights)
         input_grad, weights_grad = qnn.backward(input_data, weights)
@@ -227,53 +272,3 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             ].reshape(grad.shape)
             diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
-
-    def test_circuit_vs_sampler_qnn(self):
-        """Circuit vs Sampler QNN Test. To be removed once CircuitQNN is deprecated"""
-        from qiskit.opflow import Gradient
-        import importlib
-
-        aer = importlib.import_module("qiskit.providers.aer")
-
-        parity = lambda x: f"{x:b}".count("1") % 2
-        output_shape = 2  # this is required in case of a callable with dense output
-
-        qi_qasm = QuantumInstance(
-            aer.AerSimulator(),
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-
-        circuit_qnn = CircuitQNN(
-            self.qc,
-            input_params=self.qc.parameters[:3],
-            weight_params=self.qc.parameters[3:],
-            sparse=False,
-            interpret=parity,
-            output_shape=output_shape,
-            quantum_instance=qi_qasm,
-            gradient=Gradient("param_shift"),
-            input_gradients=True,
-        )
-
-        sampler_qnn = SamplerQNN(
-            sampler=self.sampler,
-            circuit=self.qc,
-            input_params=self.qc.parameters[:3],
-            weight_params=self.qc.parameters[3:],
-            interpret=parity,
-            output_shape=output_shape,
-            gradient=ParamShiftSamplerGradient(self.sampler),
-            input_gradients=True,
-        )
-
-        inputs = np.asarray(algorithm_globals.random.random(size=(1, circuit_qnn._num_inputs)))
-        weights = algorithm_globals.random.random(circuit_qnn._num_weights)
-
-        circuit_qnn_fwd = circuit_qnn.backward(inputs, weights)
-        sampler_qnn_fwd = sampler_qnn.backward(inputs, weights)
-
-        np.testing.assert_array_almost_equal(
-            np.asarray(sampler_qnn_fwd), np.asarray(circuit_qnn_fwd), 0.1
-        )

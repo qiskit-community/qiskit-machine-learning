@@ -48,8 +48,6 @@ class VQC(NeuralNetworkClassifier):
 
     def __init__(
         self,
-        *,
-        sampler: BaseSampler = None,
         num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
@@ -59,6 +57,8 @@ class VQC(NeuralNetworkClassifier):
         quantum_instance: QuantumInstance | Backend | None = None,
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
+        *,
+        sampler: BaseSampler = None,
     ) -> None:
         """
         Args:
@@ -85,6 +85,7 @@ class VQC(NeuralNetworkClassifier):
                 On each iteration an optimizer invokes the callback and passes current weights
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
+            sampler: The sampler primitive used to compute neural network's results.
         Raises:
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
@@ -105,18 +106,7 @@ class VQC(NeuralNetworkClassifier):
 
         # needed for mypy
         neural_network: SamplerQNN | CircuitQNN = None
-        if sampler is None:
-            # construct circuit QNN
-            neural_network = CircuitQNN(
-                self._circuit,
-                input_params=self.feature_map.parameters,
-                weight_params=self.ansatz.parameters,
-                interpret=self._get_interpret(2),
-                output_shape=2,
-                quantum_instance=quantum_instance,
-                input_gradients=False,
-            )
-        else:
+        if quantum_instance is not None:
             # construct sampler QNN
             neural_network = SamplerQNN(
                 sampler=sampler,
@@ -125,6 +115,17 @@ class VQC(NeuralNetworkClassifier):
                 weight_params=self.ansatz.parameters,
                 interpret=self._get_interpret(2),
                 output_shape=2,
+                input_gradients=False,
+            )
+        else:
+            # construct circuit QNN
+            neural_network = CircuitQNN(
+                self._circuit,
+                input_params=self.feature_map.parameters,
+                weight_params=self.ansatz.parameters,
+                interpret=self._get_interpret(2),
+                output_shape=2,
+                quantum_instance=quantum_instance,
                 input_gradients=False,
             )
 
@@ -174,7 +175,7 @@ class VQC(NeuralNetworkClassifier):
 
         if isinstance(self._neural_network, SamplerQNN):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
-        else:
+        elif isinstance(self._neural_network, CircuitQNN):
             cast(CircuitQNN, self._neural_network).set_interpret(
                 self._get_interpret(num_classes), num_classes
             )

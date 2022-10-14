@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,7 +25,7 @@ from qiskit.algorithms.gradients import (
     SamplerGradientResult,
 )
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import BaseSampler, SamplerResult
+from qiskit.primitives import BaseSampler, SamplerResult, Sampler
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 import qiskit_machine_learning.optionals as _optionals
 
@@ -53,8 +53,8 @@ class SamplerQNN(NeuralNetwork):
     def __init__(
         self,
         *,
-        sampler: BaseSampler,
-        circuit: QuantumCircuit,
+        sampler: BaseSampler | None = None,
+        circuit: QuantumCircuit | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         sparse: bool = False,
@@ -82,19 +82,27 @@ class SamplerQNN(NeuralNetwork):
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
-        # set primitive
+        # set primitive, provide default
+        if sampler is None:
+            sampler = Sampler()
         self.sampler = sampler
 
         # set gradient
-        # TODO: provide default gradient?
-        self.gradient = gradient or ParamShiftSamplerGradient(self.sampler)
+        if gradient is None:
+            gradient = ParamShiftSamplerGradient(self.sampler)
+        self.gradient = gradient
 
         self._circuit = circuit.copy()
         if len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
-        self._input_params = list(input_params or [])
-        self._weight_params = list(weight_params or [])
+        if input_params is None:
+            input_params = []
+        self._input_params = list(input_params)
+
+        if weight_params is None:
+            weight_params = []
+        self._weight_params = list(weight_params)
 
         if sparse:
             _optionals.HAS_SPARSE.require_now("DOK")
@@ -106,11 +114,11 @@ class SamplerQNN(NeuralNetwork):
         # TODO: look into custom transpilation
 
         super().__init__(
-            len(self._input_params),
-            len(self._weight_params),
-            sparse,
-            self._output_shape,
-            self._input_gradients,
+            num_inputs=len(self._input_params),
+            num_weights=len(self._weight_params),
+            sparse=sparse,
+            output_shape=self._output_shape,
+            input_gradients=self._input_gradients,
         )
 
     @property
@@ -119,12 +127,12 @@ class SamplerQNN(NeuralNetwork):
         return self._circuit
 
     @property
-    def input_params(self) -> Sequence:
+    def input_params(self) -> Sequence[Parameter]:
         """Returns the list of input parameters."""
         return self._input_params
 
     @property
-    def weight_params(self) -> Sequence:
+    def weight_params(self) -> Sequence[Parameter]:
         """Returns the list of trainable weights parameters."""
         return self._weight_params
 
@@ -186,28 +194,39 @@ class SamplerQNN(NeuralNetwork):
 
     def _preprocess(
         self,
-        input_data: list[float] | np.ndarray | float,
-        weights: list[float] | np.ndarray | float,
-    ) -> tuple[np.ndarray, int]:
+        input_data: np.ndarray | None,
+        weights: np.ndarray | None,
+    ) -> tuple[np.ndarray | None, int | None]:
         """
         Pre-processing during forward pass of the network.
         """
 
-        np_input_data: np.ndarray = np.asarray(input_data)
-        np_weights: np.ndarray = np.asarray(weights)
-        if len(np_input_data.shape) == 1:
-            np_input_data = np.expand_dims(np_input_data, 0)
-
-        num_samples = max(np_input_data.shape[0], 1)
-        np_weights = np.broadcast_to(np_weights, (num_samples, len(np_weights)))
-        parameters = np.concatenate((np_input_data, np_weights), axis=1)
+        if input_data is not None:
+            num_samples = input_data.shape[0]
+            if weights is not None:
+                weights = np.broadcast_to(weights, (num_samples, len(weights)))
+                parameters = np.concatenate((input_data, weights), axis=1)
+            else:
+                parameters = input_data
+        else:
+            if weights is not None:
+                num_samples = 1
+                parameters = np.broadcast_to(weights, (num_samples, len(weights)))
+            else:
+                return None, None
 
         return parameters, num_samples
 
-    def _postprocess(self, num_samples: int, result: SamplerResult) -> np.ndarray:
+    def _postprocess(
+        self, num_samples: int | None, result: SamplerResult | None
+    ) -> np.ndarray | SparseArray | None:
         """
         Post-processing during forward pass of the network.
         """
+
+        if result is None:
+            return None
+
         if self._sparse:
             # pylint: disable=import-error
             from sparse import DOK
@@ -233,30 +252,15 @@ class SamplerQNN(NeuralNetwork):
         else:
             return prob
 
-    def _forward(
-        self,
-        input_data: list[float] | np.ndarray | float,
-        weights: list[float] | np.ndarray | float,
-    ) -> np.ndarray | SparseArray:
-        """
-        Forward pass of the network.
-        """
-        parameter_values, num_samples = self._preprocess(input_data, weights)
-
-        # sampler allows batching
-        job = self.sampler.run([self._circuit] * num_samples, parameter_values)
-        results = job.result()
-
-        result = self._postprocess(num_samples, results)
-
-        return result
-
     def _postprocess_gradient(
-        self, num_samples: int, results: SamplerGradientResult
-    ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray]:
+        self, num_samples: int | None, results: SamplerGradientResult | None
+    ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray | None]:
         """
         Post-processing during backward pass of the network.
         """
+        if num_samples is None or results is None:
+            return None, None
+
         if self._sparse:
             # pylint: disable=import-error
             from sparse import DOK
@@ -268,6 +272,7 @@ class SamplerQNN(NeuralNetwork):
             )
             weights_grad = DOK((num_samples, *self._output_shape, self._num_weights))
         else:
+
             input_grad = (
                 np.zeros((num_samples, *self._output_shape, self._num_inputs))
                 if self._input_gradients
@@ -283,14 +288,13 @@ class SamplerQNN(NeuralNetwork):
         for sample in range(num_samples):
             for i in range(num_grad_vars):
                 grad = results.gradients[sample][i]
-
-                for k in grad.keys():
-                    val = results.gradients[sample][i][k]
+                for k, val in grad.items():
                     # get index for input or weights gradients
                     if self._input_gradients:
                         grad_index = i if i < self._num_inputs else i - self._num_inputs
                     else:
                         grad_index = i
+
                     # interpret integer and construct key
                     key = self._interpret(k)
                     if isinstance(key, Integral):
@@ -317,26 +321,53 @@ class SamplerQNN(NeuralNetwork):
 
         return input_grad, weights_grad
 
+    def _forward(
+        self,
+        input_data: np.ndarray | None,
+        weights: np.ndarray | None,
+    ) -> np.ndarray | SparseArray | None:
+        """
+        Forward pass of the network.
+        """
+        parameter_values, num_samples = self._preprocess(input_data, weights)
+
+        if num_samples is not None and np.prod(parameter_values.shape) > 0:
+            # sampler allows batching
+            job = self.sampler.run([self._circuit] * num_samples, parameter_values)
+            results = job.result()
+        else:
+            results = None
+
+        result = self._postprocess(num_samples, results)
+
+        return result
+
     def _backward(
         self,
-        input_data: list[float] | np.ndarray | float,
-        weights: list[float] | np.ndarray | float,
-    ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray]:
+        input_data: np.ndarray | None,
+        weights: np.ndarray | None,
+    ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray | None]:
 
         """Backward pass of the network."""
         # prepare parameters in the required format
         parameter_values, num_samples = self._preprocess(input_data, weights)
 
-        if self._input_gradients:
-            job = self.gradient.run([self._circuit] * num_samples, parameter_values)
+        if num_samples is not None and np.prod(parameter_values.shape) > 0:
+            if self._input_gradients:
+                job = self.gradient.run([self._circuit] * num_samples, parameter_values)
+                results = job.result()
+            else:
+                if len(parameter_values[0]) is not self._num_inputs:
+                    job = self.gradient.run(
+                        [self._circuit] * num_samples,
+                        parameter_values,
+                        parameters=[self._circuit.parameters[self._num_inputs :]] * num_samples,
+                    )
+                    results = job.result()
+                else:
+                    results = None
         else:
-            job = self.gradient.run(
-                [self._circuit] * num_samples,
-                parameter_values,
-                parameters=[self._circuit.parameters[self._num_inputs :]] * num_samples,
-            )
-
-        results = job.result()
+            results = None
 
         input_grad, weights_grad = self._postprocess_gradient(num_samples, results)
 
