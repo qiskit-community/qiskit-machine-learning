@@ -12,6 +12,7 @@
 """ Test TrainableQuantumKernel using primitives """
 
 import unittest
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
@@ -19,6 +20,7 @@ from ddt import ddt, data
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
 
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
 
 
@@ -33,6 +35,7 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         circ1 = ZZFeatureMap(3)
         circ2 = ZZFeatureMap(3, parameter_prefix="θ")
         self.feature_map = circ1.compose(circ2).compose(circ1)
+        self.num_features = circ1.num_parameters
         self.training_parameters = circ2.parameters
 
         self.sample_train = np.array(
@@ -151,6 +154,31 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         if params == "params_1":
             return np.array([[0.00569059], [0.07038205]])
         return np.array([[0.10568674], [0.122404]])
+
+    def test_incomplete_binding(self):
+        """Test if an exception is raised when not all training parameter are bound."""
+        # assign all parameters except the last one
+        training_params = {
+            self.training_parameters[i]: 0 for i in range(len(self.training_parameters) - 1)
+        }
+
+        kernel = TrainableFidelityQuantumKernel(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        kernel.assign_training_parameters(training_params)
+        with self.assertRaises(QiskitMachineLearningError):
+            kernel.evaluate(self.sample_train)
+
+    def test_properties(self):
+        """Test properties of the trainable quantum kernel."""
+        kernel = TrainableFidelityQuantumKernel(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+        self.assertEqual(len(self.training_parameters), kernel.num_training_parameters)
+        self.assertEqual(self.num_features, kernel.num_features)
 
 
 if __name__ == "__main__":

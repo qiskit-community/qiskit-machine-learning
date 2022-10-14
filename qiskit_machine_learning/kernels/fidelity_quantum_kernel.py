@@ -266,3 +266,14 @@ class FidelityQuantumKernel(BaseKernel):
 
         # otherwise evaluate
         return False
+
+    @property
+    def fidelity(self):
+        """Returns the fidelity primitive used by this kernel."""
+        return self._fidelity
+
+    @property
+    def evaluate_duplicates(self):
+        """Returns the strategy used by this kernel to evaluate kernel matrix elements if duplicate
+        samples are found."""
+        return self._evaluate_duplicates

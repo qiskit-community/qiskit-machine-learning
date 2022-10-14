@@ -28,6 +28,7 @@ from qiskit.algorithms.state_fidelities import (
     BaseStateFidelity,
     StateFidelityResult,
 )
+from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
@@ -284,6 +285,64 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             eigen_values = np.linalg.eigvals(matrix)
             # all eigenvalues are non-negative with some tolerance
             self.assertTrue(np.all(np.greater_equal(eigen_values, -1e-10)))
+
+    def test_validate_input(self):
+        """Test validation of input data in the base (abstract) class."""
+        with self.subTest("Incorrect size of x_vec"):
+            kernel = FidelityQuantumKernel()
+
+            x_vec = np.asarray([[[0]]])
+            self.assertRaises(ValueError, kernel.evaluate, x_vec)
+
+            x_vec = np.asarray([])
+            self.assertRaises(ValueError, kernel.evaluate, x_vec)
+
+        with self.subTest("Adjust the number of qubits in the feature map"):
+            kernel = FidelityQuantumKernel()
+
+            x_vec = np.asarray([[1, 2, 3]])
+            kernel.evaluate(x_vec)
+            self.assertEqual(kernel.feature_map.num_qubits, 3)
+
+        with self.subTest("Fail to adjust the number of qubits in the feature map"):
+            qc = QuantumCircuit(1)
+            kernel = FidelityQuantumKernel(feature_map=qc)
+
+            x_vec = np.asarray([[1, 2]])
+            self.assertRaises(ValueError, kernel.evaluate, x_vec)
+
+        with self.subTest("Incorrect size of y_vec"):
+            kernel = FidelityQuantumKernel()
+
+            x_vec = np.asarray([[1, 2]])
+            y_vec = np.asarray([[[0]]])
+            self.assertRaises(ValueError, kernel.evaluate, x_vec, y_vec)
+
+            x_vec = np.asarray([[1, 2]])
+            y_vec = np.asarray([])
+            self.assertRaises(ValueError, kernel.evaluate, x_vec, y_vec)
+
+        with self.subTest("Fail when x_vec and y_vec have different shapes"):
+            kernel = FidelityQuantumKernel()
+
+            x_vec = np.asarray([[1, 2]])
+            y_vec = np.asarray([[1, 2, 3]])
+            self.assertRaises(ValueError, kernel.evaluate, x_vec, y_vec)
+
+    def test_properties(self):
+        """Test properties of the base (abstract) class and fidelity based kernel."""
+        qc = QuantumCircuit(1)
+        qc.ry(Parameter("w"), 0)
+        fidelity = ComputeUncompute(sampler=Sampler())
+        kernel = FidelityQuantumKernel(
+            feature_map=qc, fidelity=fidelity, enforce_psd=False, evaluate_duplicates="none"
+        )
+
+        self.assertEqual(qc, kernel.feature_map)
+        self.assertEqual(fidelity, kernel.fidelity)
+        self.assertEqual(False, kernel.enforce_psd)
+        self.assertEqual("none", kernel.evaluate_duplicates)
+        self.assertEqual(1, kernel.num_features)
 
 
 @ddt
