@@ -157,18 +157,6 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 1)
 
-    def test_wrong_parameters(self):
-        """Tests PegasosQSVC with incorrect constructor parameter values."""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
-
-        with self.subTest("Both kernel and precomputed are passed"):
-            self.assertRaises(ValueError, PegasosQSVC, quantum_kernel=qkernel, precomputed=True)
-
-        with self.subTest("Incorrect quantum kernel value is passed"):
-            self.assertRaises(TypeError, PegasosQSVC, quantum_kernel=1)
-
     def test_labels(self):
         """Test PegasosQSVC with different integer labels than {0, 1}"""
         qkernel = QuantumKernel(
@@ -218,9 +206,11 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             with self.assertRaises(ValueError):
                 _ = PegasosQSVC(quantum_kernel=qkernel, precomputed=True)
 
-        with self.subTest("PegasosQSVC with wrong type of kernel"):
-            with self.assertRaises(TypeError):
-                _ = PegasosQSVC(quantum_kernel=object())
+        with self.subTest("Both kernel and precomputed are passed"):
+            qkernel = QuantumKernel(
+                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
+            )
+            self.assertRaises(ValueError, PegasosQSVC, quantum_kernel=qkernel, precomputed=True)
 
     def test_change_kernel_types(self):
         """Test PegasosQSVC with a precomputed kernel matrix"""
