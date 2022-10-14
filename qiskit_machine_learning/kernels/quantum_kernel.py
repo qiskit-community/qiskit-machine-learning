@@ -31,10 +31,12 @@ from qiskit_machine_learning.deprecation import (
     deprecate_method,
     deprecate_property,
 )
+from .trainable_kernel import TrainableKernel
+from .base_kernel import BaseKernel
 from ..exceptions import QiskitMachineLearningError
 
 
-class QuantumKernel:
+class QuantumKernel(TrainableKernel, BaseKernel):
     r"""Quantum Kernel.
 
     The general task of machine learning is to find and study patterns in data. For many
@@ -91,6 +93,7 @@ class QuantumKernel:
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
+        super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
         # Class fields
         self._feature_map: QuantumCircuit | None = None  # type is required by mypy
         self._unbound_feature_map = None
@@ -163,13 +166,14 @@ class QuantumKernel:
         self._training_parameters = copy.deepcopy(training_params)
 
     def assign_training_parameters(
-        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
+        self,
+        parameter_values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType],
     ) -> None:
         """
-        Assign training parameters in the ``QuantumKernel`` feature map.
+        Assign training parameters in the quantum kernel's feature map.
 
         Args:
-            values (dict or iterable): Either a dictionary or iterable specifying the new
+            parameter_values (dict or iterable): Either a dictionary or iterable specifying the new
             parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
             ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
             numeric value. If an iterable, the elements are assigned to the existing parameters
@@ -179,11 +183,12 @@ class QuantumKernel:
             ValueError: Incompatible number of training parameters and values
 
         """
+        values = parameter_values
         if self._training_parameters is None:
             raise ValueError(
                 f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of training parameters tracked by the QuantumKernel
+                match the number of training parameters tracked by the quantum kernel
                 (None).
                 """
             )
@@ -199,7 +204,7 @@ class QuantumKernel:
                 raise ValueError(
                     f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of training parameters tracked by the QuantumKernel
+                match the number of training parameters tracked by the quantum kernel
                 ({len(self._training_parameters)}).
                 """
                 )
