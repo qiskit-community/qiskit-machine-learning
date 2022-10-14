@@ -18,17 +18,13 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-
+from qiskit.circuit.library import ZFeatureMap
+from qiskit.utils import algorithm_globals
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler
 
-from qiskit import BasicAer
-from qiskit.circuit.library import ZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import PegasosQSVC, SerializableModelMixin
-
-from qiskit_machine_learning.kernels import QuantumKernel, FidelityQuantumKernel
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 
 class TestPegasosQSVC(QiskitMachineLearningTestCase):
@@ -38,13 +34,6 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         super().setUp()
 
         algorithm_globals.random_seed = 10598
-
-        self.statevector_simulator = QuantumInstance(
-            BasicAer.get_backend("statevector_simulator"),
-            shots=1,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
 
         # number of qubits is equal to the number of features
         self.q = 2
@@ -82,9 +71,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc(self):
         """Test PegasosQSVC"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -95,9 +82,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_decision_function(self):
         """Test PegasosQSVC."""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -108,9 +93,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc_4d(self):
         """Test PegasosQSVC with 4-dimensional input data"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map_4d, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map_4d)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -120,9 +103,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_precomputed_kernel(self):
         """Test PegasosQSVC with a precomputed kernel matrix"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
 
@@ -136,19 +117,9 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 1.0)
 
-    def test_empty_kernel(self):
-        """Test PegasosQSVC with empty QuantumKernel"""
-        qkernel = QuantumKernel()
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
-
-        with self.assertRaises(QiskitMachineLearningError):
-            pegasos_qsvc.fit(self.sample_train, self.label_train)
-
     def test_change_kernel(self):
         """Test QSVC with QuantumKernel later"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau)
         pegasos_qsvc.quantum_kernel = qkernel
@@ -159,9 +130,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_labels(self):
         """Test PegasosQSVC with different integer labels than {0, 1}"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
 
@@ -187,11 +156,9 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             self.assertEqual(pegasos_qsvc.num_steps, 1000)
 
         with self.subTest("PegasosQSVC with QuantumKernel"):
-            qkernel = QuantumKernel(
-                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-            )
+            qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
             pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel)
-            self.assertIsInstance(pegasos_qsvc.quantum_kernel, QuantumKernel)
+            self.assertIsInstance(pegasos_qsvc.quantum_kernel, FidelityQuantumKernel)
             self.assertFalse(pegasos_qsvc.precomputed)
 
         with self.subTest("PegasosQSVC with precomputed kernel"):
@@ -200,23 +167,17 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
             self.assertTrue(pegasos_qsvc.precomputed)
 
         with self.subTest("PegasosQSVC with wrong parameters"):
-            qkernel = QuantumKernel(
-                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-            )
+            qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
             with self.assertRaises(ValueError):
                 _ = PegasosQSVC(quantum_kernel=qkernel, precomputed=True)
 
         with self.subTest("Both kernel and precomputed are passed"):
-            qkernel = QuantumKernel(
-                feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-            )
+            qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
             self.assertRaises(ValueError, PegasosQSVC, quantum_kernel=qkernel, precomputed=True)
 
     def test_change_kernel_types(self):
         """Test PegasosQSVC with a precomputed kernel matrix"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, precomputed=True)
 
@@ -225,9 +186,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         pegasos_qsvc.fit(kernel_matrix_train, self.label_train)
 
         # now train the same instance, but with a new quantum kernel
-        pegasos_qsvc.quantum_kernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        pegasos_qsvc.quantum_kernel = FidelityQuantumKernel(feature_map=self.feature_map)
         pegasos_qsvc.fit(self.sample_train, self.label_train)
         score = pegasos_qsvc.score(self.sample_test, self.label_test)
 
@@ -238,9 +197,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
         labels = np.array([0, 0, 1, 1])
 
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         regressor = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
         regressor.fit(features, labels)
