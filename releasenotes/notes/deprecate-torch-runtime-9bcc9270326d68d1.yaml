@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    Classes :class:`qiskit_machine_learning.runtime.TorchRuntimeClient`,
+    :class:`qiskit_machine_learning.runtime.TorchRuntimeResult`,
+    :class:`qiskit_machine_learning.runtime.HookBase` and functions
+    :func:`qiskit_machine_learning.runtime.str_to_obj`,
+    :func:`qiskit_machine_learning.runtime.obj_to_str`
+    are being deprecated.
+    You should use `QiskitRuntimeService` to leverage primitives and runtimes.
