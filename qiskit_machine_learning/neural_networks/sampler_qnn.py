@@ -48,7 +48,20 @@ logger = logging.getLogger(__name__)
 
 
 class SamplerQNN(NeuralNetwork):
-    """A Neural Network implementation based on the Sampler primitive."""
+    """A Neural Network implementation based on the Sampler primitive.
+
+    The ``Sampler QNN`` is a neural network that takes in a parametrized quantum circuit
+    with the combined network's feature map (input parameters) and ansatz (weight parameters)
+    and outputs its measurements for the forward and backward passes.
+    The output can be set up in different formats, and an optional post-processing step
+    can be used to interpret the sampler's output in a particular context (e.g. mapping the
+    resulting bitstring to match the number of classes).
+
+    Attributes:
+
+        sampler (BaseSampler): The sampler primitive used to compute the neural network's results.
+        gradient (BaseSamplerGradient): An optional sampler gradient to be used for the backward pass.
+    """
 
     def __init__(
         self,
@@ -65,7 +78,7 @@ class SamplerQNN(NeuralNetwork):
     ):
         """
         Args:
-            sampler: The sampler primitive used to compute neural network's results.
+            sampler: The sampler primitive used to compute the neural network's results.
             circuit: The parametrized quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
@@ -108,10 +121,7 @@ class SamplerQNN(NeuralNetwork):
             _optionals.HAS_SPARSE.require_now("DOK")
 
         self.set_interpret(interpret, output_shape)
-
         self._input_gradients = input_gradients
-
-        # TODO: look into custom transpilation
 
         super().__init__(
             num_inputs=len(self._input_params),

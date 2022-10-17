@@ -12,7 +12,7 @@
 """An implementation of variational quantum classifier."""
 
 from __future__ import annotations
-from typing import Callable, cast
+from typing import Callable
 
 import numpy as np
 
@@ -107,18 +107,7 @@ class VQC(NeuralNetworkClassifier):
         # needed for mypy
         neural_network: SamplerQNN | CircuitQNN = None
         if quantum_instance is not None:
-            # construct sampler QNN
-            neural_network = SamplerQNN(
-                sampler=sampler,
-                circuit=self._circuit,
-                input_params=self.feature_map.parameters,
-                weight_params=self.ansatz.parameters,
-                interpret=self._get_interpret(2),
-                output_shape=2,
-                input_gradients=False,
-            )
-        else:
-            # construct circuit QNN
+            # construct circuit QNN only if qi is provided
             neural_network = CircuitQNN(
                 self._circuit,
                 input_params=self.feature_map.parameters,
@@ -126,6 +115,17 @@ class VQC(NeuralNetworkClassifier):
                 interpret=self._get_interpret(2),
                 output_shape=2,
                 quantum_instance=quantum_instance,
+                input_gradients=False,
+            )
+        else:
+            # construct sampler QNN by default
+            neural_network = SamplerQNN(
+                sampler=sampler,
+                circuit=self._circuit,
+                input_params=self.feature_map.parameters,
+                weight_params=self.ansatz.parameters,
+                interpret=self._get_interpret(2),
+                output_shape=2,
                 input_gradients=False,
             )
 
@@ -173,12 +173,11 @@ class VQC(NeuralNetworkClassifier):
         X, y = self._validate_input(X, y)
         num_classes = self._num_classes
 
+        # instance check required by mypy (alternative to cast)
         if isinstance(self._neural_network, SamplerQNN):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
         elif isinstance(self._neural_network, CircuitQNN):
-            cast(CircuitQNN, self._neural_network).set_interpret(
-                self._get_interpret(num_classes), num_classes
-            )
+            self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
 
         return super()._minimize(X, y)
 
