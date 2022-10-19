@@ -58,7 +58,7 @@ class VQC(NeuralNetworkClassifier):
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
-        sampler: BaseSampler = None,
+        sampler: BaseSampler | None = None,
     ) -> None:
         """
         Args:
