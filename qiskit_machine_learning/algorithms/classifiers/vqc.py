@@ -62,30 +62,37 @@ class VQC(NeuralNetworkClassifier):
     ) -> None:
         """
         Args:
-            num_qubits: The number of qubits for the underlying
-                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given,
-                the number of qubits is derived from the feature map or ansatz. If neither of those
-                is given, raises an exception. The number of qubits in the feature map and ansatz
-                are adjusted to this number if required.
+            num_qubits: The number of qubits for the underlying QNN.
+                If ``None`` is given, the number of qubits is derived from the
+                feature map or ansatz. If neither of those is given, raises an exception.
+                The number of qubits in the feature map and ansatz are adjusted to this
+                number if required.
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
-                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given,
-                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For a single
-                qubit classification problem the ``ZFeatureMap`` is used per default.
+                QNN. If ``None`` is given, the ``ZZFeatureMap`` is used if the number of qubits
+                is larger than 1. For a single qubit classification problem the ``ZFeatureMap``
+                is used by default.
             ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
-                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given
-                then the ``RealAmplitudes`` circuit is used.
+                QNN. If ``None`` is given then the ``RealAmplitudes`` circuit is used.
             loss: A target loss function to be used in training. Default value is ``cross_entropy``.
             optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
                 to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
-            quantum_instance: The quantum instance to execute circuits on.
+            quantum_instance: If a quantum instance is sent and ``sampler`` is ``None``,
+                the underlying QNN will be of type
+                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`, and the quantum
+                instance will be used to compute the neural network's results. If a sampler
+                instance is also set, it will override the `quantum_instance` parameter and
+                a :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`
+                will be used instead.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and
                 returns ``None``. The callback can access intermediate data during training.
                 On each iteration an optimizer invokes the callback and passes current weights
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
-            sampler: The sampler primitive used to compute neural network's results.
+            sampler: If a sampler instance is sent, the underlying QNN will be of type
+                :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`, and the sampler
+                primitive will be used to compute the neural network's results.
         Raises:
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
@@ -106,8 +113,7 @@ class VQC(NeuralNetworkClassifier):
 
         # needed for mypy
         neural_network: SamplerQNN | CircuitQNN = None
-        if quantum_instance is not None:
-            # construct circuit QNN only if qi is provided
+        if quantum_instance is not None and sampler is None:
             neural_network = CircuitQNN(
                 self._circuit,
                 input_params=self.feature_map.parameters,
@@ -174,9 +180,7 @@ class VQC(NeuralNetworkClassifier):
         num_classes = self._num_classes
 
         # instance check required by mypy (alternative to cast)
-        if isinstance(self._neural_network, SamplerQNN):
-            self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
-        elif isinstance(self._neural_network, CircuitQNN):
+        if isinstance(self._neural_network, CircuitQNN|SamplerQNN):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
 
         return super()._minimize(X, y)
