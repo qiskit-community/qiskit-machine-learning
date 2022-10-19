@@ -11,8 +11,11 @@
 # that they have been altered from the originals.
 
 """Estimator quantum neural network class"""
+
+from __future__ import annotations
+
 import logging
-from typing import Optional, Sequence, Tuple, Union
+from typing import Sequence, Tuple
 
 import numpy as np
 from qiskit.algorithms.gradients import BaseEstimatorGradient
@@ -20,23 +23,9 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliSumOp
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
-
-import qiskit_machine_learning.optionals as _optionals
+from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
-
-if _optionals.HAS_SPARSE:
-    # pylint: disable=import-error
-    from sparse import SparseArray
-else:
-
-    class SparseArray:  # type: ignore
-        """Empty SparseArray class
-        Replacement if sparse.SparseArray is not present.
-        """
-
-        pass
-
 
 logger = logging.getLogger(__name__)
 
@@ -48,10 +37,10 @@ class EstimatorQNN(NeuralNetwork):
         self,
         estimator: BaseEstimator,
         circuit: QuantumCircuit,
-        observables: Sequence[Union[BaseOperator, PauliSumOp]],
-        input_params: Optional[Sequence[Parameter]] = None,
-        weight_params: Optional[Sequence[Parameter]] = None,
-        gradient: Optional[BaseEstimatorGradient] = None,
+        observables: Sequence[BaseOperator | PauliSumOp],
+        input_params: Sequence[Parameter] | None = None,
+        weight_params: Sequence[Parameter] | None = None,
+        gradient: BaseEstimatorGradient | None = None,
         input_gradients: bool = False,
     ):
         """
@@ -59,9 +48,12 @@ class EstimatorQNN(NeuralNetwork):
             estimator: The estimator used to compute neural network's results.
             circuit: The quantum circuit to represent the neural network.
             observables: The observables for outputs of the neural network.
-            input_params: The parameters that correspond to the input of the network.
+            input_params: The parameters that correspond to the input data of the network.
+                If None, the input data is not bound to any parameters.
             weight_params: The parameters that correspond to the trainable weights.
+                If None, the weights are not bound to any parameters.
             gradient: The estimator gradient to be used for the backward pass.
+                If None, the gradient is not computed.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
@@ -69,10 +61,10 @@ class EstimatorQNN(NeuralNetwork):
         self._estimator = estimator
         self._circuit = circuit
         self._observables = observables
-        self._input_params = list(input_params) or []
-        self._weight_params = list(weight_params) or []
+        self._input_params = list(input_params) if input_params is not None else []
+        self._weight_params = list(weight_params) if weight_params is not None else []
         self._gradient = gradient
-        self.input_gradients = input_gradients
+        self._input_gradients = input_gradients
 
         super().__init__(
             len(self._input_params),
@@ -83,7 +75,7 @@ class EstimatorQNN(NeuralNetwork):
         )
 
     @property
-    def observables(self):
+    def observables(self) -> Sequence[BaseOperator | PauliSumOp]:
         """Returns the underlying observables of this QNN."""
         return self._observables
 
@@ -99,21 +91,21 @@ class EstimatorQNN(NeuralNetwork):
         self._input_gradients = input_gradients
 
     def _preprocess(self, input_data, weights):
-        """Pre-processing during forward pass of the network."""
-        if len(input_data.shape) == 1:
-            input_data = np.expand_dims(input_data, 0)
-        num_samples = input_data.shape[0]
-        # quick fix for 0 inputs
-        if num_samples == 0:
-            num_samples = 1
-
-        parameter_values = []
-        for i in range(num_samples):
-            param_values = [input_data[i, j] for j, input_param in enumerate(self._input_params)]
-            param_values += [weights[j] for j, weight_param in enumerate(self._weight_params)]
-            parameter_values.append(param_values)
-
-        return parameter_values, num_samples
+        """Pre-processing during the forward pass and backward pass of the network."""
+        if input_data is not None:
+            num_samples = input_data.shape[0]
+            if weights is not None:
+                weights = np.broadcast_to(weights, (num_samples, len(weights)))
+                parameters = np.concatenate((input_data, weights), axis=1)
+            else:
+                parameters = input_data
+        else:
+            if weights is not None:
+                num_samples = 1
+                parameters = np.broadcast_to(weights, (num_samples, len(weights)))
+            else:
+                return None, None
+        return parameters, num_samples
 
     def _forward_postprocess(self, num_samples, results):
         """Post-processing during forward pass of the network."""
@@ -124,20 +116,27 @@ class EstimatorQNN(NeuralNetwork):
         return res
 
     def _forward(
-        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Union[np.ndarray, SparseArray]:
+        self, input_data: np.ndarray | None, weights: np.ndarray | None
+    ) -> np.ndarray | None:
         """Forward pass of the neural network."""
         parameter_values_, num_samples = self._preprocess(input_data, weights)
-        parameter_values = [
-            param_values for param_values in parameter_values_ for _ in range(self.output_shape[0])
-        ]
-        job = self._estimator.run(
-            [self._circuit] * num_samples * self.output_shape[0],
-            self._observables * num_samples,
-            parameter_values,
-        )
-        results = job.result()
-        return self._forward_postprocess(num_samples, results)
+        if num_samples is None:
+            return None
+        else:
+            parameter_values = [
+                param_values for param_values in parameter_values_ for _ in range(self.output_shape[0])
+            ]
+            job = self._estimator.run(
+                [self._circuit] * num_samples * self.output_shape[0],
+                self._observables * num_samples,
+                parameter_values,
+            )
+            try:
+                results = job.result()
+            except Exception as exc:
+                raise QiskitMachineLearningError("Estimator job failed.") from exc
+
+            return self._forward_postprocess(num_samples, results)
 
     def _backward_postprocess(self, num_samples, results):
         """Post-processing during backward pass of the network."""
@@ -169,9 +168,12 @@ class EstimatorQNN(NeuralNetwork):
         return input_grad, weights_grad
 
     def _backward(
-        self, input_data: Optional[np.ndarray], weights: Optional[np.ndarray]
-    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray],]:
+        self, input_data: np.ndarray | None, weights: np.ndarray | None
+    ) -> Tuple[np.ndarray | None, np.ndarray | None]:
         """Backward pass of the network."""
+        # if no gradient is set, return None
+        if self._gradient is None:
+            return None, None
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
         parameter_values = [
@@ -193,6 +195,10 @@ class EstimatorQNN(NeuralNetwork):
                 * self.output_shape[0],
             )
 
-        results = job.result()
+        try:
+            results = job.result()
+        except Exception as exc:
+            raise QiskitMachineLearningError("Estimator job failed.") from exc
+
         input_grad, weights_grad = self._backward_postprocess(num_samples, results)
         return input_grad, weights_grad  # `None` for gradients wrt input data, see TorchConnector
