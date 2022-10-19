@@ -58,7 +58,7 @@ class VQC(NeuralNetworkClassifier):
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
-        sampler: BaseSampler = None,
+        sampler: BaseSampler | None = None,
     ) -> None:
         """
         Args:
@@ -180,7 +180,7 @@ class VQC(NeuralNetworkClassifier):
         num_classes = self._num_classes
 
         # instance check required by mypy (alternative to cast)
-        if isinstance(self._neural_network, CircuitQNN|SamplerQNN):
+        if isinstance(self._neural_network, CircuitQNN | SamplerQNN):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
 
         return super()._minimize(X, y)

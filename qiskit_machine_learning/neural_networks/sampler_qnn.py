@@ -67,7 +67,7 @@ class SamplerQNN(NeuralNetwork):
         self,
         *,
         sampler: BaseSampler | None = None,
-        circuit: QuantumCircuit | None = None,
+        circuit: QuantumCircuit,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         sparse: bool = False,
@@ -79,6 +79,8 @@ class SamplerQNN(NeuralNetwork):
         """
         Args:
             sampler: The sampler primitive used to compute the neural network's results.
+                If ``None`` is given, a default instance of the reference sampler defined
+                by :class:`~qiskit.primitives.Sampler` will be used.
             circuit: The parametrized quantum circuit that generates the samples of this network.
             input_params: The parameters of the circuit corresponding to the input.
             weight_params: The parameters of the circuit corresponding to the trainable weights.
@@ -89,6 +91,8 @@ class SamplerQNN(NeuralNetwork):
                 passed, then an identity function will be used by this neural network.
             output_shape: The output shape of the custom interpretation
             gradient: An optional sampler gradient to be used for the backward pass.
+                If ``None`` is given, a default instance of
+                :class:`~qiskit.algorithms.gradients.ParamShiftSamplerGradient` will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                  Note that this parameter is ``False`` by default, and must be explicitly set to
                  ``True`` for a proper gradient computation when using ``TorchConnector``.
@@ -227,15 +231,10 @@ class SamplerQNN(NeuralNetwork):
 
         return parameters, num_samples
 
-    def _postprocess(
-        self, num_samples: int | None, result: SamplerResult | None
-    ) -> np.ndarray | SparseArray | None:
+    def _postprocess(self, num_samples: int, result: SamplerResult) -> np.ndarray | SparseArray:
         """
         Post-processing during forward pass of the network.
         """
-
-        if result is None:
-            return None
 
         if self._sparse:
             # pylint: disable=import-error
@@ -263,13 +262,11 @@ class SamplerQNN(NeuralNetwork):
             return prob
 
     def _postprocess_gradient(
-        self, num_samples: int | None, results: SamplerGradientResult | None
-    ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray | None]:
+        self, num_samples: int, results: SamplerGradientResult
+    ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray]:
         """
         Post-processing during backward pass of the network.
         """
-        if num_samples is None or results is None:
-            return None, None
 
         if self._sparse:
             # pylint: disable=import-error
@@ -345,10 +342,9 @@ class SamplerQNN(NeuralNetwork):
             # sampler allows batching
             job = self.sampler.run([self._circuit] * num_samples, parameter_values)
             results = job.result()
+            result = self._postprocess(num_samples, results)
         else:
-            results = None
-
-        result = self._postprocess(num_samples, results)
+            result = None
 
         return result
 
@@ -362,23 +358,22 @@ class SamplerQNN(NeuralNetwork):
         # prepare parameters in the required format
         parameter_values, num_samples = self._preprocess(input_data, weights)
 
+        results = None
         if num_samples is not None and np.prod(parameter_values.shape) > 0:
             if self._input_gradients:
                 job = self.gradient.run([self._circuit] * num_samples, parameter_values)
                 results = job.result()
             else:
-                if len(parameter_values[0]) is not self._num_inputs:
+                if len(parameter_values[0]) > self._num_inputs:
                     job = self.gradient.run(
                         [self._circuit] * num_samples,
                         parameter_values,
                         parameters=[self._circuit.parameters[self._num_inputs :]] * num_samples,
                     )
                     results = job.result()
-                else:
-                    results = None
-        else:
-            results = None
+
+        if results is None:
+            return None, None
 
         input_grad, weights_grad = self._postprocess_gradient(num_samples, results)
-
         return input_grad, weights_grad  # `None` for gradients wrt input data, see TorchConnector
