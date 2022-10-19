@@ -102,7 +102,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
         }
 
-        self.run_methods = {  # Tuple of type: (primitive, qi)
+        self.run_methods = {  # Tuple of type: (primitive, quantum_instance)
             "sampler": (sampler, None),
             "statevector": (None, statevector),
             "qasm": (None, qasm),
