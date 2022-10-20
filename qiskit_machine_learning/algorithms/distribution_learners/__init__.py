@@ -20,6 +20,17 @@ from .qgan import (
     QuantumGenerator,
     QGAN,
 )
+from ...deprecation import warn_deprecated, DeprecatedType, MachineLearningDeprecationWarning
+
+warn_deprecated(
+    "0.5.0",
+    old_type=DeprecatedType.PACKAGE,
+    old_name="qiskit_machine_learning.algorithms.distribution_learners",
+    new_type=DeprecatedType.PACKAGE,
+    additional_msg="Please refer to the QGAN tutorial instead",
+    stack_level=3,
+    category=MachineLearningDeprecationWarning,
+)
 
 __all__ = [
     "DiscriminativeNetwork",
