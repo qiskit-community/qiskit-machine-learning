@@ -17,6 +17,7 @@ benchmarking
 bergholm
 bitstring
 bitstrings
+bivariate
 bool
 boolean
 cargs
@@ -54,6 +55,7 @@ diag
 dicts
 dimensionality
 dir
+discretization
 discretize
 discretized
 discriminative
