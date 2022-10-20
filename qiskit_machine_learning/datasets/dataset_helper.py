@@ -121,7 +121,7 @@ def discretize_and_truncate(
                     temp.append(grid_element + [element_current])
             grid_elements = deepcopy(temp)
             data_grid.append(elements_current_dim)
-    data_grid = np.array(data_grid, dtype=object)
+    data_grid = np.array(data_grid)
 
     data = np.reshape(data, (len(data), len(data[0])))
 
