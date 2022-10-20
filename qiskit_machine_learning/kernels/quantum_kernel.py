@@ -25,17 +25,20 @@ from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.providers import Backend
 from qiskit.result import Result
 from qiskit.utils import QuantumInstance
+from qiskit.utils.deprecation import deprecate_function
 
 from qiskit_machine_learning.deprecation import (
     deprecate_arguments,
     deprecate_method,
     deprecate_property,
 )
+from .trainable_kernel import TrainableKernel
+from .base_kernel import BaseKernel
 from ..exceptions import QiskitMachineLearningError
 
 
-class QuantumKernel:
-    r"""Quantum Kernel.
+class QuantumKernel(TrainableKernel, BaseKernel):
+    r"""Pending deprecation: Quantum Kernel.
 
     The general task of machine learning is to find and study patterns in data. For many
     algorithms, the datapoints are better understood in a higher dimensional feature space,
@@ -55,6 +58,15 @@ class QuantumKernel:
     """
 
     @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
+    @deprecate_function(
+        "The QuantumKernel class has been superseded by the "
+        "qiskit_machine_learning.kernels.FidelityQuantumKernel and "
+        "qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel classes. "
+        "This class will be deprecated in a future release and subsequently "
+        "removed after that.",
+        stacklevel=3,
+        category=PendingDeprecationWarning,
+    )
     def __init__(
         self,
         feature_map: QuantumCircuit | None = None,
@@ -78,19 +90,20 @@ class QuantumKernel:
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
                duplicate samples are found. Possible values are:
 
-                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
-                        ones when training. This may introduce additional noise in the matrix.
-                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
-                        elements are fully evaluated, e.g., for two identical samples in the
-                        dataset. When inferring, all elements are evaluated. This is the default
-                        value.
-                    - ``none`` when training the diagonal is set to `1` and if two identical samples
-                        are found in the dataset the corresponding matrix element is set to `1`.
-                        When inferring, matrix elements for identical samples are set to `1`.
+               - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
+                 ones when training. This may introduce additional noise in the matrix.
+               - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                 elements are fully evaluated, e.g., for two identical samples in the
+                 dataset. When inferring, all elements are evaluated. This is the default
+                 value.
+               - ``none`` when training the diagonal is set to `1` and if two identical samples
+                 are found in the dataset the corresponding matrix element is set to `1`.
+                 When inferring, matrix elements for identical samples are set to `1`.
 
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
+        super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
         # Class fields
         self._feature_map: QuantumCircuit | None = None  # type is required by mypy
         self._unbound_feature_map = None
@@ -163,13 +176,14 @@ class QuantumKernel:
         self._training_parameters = copy.deepcopy(training_params)
 
     def assign_training_parameters(
-        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
+        self,
+        parameter_values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType],
     ) -> None:
         """
-        Assign training parameters in the ``QuantumKernel`` feature map.
+        Assign training parameters in the quantum kernel's feature map.
 
         Args:
-            values (dict or iterable): Either a dictionary or iterable specifying the new
+            parameter_values (dict or iterable): Either a dictionary or iterable specifying the new
             parameter values. If a dict, it specifies the mapping from ``current_parameter`` to
             ``new_parameter``, where ``new_parameter`` can be a parameter expression or a
             numeric value. If an iterable, the elements are assigned to the existing parameters
@@ -179,11 +193,12 @@ class QuantumKernel:
             ValueError: Incompatible number of training parameters and values
 
         """
+        values = parameter_values
         if self._training_parameters is None:
             raise ValueError(
                 f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of training parameters tracked by the QuantumKernel
+                match the number of training parameters tracked by the quantum kernel
                 (None).
                 """
             )
@@ -199,7 +214,7 @@ class QuantumKernel:
                 raise ValueError(
                     f"""
                 The number of parameter values ({len(values)}) does not
-                match the number of training parameters tracked by the QuantumKernel
+                match the number of training parameters tracked by the quantum kernel
                 ({len(self._training_parameters)}).
                 """
                 )
@@ -302,13 +317,13 @@ class QuantumKernel:
 
         return unbound_training_params
 
-    @property  # type: ignore
+    @property
     @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
         """[Deprecated property]Return the vector of training parameters."""
         return self.training_parameters
 
-    @user_parameters.setter  # type: ignore
+    @user_parameters.setter
     @deprecate_property("0.5.0", new_name="training_parameters")
     def user_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
         """[Deprecated property setter]Set the training parameters"""
@@ -325,7 +340,7 @@ class QuantumKernel:
         """
         self.assign_training_parameters(values)
 
-    @property  # type: ignore
+    @property
     @deprecate_property("0.5.0", new_name="training_parameter_binds")
     def user_param_binds(self) -> Mapping[Parameter, float] | None:
         """
