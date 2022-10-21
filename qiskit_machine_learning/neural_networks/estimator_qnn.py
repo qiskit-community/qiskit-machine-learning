@@ -18,10 +18,14 @@ import logging
 from typing import Sequence, Tuple
 
 import numpy as np
-from qiskit.algorithms.gradients import BaseEstimatorGradient, ParamShiftEstimatorGradient
+from qiskit.algorithms.gradients import (
+    BaseEstimatorGradient,
+    ParamShiftEstimatorGradient,
+    EstimatorGradientResult,
+)
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliSumOp
-from qiskit.primitives import BaseEstimator, Estimator
+from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 
@@ -101,8 +105,15 @@ class EstimatorQNN(NeuralNetwork):
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
 
-    def _preprocess(self, input_data, weights):
-        """Pre-processing during the forward pass and backward pass of the network."""
+    # todo: move to the superclass
+    def _preprocess(
+        self,
+        input_data: np.ndarray | None,
+        weights: np.ndarray | None,
+    ) -> tuple[np.ndarray | None, int | None]:
+        """
+        Pre-processing during forward pass of the network.
+        """
         if input_data is not None:
             num_samples = input_data.shape[0]
             if weights is not None:
@@ -118,12 +129,12 @@ class EstimatorQNN(NeuralNetwork):
                 return None, None
         return parameters, num_samples
 
-    def _forward_postprocess(self, num_samples, results):
+    def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
         """Post-processing during forward pass of the network."""
-        res = np.zeros((num_samples, self._output_shape[0]))
+        expectations = np.zeros((num_samples, self._output_shape[0]))
         for i in range(self._output_shape[0]):
-            res[:, i] = results.values[i * num_samples : (i + 1) * num_samples]
-        return res
+            expectations[:, i] = result.values[i * num_samples : (i + 1) * num_samples]
+        return expectations
 
     def _forward(
         self, input_data: np.ndarray | None, weights: np.ndarray | None
@@ -145,7 +156,9 @@ class EstimatorQNN(NeuralNetwork):
 
             return self._forward_postprocess(num_samples, results)
 
-    def _backward_postprocess(self, num_samples, results):
+    def _backward_postprocess(
+        self, num_samples: int, result: EstimatorGradientResult
+    ) -> tuple[np.ndarray | None, np.ndarray]:
         """Post-processing during backward pass of the network."""
         if self._input_gradients:
             input_grad = np.zeros((num_samples, self.output_shape[0], self._num_inputs))
@@ -153,7 +166,7 @@ class EstimatorQNN(NeuralNetwork):
             input_grad = None
 
         weights_grad = np.zeros((num_samples, self.output_shape[0], self._num_weights))
-        gradients = np.array(results.gradients)
+        gradients = np.asarray(result.gradients)
         for i in range(self._output_shape[0]):
             if self._input_gradients:
                 input_grad[:, i, :] = gradients[i * num_samples : (i + 1) * num_samples][
@@ -168,11 +181,8 @@ class EstimatorQNN(NeuralNetwork):
 
     def _backward(
         self, input_data: np.ndarray | None, weights: np.ndarray | None
-    ) -> Tuple[np.ndarray | None, np.ndarray | None]:
+    ) -> Tuple[np.ndarray | None, np.ndarray]:
         """Backward pass of the network."""
-        # if no gradient is set, return None
-        if self._gradient is None:
-            return None, None
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
         if self._input_gradients:
