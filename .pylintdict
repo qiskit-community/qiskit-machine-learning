@@ -1,3 +1,4 @@
+adam
 adjoint
 al
 ancilla
@@ -10,10 +11,13 @@ async
 autograd
 autosummary
 backend
+backends
 backpropagation
+benchmarking
 bergholm
 bitstring
 bitstrings
+bivariate
 bool
 boolean
 cargs
@@ -51,6 +55,7 @@ diag
 dicts
 dimensionality
 dir
+discretization
 discretize
 discretized
 discriminative
