@@ -21,8 +21,10 @@ import numpy as np
 from qiskit.algorithms.gradients import BaseEstimatorGradient
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliSumOp
-from qiskit.primitives import BaseEstimator
+from qiskit.primitives import BaseEstimator, Estimator
+from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
@@ -35,9 +37,10 @@ class EstimatorQNN(NeuralNetwork):
 
     def __init__(
         self,
-        estimator: BaseEstimator,
+        *,
+        estimator: BaseEstimator | None = None,
         circuit: QuantumCircuit,
-        observables: Sequence[BaseOperator | PauliSumOp],
+        observables: Sequence[BaseOperator | PauliSumOp] | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         gradient: BaseEstimatorGradient | None = None,
@@ -58,9 +61,15 @@ class EstimatorQNN(NeuralNetwork):
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
         """
-        self._estimator = estimator
+        if estimator is None:
+            self._estimator = Estimator()
+        else:
+            self._estimator = estimator
         self._circuit = circuit
-        self._observables = observables
+        if observables is None:
+            self._observables = SparsePauliOp.from_list([("Z" * circuit.num_qubits, 1)])
+        else:
+            self._observables = observables
         self._input_params = list(input_params) if input_params is not None else []
         self._weight_params = list(weight_params) if weight_params is not None else []
         self._gradient = gradient

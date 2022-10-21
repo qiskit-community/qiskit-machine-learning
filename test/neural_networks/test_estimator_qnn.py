@@ -26,7 +26,7 @@ from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 
 
 class TestEstimatorQNN(QiskitMachineLearningTestCase):
-    """EstimatorQNN Tests."""
+    """EstimatorQNN Tests. The correct references is obtained from OpflowQNN"""
 
     def test_estimator_qnn_1_1(self):
         """Test Estimator QNN with input/output dimension 1/1."""
@@ -39,33 +39,33 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         estimator = Estimator()
         gradient = ParamShiftEstimatorGradient(estimator)
         estimator_qnn = EstimatorQNN(
-            estimator, qc, [op], [params[0]], [params[1]], gradient=gradient
+            estimator=estimator,
+            circuit=qc,
+            observables=[op],
+            input_params=[params[0]],
+            weight_params=[params[1]],
+            gradient=gradient,
         )
         weights = np.array([1])
 
-        test_data = [
-            np.array(1),
-            np.array([1]),
-            np.array([[1], [2]]),
-            np.array([[[1], [2]], [[3], [4]]]),
-        ]
+        test_data = [1, [1], [[1], [2]], [[[1], [2]], [[3], [4]]]]
         correct_forwards = [
-            np.array([[0.08565359]]),
-            np.array([[0.08565359]]),
-            np.array([[0.08565359], [-0.90744233]]),
-            np.array([[[0.08565359], [-0.90744233]], [[-1.06623996], [-0.24474149]]]),
+            [[0.08565359]],
+            [[0.08565359]],
+            [[0.08565359], [-0.90744233]],
+            [[[0.08565359], [-0.90744233]], [[-1.06623996], [-0.24474149]]],
         ]
         correct_weight_backwards = [
-            np.array([[[0.70807342]]]),
-            np.array([[[0.70807342]]]),
-            np.array([[[0.70807342]], [[0.7651474]]]),
-            np.array([[[[0.70807342]], [[0.7651474]]], [[[0.11874839]], [[-0.63682734]]]]),
+            [[[0.70807342]]],
+            [[[0.70807342]]],
+            [[[0.70807342]], [[0.7651474]]],
+            [[[[0.70807342]], [[0.7651474]]], [[[0.11874839]], [[-0.63682734]]]],
         ]
         correct_input_backwards = [
-            np.array([[[-1.13339757]]]),
-            np.array([[[-1.13339757]]]),
-            np.array([[[-1.13339757]], [[-0.68445233]]]),
-            np.array([[[[-1.13339757]], [[-0.68445233]]], [[[0.39377522]], [[1.10996765]]]]),
+            [[[-1.13339757]]],
+            [[[-1.13339757]]],
+            [[[-1.13339757]], [[-0.68445233]]],
+            [[[[-1.13339757]], [[-0.68445233]]], [[[0.39377522]], [[1.10996765]]]],
         ]
 
         # test forward pass
@@ -104,26 +104,32 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         op = SparsePauliOp.from_list([("ZZ", 1), ("XX", 1)])
         estimator = Estimator()
         gradient = ParamShiftEstimatorGradient(estimator)
-        estimator_qnn = EstimatorQNN(estimator, qc, [op], params[:2], params[2:], gradient=gradient)
+        estimator_qnn = EstimatorQNN(
+            estimator=estimator,
+            circuit=qc,
+            observables=[op],
+            input_params=params[:2],
+            weight_params=params[2:],
+            gradient=gradient,
+        )
         weights = np.array([1, 2])
 
-        test_data = [np.array([1, 2]), np.array([[1, 2]]), np.array([[1, 2], [3, 4]])]
+        test_data = [[1, 2], [[1, 2]], [[1, 2], [3, 4]]]
         correct_forwards = [
-            np.array([[0.41256026]]),
-            np.array([[0.41256026]]),
-            np.array([[0.41256026], [0.72848859]]),
+            [[0.41256026]],
+            [[0.41256026]],
+            [[0.41256026], [0.72848859]],
         ]
         correct_weight_backwards = [
-            np.array([[[0.12262287, -0.17203964]]]),
-            np.array([[[0.12262287, -0.17203964]]]),
-            np.array([[[0.12262287, -0.17203964]], [[0.03230095, -0.04531817]]]),
+            [[[0.12262287, -0.17203964]]],
+            [[[0.12262287, -0.17203964]]],
+            [[[0.12262287, -0.17203964]], [[0.03230095, -0.04531817]]],
         ]
         correct_input_backwards = [
-            np.array([[[-0.81570272, -0.39688474]]]),
-            np.array([[[-0.81570272, -0.39688474]]]),
-            np.array([[[-0.81570272, -0.39688474]], [[0.25229775, 0.67111573]]]),
+            [[[-0.81570272, -0.39688474]]],
+            [[[-0.81570272, -0.39688474]]],
+            [[[-0.81570272, -0.39688474]], [[0.25229775, 0.67111573]]],
         ]
-
         # test forward pass
         with self.subTest("forward pass"):
             for i, inputs in enumerate(test_data):
