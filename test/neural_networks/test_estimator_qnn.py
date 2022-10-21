@@ -164,7 +164,12 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         gradient = ParamShiftEstimatorGradient(estimator)
         # construct QNN
         estimator_qnn = EstimatorQNN(
-            estimator, qc, [op1, op2], [params[0]], [params[1]], gradient=gradient
+            estimator=estimator,
+            circuit=qc,
+            observables=[op1, op2],
+            input_params=[params[0]],
+            weight_params=[params[1]],
+            gradient=gradient,
         )
         weights = np.array([1])
 
