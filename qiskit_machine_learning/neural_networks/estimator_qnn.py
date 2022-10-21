@@ -18,7 +18,7 @@ import logging
 from typing import Sequence, Tuple
 
 import numpy as np
-from qiskit.algorithms.gradients import BaseEstimatorGradient
+from qiskit.algorithms.gradients import BaseEstimatorGradient, ParamShiftEstimatorGradient
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliSumOp
 from qiskit.primitives import BaseEstimator, Estimator
@@ -72,6 +72,8 @@ class EstimatorQNN(NeuralNetwork):
             self._observables = observables
         self._input_params = list(input_params) if input_params is not None else []
         self._weight_params = list(weight_params) if weight_params is not None else []
+        if gradient is None:
+            gradient = ParamShiftEstimatorGradient(self._estimator)
         self._gradient = gradient
         self._input_gradients = input_gradients
 
