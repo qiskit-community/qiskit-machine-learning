@@ -78,8 +78,8 @@ class EstimatorQNN(NeuralNetwork):
         self._input_gradients = input_gradients
 
         super().__init__(
-            len(self._input_params),
-            len(self._weight_params),
+            num_inputs=len(self._input_params),
+            num_weights=len(self._weight_params),
             sparse=False,
             output_shape=len(observables),
             input_gradients=input_gradients,
