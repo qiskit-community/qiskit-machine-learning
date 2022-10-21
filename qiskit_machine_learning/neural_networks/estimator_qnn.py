@@ -109,10 +109,9 @@ class EstimatorQNN(NeuralNetwork):
 
     def _forward_postprocess(self, num_samples, results):
         """Post-processing during forward pass of the network."""
-        res = np.zeros((num_samples, *self._output_shape))
-        for i in range(num_samples):
-            for j in range(self.output_shape[0]):
-                res[i, j] = results.values[i * self.output_shape[0] + j]
+        res = np.zeros((num_samples, self._output_shape[0]))
+        for i in range(self._output_shape[0]):
+            res[:, i] = results.values[i * num_samples : (i + 1) * num_samples]
         return res
 
     def _forward(
@@ -123,13 +122,10 @@ class EstimatorQNN(NeuralNetwork):
         if num_samples is None:
             return None
         else:
-            parameter_values = [
-                param_values for param_values in parameter_values_ for _ in range(self.output_shape[0])
-            ]
             job = self._estimator.run(
                 [self._circuit] * num_samples * self.output_shape[0],
-                self._observables * num_samples,
-                parameter_values,
+                [op for op in self._observables for _ in range(num_samples)],
+                np.tile(parameter_values_, (self.output_shape[0], 1)),
             )
             try:
                 results = job.result()
@@ -140,31 +136,23 @@ class EstimatorQNN(NeuralNetwork):
 
     def _backward_postprocess(self, num_samples, results):
         """Post-processing during backward pass of the network."""
-        input_grad = (
-            np.zeros((num_samples, *self.output_shape, self._num_inputs))
-            if self._input_gradients
-            else None
-        )
-        weights_grad = np.zeros((num_samples, *self.output_shape, self._num_weights))
-
         if self._input_gradients:
-            num_grad_vars = self._num_inputs + self._num_weights
+            input_grad = np.zeros((num_samples, self.output_shape[0], self._num_inputs))
         else:
-            num_grad_vars = self._num_weights
+            input_grad = None
 
-        for i in range(num_samples):
-            for j in range(self.output_shape[0]):
-                for k in range(num_grad_vars):
-                    if self._input_gradients:
-                        if k < self._num_inputs:
-                            input_grad[i, j, k] = results.gradients[i * self.output_shape[0] + j][k]
-                        else:
-                            weights_grad[i, j, k - self._num_inputs] = results.gradients[
-                                i * self.output_shape[0] + j
-                            ][k]
-                    else:
-                        weights_grad[i, j, k] = results.gradients[i * self.output_shape[0] + j][k]
-
+        weights_grad = np.zeros((num_samples, self.output_shape[0], self._num_weights))
+        gradients = np.array(results.gradients)
+        for i in range(self._output_shape[0]):
+            if self._input_gradients:
+                input_grad[:, i, :] = gradients[i * num_samples : (i + 1) * num_samples][
+                    :, : self._num_inputs
+                ]
+                weights_grad[:, i, :] = gradients[i * num_samples : (i + 1) * num_samples][
+                    :, self._num_inputs :
+                ]
+            else:
+                weights_grad[:, i, :] = gradients[i * num_samples : (i + 1) * num_samples]
         return input_grad, weights_grad
 
     def _backward(
@@ -176,20 +164,17 @@ class EstimatorQNN(NeuralNetwork):
             return None, None
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
-        parameter_values = [
-            param_values for param_values in parameter_values_ for _ in range(self.output_shape[0])
-        ]
         if self._input_gradients:
             job = self._gradient.run(
                 [self._circuit] * num_samples * self.output_shape[0],
-                self._observables * num_samples,
-                parameter_values,
+                [op for op in self._observables for _ in range(num_samples)],
+                np.tile(parameter_values_, (self.output_shape[0], 1)),
             )
         else:
             job = self._gradient.run(
                 [self._circuit] * num_samples * self.output_shape[0],
-                self._observables * num_samples,
-                parameter_values,
+                [op for op in self._observables for _ in range(num_samples)],
+                np.tile(parameter_values_, (self.output_shape[0], 1)),
                 parameters=[self._circuit.parameters[self._num_inputs :]]
                 * num_samples
                 * self.output_shape[0],
@@ -201,4 +186,4 @@ class EstimatorQNN(NeuralNetwork):
             raise QiskitMachineLearningError("Estimator job failed.") from exc
 
         input_grad, weights_grad = self._backward_postprocess(num_samples, results)
-        return input_grad, weights_grad  # `None` for gradients wrt input data, see TorchConnector
+        return input_grad, weights_grad
