@@ -68,7 +68,7 @@ class VQR(NeuralNetworkRegressor):
             optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
                 to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
-            quantum_instance: If a quantum instance is set and ``estimator`` is ``None``,
+            quantum_instance: Deprecated: If a quantum instance is set and ``estimator`` is ``None``,
                 the underlying QNN will be of type
                 :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN`, and the quantum
                 instance will be used to compute the neural network's results. If an estimator
