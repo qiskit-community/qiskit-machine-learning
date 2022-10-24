@@ -17,10 +17,11 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import data, ddt
-
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+
 from qiskit_machine_learning.algorithms import VQR
 
 
@@ -119,6 +120,19 @@ class TestVQR(QiskitMachineLearningTestCase):
         # score
         score = regressor.score(self.X, self.y)
         self.assertGreater(score, 0.5)
+
+    def test_properties(self):
+        """Test properties of VQR."""
+        vqr = VQR(num_qubits=2, quantum_instance=self.qasm_quantum_instance)
+        self.assertIsNotNone(vqr.feature_map)
+        self.assertIsInstance(vqr.feature_map, ZZFeatureMap)
+        self.assertEqual(vqr.feature_map.num_qubits, 2)
+
+        self.assertIsNotNone(vqr.ansatz)
+        self.assertIsInstance(vqr.ansatz, RealAmplitudes)
+        self.assertEqual(vqr.ansatz.num_qubits, 2)
+
+        self.assertEqual(vqr.num_qubits, 2)
 
 
 if __name__ == "__main__":

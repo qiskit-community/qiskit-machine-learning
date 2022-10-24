@@ -96,6 +96,7 @@ class VQR(NeuralNetworkRegressor):
                 "0.5.0", DeprecatedType.ARGUMENT, old_name="quantum_instance", new_name="estimator"
             )
             self._quantum_instance = quantum_instance
+            self._estimator = None
 
             # construct QNN
             neural_network = TwoLayerQNN(
@@ -108,6 +109,7 @@ class VQR(NeuralNetworkRegressor):
             )
         else:
             # construct estimator QNN by default
+            self._quantum_instance = None
             self._estimator = estimator
 
             num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
