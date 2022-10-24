@@ -56,11 +56,11 @@ class VQR(NeuralNetworkRegressor):
                 The number of qubits in the feature map and ansatz are adjusted to this
                 number if required.
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
-                QNN. If ``None`` is given, the :class:`~qiskit.circuit.library.ZZFeatureMap`
+                QNN. If ``None`` the :class:`~qiskit.circuit.library.ZZFeatureMap`
                 is used if the number of qubits is larger than 1. For a single qubit regression
                 problem the :class:`~qiskit.circuit.library.ZFeatureMap` is used by default.
             ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
-                QNN. If ``None`` is given then the :class:`~qiskit.circuit.library.RealAmplitudes`
+                QNN. If ``None`` then the :class:`~qiskit.circuit.library.RealAmplitudes`
                 circuit is used.
             observable: The observable to be measured in the underlying QNN. If ``None``,
                 use the default :math:`Z^{\otimes num\_qubits}` observable.
