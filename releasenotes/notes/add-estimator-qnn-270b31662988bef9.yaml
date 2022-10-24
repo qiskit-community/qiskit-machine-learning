@@ -6,7 +6,7 @@ features:
     forward pass and it requires :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to
     calculate the backward pass.
 
-    Example::
+    Example:
 
     .. code-block:: python
 

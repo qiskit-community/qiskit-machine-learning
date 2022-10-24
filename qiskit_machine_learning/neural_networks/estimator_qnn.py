@@ -105,7 +105,7 @@ class EstimatorQNN(NeuralNetwork):
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
 
-    # todo: move to the superclass
+    # todo: move to the super-class
     def _preprocess(
         self,
         input_data: np.ndarray | None,
