@@ -105,7 +105,7 @@ class EstimatorQNN(NeuralNetwork):
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
 
-    # todo: move to the super-class
+    # todo: move to the super-class once sampler-based network is merged
     def _preprocess(
         self,
         input_data: np.ndarray | None,
@@ -158,14 +158,15 @@ class EstimatorQNN(NeuralNetwork):
         self, num_samples: int, result: EstimatorGradientResult
     ) -> tuple[np.ndarray | None, np.ndarray]:
         """Post-processing during backward pass of the network."""
+        num_observables = self.output_shape[0]
         if self._input_gradients:
-            input_grad = np.zeros((num_samples, self.output_shape[0], self._num_inputs))
+            input_grad = np.zeros((num_samples, num_observables, self._num_inputs))
         else:
             input_grad = None
 
-        weights_grad = np.zeros((num_samples, self.output_shape[0], self._num_weights))
+        weights_grad = np.zeros((num_samples, num_observables, self._num_weights))
         gradients = np.asarray(result.gradients)
-        for i in range(self._output_shape[0]):
+        for i in range(num_observables):
             if self._input_gradients:
                 input_grad[:, i, :] = gradients[i * num_samples : (i + 1) * num_samples][
                     :, : self._num_inputs
@@ -183,21 +184,19 @@ class EstimatorQNN(NeuralNetwork):
         """Backward pass of the network."""
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
+
+        num_observables = self.output_shape[0]
+        num_circuits = num_samples * num_observables
+
+        circuits = [self._circuit] * num_circuits
+        observables = [op for op in self._observables for _ in range(num_samples)]
+        param_values = np.tile(parameter_values_, (num_observables, 1))
+
         if self._input_gradients:
-            job = self._gradient.run(
-                [self._circuit] * num_samples * self.output_shape[0],
-                [op for op in self._observables for _ in range(num_samples)],
-                np.tile(parameter_values_, (self.output_shape[0], 1)),
-            )
+            job = self._gradient.run(circuits, observables, param_values)
         else:
-            job = self._gradient.run(
-                [self._circuit] * num_samples * self.output_shape[0],
-                [op for op in self._observables for _ in range(num_samples)],
-                np.tile(parameter_values_, (self.output_shape[0], 1)),
-                parameters=[self._circuit.parameters[self._num_inputs :]]
-                * num_samples
-                * self.output_shape[0],
-            )
+            params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
+            job = self._gradient.run(circuits, observables, param_values, parameters=params)
 
         try:
             results = job.result()
