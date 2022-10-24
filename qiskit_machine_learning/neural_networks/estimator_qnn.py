@@ -131,9 +131,7 @@ class EstimatorQNN(NeuralNetwork):
 
     def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
         """Post-processing during forward pass of the network."""
-        expectations = np.zeros((num_samples, self._output_shape[0]))
-        for i in range(self._output_shape[0]):
-            expectations[:, i] = result.values[i * num_samples : (i + 1) * num_samples]
+        expectations = np.reshape(result.values, (-1, num_samples)).T
         return expectations
 
     def _forward(
