@@ -52,7 +52,7 @@ class VQR(NeuralNetworkRegressor):
         Args:
             num_qubits: The number of qubits for the underlying QNN.
                 If ``None`` is given, the number of qubits is derived from the
-                feature map or ansatz. If neither of those is given, raises an exception.
+                feature map or ansatz, but if neither of these are given an error is raised.
                 The number of qubits in the feature map and ansatz are adjusted to this
                 number if required.
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
