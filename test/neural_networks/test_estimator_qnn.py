@@ -115,6 +115,58 @@ CASE_DATA = dict(
             ],
         ],
     ),
+    no_input_parameters=dict(
+        test_data=[None],
+        weights=[1, 1],
+        correct_forwards=[
+            [[0.08565359]]
+        ],
+        correct_weight_backwards=[
+            [[[-1.13339757, 0.70807342]]]
+        ],
+        correct_input_backwards=[
+            None
+        ],
+    ),
+    no_weight_parameters=dict(
+        test_data=[[1 , 1]],
+        weights=None,
+        correct_forwards=[
+            [[0.08565359]]
+        ],
+        correct_weight_backwards=[
+            None
+        ],
+        correct_input_backwards=[
+            [[[-1.13339757, 0.70807342]]]
+        ],
+    ),
+    no_parameters=dict(
+        test_data=[None],
+        weights=None,
+        correct_forwards=[
+            [[1]]
+        ],
+        correct_weight_backwards=[
+            None
+        ],
+        correct_input_backwards=[
+            None
+        ],
+    ),
+    default_observables=dict(
+        test_data=[[[1], [2]]],
+        weights=[1],
+        correct_forwards=[
+            [[-0.45464871], [-0.4912955 ]]
+        ],
+        correct_weight_backwards=[
+            [[[0.70807342]], [[0.7651474 ]]]
+        ],
+        correct_input_backwards=[
+            [[[-0.29192658]], [[ 0.2248451 ]]]
+        ],
+    ),
 )
 
 
@@ -141,15 +193,24 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         with self.subTest("backward pass without input gradients"):
             for i, inputs in enumerate(test_data):
                 input_backward, weight_backward = estimator_qnn.backward(inputs, weights)
-                np.testing.assert_allclose(weight_backward, correct_weight_backwards[i], atol=1e-3)
+                if correct_weight_backwards[i] is None:
+                    self.assertIsNone(weight_backward)
+                else:
+                    np.testing.assert_allclose(weight_backward, correct_weight_backwards[i], atol=1e-3)
                 self.assertIsNone(input_backward)
         # test backward pass with input_gradients
         with self.subTest("backward bass with input gradients"):
             estimator_qnn.input_gradients = True
             for i, inputs in enumerate(test_data):
                 input_backward, weight_backward = estimator_qnn.backward(inputs, weights)
-                np.testing.assert_allclose(weight_backward, correct_weight_backwards[i], atol=1e-3)
-                np.testing.assert_allclose(input_backward, correct_input_backwards[i], atol=1e-3)
+                if correct_weight_backwards[i] is None:
+                    self.assertIsNone(weight_backward)
+                else:
+                    np.testing.assert_allclose(weight_backward, correct_weight_backwards[i], atol=1e-3)
+                if correct_input_backwards[i] is None:
+                    self.assertIsNone(input_backward)
+                else:
+                    np.testing.assert_allclose(input_backward, correct_input_backwards[i], atol=1e-3)
 
     def test_estimator_qnn_1_1(self):
         """Test Estimator QNN with input/output dimension 1/1."""
@@ -237,6 +298,100 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         )
 
         self._test_network_passes(estimator_qnn, CASE_DATA["shape_2_2"])
+
+    def test_no_input_parameters(self):
+        """Test Estimator QNN with no input parameters."""
+        params = [Parameter("weight0"), Parameter("weight1")]
+        qc = QuantumCircuit(1)
+        qc.h(0)
+        qc.ry(params[0], 0)
+        qc.rx(params[1], 0)
+        op = SparsePauliOp.from_list([("Z", 1), ("X", 1)])
+        estimator_qnn = EstimatorQNN(
+            circuit=qc,
+            observables=[op],
+            input_params=None,
+            weight_params=params,
+        )
+        self._test_network_passes(estimator_qnn, CASE_DATA["no_input_parameters"])
+
+    def test_no_weight_parameters(self):
+        """Test Estimator QNN with no weight parameters."""
+        params = [Parameter("input0"), Parameter("input1")]
+        qc = QuantumCircuit(1)
+        qc.h(0)
+        qc.ry(params[0], 0)
+        qc.rx(params[1], 0)
+        op = SparsePauliOp.from_list([("Z", 1), ("X", 1)])
+        estimator_qnn = EstimatorQNN(
+            circuit=qc,
+            observables=[op],
+            input_params=params,
+            weight_params=None,
+        )
+        self._test_network_passes(estimator_qnn, CASE_DATA["no_weight_parameters"])
+
+    def test_no_parameters(self):
+        """Test Estimator QNN with no parameters."""
+        qc = QuantumCircuit(1)
+        qc.h(0)
+        op = SparsePauliOp.from_list([("Z", 1), ("X", 1)])
+        estimator_qnn = EstimatorQNN(
+            circuit=qc,
+            observables=[op],
+            input_params=None,
+            weight_params=None,
+        )
+        self._test_network_passes(estimator_qnn, CASE_DATA["no_parameters"])
+
+    def test_default_observables(self):
+        """Test Estimator QNN with default observables."""
+        params = [Parameter("input1"), Parameter("weight1")]
+        qc = QuantumCircuit(1)
+        qc.h(0)
+        qc.ry(params[0], 0)
+        qc.rx(params[1], 0)
+        estimator_qnn = EstimatorQNN(
+            circuit=qc,
+            input_params=[params[0]],
+            weight_params=[params[1]],
+        )
+        self._test_network_passes(estimator_qnn, CASE_DATA["default_observables"])
+
+    def test_observables_getter(self):
+        """Test Estimator QNN observables getter."""
+        params = [Parameter("input1"), Parameter("weight1")]
+        qc = QuantumCircuit(1)
+        qc.h(0)
+        qc.ry(params[0], 0)
+        qc.rx(params[1], 0)
+        op = SparsePauliOp.from_list([("Z", 1), ("X", 1)])
+        estimator_qnn = EstimatorQNN(
+            circuit=qc,
+            observables=[op],
+            input_params=[params[0]],
+            weight_params=[params[1]],
+        )
+        self.assertEqual(estimator_qnn.observables, [op])
+
+    def test_input_gradients(self):
+        """Test Estimator QNN input gradients."""
+        params = [Parameter("input1"), Parameter("weight1")]
+        qc = QuantumCircuit(1)
+        qc.h(0)
+        qc.ry(params[0], 0)
+        qc.rx(params[1], 0)
+        op = SparsePauliOp.from_list([("Z", 1), ("X", 1)])
+        estimator_qnn = EstimatorQNN(
+            circuit=qc,
+            observables=[op],
+            input_params=[params[0]],
+            weight_params=[params[1]],
+            input_gradients=True
+        )
+        self.assertTrue(estimator_qnn.input_gradients)
+        estimator_qnn.input_gradients = False
+        self.assertFalse(estimator_qnn.input_gradients)
 
 
 if __name__ == "__main__":
