@@ -2,6 +2,6 @@
 deprecations:
   - |
     The `qiskit_machine_learning.algorithms.distribution_learners` package is deprecated. There's no
-    a direct replacement for the classes from this package. Instead, please refer to the new QGAN
+    direct replacement for the classes from this package. Instead, please refer to the new QGAN
     tutorial. This tutorial introduces step-by-step how to build a PyTorch-based QGAN using
     quantum neural networks.
