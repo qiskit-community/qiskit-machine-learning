@@ -46,7 +46,7 @@ class TwoLayerQNN(OpflowQNN):
                 is given, raises an exception. The number of qubits in the feature map and ansatz
                 are adjusted to this number if required.
             feature_map: The (parametrized) circuit to be used as a feature map. If ``None`` is given,
-                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For
+                the `:class:`~qiskit.circuit.library.ZZFeatureMap` is used if the number of qubits is larger than 1. For
                 a single qubit two-layer QNN the ``ZFeatureMap`` circuit is used per default.
             ansatz: The (parametrized) circuit to be used as an ansatz. If ``None`` is given,
                 the ``RealAmplitudes`` circuit is used.

@@ -51,11 +51,11 @@ class VQR(NeuralNetworkRegressor):
                 are adjusted to this number if required.
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
                 :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN`. If ``None`` is given,
-                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For a single
-                qubit regression problem the ``ZFeatureMap`` circuit is used per default.
+                the :class:`~qiskit.circuit.library.ZZFeatureMap` is used if the number of qubits is larger than 1. For a single
+                qubit regression problem the :class:`~qiskit.circuit.library.ZZFeatureMap` circuit is used per default.
             ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
                 :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN`. If ``None`` is given
-                then the ``RealAmplitudes`` circuit is used.
+                then the :class:`~qiskit.circuit.library.RealAmplitudes` circuit is used.
             observable: The observable to be measured in the underlying TwoLayerQNN. If ``None``,
                 use the default from the TwoLayerQNN, i.e., :math:`Z^{\otimes num\_qubits}`.
             loss: A target loss function to be used in training. Default is squared error.
