@@ -85,7 +85,7 @@ class EstimatorQNN(NeuralNetwork):
             num_inputs=len(self._input_params),
             num_weights=len(self._weight_params),
             sparse=False,
-            output_shape=len(observables),
+            output_shape=len(self._observables),
             input_gradients=input_gradients,
         )
 
@@ -131,6 +131,9 @@ class EstimatorQNN(NeuralNetwork):
 
     def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
         """Post-processing during forward pass of the network."""
+        print('====',result.values)
+        if num_samples is None:
+            num_samples = 1
         expectations = np.reshape(result.values, (-1, num_samples)).T
         return expectations
 
@@ -140,19 +143,19 @@ class EstimatorQNN(NeuralNetwork):
         """Forward pass of the neural network."""
         parameter_values_, num_samples = self._preprocess(input_data, weights)
         if num_samples is None:
-            return None
+            job = self._estimator.run(self._circuit, self._observables)
         else:
             job = self._estimator.run(
                 [self._circuit] * num_samples * self.output_shape[0],
                 [op for op in self._observables for _ in range(num_samples)],
                 np.tile(parameter_values_, (self.output_shape[0], 1)),
             )
-            try:
-                results = job.result()
-            except Exception as exc:
-                raise QiskitMachineLearningError("Estimator job failed.") from exc
+        try:
+            results = job.result()
+        except Exception as exc:
+            raise QiskitMachineLearningError("Estimator job failed.") from exc
 
-            return self._forward_postprocess(num_samples, results)
+        return self._forward_postprocess(num_samples, results)
 
     def _backward_postprocess(
         self, num_samples: int, result: EstimatorGradientResult
@@ -184,6 +187,9 @@ class EstimatorQNN(NeuralNetwork):
         """Backward pass of the network."""
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
+
+        if num_samples is None:
+            return None, None
 
         num_observables = self.output_shape[0]
         num_circuits = num_samples * num_observables
