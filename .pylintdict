@@ -1,3 +1,4 @@
+adam
 adjoint
 al
 alan
@@ -8,15 +9,19 @@ ansatzes
 args
 asmatrix
 aspuru
+async
 autoencoder
 autoencoders
 autograd
 autosummary
 backend
+backends
 backpropagation
+benchmarking
 bergholm
 bitstring
 bitstrings
+bivariate
 bool
 boolean
 cargs
@@ -55,6 +60,7 @@ diag
 dicts
 dimensionality
 dir
+discretization
 discretize
 discretized
 discriminative
@@ -67,6 +73,7 @@ et
 eval
 expressibility
 farrokh
+fidelities
 formatter
 func
 gambetta

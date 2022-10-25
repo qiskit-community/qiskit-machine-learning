@@ -19,7 +19,7 @@ import numpy as np
 from sklearn.svm import SVC
 
 # Prevent circular dependencies caused from type checking
-from ...kernels import QuantumKernel
+from ...kernels import TrainableKernel
 
 
 class KernelLoss(ABC):
@@ -33,7 +33,7 @@ class KernelLoss(ABC):
     def __call__(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: TrainableKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -46,7 +46,7 @@ class KernelLoss(ABC):
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: TrainableKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:
@@ -98,7 +98,7 @@ class SVCLoss(KernelLoss):
     def evaluate(
         self,
         parameter_values: Sequence[float],
-        quantum_kernel: QuantumKernel,
+        quantum_kernel: TrainableKernel,
         data: np.ndarray,
         labels: np.ndarray,
     ) -> float:

@@ -1,0 +1,58 @@
+---
+features:
+  - |
+    Introduced Quantum Kernels based on (runtime) primitives. This implementation leverages the
+    fidelity primitive (see :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity`) and
+    provides more flexibility to end users. The fidelity primitive calculates state
+    fidelities/overlaps for pairs of quantum circuits and requires an instance of
+    :class:`~qiskit.primitives.Sampler`. Thus, users may plug in their own implementations of
+    fidelity calculations.
+
+    The new kernels expose the same interface and the same parameters except the `quantum_instance`
+    parameter. This parameter does not have a direct replacement and instead the `fidelity`
+    parameter must be used.
+
+    A new hierarchy is introduced:
+
+      - A base and abstract class :class:`~qiskit_machine_learning.kernels.BaseKernel` is
+        introduced. All concrete implementation must inherit this class.
+      - A fidelity based quantum kernel
+        :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` is added. This is a direct
+        replacement of :class:`~qiskit_machine_learning.kernels.QuantumKernel`. The difference is
+        that the new class takes either a sampler or a fidelity instance to estimate overlaps and
+        construct kernel matrix.
+      - A new abstract class :class:`~qiskit_machine_learning.kernels.TrainableKernel` is
+        introduced to generalize ability to train quantum kernels.
+      - A fidelity-based trainable quantum kernel
+        :class:`~qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel` is introduced. This
+        is a replacement of the existing :class:`~qiskit_machine_learning.kernels.QuantumKernel` if
+        a trainable kernel is required. The trainer
+        :class:`~qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer` now accepts both
+        quantum kernel implementations, the new one and the existing one.
+
+    The existing algorithms such as :class:`~qiskit_machine_learning.algorithms.QSVC`,
+    :class:`~qiskit_machine_learning.algorithms.QSVR` and other kernel-based algorithms are updated
+    to accept both implementations.
+
+    For example a QSVM classifier can be trained as follows:
+
+    .. code-block:: python
+
+      from qiskit.algorithms.state_fidelities import ComputeUncompute
+      from qiskit.circuit.library import ZZFeatureMap
+      from qiskit.primitives import Sampler
+      from sklearn.datasets import make_blobs
+
+      from qiskit_machine_learning.algorithms import QSVC
+      from qiskit_machine_learning.kernels import FidelityQuantumKernel
+
+      # generate a simple dataset
+      features, labels = make_blobs(n_samples=20, centers=2, center_box=(-1, 1), cluster_std=0.1)
+
+      # fidelity is optional and quantum kernel will create it automatically if none is passed
+      fidelity = ComputeUncompute(sampler=Sampler())
+
+      feature_map = ZZFeatureMap(2)
+      kernel = FidelityQuantumKernel(feature_map=feature_map, fidelity=fidelity)
+      qsvc = QSVC(quantum_kernel=kernel)
+      qsvc.fit(features, labels)

@@ -20,7 +20,7 @@ from sklearn.svm import SVC
 
 from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
-from qiskit_machine_learning.kernels.quantum_kernel import QuantumKernel
+from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
 
 
 class QSVC(SVC, SerializableModelMixin):
@@ -41,10 +41,10 @@ class QSVC(SVC, SerializableModelMixin):
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, *args, quantum_kernel: Optional[QuantumKernel] = None, **kwargs):
+    def __init__(self, *args, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: QuantumKernel to be used for classification.
+            quantum_kernel: Quantum kernel to be used for classification.
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
@@ -65,7 +65,7 @@ class QSVC(SVC, SerializableModelMixin):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
 
-        self._quantum_kernel = quantum_kernel if quantum_kernel else QuantumKernel()
+        self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
@@ -73,12 +73,12 @@ class QSVC(SVC, SerializableModelMixin):
         super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
 
     @property
-    def quantum_kernel(self) -> QuantumKernel:
+    def quantum_kernel(self) -> BaseKernel:
         """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: QuantumKernel):
+    def quantum_kernel(self, quantum_kernel: BaseKernel):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
