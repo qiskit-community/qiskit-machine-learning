@@ -148,7 +148,7 @@ def warn_deprecated(
         type_str = new_type.value if new_type is not None else old_type.value
         msg += f". Instead use the {new_name} {type_str}"
     if additional_msg:
-        msg += f". {additional_msg}"
+        msg += f" {additional_msg}"
     msg += "."
 
     warnings.warn(msg, category=category, stacklevel=stack_level + 1)
