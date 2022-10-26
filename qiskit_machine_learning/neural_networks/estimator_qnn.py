@@ -47,7 +47,8 @@ class EstimatorQNN(NeuralNetwork):
     Attributes:
 
         estimator (BaseEstimator): The estimator primitive used to compute the neural network's results.
-        gradient (BaseEstimatorGradient): An optional estimator gradient to be used for the backward pass.
+        gradient (BaseEstimatorGradient): An optional estimator gradient to be used for the backward
+            pass.
 
     A Neural Network implementation based on the Estimator primitive."""
 
@@ -56,7 +57,7 @@ class EstimatorQNN(NeuralNetwork):
         *,
         estimator: BaseEstimator | None = None,
         circuit: QuantumCircuit,
-        observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp| None = None,
+        observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         gradient: BaseEstimatorGradient | None = None,

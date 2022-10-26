@@ -379,7 +379,7 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         self._test_network_passes(estimator_qnn, CASE_DATA["single_observable"])
 
     def test_setters_getters(self):
-        """Test Estimator QNN setters/getters."""
+        """Test Estimator QNN properties."""
         params = [Parameter("input1"), Parameter("weight1")]
         qc = QuantumCircuit(1)
         qc.h(0)
