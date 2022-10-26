@@ -24,6 +24,7 @@ features:
     Example:
 
     .. code-block:: python
+
       import numpy as np
 
       from qiskit.algorithms.optimizers import L_BFGS_B
