@@ -2,7 +2,7 @@
 features:
   - |
     New quantum neural network class, `~qiskit_machine_learning.neural_networks.EstimatorQNN`,
-    has been added. It internally uses :class:`~qiskit.primitives.Estimator` to calculate the
+    has been added. It uses :class:`~qiskit.primitives.Estimator` to calculate the
     forward pass and it requires :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to
     calculate the backward pass.
 
