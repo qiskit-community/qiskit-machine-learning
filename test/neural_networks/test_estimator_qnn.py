@@ -199,7 +199,7 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
                     )
                 self.assertIsNone(input_backward)
         # test backward pass with input_gradients
-        with self.subTest("backward bass with input gradients"):
+        with self.subTest("backward pass with input gradients"):
             estimator_qnn.input_gradients = True
             for i, inputs in enumerate(test_data):
                 input_backward, weight_backward = estimator_qnn.backward(inputs, weights)
