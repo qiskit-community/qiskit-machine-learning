@@ -66,11 +66,11 @@ class VQC(NeuralNetworkClassifier):
                 are adjusted to this number if required.
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
                 :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given,
-                the ``ZZFeatureMap`` is used if the number of qubits is larger than 1. For a single
-                qubit classification problem the ``ZFeatureMap`` is used per default.
+                the :class:`~qiskit.circuit.library.ZZFeatureMap` is used if the number of qubits is larger than 1. For a single
+                qubit classification problem the :class:`~qiskit.circuit.library.ZZFeatureMap` is used per default.
             ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
                 :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`. If ``None`` is given
-                then the ``RealAmplitudes`` circuit is used.
+                then the :class:`~qiskit.circuit.library.RealAmplitudes` circuit is used.
             loss: A target loss function to be used in training. Default value is ``cross_entropy``.
             optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
                 to SLSQP.
