@@ -61,7 +61,8 @@ class SamplingNeuralNetwork(NeuralNetwork):
             output_shape: The shape of the output.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
-                ``True`` for a proper gradient computation when using ``TorchConnector``.
+                ``True`` for a proper gradient computation when using
+                :class:`~qiskit_machine_learning.connectors.TorchConnector`.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """

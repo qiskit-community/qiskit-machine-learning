@@ -84,11 +84,13 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
 
         Raises:
             ValueError:
-                - if ``quantum_kernel`` is passed and ``precomputed`` is set to ``True``. To use
-                a precomputed kernel, ``quantum_kernel`` has to be of the ``None`` type.
+                - if :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` is passed and
+                ``precomputed`` is set to ``True``. To use a precomputed kernel,
+                 :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` has to be of
+                 the ``None`` type.
             TypeError:
-                - if ``quantum_kernel`` neither instance of
-                  :class:`~qiskit_machine_learning.kernels.BaseKernel` nor ``None``.
+                - if :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` neither instance
+                  of :class:`~qiskit_machine_learning.kernels.BaseKernel` nor ``None``.
         """
 
         if precomputed:
