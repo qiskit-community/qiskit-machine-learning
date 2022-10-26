@@ -143,6 +143,28 @@ CASE_DATA = dict(
         correct_weight_backwards=[[[[0.70807342]], [[0.7651474]]]],
         correct_input_backwards=[[[[-0.29192658]], [[0.2248451]]]],
     ),
+    single_observable=dict(
+        test_data=[1, [1], [[1], [2]], [[[1], [2]], [[3], [4]]]],
+        weights=[1],
+        correct_forwards=[
+            [[0.08565359]],
+            [[0.08565359]],
+            [[0.08565359], [-0.90744233]],
+            [[[0.08565359], [-0.90744233]], [[-1.06623996], [-0.24474149]]],
+        ],
+        correct_weight_backwards=[
+            [[[0.70807342]]],
+            [[[0.70807342]]],
+            [[[0.70807342]], [[0.7651474]]],
+            [[[[0.70807342]], [[0.7651474]]], [[[0.11874839]], [[-0.63682734]]]],
+        ],
+        correct_input_backwards=[
+            [[[-1.13339757]]],
+            [[[-1.13339757]]],
+            [[[-1.13339757]], [[-0.68445233]]],
+            [[[[-1.13339757]], [[-0.68445233]]], [[[0.39377522]], [[1.10996765]]]],
+        ],
+    ),
 )
 
 
@@ -340,8 +362,8 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         )
         self._test_network_passes(estimator_qnn, CASE_DATA["default_observables"])
 
-    def test_observables_getter(self):
-        """Test Estimator QNN observables getter."""
+    def test_single_observable(self):
+        """Test Estimator QNN with single observable."""
         params = [Parameter("input1"), Parameter("weight1")]
         qc = QuantumCircuit(1)
         qc.h(0)
@@ -350,14 +372,14 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         op = SparsePauliOp.from_list([("Z", 1), ("X", 1)])
         estimator_qnn = EstimatorQNN(
             circuit=qc,
-            observables=[op],
+            observables=op,
             input_params=[params[0]],
             weight_params=[params[1]],
         )
-        self.assertEqual(estimator_qnn.observables, [op])
+        self._test_network_passes(estimator_qnn, CASE_DATA["single_observable"])
 
-    def test_input_gradients(self):
-        """Test Estimator QNN input gradients."""
+    def test_setters_getters(self):
+        """Test Estimator QNN setters/getters."""
         params = [Parameter("input1"), Parameter("weight1")]
         qc = QuantumCircuit(1)
         qc.h(0)
@@ -369,11 +391,19 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
             observables=[op],
             input_params=[params[0]],
             weight_params=[params[1]],
-            input_gradients=True,
         )
-        self.assertTrue(estimator_qnn.input_gradients)
-        estimator_qnn.input_gradients = False
-        self.assertFalse(estimator_qnn.input_gradients)
+        with self.subTest("Test circuit getter."):
+            self.assertEqual(estimator_qnn.circuit, qc)
+        with self.subTest("Test observables getter."):
+            self.assertEqual(estimator_qnn.observables, [op])
+        with self.subTest("Test input_params getter."):
+            self.assertEqual(estimator_qnn.input_params, [params[0]])
+        with self.subTest("Test weight_params getter."):
+            self.assertEqual(estimator_qnn.weight_params, [params[1]])
+        with self.subTest("Test input_gradients setter and getter."):
+            self.assertFalse(estimator_qnn.input_gradients)
+            estimator_qnn.input_gradients = True
+            self.assertTrue(estimator_qnn.input_gradients)
 
 
 if __name__ == "__main__":

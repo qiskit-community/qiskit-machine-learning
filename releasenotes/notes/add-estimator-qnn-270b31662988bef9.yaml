@@ -1,32 +1,54 @@
 ---
 features:
   - |
-    New quantum neural network class, `~qiskit_machine_learning.neural_networks.EstimatorQNN`,
-    has been added. It uses :class:`~qiskit.primitives.Estimator` to calculate the
-    forward pass and uses :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to
-    calculate the backward pass.
+    Introduced Estimator Quantum Neural Network
+    (class, `~qiskit_machine_learning.neural_networks.EstimatorQNN`) based on (runtime) primitives.
+    This implementation leverages the estimator primitive
+    (see :class:`~qiskit.primitives.BaseEstimator`) and the estimator gradients
+    (see :class:`~qiskit.algorithms.gradients.BaseEstimatorGradient`) to enable runtime access and
+    more efficient computation of forward and backward passes.
+
+    The new Estimator QNN exposes a similar interface to the Circuit QNN, with a few differences.
+    One is the `quantum_instance` parameter. This parameter does not have a direct replacement,
+    and instead the `estimator` parameter must be used. The `gradient` parameter keeps the same name
+    as in the Opflow QNN implementation, but it no longer accepts Opflow gradient classes as inputs;
+    instead, this parameter expects an (optionally custom) primitive gradient.
+
+    The existing training algorithms such as :class:`~qiskit_machine_learning.algorithms.VQR`,
+    that were based on the Opflow QNN, are updated to accept both implementations. The implementation
+    of :class:`~qiskit_machine_learning.algorithms.NeuralNetworkRegressor` has not changed.
+
+    For example a `VQR` using `EstimatorQNN` can be trained as follows:
+
 
     Example:
 
     .. code-block:: python
+      import numpy as np
 
+      from qiskit.algorithms.optimizers import L_BFGS_B
       from qiskit.circuit import QuantumCircuit, Parameter
+      from qiskit.primitives import Estimator
 
-      from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
+      from qiskit_machine_learning.algorithms import VQR
 
-      params = [Parameter("input1"), Parameter("weight1")]
-      qc = QuantumCircuit(1)
-      qc.h(0)
-      qc.ry(params[0], 0)
-      qc.rx(params[1], 0)
+      num_samples = 20
+      eps = 0.2
+      lb, ub = -np.pi, np.pi
+      X = (ub - lb) * np.random.rand(num_samples, 1) + lb
+      Y = np.sin(X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
 
-      estimator_qnn = EstimatorQNN(
-          circuit=qc,
-          input_params=[params[0]],
-          weight_params=[params[1]]
+      params = [Parameter("θ_0"), Parameter("θ_1")]
+      feature_map = QuantumCircuit(1, name="fm")
+      feature_map.ry(params[0], 0)
+      ansatz = QuantumCircuit(1, name="vf")
+      ansatz.ry(params[1], 0)
+
+      vqr = VQR(
+          feature_map=feature_map,
+          ansatz=ansatz,
+          optimizer=L_BFGS_B(maxiter=5),
+          initial_point=np.array([0]),
+          estimator=Estimator()
       )
-
-      inputs = [1.0]
-      weights = [2.0]
-      res = estimator_qnn.forward(inputs, weights)
-      input_grad, weights_grad = estimator_qnn.backward(inputs, weights)
+      vqr.fit(X, Y)

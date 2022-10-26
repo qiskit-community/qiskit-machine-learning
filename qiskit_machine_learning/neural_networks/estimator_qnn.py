@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+from copy import copy
 import logging
 from typing import Sequence, Tuple
 
@@ -37,48 +38,66 @@ logger = logging.getLogger(__name__)
 
 
 class EstimatorQNN(NeuralNetwork):
-    """A Neural Network implementation based on the Estimator primitive."""
+    """A Neural Network implementation based on the Estimator primitive.
+
+    The ``EstimatorQNN`` is a neural network that takes in a parametrized quantum circuit
+    with the combined network's feature map (input parameters) and ansatz (weight parameters)
+    and outputs its measurements for the forward and backward passes.
+
+    Attributes:
+
+        estimator (BaseEstimator): The estimator primitive used to compute the neural network's results.
+        gradient (BaseEstimatorGradient): An optional estimator gradient to be used for the backward pass.
+
+    A Neural Network implementation based on the Estimator primitive."""
 
     def __init__(
         self,
         *,
         estimator: BaseEstimator | None = None,
         circuit: QuantumCircuit,
-        observables: Sequence[BaseOperator | PauliSumOp] | None = None,
+        observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp| None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         gradient: BaseEstimatorGradient | None = None,
         input_gradients: bool = False,
     ):
-        """
+        r"""
         Args:
             estimator: The estimator used to compute neural network's results.
+                If ``None``, a default instance of the reference estimator,
+                :class:`~qiskit.algorithms.Estimator`, will be used.
             circuit: The quantum circuit to represent the neural network.
-            observables: The observables for outputs of the neural network.
+            observables: The observables for outputs of the neural network. If ``None``,
+                use the default :math:`Z^{\otimes num\_qubits}` observable.
             input_params: The parameters that correspond to the input data of the network.
-                If None, the input data is not bound to any parameters.
+                If ``None``, the input data is not bound to any parameters.
             weight_params: The parameters that correspond to the trainable weights.
-                If None, the weights are not bound to any parameters.
+                If ``None``, the weights are not bound to any parameters.
             gradient: The estimator gradient to be used for the backward pass.
-                If None, the gradient is not computed.
+                If None, a default instance of the estimator gradient,
+                :class:`~qiskit.algorithms.ParamShiftEstimatorGradient`, will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
+
+        Raises:
+            QiskitMachineLearningError: Invalid parameter values.
         """
         if estimator is None:
-            self._estimator = Estimator()
-        else:
-            self._estimator = estimator
+            estimator = Estimator()
+        self.estimator = estimator
         self._circuit = circuit
         if observables is None:
-            self._observables = SparsePauliOp.from_list([("Z" * circuit.num_qubits, 1)])
-        else:
-            self._observables = observables
+            observables = SparsePauliOp.from_list([("Z" * circuit.num_qubits, 1)])
+        if isinstance(observables, (PauliSumOp, BaseOperator)):
+            observables = (observables,)
+        self._observables = observables
         self._input_params = list(input_params) if input_params is not None else []
         self._weight_params = list(weight_params) if weight_params is not None else []
         if gradient is None:
-            gradient = ParamShiftEstimatorGradient(self._estimator)
-        self._gradient = gradient
+            gradient = ParamShiftEstimatorGradient(self.estimator)
+        self.gradient = gradient
         self._input_gradients = input_gradients
 
         super().__init__(
@@ -90,9 +109,24 @@ class EstimatorQNN(NeuralNetwork):
         )
 
     @property
-    def observables(self) -> Sequence[BaseOperator | PauliSumOp]:
+    def circuit(self) -> QuantumCircuit:
+        """The quantum circuit representing the neural network."""
+        return copy(self._circuit)
+
+    @property
+    def observables(self) -> Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp:
         """Returns the underlying observables of this QNN."""
-        return self._observables
+        return copy(self._observables)
+
+    @property
+    def input_params(self) -> Sequence[Parameter] | None:
+        """The parameters that correspond to the input data of the network."""
+        return copy(self._input_params)
+
+    @property
+    def weight_params(self) -> Sequence[Parameter] | None:
+        """The parameters that correspond to the trainable weights."""
+        return copy(self._weight_params)
 
     @property
     def input_gradients(self) -> bool:
@@ -105,7 +139,6 @@ class EstimatorQNN(NeuralNetwork):
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
 
-    # todo: move to the super-class once sampler-based network is merged
     def _preprocess(
         self,
         input_data: np.ndarray | None,
@@ -131,7 +164,6 @@ class EstimatorQNN(NeuralNetwork):
 
     def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
         """Post-processing during forward pass of the network."""
-        print("====", result.values)
         if num_samples is None:
             num_samples = 1
         expectations = np.reshape(result.values, (-1, num_samples)).T
@@ -143,9 +175,9 @@ class EstimatorQNN(NeuralNetwork):
         """Forward pass of the neural network."""
         parameter_values_, num_samples = self._preprocess(input_data, weights)
         if num_samples is None:
-            job = self._estimator.run(self._circuit, self._observables)
+            job = self.estimator.run(self._circuit, self._observables)
         else:
-            job = self._estimator.run(
+            job = self.estimator.run(
                 [self._circuit] * num_samples * self.output_shape[0],
                 [op for op in self._observables for _ in range(num_samples)],
                 np.tile(parameter_values_, (self.output_shape[0], 1)),
@@ -199,10 +231,10 @@ class EstimatorQNN(NeuralNetwork):
         param_values = np.tile(parameter_values_, (num_observables, 1))
 
         if self._input_gradients:
-            job = self._gradient.run(circuits, observables, param_values)
+            job = self.gradient.run(circuits, observables, param_values)
         else:
             params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
-            job = self._gradient.run(circuits, observables, param_values, parameters=params)
+            job = self.gradient.run(circuits, observables, param_values, parameters=params)
 
         try:
             results = job.result()
