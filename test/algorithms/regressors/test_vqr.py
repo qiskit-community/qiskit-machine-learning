@@ -20,6 +20,7 @@ from ddt import data, ddt
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.quantum_info import SparsePauliOp
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 
 from qiskit_machine_learning.algorithms import VQR
@@ -133,6 +134,15 @@ class TestVQR(QiskitMachineLearningTestCase):
         self.assertEqual(vqr.ansatz.num_qubits, 2)
 
         self.assertEqual(vqr.num_qubits, 2)
+
+    def test_incorrect_observable(self):
+        """Test VQR with a wrong observable."""
+        with self.assertRaises(ValueError):
+            _ = VQR(
+                num_qubits=2,
+                quantum_instance=self.qasm_quantum_instance,
+                observable=SparsePauliOp.from_list([("Z" * 2, 1)]),
+            )
 
 
 if __name__ == "__main__":

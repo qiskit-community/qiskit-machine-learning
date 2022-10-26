@@ -3,7 +3,7 @@ features:
   - |
     New quantum neural network class, `~qiskit_machine_learning.neural_networks.EstimatorQNN`,
     has been added. It uses :class:`~qiskit.primitives.Estimator` to calculate the
-    forward pass and it requires :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to
+    forward pass and uses :class:`qiskit.algorithms.gradients.BaseEstimatorGradient` to
     calculate the backward pass.
 
     Example:
@@ -11,28 +11,22 @@ features:
     .. code-block:: python
 
       from qiskit.circuit import QuantumCircuit, Parameter
-      from qiskit.primitives import Estimator
-      from qiskit.quantum_info import SparsePauliOp
 
       from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 
-      estimator = Estimator()
       params = [Parameter("input1"), Parameter("weight1")]
       qc = QuantumCircuit(1)
       qc.h(0)
       qc.ry(params[0], 0)
       qc.rx(params[1], 0)
-      op = SparsePauliOp.from_list([("Z", 1)])
 
       estimator_qnn = EstimatorQNN(
-          estimator=estimator,
           circuit=qc,
-          observables=[op],
           input_params=[params[0]],
           weight_params=[params[1]]
       )
 
-      inputs = [1]
-      weights = [2]
+      inputs = [1.0]
+      weights = [2.0]
       res = estimator_qnn.forward(inputs, weights)
       input_grad, weights_grad = estimator_qnn.backward(inputs, weights)

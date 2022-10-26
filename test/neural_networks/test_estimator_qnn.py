@@ -118,54 +118,30 @@ CASE_DATA = dict(
     no_input_parameters=dict(
         test_data=[None],
         weights=[1, 1],
-        correct_forwards=[
-            [[0.08565359]]
-        ],
-        correct_weight_backwards=[
-            [[[-1.13339757, 0.70807342]]]
-        ],
-        correct_input_backwards=[
-            None
-        ],
+        correct_forwards=[[[0.08565359]]],
+        correct_weight_backwards=[[[[-1.13339757, 0.70807342]]]],
+        correct_input_backwards=[None],
     ),
     no_weight_parameters=dict(
-        test_data=[[1 , 1]],
+        test_data=[[1, 1]],
         weights=None,
-        correct_forwards=[
-            [[0.08565359]]
-        ],
-        correct_weight_backwards=[
-            None
-        ],
-        correct_input_backwards=[
-            [[[-1.13339757, 0.70807342]]]
-        ],
+        correct_forwards=[[[0.08565359]]],
+        correct_weight_backwards=[None],
+        correct_input_backwards=[[[[-1.13339757, 0.70807342]]]],
     ),
     no_parameters=dict(
         test_data=[None],
         weights=None,
-        correct_forwards=[
-            [[1]]
-        ],
-        correct_weight_backwards=[
-            None
-        ],
-        correct_input_backwards=[
-            None
-        ],
+        correct_forwards=[[[1]]],
+        correct_weight_backwards=[None],
+        correct_input_backwards=[None],
     ),
     default_observables=dict(
         test_data=[[[1], [2]]],
         weights=[1],
-        correct_forwards=[
-            [[-0.45464871], [-0.4912955 ]]
-        ],
-        correct_weight_backwards=[
-            [[[0.70807342]], [[0.7651474 ]]]
-        ],
-        correct_input_backwards=[
-            [[[-0.29192658]], [[ 0.2248451 ]]]
-        ],
+        correct_forwards=[[[-0.45464871], [-0.4912955]]],
+        correct_weight_backwards=[[[[0.70807342]], [[0.7651474]]]],
+        correct_input_backwards=[[[[-0.29192658]], [[0.2248451]]]],
     ),
 )
 
@@ -196,7 +172,9 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
                 if correct_weight_backwards[i] is None:
                     self.assertIsNone(weight_backward)
                 else:
-                    np.testing.assert_allclose(weight_backward, correct_weight_backwards[i], atol=1e-3)
+                    np.testing.assert_allclose(
+                        weight_backward, correct_weight_backwards[i], atol=1e-3
+                    )
                 self.assertIsNone(input_backward)
         # test backward pass with input_gradients
         with self.subTest("backward bass with input gradients"):
@@ -206,11 +184,15 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
                 if correct_weight_backwards[i] is None:
                     self.assertIsNone(weight_backward)
                 else:
-                    np.testing.assert_allclose(weight_backward, correct_weight_backwards[i], atol=1e-3)
+                    np.testing.assert_allclose(
+                        weight_backward, correct_weight_backwards[i], atol=1e-3
+                    )
                 if correct_input_backwards[i] is None:
                     self.assertIsNone(input_backward)
                 else:
-                    np.testing.assert_allclose(input_backward, correct_input_backwards[i], atol=1e-3)
+                    np.testing.assert_allclose(
+                        input_backward, correct_input_backwards[i], atol=1e-3
+                    )
 
     def test_estimator_qnn_1_1(self):
         """Test Estimator QNN with input/output dimension 1/1."""
@@ -387,7 +369,7 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
             observables=[op],
             input_params=[params[0]],
             weight_params=[params[1]],
-            input_gradients=True
+            input_gradients=True,
         )
         self.assertTrue(estimator_qnn.input_gradients)
         estimator_qnn.input_gradients = False
