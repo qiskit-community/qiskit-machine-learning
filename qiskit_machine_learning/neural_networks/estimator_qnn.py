@@ -221,9 +221,8 @@ class EstimatorQNN(NeuralNetwork):
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
 
-        if num_samples is None:
+        if num_samples is None or not (self._input_gradients or self._num_weights):
             return None, None
-
         num_observables = self.output_shape[0]
         num_circuits = num_samples * num_observables
 
