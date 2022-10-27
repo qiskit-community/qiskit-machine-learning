@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,8 +16,14 @@ from abc import abstractmethod
 import warnings
 import functools
 import inspect
-from typing import NamedTuple, Optional, Callable, Dict, Set, cast, Any
+from typing import NamedTuple, Optional, Callable, Dict, Set, cast, Any, Type
 from enum import Enum, EnumMeta
+
+
+class MachineLearningDeprecationWarning(DeprecationWarning):
+    """Deprecation Category for Qiskit Machine Learning."""
+
+    pass
 
 
 class DeprecatedEnum(Enum):
@@ -114,6 +120,7 @@ def warn_deprecated(
     new_name: Optional[str] = None,
     additional_msg: Optional[str] = None,
     stack_level: int = 2,
+    category: Type[Warning] = DeprecationWarning,
 ) -> None:
     """Emits deprecation warning the first time only
     Args:
@@ -124,6 +131,7 @@ def warn_deprecated(
         new_name: New name to be used
         additional_msg: any additional message
         stack_level: stack level
+        category: warning category
     """
     # skip if it was already added
     obj = _DeprecatedTypeName(version, old_type, old_name, new_type, new_name, additional_msg)
@@ -143,7 +151,7 @@ def warn_deprecated(
         msg += f" {additional_msg}"
     msg += "."
 
-    warnings.warn(msg, DeprecationWarning, stacklevel=stack_level + 1)
+    warnings.warn(msg, category=category, stacklevel=stack_level + 1)
 
 
 def warn_deprecated_same_type_name(
@@ -152,6 +160,7 @@ def warn_deprecated_same_type_name(
     new_name: str,
     additional_msg: Optional[str] = None,
     stack_level: int = 2,
+    category: Type[Warning] = DeprecationWarning,
 ) -> None:
     """Emits deprecation warning the first time only
        Used when the type and name remained the same.
@@ -161,9 +170,17 @@ def warn_deprecated_same_type_name(
         new_name: new name to be used
         additional_msg: any additional message
         stack_level: stack level
+        category: category: warning category
     """
     warn_deprecated(
-        version, new_type, new_name, new_type, new_name, additional_msg, stack_level + 1
+        version,
+        old_type=new_type,
+        old_name=new_name,
+        new_type=new_type,
+        new_name=new_name,
+        additional_msg=additional_msg,
+        stack_level=stack_level + 1,
+        category=category,
     )
 
 
