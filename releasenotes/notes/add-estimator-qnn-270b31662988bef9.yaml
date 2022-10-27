@@ -8,7 +8,8 @@ features:
     (see :class:`~qiskit.algorithms.gradients.BaseEstimatorGradient`) to enable runtime access and
     more efficient computation of forward and backward passes.
 
-    The new Estimator QNN exposes a similar interface to the Circuit QNN, with a few differences.
+    The new :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` exposes a similar
+    interface to the Opflow QNN, with a few differences.
     One is the `quantum_instance` parameter. This parameter does not have a direct replacement,
     and instead the `estimator` parameter must be used. The `gradient` parameter keeps the same name
     as in the Opflow QNN implementation, but it no longer accepts Opflow gradient classes as inputs;
