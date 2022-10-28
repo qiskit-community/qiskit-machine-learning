@@ -38,6 +38,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         self.seed = 7
         algorithm_globals.random_seed = self.seed
@@ -90,6 +91,10 @@ class TestQGAN(QiskitMachineLearningTestCase):
         qc.compose(ansatz, inplace=True)
         self.generator_circuit = qc
 
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
+
     def test_sample_generation(self):
         """Test sample generation."""
         self.qgan.set_generator(generator_circuit=self.generator_circuit)
@@ -122,9 +127,7 @@ class TestQGAN(QiskitMachineLearningTestCase):
 
     def test_qgan_training(self):
         """Test QGAN training."""
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
         self.qgan.set_generator(generator_circuit=self.generator_circuit)
-        warnings.filterwarnings("always", category=DeprecationWarning)
 
         trained_statevector = self.qgan.run(self.qi_statevector)
         trained_qasm = self.qgan.run(self.qi_qasm)

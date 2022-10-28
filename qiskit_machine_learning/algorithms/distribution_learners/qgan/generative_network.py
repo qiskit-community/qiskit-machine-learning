@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2021.
+# (C) Copyright IBM 2019, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,6 +17,8 @@ from abc import ABC, abstractmethod
 import numpy as np
 from qiskit.utils import QuantumInstance
 
+from ....deprecation import deprecate_function
+
 
 class GenerativeNetwork(ABC):
     """
@@ -27,6 +29,12 @@ class GenerativeNetwork(ABC):
     """
 
     @abstractmethod
+    @deprecate_function(
+        "0.5.0",
+        additional_msg="with no direct replacement for it. "
+        "Instead, please refer to the new QGAN tutorial",
+        stack_level=3,
+    )
     def __init__(self):
         super().__init__()
         self._num_parameters = 0

@@ -2,13 +2,14 @@
 features:
   - |
     Introduced Estimator Quantum Neural Network
-    (class, `~qiskit_machine_learning.neural_networks.EstimatorQNN`) based on (runtime) primitives.
+    (:class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`) based on (runtime) primitives.
     This implementation leverages the estimator primitive
     (see :class:`~qiskit.primitives.BaseEstimator`) and the estimator gradients
     (see :class:`~qiskit.algorithms.gradients.BaseEstimatorGradient`) to enable runtime access and
     more efficient computation of forward and backward passes.
 
-    The new Estimator QNN exposes a similar interface to the Circuit QNN, with a few differences.
+    The new :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` exposes a similar
+    interface to the Opflow QNN, with a few differences.
     One is the `quantum_instance` parameter. This parameter does not have a direct replacement,
     and instead the `estimator` parameter must be used. The `gradient` parameter keeps the same name
     as in the Opflow QNN implementation, but it no longer accepts Opflow gradient classes as inputs;
@@ -19,9 +20,6 @@ features:
     of :class:`~qiskit_machine_learning.algorithms.NeuralNetworkRegressor` has not changed.
 
     For example a `VQR` using `EstimatorQNN` can be trained as follows:
-
-
-    Example:
 
     .. code-block:: python
 

@@ -15,6 +15,7 @@ Discriminator
 """
 
 import qiskit_machine_learning.optionals as _optionals
+from ....deprecation import deprecate_function
 
 if _optionals.HAS_TORCH:
     import torch
@@ -33,6 +34,12 @@ class DiscriminatorNet(torch.nn.Module):  # pylint: disable=abstract-method
     Discriminator
     """
 
+    @deprecate_function(
+        "0.5.0",
+        additional_msg="with no direct replacement for it. "
+        "Instead, please refer to the new QGAN tutorial",
+        stack_level=3,
+    )
     def __init__(self, n_features: int = 1, n_out: int = 1) -> None:
         """
         Initialize the discriminator network.
