@@ -109,8 +109,10 @@ class TestVQC(QiskitMachineLearningTestCase):
             "qasm": (None, qasm),
         }
 
+    def tearDown(self) -> None:
         # ignore deprecation warnings
-        warnings.filterwarnings("ignore")
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @idata(
         itertools.product(
