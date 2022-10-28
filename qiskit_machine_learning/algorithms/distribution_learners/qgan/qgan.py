@@ -28,6 +28,7 @@ from qiskit.algorithms.optimizers import Optimizer
 from qiskit.opflow.gradients import Gradient
 from qiskit.utils.validation import validate_min
 from ....datasets.dataset_helper import discretize_and_truncate
+from ....deprecation import deprecate_function
 from ....exceptions import QiskitMachineLearningError
 from .discriminative_network import DiscriminativeNetwork
 from .generative_network import GenerativeNetwork
@@ -63,6 +64,12 @@ class QGAN:
         <https://www.nature.com/articles/s41534-019-0223-2>`_
     """
 
+    @deprecate_function(
+        "0.5.0",
+        additional_msg="with no direct replacement for it. "
+        "Instead, please refer to the new QGAN tutorial",
+        stack_level=3,
+    )
     def __init__(
         self,
         data: Union[np.ndarray, List],
