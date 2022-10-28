@@ -14,15 +14,15 @@
 
 from __future__ import annotations
 
-from copy import copy
 import logging
-from typing import Sequence, Tuple
+from copy import copy
+from typing import Sequence
 
 import numpy as np
 from qiskit.algorithms.gradients import (
     BaseEstimatorGradient,
-    ParamShiftEstimatorGradient,
     EstimatorGradientResult,
+    ParamShiftEstimatorGradient,
 )
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.opflow import PauliSumOp
@@ -58,8 +58,8 @@ class EstimatorQNN(NeuralNetwork):
     def __init__(
         self,
         *,
-        estimator: BaseEstimator | None = None,
         circuit: QuantumCircuit,
+        estimator: BaseEstimator | None = None,
         observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
@@ -220,12 +220,12 @@ class EstimatorQNN(NeuralNetwork):
 
     def _backward(
         self, input_data: np.ndarray | None, weights: np.ndarray | None
-    ) -> Tuple[np.ndarray | None, np.ndarray]:
+    ) -> tuple[np.ndarray | None, np.ndarray]:
         """Backward pass of the network."""
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
 
-        if num_samples is None or not (self._input_gradients or self._num_weights):
+        if num_samples is None or (self._input_gradients is False and self._num_weights == 0):
             return None, None
         num_observables = self.output_shape[0]
         num_circuits = num_samples * num_observables
