@@ -24,6 +24,8 @@ from qiskit.utils import algorithm_globals, QuantumInstance
 from qiskit.algorithms.optimizers import ADAM, Optimizer
 from qiskit.opflow.gradients import Gradient
 from qiskit.opflow import CircuitStateFn, CircuitSampler
+
+from ....deprecation import deprecate_function
 from ....exceptions import QiskitMachineLearningError
 from .generative_network import GenerativeNetwork
 from .discriminative_network import DiscriminativeNetwork
@@ -43,6 +45,12 @@ class QuantumGenerator(GenerativeNetwork):
     Eventually, the trained generator can be used for state preparation e.g. in QAE.
     """
 
+    @deprecate_function(
+        "0.5.0",
+        additional_msg="with no direct replacement for it. "
+        "Instead, please refer to the new QGAN tutorial",
+        stack_level=3,
+    )
     def __init__(
         self,
         bounds: np.ndarray,
