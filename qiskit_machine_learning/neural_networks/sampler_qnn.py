@@ -368,6 +368,10 @@ class SamplerQNN(NeuralNetwork):
         if num_samples is not None and np.prod(parameter_values.shape) > 0:
             if self._input_gradients:
                 job = self.gradient.run([self._circuit] * num_samples, parameter_values)
+                try:
+                    results = job.result()
+                except Exception as exc:
+                    raise QiskitMachineLearningError("Sampler job failed.") from exc
             else:
                 if len(parameter_values[0]) > self._num_inputs:
                     job = self.gradient.run(
@@ -375,10 +379,10 @@ class SamplerQNN(NeuralNetwork):
                         parameter_values,
                         parameters=[self._circuit.parameters[self._num_inputs :]] * num_samples,
                     )
-            try:
-                results = job.result()
-            except Exception as exc:
-                raise QiskitMachineLearningError("Sampler job failed.") from exc
+                    try:
+                        results = job.result()
+                    except Exception as exc:
+                        raise QiskitMachineLearningError("Sampler job failed.") from exc
 
         if results is None:
             return None, None

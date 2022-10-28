@@ -20,7 +20,7 @@ import numpy as np
 
 from ddt import ddt, idata
 
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import algorithm_globals
@@ -272,3 +272,25 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             ].reshape(grad.shape)
             diff = weights_grad_ - grad
             self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+
+    def test_setters_getters(self):
+         """Test Sampler QNN properties."""
+         params = [Parameter("input1"), Parameter("weight1")]
+         qc = QuantumCircuit(1)
+         qc.h(0)
+         qc.ry(params[0], 0)
+         qc.rx(params[1], 0)
+         qc.measure_all()
+         sampler_qnn = SamplerQNN(
+             circuit=qc,
+             input_params=[params[0]],
+             weight_params=[params[1]],
+         )
+         with self.subTest("Test input_params getter."):
+             self.assertEqual(sampler_qnn.input_params, [params[0]])
+         with self.subTest("Test weight_params getter."):
+             self.assertEqual(sampler_qnn.weight_params, [params[1]])
+         with self.subTest("Test input_gradients setter and getter."):
+             self.assertFalse(sampler_qnn.input_gradients)
+             sampler_qnn.input_gradients = True
+             self.assertTrue(sampler_qnn.input_gradients)
