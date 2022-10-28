@@ -41,8 +41,10 @@ class EstimatorQNN(NeuralNetwork):
     """A Neural Network implementation based on the Estimator primitive.
 
     The ``EstimatorQNN`` is a neural network that takes in a parametrized quantum circuit
-    with the combined network's feature map (input parameters) and ansatz (weight parameters)
-    and outputs its measurements for the forward and backward passes.
+    with designated parameters for input data and/or weights, an optional observable(s) and outputs
+    their expectation value(s). Quite often, a combined quantum circuit is used. Such a circuit is
+    built from two circuits: a feature map, it provides input parameters for the network, and an
+    ansatz (weight parameters).
 
     The following attributes can be set via the constructor but can also be read and
     updated once the EstimatorQNN object has been constructed.
