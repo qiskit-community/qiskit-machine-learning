@@ -2,7 +2,7 @@
 features:
   - |
     Introduced Estimator Quantum Neural Network
-    (class, `~qiskit_machine_learning.neural_networks.EstimatorQNN`) based on (runtime) primitives.
+    (:class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`) based on (runtime) primitives.
     This implementation leverages the estimator primitive
     (see :class:`~qiskit.primitives.BaseEstimator`) and the estimator gradients
     (see :class:`~qiskit.algorithms.gradients.BaseEstimatorGradient`) to enable runtime access and
@@ -20,9 +20,6 @@ features:
     of :class:`~qiskit_machine_learning.algorithms.NeuralNetworkRegressor` has not changed.
 
     For example a `VQR` using `EstimatorQNN` can be trained as follows:
-
-
-    Example:
 
     .. code-block:: python
 

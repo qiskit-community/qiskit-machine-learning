@@ -44,10 +44,13 @@ class EstimatorQNN(NeuralNetwork):
     with the combined network's feature map (input parameters) and ansatz (weight parameters)
     and outputs its measurements for the forward and backward passes.
 
+    The following attributes can be set via the initializer but can also be read and
+    updated once the EstimatorQNN object has been constructed.
+
     Attributes:
 
         estimator (BaseEstimator): The estimator primitive used to compute the neural network's results.
-        gradient (BaseEstimatorGradient): An optional estimator gradient to be used for the backward
+        gradient (BaseEstimatorGradient): The estimator gradient to be used for the backward
             pass.
 
     A Neural Network implementation based on the Estimator primitive."""
@@ -67,7 +70,7 @@ class EstimatorQNN(NeuralNetwork):
         Args:
             estimator: The estimator used to compute neural network's results.
                 If ``None``, a default instance of the reference estimator,
-                :class:`~qiskit.algorithms.Estimator`, will be used.
+                :class:`~qiskit.primitives.Estimator`, will be used.
             circuit: The quantum circuit to represent the neural network.
             observables: The observables for outputs of the neural network. If ``None``,
                 use the default :math:`Z^{\otimes num\_qubits}` observable.
@@ -77,10 +80,11 @@ class EstimatorQNN(NeuralNetwork):
                 If ``None``, the weights are not bound to any parameters.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
-                :class:`~qiskit.algorithms.ParamShiftEstimatorGradient`, will be used.
+                :class:`~qiskit.algorithms.gradients.ParamShiftEstimatorGradient`, will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
-                ``True`` for a proper gradient computation when using ``TorchConnector``.
+                ``True`` for a proper gradient computation when using
+                :class:`~qiskit_machine_learning.connectors.TorchConnector`.
 
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
