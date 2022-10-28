@@ -19,11 +19,11 @@ from test import QiskitMachineLearningTestCase
 import functools
 import itertools
 import unittest
+import warnings
 
 from ddt import ddt, idata, unpack
 import numpy as np
 import scipy
-import warnings
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
@@ -110,7 +110,6 @@ class TestVQC(QiskitMachineLearningTestCase):
         }
         # ignore deprecation warnings
         warnings.filterwarnings("ignore", category=DeprecationWarning)
-
 
     def tearDown(self) -> None:
         # restore warnings

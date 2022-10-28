@@ -116,8 +116,8 @@ class VQC(NeuralNetworkClassifier):
         neural_network: SamplerQNN | CircuitQNN = None
         if quantum_instance is not None and sampler is None:
             warn_deprecated(
-                 "0.5.0", DeprecatedType.ARGUMENT, old_name="quantum_instance", new_name="sampler"
-             )
+                "0.5.0", DeprecatedType.ARGUMENT, old_name="quantum_instance", new_name="sampler"
+            )
             neural_network = CircuitQNN(
                 self._circuit,
                 input_params=self.feature_map.parameters,
