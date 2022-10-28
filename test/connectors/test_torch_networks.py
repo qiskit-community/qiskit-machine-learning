@@ -26,6 +26,7 @@ from qiskit_machine_learning.neural_networks import (
     TwoLayerQNN,
     NeuralNetwork,
     SamplerQNN,
+    EstimatorQNN,
 )
 from qiskit_machine_learning.connectors import TorchConnector
 
@@ -93,6 +94,24 @@ class TestTorchNetworks(TestTorch):
         )
         return qnn
 
+    def _create_estimator_qnn(self) -> EstimatorQNN:
+        num_inputs = 2
+
+        feature_map = ZZFeatureMap(num_inputs)
+        ansatz = RealAmplitudes(num_inputs, entanglement="linear", reps=1)
+
+        qc = QuantumCircuit(num_inputs)
+        qc.append(feature_map, range(num_inputs))
+        qc.append(ansatz, range(num_inputs))
+
+        qnn = EstimatorQNN(
+            circuit=qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            input_gradients=True,  # for hybrid qnn
+        )
+        return qnn
+
     def _create_sampler_qnn(self) -> SamplerQNN:
         output_shape, interpret = 2, lambda x: f"{x:b}".count("1") % 2
         num_inputs = 2
@@ -122,7 +141,7 @@ class TestTorchNetworks(TestTorch):
         from torch.nn import MSELoss
         from torch.optim import SGD
 
-        qnn: Optional[Union[CircuitQNN, TwoLayerQNN, SamplerQNN]] = None
+        qnn: Optional[Union[CircuitQNN, TwoLayerQNN, EstimatorQNN, SamplerQNN]] = None
         if qnn_type == "opflow":
             qnn = self._create_opflow_qnn()
             output_size = 1
@@ -132,6 +151,9 @@ class TestTorchNetworks(TestTorch):
         elif qnn_type == "sampler_qnn":
             qnn = self._create_sampler_qnn()
             output_size = 2
+        elif qnn_type == "estimator_qnn":
+            qnn = self._create_estimator_qnn()
+            output_size = 1
         else:
             raise ValueError("Unsupported QNN type")
 

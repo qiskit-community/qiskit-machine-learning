@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2022.
+# (C) Copyright IBM 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -9,8 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-""" Test Neural Network Regressor """
+""" Test Neural Network Regressor with EstimatorQNN."""
 
 import unittest
 from test import QiskitMachineLearningTestCase
@@ -20,8 +19,9 @@ from ddt import data, ddt
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit.quantum_info import SparsePauliOp
-from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from qiskit.opflow import StateFn
+from qiskit.primitives import Estimator
+from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQR
 
@@ -30,25 +30,13 @@ from qiskit_machine_learning.algorithms import VQR
 class TestVQR(QiskitMachineLearningTestCase):
     """VQR Tests."""
 
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
-        from qiskit_aer import Aer
 
-        self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
+        self.estimator = Estimator()
 
         num_samples = 20
         eps = 0.2
@@ -59,29 +47,18 @@ class TestVQR(QiskitMachineLearningTestCase):
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
 
     @data(
-        # optimizer, loss, quantum instance
-        ("cobyla", "statevector", True),
-        ("cobyla", "qasm", True),
-        ("cobyla", "statevector", False),
-        ("cobyla", "qasm", False),
-        ("bfgs", "statevector", True),
-        ("bfgs", "qasm", True),
-        ("bfgs", "statevector", False),
-        ("bfgs", "qasm", False),
-        (None, "statevector", True),
-        (None, "qasm", True),
-        (None, "statevector", False),
-        (None, "qasm", False),
+        # optimizer, has ansatz
+        ("cobyla", True),
+        ("cobyla", False),
+        ("bfgs", True),
+        ("bfgs", False),
+        (None, True),
+        (None, False),
     )
     def test_vqr(self, config):
         """Test VQR."""
 
-        opt, q_i, has_ansatz = config
-
-        if q_i == "statevector":
-            quantum_instance = self.sv_quantum_instance
-        else:
-            quantum_instance = self.qasm_quantum_instance
+        opt, has_ansatz = config
 
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
@@ -111,8 +88,8 @@ class TestVQR(QiskitMachineLearningTestCase):
             feature_map=feature_map,
             ansatz=ansatz,
             optimizer=optimizer,
-            quantum_instance=quantum_instance,
             initial_point=initial_point,
+            estimator=self.estimator,
         )
 
         # fit to data
@@ -124,7 +101,7 @@ class TestVQR(QiskitMachineLearningTestCase):
 
     def test_properties(self):
         """Test properties of VQR."""
-        vqr = VQR(num_qubits=2, quantum_instance=self.qasm_quantum_instance)
+        vqr = VQR(num_qubits=2)
         self.assertIsNotNone(vqr.feature_map)
         self.assertIsInstance(vqr.feature_map, ZZFeatureMap)
         self.assertEqual(vqr.feature_map.num_qubits, 2)
@@ -138,11 +115,9 @@ class TestVQR(QiskitMachineLearningTestCase):
     def test_incorrect_observable(self):
         """Test VQR with a wrong observable."""
         with self.assertRaises(ValueError):
-            _ = VQR(
-                num_qubits=2,
-                quantum_instance=self.qasm_quantum_instance,
-                observable=SparsePauliOp.from_list([("Z" * 2, 1)]),
-            )
+            _ = VQR(num_qubits=2, observable=QuantumCircuit(2))
+        with self.assertRaises(ValueError):
+            _ = VQR(num_qubits=2, observable=StateFn(QuantumCircuit(2)))
 
 
 if __name__ == "__main__":
