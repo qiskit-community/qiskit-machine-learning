@@ -23,7 +23,7 @@ import unittest
 from ddt import ddt, idata, unpack
 import numpy as np
 import scipy
-
+import warnings
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
@@ -73,6 +73,7 @@ class TestVQC(QiskitMachineLearningTestCase):
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
+
         super().setUp()
         algorithm_globals.random_seed = 1111111
         self.num_classes_by_batch = []
@@ -107,6 +108,9 @@ class TestVQC(QiskitMachineLearningTestCase):
             "statevector": (None, statevector),
             "qasm": (None, qasm),
         }
+
+        # ignore deprecation warnings
+        warnings.filterwarnings("ignore")
 
     @idata(
         itertools.product(

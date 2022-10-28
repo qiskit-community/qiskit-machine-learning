@@ -57,6 +57,9 @@ class SamplerQNN(NeuralNetwork):
     can be used to interpret the sampler's output in a particular context (e.g. mapping the
     resulting bitstring to match the number of classes).
 
+    The following attributes can be set via the constructor but can also be read and
+    updated once the SamplerQNN object has been constructed.
+
     Attributes:
 
         sampler (BaseSampler): The sampler primitive used to compute the neural network's results.

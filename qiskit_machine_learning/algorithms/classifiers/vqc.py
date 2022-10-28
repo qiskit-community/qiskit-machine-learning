@@ -22,6 +22,7 @@ from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
 from qiskit.primitives import BaseSampler
 
+from ...deprecation import warn_deprecated, DeprecatedType
 from ...neural_networks import CircuitQNN, SamplerQNN
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
@@ -77,7 +78,7 @@ class VQC(NeuralNetworkClassifier):
             optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
                 to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
-            quantum_instance: If a quantum instance is sent and ``sampler`` is ``None``,
+            quantum_instance: Deprecated: If a quantum instance is sent and ``sampler`` is ``None``,
                 the underlying QNN will be of type
                 :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`, and the quantum
                 instance will be used to compute the neural network's results. If a sampler
@@ -114,6 +115,9 @@ class VQC(NeuralNetworkClassifier):
         # needed for mypy
         neural_network: SamplerQNN | CircuitQNN = None
         if quantum_instance is not None and sampler is None:
+            warn_deprecated(
+                 "0.5.0", DeprecatedType.ARGUMENT, old_name="quantum_instance", new_name="sampler"
+             )
             neural_network = CircuitQNN(
                 self._circuit,
                 input_params=self.feature_map.parameters,
