@@ -44,7 +44,7 @@ class EstimatorQNN(NeuralNetwork):
     with the combined network's feature map (input parameters) and ansatz (weight parameters)
     and outputs its measurements for the forward and backward passes.
 
-    The following attributes can be set via the initializer but can also be read and
+    The following attributes can be set via the constructor but can also be read and
     updated once the EstimatorQNN object has been constructed.
 
     Attributes:
