@@ -63,7 +63,12 @@ class EstimatorQNN(NeuralNetwork):
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
 
-        qnn = EstimatorQNN(circuit=qc, input_params=feature_map.parameters, weight_params=ansatz.parameters)
+        qnn = EstimatorQNN(
+            circuit=qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters
+        )
+
         qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
 
 
@@ -247,7 +252,7 @@ class EstimatorQNN(NeuralNetwork):
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
 
-        if num_samples is None or (self._input_gradients is False and self._num_weights == 0):
+        if num_samples is None or (not self._input_gradients and self._num_weights == 0):
             return None, None
         num_observables = self.output_shape[0]
         num_circuits = num_samples * num_observables
