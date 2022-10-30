@@ -56,14 +56,14 @@ class EstimatorQNN(NeuralNetwork):
         from qiskit_machine_learning.neural_networks import EstimatorQNN
 
         num_qubits = 2
-        fm = ZZFeatureMap(feature_dimension=num_qubits)
+        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
         ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
 
         qc = QuantumCircuit(num_qubits)
-        qc.compose(fm, inplace=True)
+        qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
 
-        qnn = EstimatorQNN(circuit=qc, input_params=fm.parameters, weight_params=ansatz.parameters)
+        qnn = EstimatorQNN(circuit=qc, input_params=feature_map.parameters, weight_params=ansatz.parameters)
         qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
 
 
