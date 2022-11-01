@@ -99,7 +99,7 @@ class SamplerQNN(NeuralNetwork):
     Attributes:
 
         sampler (BaseSampler): The sampler primitive used to compute the neural network's results.
-        gradient (BaseSamplerGradient): An optional sampler gradient to be used for the backward pass.
+        gradient (BaseSamplerGradient): A sampler gradient to be used for the backward pass.
     """
 
     def __init__(
