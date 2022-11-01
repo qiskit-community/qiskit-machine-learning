@@ -38,11 +38,39 @@ logger = logging.getLogger(__name__)
 
 
 class EstimatorQNN(NeuralNetwork):
-    """A Neural Network implementation based on the Estimator primitive.
+    """A neural network implementation based on the Estimator primitive.
 
     The ``EstimatorQNN`` is a neural network that takes in a parametrized quantum circuit
-    with the combined network's feature map (input parameters) and ansatz (weight parameters)
-    and outputs its measurements for the forward and backward passes.
+    with designated parameters for input data and/or weights, an optional observable(s) and outputs
+    their expectation value(s). Quite often, a combined quantum circuit is used. Such a circuit is
+    built from two circuits: a feature map, it provides input parameters for the network, and an
+    ansatz (weight parameters).
+
+    Example:
+
+    .. code-block::
+
+        from qiskit import QuantumCircuit
+        from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+
+        from qiskit_machine_learning.neural_networks import EstimatorQNN
+
+        num_qubits = 2
+        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
+        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(feature_map, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+        qnn = EstimatorQNN(
+            circuit=qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters
+        )
+
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
+
 
     The following attributes can be set via the constructor but can also be read and
     updated once the EstimatorQNN object has been constructed.
@@ -52,8 +80,7 @@ class EstimatorQNN(NeuralNetwork):
         estimator (BaseEstimator): The estimator primitive used to compute the neural network's results.
         gradient (BaseEstimatorGradient): The estimator gradient to be used for the backward
             pass.
-
-    A Neural Network implementation based on the Estimator primitive."""
+    """
 
     def __init__(
         self,
@@ -225,7 +252,7 @@ class EstimatorQNN(NeuralNetwork):
         # prepare parameters in the required format
         parameter_values_, num_samples = self._preprocess(input_data, weights)
 
-        if num_samples is None or (self._input_gradients is False and self._num_weights == 0):
+        if num_samples is None or (not self._input_gradients and self._num_weights == 0):
             return None, None
         num_observables = self.output_shape[0]
         num_circuits = num_samples * num_observables
