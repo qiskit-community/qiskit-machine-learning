@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import itertools
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -36,6 +37,7 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(BasicAer.get_backend("statevector_simulator"))
@@ -46,6 +48,10 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
             z4=ZFeatureMap(4),
             zz4=ZZFeatureMap(4),
         )
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @idata(
         itertools.product(

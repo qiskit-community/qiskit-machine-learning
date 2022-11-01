@@ -14,6 +14,7 @@
 
 import functools
 import unittest
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -39,7 +40,7 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(
@@ -63,6 +64,10 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
 
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def test_callable(self):
         """Test callable kernel in sklearn"""
