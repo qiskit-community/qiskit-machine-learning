@@ -227,7 +227,7 @@ class SamplerQNN(NeuralNetwork):
         if interpret is not None:
             if output_shape is None:
                 raise QiskitMachineLearningError(
-                    "No output shape given, but required in case of custom interpret!"
+                    "No output shape given; it's required when using custom interpret!"
                 )
             if isinstance(output_shape, Integral):
                 output_shape = int(output_shape)
