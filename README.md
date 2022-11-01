@@ -29,7 +29,7 @@ allows users to combine parametrized quantum circuits with quantum mechanical ob
 from Qiskit’s circuit library, and the QNN’s output is given by the expected value of the observable.
 The [SamplerQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html)
 leverages another primitive introduced in Qiskit, the [Sampler](https://qiskit.org/documentation/stubs/qiskit.primitives.BaseSampler.html) primitive. 
-This neural network translates quasi-probabilities of bitstrings estimated by the primitive into desired output. This 
+This neural network translates quasi-probabilities of bitstrings estimated by the primitive into a desired output. This 
 translation step can be used to interpret a given bitstring in a particular context, e.g. translating it into a set of classes.
 
 The neural networks include the functionality to evaluate them for a given input as well as to compute the
@@ -49,7 +49,7 @@ In addition to the models provided directly in Qiskit Machine Learning, it has t
 [TorchConnector](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector),
 which allows users to integrate all of our quantum neural networks directly into the
 [PyTorch](https://pytorch.org)
-open source machine learning library. Thanks to Qiskit’s gradient framework, this includes automatic
+open source machine learning library. Thanks to Qiskit’s gradient algorithms, this includes automatic
 differentiation - the overall gradients computed by [PyTorch](https://pytorch.org)
 during the backpropagation take into
 account quantum neural networks, too. The flexible design also allows the building of connectors
