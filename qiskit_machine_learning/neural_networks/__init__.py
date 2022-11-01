@@ -46,6 +46,7 @@ Neural Networks
    OpflowQNN
    TwoLayerQNN
    CircuitQNN
+   EstimatorQNN
    SamplerQNN
 
 Neural Network Metrics
@@ -61,6 +62,7 @@ Neural Network Metrics
 
 from .circuit_qnn import CircuitQNN
 from .effective_dimension import EffectiveDimension, LocalEffectiveDimension
+from .estimator_qnn import EstimatorQNN
 from .neural_network import NeuralNetwork
 from .opflow_qnn import OpflowQNN
 from .sampling_neural_network import SamplingNeuralNetwork
@@ -75,5 +77,6 @@ __all__ = [
     "CircuitQNN",
     "EffectiveDimension",
     "LocalEffectiveDimension",
+    "EstimatorQNN",
     "SamplerQNN",
 ]
