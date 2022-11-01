@@ -12,7 +12,7 @@ without deep quantum computing knowledge. On the other hand, Qiskit Machine Lear
 and users can easily extend it to support cutting-edge quantum machine learning research.
 
 Qiskit Machine Learning provides the :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`
-class class that makes use of the :class:`~qiskit.algorithms.state_fidelities.BaseFidelity` algorithm
+class class that makes use of the :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` algorithm
 introduced in Qiskit and can be easily used to directly compute kernel matrices for given datasets
 or can be passed to a Quantum Support Vector Classifier
 (:class:`~qiskit_machine_learning.algorithms.QSVC`) or
@@ -25,8 +25,8 @@ Qiskit Machine Learning defines a generic interface for neural networks that is 
 quantum neural networks. Two core implementations are readily provided, such as the
 :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`
 and the :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`.
-The :class:`~qiskit_machine_learning.neural_networks.OpflowQNN` leverages
-the :class:`qiskit.primitives.BaseEstimator` primitive from Qiskit and allows users to combine
+The :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` leverages
+the :class:`~qiskit.primitives.BaseEstimator` primitive from Qiskit and allows users to combine
 parametrized quantum circuits with quantum mechanical observables. The circuits can be constructed
 using, for example, building blocks from Qiskit's circuit library, and the QNN's output is given
 by the expected value of the observable.
