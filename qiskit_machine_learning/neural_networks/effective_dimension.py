@@ -173,7 +173,8 @@ class EffectiveDimension:
             grads[self._num_input_samples * i : self._num_input_samples * (i + 1)] = backward_pass
             outputs[self._num_input_samples * i : self._num_input_samples * (i + 1)] = forward_pass
 
-        # post-processing in the case of OpflowQNN output, to match the CircuitQNN output format
+        # post-processing in the case of OpflowQNN and EstimatorQNN output, to match
+        # the CircuitQNN output format
         if isinstance(self._model, (OpflowQNN, EstimatorQNN)):
             grads = np.concatenate([grads / 2, -1 * grads / 2], 1)
             outputs = np.concatenate([(outputs + 1) / 2, (1 - outputs) / 2], 1)
