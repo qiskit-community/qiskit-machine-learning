@@ -51,11 +51,47 @@ class SamplerQNN(NeuralNetwork):
     """A Neural Network implementation based on the Sampler primitive.
 
     The ``Sampler QNN`` is a neural network that takes in a parametrized quantum circuit
-    with the combined network's feature map (input parameters) and ansatz (weight parameters)
-    and outputs its measurements for the forward and backward passes.
+    with designated parameters for input data and/or weights and translates the quasi-probabilities
+    estimated by the :class:`~qiskit.primitives.Sampler` primitive into predicted classes. Quite
+    often, a combined quantum circuit is used. Such a circuit is built from two circuits:
+    a feature map, it provides input parameters for the network, and an ansatz (weight parameters).
+
     The output can be set up in different formats, and an optional post-processing step
     can be used to interpret the sampler's output in a particular context (e.g. mapping the
     resulting bitstring to match the number of classes).
+
+    In this example the network maps the output of the quantum circuit to two classes via a custom
+    `interpret` function:
+
+    .. code-block::
+
+        from qiskit import QuantumCircuit
+        from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+
+        from qiskit_machine_learning.neural_networks import SamplerQNN
+
+        num_qubits = 2
+        fm = ZZFeatureMap(feature_dimension=num_qubits)
+        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(fm, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+
+        def parity(x):
+            return "{:b}".format(x).count("1") % 2
+
+
+        qnn = SamplerQNN(
+            circuit=qc,
+            input_params=fm.parameters,
+            weight_params=ansatz.parameters,
+            interpret=parity,
+            output_shape=2
+        )
+
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
 
     The following attributes can be set via the constructor but can also be read and
     updated once the SamplerQNN object has been constructed.
