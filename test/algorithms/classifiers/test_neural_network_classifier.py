@@ -14,6 +14,7 @@ import itertools
 import os
 import tempfile
 import unittest
+import warnings
 from typing import Tuple, Optional, Callable
 
 from test import QiskitMachineLearningTestCase
@@ -52,6 +53,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
@@ -68,6 +70,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
         )
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def _create_optimizer(self, opt: str) -> Optional[Optimizer]:
         if opt == "bfgs":
