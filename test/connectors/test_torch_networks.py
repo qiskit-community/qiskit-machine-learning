@@ -24,7 +24,7 @@ from qiskit_machine_learning.neural_networks import (
     TwoLayerQNN,
     NeuralNetwork,
     EstimatorQNN,
-    SamplerQNN
+    SamplerQNN,
 )
 from qiskit_machine_learning.connectors import TorchConnector
 

@@ -35,7 +35,7 @@ INPUT_GRADS = [True, False]
 
 
 @ddt
-class TestCircuitvsSamplerQNN(QiskitMachineLearningTestCase):
+class TestCircuitQNNvsSamplerQNN(QiskitMachineLearningTestCase):
     """Circuit vs Sampler QNN Tests. To be removed once CircuitQNN is deprecated"""
 
     def setUp(self):

@@ -245,31 +245,6 @@ class SamplerQNN(NeuralNetwork):
 
         return output_shape_
 
-    def _preprocess(
-        self,
-        input_data: np.ndarray | None,
-        weights: np.ndarray | None,
-    ) -> tuple[np.ndarray | None, int | None]:
-        """
-        Pre-processing during forward pass of the network.
-        """
-
-        if input_data is not None:
-            num_samples = input_data.shape[0]
-            if weights is not None:
-                weights = np.broadcast_to(weights, (num_samples, len(weights)))
-                parameters = np.concatenate((input_data, weights), axis=1)
-            else:
-                parameters = input_data
-        else:
-            if weights is not None:
-                num_samples = 1
-                parameters = np.broadcast_to(weights, (num_samples, len(weights)))
-            else:
-                return None, None
-
-        return parameters, num_samples
-
     def _postprocess(self, num_samples: int, result: SamplerResult) -> np.ndarray | SparseArray:
         """
         Post-processing during forward pass of the network.
@@ -375,7 +350,7 @@ class SamplerQNN(NeuralNetwork):
         """
         Forward pass of the network.
         """
-        parameter_values, num_samples = self._preprocess(input_data, weights)
+        parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
         if num_samples is not None and np.prod(parameter_values.shape) > 0:
             # sampler allows batching
@@ -398,7 +373,7 @@ class SamplerQNN(NeuralNetwork):
 
         """Backward pass of the network."""
         # prepare parameters in the required format
-        parameter_values, num_samples = self._preprocess(input_data, weights)
+        parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
         results = None
         if num_samples is not None and np.prod(parameter_values.shape) > 0:
