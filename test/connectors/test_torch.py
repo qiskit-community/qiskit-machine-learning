@@ -13,6 +13,7 @@
 """Test Torch Base."""
 
 import unittest
+import warnings
 from abc import ABC, abstractmethod
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
 import qiskit_machine_learning.optionals as _optionals
@@ -30,6 +31,9 @@ class TestTorch(ABC):
     @unittest.skipUnless(_optionals.HAS_TORCH, "PyTorch not available.")
     def setup_test(self):
         """Base setup."""
+        # suppress warnings from the deprecated networks
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+
         algorithm_globals.random_seed = 12345
         # specify quantum instances
         from qiskit_aer import Aer, AerSimulator
@@ -49,6 +53,10 @@ class TestTorch(ABC):
         import torch
 
         torch.manual_seed(algorithm_globals.random_seed)
+
+    def tear_down(self):
+        """Tear down the test."""
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @abstractmethod
     def subTest(self, msg, **kwargs):
