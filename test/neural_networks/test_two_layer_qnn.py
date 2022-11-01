@@ -13,6 +13,7 @@
 """Test Two Layer QNN."""
 
 import unittest
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -34,6 +35,7 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         algorithm_globals.random_seed = 12345
         from qiskit_aer import Aer
 
@@ -56,6 +58,10 @@ class TestTwoLayerQNN(QiskitMachineLearningTestCase):
         )
 
         self.qnn_no_qi = TwoLayerQNN(num_qubits, feature_map=feature_map, ansatz=ansatz)
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @data(
         ("qi", True),

@@ -21,6 +21,7 @@ from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
 
 from .opflow_qnn import OpflowQNN
+from ..deprecation import deprecate_function, DeprecatedType
 from ..utils import derive_num_qubits_feature_map_ansatz
 
 
@@ -29,6 +30,11 @@ class TwoLayerQNN(OpflowQNN):
     and an observable.
     """
 
+    @deprecate_function(
+        version="0.5.0",
+        new_type=DeprecatedType.CLASS,
+        new_name="EstimatorQNN",
+    )
     def __init__(
         self,
         num_qubits: int | None = None,

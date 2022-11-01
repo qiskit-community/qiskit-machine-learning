@@ -31,6 +31,7 @@ from qiskit.utils import QuantumInstance
 from qiskit.utils.backend_utils import is_aer_provider
 import qiskit_machine_learning.optionals as _optionals
 from .neural_network import NeuralNetwork
+from ..deprecation import deprecate_function, DeprecatedType
 from ..exceptions import QiskitMachineLearningError, QiskitError
 
 if _optionals.HAS_SPARSE:
@@ -52,6 +53,11 @@ logger = logging.getLogger(__name__)
 class OpflowQNN(NeuralNetwork):
     """Opflow Quantum Neural Network."""
 
+    @deprecate_function(
+        version="0.5.0",
+        new_type=DeprecatedType.CLASS,
+        new_name="EstimatorQNN",
+    )
     def __init__(
         self,
         operator: OperatorBase,

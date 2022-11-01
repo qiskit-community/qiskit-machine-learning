@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 """ Test Opflow QNN """
-
+import warnings
 from typing import List
 
 from test import QiskitMachineLearningTestCase
@@ -39,6 +39,7 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         algorithm_globals.random_seed = 12345
         from qiskit_aer import Aer, AerSimulator
@@ -57,6 +58,10 @@ class TestOpflowQNN(QiskitMachineLearningTestCase):
             seed_transpiler=algorithm_globals.random_seed,
         )
         np.random.seed(algorithm_globals.random_seed)
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def validate_output_shape(self, qnn: OpflowQNN, test_data: List[np.ndarray]) -> None:
         """
