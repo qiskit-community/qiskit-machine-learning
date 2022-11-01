@@ -20,13 +20,13 @@ from ddt import ddt, data, unpack
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
-from qiskit.utils import algorithm_globals, optionals, QuantumInstance
+from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning.neural_networks import (
     EffectiveDimension,
     LocalEffectiveDimension,
     EstimatorQNN,
-    CircuitQNN,
+    SamplerQNN,
 )
 from qiskit_machine_learning import QiskitMachineLearningError
 
@@ -35,18 +35,10 @@ from qiskit_machine_learning import QiskitMachineLearningError
 class TestEffectiveDimension(QiskitMachineLearningTestCase):
     """Test the Effective Dimension algorithm"""
 
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
 
         algorithm_globals.random_seed = 1234
-        from qiskit_aer import Aer
-
-        qi_sv = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
 
         # set up quantum neural networks
         num_qubits = 3
@@ -61,34 +53,19 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         def parity(x):
             return f"{x:b}".count("1") % 2
 
-        circuit_qnn_1 = CircuitQNN(
-            qc,
+        sampler_qnn_1 = SamplerQNN(
+            circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
             interpret=parity,
             output_shape=2,
-            sparse=False,
-            quantum_instance=qi_sv,
         )
 
-        # qnn2 for checking result without parity
-        circuit_qnn_2 = CircuitQNN(
-            qc,
+        sampler_qnn_2 = SamplerQNN(
+            circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
-            sparse=False,
-            quantum_instance=qi_sv,
         )
-
-        # OpflowQNN
-        # observable = PauliSumOp.from_list([("Z" * num_qubits, 1)])
-        # opflow_qnn = TwoLayerQNN(
-        #     num_qubits,
-        #     feature_map=feature_map,
-        #     ansatz=ansatz,
-        #     observable=observable,
-        #     quantum_instance=qi_sv,
-        # )
 
         # EstimatorQNN
         estimator_qnn = EstimatorQNN(
@@ -98,8 +75,8 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         )
 
         self.qnns = {
-            "circuit1": circuit_qnn_1,
-            "circuit2": circuit_qnn_2,
+            "sampler_qnn_1": sampler_qnn_1,
+            "sampler_qnn_2": sampler_qnn_2,
             "estimator_qnn": estimator_qnn,
         }
 
@@ -109,10 +86,10 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
     @data(
         # qnn_name, num_inputs, num_weights, result
-        ("circuit1", 10, 10, 4.51202148),
-        ("circuit1", 1, 1, 1.39529449),
-        ("circuit1", 10, 1, 3.97371533),
-        ("circuit2", 10, 10, 5.90859124),
+        ("sampler_qnn_1", 10, 10, 4.51202148),
+        ("sampler_qnn_1", 1, 1, 1.39529449),
+        ("sampler_qnn_1", 10, 1, 3.97371533),
+        ("sampler_qnn_2", 10, 10, 5.90859124),
     )
     @unpack
     def test_alg_results(self, qnn_name, num_inputs, num_params, result):
@@ -128,7 +105,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         """Test that the results are equivalent for opflow and circuit qnn."""
 
         num_input_samples, num_weight_samples = 1, 1
-        qnn1 = self.qnns["circuit1"]
+        qnn1 = self.qnns["sampler_qnn_1"]
         qnn2 = self.qnns["estimator_qnn"]
 
         global_ed1 = EffectiveDimension(
@@ -153,7 +130,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         """Test results for a list of sampling sizes."""
 
         num_input_samples, num_weight_samples = 10, 10
-        qnn = self.qnns["circuit1"]
+        qnn = self.qnns["sampler_qnn_1"]
 
         global_ed1 = EffectiveDimension(
             qnn=qnn,
@@ -169,7 +146,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
     def test_inputs(self):
         """Test results for different input combinations."""
 
-        qnn = self.qnns["circuit1"]
+        qnn = self.qnns["sampler_qnn_1"]
 
         num_input_samples, num_weight_samples = 10, 10
         inputs = algorithm_globals.random.uniform(0, 1, size=(num_input_samples, qnn.num_inputs))
@@ -195,7 +172,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
     def test_inputs_shapes(self):
         """Test results for different input combinations."""
 
-        qnn = self.qnns["circuit1"]
+        qnn = self.qnns["sampler_qnn_1"]
 
         num_inputs, num_params = 10, 10
         inputs_ok = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
@@ -221,7 +198,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
     def test_local_ed_params(self):
         """Test that QiskitMachineLearningError is raised for wrong parameters sizes."""
 
-        qnn = self.qnns["circuit1"]
+        qnn = self.qnns["sampler_qnn_1"]
 
         num_inputs, num_params = 10, 10
         inputs_ok = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
