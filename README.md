@@ -9,8 +9,8 @@ without deep quantum computing knowledge. On the other hand, Qiskit Machine Lear
 and users can easily extend it to support cutting-edge quantum machine learning research.
 
 Qiskit Machine Learning provides the
-[QuantumKernel](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.QuantumKernel)
-class that can be easily used to directly compute
+[FidelityQuantumKernel](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel)
+class that makes use of the [Fidelity](https://qiskit.org/documentation/stubs/qiskit.algorithms.state_fidelities.BaseStateFidelity.html) algorithm introduced in Qiskit and can be easily used to directly compute
 kernel matrices for given datasets or can be passed to a Quantum Support Vector Classifier 
 [QSVC](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC) or
 Quantum Support Vector Regressor
@@ -20,25 +20,17 @@ It also can be used with many other existing kernel-based machine learning algor
 classical frameworks.
 
 Qiskit Machine Learning defines a generic interface for neural networks that is implemented by different
-quantum neural networks. Multiple implementations are readily provided, such as the
-[OpflowQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html#qiskit_machine_learning.neural_networks.OpflowQNN),
-the [TwoLayerQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html#qiskit_machine_learning.neural_networks.TwoLayerQNN),
-and the 
-[CircuitQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html#qiskit_machine_learning.neural_networks.CircuitQNN).
-The [OpflowQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html#qiskit_machine_learning.neural_networks.OpflowQNN)
-allows users to combine parametrized quantum circuits
-with quantum mechanical observables. The circuits can be constructed using, for example, building blocks
+quantum neural networks. Two core implementations are readily provided, such as the
+[EstimatorQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html),
+and the [SamplerQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html).
+The [EstimatorQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html)
+leverages the [Estimator](https://qiskit.org/documentation/stubs/qiskit.primitives.BaseEstimator.html) primitive from Qiskit and 
+allows users to combine parametrized quantum circuits with quantum mechanical observables. The circuits can be constructed using, for example, building blocks
 from Qiskit’s circuit library, and the QNN’s output is given by the expected value of the observable.
-The [TwoLayerQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html#qiskit_machine_learning.neural_networks.TwoLayerQNN) is a special case of the 
-[OpflowQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html#qiskit_machine_learning.neural_networks.OpflowQNN)
-that takes as input a feature map and an ansatz.
-The [CircuitQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html#qiskit_machine_learning.neural_networks.CircuitQNN) directly takes the quantum circuit’s 
-measurements as output without an observable.
-The output can be used either as a batch of samples, i.e., a list of bitstrings measured from the circuit’s
-qubits, or as a sparse vector of the resulting sampling probabilities for each bitstring. The former is of
-interest in learning distributions resulting from a given quantum circuit, while the latter finds application,
-e.g., in regression or classification. A post-processing step can be used to interpret a given bitstring in
-a particular context, e.g. translating it into a set of classes.
+The [SamplerQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html)
+leverages another primitive introduced in Qiskit, the [Sampler](https://qiskit.org/documentation/stubs/qiskit.primitives.BaseSampler.html) primitive. 
+This neural network translates quasi-probabilities of bitstrings estimated by the primitive into desired output. This 
+translation step can be used to interpret a given bitstring in a particular context, e.g. translating it into a set of classes.
 
 The neural networks include the functionality to evaluate them for a given input as well as to compute the
 corresponding gradients, which is important for efficient training. To train and use neural networks,
@@ -99,10 +91,10 @@ train and test samples from a data set to see how accurately the test set can
 be classified.
 
 ```python
-from qiskit import BasicAer
-from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal, ZZFeatureMap
+from qiskit.utils import algorithm_globals
+
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.datasets import ad_hoc_data
 
@@ -114,22 +106,19 @@ feature_dim = 2  # dimension of each data point
 training_size = 20
 test_size = 10
 
-# training features, training labels, test features, test labels as np.array,
+# training features, training labels, test features, test labels as np.ndarray,
 # one hot encoding for labels
-training_features, training_labels, test_features, test_labels = \
-    ad_hoc_data(
-            training_size=training_size, test_size=test_size, n=feature_dim, gap=0.3)
+training_features, training_labels, test_features, test_labels = ad_hoc_data(
+    training_size=training_size, test_size=test_size, n=feature_dim, gap=0.3
+)
 
 feature_map = ZZFeatureMap(feature_dimension=feature_dim, reps=2, entanglement="linear")
-ansatz = TwoLocal(feature_map.num_qubits, ['ry', 'rz'], 'cz', reps=3)
-vqc = VQC(feature_map=feature_map,
-          ansatz=ansatz,
-          optimizer=COBYLA(maxiter=100),
-          quantum_instance=QuantumInstance(BasicAer.get_backend('statevector_simulator'),
-                                           shots=1024,
-                                           seed_simulator=seed,
-                                           seed_transpiler=seed)
-          )
+ansatz = TwoLocal(feature_map.num_qubits, ["ry", "rz"], "cz", reps=3)
+vqc = VQC(
+    feature_map=feature_map,
+    ansatz=ansatz,
+    optimizer=COBYLA(maxiter=100),
+)
 vqc.fit(training_features, training_labels)
 
 score = vqc.score(test_features, test_labels)
