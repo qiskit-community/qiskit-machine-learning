@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 
 
 class CircuitQNN(SamplingNeuralNetwork):
-    """A Sampling Neural Network based on a given quantum circuit."""
+    """A sampling neural network based on a given quantum circuit."""
 
     def __init__(
         self,
