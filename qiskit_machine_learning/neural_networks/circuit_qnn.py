@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 
 class CircuitQNN(SamplingNeuralNetwork):
-    """Pending deprecation: A Sampling Neural Network based on a given quantum circuit."""
+    """Deprecation: A sampling neural network based on a given quantum circuit."""
 
     @deprecate_function(
         version="0.5.0",
