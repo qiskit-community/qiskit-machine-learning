@@ -99,7 +99,6 @@ class VQR(NeuralNetworkRegressor):
                 ``estimator``.
         """
         # needed for mypy
-        neural_network: EstimatorQNN | TwoLayerQNN = None
         if quantum_instance is not None and estimator is None:
             warn_deprecated(
                 "0.5.0", DeprecatedType.ARGUMENT, old_name="quantum_instance", new_name="estimator"

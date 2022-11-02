@@ -1,0 +1,12 @@
+---
+deprecations:
+  - |
+    Class :class:`qiskit_machine_learning.neural_networks.CircuitQNN` is pending deprecation and
+    is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.
+
+    Class :class:`qiskit_machine_learning.neural_networks.OpflowQNN` is pending deprecation and
+    is superseded by :class:`qiskit_machine_learning.neural_networks.EstimatorQNN`.
+
+    Class :class:`qiskit_machine_learning.neural_networks.TwoLayerQNN` is pending deprecation and
+    has no direct replacement. Please make use of
+    :class:`qiskit_machine_learning.neural_networks.EstimatorQNN` instead.
