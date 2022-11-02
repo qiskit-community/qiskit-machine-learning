@@ -48,9 +48,9 @@ logger = logging.getLogger(__name__)
 
 
 class SamplerQNN(NeuralNetwork):
-    """A Neural Network implementation based on the Sampler primitive.
+    """A neural network implementation based on the Sampler primitive.
 
-    The ``Sampler QNN`` is a neural network that takes in a parametrized quantum circuit
+    The ``SamplerQNN`` is a neural network that takes in a parametrized quantum circuit
     with designated parameters for input data and/or weights and translates the quasi-probabilities
     estimated by the :class:`~qiskit.primitives.Sampler` primitive into predicted classes. Quite
     often, a combined quantum circuit is used. Such a circuit is built from two circuits:
@@ -99,7 +99,7 @@ class SamplerQNN(NeuralNetwork):
     Attributes:
 
         sampler (BaseSampler): The sampler primitive used to compute the neural network's results.
-        gradient (BaseSamplerGradient): An optional sampler gradient to be used for the backward pass.
+        gradient (BaseSamplerGradient): A sampler gradient to be used for the backward pass.
     """
 
     def __init__(
@@ -128,13 +128,16 @@ class SamplerQNN(NeuralNetwork):
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If no interpret function is
                 passed, then an identity function will be used by this neural network.
-            output_shape: The output shape of the custom interpretation
+            output_shape: The output shape of the custom interpretation. It is ignored if no custom
+                interpret method is provided where the shape is taken to be
+                ``2^circuit.num_qubits``..
             gradient: An optional sampler gradient to be used for the backward pass.
                 If ``None`` is given, a default instance of
                 :class:`~qiskit.algorithms.gradients.ParamShiftSamplerGradient` will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                  Note that this parameter is ``False`` by default, and must be explicitly set to
-                 ``True`` for a proper gradient computation when using ``TorchConnector``.
+                 ``True`` for a proper gradient computation when using
+                 :class:`~qiskit_machine_learning.connectors.TorchConnector`.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
@@ -205,9 +208,9 @@ class SamplerQNN(NeuralNetwork):
         Args:
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. See constructor for more details.
-            output_shape: The output shape of the custom interpretation, only used in the case
-                where an interpret function is provided. See constructor
-                for more details.
+            output_shape: The output shape of the custom interpretation. It is ignored if no custom
+                interpret method is provided where the shape is taken to be
+                ``2^circuit.num_qubits``.
         """
 
         # derive target values to be used in computations
@@ -227,7 +230,7 @@ class SamplerQNN(NeuralNetwork):
         if interpret is not None:
             if output_shape is None:
                 raise QiskitMachineLearningError(
-                    "No output shape given, but required in case of custom interpret!"
+                    "No output shape given; it's required when using custom interpret!"
                 )
             if isinstance(output_shape, Integral):
                 output_shape = int(output_shape)
