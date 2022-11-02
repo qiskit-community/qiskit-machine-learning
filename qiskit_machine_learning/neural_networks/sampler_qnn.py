@@ -48,19 +48,58 @@ logger = logging.getLogger(__name__)
 
 
 class SamplerQNN(NeuralNetwork):
-    """A Neural Network implementation based on the Sampler primitive.
+    """A neural network implementation based on the Sampler primitive.
 
-    The ``Sampler QNN`` is a neural network that takes in a parametrized quantum circuit
-    with the combined network's feature map (input parameters) and ansatz (weight parameters)
-    and outputs its measurements for the forward and backward passes.
+    The ``SamplerQNN`` is a neural network that takes in a parametrized quantum circuit
+    with designated parameters for input data and/or weights and translates the quasi-probabilities
+    estimated by the :class:`~qiskit.primitives.Sampler` primitive into predicted classes. Quite
+    often, a combined quantum circuit is used. Such a circuit is built from two circuits:
+    a feature map, it provides input parameters for the network, and an ansatz (weight parameters).
+
     The output can be set up in different formats, and an optional post-processing step
     can be used to interpret the sampler's output in a particular context (e.g. mapping the
     resulting bitstring to match the number of classes).
 
+    In this example the network maps the output of the quantum circuit to two classes via a custom
+    `interpret` function:
+
+    .. code-block::
+
+        from qiskit import QuantumCircuit
+        from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+
+        from qiskit_machine_learning.neural_networks import SamplerQNN
+
+        num_qubits = 2
+        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
+        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(feature_map, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+
+        def parity(x):
+            return "{:b}".format(x).count("1") % 2
+
+
+        qnn = SamplerQNN(
+            circuit=qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            interpret=parity,
+            output_shape=2
+        )
+
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
+
+    The following attributes can be set via the constructor but can also be read and
+    updated once the SamplerQNN object has been constructed.
+
     Attributes:
 
         sampler (BaseSampler): The sampler primitive used to compute the neural network's results.
-        gradient (BaseSamplerGradient): An optional sampler gradient to be used for the backward pass.
+        gradient (BaseSamplerGradient): A sampler gradient to be used for the backward pass.
     """
 
     def __init__(
@@ -89,13 +128,16 @@ class SamplerQNN(NeuralNetwork):
                 tuple of unsigned integers. These are used as new indices for the (potentially
                 sparse) output array. If no interpret function is
                 passed, then an identity function will be used by this neural network.
-            output_shape: The output shape of the custom interpretation
+            output_shape: The output shape of the custom interpretation. It is ignored if no custom
+                interpret method is provided where the shape is taken to be
+                ``2^circuit.num_qubits``..
             gradient: An optional sampler gradient to be used for the backward pass.
                 If ``None`` is given, a default instance of
                 :class:`~qiskit.algorithms.gradients.ParamShiftSamplerGradient` will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                  Note that this parameter is ``False`` by default, and must be explicitly set to
-                 ``True`` for a proper gradient computation when using ``TorchConnector``.
+                 ``True`` for a proper gradient computation when using
+                 :class:`~qiskit_machine_learning.connectors.TorchConnector`.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
@@ -166,9 +208,9 @@ class SamplerQNN(NeuralNetwork):
         Args:
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. See constructor for more details.
-            output_shape: The output shape of the custom interpretation, only used in the case
-                where an interpret function is provided. See constructor
-                for more details.
+            output_shape: The output shape of the custom interpretation. It is ignored if no custom
+                interpret method is provided where the shape is taken to be
+                ``2^circuit.num_qubits``.
         """
 
         # derive target values to be used in computations
@@ -188,7 +230,7 @@ class SamplerQNN(NeuralNetwork):
         if interpret is not None:
             if output_shape is None:
                 raise QiskitMachineLearningError(
-                    "No output shape given, but required in case of custom interpret!"
+                    "No output shape given; it's required when using custom interpret!"
                 )
             if isinstance(output_shape, Integral):
                 output_shape = int(output_shape)
@@ -205,31 +247,6 @@ class SamplerQNN(NeuralNetwork):
             output_shape_ = (2**self._circuit.num_qubits,)
 
         return output_shape_
-
-    def _preprocess(
-        self,
-        input_data: np.ndarray | None,
-        weights: np.ndarray | None,
-    ) -> tuple[np.ndarray | None, int | None]:
-        """
-        Pre-processing during forward pass of the network.
-        """
-
-        if input_data is not None:
-            num_samples = input_data.shape[0]
-            if weights is not None:
-                weights = np.broadcast_to(weights, (num_samples, len(weights)))
-                parameters = np.concatenate((input_data, weights), axis=1)
-            else:
-                parameters = input_data
-        else:
-            if weights is not None:
-                num_samples = 1
-                parameters = np.broadcast_to(weights, (num_samples, len(weights)))
-            else:
-                return None, None
-
-        return parameters, num_samples
 
     def _postprocess(self, num_samples: int, result: SamplerResult) -> np.ndarray | SparseArray:
         """
@@ -336,7 +353,7 @@ class SamplerQNN(NeuralNetwork):
         """
         Forward pass of the network.
         """
-        parameter_values, num_samples = self._preprocess(input_data, weights)
+        parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
         if num_samples is not None and np.prod(parameter_values.shape) > 0:
             # sampler allows batching
@@ -359,12 +376,16 @@ class SamplerQNN(NeuralNetwork):
 
         """Backward pass of the network."""
         # prepare parameters in the required format
-        parameter_values, num_samples = self._preprocess(input_data, weights)
+        parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
         results = None
         if num_samples is not None and np.prod(parameter_values.shape) > 0:
             if self._input_gradients:
                 job = self.gradient.run([self._circuit] * num_samples, parameter_values)
+                try:
+                    results = job.result()
+                except Exception as exc:
+                    raise QiskitMachineLearningError("Sampler job failed.") from exc
             else:
                 if len(parameter_values[0]) > self._num_inputs:
                     job = self.gradient.run(
@@ -372,10 +393,10 @@ class SamplerQNN(NeuralNetwork):
                         parameter_values,
                         parameters=[self._circuit.parameters[self._num_inputs :]] * num_samples,
                     )
-            try:
-                results = job.result()
-            except Exception as exc:
-                raise QiskitMachineLearningError("Sampler job failed.") from exc
+                    try:
+                        results = job.result()
+                    except Exception as exc:
+                        raise QiskitMachineLearningError("Sampler job failed.") from exc
 
         if results is None:
             return None, None
