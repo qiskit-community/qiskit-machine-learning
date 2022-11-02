@@ -11,8 +11,8 @@
 # that they have been altered from the originals.
 
 """
-Utility functions and classes(:mod:`qiskit_machine_learning.utils`)
-===================================================================
+Utility functions and classes (:mod:`qiskit_machine_learning.utils`)
+====================================================================
 
 A collection of utility functions and classes provided by Qiskit Machine Learning.
 

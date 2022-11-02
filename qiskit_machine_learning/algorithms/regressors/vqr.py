@@ -30,7 +30,7 @@ from ...utils.loss_functions import Loss
 
 
 class VQR(NeuralNetworkRegressor):
-    """Quantum neural network regressor."""
+    """A convenient Variational Quantum Regressor implementation."""
 
     def __init__(
         self,
