@@ -171,29 +171,6 @@ class EstimatorQNN(NeuralNetwork):
         """Turn on/off computation of gradients with respect to input data."""
         self._input_gradients = input_gradients
 
-    def _preprocess(
-        self,
-        input_data: np.ndarray | None,
-        weights: np.ndarray | None,
-    ) -> tuple[np.ndarray | None, int | None]:
-        """
-        Pre-processing during forward pass of the network.
-        """
-        if input_data is not None:
-            num_samples = input_data.shape[0]
-            if weights is not None:
-                weights = np.broadcast_to(weights, (num_samples, len(weights)))
-                parameters = np.concatenate((input_data, weights), axis=1)
-            else:
-                parameters = input_data
-        else:
-            if weights is not None:
-                num_samples = 1
-                parameters = np.broadcast_to(weights, (num_samples, len(weights)))
-            else:
-                return None, None
-        return parameters, num_samples
-
     def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
         """Post-processing during forward pass of the network."""
         if num_samples is None:
@@ -205,7 +182,7 @@ class EstimatorQNN(NeuralNetwork):
         self, input_data: np.ndarray | None, weights: np.ndarray | None
     ) -> np.ndarray | None:
         """Forward pass of the neural network."""
-        parameter_values_, num_samples = self._preprocess(input_data, weights)
+        parameter_values_, num_samples = self._preprocess_forward(input_data, weights)
         if num_samples is None:
             job = self.estimator.run(self._circuit, self._observables)
         else:
@@ -250,7 +227,7 @@ class EstimatorQNN(NeuralNetwork):
     ) -> tuple[np.ndarray | None, np.ndarray]:
         """Backward pass of the network."""
         # prepare parameters in the required format
-        parameter_values_, num_samples = self._preprocess(input_data, weights)
+        parameter_values_, num_samples = self._preprocess_forward(input_data, weights)
 
         if num_samples is None or (not self._input_gradients and self._num_weights == 0):
             return None, None
