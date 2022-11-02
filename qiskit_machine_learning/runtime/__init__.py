@@ -11,12 +11,12 @@
 # that they have been altered from the originals.
 
 """
-Deprecated: Runtime (:mod:`qiskit_machine_learning.runtime`)
-===============================================================
+Deprecation: Runtime (:mod:`qiskit_machine_learning.runtime`)
+=============================================================
 
 .. currentmodule:: qiskit_machine_learning.runtime
 
-Deprecated: Programs that embed Qiskit Runtime in the algorithmic interfaces and facilitate usage of
+Programs that embed Qiskit Runtime in the algorithmic interfaces and facilitate usage of
 algorithms and scripts in the cloud.
 
 

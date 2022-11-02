@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 """
-Circuit library for Machine Learning applications (:mod:`qiskit_machine_learning.circuit.library`)
+Circuit library for machine learning applications (:mod:`qiskit_machine_learning.circuit.library`)
 ==================================================================================================
 
 A library of quantum circuits used for machine learning applications and as

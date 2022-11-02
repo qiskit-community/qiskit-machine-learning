@@ -12,7 +12,7 @@
 
 """
 Connectors (:mod:`qiskit_machine_learning.connectors`)
-===============================================================
+======================================================
 
 Connectors from Qiskit Machine Learning to other frameworks.
 

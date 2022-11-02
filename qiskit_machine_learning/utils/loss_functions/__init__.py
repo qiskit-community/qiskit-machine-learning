@@ -13,6 +13,7 @@
 """
 Loss Functions (:mod:`qiskit_machine_learning.utils.loss_functions`)
 ====================================================================
+
 A collection of common loss functions to be used with the classifiers and regressors provided
 by Qiskit Machine Learning.
 
