@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 
 class OpflowQNN(NeuralNetwork):
-    """Opflow Quantum Neural Network."""
+    """Deprecation: Opflow Quantum Neural Network."""
 
     @deprecate_function(
         version="0.5.0",

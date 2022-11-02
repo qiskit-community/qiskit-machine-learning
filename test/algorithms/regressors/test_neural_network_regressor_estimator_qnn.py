@@ -82,9 +82,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         # construct QNN
         regression_estimator_qnn = EstimatorQNN(
-            circuit=qc,
-            input_params=feature_map.parameters,
-            weight_params=ansatz.parameters
+            circuit=qc, input_params=feature_map.parameters, weight_params=ansatz.parameters
         )
 
         initial_point = np.zeros(ansatz.num_parameters)

@@ -26,7 +26,7 @@ from ..utils import derive_num_qubits_feature_map_ansatz
 
 
 class TwoLayerQNN(OpflowQNN):
-    """Two Layer Quantum Neural Network consisting of a feature map, a ansatz,
+    """Deprecation: Two Layer Quantum Neural Network consisting of a feature map, a ansatz,
     and an observable.
     """
 
