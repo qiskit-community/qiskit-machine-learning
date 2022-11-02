@@ -49,7 +49,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 12345
         from qiskit_aer import Aer, AerSimulator
 
@@ -107,7 +107,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=DeprecationWarning)
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def _get_qnn(self, sparse, sampling, quantum_instance_type, interpret_id):
         """Construct QNN from configuration."""

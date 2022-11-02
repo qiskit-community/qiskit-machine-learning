@@ -53,7 +53,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
@@ -73,7 +73,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=DeprecationWarning)
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def _create_optimizer(self, opt: str) -> Optional[Optimizer]:
         if opt == "bfgs":

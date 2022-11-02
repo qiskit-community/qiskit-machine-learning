@@ -23,11 +23,10 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.opflow import Gradient, CircuitSampler, StateFn, OpflowError, OperatorBase
 from qiskit.providers import Backend
-from qiskit.utils import QuantumInstance
+from qiskit.utils import QuantumInstance, deprecate_function
 
 import qiskit_machine_learning.optionals as _optionals
 from .sampling_neural_network import SamplingNeuralNetwork
-from ..deprecation import deprecate_function, DeprecatedType
 from ..exceptions import QiskitMachineLearningError, QiskitError
 
 if _optionals.HAS_SPARSE:
@@ -47,12 +46,15 @@ logger = logging.getLogger(__name__)
 
 
 class CircuitQNN(SamplingNeuralNetwork):
-    """Deprecation: A sampling neural network based on a given quantum circuit."""
+    """Pending deprecation: A sampling neural network based on a given quantum circuit."""
 
     @deprecate_function(
-        version="0.5.0",
-        new_type=DeprecatedType.CLASS,
-        new_name="SamplerQNN",
+        "The CircuitQNN class has been superseded by the "
+        "qiskit_machine_learning.neural_networks.SamplerQNN "
+        "This class will be deprecated in a future release and subsequently "
+        "removed after that.",
+        stacklevel=3,
+        category=PendingDeprecationWarning,
     )
     def __init__(
         self,
