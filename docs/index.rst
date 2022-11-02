@@ -64,6 +64,8 @@ Next Steps
 
 `Getting started <getting_started.html>`_
 
+`Migration Guide <migration/index.html>`_
+
 `Tutorials <tutorials/index.html>`_
 
 .. toctree::
@@ -71,6 +73,7 @@ Next Steps
 
     Overview <self>
     Getting Started <getting_started>
+    Migration Guide <migration/index>
     Tutorials <tutorials/index>
     API Reference <apidocs/qiskit_machine_learning>
     Release Notes <release_notes>
