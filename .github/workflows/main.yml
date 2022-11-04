@@ -248,7 +248,7 @@ jobs:
           cd docs/_build/html
           mkdir artifacts
           tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
-        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
         shell: bash
       - name: Run upload stable tutorials
         uses: actions/upload-artifact@v3
