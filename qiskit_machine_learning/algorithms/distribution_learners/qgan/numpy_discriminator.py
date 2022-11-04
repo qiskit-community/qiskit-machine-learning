@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019, 2022.
+# (C) Copyright IBM 2019, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,6 +18,7 @@ https://towardsdatascience.com/lets-code-a-neural-network-in-plain-numpy-ae7e744
 """
 
 from typing import Dict, Any
+import builtins
 import os
 import numpy as np
 from qiskit.utils import algorithm_globals
@@ -103,7 +104,7 @@ class DiscriminatorNet:
             elif activation == "sigmoid":
                 activation_func = sigmoid
             else:
-                raise Exception("Non-supported activation function")
+                raise builtins.Exception("Non-supported activation function")
 
             return activation_func(z_curr), z_curr
 
@@ -163,7 +164,7 @@ class DiscriminatorNet:
             elif activation == "sigmoid":
                 backward_activation_func = sigmoid_backward
             else:
-                raise Exception("Non-supported activation function")
+                raise builtins.Exception("Non-supported activation function")
 
             dz_curr = backward_activation_func(da_curr, z_curr)
             dw_curr = np.dot(dz_curr, a_prev.T)

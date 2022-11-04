@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -63,14 +63,14 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter qiskit-terra[visualization] 'torchvision<0.10.0'
+          pip install torchvision
           sudo apt-get -y install pandoc graphviz
           sudo apt-get -y install python3-enchant
           sudo apt-get -y install hunspell-en-us
           pip install pyenchant
           echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
         shell: bash
-      - run:  pip check
+      - run: pip check
         if: ${{ !cancelled() }}
         shell: bash
       - name: Copyright Check
@@ -78,7 +78,7 @@ jobs:
           python tools/check_copyright.py -check
         if: ${{ !cancelled() }}
         shell: bash
-      - run:  make spell
+      - run: make spell
         if: ${{ !cancelled() }}
         shell: bash
       - name: Style Check
@@ -88,7 +88,7 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
       - name: Run make html
-        run:  |
+        run: |
           make clean_sphinx
           make html
           cd docs/_build/html
@@ -102,7 +102,7 @@ jobs:
           name: documentation
           path: docs/_build/html/artifacts/documentation.tar.gz
         if: ${{ !cancelled() }}
-      - run:  make doctest
+      - run: make doctest
         if: ${{ !cancelled() }}
         shell: bash
   MachineLearning:
@@ -111,16 +111,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7, 3.8, 3.9, '3.10']
+        python-version: [3.7, 3.8, 3.9, '3.10', 3.11]
         include:
           - os: macos-latest
             python-version: 3.8
           - os: macos-latest
-            python-version: '3.10'
+            python-version: 3.11
           - os: windows-2019
             python-version: 3.8
           - os: windows-2019
-            python-version: '3.10'
+            python-version: 3.11
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -140,12 +140,7 @@ jobs:
       - run: make lint
         shell: bash
       - run: make mypy
-        if: ${{ !cancelled() && matrix.python-version != '3.10' }}
-        shell: bash
-      - name: Run make lint latest version
-        run: |
-          pip install -U -r requirements-dev.txt
-          make lint
+        if: ${{ !cancelled() && matrix.python-version != '3.10' && matrix.python-version != 3.11 }}
         shell: bash
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
@@ -186,7 +181,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.8, 3.11]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -207,7 +202,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter qiskit-terra[visualization] 'torchvision<0.10.0'
+          pip install torchvision
           sudo apt-get install -y pandoc graphviz
         shell: bash
       - name: Run Machine Learning Tutorials
@@ -289,22 +284,22 @@ jobs:
           path: /tmp/m38
       - uses: actions/download-artifact@v3
         with:
-          name: macos-latest-3.10
-          path: /tmp/m310
+          name: macos-latest-3.11
+          path: /tmp/m311
       - uses: actions/download-artifact@v3
         with:
           name: windows-2019-3.8
           path: /tmp/w38
       - uses: actions/download-artifact@v3
         with:
-          name: windows-2019-3.10
-          path: /tmp/w310
+          name: windows-2019-3.11
+          path: /tmp/w311
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/u37/ml.dep /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/m38/ml.dep /tmp/m310/ml.dep /tmp/w38/ml.dep /tmp/w310/ml.dep || true
+          sort -f -u /tmp/u37/ml.dep /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/m38/ml.dep /tmp/m311/ml.dep /tmp/w38/ml.dep /tmp/w311/ml.dep || true
         shell: bash
       - name: Coverage combine
         run: coverage3 combine /tmp/u37/ml.dat

@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -221,7 +221,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         num_inputs, num_params = 10, 10
         inputs_ok = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
         weights_ok = algorithm_globals.random.uniform(0, 1, size=(1, qnn.num_weights))
-        weights_ok2 = algorithm_globals.random.uniform(0, 1, size=(qnn.num_weights))
+        weights_ok2 = algorithm_globals.random.uniform(0, 1, size=qnn.num_weights)
         weights_wrong = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
 
         LocalEffectiveDimension(

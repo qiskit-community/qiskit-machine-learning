@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2022.
+# (C) Copyright IBM 2018, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -121,7 +121,7 @@ def discretize_and_truncate(
                     temp.append(grid_element + [element_current])
             grid_elements = deepcopy(temp)
             data_grid.append(elements_current_dim)
-    data_grid = np.array(data_grid)
+    data_grid = np.array(data_grid, dtype=object)
 
     data = np.reshape(data, (len(data), len(data[0])))
 

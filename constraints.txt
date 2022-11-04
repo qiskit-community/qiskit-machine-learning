@@ -1,3 +1,1 @@
-astroid==2.5.6
-pylint==2.8.3
 numpy>=1.20.0

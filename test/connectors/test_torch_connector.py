@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,6 +13,7 @@
 """Test Torch Connector."""
 
 from typing import List
+import builtins
 from test.connectors.test_torch import TestTorch
 
 import numpy as np
@@ -64,14 +65,14 @@ class TestTorchConnector(TestTorch):
             c_worked = True
             try:
                 c_shape = linear(x).shape
-            except Exception:  # pylint: disable=broad-except
+            except builtins.Exception:  # pylint: disable=broad-except
                 c_worked = False
 
             # test quantum model and track whether it failed or store the output shape
             q_worked = True
             try:
                 q_shape = model(x).shape
-            except Exception:  # pylint: disable=broad-except
+            except builtins.Exception:  # pylint: disable=broad-except
                 q_worked = False
 
             # compare results and assert that the behavior is equal

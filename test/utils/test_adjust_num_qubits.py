@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -28,9 +28,12 @@ class TestAdjustNumQubits(QiskitMachineLearningTestCase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.properties = dict(
-            z1=ZFeatureMap(1), z2=ZFeatureMap(2), ra1=RealAmplitudes(1), ra2=RealAmplitudes(2)
-        )
+        self.properties = {
+            "z1": ZFeatureMap(1),
+            "z2": ZFeatureMap(2),
+            "ra1": RealAmplitudes(1),
+            "ra2": RealAmplitudes(2),
+        }
 
     def test_all_none(self):
         """Test when all parameters are ``None``."""
