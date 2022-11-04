@@ -10,3 +10,5 @@ deprecations:
     Class :class:`qiskit_machine_learning.neural_networks.TwoLayerQNN` is pending deprecation and
     has no direct replacement. Please make use of
     :class:`qiskit_machine_learning.neural_networks.EstimatorQNN` instead.
+
+    These classes will be deprecated in a future release and subsequently removed after that.
