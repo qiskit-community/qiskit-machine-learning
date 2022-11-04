@@ -13,6 +13,7 @@
 """ Test Neural Network Classifier """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
 from test import QiskitMachineLearningTestCase
@@ -73,7 +74,6 @@ class TestVQC(QiskitMachineLearningTestCase):
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
-
         super().setUp()
         algorithm_globals.random_seed = 1111111
         self.num_classes_by_batch = []
@@ -109,11 +109,13 @@ class TestVQC(QiskitMachineLearningTestCase):
             "qasm": (None, qasm),
         }
         # ignore deprecation warnings
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
     def tearDown(self) -> None:
         # restore warnings
         super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
         warnings.filterwarnings("always", category=DeprecationWarning)
 
     @idata(

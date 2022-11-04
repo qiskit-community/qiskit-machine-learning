@@ -13,6 +13,8 @@
 """ Test Neural Network Regressor """
 
 import unittest
+import warnings
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
@@ -33,6 +35,8 @@ class TestVQR(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
@@ -57,6 +61,11 @@ class TestVQR(QiskitMachineLearningTestCase):
         lb, ub = -np.pi, np.pi
         self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @data(
         # optimizer, loss, quantum instance
