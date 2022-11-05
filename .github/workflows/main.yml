@@ -255,7 +255,7 @@ jobs:
         with:
           name: tutorials-stable${{ matrix.python-version }}
           path: docs/_build/html/artifacts/tutorials.tar.gz
-        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
   Deprecation_Messages_and_Coverage:
     needs: [Checks, MachineLearning, Tutorials]
     runs-on: ubuntu-latest
