@@ -31,10 +31,10 @@ from .neural_network_classifier import NeuralNetworkClassifier
 
 
 class VQC(NeuralNetworkClassifier):
-    r"""Variational quantum classifier.
+    r"""A convenient Variational Quantum Classifier implementation.
 
     The variational quantum classifier (VQC) is a variational algorithm where the measured
-    expectation value is interpreted as the output of a classifier.
+    bitstrings are interpreted as the output of a classifier.
 
     Constructs a quantum circuit and corresponding neural network, then uses it to instantiate a
     neural network classifier.

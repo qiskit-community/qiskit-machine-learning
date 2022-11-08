@@ -24,7 +24,7 @@ from .base_kernel import BaseKernel
 
 
 class TrainableKernel(BaseKernel, ABC):
-    """An abstract class that adds ability to train kernel."""
+    """An abstract definition of the ability to train kernel via specifying training parameters."""
 
     def __init__(
         self, *, training_parameters: ParameterVector | Sequence[Parameter] | None = None, **kwargs

@@ -23,7 +23,7 @@ from qiskit.circuit.library import ZZFeatureMap
 
 class BaseKernel(ABC):
     r"""
-    Abstract class defining the Kernel interface.
+    An abstract definition of the quantum kernel interface.
 
     The general task of machine learning is to find and study patterns in data. For many
     algorithms, the datapoints are better understood in a higher dimensional feature space,

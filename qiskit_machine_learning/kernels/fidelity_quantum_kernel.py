@@ -27,7 +27,8 @@ KernelIndices = List[Tuple[int, int]]
 
 class FidelityQuantumKernel(BaseKernel):
     r"""
-    QuantumKernel
+    An implementation of the quantum kernel interface based on the
+    :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` algorithm.
 
     The general task of machine learning is to find and study patterns in data. For many
     algorithms, the datapoints are better understood in a higher dimensional feature space,

@@ -1,5 +1,6 @@
 adam
 adjoint
+aer
 al
 ancilla
 ancillas
@@ -232,6 +233,7 @@ transpiles
 transpiling
 tunable
 uncompiled
+uncompute
 unitaries
 univariate
 unsymmetric

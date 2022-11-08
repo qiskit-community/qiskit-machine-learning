@@ -11,15 +11,16 @@
 # that they have been altered from the originals.
 
 """
-Neural Networks (:mod:`qiskit_machine_learning.neural_networks`)
-================================================================
+Quantum neural networks (:mod:`qiskit_machine_learning.neural_networks`)
+========================================================================
+
 A neural network is a parametrized network which may be defined as a artificial
 neural network - classical neural network - or as parametrized quantum circuits
 - quantum neural network. Furthermore, neural networks can be defined with respect
 to a discriminative or generative task.
 
-Neural Networks may be used, for example, with the
-:class:`~qiskit_machine_learning.algorithms.QGAN` algorithm.
+Neural networks may be used, for example, with the
+:class:`~qiskit_machine_learning.algorithms.VQC` algorithm.
 
 See also the :class:`~qiskit_machine_learning.connectors.TorchConnector` that allows the
 use of these neural networks in code written to `PyTorch <https://pytorch.org/>`_.

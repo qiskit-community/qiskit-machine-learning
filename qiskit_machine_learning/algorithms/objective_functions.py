@@ -107,8 +107,8 @@ class ObjectiveFunction:
 
 
 class BinaryObjectiveFunction(ObjectiveFunction):
-    """An objective function for binary representation of the output,
-    e.g. classes of ``-1`` and ``+1``."""
+    """An objective function for binary representation of the output. For instance, classes of
+    ``-1`` and ``+1``."""
 
     def objective(self, weights: np.ndarray) -> float:
         # predict is of shape (N, 1), where N is a number of samples
@@ -143,8 +143,8 @@ class BinaryObjectiveFunction(ObjectiveFunction):
 
 class MultiClassObjectiveFunction(ObjectiveFunction):
     """
-    An objective function for multiclass representation of the output,
-    e.g. classes of ``0``, ``1``, ``2``, etc.
+    An objective function for multiclass representation of the output. For instance, classes of
+    ``0``, ``1``, ``2``, etc.
     """
 
     def objective(self, weights: np.ndarray) -> float:
@@ -182,8 +182,8 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
 
 class OneHotObjectiveFunction(ObjectiveFunction):
     """
-    An objective function for one hot encoding representation of the output,
-    e.g. classes like ``[1, 0, 0]``, ``[0, 1, 0]``, ``[0, 0, 1]``.
+    An objective function for one hot encoding representation of the output. For instance, classes
+    like ``[1, 0, 0]``, ``[0, 1, 0]``, ``[0, 0, 1]``.
     """
 
     def objective(self, weights: np.ndarray) -> float:
