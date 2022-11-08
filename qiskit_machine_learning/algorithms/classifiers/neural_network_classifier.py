@@ -37,9 +37,9 @@ from ...utils.loss_functions import Loss
 
 
 class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
-    """Quantum neural network classifier. Implements Scikit-Learn compatible methods for
-    classification and extends ``ClassifierMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
-    for more details.
+    """Implements a basic quantum neural network classifier. Implements Scikit-Learn compatible
+    methods for classification and extends ``ClassifierMixin``.
+    See `Scikit-Learn <https://scikit-learn.org>`__ for more details.
     """
 
     def __init__(
