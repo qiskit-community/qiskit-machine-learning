@@ -11,9 +11,10 @@
 # that they have been altered from the originals.
 
 """
-Utilities (:mod:`qiskit_machine_learning.utils`)
-========================================================================
-A collection of utilities provided by Qiskit Machine Learning.
+Utility functions and classes (:mod:`qiskit_machine_learning.utils`)
+====================================================================
+
+A collection of utility functions and classes provided by Qiskit Machine Learning.
 
 .. currentmodule:: qiskit_machine_learning.utils
 

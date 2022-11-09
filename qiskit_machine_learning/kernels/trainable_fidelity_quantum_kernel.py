@@ -28,6 +28,10 @@ from ..exceptions import QiskitMachineLearningError
 
 class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
     r"""
+    An implementation of the quantum kernel that is based on the
+    :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` algorithm and provides ability to
+    train it.
+
     Finding good quantum kernels for a specific machine learning task is a big challenge in quantum
     machine learning. One way to choose the kernel is to add trainable parameters to the feature
     map, which can be used to fine-tune the kernel.
