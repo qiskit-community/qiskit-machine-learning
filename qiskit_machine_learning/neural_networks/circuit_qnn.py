@@ -54,7 +54,6 @@ class CircuitQNN(SamplingNeuralNetwork):
         "This class will be deprecated in a future release and subsequently "
         "removed after that.",
         stacklevel=3,
-        category=PendingDeprecationWarning,
     )
     def __init__(
         self,
