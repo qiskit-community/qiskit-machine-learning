@@ -24,12 +24,13 @@ from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
 
 
 class QSVC(SVC, SerializableModelMixin):
-    r"""Quantum Support Vector Classifier.
+    r"""Quantum Support Vector Classifier that extends the scikit-learn
+    `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_
+    classifier and introduces an additional `quantum_kernel` parameter.
 
-    This class shows how to use a quantum kernel for classification. The class extends
-    `sklearn.svm.SVC <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_,
-    and thus inherits its methods like ``fit`` and ``predict`` used in the example below.
-    Read more in the `sklearn user guide
+    This class shows how to use a quantum kernel for classification. The class inherits its methods
+    like ``fit`` and ``predict`` from scikit-learn, see the example below.
+    Read more in the `scikit-learn user guide
     <https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
 
     **Example**

@@ -63,7 +63,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx_rtd_theme qiskit-terra[visualization] 'torchvision<0.10.0'
+          pip install jupyter qiskit-terra[visualization] 'torchvision<0.10.0'
           sudo apt-get -y install pandoc graphviz
           sudo apt-get -y install python3-enchant
           sudo apt-get -y install hunspell-en-us
@@ -206,7 +206,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter sphinx_rtd_theme qiskit-terra[visualization] 'torchvision<0.10.0'
+          pip install jupyter qiskit-terra[visualization] 'torchvision<0.10.0'
           sudo apt-get install -y pandoc graphviz
         shell: bash
       - name: Run Machine Learning Tutorials
@@ -238,7 +238,6 @@ jobs:
           wget https://codeload.github.com/Qiskit/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
           unzip /tmp/repo.zip -d /tmp/
           # copy stable tutorials to main tutorials
-          rm -rf docs/tutorials/*
           cp -R /tmp/qiskit-machine-learning-stable-$version/docs/tutorials/* docs/tutorials
           # run tutorials and zip results
           echo "earliest_version: 0.1.0" >> releasenotes/config.yaml

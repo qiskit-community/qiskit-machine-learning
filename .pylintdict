@@ -1,5 +1,6 @@
 adam
 adjoint
+aer
 al
 alan
 ancilla
@@ -75,6 +76,7 @@ expressibility
 farrokh
 fidelities
 formatter
+frontend
 func
 gambetta
 gaussian
@@ -242,6 +244,7 @@ transpiling
 tunable
 uncompiled
 uncompress
+uncompute
 unitaries
 univariate
 unsymmetric

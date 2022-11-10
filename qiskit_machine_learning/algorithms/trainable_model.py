@@ -35,7 +35,7 @@ from ..deprecation import deprecate_values
 
 
 class TrainableModel(SerializableModelMixin):
-    """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
+    """Base class for ML model that defines a scikit-learn like interface for Estimators."""
 
     @deprecate_values("0.4.0", {"loss": {"cross_entropy_sigmoid": "<unsupported>"}})
     def __init__(

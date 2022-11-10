@@ -38,7 +38,8 @@ from ..exceptions import QiskitMachineLearningError
 
 
 class QuantumKernel(TrainableKernel, BaseKernel):
-    r"""Pending deprecation: Quantum Kernel.
+    r"""Pending deprecation: A dedicated trainable quantum kernel implementation that constructs
+    and executes quantum circuits directly.
 
     The general task of machine learning is to find and study patterns in data. For many
     algorithms, the datapoints are better understood in a higher dimensional feature space,

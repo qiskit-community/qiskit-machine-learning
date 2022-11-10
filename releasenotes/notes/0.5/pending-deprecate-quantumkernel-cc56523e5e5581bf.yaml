@@ -4,3 +4,5 @@ deprecations:
     Class :class:`qiskit_machine_learning.kernels.QuantumKernel` is pending deprecation and
     is superseded by :class:`qiskit_machine_learning.kernels.FidelityQuantumKernel` and
     :class:`qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`.
+
+    This class will be deprecated in a future release and subsequently removed after that.

@@ -11,7 +11,10 @@
 # that they have been altered from the originals.
 
 """
-Quantum Kernels (:mod:`qiskit_machine_learning.kernels`)
+Quantum kernels (:mod:`qiskit_machine_learning.kernels`)
+========================================================
+
+A set of extendable classes that can be used to evaluate kernel matrices.
 
 .. currentmodule:: qiskit_machine_learning.kernels
 
