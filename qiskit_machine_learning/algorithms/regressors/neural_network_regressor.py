@@ -26,9 +26,9 @@ from ..trainable_model import TrainableModel
 
 
 class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
-    """Quantum neural network regressor. Implements Scikit-Learn compatible methods for
-    regression and extends ``RegressorMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
-    for more details.
+    """Implements a basic quantum neural network regressor. Implements Scikit-Learn compatible
+    methods for regression and extends ``RegressorMixin``.
+    See `Scikit-Learn <https://scikit-learn.org>`__ for more details.
     """
 
     def _fit_internal(

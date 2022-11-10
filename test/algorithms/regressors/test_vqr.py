@@ -13,14 +13,18 @@
 """ Test Neural Network Regressor """
 
 import unittest
+import warnings
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import data, ddt
-
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.quantum_info import SparsePauliOp
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+
 from qiskit_machine_learning.algorithms import VQR
 
 
@@ -31,6 +35,8 @@ class TestVQR(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
@@ -55,6 +61,11 @@ class TestVQR(QiskitMachineLearningTestCase):
         lb, ub = -np.pi, np.pi
         self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @data(
         # optimizer, loss, quantum instance
@@ -119,6 +130,28 @@ class TestVQR(QiskitMachineLearningTestCase):
         # score
         score = regressor.score(self.X, self.y)
         self.assertGreater(score, 0.5)
+
+    def test_properties(self):
+        """Test properties of VQR."""
+        vqr = VQR(num_qubits=2, quantum_instance=self.qasm_quantum_instance)
+        self.assertIsNotNone(vqr.feature_map)
+        self.assertIsInstance(vqr.feature_map, ZZFeatureMap)
+        self.assertEqual(vqr.feature_map.num_qubits, 2)
+
+        self.assertIsNotNone(vqr.ansatz)
+        self.assertIsInstance(vqr.ansatz, RealAmplitudes)
+        self.assertEqual(vqr.ansatz.num_qubits, 2)
+
+        self.assertEqual(vqr.num_qubits, 2)
+
+    def test_incorrect_observable(self):
+        """Test VQR with a wrong observable."""
+        with self.assertRaises(ValueError):
+            _ = VQR(
+                num_qubits=2,
+                quantum_instance=self.qasm_quantum_instance,
+                observable=SparsePauliOp.from_list([("Z" * 2, 1)]),
+            )
 
 
 if __name__ == "__main__":

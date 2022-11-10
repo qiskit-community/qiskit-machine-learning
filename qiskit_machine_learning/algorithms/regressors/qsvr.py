@@ -23,13 +23,14 @@ from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
 
 
 class QSVR(SVR, SerializableModelMixin):
-    r"""Quantum Support Vector Regressor.
+    r"""Quantum Support Vector Regressor that extends the scikit-learn
+    `sklearn.svm.SVR <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html>`_
+    regressor and introduces an additional `quantum_kernel` parameter.
 
-    This class shows how to use a quantum kernel for regression. The class extends
-    `sklearn.svm.SVR <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html>`_,
-    and thus inherits its methods like ``fit`` and ``predict`` used in the example below.
+    This class shows how to use a quantum kernel for regression. The class inherits its methods
+    like ``fit`` and ``predict`` from scikit-learn, see the example below.
     Read more in the
-    `sklearn user guide <https://scikit-learn.org/stable/modules/svm.html#svm-regression>`_.
+    `scikit-learn user guide <https://scikit-learn.org/stable/modules/svm.html#svm-regression>`_.
 
     **Example**
 

@@ -11,7 +11,10 @@
 # that they have been altered from the originals.
 
 """
-Algorithms (:mod:`qiskit_machine_learning.algorithms`)
+Quantum machine learning algorithms (:mod:`qiskit_machine_learning.algorithms`)
+===============================================================================
+
+The package contains core algorithms such as classifiers and classifiers.
 
 .. currentmodule:: qiskit_machine_learning.algorithms
 

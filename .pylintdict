@@ -1,4 +1,6 @@
+adam
 adjoint
+aer
 al
 ancilla
 ancillas
@@ -10,10 +12,13 @@ async
 autograd
 autosummary
 backend
+backends
 backpropagation
+benchmarking
 bergholm
 bitstring
 bitstrings
+bivariate
 bool
 boolean
 cargs
@@ -51,6 +56,7 @@ diag
 dicts
 dimensionality
 dir
+discretization
 discretize
 discretized
 discriminative
@@ -65,6 +71,7 @@ expressibility
 farrokh
 fidelities
 formatter
+frontend
 func
 gambetta
 gaussian
@@ -226,6 +233,7 @@ transpiles
 transpiling
 tunable
 uncompiled
+uncompute
 unitaries
 univariate
 unsymmetric

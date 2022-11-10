@@ -14,6 +14,7 @@ import unittest
 import itertools
 import os
 import tempfile
+import warnings
 from typing import Tuple
 
 from test import QiskitMachineLearningTestCase
@@ -44,6 +45,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
@@ -68,6 +70,10 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         lb, ub = -np.pi, np.pi
         self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
         self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def _create_regressor(
         self, opt, q_i, callback=None
