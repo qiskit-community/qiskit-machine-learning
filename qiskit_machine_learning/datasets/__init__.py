@@ -13,7 +13,8 @@
 """
 Datasets (:mod:`qiskit_machine_learning.datasets`)
 ==================================================
-Sample datasets suitable for machine learning problems
+
+A set of sample datasets suitable for machine learning problems
 
 .. currentmodule:: qiskit_machine_learning.datasets
 
@@ -25,26 +26,11 @@ Datasets
    :nosignatures:
 
    ad_hoc_data
-   breast_cancer
-   digits
-   gaussian
-   iris
-   wine
 
 """
 
 from .ad_hoc import ad_hoc_data
-from .breast_cancer import breast_cancer
-from .digits import digits
-from .gaussian import gaussian
-from .iris import iris
-from .wine import wine
 
 __all__ = [
     "ad_hoc_data",
-    "breast_cancer",
-    "digits",
-    "gaussian",
-    "iris",
-    "wine",
 ]

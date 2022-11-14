@@ -33,7 +33,7 @@ from .serializable_model import SerializableModelMixin
 
 
 class TrainableModel(SerializableModelMixin):
-    """Base class for ML model. This class defines Scikit-Learn like interface to implement."""
+    """Base class for ML model that defines a scikit-learn like interface for Estimators."""
 
     def __init__(
         self,
