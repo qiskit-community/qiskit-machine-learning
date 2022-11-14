@@ -1,0 +1,4 @@
+---
+deprecations:
+  - |
+    The previously deprecated ``CrossEntropySigmoidLoss`` loss function has been removed.
