@@ -11,11 +11,3 @@
 # that they have been altered from the originals.
 
 """ Test datasets module """
-
-
-def get_deprecated_msg_ref(function_name: str) -> str:
-    """returns reference deprecated message"""
-    return (
-        f"The {function_name} function is deprecated as of version 0.4.0 and "
-        "will be removed no sooner than 3 months after the release."
-    )
