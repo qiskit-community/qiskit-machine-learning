@@ -33,6 +33,7 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
@@ -45,6 +46,7 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
     def tearDown(self) -> None:
         super().tearDown()
         warnings.filterwarnings("always", category=DeprecationWarning)
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_positional_user_parameters(self):
         """Test assigning user parameters with positional argument"""

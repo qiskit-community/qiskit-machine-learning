@@ -38,6 +38,7 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(BasicAer.get_backend("statevector_simulator"))
@@ -52,6 +53,7 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
     def tearDown(self) -> None:
         super().tearDown()
         warnings.filterwarnings("always", category=DeprecationWarning)
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     @idata(
         itertools.product(

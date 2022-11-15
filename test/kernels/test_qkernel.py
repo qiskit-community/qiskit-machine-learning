@@ -41,6 +41,7 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(
@@ -68,6 +69,7 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
     def tearDown(self) -> None:
         super().tearDown()
         warnings.filterwarnings("always", category=DeprecationWarning)
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_callable(self):
         """Test callable kernel in sklearn"""
@@ -125,6 +127,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         algorithm_globals.random_seed = 10598
         self.shots = 12000
@@ -220,6 +223,11 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
                 ]
             ),
         }
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+
 
     def test_qasm_symmetric(self):
         """Test symmetric matrix evaluation using qasm simulator"""
@@ -355,12 +363,17 @@ class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         self.x = [1, 1]
         self.y = [2, 2]
         self.z = [3]
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=1)
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def _check_circuit(self, qc: QuantumCircuit, check_measurements: bool, check_inverse: bool):
         self.assertEqual(qc.num_qubits, self.feature_map.num_qubits)
@@ -433,6 +446,7 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
@@ -458,6 +472,10 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
             ]
         )
         self.label_train = np.asarray([0, 0, 1, 1])
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_training_parameters(self):
         """Test assigning/re-assigning user parameters"""
@@ -668,6 +686,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         algorithm_globals.random_seed = 10598
 
@@ -712,6 +731,10 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
             ]
         )
         self.label_train = np.asarray([0, 0, 0, 0, 1, 1, 1, 1])
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_statevector_batching(self):
         """Test batching when using the statevector simulator"""
@@ -779,6 +802,7 @@ class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 10598
         self.circuit_counts = 0
 
@@ -798,6 +822,10 @@ class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
             "dups": np.array([[1, 2], [1, 2], [3, 4]]),
             "y_vec": np.array([[0, 1], [1, 2]]),
         }
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     @idata(
         [

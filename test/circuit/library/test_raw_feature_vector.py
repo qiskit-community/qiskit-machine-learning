@@ -23,7 +23,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from qiskit.utils import algorithm_globals, optionals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector
@@ -92,17 +92,10 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_usage_in_vqc(self):
-        """Test using the circuit the a single VQC iteration works."""
+        """Test the circuit works in VQC."""
 
         # specify quantum instance and random seed
         algorithm_globals.random_seed = 12345
-        from qiskit_aer import Aer
-
-        quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
 
         # construct data
         num_samples = 10
@@ -117,15 +110,11 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
 
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
         ansatz = RealAmplitudes(feature_map.num_qubits, reps=1)
-        # classification may fail sometimes, so let's fix initial point
-        initial_point = np.array([0.5] * ansatz.num_parameters)
 
         vqc = VQC(
             feature_map=feature_map,
             ansatz=ansatz,
             optimizer=COBYLA(maxiter=10),
-            quantum_instance=quantum_instance,
-            initial_point=initial_point,
         )
 
         vqc.fit(X, y)
