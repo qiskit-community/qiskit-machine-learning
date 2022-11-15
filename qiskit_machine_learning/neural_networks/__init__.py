@@ -11,15 +11,16 @@
 # that they have been altered from the originals.
 
 """
-Neural Networks (:mod:`qiskit_machine_learning.neural_networks`)
-================================================================
+Quantum neural networks (:mod:`qiskit_machine_learning.neural_networks`)
+========================================================================
+
 A neural network is a parametrized network which may be defined as a artificial
 neural network - classical neural network - or as parametrized quantum circuits
 - quantum neural network. Furthermore, neural networks can be defined with respect
 to a discriminative or generative task.
 
-Neural Networks may be used, for example, with the
-:class:`~qiskit_machine_learning.algorithms.QGAN` algorithm.
+Neural networks may be used, for example, with the
+:class:`~qiskit_machine_learning.algorithms.VQC` algorithm.
 
 See also the :class:`~qiskit_machine_learning.connectors.TorchConnector` that allows the
 use of these neural networks in code written to `PyTorch <https://pytorch.org/>`_.
@@ -47,6 +48,7 @@ Neural Networks
    TwoLayerQNN
    CircuitQNN
    EstimatorQNN
+   SamplerQNN
 
 Neural Network Metrics
 ======================
@@ -57,7 +59,6 @@ Neural Network Metrics
 
    EffectiveDimension
    LocalEffectiveDimension
-
 """
 
 from .circuit_qnn import CircuitQNN
@@ -67,6 +68,7 @@ from .neural_network import NeuralNetwork
 from .opflow_qnn import OpflowQNN
 from .sampling_neural_network import SamplingNeuralNetwork
 from .two_layer_qnn import TwoLayerQNN
+from .sampler_qnn import SamplerQNN
 
 __all__ = [
     "NeuralNetwork",
@@ -77,4 +79,5 @@ __all__ = [
     "EffectiveDimension",
     "LocalEffectiveDimension",
     "EstimatorQNN",
+    "SamplerQNN",
 ]

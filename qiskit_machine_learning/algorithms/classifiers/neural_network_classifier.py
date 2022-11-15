@@ -37,9 +37,9 @@ from ...utils.loss_functions import Loss
 
 
 class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
-    """Quantum neural network classifier. Implements Scikit-Learn compatible methods for
-    classification and extends ``ClassifierMixin``. See `Scikit-Learn <https://scikit-learn.org>`__
-    for more details.
+    """Implements a basic quantum neural network classifier. Implements Scikit-Learn compatible
+    methods for classification and extends ``ClassifierMixin``.
+    See `Scikit-Learn <https://scikit-learn.org>`__ for more details.
     """
 
     def __init__(
@@ -66,7 +66,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 function is applied to the index and weighted with the corresponding probability.
             loss: A target loss function to be used in training. Default is `squared_error`,
                 i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
-                'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
+                'squared_error', 'cross_entropy', or as a loss function
                 implementing the Loss interface.
             one_hot: Determines in the case of a multi-dimensional result of the
                 neural_network how to interpret the result. If True it is interpreted as a single

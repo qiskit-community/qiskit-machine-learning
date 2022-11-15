@@ -18,7 +18,7 @@ import dill
 
 class SerializableModelMixin:
     """
-    This class provides convenient methods for saving and loading models.
+    Provides convenient methods for saving and loading models.
     """
 
     def save(self, file_name: str) -> None:

@@ -1,0 +1,58 @@
+---
+features:
+  - |
+    Introduced Sampler Quantum Neural Network
+    (:class:`~qiskit_machine_learning.neural_networks.SamplerQNN`) based on (runtime) primitives.
+    This implementation leverages the sampler primitive
+    (see :class:`~qiskit.primitives.BaseSampler`) and the sampler gradients
+    (see :class:`~qiskit.algorithms.gradients.BaseSamplerGradient`) to enable runtime access and
+    more efficient computation of forward and backward passes more efficiently.
+
+    The new :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` exposes a similar
+    interface to the :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`, with a
+    few differences. One is the `quantum_instance` parameter. This parameter does not have
+    a direct replacement, and instead the `sampler` parameter must be used. The `gradient` parameter
+    keeps the same name as in the :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`
+    implementation, but it no longer accepts Opflow gradient classes as inputs;
+    instead, this parameter expects an (optionally custom) primitive gradient. The `sampling` option
+    has been removed for the time being, as this information is not currently exposed by the `Sampler`,
+    and might correspond to future lower-level primitives.
+
+    The existing training algorithms such as :class:`~qiskit_machine_learning.algorithms.VQC`,
+    that were based on the :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`, are updated
+    to accept both implementations. The implementation
+    of :class:`~qiskit_machine_learning.algorithms.NeuralNetworkClassifier` has not changed.
+
+    For example a :class:`~qiskit_machine_learning.algorithms.VQC` using
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` can be trained as follows:
+
+    .. code-block:: python
+
+      from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+      from qiskit.algorithms.optimizers import COBYLA
+      from qiskit.primitives import Sampler
+      from sklearn.datasets import make_blobs
+
+      from qiskit_machine_learning.algorithms import VQC
+
+      # generate a simple dataset
+      num_inputs = 20
+      features, labels = make_blobs(n_samples=num_inputs, centers=2, center_box=(-1, 1), cluster_std=0.1)
+
+      # construct feature map
+      feature_map = ZZFeatureMap(num_inputs)
+
+      # construct ansatz
+      ansatz = RealAmplitudes(num_inputs, reps=1)
+
+      # construct variational quantum classifier
+      vqc = VQC(
+        sampler=sampler,
+        feature_map=feature_map,
+        ansatz=ansatz,
+        loss="cross_entropy",
+        optimizer=COBYLA(maxiter=30),
+      )
+
+      # fit classifier to data
+      vqc.fit(features, labels)
