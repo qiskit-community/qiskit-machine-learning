@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2022.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,7 +16,8 @@
 
 LATEST_TAG=$(git describe --tags --abbrev=0)
 
-for file_changed in `git diff --name-only HEAD $LATEST_TAG`
+# select only release notes added after the tag was created
+for file_changed in `git diff --name-only --diff-filter=A HEAD $LATEST_TAG releasenotes/notes`
 do
     if [[ $file_changed == releasenotes/notes/* ]]; then
         isInFile=$(grep -Exq "\s*$file_changed," docs/release_notes.rst >/dev/null; echo $?)
