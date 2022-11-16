@@ -23,7 +23,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit.utils import algorithm_globals, optionals
+from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector
@@ -90,7 +90,6 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_qubits, bound.num_qubits)
             self.assertEqual(circuit.feature_dimension, bound.feature_dimension)
 
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_usage_in_vqc(self):
         """Test the circuit works in VQC."""
 

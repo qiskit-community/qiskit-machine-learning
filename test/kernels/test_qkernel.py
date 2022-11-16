@@ -228,7 +228,6 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
         super().tearDown()
         warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
-
     def test_qasm_symmetric(self):
         """Test symmetric matrix evaluation using qasm simulator"""
         qkclass = QuantumKernel(feature_map=self.feature_map, quantum_instance=self.qasm_simulator)
