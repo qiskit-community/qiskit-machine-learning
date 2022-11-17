@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """ Test QuantumKernelTrainer """
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -34,6 +35,8 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 10598
         self.optimizer = COBYLA(maxiter=25)
         # pylint: disable=no-member
@@ -63,6 +66,11 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             training_parameters=self.training_parameters,
             quantum_instance=self.backend,
         )
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_qkt(self):
         """Test QuantumKernelTrainer"""

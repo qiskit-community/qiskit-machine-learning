@@ -12,6 +12,7 @@
 """ Unit Tests for Effective Dimension Algorithm """
 
 import unittest
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -38,6 +39,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         algorithm_globals.random_seed = 1234
         from qiskit_aer import Aer
@@ -95,6 +97,10 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         # define sample numbers
         self.n_list = [5000, 8000, 10000, 40000, 60000, 100000, 150000, 200000, 500000, 1000000]
         self.n = 5000
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     @data(
         # qnn_name, num_inputs, num_weights, result
