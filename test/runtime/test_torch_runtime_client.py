@@ -13,6 +13,8 @@
 """Test for TorchRuntimeClient."""
 
 import unittest
+import warnings
+
 from test import QiskitMachineLearningTestCase
 
 from qiskit import QuantumCircuit
@@ -74,6 +76,8 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         self._trainer_provider = FakeTorchTrainerRuntimeProvider()
         self._infer_provider = FakeTorchInferRuntimeProvider()
         self._backend = QasmSimulatorPy()
@@ -85,6 +89,11 @@ class TestTorchRuntimeClient(QiskitMachineLearningTestCase):
         ansatz = QuantumCircuit(1, name="vf")
         ansatz.ry(param_y, 0)
         self._qnn = TwoLayerQNN(1, feature_map, ansatz)
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=DeprecationWarning)
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def validate_train_result(self, result, val_loader=False):
         """To validate the train results"""

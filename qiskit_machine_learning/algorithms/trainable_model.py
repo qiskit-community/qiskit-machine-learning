@@ -26,18 +26,15 @@ from qiskit_machine_learning.utils.loss_functions import (
     L1Loss,
     L2Loss,
     CrossEntropyLoss,
-    CrossEntropySigmoidLoss,
 )
 
 from .objective_functions import ObjectiveFunction
 from .serializable_model import SerializableModelMixin
-from ..deprecation import deprecate_values
 
 
 class TrainableModel(SerializableModelMixin):
     """Base class for ML model that defines a scikit-learn like interface for Estimators."""
 
-    @deprecate_values("0.4.0", {"loss": {"cross_entropy_sigmoid": "<unsupported>"}})
     def __init__(
         self,
         neural_network: NeuralNetwork,
@@ -61,7 +58,7 @@ class TrainableModel(SerializableModelMixin):
                 function is applied to the index and weighted with the corresponding probability.
             loss: A target loss function to be used in training. Default is `squared_error`,
                 i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
-                'squared_error', 'cross_entropy', 'cross_entropy_sigmoid', or as a loss function
+                'squared_error', 'cross_entropy', or as a loss function
                 implementing the Loss interface.
             optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
             warm_start: Use weights from previous fit to start next fit.
@@ -87,8 +84,6 @@ class TrainableModel(SerializableModelMixin):
                 self._loss = L2Loss()
             elif loss == "cross_entropy":
                 self._loss = CrossEntropyLoss()
-            elif loss == "cross_entropy_sigmoid":
-                self._loss = CrossEntropySigmoidLoss()
             else:
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 

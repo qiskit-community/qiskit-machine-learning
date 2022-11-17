@@ -39,7 +39,6 @@ Loss Functions
    L1Loss
    L2Loss
    CrossEntropyLoss
-   CrossEntropySigmoidLoss
    SVCLoss
 """
 
@@ -48,7 +47,6 @@ from .loss_functions import (
     L1Loss,
     L2Loss,
     CrossEntropyLoss,
-    CrossEntropySigmoidLoss,
 )
 
 from .kernel_loss_functions import KernelLoss, SVCLoss
@@ -59,6 +57,5 @@ __all__ = [
     "L1Loss",
     "L2Loss",
     "CrossEntropyLoss",
-    "CrossEntropySigmoidLoss",
     "SVCLoss",
 ]

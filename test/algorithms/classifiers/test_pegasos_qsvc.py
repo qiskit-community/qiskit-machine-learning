@@ -14,6 +14,7 @@
 import os
 import tempfile
 import unittest
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -36,6 +37,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         algorithm_globals.random_seed = 10598
 
@@ -79,6 +81,10 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         self.label_train_4d = label_4d[:15]
         self.sample_test_4d = sample_4d[15:]
         self.label_test_4d = label_4d[15:]
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_qsvc(self):
         """Test PegasosQSVC"""

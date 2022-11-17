@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test Sampler QNN vs Circuit QNN."""
+import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -40,6 +41,8 @@ class TestCircuitQNNvsSamplerQNN(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+
         algorithm_globals.random_seed = 10598
 
         self.parity = lambda x: f"{x:b}".count("1") % 2
@@ -59,6 +62,10 @@ class TestCircuitQNNvsSamplerQNN(QiskitMachineLearningTestCase):
         self.weight_params = list(var_form.parameters)
 
         self.sampler = Sampler()
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
     @idata(itertools.product(SPARSE, INPUT_GRADS))
