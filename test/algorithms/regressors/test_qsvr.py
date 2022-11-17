@@ -14,6 +14,8 @@
 import os
 import tempfile
 import unittest
+import warnings
+
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
@@ -34,6 +36,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
+        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         algorithm_globals.random_seed = 10598
 
@@ -58,6 +61,10 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_qsvr(self):
         """Test QSVR"""
