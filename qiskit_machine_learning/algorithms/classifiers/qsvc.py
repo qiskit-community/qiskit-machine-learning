@@ -42,21 +42,13 @@ class QSVC(SVC, SerializableModelMixin):
         qsvc.predict(sample_test)
     """
 
-    def __init__(self, *args, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
+    def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
             quantum_kernel: Quantum kernel to be used for classification.
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """
-        if (len(args)) != 0:
-            msg = (
-                f"Positional arguments ({args}) are deprecated as of version 0.3.0 and "
-                f"will be removed no sooner than 3 months after the release. Instead use "
-                f"keyword arguments."
-            )
-            warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
         if "kernel" in kwargs:
             msg = (
                 "'kernel' argument is not supported and will be discarded, "
@@ -71,7 +63,7 @@ class QSVC(SVC, SerializableModelMixin):
         if "random_state" not in kwargs:
             kwargs["random_state"] = algorithm_globals.random_seed
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, *args, **kwargs)
+        super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
     def quantum_kernel(self) -> BaseKernel:
