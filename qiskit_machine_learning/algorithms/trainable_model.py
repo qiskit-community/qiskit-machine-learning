@@ -13,10 +13,10 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Union, Optional, Callable
+from typing import Callable
 
 import numpy as np
-from qiskit.algorithms.optimizers import Optimizer, SLSQP, OptimizerResult
+from qiskit.algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
 from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -38,11 +38,11 @@ class TrainableModel(SerializableModelMixin):
     def __init__(
         self,
         neural_network: NeuralNetwork,
-        loss: Union[str, Loss] = "squared_error",
-        optimizer: Optional[Optimizer] = None,
+        loss: str | Loss = "squared_error",
+        optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
-        callback: Optional[Callable[[np.ndarray, float], None]] = None,
+        callback: Callable[[np.ndarray, float], None] | None = None,
     ):
         """
         Args:
@@ -60,7 +60,10 @@ class TrainableModel(SerializableModelMixin):
                 i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),
                 'squared_error', 'cross_entropy', or as a loss function
                 implementing the Loss interface.
-            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
+            optimizer: An instance of an optimizer or a callable to be used in training.
+                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                the callable protocol. When `None` defaults to
+                :class:`~qiskit.algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: A reference to a user's callback function that has two parameters and
@@ -106,12 +109,12 @@ class TrainableModel(SerializableModelMixin):
         return self._loss
 
     @property
-    def optimizer(self) -> Optimizer:
+    def optimizer(self) -> Optimizer | Minimizer:
         """Returns an optimizer to be used in training."""
         return self._optimizer
 
     @optimizer.setter
-    def optimizer(self, optimizer: Optional[Optimizer] = None):
+    def optimizer(self, optimizer: Optimizer | Minimizer | None = None):
         """Sets the optimizer to use in training process."""
         if optimizer is None:
             optimizer = SLSQP()
@@ -162,12 +165,12 @@ class TrainableModel(SerializableModelMixin):
         return self._fit_result
 
     @property
-    def callback(self) -> Optional[Callable[[np.ndarray, float], None]]:
+    def callback(self) -> Callable[[np.ndarray, float], None] | None:
         """Return the callback."""
         return self._callback
 
     @callback.setter
-    def callback(self, callback: Optional[Callable[[np.ndarray, float], None]]) -> None:
+    def callback(self, callback: Callable[[np.ndarray, float], None] | None) -> None:
         """Set the callback."""
         self._callback = callback
 
@@ -218,7 +221,7 @@ class TrainableModel(SerializableModelMixin):
     @abstractmethod
     # pylint: disable=invalid-name
     def score(
-        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
+        self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None
     ) -> float:
         """
         Returns a score of this model given samples and true values for the samples. In case of

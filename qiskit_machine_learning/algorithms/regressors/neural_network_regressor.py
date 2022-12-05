@@ -43,11 +43,18 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
 
         objective = self._get_objective(function)
 
-        return self._optimizer.minimize(
-            fun=objective,
-            x0=self._choose_initial_point(),
-            jac=function.gradient,
-        )
+        initial_point = self._choose_initial_point()
+        if callable(self._optimizer):
+            optimizer_result = self._optimizer(
+                fun=objective, x0=initial_point, jac=function.gradient
+            )
+        else:
+            optimizer_result = self._optimizer.minimize(
+                fun=objective,
+                x0=initial_point,
+                jac=function.gradient,
+            )
+        return optimizer_result
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
         self._check_fitted()

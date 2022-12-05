@@ -17,7 +17,7 @@ from typing import Callable, cast
 
 import numpy as np
 import scipy.sparse
-from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
+from qiskit.algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from scipy.sparse import spmatrix
 from sklearn.base import ClassifierMixin
 from sklearn.exceptions import NotFittedError
@@ -47,7 +47,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         neural_network: NeuralNetwork,
         loss: str | Loss = "squared_error",
         one_hot: bool = False,
-        optimizer: Optimizer | None = None,
+        optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
         initial_point: np.ndarray = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
@@ -75,7 +75,10 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 the prediction and the value the corresponding frequency, e.g. for absolute/squared
                 loss). In case of a one-dimensional categorical output, this option determines how
                 to encode the target data (i.e. one-hot or integer encoding).
-            optimizer: An instance of an optimizer to be used in training. When `None` defaults to SLSQP.
+            optimizer: An instance of an optimizer or a callable to be used in training.
+                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                the callable protocol. When `None` defaults to
+                :class:`~qiskit.algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and
@@ -124,11 +127,18 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
 
         objective = self._get_objective(function)
 
-        return self._optimizer.minimize(
-            fun=objective,
-            x0=self._choose_initial_point(),
-            jac=function.gradient,
-        )
+        initial_point = self._choose_initial_point()
+        if callable(self._optimizer):
+            optimizer_result = self._optimizer(
+                fun=objective, x0=initial_point, jac=function.gradient
+            )
+        else:
+            optimizer_result = self._optimizer.minimize(
+                fun=objective,
+                x0=initial_point,
+                jac=function.gradient,
+            )
+        return optimizer_result
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         self._check_fitted()
