@@ -13,7 +13,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Callable
+from typing import Callable, Union
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
@@ -30,6 +30,9 @@ from qiskit_machine_learning.utils.loss_functions import (
 
 from .objective_functions import ObjectiveFunction
 from .serializable_model import SerializableModelMixin
+
+
+POINT = Union[float, np.ndarray]
 
 
 class TrainableModel(SerializableModelMixin):
@@ -220,9 +223,7 @@ class TrainableModel(SerializableModelMixin):
 
     @abstractmethod
     # pylint: disable=invalid-name
-    def score(
-        self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None
-    ) -> float:
+    def score(self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None) -> float:
         """
         Returns a score of this model given samples and true values for the samples. In case of
         classification this should be mean accuracy, in case of regression the coefficient of
@@ -275,3 +276,28 @@ class TrainableModel(SerializableModelMixin):
             return objective_value
 
         return objective
+
+    def _minimize(self, function: ObjectiveFunction) -> OptimizerResult:
+        """
+        Minimizes the objective function.
+
+        Args:
+            function: a function to minimize.
+
+        Returns:
+            An optimization result.
+        """
+        objective = self._get_objective(function)
+
+        initial_point = self._choose_initial_point()
+        if callable(self._optimizer):
+            optimizer_result = self._optimizer(
+                fun=objective, x0=initial_point, jac=function.gradient
+            )
+        else:
+            optimizer_result = self._optimizer.minimize(
+                fun=objective,
+                x0=initial_point,
+                jac=function.gradient,
+            )
+        return optimizer_result

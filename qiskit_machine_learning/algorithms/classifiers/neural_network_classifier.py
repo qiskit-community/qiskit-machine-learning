@@ -111,9 +111,20 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     def _fit_internal(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
         X, y = self._validate_input(X, y)
 
-        return self._minimize(X, y)
+        function = self._create_objective(X, y)
+        return self._minimize(function)
 
-    def _minimize(self, X: np.ndarray, y: np.ndarray) -> OptimizerResult:
+    def _create_objective(self, X: np.ndarray, y: np.ndarray) -> ObjectiveFunction:
+        """
+        Creates an objective function that depends on the classification we want to solve.
+
+        Args:
+            X: The input data.
+            y: True values for ``X``.
+
+        Returns:
+            An instance of the objective function.
+        """
         # mypy definition
         function: ObjectiveFunction = None
         if self._neural_network.output_shape == (1,):
@@ -125,20 +136,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
             else:
                 function = MultiClassObjectiveFunction(X, y, self._neural_network, self._loss)
 
-        objective = self._get_objective(function)
-
-        initial_point = self._choose_initial_point()
-        if callable(self._optimizer):
-            optimizer_result = self._optimizer(
-                fun=objective, x0=initial_point, jac=function.gradient
-            )
-        else:
-            optimizer_result = self._optimizer.minimize(
-                fun=objective,
-                x0=initial_point,
-                jac=function.gradient,
-            )
-        return optimizer_result
+        return function
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         self._check_fitted()

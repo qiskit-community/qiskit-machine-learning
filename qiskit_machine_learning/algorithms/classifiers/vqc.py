@@ -189,7 +189,8 @@ class VQC(NeuralNetworkClassifier):
         if isinstance(self._neural_network, (CircuitQNN, SamplerQNN)):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
 
-        return super()._minimize(X, y)
+        function = self._create_objective(X, y)
+        return self._minimize(function)
 
     def _get_interpret(self, num_classes: int):
         def parity(x: int, num_classes: int = num_classes) -> int:
