@@ -109,6 +109,7 @@ runs:
               build_from_main=false
             else
               echo 'Cached Aer failed verification.'
+              pip uninstall -y qiskit-aer
             fi
           fi
         else
