@@ -1,0 +1,7 @@
+---
+deprecations:
+  - |
+    Positional arguments in :class:`~qiskit_machine_learning.algorithms.QSVC` and
+    :class:`~qiskit_machine_learning.algorithms.QSVR` were deprecated as of version 0.3. Support of
+    the positional arguments was completely removed in this version, please replace them with
+    corresponding keyword arguments.
