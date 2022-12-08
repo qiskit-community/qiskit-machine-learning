@@ -18,7 +18,6 @@ from functools import partial
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-import qiskit
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import algorithm_globals, optionals
 from scipy.optimize import minimize
@@ -39,7 +38,9 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 10598
         # pylint: disable=no-member
-        self.backend = qiskit.providers.aer.AerSimulator(method="statevector")
+        from qiskit_aer import AerSimulator
+
+        self.backend = AerSimulator(method="statevector")
         data_block = ZZFeatureMap(2)
         trainable_block = ZZFeatureMap(2, parameter_prefix="θ")
         training_parameters = trainable_block.parameters
