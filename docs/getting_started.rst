@@ -95,11 +95,11 @@ See :ref:`optional_installs` for more information.
 Optional installs
 =================
 
-* **PyTorch**, may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
+* **PyTorch**, may be installed either using command ``pip install 'qiskit-machine-learning[torch]'`` to install the
   package or refer to PyTorch `getting started <https://pytorch.org/get-started/locally/>`__. When PyTorch
   is installed, the `TorchConnector` facilitates its use of quantum computed networks.
 
-* **Sparse**, may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
+* **Sparse**, may be installed using command ``pip install 'qiskit-machine-learning[sparse]'`` to install the
   package. Sparse being installed will enable the usage of sparse arrays/tensors.
 
 ----
