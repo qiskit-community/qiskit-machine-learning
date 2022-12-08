@@ -18,7 +18,6 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-import qiskit
 from ddt import data, ddt, idata, unpack
 from qiskit import BasicAer, QuantumCircuit
 from qiskit.circuit import Parameter
@@ -93,9 +92,15 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
 
     # pylint: disable=no-member
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    @data(qiskit.providers.aer.AerSimulator(), BasicAer.get_backend("statevector_simulator"))
-    def test_custom_pass_manager(self, backend):
+    @data("aer_simulator", "statevector_simulator")
+    def test_custom_pass_manager(self, backend_name):
         """Test quantum kernel with a custom pass manager."""
+        if backend_name == "aer_simulator":
+            from qiskit_aer import AerSimulator
+
+            backend = AerSimulator()
+        else:
+            backend = BasicAer.get_backend(backend_name)
 
         quantum_instance = QuantumInstance(
             backend,
