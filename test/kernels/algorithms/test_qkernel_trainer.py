@@ -11,22 +11,22 @@
 # that they have been altered from the originals.
 
 """ Test QuantumKernelTrainer """
+import unittest
 import warnings
+from functools import partial
 
 from test import QiskitMachineLearningTestCase
 
-import unittest
-
 import numpy as np
-
 import qiskit
-from qiskit.utils import algorithm_globals, optionals
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.algorithms.optimizers import COBYLA
+from qiskit.utils import algorithm_globals, optionals
+from scipy.optimize import minimize
+
+from qiskit_machine_learning.algorithms.classifiers import QSVC
 from qiskit_machine_learning.kernels import QuantumKernel
 from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
 from qiskit_machine_learning.utils.loss_functions import SVCLoss
-from qiskit_machine_learning.algorithms.classifiers import QSVC
 
 
 class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
@@ -38,7 +38,6 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 10598
-        self.optimizer = COBYLA(maxiter=25)
         # pylint: disable=no-member
         self.backend = qiskit.providers.aer.AerSimulator(method="statevector")
         data_block = ZZFeatureMap(2)
@@ -72,31 +71,34 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         warnings.filterwarnings("always", category=DeprecationWarning)
         warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
-    def test_qkt(self):
-        """Test QuantumKernelTrainer"""
-        with self.subTest("check default fit"):
-            qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
-            qkt_result = qkt.fit(self.sample_train, self.label_train)
+    def test_default_fit(self):
+        """Test trainer with default parameters."""
+        qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
+        qkt_result = qkt.fit(self.sample_train, self.label_train)
 
-            # Ensure kernel training functions and is deterministic
-            qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
-            qsvc.fit(self.sample_train, self.label_train)
-            score = qsvc.score(self.sample_test, self.label_test)
-            self.assertGreaterEqual(score, 0.5)
+        # Ensure kernel training functions and is deterministic
+        qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
+        qsvc.fit(self.sample_train, self.label_train)
+        score = qsvc.score(self.sample_test, self.label_test)
+        self.assertGreaterEqual(score, 0.5)
 
-        with self.subTest("check fit with params"):
-            loss = SVCLoss(C=0.8, gamma="auto")
-            qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel, loss=loss)
-            qkt_result = qkt.fit(self.sample_train, self.label_train)
+    def test_fit_with_params(self):
+        """Test trainer with custom parameters."""
+        loss = SVCLoss(C=0.8, gamma="auto")
+        optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
+        qkt = QuantumKernelTrainer(
+            quantum_kernel=self.quantum_kernel, loss=loss, optimizer=optimizer
+        )
+        qkt_result = qkt.fit(self.sample_train, self.label_train)
 
-            # Ensure user parameters are bound to real values
-            self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_training_parameters()), 0)
+        # Ensure user parameters are bound to real values
+        self.assertEqual(len(qkt_result.quantum_kernel.get_unbound_training_parameters()), 0)
 
-            # Ensure kernel training functions and is deterministic
-            qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
-            qsvc.fit(self.sample_train, self.label_train)
-            score = qsvc.score(self.sample_test, self.label_test)
-            self.assertGreaterEqual(score, 0.5)
+        # Ensure kernel training functions and is deterministic
+        qsvc = QSVC(quantum_kernel=qkt_result.quantum_kernel)
+        qsvc.fit(self.sample_train, self.label_train)
+        score = qsvc.score(self.sample_test, self.label_test)
+        self.assertGreaterEqual(score, 0.5)
 
 
 if __name__ == "__main__":

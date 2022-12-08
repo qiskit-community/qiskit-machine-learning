@@ -10,23 +10,24 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """ Test Neural Network Regressor """
-import unittest
 import itertools
 import os
 import tempfile
+import unittest
 import warnings
+from functools import partial
 from typing import Tuple
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, unpack, idata
-
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.opflow import PauliSumOp
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from scipy.optimize import minimize
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
@@ -34,7 +35,7 @@ from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
 from qiskit_machine_learning.neural_networks import TwoLayerQNN
 
 QUANTUM_INSTANCES = ["statevector", "qasm"]
-OPTIMIZERS = ["cobyla", "bfgs", None]
+OPTIMIZERS = ["cobyla", "bfgs", "callable", None]
 CALLBACKS = [True, False]
 
 
@@ -101,6 +102,8 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             optimizer = L_BFGS_B(maxiter=5)
         elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        elif opt == "callable":
+            optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
         else:
             optimizer = None
 

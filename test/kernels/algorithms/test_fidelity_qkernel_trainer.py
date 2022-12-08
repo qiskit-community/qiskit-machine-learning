@@ -14,15 +14,16 @@
 from __future__ import annotations
 
 import unittest
+from functools import partial
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import algorithm_globals
+from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms.classifiers import QSVC
 from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
@@ -36,7 +37,6 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 10598
-        self.optimizer = COBYLA(maxiter=25)
         data_block = ZZFeatureMap(2)
         trainable_block = ZZFeatureMap(2, parameter_prefix="θ")
         training_parameters = trainable_block.parameters
@@ -62,25 +62,26 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             training_parameters=self.training_parameters,
         )
 
-    def test_qkt(self):
-        """Test QuantumKernelTrainer"""
-        with self.subTest("check default fit"):
-            qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
-            qkt_result = qkt.fit(self.sample_train, self.label_train)
+    def test_default_fit(self):
+        """Test trainer with default parameters."""
+        qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
+        qkt_result = qkt.fit(self.sample_train, self.label_train)
 
-            self._fit_and_assert_score(qkt_result)
+        self._fit_and_assert_score(qkt_result)
 
-        with self.subTest("check fit with params"):
-            loss = SVCLoss(C=0.8, gamma="auto")
-            qkt = QuantumKernelTrainer(
-                quantum_kernel=self.quantum_kernel, loss=loss, optimizer=self.optimizer
-            )
-            qkt_result = qkt.fit(self.sample_train, self.label_train)
+    def test_fit_with_params(self):
+        """Test trainer with custom parameters."""
+        loss = SVCLoss(C=0.8, gamma="auto")
+        optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
+        qkt = QuantumKernelTrainer(
+            quantum_kernel=self.quantum_kernel, loss=loss, optimizer=optimizer
+        )
+        qkt_result = qkt.fit(self.sample_train, self.label_train)
 
-            # Ensure user parameters are bound to real values
-            self.assertTrue(np.all(qkt_result.quantum_kernel.parameter_values))
+        # Ensure user parameters are bound to real values
+        self.assertTrue(np.all(qkt_result.quantum_kernel.parameter_values))
 
-            self._fit_and_assert_score(qkt_result)
+        self._fit_and_assert_score(qkt_result)
 
     def test_asymmetric_trainable_parameters(self):
         """Test when the number of trainable parameters does not equal to the number of features."""
