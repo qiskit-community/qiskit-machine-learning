@@ -1,7 +1,7 @@
 ---
 features:
   - |
-    Allow callables as optimizers in
+    Allow callable as an optimizer in
     :class:`~qiskit_machine_learning.algorithms.classifiers.NeuralNetworkClassifier`,
     :class:`~qiskit_machine_learning.algorithms.classifiers.VQC`,
     :class:`~qiskit_machine_learning.algorithms.regressors.NeuralNetworkRegressor`,
