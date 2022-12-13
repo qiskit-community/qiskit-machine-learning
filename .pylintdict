@@ -93,6 +93,7 @@ html
 hubbard
 hyperparameter
 hyperparameters
+hyperplanes
 init
 inlier
 inplace
@@ -164,6 +165,7 @@ pauli
 pegasos
 pixelated
 pre
+precompute
 precomputed
 precomputes
 precomputing
