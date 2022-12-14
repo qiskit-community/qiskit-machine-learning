@@ -16,6 +16,7 @@ import itertools
 import os
 import tempfile
 import unittest
+from functools import partial
 
 from test import QiskitMachineLearningTestCase
 
@@ -25,6 +26,7 @@ from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.utils import algorithm_globals
+from scipy.optimize import minimize
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
@@ -32,7 +34,7 @@ from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
 from qiskit_machine_learning.neural_networks import EstimatorQNN
 
 QUANTUM_INSTANCES = ["statevector", "qasm"]
-OPTIMIZERS = ["cobyla", "bfgs", None]
+OPTIMIZERS = ["cobyla", "bfgs", "callable", None]
 CALLBACKS = [True, False]
 
 
@@ -77,6 +79,8 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             optimizer = L_BFGS_B(maxiter=5)
         elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        elif opt == "callable":
+            optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
         else:
             optimizer = None
 

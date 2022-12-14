@@ -16,6 +16,7 @@ import itertools
 import os
 import tempfile
 import unittest
+from functools import partial
 from typing import Callable
 
 from test import QiskitMachineLearningTestCase
@@ -23,11 +24,11 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 import scipy
 from ddt import ddt, data, idata, unpack
-
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import algorithm_globals, optionals
+from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
@@ -35,7 +36,7 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
 
-OPTIMIZERS = ["cobyla", "bfgs", None]
+OPTIMIZERS = ["cobyla", "bfgs", "callable", None]
 L1L2_ERRORS = ["absolute_error", "squared_error"]
 CALLBACKS = [True, False]
 
@@ -62,6 +63,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             optimizer = L_BFGS_B(maxiter=5)
         elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        elif opt == "callable":
+            optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
         else:
             optimizer = None
 
