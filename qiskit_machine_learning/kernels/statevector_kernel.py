@@ -187,4 +187,4 @@ class StatevectorKernel(BaseKernel):
 
     def clear_cache(self):
         """Clear the statevector cache."""
-        self._statevector_cache = {}
+        self._statevector_cache.clear()
