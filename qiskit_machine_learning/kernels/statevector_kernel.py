@@ -56,7 +56,7 @@ class StatevectorKernel(BaseKernel):
         K(x,y) = (\phi(x)^\dagger \phi(y))^2
 
     These are stored in a statevector cache for reuse to avoid repeated computation. This stash
-    can be cleared using :meth:`clear_cache`.
+    can be cleared using :meth:`clear_cache()`.
     """
 
     def __init__(
@@ -121,7 +121,7 @@ class StatevectorKernel(BaseKernel):
         kernel_matrix = np.ones(kernel_shape)
         for i, x in enumerate(x_svs):
             for j, y in enumerate(y_svs):
-                if self._is_trivial(i, j, x, y, False):
+                if self._is_trivial(i, j, x, y, is_symmetric):
                     continue
                 kernel_matrix[i, j] =  self._compute_kernel_element(x, y)
 

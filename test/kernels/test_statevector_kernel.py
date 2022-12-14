@@ -91,7 +91,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         self.assertEqual(score, 1.0)
 
     def test_defaults(self):
-        """Test quantum kernel with all default values."""
+        """Test statevector kernel with all default values."""
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
@@ -118,7 +118,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             self.assertTrue(not kernel._statevector_cache)
 
     def test_exceptions(self):
-        """Test quantum kernel raises exceptions and warnings."""
+        """Test statevector kernel raises exceptions and warnings."""
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
             _ = StatevectorKernel(evaluate_duplicates="wrong")
 
@@ -358,16 +358,16 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
     @idata(
         [
             ("no_dups", "all", 9),
-            ("no_dups", "off_diagonal", 9),
+            ("no_dups", "off_diagonal", 6),
             ("no_dups", "none", 6),
             ("dups", "all", 9),
-            ("dups", "off_diagonal", 9),
+            ("dups", "off_diagonal", 6),
             ("dups", "none", 4),
         ]
     )
     @unpack
     def test_evaluate_duplicates(self, dataset_name, evaluate_duplicates, expected_computations):
-        """Tests quantum kernel evaluation with duplicate samples."""
+        """Tests statevector kernel evaluation with duplicate samples."""
         self.computation_counts = 0
         kernel = StatevectorKernel(
             feature_map=self.feature_map,
@@ -389,7 +389,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
     def test_evaluate_duplicates_asymmetric(
         self, dataset_name, evaluate_duplicates, expected_computations
     ):
-        """Tests asymmetric quantum kernel evaluation with duplicate samples."""
+        """Tests asymmetric statevector kernel evaluation with duplicate samples."""
         self.computation_counts = 0
         kernel = StatevectorKernel(
             feature_map=self.feature_map,
