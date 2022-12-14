@@ -102,6 +102,21 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         self.assertGreaterEqual(score, 0.5)
 
+    def test_statevector_cache(self):
+        """Test filling and clearing the statevector cache."""
+        kernel = StatevectorKernel()
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(self.sample_train, self.label_train)
+        with self.subTest("Check cache fills correctly"):
+            np.testing.assert_array_equal(
+                np.asarray(list(kernel._statevector_cache.keys())), self.sample_train
+            )
+            for value in kernel._statevector_cache.values():
+                self.assertIsInstance(value, np.ndarray)
+        with self.subTest("Check cache clears correctly"):
+            kernel.clear_cache()
+            self.assertTrue(not kernel._statevector_cache)
+
     def test_exceptions(self):
         """Test quantum kernel raises exceptions and warnings."""
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):

@@ -22,7 +22,7 @@ from .base_kernel import BaseKernel
 
 class StatevectorKernel(BaseKernel):
     r"""
-    An implementation of the quantum kernel interface.
+    An implementation of the quantum kernel interface using ``Statevector`` features.
 
     The general task of machine learning is to find and study patterns in data. For many
     algorithms, the datapoints are better understood in a higher dimensional feature space,
@@ -32,13 +32,14 @@ class StatevectorKernel(BaseKernel):
 
         K(x, y) = \langle f(x), f(y)\rangle.
 
-    Here :math:`K` is the kernel function, x, y are n dimensional inputs. f is a map from n-dimension
-    to m-dimension space. :math:`\langle x, y \rangle` denotes the dot product.
-    Usually m is much larger than n.
+    Here :math:`K` is the kernel function, :math:`x`, :math:`y` are :math:`n` dimensional inputs.
+    :math:`f` is a map from :math:`n`-dimension to :math:`m`-dimension space. :math:`\langle x, y
+    \rangle` denotes the dot product. Usually m is much larger than :math:`n`.
 
-    The quantum kernel algorithm calculates a kernel matrix, given datapoints x and y and feature
-    map f, all of n dimension. This kernel matrix can then be used in classical machine learning
-    algorithms such as support vector classification, spectral clustering or ridge regression.
+    The quantum kernel algorithm calculates a kernel matrix, given datapoints :math:`x` and
+    :math:`y` and feature map :math:`f`, all of :math:`n` dimension. This kernel matrix can then be
+    used in classical machine learning algorithms such as support vector classification, spectral
+    clustering or ridge regression.
 
     Here, the kernel function is defined as the overlap of two quantum states defined by a
     parametrized quantum circuit (called feature map):
@@ -46,6 +47,16 @@ class StatevectorKernel(BaseKernel):
     .. math::
 
         K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2
+
+    In this implementation, :math:`\phi` is represented by a ``Statevector.data`` array,
+    thus the kernel function is simply:
+
+    .. math::
+
+        K(x,y) = (\phi(x)^\dagger \phi(y))^2
+
+    These are stored in a statevector cache for reuse to avoid repeated computation. This stash
+    can be cleared using :meth:`clear_cache`.
     """
 
     def __init__(
@@ -69,7 +80,7 @@ class StatevectorKernel(BaseKernel):
 
                     - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
                       ones when training. This may introduce additional noise in the matrix.
-                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
+                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the remaining
                       elements are fully evaluated, e.g., for two identical samples in the
                       dataset. When inferring, all elements are evaluated. This is the default
                       value.
@@ -173,3 +184,7 @@ class StatevectorKernel(BaseKernel):
 
         # otherwise evaluate
         return False
+
+    def clear_cache(self):
+        """Clear the statevector cache."""
+        self._statevector_cache = {}
