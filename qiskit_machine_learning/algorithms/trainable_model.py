@@ -13,7 +13,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Callable, Union
+from typing import Callable
 
 import numpy as np
 from qiskit.algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
