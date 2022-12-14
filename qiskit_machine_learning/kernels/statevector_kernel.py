@@ -123,7 +123,7 @@ class StatevectorKernel(BaseKernel):
             for j, y in enumerate(y_svs):
                 if self._is_trivial(i, j, x, y, is_symmetric):
                     continue
-                kernel_matrix[i, j] =  self._compute_kernel_element(x, y)
+                kernel_matrix[i, j] = self._compute_kernel_element(x, y)
 
         if is_symmetric and self._enforce_psd:
             kernel_matrix = self._make_psd(kernel_matrix)
