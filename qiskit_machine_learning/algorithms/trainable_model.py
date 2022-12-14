@@ -32,9 +32,6 @@ from .objective_functions import ObjectiveFunction
 from .serializable_model import SerializableModelMixin
 
 
-POINT = Union[float, np.ndarray]
-
-
 class TrainableModel(SerializableModelMixin):
     """Base class for ML model that defines a scikit-learn like interface for Estimators."""
 
