@@ -123,16 +123,15 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             _ = StatevectorKernel(evaluate_duplicates="wrong")
 
     @idata(
-        # params, feature map, enforce_psd, duplicate
+        # params, feature map, duplicate
         itertools.product(
             ["samples_1", "samples_4"],
             ["no_fm", "z_fm"],
-            [True, False],
             ["none", "off_diagonal", "all"],
         )
     )
     @unpack
-    def test_evaluate_symmetric(self, params, feature_map, enforce_psd, duplicates):
+    def test_evaluate_symmetric(self, params, feature_map, duplicates):
         """Test QuantumKernel.evaluate(x) for a symmetric kernel."""
         solution = self._get_symmetric_solution(params, feature_map)
 
@@ -140,7 +139,6 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         feature_map = self.properties[feature_map]
         kernel = StatevectorKernel(
             feature_map=feature_map,
-            enforce_psd=enforce_psd,
             evaluate_duplicates=duplicates,
         )
 
@@ -153,12 +151,11 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             ["samples_1", "samples_4"],
             ["samples_1", "samples_4", "samples_test"],
             ["no_fm", "z_fm"],
-            [True, False],
             ["none", "off_diagonal", "all"],
         )
     )
     @unpack
-    def test_evaluate_asymmetric(self, params_x, params_y, feature_map, enforce_psd, duplicates):
+    def test_evaluate_asymmetric(self, params_x, params_y, feature_map, duplicates):
         """Test QuantumKernel.evaluate(x,y) for an asymmetric kernel."""
         solution = self._get_asymmetric_solution(params_x, params_y, feature_map)
 
@@ -167,7 +164,6 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         feature_map = self.properties[feature_map]
         kernel = StatevectorKernel(
             feature_map=feature_map,
-            enforce_psd=enforce_psd,
             evaluate_duplicates=duplicates,
         )
 
@@ -247,25 +243,6 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
                 )
         return solution
 
-    def test_enforce_psd(self):
-        """Test enforce_psd"""
-
-        with self.subTest("No PSD enforcement"):
-            kernel = StatevectorKernel(enforce_psd=False)
-            kernel._compute_kernel_element = lambda x, y: -1
-            matrix = kernel.evaluate(self.sample_train)
-            eigen_values = np.linalg.eigvals(matrix)
-            # there's a negative eigenvalue
-            self.assertFalse(np.all(np.greater_equal(eigen_values, -1e-10)))
-
-        with self.subTest("PSD enforced"):
-            kernel = StatevectorKernel(enforce_psd=True)
-            kernel._compute_kernel_element = lambda x, y: -1
-            matrix = kernel.evaluate(self.sample_train)
-            eigen_values = np.linalg.eigvals(matrix)
-            # all eigenvalues are non-negative with some tolerance
-            self.assertTrue(np.all(np.greater_equal(eigen_values, -1e-10)))
-
     def test_validate_input(self):
         """Test validation of input data in the base (abstract) class."""
         with self.subTest("Incorrect size of x_vec"):
@@ -313,10 +290,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         """Test properties of the base (abstract) class and statevector based kernel."""
         qc = QuantumCircuit(1)
         qc.ry(Parameter("w"), 0)
-        kernel = StatevectorKernel(feature_map=qc, enforce_psd=False, evaluate_duplicates="none")
+        kernel = StatevectorKernel(feature_map=qc, evaluate_duplicates="none")
 
         self.assertEqual(qc, kernel.feature_map)
-        self.assertEqual(False, kernel.enforce_psd)
         self.assertEqual("none", kernel.evaluate_duplicates)
         self.assertEqual(1, kernel.num_features)
 

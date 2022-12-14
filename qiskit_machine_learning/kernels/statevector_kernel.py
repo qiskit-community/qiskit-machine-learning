@@ -63,7 +63,6 @@ class StatevectorKernel(BaseKernel):
         self,
         *,
         feature_map: QuantumCircuit | None = None,
-        enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
     ) -> None:
         """
@@ -73,8 +72,6 @@ class StatevectorKernel(BaseKernel):
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
-            enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
-                Default ``True``.
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
                duplicate samples are found. Possible values are:
 
@@ -91,7 +88,7 @@ class StatevectorKernel(BaseKernel):
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
-        super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
+        super().__init__(feature_map=feature_map)
 
         eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
@@ -100,7 +97,7 @@ class StatevectorKernel(BaseKernel):
             )
         self._evaluate_duplicates = eval_duplicates
 
-        self._statevector_cache = {}
+        self._statevector_cache: dict[tuple[float, ...], np.ndarray] = {}
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
 
@@ -124,9 +121,6 @@ class StatevectorKernel(BaseKernel):
                 if self._is_trivial(i, j, x, y, is_symmetric):
                     continue
                 kernel_matrix[i, j] = self._compute_kernel_element(x, y)
-
-        if is_symmetric and self._enforce_psd:
-            kernel_matrix = self._make_psd(kernel_matrix)
 
         # due to truncation and rounding errors we may get complex numbers
         kernel_matrix = np.real(kernel_matrix)
