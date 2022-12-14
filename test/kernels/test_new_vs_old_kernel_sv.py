@@ -63,7 +63,7 @@ class TestNewVsOldStatevectorKernel(QiskitMachineLearningTestCase):
         )
     )
     @unpack
-    def test_new_vs_old(self, feature_map_name, enforce_psd, duplicates):
+    def test_new_vs_old(self, feature_map_name, duplicates):
         """Test new versus old."""
         feature_map = self.properties[feature_map_name]
         features = algorithm_globals.random.random((10, feature_map.num_qubits))
@@ -72,12 +72,10 @@ class TestNewVsOldStatevectorKernel(QiskitMachineLearningTestCase):
 
         new_qk = StatevectorKernel(
             feature_map=feature_map,
-            enforce_psd=enforce_psd,
             evaluate_duplicates=duplicates,
         )
         old_qk = QuantumKernel(
             feature_map,
-            enforce_psd=enforce_psd,
             quantum_instance=self.statevector_simulator,
             evaluate_duplicates=duplicates,
         )
