@@ -58,7 +58,6 @@ class TestNewVsOldStatevectorKernel(QiskitMachineLearningTestCase):
     @idata(
         itertools.product(
             ["z1", "z2", "zz2", "z4", "zz4"],
-            [True, False],
             ["none", "off_diagonal", "all"],
         )
     )
