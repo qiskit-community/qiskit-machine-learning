@@ -65,7 +65,7 @@ class FidelityStatevectorKernel(BaseKernel):
         *,
         feature_map: QuantumCircuit | None = None,
         evaluate_duplicates: str = "off_diagonal",
-        statevector_type: type = Statevector
+        statevector_type: type = Statevector,
     ) -> None:
         """
         Args:

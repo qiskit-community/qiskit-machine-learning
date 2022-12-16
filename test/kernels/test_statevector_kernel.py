@@ -102,7 +102,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         self.assertGreaterEqual(score, 0.5)
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
-    def test_defaults(self):
+    def test_aer_statevector(self):
         """Test statevector kernel when using AerStatevector type statevectors."""
         from qiskit_aer.quantum_info import AerStatevector
 
