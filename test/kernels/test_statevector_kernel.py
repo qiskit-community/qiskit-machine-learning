@@ -21,6 +21,8 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, idata, unpack
+from sklearn.svm import SVC
+
 from qiskit import QuantumCircuit
 from qiskit.algorithms.state_fidelities import (
     ComputeUncompute,
@@ -28,8 +30,7 @@ from qiskit.algorithms.state_fidelities import (
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
-from qiskit.utils import algorithm_globals
-from sklearn.svm import SVC
+from qiskit.utils import algorithm_globals, optionals
 
 from qiskit_machine_learning.kernels import StatevectorKernel
 
@@ -96,6 +97,21 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         labels = np.sign(features[:, 0])
 
         kernel = StatevectorKernel()
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(features, labels)
+        score = svc.score(features, labels)
+
+        self.assertGreaterEqual(score, 0.5)
+
+    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    def test_defaults(self):
+        """Test statevector kernel when using AerStatevector type statevectors."""
+        from qiskit_aer.quantum_info import AerStatevector
+
+        features = algorithm_globals.random.random((10, 2)) - 0.5
+        labels = np.sign(features[:, 0])
+
+        kernel = StatevectorKernel(statevector_type=AerStatevector)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)

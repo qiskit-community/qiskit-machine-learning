@@ -64,6 +64,7 @@ class StatevectorKernel(BaseKernel):
         *,
         feature_map: QuantumCircuit | None = None,
         evaluate_duplicates: str = "off_diagonal",
+        statevector_type: type = Statevector
     ) -> None:
         """
         Args:
@@ -84,6 +85,9 @@ class StatevectorKernel(BaseKernel):
                     - ``none`` when training the diagonal is set to `1` and if two identical samples
                       are found in the dataset the corresponding matrix element is set to `1`.
                       When inferring, matrix elements for identical samples are set to `1`.
+            statevector_type: The type of Statevector that will be instantiated with the
+                ``feature_map`` quantum circuit and used to compute the kernel. This type should
+                inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
 
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
@@ -96,6 +100,8 @@ class StatevectorKernel(BaseKernel):
                 f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
             )
         self._evaluate_duplicates = eval_duplicates
+
+        self._statevector_type = statevector_type
 
         self._statevector_cache: dict[tuple[float, ...], np.ndarray] = {}
 
@@ -137,7 +143,7 @@ class StatevectorKernel(BaseKernel):
 
         if statevector is None:
             qc = self._feature_map.bind_parameters(param_values)
-            statevector = Statevector(qc).data
+            statevector = self._statevector_type(qc).data
             self._statevector_cache[param_values] = statevector
 
         return statevector
