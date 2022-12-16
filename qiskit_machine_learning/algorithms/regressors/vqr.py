@@ -16,7 +16,7 @@ from typing import Callable
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms.optimizers import Optimizer
+from qiskit.algorithms.optimizers import Optimizer, Minimizer
 from qiskit.opflow import OperatorBase, PauliSumOp
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
@@ -39,7 +39,7 @@ class VQR(NeuralNetworkRegressor):
         ansatz: QuantumCircuit | None = None,
         observable: QuantumCircuit | OperatorBase | BaseOperator | PauliSumOp | None = None,
         loss: str | Loss = "squared_error",
-        optimizer: Optimizer | None = None,
+        optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
         quantum_instance: QuantumInstance | None = None,
         initial_point: np.ndarray | None = None,
@@ -69,8 +69,10 @@ class VQR(NeuralNetworkRegressor):
                 :class:`~qiskit.quantum_info.operators.base_operator.BaseOperator` or
                 :class:`~qiskit.opflow.PauliSumOp`.
             loss: A target loss function to be used in training. Default is squared error.
-            optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
-                to SLSQP.
+            optimizer: An instance of an optimizer or a callable to be used in training.
+                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                the callable protocol. When `None` defaults to
+                :class:`~qiskit.algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             quantum_instance: Deprecated: If a quantum instance is set and ``estimator`` is ``None``,
                 the underlying QNN will be of type

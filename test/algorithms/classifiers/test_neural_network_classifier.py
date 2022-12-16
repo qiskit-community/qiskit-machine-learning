@@ -15,6 +15,7 @@ import os
 import tempfile
 import unittest
 import warnings
+from functools import partial
 from typing import Tuple, Optional, Callable
 
 from test import QiskitMachineLearningTestCase
@@ -22,11 +23,11 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 import scipy
 from ddt import ddt, data, idata, unpack
-
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
@@ -34,7 +35,7 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, NeuralNetwork
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
 
-OPTIMIZERS = ["cobyla", "bfgs", None]
+OPTIMIZERS = ["cobyla", "bfgs", "callable", None]
 L1L2_ERRORS = ["absolute_error", "squared_error"]
 QUANTUM_INSTANCES = ["statevector", "qasm"]
 CALLBACKS = [True, False]
@@ -74,12 +75,18 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
     def tearDown(self) -> None:
         super().tearDown()
         warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        # enable the warnings if they were disabled for COBYLA
+        warnings.filterwarnings("always", category=RuntimeWarning)
 
     def _create_optimizer(self, opt: str) -> Optional[Optimizer]:
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
+        elif opt == "callable":
+            # COBYLA raises a warning in the callable case
+            warnings.filterwarnings("ignore", category=RuntimeWarning)
+            optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
         else:
             optimizer = None
 

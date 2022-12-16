@@ -11,15 +11,16 @@
 # that they have been altered from the originals.
 
 """Quantum Kernel Trainer"""
+from __future__ import annotations
 
 import copy
 from functools import partial
-from typing import Union, Optional, Sequence
+from typing import Sequence
 
 import numpy as np
 
 from qiskit.utils.algorithm_globals import algorithm_globals
-from qiskit.algorithms.optimizers import Optimizer, SPSA
+from qiskit.algorithms.optimizers import Optimizer, SPSA, Minimizer
 from qiskit.algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
 
@@ -34,7 +35,7 @@ class QuantumKernelTrainerResult(VariationalResult):
         self._quantum_kernel: TrainableKernel = None
 
     @property
-    def quantum_kernel(self) -> Optional[TrainableKernel]:
+    def quantum_kernel(self) -> TrainableKernel | None:
         """Return the optimized quantum kernel object."""
         return self._quantum_kernel
 
@@ -46,7 +47,7 @@ class QuantumKernelTrainerResult(VariationalResult):
 class QuantumKernelTrainer:
     """
     Quantum Kernel Trainer.
-    This class provides utility to train ``QuantumKernel`` feature map parameters.
+    This class provides utility to train quantum kernel feature map parameters.
 
     **Example**
 
@@ -89,30 +90,34 @@ class QuantumKernelTrainer:
     def __init__(
         self,
         quantum_kernel: TrainableKernel,
-        loss: Optional[Union[str, KernelLoss]] = None,
-        optimizer: Optional[Optimizer] = None,
-        initial_point: Optional[Sequence[float]] = None,
+        loss: str | KernelLoss | None = None,
+        optimizer: Optimizer | Minimizer | None = None,
+        initial_point: Sequence[float] | None = None,
     ):
         """
         Args:
-            quantum_kernel: QuantumKernel to be trained
-            loss (str or KernelLoss): Loss functions available via string:
-                       {'svc_loss': SVCLoss()}.
-                       If a string is passed as the loss function, then the
-                       underlying KernelLoss object will exhibit default
-                       behavior.
-            optimizer: An instance of ``Optimizer`` to be used in training. Since no
-                       analytical gradient is defined for kernel loss functions, gradient-based
-                       optimizers are not recommended for training kernels.
+            quantum_kernel: a trainable quantum kernel to be trained.
+            loss: A loss function available via string is "svc_loss" which is the same as
+                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss`. If a string is
+                passed as the loss function, then the underlying
+                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss` object will exhibit
+                default behavior.
+            optimizer: An instance of :class:`~qiskit.algorithms.optimizers.Optimizer` or a
+                callable to be used in training. Refer to
+                :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on the
+                callable protocol. Since no analytical gradient is defined for kernel loss
+                functions, gradient-based optimizers are not recommended for training kernels. When
+                `None` defaults to :class:`~qiskit.algorithms.optimizers.SPSA`.
             initial_point: Initial point from which the optimizer will begin.
 
         Raises:
-            ValueError: unknown loss function
+            ValueError: unknown loss function.
         """
         # Class fields
         self._quantum_kernel = quantum_kernel
         self._initial_point = initial_point
-        self._optimizer = optimizer or SPSA()
+        # call setter
+        self.optimizer = optimizer
 
         # Loss setter
         self._set_loss(loss)
@@ -133,7 +138,7 @@ class QuantumKernelTrainer:
         return self._loss
 
     @loss.setter
-    def loss(self, loss: Optional[Union[str, KernelLoss]]) -> None:
+    def loss(self, loss: str | KernelLoss | None) -> None:
         """
         Set the loss.
 
@@ -146,22 +151,24 @@ class QuantumKernelTrainer:
         self._set_loss(loss)
 
     @property
-    def optimizer(self) -> Optimizer:
+    def optimizer(self) -> Optimizer | Minimizer:
         """Return an optimizer to be used in training."""
         return self._optimizer
 
     @optimizer.setter
-    def optimizer(self, optimizer: Optimizer) -> None:
+    def optimizer(self, optimizer: Optimizer | Minimizer | None) -> None:
         """Set the optimizer."""
+        if optimizer is None:
+            optimizer = SPSA()
         self._optimizer = optimizer
 
     @property
-    def initial_point(self) -> Optional[Sequence[float]]:
+    def initial_point(self) -> Sequence[float] | None:
         """Return initial point"""
         return self._initial_point
 
     @initial_point.setter
-    def initial_point(self, initial_point: Optional[Sequence[float]]) -> None:
+    def initial_point(self, initial_point: Sequence[float] | None) -> None:
         """Set the initial point"""
         self._initial_point = initial_point
 
@@ -202,10 +209,13 @@ class QuantumKernelTrainer:
         loss_function = partial(
             self._loss.evaluate, quantum_kernel=self.quantum_kernel, data=data, labels=labels
         )
-        opt_results = self._optimizer.minimize(
-            fun=loss_function,
-            x0=self._initial_point,
-        )
+        if callable(self._optimizer):
+            opt_results = self._optimizer(fun=loss_function, x0=self._initial_point)
+        else:
+            opt_results = self._optimizer.minimize(
+                fun=loss_function,
+                x0=self._initial_point,
+            )
 
         # Return kernel training results
         result = QuantumKernelTrainerResult()
@@ -220,7 +230,7 @@ class QuantumKernelTrainer:
 
         return result
 
-    def _set_loss(self, loss: Optional[Union[str, KernelLoss]]) -> None:
+    def _set_loss(self, loss: str | KernelLoss | None) -> None:
         """Internal setter."""
         if loss is None:
             loss = SVCLoss()

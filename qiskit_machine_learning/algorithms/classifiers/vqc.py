@@ -19,7 +19,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.providers import Backend
 from qiskit.utils import QuantumInstance
-from qiskit.algorithms.optimizers import Optimizer, OptimizerResult
+from qiskit.algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from qiskit.primitives import BaseSampler
 
 from ...deprecation import warn_deprecated, DeprecatedType
@@ -53,7 +53,7 @@ class VQC(NeuralNetworkClassifier):
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
         loss: str | Loss = "cross_entropy",
-        optimizer: Optimizer | None = None,
+        optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
         quantum_instance: QuantumInstance | Backend | None = None,
         initial_point: np.ndarray | None = None,
@@ -75,8 +75,10 @@ class VQC(NeuralNetworkClassifier):
             ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
                 QNN. If ``None`` is given then the ``RealAmplitudes`` circuit is used.
             loss: A target loss function to be used in training. Default value is ``cross_entropy``.
-            optimizer: An instance of an optimizer to be used in training. When ``None`` defaults
-                to SLSQP.
+            optimizer: An instance of an optimizer or a callable to be used in training.
+                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                the callable protocol. When `None` defaults to
+                :class:`~qiskit.algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             quantum_instance: Deprecated: If a quantum instance is sent and ``sampler`` is ``None``,
                 the underlying QNN will be of type
@@ -187,7 +189,8 @@ class VQC(NeuralNetworkClassifier):
         if isinstance(self._neural_network, (CircuitQNN, SamplerQNN)):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
 
-        return super()._minimize(X, y)
+        function = self._create_objective(X, y)
+        return self._minimize(function)
 
     def _get_interpret(self, num_classes: int):
         def parity(x: int, num_classes: int = num_classes) -> int:
