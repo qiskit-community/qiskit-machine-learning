@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Statevector Quantum Kernel"""
+"""Fidelity Statevector Kernel"""
 
 from __future__ import annotations
 
@@ -20,9 +20,10 @@ from qiskit.quantum_info import Statevector
 from .base_kernel import BaseKernel
 
 
-class StatevectorKernel(BaseKernel):
+class FidelityStatevectorKernel(BaseKernel):
     r"""
-    An implementation of the quantum kernel interface using ``Statevector`` features.
+    A reference implementation of the quantum kernel interface limited to classically simulated
+    statevectors.
 
     The general task of machine learning is to find and study patterns in data. For many
     algorithms, the datapoints are better understood in a higher dimensional feature space,
@@ -34,28 +35,28 @@ class StatevectorKernel(BaseKernel):
 
     Here :math:`K` is the kernel function, :math:`x`, :math:`y` are :math:`n` dimensional inputs.
     :math:`f` is a map from :math:`n`-dimension to :math:`m`-dimension space. :math:`\langle x, y
-    \rangle` denotes the dot product. Usually m is much larger than :math:`n`.
+    \rangle` denotes the dot product. Usually :math:`m` is much larger than :math:`n`.
 
     The quantum kernel algorithm calculates a kernel matrix, given datapoints :math:`x` and
     :math:`y` and feature map :math:`f`, all of :math:`n` dimension. This kernel matrix can then be
     used in classical machine learning algorithms such as support vector classification, spectral
     clustering or ridge regression.
 
-    Here, the kernel function is defined as the overlap of two quantum states defined by a
-    parametrized quantum circuit (called feature map):
+    Here, the kernel function is defined as the overlap of two simulated quantum statevectors
+    produced by a parametrized quantum circuit (called feature map):
 
     .. math::
 
-        K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2
+        K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2.
 
     In this implementation, :math:`\phi` is represented by a ``Statevector.data`` array,
-    thus the kernel function is simply:
+    thus the kernel function is given simply by
 
     .. math::
 
-        K(x,y) = (\phi(x)^\dagger \phi(y))^2
+        K(x,y) = (\phi(x)^\dagger \phi(y))^2.
 
-    These are stored in a statevector cache for reuse to avoid repeated computation. This stash
+    These arrays are stored in a statevector cache for reuse to avoid repeated computation. This stash
     can be cleared using :meth:`clear_cache()`.
     """
 
@@ -85,9 +86,9 @@ class StatevectorKernel(BaseKernel):
                     - ``none`` when training the diagonal is set to `1` and if two identical samples
                       are found in the dataset the corresponding matrix element is set to `1`.
                       When inferring, matrix elements for identical samples are set to `1`.
-            statevector_type: The type of Statevector that will be instantiated with the
-                ``feature_map`` quantum circuit and used to compute the kernel. This type should
-                inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
+            statevector_type: The type of Statevector that will be instantiated using the
+                ``feature_map`` quantum circuit and used to compute the fidelity kernel. This type
+                should inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
 
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.

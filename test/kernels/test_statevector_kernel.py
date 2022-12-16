@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Test StatevectorKernel."""
+"""Test FidelityStatevectorKernel."""
 
 from __future__ import annotations
 
@@ -24,20 +24,18 @@ from ddt import ddt, idata, unpack
 from sklearn.svm import SVC
 
 from qiskit import QuantumCircuit
-from qiskit.algorithms.state_fidelities import (
-    ComputeUncompute,
-)
+from qiskit.algorithms.state_fidelities import ComputeUncompute
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals, optionals
 
-from qiskit_machine_learning.kernels import StatevectorKernel
+from qiskit_machine_learning.kernels import FidelityStatevectorKernel
 
 
 @ddt
 class TestStatevectorKernel(QiskitMachineLearningTestCase):
-    """Test StatevectorKernel."""
+    """Test FidelityStatevectorKernel."""
 
     def setUp(self):
         super().setUp()
@@ -72,7 +70,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""
-        kernel = StatevectorKernel(feature_map=self.feature_map)
+        kernel = FidelityStatevectorKernel(feature_map=self.feature_map)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         score = svc.score(self.sample_test, self.label_test)
@@ -81,7 +79,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_svc_precomputed(self):
         """Test precomputed kernel in sklearn."""
-        kernel = StatevectorKernel(feature_map=self.feature_map)
+        kernel = FidelityStatevectorKernel(feature_map=self.feature_map)
         kernel_train = kernel.evaluate(x_vec=self.sample_train)
         kernel_test = kernel.evaluate(x_vec=self.sample_test, y_vec=self.sample_train)
 
@@ -96,7 +94,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
-        kernel = StatevectorKernel()
+        kernel = FidelityStatevectorKernel()
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
@@ -111,7 +109,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
-        kernel = StatevectorKernel(statevector_type=AerStatevector)
+        kernel = FidelityStatevectorKernel(statevector_type=AerStatevector)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
@@ -120,7 +118,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_statevector_cache(self):
         """Test filling and clearing the statevector cache."""
-        kernel = StatevectorKernel()
+        kernel = FidelityStatevectorKernel()
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         with self.subTest("Check cache fills correctly"):
@@ -136,7 +134,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
     def test_exceptions(self):
         """Test statevector kernel raises exceptions and warnings."""
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
-            _ = StatevectorKernel(evaluate_duplicates="wrong")
+            _ = FidelityStatevectorKernel(evaluate_duplicates="wrong")
 
     @idata(
         # params, feature map, duplicate
@@ -153,7 +151,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         x_vec = self.properties[params]
         feature_map = self.properties[feature_map]
-        kernel = StatevectorKernel(
+        kernel = FidelityStatevectorKernel(
             feature_map=feature_map,
             evaluate_duplicates=duplicates,
         )
@@ -178,7 +176,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         x_vec = self.properties[params_x]
         y_vec = self.properties[params_y]
         feature_map = self.properties[feature_map]
-        kernel = StatevectorKernel(
+        kernel = FidelityStatevectorKernel(
             feature_map=feature_map,
             evaluate_duplicates=duplicates,
         )
@@ -262,7 +260,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
     def test_validate_input(self):
         """Test validation of input data in the base (abstract) class."""
         with self.subTest("Incorrect size of x_vec"):
-            kernel = StatevectorKernel()
+            kernel = FidelityStatevectorKernel()
 
             x_vec = np.asarray([[[0]]])
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
@@ -271,7 +269,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Adjust the number of qubits in the feature map"):
-            kernel = StatevectorKernel()
+            kernel = FidelityStatevectorKernel()
 
             x_vec = np.asarray([[1, 2, 3]])
             kernel.evaluate(x_vec)
@@ -279,13 +277,13 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         with self.subTest("Fail to adjust the number of qubits in the feature map"):
             qc = QuantumCircuit(1)
-            kernel = StatevectorKernel(feature_map=qc)
+            kernel = FidelityStatevectorKernel(feature_map=qc)
 
             x_vec = np.asarray([[1, 2]])
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Incorrect size of y_vec"):
-            kernel = StatevectorKernel()
+            kernel = FidelityStatevectorKernel()
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[[0]]])
@@ -296,7 +294,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec, y_vec)
 
         with self.subTest("Fail when x_vec and y_vec have different shapes"):
-            kernel = StatevectorKernel()
+            kernel = FidelityStatevectorKernel()
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[1, 2, 3]])
@@ -306,7 +304,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         """Test properties of the base (abstract) class and statevector based kernel."""
         qc = QuantumCircuit(1)
         qc.ry(Parameter("w"), 0)
-        kernel = StatevectorKernel(feature_map=qc, evaluate_duplicates="none")
+        kernel = FidelityStatevectorKernel(feature_map=qc, evaluate_duplicates="none")
 
         self.assertEqual(qc, kernel.feature_map)
         self.assertEqual("none", kernel.evaluate_duplicates)
@@ -361,7 +359,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
     def test_evaluate_duplicates(self, dataset_name, evaluate_duplicates, expected_computations):
         """Tests statevector kernel evaluation with duplicate samples."""
         self.computation_counts = 0
-        kernel = StatevectorKernel(
+        kernel = FidelityStatevectorKernel(
             feature_map=self.feature_map,
             evaluate_duplicates=evaluate_duplicates,
         )
@@ -383,7 +381,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
     ):
         """Tests asymmetric statevector kernel evaluation with duplicate samples."""
         self.computation_counts = 0
-        kernel = StatevectorKernel(
+        kernel = FidelityStatevectorKernel(
             feature_map=self.feature_map,
             evaluate_duplicates=evaluate_duplicates,
         )

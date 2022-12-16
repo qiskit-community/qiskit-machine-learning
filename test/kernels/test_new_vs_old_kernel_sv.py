@@ -25,11 +25,11 @@ from qiskit.circuit.library import ZFeatureMap, ZZFeatureMap
 from qiskit.utils import algorithm_globals, QuantumInstance
 
 from qiskit_machine_learning.kernels import QuantumKernel
-from qiskit_machine_learning.kernels.statevector_kernel import StatevectorKernel
+from qiskit_machine_learning.kernels.statevector_kernel import FidelityStatevectorKernel
 
 
 @ddt
-class TestNewVsOldStatevectorKernel(QiskitMachineLearningTestCase):
+class TestNewVsOldFidelityStatevectorKernel(QiskitMachineLearningTestCase):
     """
     Test new statevector kernel versus the old one. The old one is evaluated on a statevector
     simulator. To be removed when old quantum kernel is removed.
@@ -69,7 +69,7 @@ class TestNewVsOldStatevectorKernel(QiskitMachineLearningTestCase):
         # add some duplicates
         features = np.concatenate((features, features[0, :].reshape(1, -1)))
 
-        new_qk = StatevectorKernel(
+        new_qk = FidelityStatevectorKernel(
             feature_map=feature_map,
             evaluate_duplicates=duplicates,
         )
