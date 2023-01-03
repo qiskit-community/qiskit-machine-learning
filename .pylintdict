@@ -123,6 +123,7 @@ maxiter
 mcrx
 mcry
 mcrz
+minimizer
 misclassified
 mixin
 monte
