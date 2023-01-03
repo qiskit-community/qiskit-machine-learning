@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -82,6 +82,7 @@ class OpflowQNN(NeuralNetwork):
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using ``TorchConnector``.
         """
+        self._gradient_operator_constructed: bool = False
         self._input_params = list(input_params) or []
         self._weight_params = list(weight_params) or []
         self._set_quantum_instance(quantum_instance)
@@ -101,7 +102,7 @@ class OpflowQNN(NeuralNetwork):
             input_gradients=input_gradients,
         )
 
-    def _construct_gradient_operator(self):
+    def _construct_gradient_operator(self) -> None:
         if self._gradient_operator_constructed:
             return
 
