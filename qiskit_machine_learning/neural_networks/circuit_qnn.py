@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -109,6 +109,7 @@ class CircuitQNN(SamplingNeuralNetwork):
             QiskitMachineLearningError: if ``interpret`` is passed without ``output_shape``.
 
         """
+        self._gradient_circuit_constructed: bool = False
         self._input_params = list(input_params or [])
         self._weight_params = list(weight_params or [])
 
@@ -152,7 +153,7 @@ class CircuitQNN(SamplingNeuralNetwork):
         # use given gradient or default
         self._gradient = gradient or Gradient()
 
-    def _construct_gradient_circuit(self):
+    def _construct_gradient_circuit(self) -> None:
         if self._gradient_circuit_constructed:
             return
 
