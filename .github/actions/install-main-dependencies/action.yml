@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -119,6 +119,8 @@ runs:
           echo 'Create wheel file from main'
           pip install -U wheel
           pushd /tmp/qiskit-aer
+          pip install -U -c constraints.txt -r requirements-dev.txt
+          pip install pybind11
           if [ "${{ inputs.os }}" == "windows-2019" ]; then
             python setup.py bdist_wheel -- -G 'Visual Studio 16 2019'
           elif  [ "${{ inputs.os }}" == "macos-latest" ]; then
