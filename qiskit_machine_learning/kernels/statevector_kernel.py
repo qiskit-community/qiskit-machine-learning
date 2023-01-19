@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,7 +13,7 @@
 
 from __future__ import annotations
 
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Protocol
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -22,6 +22,18 @@ from qiskit.quantum_info import Statevector
 from .base_kernel import BaseKernel
 
 SV = TypeVar("SV", bound=Statevector)
+
+
+class StatevectorLike(Protocol):
+    """Statevector-like protocol.
+
+    Must be initialized using a ``QuantumCircuit`` and provide an ``np.ndarray`` ``data`` attribute.
+    """
+
+    def __init__(self, data: QuantumCircuit):
+        ...
+
+    data: np.ndarray
 
 
 class FidelityStatevectorKernel(BaseKernel):
@@ -50,7 +62,10 @@ class FidelityStatevectorKernel(BaseKernel):
     """
 
     def __init__(
-        self, *, feature_map: QuantumCircuit | None = None, statevector_type: Type[SV] = Statevector
+        self,
+        *,
+        feature_map: QuantumCircuit | None = None,
+        statevector_type: Type[StatevectorLike] = Statevector,
     ) -> None:
         """
         Args:
