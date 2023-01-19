@@ -23,6 +23,7 @@ from .base_kernel import BaseKernel
 
 SV = TypeVar("SV", bound=Statevector)
 
+
 class FidelityStatevectorKernel(BaseKernel):
     r"""
     A reference implementation of the quantum kernel interface limited to classically simulated
@@ -49,10 +50,7 @@ class FidelityStatevectorKernel(BaseKernel):
     """
 
     def __init__(
-        self,
-        *,
-        feature_map: QuantumCircuit | None = None,
-        statevector_type: Type[SV] = Statevector
+        self, *, feature_map: QuantumCircuit | None = None, statevector_type: Type[SV] = Statevector
     ) -> None:
         """
         Args:

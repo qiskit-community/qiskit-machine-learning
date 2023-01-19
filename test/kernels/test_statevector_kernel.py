@@ -359,9 +359,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
         ]
     )
     @unpack
-    def test_with_duplicates_asymmetric(
-        self, dataset_name, expected_computations
-    ):
+    def test_with_duplicates_asymmetric(self, dataset_name, expected_computations):
         """Tests asymmetric statevector kernel evaluation with duplicate samples."""
         self.computation_counts = 0
         kernel = FidelityStatevectorKernel(
