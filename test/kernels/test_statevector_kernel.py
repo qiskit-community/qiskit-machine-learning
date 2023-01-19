@@ -131,21 +131,15 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             kernel.clear_cache()
             self.assertTrue(not kernel._statevector_cache)
 
-    def test_exceptions(self):
-        """Test statevector kernel raises exceptions and warnings."""
-        with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
-            _ = FidelityStatevectorKernel(evaluate_duplicates="wrong")
-
     @idata(
         # params, feature map, duplicate
         itertools.product(
             ["samples_1", "samples_4"],
             ["no_fm", "z_fm"],
-            ["none", "off_diagonal", "all"],
         )
     )
     @unpack
-    def test_evaluate_symmetric(self, params, feature_map, duplicates):
+    def test_evaluate_symmetric(self, params, feature_map):
         """Test QuantumKernel.evaluate(x) for a symmetric kernel."""
         solution = self._get_symmetric_solution(params, feature_map)
 
@@ -153,7 +147,6 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         feature_map = self.properties[feature_map]
         kernel = FidelityStatevectorKernel(
             feature_map=feature_map,
-            evaluate_duplicates=duplicates,
         )
 
         kernel_matrix = kernel.evaluate(x_vec)
@@ -165,11 +158,10 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             ["samples_1", "samples_4"],
             ["samples_1", "samples_4", "samples_test"],
             ["no_fm", "z_fm"],
-            ["none", "off_diagonal", "all"],
         )
     )
     @unpack
-    def test_evaluate_asymmetric(self, params_x, params_y, feature_map, duplicates):
+    def test_evaluate_asymmetric(self, params_x, params_y, feature_map):
         """Test QuantumKernel.evaluate(x,y) for an asymmetric kernel."""
         solution = self._get_asymmetric_solution(params_x, params_y, feature_map)
 
@@ -178,7 +170,6 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         feature_map = self.properties[feature_map]
         kernel = FidelityStatevectorKernel(
             feature_map=feature_map,
-            evaluate_duplicates=duplicates,
         )
 
         if isinstance(solution, str) and solution == "wrong":
@@ -304,10 +295,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         """Test properties of the base (abstract) class and statevector based kernel."""
         qc = QuantumCircuit(1)
         qc.ry(Parameter("w"), 0)
-        kernel = FidelityStatevectorKernel(feature_map=qc, evaluate_duplicates="none")
+        kernel = FidelityStatevectorKernel(feature_map=qc)
 
         self.assertEqual(qc, kernel.feature_map)
-        self.assertEqual("none", kernel.evaluate_duplicates)
         self.assertEqual(1, kernel.num_features)
 
 
@@ -347,21 +337,16 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
 
     @idata(
         [
-            ("no_dups", "all", 9),
-            ("no_dups", "off_diagonal", 6),
-            ("no_dups", "none", 6),
-            ("dups", "all", 9),
-            ("dups", "off_diagonal", 6),
-            ("dups", "none", 4),
+            ("no_dups", 6),
+            ("dups", 4),
         ]
     )
     @unpack
-    def test_evaluate_duplicates(self, dataset_name, evaluate_duplicates, expected_computations):
+    def test_with_duplicates(self, dataset_name, expected_computations):
         """Tests statevector kernel evaluation with duplicate samples."""
         self.computation_counts = 0
         kernel = FidelityStatevectorKernel(
             feature_map=self.feature_map,
-            evaluate_duplicates=evaluate_duplicates,
         )
         kernel._compute_kernel_element = self.count_computations(kernel._compute_kernel_element)
         kernel.evaluate(self.properties.get(dataset_name))
@@ -370,20 +355,17 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
 
     @idata(
         [
-            ("no_dups", "all", 6),
-            ("no_dups", "off_diagonal", 6),
-            ("no_dups", "none", 5),
+            ("no_dups", 5),
         ]
     )
     @unpack
-    def test_evaluate_duplicates_asymmetric(
-        self, dataset_name, evaluate_duplicates, expected_computations
+    def test_with_duplicates_asymmetric(
+        self, dataset_name, expected_computations
     ):
         """Tests asymmetric statevector kernel evaluation with duplicate samples."""
         self.computation_counts = 0
         kernel = FidelityStatevectorKernel(
             feature_map=self.feature_map,
-            evaluate_duplicates=evaluate_duplicates,
         )
         kernel._compute_kernel_element = self.count_computations(kernel._compute_kernel_element)
         kernel.evaluate(self.properties.get(dataset_name), self.properties.get("y_vec"))

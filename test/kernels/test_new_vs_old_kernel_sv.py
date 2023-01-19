@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Test statevector kernel versus the original implementation."""
+"""Test statevector kernel versus the original quantum kernel implementation."""
 
 from __future__ import annotations
 
@@ -31,8 +31,8 @@ from qiskit_machine_learning.kernels.statevector_kernel import FidelityStatevect
 @ddt
 class TestNewVsOldFidelityStatevectorKernel(QiskitMachineLearningTestCase):
     """
-    Test new statevector kernel versus the old one. The old one is evaluated on a statevector
-    simulator. To be removed when old quantum kernel is removed.
+    Test new statevector kernel versus the old QuantumKernel evaluated on a statevector simulator.
+    To be removed when old quantum kernel is removed.
     """
 
     def setUp(self):
@@ -71,7 +71,6 @@ class TestNewVsOldFidelityStatevectorKernel(QiskitMachineLearningTestCase):
 
         new_qk = FidelityStatevectorKernel(
             feature_map=feature_map,
-            evaluate_duplicates=duplicates,
         )
         old_qk = QuantumKernel(
             feature_map,

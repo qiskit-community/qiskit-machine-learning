@@ -13,34 +13,20 @@
 
 from __future__ import annotations
 
+from typing import Type, TypeVar
+
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector
 
 from .base_kernel import BaseKernel
 
+SV = TypeVar("SV", bound=Statevector)
 
 class FidelityStatevectorKernel(BaseKernel):
     r"""
     A reference implementation of the quantum kernel interface limited to classically simulated
     statevectors.
-
-    The general task of machine learning is to find and study patterns in data. For many
-    algorithms, the datapoints are better understood in a higher dimensional feature space,
-    through the use of a kernel function:
-
-    .. math::
-
-        K(x, y) = \langle f(x), f(y)\rangle.
-
-    Here :math:`K` is the kernel function, :math:`x`, :math:`y` are :math:`n` dimensional inputs.
-    :math:`f` is a map from :math:`n`-dimension to :math:`m`-dimension space. :math:`\langle x, y
-    \rangle` denotes the dot product. Usually :math:`m` is much larger than :math:`n`.
-
-    The quantum kernel algorithm calculates a kernel matrix, given datapoints :math:`x` and
-    :math:`y` and feature map :math:`f`, all of :math:`n` dimension. This kernel matrix can then be
-    used in classical machine learning algorithms such as support vector classification, spectral
-    clustering or ridge regression.
 
     Here, the kernel function is defined as the overlap of two simulated quantum statevectors
     produced by a parametrized quantum circuit (called feature map):
@@ -54,18 +40,19 @@ class FidelityStatevectorKernel(BaseKernel):
 
     .. math::
 
-        K(x,y) = (\phi(x)^\dagger \phi(y))^2.
+        K(x,y) = |\phi(x)^\dagger \phi(y)|^2.
 
-    These arrays are stored in a statevector cache for reuse to avoid repeated computation. This stash
-    can be cleared using :meth:`clear_cache()`.
+    These arrays are stored in a statevector cache for reuse to avoid repeated computation.
+    This stash can be cleared using :meth:`clear_cache`. By default, the cache is cleared
+    when :meth:`evaluate` is called.
+
     """
 
     def __init__(
         self,
         *,
         feature_map: QuantumCircuit | None = None,
-        evaluate_duplicates: str = "off_diagonal",
-        statevector_type: type = Statevector,
+        statevector_type: Type[SV] = Statevector
     ) -> None:
         """
         Args:
@@ -74,48 +61,41 @@ class FidelityStatevectorKernel(BaseKernel):
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
-            evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
-               duplicate samples are found. Possible values are:
-
-                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
-                      ones when training. This may introduce additional noise in the matrix.
-                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the remaining
-                      elements are fully evaluated, e.g., for two identical samples in the
-                      dataset. When inferring, all elements are evaluated. This is the default
-                      value.
-                    - ``none`` when training the diagonal is set to `1` and if two identical samples
-                      are found in the dataset the corresponding matrix element is set to `1`.
-                      When inferring, matrix elements for identical samples are set to `1`.
             statevector_type: The type of Statevector that will be instantiated using the
                 ``feature_map`` quantum circuit and used to compute the fidelity kernel. This type
                 should inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
-
-        Raises:
-            ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
         super().__init__(feature_map=feature_map)
 
-        eval_duplicates = evaluate_duplicates.lower()
-        if eval_duplicates not in ("all", "off_diagonal", "none"):
-            raise ValueError(
-                f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
-            )
-        self._evaluate_duplicates = eval_duplicates
-
         self._statevector_type = statevector_type
-
         self._statevector_cache: dict[tuple[float, ...], np.ndarray] = {}
 
-    def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
+    def evaluate(
+        self, x_vec: np.ndarray, y_vec: np.ndarray | None = None, clear_cache: bool = True
+    ) -> np.ndarray:
+        r"""
+        Construct kernel matrix for given data.
+
+        If ``y_vec`` is ``None``, self inner product is calculated.
+
+        Args:
+            x_vec: 1D or 2D array of datapoints, :math:`N\times D`, where :math:`N` is the number of
+                datapoints, :math:`D` is the feature dimension.
+            y_vec: 1D or 2D array of datapoints, :math:`M\times D`, where :math:`M` is the number of
+                datapoints, :math:`D` is the feature dimension.
+            clear_cache: Boolean that determines whether the statevector cache is cleared when
+                evaluate is called. Defaults to ``True``.
+
+        Returns:
+            2D matrix, :math:`N\times M`.
+        """
+        if clear_cache:
+            self.clear_cache()
 
         x_vec, y_vec = self._validate_input(x_vec, y_vec)
 
-        # determine if calculating self inner product
-        is_symmetric = True
         if y_vec is None:
             y_vec = x_vec
-        elif not np.array_equal(x_vec, y_vec):
-            is_symmetric = False
 
         kernel_shape = (x_vec.shape[0], y_vec.shape[0])
 
@@ -125,20 +105,17 @@ class FidelityStatevectorKernel(BaseKernel):
         kernel_matrix = np.ones(kernel_shape)
         for i, x in enumerate(x_svs):
             for j, y in enumerate(y_svs):
-                if self._is_trivial(i, j, x, y, is_symmetric):
+                if np.array_equal(x, y):
                     continue
                 kernel_matrix[i, j] = self._compute_kernel_element(x, y)
-
-        # due to truncation and rounding errors we may get complex numbers
-        kernel_matrix = np.real(kernel_matrix)
 
         return kernel_matrix
 
     @staticmethod
-    def _compute_kernel_element(x: Statevector, y: Statevector) -> float:
+    def _compute_kernel_element(x: np.ndarray, y: np.ndarray) -> float:
         return np.abs(np.conj(x) @ y) ** 2
 
-    def _get_statevector(self, param_values) -> Statevector:
+    def _get_statevector(self, param_values) -> np.ndarray:
         param_values = tuple(param_values)
         statevector = self._statevector_cache.get(param_values, None)
 
@@ -148,43 +125,6 @@ class FidelityStatevectorKernel(BaseKernel):
             self._statevector_cache[param_values] = statevector
 
         return statevector
-
-    @property
-    def evaluate_duplicates(self):
-        """Returns the strategy used by this kernel to evaluate kernel matrix elements if duplicate
-        samples are found."""
-        return self._evaluate_duplicates
-
-    def _is_trivial(
-        self, i: int, j: int, x_i: np.ndarray, y_j: np.ndarray, symmetric: bool
-    ) -> bool:
-        """
-        Verifies if the kernel entry is trivial (to be set to `1.0`) or not.
-
-        Args:
-            i: row index of the entry in the kernel matrix.
-            j: column index of the entry in the kernel matrix.
-            x_i: a sample from the dataset that corresponds to the row in the kernel matrix.
-            y_j: a sample from the dataset that corresponds to the column in the kernel matrix.
-            symmetric: whether it is a symmetric case or not.
-
-        Returns:
-            `True` if the entry is trivial, `False` otherwise.
-        """
-        # if we evaluate all combinations, then it is non-trivial
-        if self._evaluate_duplicates == "all":
-            return False
-
-        # if we are on the diagonal and we don't evaluate it, it is trivial
-        if symmetric and i == j and self._evaluate_duplicates == "off_diagonal":
-            return True
-
-        # if don't evaluate any duplicates
-        if np.array_equal(x_i, y_j) and self._evaluate_duplicates == "none":
-            return True
-
-        # otherwise evaluate
-        return False
 
     def clear_cache(self):
         """Clear the statevector cache."""
