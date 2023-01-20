@@ -44,13 +44,17 @@ class FidelityStatevectorKernel(BaseKernel):
         K(x,y) = |\phi(x)^\dagger \phi(y)|^2.
 
     These arrays are stored in a statevector cache for reuse to avoid repeated computation.
-    This stash can be cleared using :meth:`clear_cache`. By default, the cache is cleared
-    when :meth:`evaluate` is called.
+    This stash can be cleared using :meth:`clear_cache`. By default the stash is cleared when
+    :meth:`evaluate` is called, unless ``retain_cache`` is ``True``.
 
     """
 
     def __init__(
-        self, *, feature_map: QuantumCircuit | None = None, statevector_type: Type[SV] = Statevector
+        self,
+        *,
+        feature_map: QuantumCircuit | None = None,
+        statevector_type: Type[SV] = Statevector,
+        retain_cache: bool = False,
     ) -> None:
         """
         Args:
@@ -62,14 +66,19 @@ class FidelityStatevectorKernel(BaseKernel):
             statevector_type: The type of Statevector that will be instantiated using the
                 ``feature_map`` quantum circuit and used to compute the fidelity kernel. This type
                 should inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
+            retain_cache: Determines whether the statevector cache is retained when :meth:`evaluate`
+                is called. The cache is cleared by default.
         """
         super().__init__(feature_map=feature_map)
 
         self._statevector_type = statevector_type
+        self._retain_cache = retain_cache
         self._statevector_cache: dict[tuple[float, ...], np.ndarray] = {}
 
     def evaluate(
-        self, x_vec: np.ndarray, y_vec: np.ndarray | None = None, clear_cache: bool = True
+        self,
+        x_vec: np.ndarray,
+        y_vec: np.ndarray | None = None,
     ) -> np.ndarray:
         r"""
         Construct kernel matrix for given data.
@@ -81,13 +90,11 @@ class FidelityStatevectorKernel(BaseKernel):
                 datapoints, :math:`D` is the feature dimension.
             y_vec: 1D or 2D array of datapoints, :math:`M\times D`, where :math:`M` is the number of
                 datapoints, :math:`D` is the feature dimension.
-            clear_cache: Boolean that determines whether the statevector cache is cleared when
-                evaluate is called. Defaults to ``True``.
 
         Returns:
             2D matrix, :math:`N\times M`.
         """
-        if clear_cache:
+        if not self._retain_cache:
             self.clear_cache()
 
         x_vec, y_vec = self._validate_input(x_vec, y_vec)
