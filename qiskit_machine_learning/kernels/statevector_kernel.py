@@ -26,8 +26,8 @@ SV = TypeVar("SV", bound=Statevector)
 
 class FidelityStatevectorKernel(BaseKernel):
     r"""
-    A reference implementation of the quantum kernel interface limited to classically simulated
-    statevectors.
+    A reference implementation of the quantum kernel interface optimized for (and limited
+    to) classically simulated statevectors.
 
     Here, the kernel function is defined as the overlap of two simulated quantum statevectors
     produced by a parametrized quantum circuit (called feature map):
@@ -44,7 +44,7 @@ class FidelityStatevectorKernel(BaseKernel):
         K(x,y) = |\phi(x)^\dagger \phi(y)|^2.
 
     These arrays are stored in a statevector cache for reuse to avoid repeated computation.
-    This stash can be cleared using :meth:`clear_cache`. By default the stash is cleared when
+    This cache can be cleared using :meth:`clear_cache`. By default the cache is cleared when
     :meth:`evaluate` is called, unless ``retain_cache`` is ``True``.
 
     """
