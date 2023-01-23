@@ -22,7 +22,7 @@ from qiskit.circuit import Parameter
 from qiskit.primitives import BaseSampler, SamplerResult
 from qiskit.utils import algorithm_globals
 
-from qiskit_machine_learning.neural_networks import SamplerQNN
+from .sampler_qnn import SamplerQNN
 
 
 class SamplingQNN(SamplerQNN):
