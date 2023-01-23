@@ -76,7 +76,7 @@ class FidelityStatevectorKernel(BaseKernel):
         self._retain_cache = retain_cache
 
         # Create the statevector cache at the instance level.
-        self._get_statevector = functools.lru_cache()(self._get_statevector_)
+        self._get_statevector = functools.lru_cache(maxsize=None)(self._get_statevector_)
 
     def evaluate(
         self,
