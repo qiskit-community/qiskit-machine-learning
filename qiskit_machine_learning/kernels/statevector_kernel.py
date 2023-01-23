@@ -75,6 +75,9 @@ class FidelityStatevectorKernel(BaseKernel):
         self._statevector_type = statevector_type
         self._retain_cache = retain_cache
 
+        # Create the statevector cache at the instance level.
+        self._get_statevector = functools.lru_cache()(self._get_statevector_)
+
     def evaluate(
         self,
         x_vec: np.ndarray,
@@ -116,8 +119,7 @@ class FidelityStatevectorKernel(BaseKernel):
 
         return kernel_matrix
 
-    @functools.cache
-    def _get_statevector(self, param_values: tuple[float]) -> np.ndarray:
+    def _get_statevector_(self, param_values: tuple[float]) -> np.ndarray:
         qc = self._feature_map.bind_parameters(param_values)
         return self._statevector_type(qc).data
 
@@ -127,5 +129,5 @@ class FidelityStatevectorKernel(BaseKernel):
 
     def clear_cache(self):
         """Clear the statevector cache."""
-        # pylint: disable=no-member
+        # pylint: disable=no-member
         self._get_statevector.cache_clear()
