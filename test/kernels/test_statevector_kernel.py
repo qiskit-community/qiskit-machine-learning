@@ -122,10 +122,12 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         with self.subTest("Check cache fills correctly"):
+            # pylint: disable=no-member
             self.assertEqual(kernel._get_statevector.cache_info().currsize, len(self.sample_train))
 
         with self.subTest("Check cache clears correctly"):
             kernel.clear_cache()
+            # pylint: disable=no-member
             self.assertEqual(kernel._get_statevector.cache_info().currsize, 0)
 
     @idata(

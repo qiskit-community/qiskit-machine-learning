@@ -127,4 +127,5 @@ class FidelityStatevectorKernel(BaseKernel):
 
     def clear_cache(self):
         """Clear the statevector cache."""
+        # pylint: disable=no-member
         self._get_statevector.cache_clear()
