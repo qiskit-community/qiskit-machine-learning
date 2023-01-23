@@ -41,7 +41,7 @@ class SamplingQNN(SamplerQNN):
     returns a single number then the interpret shape is ``1``, if the function returns an array,
     then the interpret shape is the shape of this array.
 
-    The ``backward`` always returns a tuple of ``None``s.
+    The ``backward`` always returns a tuple ``(None, None)``.
 
     In this example the network generates samples without custom interpretation. The circuit has two
     qubits, thus there are four possible outcomes, but in this setup the network generates evenly
