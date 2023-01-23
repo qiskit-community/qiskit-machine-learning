@@ -13,6 +13,7 @@
 
 from __future__ import annotations
 
+import functools
 from typing import Type, TypeVar
 
 import numpy as np
@@ -73,7 +74,6 @@ class FidelityStatevectorKernel(BaseKernel):
 
         self._statevector_type = statevector_type
         self._retain_cache = retain_cache
-        self._statevector_cache: dict[tuple[float, ...], np.ndarray] = {}
 
     def evaluate(
         self,
@@ -104,8 +104,8 @@ class FidelityStatevectorKernel(BaseKernel):
 
         kernel_shape = (x_vec.shape[0], y_vec.shape[0])
 
-        x_svs = [self._get_statevector(x) for x in x_vec]
-        y_svs = [self._get_statevector(y) for y in y_vec]
+        x_svs = [self._get_statevector(tuple(x)) for x in x_vec]
+        y_svs = [self._get_statevector(tuple(y)) for y in y_vec]
 
         kernel_matrix = np.ones(kernel_shape)
         for i, x in enumerate(x_svs):
@@ -116,21 +116,15 @@ class FidelityStatevectorKernel(BaseKernel):
 
         return kernel_matrix
 
+    @functools.cache
+    def _get_statevector(self, param_values: tuple[float]) -> np.ndarray:
+        qc = self._feature_map.bind_parameters(param_values)
+        return self._statevector_type(qc).data
+
     @staticmethod
     def _compute_kernel_element(x: np.ndarray, y: np.ndarray) -> float:
         return np.abs(np.conj(x) @ y) ** 2
 
-    def _get_statevector(self, param_values) -> np.ndarray:
-        param_values = tuple(param_values)
-        statevector = self._statevector_cache.get(param_values, None)
-
-        if statevector is None:
-            qc = self._feature_map.bind_parameters(param_values)
-            statevector = self._statevector_type(qc).data
-            self._statevector_cache[param_values] = statevector
-
-        return statevector
-
     def clear_cache(self):
         """Clear the statevector cache."""
-        self._statevector_cache.clear()
+        self._get_statevector.cache_clear()

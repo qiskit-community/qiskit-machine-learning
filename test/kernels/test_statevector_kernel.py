@@ -122,14 +122,11 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         with self.subTest("Check cache fills correctly"):
-            np.testing.assert_array_equal(
-                np.asarray(list(kernel._statevector_cache.keys())), self.sample_train
-            )
-            for value in kernel._statevector_cache.values():
-                self.assertIsInstance(value, np.ndarray)
+            self.assertEqual(kernel._get_statevector.cache_info().currsize, len(self.sample_train))
+
         with self.subTest("Check cache clears correctly"):
             kernel.clear_cache()
-            self.assertTrue(not kernel._statevector_cache)
+            self.assertEqual(kernel._get_statevector.cache_info().currsize, 0)
 
     @idata(
         # params, feature map, duplicate
@@ -356,6 +353,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
     @idata(
         [
             ("no_dups", 5),
+            ("dups", 4),
         ]
     )
     @unpack
