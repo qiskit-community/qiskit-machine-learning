@@ -439,7 +439,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
                 [
                     "WARNING:qiskit_machine_learning.neural_networks.circuit_qnn:"
                     "In sampling mode, output_shape will be automatically inferred "
-                    "from the number of samples and interpret function, if provided."
+                    "from the number of shots and interpret function, if provided."
                 ],
             )
 

@@ -227,27 +227,31 @@ class EstimatorQNN(NeuralNetwork):
     ) -> tuple[np.ndarray | None, np.ndarray]:
         """Backward pass of the network."""
         # prepare parameters in the required format
-        parameter_values_, num_samples = self._preprocess_forward(input_data, weights)
+        parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
-        if num_samples is None or (not self._input_gradients and self._num_weights == 0):
-            return None, None
-        num_observables = self.output_shape[0]
-        num_circuits = num_samples * num_observables
+        input_grad, weights_grad = None, None
 
-        circuits = [self._circuit] * num_circuits
-        observables = [op for op in self._observables for _ in range(num_samples)]
-        param_values = np.tile(parameter_values_, (num_observables, 1))
+        if np.prod(parameter_values.shape) > 0:
+            num_observables = self.output_shape[0]
+            num_circuits = num_samples * num_observables
 
-        if self._input_gradients:
-            job = self.gradient.run(circuits, observables, param_values)
-        else:
-            params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
-            job = self.gradient.run(circuits, observables, param_values, parameters=params)
+            circuits = [self._circuit] * num_circuits
+            observables = [op for op in self._observables for _ in range(num_samples)]
+            param_values = np.tile(parameter_values, (num_observables, 1))
 
-        try:
-            results = job.result()
-        except Exception as exc:
-            raise QiskitMachineLearningError("Estimator job failed.") from exc
+            job = None
+            if self._input_gradients:
+                job = self.gradient.run(circuits, observables, param_values)
+            elif len(parameter_values[0]) > self._num_inputs:
+                params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
+                job = self.gradient.run(circuits, observables, param_values, parameters=params)
 
-        input_grad, weights_grad = self._backward_postprocess(num_samples, results)
+            if job is not None:
+                try:
+                    results = job.result()
+                except Exception as exc:
+                    raise QiskitMachineLearningError("Estimator job failed.") from exc
+
+                input_grad, weights_grad = self._backward_postprocess(num_samples, results)
+
         return input_grad, weights_grad

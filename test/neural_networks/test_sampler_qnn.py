@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test Sampler QNN with Terra primitives."""
+from __future__ import annotations
 
 from test import QiskitMachineLearningTestCase
 
@@ -131,7 +132,11 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         return qnn
 
     def _verify_qnn(
-        self, qnn: SamplerQNN, batch_size: int, input_data: np.ndarray, weights: np.ndarray
+        self,
+        qnn: SamplerQNN,
+        batch_size: int,
+        input_data: np.ndarray | None,
+        weights: np.ndarray | None,
     ) -> None:
         """
         Verifies that a QNN functions correctly
@@ -162,7 +167,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                 )
                 self.assertTrue(isinstance(weights_grad, self.array_type[qnn.sparse]))
             else:
-                # verify that input gradients are None if turned off
+                # verify that weight gradients are None if no weights
                 self.assertIsNone(weights_grad)
 
         else:
@@ -173,6 +178,9 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                     weights_grad.shape, (batch_size, *qnn.output_shape, qnn.num_weights)
                 )
                 self.assertTrue(isinstance(weights_grad, self.array_type[qnn.sparse]))
+            else:
+                # verify that weight gradients are None if no weights
+                self.assertIsNone(weights_grad)
 
     @unittest.skipIf(not _optionals.HAS_SPARSE, "Sparse not available.")
     @idata(itertools.product(SPARSE, SAMPLERS, INTERPRET_TYPES, BATCH_SIZES, INPUT_GRADS))
@@ -294,3 +302,43 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             self.assertFalse(sampler_qnn.input_gradients)
             sampler_qnn.input_gradients = True
             self.assertTrue(sampler_qnn.input_gradients)
+
+    def test_no_parameters(self):
+        """Test when some parameters are not set."""
+        params = [Parameter("p0"), Parameter("p1")]
+        qc = QuantumCircuit(1)
+        qc.h(0)
+        qc.ry(params[0], 0)
+        qc.rx(params[1], 0)
+
+        with self.subTest("no inputs"):
+            sampler_qnn = SamplerQNN(
+                circuit=qc,
+                weight_params=params,
+            )
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1, 2])
+
+            sampler_qnn.input_gradients = True
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1, 2])
+
+        with self.subTest("no weights"):
+            sampler_qnn = SamplerQNN(
+                circuit=qc,
+                input_params=params,
+            )
+            self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
+
+            sampler_qnn.input_gradients = True
+            self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
+
+        with self.subTest("no parameters"):
+            qc = qc.bind_parameters([1, 2])
+
+            sampler_qnn = SamplerQNN(
+                circuit=qc,
+            )
+
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=None)
+
+            sampler_qnn.input_gradients = True
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=None)

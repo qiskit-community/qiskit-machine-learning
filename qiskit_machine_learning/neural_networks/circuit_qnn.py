@@ -188,7 +188,7 @@ class CircuitQNN(SamplingNeuralNetwork):
                 # Warn user that output_shape parameter will be ignored
                 logger.warning(
                     "In sampling mode, output_shape will be automatically inferred "
-                    "from the number of samples and interpret function, if provided."
+                    "from the number of shots and interpret function, if provided."
                 )
 
             num_samples = self._quantum_instance.run_config.shots
