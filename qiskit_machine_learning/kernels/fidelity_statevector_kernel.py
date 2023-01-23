@@ -55,7 +55,7 @@ class FidelityStatevectorKernel(BaseKernel):
         *,
         feature_map: QuantumCircuit | None = None,
         statevector_type: Type[SV] = Statevector,
-        retain_cache: bool = False,
+        auto_clear_cache: bool = True,
     ) -> None:
         """
         Args:
@@ -67,13 +67,13 @@ class FidelityStatevectorKernel(BaseKernel):
             statevector_type: The type of Statevector that will be instantiated using the
                 ``feature_map`` quantum circuit and used to compute the fidelity kernel. This type
                 should inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
-            retain_cache: Determines whether the statevector cache is retained when :meth:`evaluate`
-                is called. The cache is cleared by default.
+            auto_clear_cache: Determines whether the statevector cache is retained when
+                :meth:`evaluate` is called. The cache is automatically cleared by default.
         """
         super().__init__(feature_map=feature_map)
 
         self._statevector_type = statevector_type
-        self._retain_cache = retain_cache
+        self._auto_clear_cache = auto_clear_cache
 
         # Create the statevector cache at the instance level.
         self._get_statevector = functools.lru_cache(maxsize=None)(self._get_statevector_)
@@ -97,7 +97,7 @@ class FidelityStatevectorKernel(BaseKernel):
         Returns:
             2D matrix, :math:`N\times M`.
         """
-        if not self._retain_cache:
+        if self._auto_clear_cache:
             self.clear_cache()
 
         x_vec, y_vec = self._validate_input(x_vec, y_vec)
