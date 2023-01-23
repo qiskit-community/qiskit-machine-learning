@@ -354,8 +354,6 @@ class SamplerQNN(NeuralNetwork):
         """
         parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
-        assert num_samples > 0
-
         if num_samples is not None:  # and np.prod(parameter_values.shape) > 0: # np.prod == 0
             # sampler allows batching
             job = self.sampler.run([self._circuit] * num_samples, parameter_values)
