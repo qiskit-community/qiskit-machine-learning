@@ -24,8 +24,7 @@ from qiskit import BasicAer
 from qiskit.circuit.library import ZFeatureMap, ZZFeatureMap
 from qiskit.utils import algorithm_globals, QuantumInstance
 
-from qiskit_machine_learning.kernels import QuantumKernel
-from qiskit_machine_learning.kernels.statevector_kernel import FidelityStatevectorKernel
+from qiskit_machine_learning.kernels import QuantumKernel, FidelityStatevectorKernel
 
 
 @ddt

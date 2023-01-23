@@ -61,7 +61,7 @@ Submodules
 from .quantum_kernel import QuantumKernel
 from .base_kernel import BaseKernel
 from .fidelity_quantum_kernel import FidelityQuantumKernel
-from .statevector_kernel import FidelityStatevectorKernel
+from .fidelity_statevector_kernel import FidelityStatevectorKernel
 from .trainable_kernel import TrainableKernel
 from .trainable_fidelity_quantum_kernel import TrainableFidelityQuantumKernel
 
