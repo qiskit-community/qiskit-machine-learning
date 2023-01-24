@@ -55,6 +55,7 @@ class FidelityStatevectorKernel(BaseKernel):
         *,
         feature_map: QuantumCircuit | None = None,
         statevector_type: Type[SV] = Statevector,
+        cache_size: int | None = None,
         auto_clear_cache: bool = True,
     ) -> None:
         """
@@ -67,6 +68,7 @@ class FidelityStatevectorKernel(BaseKernel):
             statevector_type: The type of Statevector that will be instantiated using the
                 ``feature_map`` quantum circuit and used to compute the fidelity kernel. This type
                 should inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
+            cache_size: Maximum size of the statevector cache. When ``None`` this is unbounded.
             auto_clear_cache: Determines whether the statevector cache is retained when
                 :meth:`evaluate` is called. The cache is automatically cleared by default.
         """
@@ -76,7 +78,7 @@ class FidelityStatevectorKernel(BaseKernel):
         self._auto_clear_cache = auto_clear_cache
 
         # Create the statevector cache at the instance level.
-        self._get_statevector = functools.lru_cache(maxsize=None)(self._get_statevector_)
+        self._get_statevector = functools.lru_cache(maxsize=cache_size)(self._get_statevector_)
 
     def evaluate(
         self,

@@ -118,15 +118,30 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_statevector_cache(self):
         """Test filling and clearing the statevector cache."""
-        kernel = FidelityStatevectorKernel()
+        kernel = FidelityStatevectorKernel(auto_clear_cache=False)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
-        with self.subTest("Check cache fills correctly"):
+        with self.subTest("Check cache fills correctly."):
             # pylint: disable=no-member
             self.assertEqual(kernel._get_statevector.cache_info().currsize, len(self.sample_train))
 
+        svc.fit(self.sample_test, self.label_test)
+        with self.subTest("Check no auto_clear_cache."):
+            # pylint: disable=no-member
+            self.assertEqual(
+                kernel._get_statevector.cache_info().currsize,
+                len(self.sample_train) + len(self.sample_test),
+            )
+
+        kernel = FidelityStatevectorKernel(cache_size=3, auto_clear_cache=False)
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(self.sample_train, self.label_train)
+        with self.subTest("Check cache limit respected."):
+            # pylint: disable=no-member
+            self.assertEqual(kernel._get_statevector.cache_info().currsize, 3)
+
+        kernel.clear_cache()
         with self.subTest("Check cache clears correctly"):
-            kernel.clear_cache()
             # pylint: disable=no-member
             self.assertEqual(kernel._get_statevector.cache_info().currsize, 0)
 
