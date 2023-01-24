@@ -1,0 +1,49 @@
+---
+features:
+  - |
+    Added a new :class:`~qiskit_machine_learning.neural_networks.SamplingQNN` that brings in
+    sampling functionality on top of primitives. Previously, this functionality was available in
+    ``CircuitQNN``. The new QNN adds this missing feature.
+
+    This network generates samples instead of probabilities. The network extends
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`, generates samples out of the
+    quasi-probabilities returned by the sampler primitive, and returns them. This network to be
+    replaced/updated when a new primitive that can return samples will be introduced.
+
+    This network provides only the ``forward`` method. The method constructs a multinomial
+    distribution for each quasi-distribution from the sampler results, samples ``num_shots`` values
+    from this distribution, and applies ``interpret`` to the sampled values. The interpreted values
+    are returned in an array of shape ``(num_samples, num_shots, *interpret_shape)``. Where
+    ``num_samples`` is the number of samples (or batch size in other words) in the dataset and
+    ``interpret_shape`` is the shape of the output of the ``interpret`` function. If the function
+    returns a single number then the interpret shape is ``1``, if the function returns an array,
+    then the interpret shape is the shape of this array.
+
+    The ``backward`` always returns a tuple ``(None, None)``.
+
+    In this example the network generates samples without custom interpretation. The circuit has two
+    qubits, thus there are four possible outcomes, but in this setup the network generates evenly
+    distributed outcomes of ``0`` and ``1``. The network does not take any input data.
+
+    .. code-block::
+
+        import numpy as np
+        from qiskit import QuantumCircuit
+        from qiskit.circuit import Parameter
+
+        from qiskit_machine_learning.neural_networks.sampling_qnn import SamplingQNN
+
+        qc = QuantumCircuit(2)
+
+        qc.ry(Parameter("0"), 0)
+        qc.ry(Parameter("1"), 1)
+        qc.rx(np.pi / 2, 0)
+
+        qnn = SamplingQNN(circuit=qc, num_shots=10, input_params=[], weight_params=qc.parameters)
+        qnn.forward(input_data=None, weights=[0, 0])
+
+fixes:
+  - |
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` can now correctly handle quantum
+    circuits without both input parameters and weights. If such a circuit is passed to the QNN then
+    this circuit executed once in the forward pass and backward returns ``None`` for both gradients.
