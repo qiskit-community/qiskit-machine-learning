@@ -111,7 +111,7 @@ class TestSamplingQNN(QiskitMachineLearningTestCase):
     def test_defaults(self):
         """test the QNN with the default (or minimal) configuration."""
         qc = QuantumCircuit(1)
-        qnn = SamplingQNN(circuit=qc, num_shots=1)
+        qnn = SamplingQNN(circuit=qc)
 
         output = qnn.forward(input_data=[], weights=[])
         print(output)

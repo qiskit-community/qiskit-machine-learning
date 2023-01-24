@@ -354,16 +354,13 @@ class SamplerQNN(NeuralNetwork):
         """
         parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
-        if num_samples is not None:
-            # sampler allows batching
-            job = self.sampler.run([self._circuit] * num_samples, parameter_values)
-            try:
-                results = job.result()
-            except Exception as exc:
-                raise QiskitMachineLearningError("Sampler job failed.") from exc
-            result = self._postprocess(num_samples, results)
-        else:
-            result = None
+        # sampler allows batching
+        job = self.sampler.run([self._circuit] * num_samples, parameter_values)
+        try:
+            results = job.result()
+        except Exception as exc:
+            raise QiskitMachineLearningError("Sampler job failed.") from exc
+        result = self._postprocess(num_samples, results)
 
         return result
 

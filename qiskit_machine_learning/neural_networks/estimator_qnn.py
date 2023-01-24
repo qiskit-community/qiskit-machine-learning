@@ -173,24 +173,18 @@ class EstimatorQNN(NeuralNetwork):
 
     def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
         """Post-processing during forward pass of the network."""
-        if num_samples is None:
-            num_samples = 1
-        expectations = np.reshape(result.values, (-1, num_samples)).T
-        return expectations
+        return np.reshape(result.values, (-1, num_samples)).T
 
     def _forward(
         self, input_data: np.ndarray | None, weights: np.ndarray | None
     ) -> np.ndarray | None:
         """Forward pass of the neural network."""
         parameter_values_, num_samples = self._preprocess_forward(input_data, weights)
-        if num_samples is None:
-            job = self.estimator.run(self._circuit, self._observables)
-        else:
-            job = self.estimator.run(
-                [self._circuit] * num_samples * self.output_shape[0],
-                [op for op in self._observables for _ in range(num_samples)],
-                np.tile(parameter_values_, (self.output_shape[0], 1)),
-            )
+        job = self.estimator.run(
+            [self._circuit] * num_samples * self.output_shape[0],
+            [op for op in self._observables for _ in range(num_samples)],
+            np.tile(parameter_values_, (self.output_shape[0], 1)),
+        )
         try:
             results = job.result()
         except Exception as exc:

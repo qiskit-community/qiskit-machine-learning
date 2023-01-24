@@ -69,7 +69,7 @@ class SamplingQNN(SamplerQNN):
         self,
         *,
         circuit: QuantumCircuit,
-        num_shots: int,
+        num_shots: int | None = None,
         sampler: BaseSampler | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
@@ -125,17 +125,14 @@ class SamplingQNN(SamplerQNN):
         # this definition is required by mypy
         output_shape: tuple[int, ...] = (-1,)
 
-        if interpret is not None:
-            result = np.array(interpret(0))  # infer shape from the function
-            if len(result.shape) == 0:
-                # interpret returned a single number
-                output_shape = (self._num_shots, 1)
-            else:
-                # interpret returned an array
-                output_shape = (self._num_shots, *result.shape)
-        else:
-            # no mapping of the network's output, it is a plain number
+        # we always have interpret here, so it is safe to call it.
+        result = np.array(interpret(0))  # infer shape from the function
+        if len(result.shape) == 0:
+            # interpret returned a single number
             output_shape = (self._num_shots, 1)
+        else:
+            # interpret returned an array
+            output_shape = (self._num_shots, *result.shape)
 
         return output_shape
 
