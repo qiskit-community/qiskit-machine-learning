@@ -37,16 +37,10 @@ class FidelityStatevectorKernel(BaseKernel):
 
         K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2.
 
-    In this implementation, :math:`\phi` is represented by a ``Statevector.data`` array,
-    thus the kernel function is given simply by
-
-    .. math::
-
-        K(x,y) = |\phi(x)^\dagger \phi(y)|^2.
-
-    These arrays are stored in a statevector cache for reuse to avoid repeated computation.
-    This cache can be cleared using :meth:`clear_cache`. By default the cache is cleared when
-    :meth:`evaluate` is called, unless ``retain_cache`` is ``True``.
+    In this implementation, :math:`|\phi(y)\rangle` is given by a ``Statevector.data`` array.
+    These arrays are stored in a statevector cache for reuse to avoid repeated evaluation of the
+    quantum circuit. This cache can be cleared using :meth:`clear_cache`. By default the cache is
+    cleared when :meth:`evaluate` is called, unless ``retain_cache`` is ``True``.
 
     """
 
@@ -67,7 +61,7 @@ class FidelityStatevectorKernel(BaseKernel):
                 number of features.
             statevector_type: The type of Statevector that will be instantiated using the
                 ``feature_map`` quantum circuit and used to compute the fidelity kernel. This type
-                should inherit from and defaults to :class:`~qiskit.quantum_info.Statevector`.
+                should inherit from (and defaults to) :class:`~qiskit.quantum_info.Statevector`.
             cache_size: Maximum size of the statevector cache. When ``None`` this is unbounded.
             auto_clear_cache: Determines whether the statevector cache is retained when
                 :meth:`evaluate` is called. The cache is automatically cleared by default.
@@ -85,20 +79,6 @@ class FidelityStatevectorKernel(BaseKernel):
         x_vec: np.ndarray,
         y_vec: np.ndarray | None = None,
     ) -> np.ndarray:
-        r"""
-        Construct kernel matrix for given data.
-
-        If ``y_vec`` is ``None``, self inner product is calculated.
-
-        Args:
-            x_vec: 1D or 2D array of datapoints, :math:`N\times D`, where :math:`N` is the number of
-                datapoints, :math:`D` is the feature dimension.
-            y_vec: 1D or 2D array of datapoints, :math:`M\times D`, where :math:`M` is the number of
-                datapoints, :math:`D` is the feature dimension.
-
-        Returns:
-            2D matrix, :math:`N\times M`.
-        """
         if self._auto_clear_cache:
             self.clear_cache()
 
@@ -117,16 +97,17 @@ class FidelityStatevectorKernel(BaseKernel):
             for j, y in enumerate(y_svs):
                 if np.array_equal(x, y):
                     continue
-                kernel_matrix[i, j] = self._compute_kernel_element(x, y)
+                kernel_matrix[i, j] = self._compute_kernel_entry(x, y)
 
         return kernel_matrix
 
     def _get_statevector_(self, param_values: tuple[float]) -> np.ndarray:
+        # lru_cache requires hashable function arguments
         qc = self._feature_map.bind_parameters(param_values)
         return self._statevector_type(qc).data
 
     @staticmethod
-    def _compute_kernel_element(x: np.ndarray, y: np.ndarray) -> float:
+    def _compute_kernel_entry(x: np.ndarray, y: np.ndarray) -> float:
         return np.abs(np.conj(x) @ y) ** 2
 
     def clear_cache(self):

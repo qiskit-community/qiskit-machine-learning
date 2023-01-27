@@ -333,7 +333,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
         self.computation_counts = 0
 
     def count_computations(self, func):
-        """Wrapper to record the number of computed kernel elements.
+        """Wrapper to record the number of computed kernel entries.
 
         Args:
             func (Callable): execute function to be wrapped
@@ -362,7 +362,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
         kernel = FidelityStatevectorKernel(
             feature_map=self.feature_map,
         )
-        kernel._compute_kernel_element = self.count_computations(kernel._compute_kernel_element)
+        kernel._compute_kernel_entry = self.count_computations(kernel._compute_kernel_entry)
         kernel.evaluate(self.properties.get(dataset_name))
 
         self.assertEqual(self.computation_counts, expected_computations)
@@ -380,7 +380,7 @@ class TestStatevectorKernelDuplicates(QiskitMachineLearningTestCase):
         kernel = FidelityStatevectorKernel(
             feature_map=self.feature_map,
         )
-        kernel._compute_kernel_element = self.count_computations(kernel._compute_kernel_element)
+        kernel._compute_kernel_entry = self.count_computations(kernel._compute_kernel_entry)
         kernel.evaluate(self.properties.get(dataset_name), self.properties.get("y_vec"))
         self.assertEqual(self.computation_counts, expected_computations)
 
