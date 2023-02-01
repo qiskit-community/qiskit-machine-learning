@@ -1,0 +1,43 @@
+---
+features:
+  - |
+    Added a new :class:`~qiskit.algorithms.kernels.FidelityStatevectorKernel` class that is
+    optimized to use only statevector-implemented feature maps. Therefore, computational complexity
+    is reduced from :math:`O(N^2)` to :math:`O(N)`.
+
+    Computed statevector arrays are also cached to further increase efficiency unless. This cache is
+    cleared when the ``evaluate`` method is called, unless ``auto_clear_cache`` is ``False``. The
+    cache is unbounded by default, but its size can be set by the user, i.e., limited to the number
+    of samples in the worst case.
+
+    By default the Terra reference ``Statevector`` is used, however, the type can be specified via
+    the ``statevector_type`` argument.
+
+    An example of using this class is as follows:
+
+    .. code-block:: python
+
+        from sklearn.datasets import make_blobs
+        from sklearn.svm import SVC
+
+        from qiskit.circuit.library import ZZFeatureMap
+        from qiskit.quantum_info import Statevector
+
+        from qiskit_machine_learning.kernels import FidelityStatevectorKernel
+
+        # generate a simple dataset
+        features, labels = make_blobs(
+            n_samples=20, centers=2, center_box=(-1, 1), cluster_std=0.1
+        )
+
+        feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
+        statevector_type = Statevector
+
+        kernel = FidelityStatevectorKernel(
+            feature_map=feature_map,
+            statevector_type=Statevector,
+            cache_size=len(labels),
+            auto_clear_cache=True,
+        )
+        svc = SVC(kernel=kernel.evaluate)
+        svc.fit(features, labels)
