@@ -101,6 +101,15 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         self.assertGreaterEqual(score, 0.5)
 
+    def test_with_shot_noise(self):
+        """Test statevector kernel with shot noise emulation."""
+        features = algorithm_globals.random.random((3, 2)) - 0.5
+        kernel = FidelityStatevectorKernel(feature_map=self.feature_map, shots=10)
+        kernel_train = kernel.evaluate(x_vec=features)
+        np.testing.assert_array_almost_equal(
+            kernel_train, [[1, 0.9, 0.9], [0.4, 1, 1], [0.7, 0.8, 1]]
+        )
+
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_aer_statevector(self):
         """Test statevector kernel when using AerStatevector type statevectors."""
