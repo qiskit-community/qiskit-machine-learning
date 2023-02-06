@@ -51,8 +51,8 @@ class FidelityStatevectorKernel(BaseKernel):
     compute-uncompute method. I.e., the fidelity is given by the probability of measuring
     :math:`0` after preparing the state :math:`U(x)^\dagger U(y) | 0 \rangle`.
 
-    With the addition of shot noise, the kernel matrix may no longer be positive semi-definite
-    (PSD). With ``enforce_psd`` set to ``True`` this condition is enforced.
+    With the addition of shot noise, the kernel matrix may no longer be positive semi-definite. With
+    ``enforce_psd`` set to ``True`` this condition is enforced.
 
     **References:**
     [1] Havlíček, V., Córcoles, A. D., Temme, K., Harrow, A. W., Kandala,
