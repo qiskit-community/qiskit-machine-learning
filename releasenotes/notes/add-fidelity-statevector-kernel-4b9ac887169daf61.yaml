@@ -17,6 +17,9 @@ features:
     Otherwise, the mean is taken of samples drawn from a binomial distribution with probability
     equal to the exact fidelity.
 
+    With the addition of shot noise, the kernel matrix may no longer be positive semi-definite
+    (PSD). With ``enforce_psd`` set to ``True`` this condition is enforced.
+
     An example of using this class is as follows:
 
     .. code-block:: python
@@ -43,6 +46,7 @@ features:
             cache_size=len(labels),
             auto_clear_cache=True,
             shots=1000,
+            enforce_psd=True,
         )
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)

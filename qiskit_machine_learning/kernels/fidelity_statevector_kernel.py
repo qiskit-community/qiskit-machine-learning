@@ -51,6 +51,9 @@ class FidelityStatevectorKernel(BaseKernel):
     compute-uncompute method. I.e., the fidelity is given by the probability of measuring
     :math:`0` after preparing the state :math:`U(x)^\dagger U(y) | 0 \rangle`.
 
+    With the addition of shot noise, the kernel matrix may no longer be positive semi-definite
+    (PSD). With ``enforce_psd`` set to ``True`` this condition is enforced.
+
     **References:**
     [1] Havlíček, V., Córcoles, A. D., Temme, K., Harrow, A. W., Kandala,
     A., Chow, J. M., & Gambetta, J. M. (2019). Supervised learning
@@ -66,6 +69,7 @@ class FidelityStatevectorKernel(BaseKernel):
         cache_size: int | None = None,
         auto_clear_cache: bool = True,
         shots: int | None = None,
+        enforce_psd: bool = False,
     ) -> None:
         """
         Args:
@@ -83,12 +87,15 @@ class FidelityStatevectorKernel(BaseKernel):
             shots: The number of shots. If ``None``, the exact fidelity is used. Otherwise, the
                 mean is taken of samples drawn from a binomial distribution with probability equal
                 to the exact fidelity.
+            enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
+                This is only required if the number of shots is specified.
         """
         super().__init__(feature_map=feature_map)
 
         self._statevector_type = statevector_type
         self._auto_clear_cache = auto_clear_cache
         self._shots = shots
+        self._enforce_psd = enforce_psd
 
         # Create the statevector cache at the instance level.
         self._get_statevector = lru_cache(maxsize=cache_size)(self._get_statevector_)
@@ -103,8 +110,12 @@ class FidelityStatevectorKernel(BaseKernel):
 
         x_vec, y_vec = self._validate_input(x_vec, y_vec)
 
+        # Determine if calculating self inner product.
+        is_symmetric = True
         if y_vec is None:
             y_vec = x_vec
+        elif not np.array_equal(x_vec, y_vec):
+            is_symmetric = False
 
         kernel_shape = (x_vec.shape[0], y_vec.shape[0])
 
@@ -118,10 +129,13 @@ class FidelityStatevectorKernel(BaseKernel):
                     continue
                 kernel_matrix[i, j] = self._compute_kernel_entry(x, y)
 
+        if self._shots is not None and self._enforce_psd and is_symmetric:
+            kernel_matrix = self._make_psd(kernel_matrix)
+
         return kernel_matrix
 
     def _get_statevector_(self, param_values: tuple[float]) -> np.ndarray:
-        # lru_cache requires hashable function arguments
+        # lru_cache requires hashable function arguments.
         qc = self._feature_map.bind_parameters(param_values)
         return self._statevector_type(qc).data
 
