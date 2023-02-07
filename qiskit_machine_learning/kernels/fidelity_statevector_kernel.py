@@ -69,7 +69,7 @@ class FidelityStatevectorKernel(BaseKernel):
         cache_size: int | None = None,
         auto_clear_cache: bool = True,
         shots: int | None = None,
-        enforce_psd: bool = False,
+        enforce_psd: bool = True,
     ) -> None:
         """
         Args:
@@ -88,7 +88,7 @@ class FidelityStatevectorKernel(BaseKernel):
                 mean is taken of samples drawn from a binomial distribution with probability equal
                 to the exact fidelity.
             enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
-                This is only required if the number of shots is specified.
+                This is only used when number of shots given is not ``None``.
         """
         super().__init__(feature_map=feature_map)
 
