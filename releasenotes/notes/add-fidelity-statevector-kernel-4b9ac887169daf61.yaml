@@ -5,13 +5,20 @@ features:
     optimized to use only statevector-implemented feature maps. Therefore, computational complexity
     is reduced from :math:`O(N^2)` to :math:`O(N)`.
 
-    Computed statevector arrays are also cached to further increase efficiency unless. This cache is
+    Computed statevector arrays are also cached to further increase efficiency. This cache is
     cleared when the ``evaluate`` method is called, unless ``auto_clear_cache`` is ``False``. The
     cache is unbounded by default, but its size can be set by the user, i.e., limited to the number
     of samples in the worst case.
 
     By default the Terra reference ``Statevector`` is used, however, the type can be specified via
     the ``statevector_type`` argument.
+
+    Shot noise emulation can also be added. If ``shots`` is ``None``, the exact fidelity is used.
+    Otherwise, the mean is taken of samples drawn from a binomial distribution with probability
+    equal to the exact fidelity.
+
+    With the addition of shot noise, the kernel matrix may no longer be positive semi-definite
+    (PSD). With ``enforce_psd`` set to ``True`` this condition is enforced.
 
     An example of using this class is as follows:
 
@@ -38,6 +45,8 @@ features:
             statevector_type=Statevector,
             cache_size=len(labels),
             auto_clear_cache=True,
+            shots=1000,
+            enforce_psd=True,
         )
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)

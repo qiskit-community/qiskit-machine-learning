@@ -13,12 +13,15 @@
 
 from __future__ import annotations
 
-import functools
+from functools import lru_cache
 from typing import Type, TypeVar
 
 import numpy as np
+
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector
+from qiskit.utils import algorithm_globals
+
 
 from .base_kernel import BaseKernel
 
@@ -42,6 +45,20 @@ class FidelityStatevectorKernel(BaseKernel):
     This cache can be cleared using :meth:`clear_cache`. By default the cache is cleared when
     :meth:`evaluate` is called, unless ``auto_clear_cache`` is ``False``.
 
+    Shot noise emulation can also be added. If ``shots`` is ``None``, the exact fidelity is used.
+    Otherwise, the mean is taken of samples drawn from a binomial distribution with probability
+    equal to the exact fidelity. This model assumes that the fidelity is determined via the
+    compute-uncompute method. I.e., the fidelity is given by the probability of measuring
+    :math:`0` after preparing the state :math:`U(x)^\dagger U(y) | 0 \rangle`.
+
+    With the addition of shot noise, the kernel matrix may no longer be positive semi-definite. With
+    ``enforce_psd`` set to ``True`` this condition is enforced.
+
+    **References:**
+    [1] Havlíček, V., Córcoles, A. D., Temme, K., Harrow, A. W., Kandala,
+    A., Chow, J. M., & Gambetta, J. M. (2019). Supervised learning
+    with quantum-enhanced feature spaces. Nature, 567(7747), 209-212.
+    `arXiv:1804.11326v2 [quant-ph] <https://arxiv.org/pdf/1804.11326.pdf>`_
     """
 
     def __init__(
@@ -51,6 +68,8 @@ class FidelityStatevectorKernel(BaseKernel):
         statevector_type: Type[SV] = Statevector,
         cache_size: int | None = None,
         auto_clear_cache: bool = True,
+        shots: int | None = None,
+        enforce_psd: bool = True,
     ) -> None:
         """
         Args:
@@ -65,14 +84,21 @@ class FidelityStatevectorKernel(BaseKernel):
             cache_size: Maximum size of the statevector cache. When ``None`` this is unbounded.
             auto_clear_cache: Determines whether the statevector cache is retained when
                 :meth:`evaluate` is called. The cache is automatically cleared by default.
+            shots: The number of shots. If ``None``, the exact fidelity is used. Otherwise, the
+                mean is taken of samples drawn from a binomial distribution with probability equal
+                to the exact fidelity.
+            enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
+                This is only used when number of shots given is not ``None``.
         """
         super().__init__(feature_map=feature_map)
 
         self._statevector_type = statevector_type
         self._auto_clear_cache = auto_clear_cache
+        self._shots = shots
+        self._enforce_psd = enforce_psd
 
         # Create the statevector cache at the instance level.
-        self._get_statevector = functools.lru_cache(maxsize=cache_size)(self._get_statevector_)
+        self._get_statevector = lru_cache(maxsize=cache_size)(self._get_statevector_)
 
     def evaluate(
         self,
@@ -84,8 +110,12 @@ class FidelityStatevectorKernel(BaseKernel):
 
         x_vec, y_vec = self._validate_input(x_vec, y_vec)
 
+        # Determine if calculating self inner product.
+        is_symmetric = True
         if y_vec is None:
             y_vec = x_vec
+        elif not np.array_equal(x_vec, y_vec):
+            is_symmetric = False
 
         kernel_shape = (x_vec.shape[0], y_vec.shape[0])
 
@@ -99,16 +129,28 @@ class FidelityStatevectorKernel(BaseKernel):
                     continue
                 kernel_matrix[i, j] = self._compute_kernel_entry(x, y)
 
+        if self._shots is not None and self._enforce_psd and is_symmetric:
+            kernel_matrix = self._make_psd(kernel_matrix)
+
         return kernel_matrix
 
     def _get_statevector_(self, param_values: tuple[float]) -> np.ndarray:
-        # lru_cache requires hashable function arguments
+        # lru_cache requires hashable function arguments.
         qc = self._feature_map.bind_parameters(param_values)
         return self._statevector_type(qc).data
 
+    def _compute_kernel_entry(self, x: np.ndarray, y: np.ndarray) -> float:
+        fidelity = self._compute_fidelity(x, y)
+        if self._shots is not None:
+            fidelity = self._add_shot_noise(fidelity)
+        return fidelity
+
     @staticmethod
-    def _compute_kernel_entry(x: np.ndarray, y: np.ndarray) -> float:
+    def _compute_fidelity(x: np.ndarray, y: np.ndarray) -> float:
         return np.abs(np.conj(x) @ y) ** 2
+
+    def _add_shot_noise(self, fidelity: float) -> float:
+        return algorithm_globals.random.binomial(n=self._shots, p=fidelity) / self._shots
 
     def clear_cache(self):
         """Clear the statevector cache."""
