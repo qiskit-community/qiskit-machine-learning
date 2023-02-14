@@ -14,6 +14,7 @@
 
 from typing import Tuple, Any, Optional, cast, Union
 import numpy as np
+import torch
 
 import qiskit_machine_learning.optionals as _optionals
 from ..neural_networks import NeuralNetwork
@@ -51,7 +52,7 @@ else:
 class TorchConnector(Module):
     """Connects a Qiskit (Quantum) Neural Network to PyTorch."""
 
-    # pylint: disable=abstract-method
+    # ----
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
         @staticmethod
@@ -102,7 +103,7 @@ class TorchConnector(Module):
                 result = cast(COO, cast(SparseArray, result).asformat("coo"))
                 result_tensor = sparse_coo_tensor(result.coords, result.data)
             else:
-                result_tensor = Tensor(result)
+                result_tensor = torch.from_numpy(result)
 
             # if the input was not a batch, then remove the batch-dimension from the result,
             # since the neural network will always treat input as a batch and cast to a
