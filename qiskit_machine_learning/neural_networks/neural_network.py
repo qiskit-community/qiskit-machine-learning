@@ -165,7 +165,8 @@ class NeuralNetwork(ABC):
                 parameters = np.broadcast_to(weights, (num_samples, len(weights)))
             else:
                 # no input, no weights, just execute circuit once
-                return np.asarray([]), 1
+                num_samples = 1
+                parameters = np.asarray([])
         return parameters, num_samples
 
     def _validate_weights(
