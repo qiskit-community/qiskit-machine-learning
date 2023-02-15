@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` can now correctly handle quantum
+    circuits without both input parameters and weights. If such a circuit is passed to the QNN then
+    this circuit executed once in the forward pass and backward returns ``None`` for both gradients.

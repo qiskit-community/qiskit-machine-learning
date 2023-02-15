@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -173,24 +173,18 @@ class EstimatorQNN(NeuralNetwork):
 
     def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
         """Post-processing during forward pass of the network."""
-        if num_samples is None:
-            num_samples = 1
-        expectations = np.reshape(result.values, (-1, num_samples)).T
-        return expectations
+        return np.reshape(result.values, (-1, num_samples)).T
 
     def _forward(
         self, input_data: np.ndarray | None, weights: np.ndarray | None
     ) -> np.ndarray | None:
         """Forward pass of the neural network."""
         parameter_values_, num_samples = self._preprocess_forward(input_data, weights)
-        if num_samples is None:
-            job = self.estimator.run(self._circuit, self._observables)
-        else:
-            job = self.estimator.run(
-                [self._circuit] * num_samples * self.output_shape[0],
-                [op for op in self._observables for _ in range(num_samples)],
-                np.tile(parameter_values_, (self.output_shape[0], 1)),
-            )
+        job = self.estimator.run(
+            [self._circuit] * num_samples * self.output_shape[0],
+            [op for op in self._observables for _ in range(num_samples)],
+            np.tile(parameter_values_, (self.output_shape[0], 1)),
+        )
         try:
             results = job.result()
         except Exception as exc:
@@ -227,27 +221,31 @@ class EstimatorQNN(NeuralNetwork):
     ) -> tuple[np.ndarray | None, np.ndarray]:
         """Backward pass of the network."""
         # prepare parameters in the required format
-        parameter_values_, num_samples = self._preprocess_forward(input_data, weights)
+        parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
-        if num_samples is None or (not self._input_gradients and self._num_weights == 0):
-            return None, None
-        num_observables = self.output_shape[0]
-        num_circuits = num_samples * num_observables
+        input_grad, weights_grad = None, None
 
-        circuits = [self._circuit] * num_circuits
-        observables = [op for op in self._observables for _ in range(num_samples)]
-        param_values = np.tile(parameter_values_, (num_observables, 1))
+        if np.prod(parameter_values.shape) > 0:
+            num_observables = self.output_shape[0]
+            num_circuits = num_samples * num_observables
 
-        if self._input_gradients:
-            job = self.gradient.run(circuits, observables, param_values)
-        else:
-            params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
-            job = self.gradient.run(circuits, observables, param_values, parameters=params)
+            circuits = [self._circuit] * num_circuits
+            observables = [op for op in self._observables for _ in range(num_samples)]
+            param_values = np.tile(parameter_values, (num_observables, 1))
 
-        try:
-            results = job.result()
-        except Exception as exc:
-            raise QiskitMachineLearningError("Estimator job failed.") from exc
+            job = None
+            if self._input_gradients:
+                job = self.gradient.run(circuits, observables, param_values)
+            elif len(parameter_values[0]) > self._num_inputs:
+                params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
+                job = self.gradient.run(circuits, observables, param_values, parameters=params)
 
-        input_grad, weights_grad = self._backward_postprocess(num_samples, results)
+            if job is not None:
+                try:
+                    results = job.result()
+                except Exception as exc:
+                    raise QiskitMachineLearningError("Estimator job failed.") from exc
+
+                input_grad, weights_grad = self._backward_postprocess(num_samples, results)
+
         return input_grad, weights_grad
