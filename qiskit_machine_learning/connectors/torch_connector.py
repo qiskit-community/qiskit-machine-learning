@@ -14,14 +14,13 @@
 
 from typing import Tuple, Any, Optional, cast, Union
 import numpy as np
-import torch
 
 import qiskit_machine_learning.optionals as _optionals
 from ..neural_networks import NeuralNetwork
 from ..exceptions import QiskitMachineLearningError
 
 if _optionals.HAS_TORCH:
-    from torch import Tensor, sparse_coo_tensor, einsum
+    import torch
     from torch.autograd import Function
     from torch.nn import Module, Parameter as TorchParam
 else:
@@ -52,13 +51,12 @@ else:
 class TorchConnector(Module):
     """Connects a Qiskit (Quantum) Neural Network to PyTorch."""
 
-    # ----
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
         @staticmethod
         def forward(  # type: ignore
             ctx: Any,
-            input_data: Tensor,
+            input_data: torch.Tensor,
             weights: Tensor,
             neural_network: NeuralNetwork,
             sparse: bool,
@@ -101,9 +99,13 @@ class TorchConnector(Module):
                 from sparse import SparseArray, COO
 
                 result = cast(COO, cast(SparseArray, result).asformat("coo"))
-                result_tensor = sparse_coo_tensor(result.coords, result.data)
+                result_tensor = torch.sparse_coo_tensor(result.coords, result.data)
+            elif neural_network.sparse and not sparse:
+                # convert from a sparse tensor to dense
+                result_tensor = torch.from_numpy(result.todense()).to(input_data.dtype)
             else:
-                result_tensor = torch.from_numpy(result)
+                # result_tensor = Tensor(result)
+                result_tensor = torch.from_numpy(result).to(input_data.dtype)
 
             # if the input was not a batch, then remove the batch-dimension from the result,
             # since the neural network will always treat input as a batch and cast to a
@@ -154,7 +156,7 @@ class TorchConnector(Module):
             )
             if input_grad is not None:
                 if neural_network.sparse:
-                    input_grad = sparse_coo_tensor(input_grad.coords, input_grad.data)
+                    input_grad = torch.sparse_coo_tensor(input_grad.coords, input_grad.data)
 
                     # cast to dense here, since PyTorch does not support sparse output yet.
                     # this should only happen if the network returns sparse output but the
@@ -162,7 +164,7 @@ class TorchConnector(Module):
                     input_grad = input_grad.to_dense()  # this should be eventually removed
                     input_grad = input_grad.to(grad_output.dtype)
                 else:
-                    input_grad = Tensor(input_grad).to(grad_output.dtype)
+                    input_grad = torch.from_numpy(input_grad).to(grad_output.dtype)
 
                 # Takes gradients from previous layer in backward pass (i.e. later layer in forward
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
@@ -170,14 +172,14 @@ class TorchConnector(Module):
                 # to get total gradient of output w.r.t. each input k and batch index i.
                 # This operation should preserve the batch dimension to be able to do back-prop in
                 # a batched manner.
-                input_grad = einsum("ij,ijk->ik", grad_output.detach().cpu(), input_grad)
+                input_grad = torch.einsum("ij,ijk->ik", grad_output.detach().cpu(), input_grad)
 
                 # place the resulting tensor to the device where they were stored
                 input_grad = input_grad.to(input_data.device)
 
             if weights_grad is not None:
                 if neural_network.sparse:
-                    weights_grad = sparse_coo_tensor(weights_grad.coords, weights_grad.data)
+                    weights_grad = torch.sparse_coo_tensor(weights_grad.coords, weights_grad.data)
 
                     # cast to dense here, since PyTorch does not support sparse output yet.
                     # this should only happen if the network returns sparse output but the
@@ -185,14 +187,14 @@ class TorchConnector(Module):
                     weights_grad = weights_grad.to_dense()  # this should be eventually removed
                     weights_grad = weights_grad.to(grad_output.dtype)
                 else:
-                    weights_grad = Tensor(weights_grad).to(grad_output.dtype)
+                    weights_grad = torch.from_numpy(weights_grad).to(grad_output.dtype)
 
                 # Takes gradients from previous layer in backward pass (i.e. later layer in forward
                 # pass) j for each observation i in the batch. Multiplies this with the gradient
                 # from this point on backwards with respect to each parameter k. Sums over all i and
                 # j to get total gradient of output w.r.t. each parameter k.
                 # The weights' dimension is independent of the batch size.
-                weights_grad = einsum("ij,ijk->k", grad_output.detach().cpu(), weights_grad)
+                weights_grad = torch.einsum("ij,ijk->k", grad_output.detach().cpu(), weights_grad)
 
                 # place the resulting tensor to the device where they were stored
                 weights_grad = weights_grad.to(weights.device)
@@ -264,7 +266,7 @@ class TorchConnector(Module):
         Returns:
             Result of forward pass of this model.
         """
-        input_ = input_data if input_data is not None else Tensor([])
+        input_ = input_data if input_data is not None else torch.empty(0)
         return TorchConnector._TorchNNFunction.apply(
             input_, self._weights, self._neural_network, self._sparse
         )
