@@ -1,0 +1,53 @@
+---
+features:
+  - |
+    Added a new :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` class that
+    composes a Quantum Circuit from a feature map and an ansatz.
+
+    At least one parameter, i.e. number of qubits, feature map, ansatz, has to be provided.
+
+    If only the number of qubits is provided the resulting quantum circuit is a composition
+    of the ``ZZFeatureMap`` and the ``RealAmplitudes`` ansatz.
+    If the number of qubits is 1 the ``ZFeatureMap`` is used per default.
+    If only a feature map is provided, the ``RealAmplitudes`` ansatz with the corresponding number 
+    of qubits is used. If only an ansatz is provided the ``ZZFeatureMap`` with the corresponding
+    number of qubits is used. 
+
+    In case number of qubits is provided along with either a feature map, an ansatz or both, a
+    potential mismatch between the three inputs with respect to the number of qubits is
+    resolved by constructing the ``QNNCircuit`` with the given number of qubits.
+    If one of the ``QNNCircuit`` properties is set after the class construction, a new valid
+    configuration will be derived that considers the latest property update. This ensures that the
+    classes properties are consistent at all times.
+
+    An example of using this class is as follows:
+
+    .. code-block:: python
+    
+          from qiskit_machine_learning.circuit.library import QNNCircuit
+          qnn_qc = QNNCircuit(2)
+          print(qnn_qc)
+          # prints:
+          #      ┌──────────────────────────┐»
+          # q_0: ┤0                         ├»
+          #      │  ZZFeatureMap(x[0],x[1]) │»
+          # q_1: ┤1                         ├»
+          #      └──────────────────────────┘»
+          # «     ┌──────────────────────────────────────────────────────────┐
+          # «q_0: ┤0                                                         ├
+          # «     │  RealAmplitudes(θ[0],θ[1],θ[2],θ[3],θ[4],θ[5],θ[6],θ[7]) │
+          # «q_1: ┤1                                                         ├
+          # «     └──────────────────────────────────────────────────────────┘
+
+          print(qnn_qc.num_qubits)
+          # prints: 2
+
+          print(qnn_qc.input_parameters)
+          # prints: ParameterView([ParameterVectorElement(x[0]), ParameterVectorElement(x[1])])
+
+          print(qnn_qc.weight_parameters)
+          # prints: ParameterView([ParameterVectorElement(θ[0]), ParameterVectorElement(θ[1]),
+          #         ParameterVectorElement(θ[2]), ParameterVectorElement(θ[3]),
+          #         ParameterVectorElement(θ[4]), ParameterVectorElement(θ[5]),
+          #         ParameterVectorElement(θ[6]), ParameterVectorElement(θ[7])])
+    
