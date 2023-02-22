@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -263,7 +263,6 @@ class SamplerQNN(NeuralNetwork):
 
         for i in range(num_samples):
             counts = result.quasi_dists[i]
-            shots = sum(counts.values())
 
             # evaluate probabilities
             for b, v in counts.items():
@@ -271,7 +270,7 @@ class SamplerQNN(NeuralNetwork):
                 if isinstance(key, Integral):
                     key = (cast(int, key),)
                 key = (i, *key)  # type: ignore
-                prob[key] += v / shots
+                prob[key] += v
 
         if self._sparse:
             return prob.to_coo()
@@ -355,16 +354,13 @@ class SamplerQNN(NeuralNetwork):
         """
         parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
-        if num_samples is not None and np.prod(parameter_values.shape) > 0:
-            # sampler allows batching
-            job = self.sampler.run([self._circuit] * num_samples, parameter_values)
-            try:
-                results = job.result()
-            except Exception as exc:
-                raise QiskitMachineLearningError("Sampler job failed.") from exc
-            result = self._postprocess(num_samples, results)
-        else:
-            result = None
+        # sampler allows batching
+        job = self.sampler.run([self._circuit] * num_samples, parameter_values)
+        try:
+            results = job.result()
+        except Exception as exc:
+            raise QiskitMachineLearningError("Sampler job failed.") from exc
+        result = self._postprocess(num_samples, results)
 
         return result
 
@@ -373,33 +369,28 @@ class SamplerQNN(NeuralNetwork):
         input_data: np.ndarray | None,
         weights: np.ndarray | None,
     ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray | None]:
-
         """Backward pass of the network."""
         # prepare parameters in the required format
         parameter_values, num_samples = self._preprocess_forward(input_data, weights)
 
-        results = None
-        if num_samples is not None and np.prod(parameter_values.shape) > 0:
+        input_grad, weights_grad = None, None
+
+        if np.prod(parameter_values.shape) > 0:
+            circuits = [self._circuit] * num_samples
+
+            job = None
             if self._input_gradients:
-                job = self.gradient.run([self._circuit] * num_samples, parameter_values)
+                job = self.gradient.run(circuits, parameter_values)
+            elif len(parameter_values[0]) > self._num_inputs:
+                params = [self._circuit.parameters[self._num_inputs :]] * num_samples
+                job = self.gradient.run(circuits, parameter_values, parameters=params)
+
+            if job is not None:
                 try:
                     results = job.result()
                 except Exception as exc:
                     raise QiskitMachineLearningError("Sampler job failed.") from exc
-            else:
-                if len(parameter_values[0]) > self._num_inputs:
-                    job = self.gradient.run(
-                        [self._circuit] * num_samples,
-                        parameter_values,
-                        parameters=[self._circuit.parameters[self._num_inputs :]] * num_samples,
-                    )
-                    try:
-                        results = job.result()
-                    except Exception as exc:
-                        raise QiskitMachineLearningError("Sampler job failed.") from exc
 
-        if results is None:
-            return None, None
+                input_grad, weights_grad = self._postprocess_gradient(num_samples, results)
 
-        input_grad, weights_grad = self._postprocess_gradient(num_samples, results)
-        return input_grad, weights_grad  # `None` for gradients wrt input data, see TorchConnector
+        return input_grad, weights_grad

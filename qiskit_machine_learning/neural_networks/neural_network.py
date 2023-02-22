@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -164,7 +164,9 @@ class NeuralNetwork(ABC):
                 num_samples = 1
                 parameters = np.broadcast_to(weights, (num_samples, len(weights)))
             else:
-                return None, None
+                # no input, no weights, just execute circuit once
+                num_samples = 1
+                parameters = np.asarray([])
         return parameters, num_samples
 
     def _validate_weights(
