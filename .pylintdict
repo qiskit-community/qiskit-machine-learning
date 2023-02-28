@@ -129,6 +129,7 @@ mixin
 monte
 mpl
 multiclass
+multinomial
 multioutput
 mxd
 mypy
