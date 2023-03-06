@@ -236,11 +236,11 @@ class TestTorchConnector(TestTorch):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    def test_circuit_qnn_1_1(self, config):
+    @unpack
+    def test_circuit_qnn_1_1(self, interpret, output_shape, sparse, q_i):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/1 ."""
 
-        interpret, output_shape, sparse, q_i = config
         if sparse and not _optionals.HAS_SPARSE:
             self.skipTest("sparse library is required to run this test")
             return
@@ -288,11 +288,11 @@ class TestTorchConnector(TestTorch):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    def test_circuit_qnn_1_8(self, config):
+    @unpack
+    def test_circuit_qnn_1_8(self, interpret, output_shape, sparse, q_i):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
 
-        interpret, output_shape, sparse, q_i = config
         if sparse and not _optionals.HAS_SPARSE:
             self.skipTest("sparse library is required to run this test")
             return
@@ -340,11 +340,11 @@ class TestTorchConnector(TestTorch):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    def test_circuit_qnn_2_4(self, config):
+    @unpack
+    def test_circuit_qnn_2_4(self, interpret, output_shape, sparse, q_i):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
 
-        interpret, output_shape, sparse, q_i = config
         if sparse and not _optionals.HAS_SPARSE:
             self.skipTest("sparse library is required to run this test")
             return
@@ -533,14 +533,14 @@ class TestTorchConnector(TestTorch):
         (4, None),
         (2, lambda x: f"{x:b}".count("1") % 2),
     )
-    def test_circuit_qnn_batch_gradients(self, config):
+    @unpack
+    def test_circuit_qnn_batch_gradients(self, output_shape, interpret):
         """Test batch gradient computation of CircuitQNN gives the same result as the sum of
         individual gradients."""
         import torch
         from torch.nn import MSELoss
         from torch.optim import SGD
 
-        output_shape, interpret = config
         num_inputs = 2
 
         feature_map = ZZFeatureMap(num_inputs)
