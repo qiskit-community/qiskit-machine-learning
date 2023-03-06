@@ -17,7 +17,7 @@ from test.connectors.test_torch import TestTorch
 
 import numpy as np
 
-from ddt import ddt, data
+from ddt import ddt, data, unpack
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
@@ -33,6 +33,18 @@ import qiskit_machine_learning.optionals as _optionals
 @ddt
 class TestTorchConnector(TestTorch):
     """Torch Connector Tests."""
+
+    def setup_test(self):
+        super().setup_test()
+        import torch
+
+        self._test_data = [
+            torch.tensor([1.]),
+            torch.tensor([1., 2.]),
+            torch.tensor([[1., 2.]]),
+            torch.tensor([[1.], [2.]]),
+            torch.tensor([[[1.], [2.]], [[3.], [4.]]]),
+        ]
 
     def _validate_output_shape(self, model: TorchConnector, test_data: List) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
@@ -114,6 +126,7 @@ class TestTorchConnector(TestTorch):
     def test_opflow_qnn_1_1(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 1/1."""
         from torch import Tensor
+        import torch
 
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
@@ -136,22 +149,14 @@ class TestTorchConnector(TestTorch):
         )
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
             self._validate_backward_pass(model)
 
     @data("sv", "qasm")
     def test_opflow_qnn_2_1(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 2/1."""
-        from torch import Tensor
 
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
@@ -162,23 +167,14 @@ class TestTorchConnector(TestTorch):
         qnn = TwoLayerQNN(2, quantum_instance=quantum_instance, input_gradients=True)
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1, 2]]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
             self._validate_backward_pass(model)
 
     @data("sv", "qasm")
     def test_opflow_qnn_2_2(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 2/2."""
-        from torch import Tensor
 
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
@@ -224,15 +220,8 @@ class TestTorchConnector(TestTorch):
         )
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[1, 2], [3, 4]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
             self._validate_backward_pass(model)
 
@@ -250,7 +239,6 @@ class TestTorchConnector(TestTorch):
     def test_circuit_qnn_1_1(self, config):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/1 ."""
-        from torch import Tensor
 
         interpret, output_shape, sparse, q_i = config
         if sparse and not _optionals.HAS_SPARSE:
@@ -284,15 +272,8 @@ class TestTorchConnector(TestTorch):
         )
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
             self._validate_backward_pass(model)
 
@@ -310,7 +291,6 @@ class TestTorchConnector(TestTorch):
     def test_circuit_qnn_1_8(self, config):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
-        from torch import Tensor
 
         interpret, output_shape, sparse, q_i = config
         if sparse and not _optionals.HAS_SPARSE:
@@ -344,15 +324,8 @@ class TestTorchConnector(TestTorch):
         )
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
             self._validate_backward_pass(model)
 
@@ -370,7 +343,6 @@ class TestTorchConnector(TestTorch):
     def test_circuit_qnn_2_4(self, config):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
-        from torch import Tensor
 
         interpret, output_shape, sparse, q_i = config
         if sparse and not _optionals.HAS_SPARSE:
@@ -405,16 +377,8 @@ class TestTorchConnector(TestTorch):
         )
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[1, 2], [3, 4]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
             self._validate_backward_pass(model)
 
