@@ -193,7 +193,7 @@ class TorchConnector(Module):
                         from sparse import COO
 
                         grad_output = grad_output.detach().cpu()
-                        grad_coo = COO(grad_output.indices, grad_output.values)
+                        grad_coo = COO(grad_output.indices(), grad_output.values())
 
                         # Takes gradients from previous layer in backward pass (i.e. later layer in
                         # forward pass) j for each observation i in the batch. Multiplies this with
@@ -253,7 +253,7 @@ class TorchConnector(Module):
                         from sparse import COO
 
                         grad_output = grad_output.detach().cpu()
-                        grad_coo = COO(grad_output.indices, grad_output.values)
+                        grad_coo = COO(grad_output.indices(), grad_output.values())
 
                         # Takes gradients from previous layer in backward pass (i.e. later layer in
                         # forward pass) j for each observation i in the batch. Multiplies this with
@@ -262,6 +262,9 @@ class TorchConnector(Module):
                         # w.r.t. each parameter k. The weights' dimension is independent of the
                         # batch size.
                         weights_grad = sparse.einsum("ij,ijk->k", grad_coo, weights_grad)
+
+                        # return sparse gradients
+                        weights_grad = torch.sparse_coo_tensor(weights_grad.coords, weights_grad.data)
                     else:
                         # connector is sparse while the underlying neural network is not
                         raise QiskitMachineLearningError(
