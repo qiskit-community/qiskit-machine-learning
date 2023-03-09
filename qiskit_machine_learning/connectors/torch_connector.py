@@ -107,10 +107,10 @@ class TorchConnector(Module):
                     # todo: replace output type from DOK to COO?
                     result = cast(COO, cast(SparseArray, result).asformat("coo"))
                     result_tensor = torch.sparse_coo_tensor(result.coords, result.data)
-                else:
-                    raise QiskitMachineLearningError(
-                        "TorchConnector configured as sparse, the network must be sparse as well"
-                    )
+                # else:
+                #     raise QiskitMachineLearningError(
+                #         "TorchConnector configured as sparse, the network must be sparse as well"
+                #     )
             else:
                 # connector is dense
                 if neural_network.sparse:
@@ -207,7 +207,7 @@ class TorchConnector(Module):
                         # return sparse gradients
                         input_grad = torch.sparse_coo_tensor(input_grad.coords, input_grad.data)
                     else:
-                        # connector is sparse while the underlying neural network is not
+                        # this exception should never happen
                         raise QiskitMachineLearningError(
                             "TorchConnector configured as sparse, "
                             "the network must be sparse as well"
@@ -221,27 +221,6 @@ class TorchConnector(Module):
                     input_grad = input_grad.to(grad_output.dtype)
                     # same as above
                     input_grad = torch.einsum("ij,ijk->ik", grad_output.detach().cpu(), input_grad)
-
-                # #### old code
-                # if neural_network.sparse:
-                #     input_grad = torch.sparse_coo_tensor(input_grad.coords, input_grad.data)
-                #
-                #     # cast to dense here, since PyTorch does not support sparse output yet.
-                #     # this should only happen if the network returns sparse output but the
-                #     # connector is configured to return dense output.
-                #     input_grad = input_grad.to_dense()  # this should be eventually removed
-                #     input_grad = input_grad.to(grad_output.dtype)
-                # else:
-                #     input_grad = torch.from_numpy(input_grad).to(grad_output.dtype)
-
-                # Takes gradients from previous layer in backward pass (i.e. later layer in forward
-                # pass) j for each observation i in the batch. Multiplies this with the gradient
-                # from this point on backwards with respect to each input k. Sums over all j
-                # to get total gradient of output w.r.t. each input k and batch index i.
-                # This operation should preserve the batch dimension to be able to do back-prop in
-                # a batched manner.
-                # input_grad = torch.einsum("ij,ijk->ik", grad_output.detach().cpu(), input_grad)
-                # #### old code ends
 
                 # place the resulting tensor to the device where they were stored
                 input_grad = input_grad.to(input_data.device)
@@ -264,9 +243,11 @@ class TorchConnector(Module):
                         weights_grad = sparse.einsum("ij,ijk->k", grad_coo, weights_grad)
 
                         # return sparse gradients
-                        weights_grad = torch.sparse_coo_tensor(weights_grad.coords, weights_grad.data)
+                        weights_grad = torch.sparse_coo_tensor(
+                            weights_grad.coords, weights_grad.data
+                        )
                     else:
-                        # connector is sparse while the underlying neural network is not
+                        # this exception should never happen
                         raise QiskitMachineLearningError(
                             "TorchConnector configured as sparse, "
                             "the network must be sparse as well"
@@ -281,26 +262,6 @@ class TorchConnector(Module):
                     weights_grad = torch.einsum(
                         "ij,ijk->k", grad_output.detach().cpu(), weights_grad
                     )
-
-                # #### old code
-                # if neural_network.sparse:
-                #     weights_grad = torch.sparse_coo_tensor(weights_grad.coords, weights_grad.data)
-                #
-                #     # cast to dense here, since PyTorch does not support sparse output yet.
-                #     # this should only happen if the network returns sparse output but the
-                #     # connector is configured to return dense output.
-                #     weights_grad = weights_grad.to_dense()  # this should be eventually removed
-                #     weights_grad = weights_grad.to(grad_output.dtype)
-                # else:
-                #     weights_grad = torch.from_numpy(weights_grad).to(grad_output.dtype)
-                # #### old code ends
-
-                # Takes gradients from previous layer in backward pass (i.e. later layer in forward
-                # pass) j for each observation i in the batch. Multiplies this with the gradient
-                # from this point on backwards with respect to each parameter k. Sums over all i and
-                # j to get total gradient of output w.r.t. each parameter k.
-                # The weights' dimension is independent of the batch size.
-                # weights_grad = torch.einsum("ij,ijk->k", grad_output.detach().cpu(), weights_grad)
 
                 # place the resulting tensor to the device where they were stored
                 weights_grad = weights_grad.to(weights.device)
@@ -328,10 +289,22 @@ class TorchConnector(Module):
                 otherwise it will be dense independent of the setting. Also note that PyTorch
                 currently does not support sparse back propagation, i.e., if sparse is set to True,
                 the backward pass of this module will return None.
+
+        Raises:
+            QiskitMachineLearning: if the connector is configured as sparse and the underlying
+                network is not sparse.
         """
         super().__init__()
         self._neural_network = neural_network
+        if sparse is None:
+            sparse = False
         self._sparse = sparse
+
+        if self._sparse and not self._neural_network.sparse:
+            # connector is sparse while the underlying neural network is not
+            raise QiskitMachineLearningError(
+                "TorchConnector configured as sparse, the network must be sparse as well"
+            )
 
         weight_param = torch.nn.Parameter(torch.zeros(neural_network.num_weights))
         # Register param. in graph following PyTorch naming convention
