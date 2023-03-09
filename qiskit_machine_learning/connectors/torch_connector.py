@@ -305,7 +305,7 @@ class TorchConnector(Module):
         if initial_weights is None:
             self._weights.data.uniform_(-1, 1)
         else:
-            self._weights.data = torch.from_numpy(initial_weights)
+            self._weights.data = torch.tensor(initial_weights, dtype=torch.float)
 
     @property
     def neural_network(self) -> NeuralNetwork:
