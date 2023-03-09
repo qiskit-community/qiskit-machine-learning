@@ -56,6 +56,7 @@ else:
 class TorchConnector(Module):
     """Connects a Qiskit (Quantum) Neural Network to PyTorch."""
 
+    # pylint: disable=abstract-method
     class _TorchNNFunction(Function):
         # pylint: disable=arguments-differ
         @staticmethod
@@ -122,21 +123,6 @@ class TorchConnector(Module):
                     result = cast(SparseArray, result).todense()
                 result_tensor = torch.from_numpy(result)
                 result_tensor = result_tensor.to(input_data.dtype)
-            # #### old code
-            # if neural_network.sparse and sparse:
-            #     _optionals.HAS_SPARSE.require_now("COO")
-            #     # pylint: disable=import-error
-            #     from sparse import SparseArray, COO
-            #
-            #     # todo: replace output type from DOK to COO?
-            #     result = cast(COO, cast(SparseArray, result).asformat("coo"))
-            #     result_tensor = torch.sparse_coo_tensor(result.coords, result.data)
-            # elif neural_network.sparse and not sparse:
-            #     # convert from a sparse tensor to dense
-            #     result_tensor = torch.from_numpy(result.todense()).to(input_data.dtype)
-            # else:
-            #     # result_tensor = Tensor(result)
-            #     result_tensor = torch.from_numpy(result).to(input_data.dtype)
 
             # if the input was not a batch, then remove the batch-dimension from the result,
             # since the neural network will always treat input as a batch and cast to a
@@ -291,7 +277,7 @@ class TorchConnector(Module):
                 the backward pass of this module will return None.
 
         Raises:
-            QiskitMachineLearning: if the connector is configured as sparse and the underlying
+            QiskitMachineLearningError: if the connector is configured as sparse and the underlying
                 network is not sparse.
         """
         super().__init__()

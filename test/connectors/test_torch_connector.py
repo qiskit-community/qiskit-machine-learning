@@ -12,22 +12,21 @@
 
 """Test Torch Connector."""
 import itertools
-from typing import List
-
-from qiskit.quantum_info import SparsePauliOp
+from typing import List, cast
 
 from test.connectors.test_torch import TestTorch
 
 import numpy as np
-
 from ddt import ddt, data, unpack, idata
-
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap, EfficientSU2
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
+from qiskit.quantum_info import SparsePauliOp
 
+import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning import QiskitMachineLearningError
+from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import (
     CircuitQNN,
     TwoLayerQNN,
@@ -35,8 +34,6 @@ from qiskit_machine_learning.neural_networks import (
     SamplerQNN,
     EstimatorQNN,
 )
-from qiskit_machine_learning.connectors import TorchConnector
-import qiskit_machine_learning.optionals as _optionals
 
 
 @ddt
@@ -47,6 +44,7 @@ class TestTorchConnector(TestTorch):
         super().setup_test()
         import torch
 
+        # pylint: disable=attribute-defined-outside-init
         self._test_data = [
             torch.tensor([1.0]),
             torch.tensor([1.0, 2.0]),
@@ -631,6 +629,8 @@ class TestTorchConnector(TestTorch):
                 import sparse
 
                 self.assertTrue(isinstance(qnn_output, sparse.SparseArray))
+                # mypy
+                qnn_output = cast(sparse.SparseArray, qnn_output)
                 qnn_output = qnn_output.todense()
 
             np.testing.assert_almost_equal(connector_output.numpy(), qnn_output)
@@ -663,6 +663,8 @@ class TestTorchConnector(TestTorch):
                 import sparse
 
                 self.assertTrue(isinstance(qnn_backward, sparse.SparseArray))
+                # mypy
+                qnn_backward = cast(sparse.SparseArray, qnn_backward)
                 qnn_backward = qnn_backward.todense()
 
             fin_diff_grad = self._evaluate_fin_diff_gradient(model, input_data)
@@ -686,6 +688,11 @@ class TestTorchConnector(TestTorch):
             f_1 = qnn.forward(input_data, weights + delta)
             f_2 = qnn.forward(input_data, weights - delta)
             if qnn.sparse:
+                import sparse
+                # mypy
+                f_1 = cast(sparse.SparseArray, f_1)
+                f_2 = cast(sparse.SparseArray, f_2)
+
                 f_1 = f_1.todense()
                 f_2 = f_2.todense()
 
@@ -709,15 +716,15 @@ class TestTorchConnector(TestTorch):
         if (sparse_connector or sparse_qnn) and not _optionals.HAS_SPARSE:
             self.skipTest("Sparse is not available.")
 
-        fm = ZFeatureMap(num_qubits, reps=1)
+        fmap = ZFeatureMap(num_qubits, reps=1)
         ansatz = RealAmplitudes(num_qubits, reps=1)
         qc = QuantumCircuit(num_qubits)
-        qc.compose(fm, inplace=True)
+        qc.compose(fmap, inplace=True)
         qc.compose(ansatz, inplace=True)
 
         qnn = SamplerQNN(
             circuit=qc,
-            input_params=fm.parameters,
+            input_params=fmap.parameters,
             weight_params=ansatz.parameters,
             sparse=sparse_qnn,
             interpret=interpret,
@@ -727,11 +734,13 @@ class TestTorchConnector(TestTorch):
 
         try:
             model = TorchConnector(qnn, sparse=sparse_connector)
-        except QiskitMachineLearningError:
+        except QiskitMachineLearningError as qml_ex:
             if sparse_connector and not sparse_qnn:
                 self.skipTest("Skipping test when connector is sparse and qnn is not sparse")
             else:
-                raise QiskitMachineLearningError("Unexpected exception during initialization")
+                raise QiskitMachineLearningError(
+                    "Unexpected exception during initialization"
+                ) from qml_ex
 
         self._validate_forward(model)
         self._validate_backward(model)
@@ -747,16 +756,16 @@ class TestTorchConnector(TestTorch):
     @unpack
     def test_estimator_qnn(self, num_qubits, observables):
         """Test TorchConnector on EstimatorQNN."""
-        fm = ZFeatureMap(num_qubits, reps=1)
+        fmap = ZFeatureMap(num_qubits, reps=1)
         ansatz = RealAmplitudes(num_qubits, reps=1)
         qc = QuantumCircuit(num_qubits)
-        qc.compose(fm, inplace=True)
+        qc.compose(fmap, inplace=True)
         qc.compose(ansatz, inplace=True)
 
         qnn = EstimatorQNN(
             circuit=qc,
             observables=observables,
-            input_params=fm.parameters,
+            input_params=fmap.parameters,
             weight_params=ansatz.parameters,
             input_gradients=True,
         )
