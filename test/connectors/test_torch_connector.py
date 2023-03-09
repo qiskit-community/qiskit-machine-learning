@@ -689,6 +689,7 @@ class TestTorchConnector(TestTorch):
             f_2 = qnn.forward(input_data, weights - delta)
             if qnn.sparse:
                 import sparse
+
                 # mypy
                 f_1 = cast(sparse.SparseArray, f_1)
                 f_2 = cast(sparse.SparseArray, f_2)
