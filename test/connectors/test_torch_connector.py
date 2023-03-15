@@ -252,7 +252,7 @@ class TestTorchConnector(TestTorch):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/1 ."""
 
-        if sparse and not _optionals.HAS_SPARSE:
+        if sparse and (not _optionals.HAS_SPARSE or sys.version_info < (3, 8)):
             self.skipTest("sparse library is required to run this test")
             return
         if q_i == "sv":
@@ -304,7 +304,7 @@ class TestTorchConnector(TestTorch):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
 
-        if sparse and not _optionals.HAS_SPARSE:
+        if sparse and (not _optionals.HAS_SPARSE or sys.version_info < (3, 8)):
             self.skipTest("sparse library is required to run this test")
             return
         if q_i == "sv":
@@ -356,7 +356,7 @@ class TestTorchConnector(TestTorch):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
 
-        if sparse and not _optionals.HAS_SPARSE:
+        if sparse and (not _optionals.HAS_SPARSE or sys.version_info < (3, 8)):
             self.skipTest("sparse library is required to run this test")
             return
         if q_i == "sv":
