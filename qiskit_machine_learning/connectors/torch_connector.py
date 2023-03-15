@@ -189,6 +189,7 @@ class TorchConnector(Module):
                         # batch index i. This operation should preserve the batch dimension to be
                         # able to do back-prop in a batched manner.
                         # Pytorch does not support sparse einsum, so we rely on Sparse.
+                        # pylint: disable=no-member
                         input_grad = sparse.einsum("ij,ijk->ik", grad_coo, input_grad)
 
                         # return sparse gradients
@@ -227,6 +228,7 @@ class TorchConnector(Module):
                         # parameter k. Sums over all i and j to get total gradient of output
                         # w.r.t. each parameter k. The weights' dimension is independent of the
                         # batch size.
+                        # pylint: disable=no-member
                         weights_grad = sparse.einsum("ij,ijk->k", grad_coo, weights_grad)
 
                         # return sparse gradients
