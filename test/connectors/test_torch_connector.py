@@ -12,6 +12,7 @@
 
 """Test Torch Connector."""
 import itertools
+import sys
 from typing import List, cast
 
 from test.connectors.test_torch import TestTorch
@@ -713,6 +714,9 @@ class TestTorchConnector(TestTorch):
             output_shape = 2
         else:
             output_shape = None
+
+        if sparse_connector and sys.version_info < (3, 8):
+            self.skipTest("Sparse library is not supported on 3.7")
 
         if (sparse_connector or sparse_qnn) and not _optionals.HAS_SPARSE:
             self.skipTest("Sparse is not available.")

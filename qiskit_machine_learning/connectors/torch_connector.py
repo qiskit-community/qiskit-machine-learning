@@ -13,6 +13,7 @@
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 from __future__ import annotations
 
+import sys
 from typing import Tuple, Any, cast
 
 import numpy as np
@@ -108,10 +109,10 @@ class TorchConnector(Module):
                     # todo: replace output type from DOK to COO?
                     result = cast(COO, cast(SparseArray, result).asformat("coo"))
                     result_tensor = torch.sparse_coo_tensor(result.coords, result.data)
-                # else:
-                #     raise QiskitMachineLearningError(
-                #         "TorchConnector configured as sparse, the network must be sparse as well"
-                #     )
+                else:
+                    raise QiskitMachineLearningError(
+                        "TorchConnector configured as sparse, the network must be sparse as well"
+                    )
             else:
                 # connector is dense
                 if neural_network.sparse:
@@ -274,16 +275,20 @@ class TorchConnector(Module):
                 output is only returned if the underlying neural network also returns sparse output,
                 otherwise it will be dense independent of the setting. Also note that PyTorch
                 currently does not support sparse back propagation, i.e., if sparse is set to True,
-                the backward pass of this module will return None.
+                the backward pass of this module will return None. Sparse support works on python
+                3.8 or higher.
 
         Raises:
-            QiskitMachineLearningError: if the connector is configured as sparse and the underlying
-                network is not sparse.
+            QiskitMachineLearningError: If the connector is configured as sparse and the underlying
+                network is not sparse. Or if python version is 3.7.
         """
         super().__init__()
         self._neural_network = neural_network
         if sparse is None:
             sparse = False
+        if sparse and sys.version_info < (3, 8):
+            raise QiskitMachineLearningError("Sparse is supported on python 3.8+")
+
         self._sparse = sparse
 
         if self._sparse and not self._neural_network.sparse:
