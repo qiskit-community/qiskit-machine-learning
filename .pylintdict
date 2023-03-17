@@ -70,11 +70,13 @@ dt
 eigenstates
 endian
 entangler
+estimatorqnn
 et
 eval
 expressibility
 farrokh
 fidelities
+fidelityquantumkernel
 formatter
 frontend
 func
@@ -161,6 +163,7 @@ ovo
 ovr
 param
 parameterization
+parametrize
 parametrized
 params
 pauli
@@ -206,6 +209,7 @@ runtimes
 rx
 ry
 rz
+samplerqnn
 scalability
 scikit
 scipy
@@ -240,6 +244,7 @@ toctree
 todo
 traceback
 trainability
+trainablefidelityquantumkernel
 transpilation
 transpile
 transpiled

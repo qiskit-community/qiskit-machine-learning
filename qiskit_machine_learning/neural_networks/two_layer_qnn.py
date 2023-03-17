@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -36,6 +36,7 @@ class TwoLayerQNN(OpflowQNN):
         "removed after that.",
         stacklevel=3,
         category=PendingDeprecationWarning,
+        since="0.5.0",
     )
     def __init__(
         self,
