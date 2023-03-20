@@ -67,7 +67,6 @@ class QuantumKernel(TrainableKernel, BaseKernel):
         "removed after that.",
         stacklevel=3,
         category=PendingDeprecationWarning,
-        since="0.5.0",
     )
     def __init__(
         self,
