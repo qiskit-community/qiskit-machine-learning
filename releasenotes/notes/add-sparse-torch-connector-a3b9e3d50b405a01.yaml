@@ -4,3 +4,5 @@ features:
     The PyTorch connector :class:`~qiskit_machine_learning.connector.TorchConnector` supports
     sparse output in both passes. That means a hybrid network that has a quantum layer must rely
     on PyTorch sparse operations only.
+
+    Sparse support works on python 3.8+.
