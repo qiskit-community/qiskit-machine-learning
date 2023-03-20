@@ -60,9 +60,9 @@ class QuantumKernel(TrainableKernel, BaseKernel):
 
     @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
     @deprecate_function(
-        msg="The QuantumKernel class has been superseded by the "
-        "'qiskit_machine_learning.kernels.FidelityQuantumKernel' and "
-        "'qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel' classes. "
+        "The QuantumKernel class has been superseded by the "
+        "qiskit_machine_learning.kernels.FidelityQuantumKernel and "
+        "qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel classes. "
         "This class will be deprecated in a future release and subsequently "
         "removed after that.",
         stacklevel=3,
