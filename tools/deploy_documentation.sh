@@ -12,7 +12,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# Script for pushing the documentation to the qiskit.org/ecosystem
+# Script for pushing the documentation to the qiskit.org/ecosystem and qiskit.org/documentation
 set -e
 
 curl https://downloads.rclone.org/rclone-current-linux-amd64.deb -o rclone.deb
