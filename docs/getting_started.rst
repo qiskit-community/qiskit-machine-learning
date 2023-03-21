@@ -21,7 +21,7 @@ See :ref:`optional_installs` for more information.
 
     .. tab-item:: Start locally
 
-        he simplest way to get started is to follow the `getting started 'Start locally' guide for 
+        The simplest way to get started is to follow the `getting started 'Start locally' guide for 
         Qiskit <https://qiskit.org/documentation/getting_started.html>`__
 
         In your virtual environment where you installed Qiskit simply add ``machine-learning`` to the
