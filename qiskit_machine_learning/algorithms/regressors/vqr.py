@@ -89,7 +89,7 @@ class VQR(NeuralNetworkRegressor):
                 optimized. This allows to track how well optimization / training process is going on.
             estimator: An estimator to be used to evaluate expectation values of the observable.
                 If ``None`` and quantum instance is not set, the
-                :class:`qiskit.primitives.Estimator` is used, the underlying QNN will be of type
+                :class:`qiskit.primitives.Estimator` is used. The underlying QNN will be of type
                 :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`, and the estimator
                 primitive will be used to compute the neural network's results.
         Raises:
