@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -88,9 +88,8 @@ class VQR(NeuralNetworkRegressor):
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
             estimator: An estimator to be used to evaluate expectation values of the observable.
-                If ``None`` the :class:`qiskit.primitives.BaseEstimator` is used. The underlying QNN
-                is :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`.
-            If an estimator instance is set, the underlying QNN will be of type
+                If ``None`` and quantum instance is not set, the
+                :class:`qiskit.primitives.Estimator` is used. The underlying QNN will be of type
                 :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`, and the estimator
                 primitive will be used to compute the neural network's results.
         Raises:
