@@ -81,6 +81,7 @@ class TorchConnector(Module):
 
             Raises:
                 QiskitMachineLearningError: Invalid input data.
+                RuntimeError: if connector is configured as sparse and the network is not sparse.
             """
 
             # validate input shape
@@ -110,7 +111,7 @@ class TorchConnector(Module):
                     result = cast(COO, cast(SparseArray, result).asformat("coo"))
                     result_tensor = torch.sparse_coo_tensor(result.coords, result.data)
                 else:
-                    raise QiskitMachineLearningError(
+                    raise RuntimeError(
                         "TorchConnector configured as sparse, the network must be sparse as well"
                     )
             else:
@@ -145,6 +146,7 @@ class TorchConnector(Module):
                 grad_output: previous gradient
             Raises:
                 QiskitMachineLearningError: Invalid input data.
+                RuntimeError: if connector is configured as sparse and the network is not sparse.
             Returns:
                 gradients for the first two arguments and None for the others
             """
@@ -152,10 +154,6 @@ class TorchConnector(Module):
             # get context data
             input_data, weights = ctx.saved_tensors
             neural_network = ctx.neural_network
-
-            # if sparse output is requested return None, since PyTorch does not support it yet.
-            # if neural_network.sparse and ctx.sparse:
-            #     return None, None, None, None
 
             # validate input shape
             if input_data.shape[-1] != neural_network.num_inputs:
@@ -196,7 +194,7 @@ class TorchConnector(Module):
                         input_grad = torch.sparse_coo_tensor(input_grad.coords, input_grad.data)
                     else:
                         # this exception should never happen
-                        raise QiskitMachineLearningError(
+                        raise RuntimeError(
                             "TorchConnector configured as sparse, "
                             "the network must be sparse as well"
                         )
@@ -237,7 +235,7 @@ class TorchConnector(Module):
                         )
                     else:
                         # this exception should never happen
-                        raise QiskitMachineLearningError(
+                        raise RuntimeError(
                             "TorchConnector configured as sparse, "
                             "the network must be sparse as well"
                         )
@@ -275,9 +273,7 @@ class TorchConnector(Module):
             sparse: Whether this connector should return sparse output or not. If sparse is set
                 to None, then the setting from the given neural network is used. Note that sparse
                 output is only returned if the underlying neural network also returns sparse output,
-                otherwise it will be dense independent of the setting. Also note that PyTorch
-                currently does not support sparse back propagation, i.e., if sparse is set to True,
-                the backward pass of this module will return None. Sparse support works on python
+                otherwise an error will be raised. Sparse support works on python
                 3.8 or higher.
 
         Raises:
@@ -287,7 +283,7 @@ class TorchConnector(Module):
         super().__init__()
         self._neural_network = neural_network
         if sparse is None:
-            sparse = False
+            sparse = self._neural_network.sparse
         if sparse and sys.version_info < (3, 8):
             raise QiskitMachineLearningError("Sparse is supported on python 3.8+")
 
