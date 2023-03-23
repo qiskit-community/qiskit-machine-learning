@@ -28,5 +28,5 @@ openssl aes-256-cbc -K $encrypted_rclone_key -iv $encrypted_rclone_iv -in tools/
 echo "Pushing built docs to qiskit.org/ecosystem"
 rclone sync --progress --exclude locale/** ./docs/_build/html IBMCOS:qiskit-org-web-resources/ecosystem/machine-learning
 
-# Push to qiskit.org/documentation
+echo "Pushing built docs to qiskit.org/documentation"
 rclone sync --progress --exclude locale/** ./docs/_build/html IBMCOS:qiskit-org-web-resources/documentation/machine-learning
