@@ -147,6 +147,7 @@ class TorchConnector(Module):
             Raises:
                 QiskitMachineLearningError: Invalid input data.
                 RuntimeError: if connector is configured as sparse and the network is not sparse.
+
             Returns:
                 gradients for the first two arguments and None for the others
             """

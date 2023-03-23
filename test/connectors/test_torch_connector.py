@@ -25,7 +25,6 @@ from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
 from qiskit.quantum_info import SparsePauliOp
 
-import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import (
@@ -252,9 +251,6 @@ class TestTorchConnector(TestTorch):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/1 ."""
 
-        if sparse and (not _optionals.HAS_SPARSE or sys.version_info < (3, 8)):
-            self.skipTest("sparse library is required to run this test")
-            return
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
         else:
@@ -281,12 +277,16 @@ class TestTorchConnector(TestTorch):
             quantum_instance=quantum_instance,
             input_gradients=True,
         )
-        model = TorchConnector(qnn, sparse=sparse)
+        if sparse and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse)
+        else:
+            model = TorchConnector(qnn, sparse=sparse)
 
-        # test model
-        self._validate_output_shape(model, self._test_data)
-        if q_i == "sv":
-            self._validate_backward_automatically(model)
+            # test model
+            self._validate_output_shape(model, self._test_data)
+            if q_i == "sv":
+                self._validate_backward_automatically(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -304,9 +304,6 @@ class TestTorchConnector(TestTorch):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
 
-        if sparse and (not _optionals.HAS_SPARSE or sys.version_info < (3, 8)):
-            self.skipTest("sparse library is required to run this test")
-            return
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
         else:
@@ -333,12 +330,16 @@ class TestTorchConnector(TestTorch):
             quantum_instance=quantum_instance,
             input_gradients=True,
         )
-        model = TorchConnector(qnn, sparse=sparse)
+        if sparse and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse)
+        else:
+            model = TorchConnector(qnn, sparse=sparse)
 
-        # test model
-        self._validate_output_shape(model, self._test_data)
-        if q_i == "sv":
-            self._validate_backward_automatically(model)
+            # test model
+            self._validate_output_shape(model, self._test_data)
+            if q_i == "sv":
+                self._validate_backward_automatically(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -356,9 +357,6 @@ class TestTorchConnector(TestTorch):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
 
-        if sparse and (not _optionals.HAS_SPARSE or sys.version_info < (3, 8)):
-            self.skipTest("sparse library is required to run this test")
-            return
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
         else:
@@ -386,12 +384,16 @@ class TestTorchConnector(TestTorch):
             quantum_instance=quantum_instance,
             input_gradients=True,
         )
-        model = TorchConnector(qnn, sparse=sparse)
+        if sparse and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse)
+        else:
+            model = TorchConnector(qnn, sparse=sparse)
 
-        # test model
-        self._validate_output_shape(model, self._test_data)
-        if q_i == "sv":
-            self._validate_backward_automatically(model)
+            # test model
+            self._validate_output_shape(model, self._test_data)
+            if q_i == "sv":
+                self._validate_backward_automatically(model)
 
     def test_circuit_qnn_without_parameters(self):
         """Tests CircuitQNN without parameters."""
@@ -715,12 +717,6 @@ class TestTorchConnector(TestTorch):
         else:
             output_shape = None
 
-        if sparse_connector and sys.version_info < (3, 8):
-            self.skipTest("Sparse library is not supported on 3.7")
-
-        if (sparse_connector or sparse_qnn) and not _optionals.HAS_SPARSE:
-            self.skipTest("Sparse is not available.")
-
         fmap = ZFeatureMap(num_qubits, reps=1)
         ansatz = RealAmplitudes(num_qubits, reps=1)
         qc = QuantumCircuit(num_qubits)
@@ -737,19 +733,23 @@ class TestTorchConnector(TestTorch):
             input_gradients=True,
         )
 
-        try:
-            model = TorchConnector(qnn, sparse=sparse_connector)
-        except QiskitMachineLearningError as qml_ex:
-            if sparse_connector and not sparse_qnn:
-                self.skipTest("Skipping test when connector is sparse and qnn is not sparse")
-            else:
-                raise QiskitMachineLearningError(
-                    "Unexpected exception during initialization"
-                ) from qml_ex
+        if sparse_connector and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse_connector)
+        else:
+            try:
+                model = TorchConnector(qnn, sparse=sparse_connector)
+            except QiskitMachineLearningError as qml_ex:
+                if sparse_connector and not sparse_qnn:
+                    self.skipTest("Skipping test when connector is sparse and qnn is not sparse")
+                else:
+                    raise QiskitMachineLearningError(
+                        "Unexpected exception during initialization"
+                    ) from qml_ex
 
-        self._validate_forward(model)
-        self._validate_backward(model)
-        self._validate_backward_automatically(model)
+            self._validate_forward(model)
+            self._validate_backward(model)
+            self._validate_backward_automatically(model)
 
     @data(
         (1, None),

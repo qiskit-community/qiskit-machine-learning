@@ -98,3 +98,8 @@ class TestTorch(ABC):
     def assertListEqual(self, list1, list2, msg=None):
         """Assert list equal."""
         raise Exception("Abstract method")
+
+    @abstractmethod
+    def assertRaises(self, expected_exception):
+        """Assert raises an exception."""
+        raise Exception("Abstract method")
