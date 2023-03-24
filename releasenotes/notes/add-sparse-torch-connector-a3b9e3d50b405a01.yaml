@@ -1,8 +1,46 @@
 ---
 features:
   - |
-    The PyTorch connector :class:`~qiskit_machine_learning.connector.TorchConnector` supports
-    sparse output in both passes. That means a hybrid network that has a quantum layer must rely
-    on PyTorch sparse operations only.
+    The PyTorch connector :class:`~qiskit_machine_learning.connector.TorchConnector` now fully
+    supports sparse output in both forward and backward passes. To enable sparse support, the
+    `sparse` parameter must be set in the connector itself along with the corresponding `sparse`
+    parameter of :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`. This snippet
+    illustrates how to create a sparse instance of the connector.
+
+    .. code-block:: python
+      import torch
+      from qiskit import QuantumCircuit
+      from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
+
+      from qiskit_machine_learning.connectors import TorchConnector
+      from qiskit_machine_learning.neural_networks import SamplerQNN
+
+      num_qubits = 2
+      fmap = ZFeatureMap(num_qubits, reps=1)
+      ansatz = RealAmplitudes(num_qubits, reps=1)
+      qc = QuantumCircuit(num_qubits)
+      qc.compose(fmap, inplace=True)
+      qc.compose(ansatz, inplace=True)
+
+      qnn = SamplerQNN(
+          circuit=qc,
+          input_params=fmap.parameters,
+          weight_params=ansatz.parameters,
+          sparse=True,
+      )
+
+      connector = TorchConnector(qnn, sparse=True)
+
+      forward_output = connector(torch.tensor([[1., 2.]]))
+      print(forward_output)
+
+      loss = torch.sparse.sum(forward_output)
+      loss.backward()
+
+      grad = connector.weight.grad
+      print(grad)
+
+    In hybrid setup, where a PyTorch-based neural network has classical and quantum layers, sparse
+    operation should not be mixed with dense ones, otherwise exceptions may be thrown by PyTorch.
 
     Sparse support works on python 3.8+.
