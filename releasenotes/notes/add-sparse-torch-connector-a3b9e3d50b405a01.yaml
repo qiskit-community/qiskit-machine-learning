@@ -8,6 +8,7 @@ features:
     illustrates how to create a sparse instance of the connector.
 
     .. code-block:: python
+
       import torch
       from qiskit import QuantumCircuit
       from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
