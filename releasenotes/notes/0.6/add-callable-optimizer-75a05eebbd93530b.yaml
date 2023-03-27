@@ -12,6 +12,7 @@ features:
     such as :class:`~qiskit.algorithms.optimizers.SPSA` or a callable with the following signature:
 
     .. code-block:: python
+
         from qiskit.algorithms.optimizers import OptimizerResult
 
         def my_optimizer(fun, x0, jac=None, bounds=None) -> OptimizerResult:
