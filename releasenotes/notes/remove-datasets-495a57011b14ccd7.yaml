@@ -1,5 +1,5 @@
 ---
-deprecations:
+upgrade:
   - |
     The previously deprecated datasets have been removed: ``breast_cancer``, ``digits``,
     ``gaussian``, ``iris``, ``wine``.
