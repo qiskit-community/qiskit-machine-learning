@@ -1,5 +1,5 @@
 ---
-deprecations:
+upgrade:
   - |
     Positional arguments in :class:`~qiskit_machine_learning.algorithms.QSVC` and
     :class:`~qiskit_machine_learning.algorithms.QSVR` were deprecated as of version 0.3. Support of
