@@ -65,7 +65,7 @@ runs:
         fi
         if [ "$build_from_main" == "true" ]; then
           echo 'Create wheel file from main'
-          pip install -U wheel setuptools_rust
+          pip install -U pip setuptools wheel setuptools_rust
           git clone --depth 1 --branch main https://github.com/Qiskit/qiskit-terra.git /tmp/qiskit-terra
           pushd /tmp/qiskit-terra
           python setup.py bdist_wheel
