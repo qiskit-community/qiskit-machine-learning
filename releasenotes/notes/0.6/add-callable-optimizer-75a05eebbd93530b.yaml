@@ -11,7 +11,7 @@ features:
     Now, the optimizer can either be one of Qiskit's optimizers,
     such as :class:`~qiskit.algorithms.optimizers.SPSA` or a callable with the following signature:
 
-    .. code-block::python
+    .. code-block:: python
         from qiskit.algorithms.optimizers import OptimizerResult
 
         def my_optimizer(fun, x0, jac=None, bounds=None) -> OptimizerResult:
@@ -27,7 +27,7 @@ features:
 
     The above signature also allows to directly pass any SciPy minimizer, for instance as
 
-    .. code-block::python
+    .. code-block:: python
 
         from functools import partial
         from scipy.optimize import minimize
