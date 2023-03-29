@@ -47,7 +47,6 @@ jobs:
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
           echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
-          tools/ignore_untagged_notes.sh
           make html
           tools/deploy_documentation.sh
         shell: bash
