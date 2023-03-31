@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -97,4 +97,9 @@ class TestTorch(ABC):
     @abstractmethod
     def assertListEqual(self, list1, list2, msg=None):
         """Assert list equal."""
+        raise Exception("Abstract method")
+
+    @abstractmethod
+    def assertRaises(self, expected_exception):
+        """Assert raises an exception."""
         raise Exception("Abstract method")
