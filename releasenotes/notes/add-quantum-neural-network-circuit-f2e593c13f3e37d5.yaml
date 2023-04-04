@@ -16,9 +16,10 @@ features:
     In case number of qubits is provided along with either a feature map, an ansatz or both, a
     potential mismatch between the three inputs with respect to the number of qubits is
     resolved by constructing the ``QNNCircuit`` with the given number of qubits.
-    If one of the ``QNNCircuit`` properties is set after the class construction, a new valid
-    configuration will be derived that considers the latest property update. This ensures that the
-    classes properties are consistent at all times.
+    If one of the ``QNNCircuit`` properties is set after the class construction, the circuit is
+    is adjusted  to incorporate the changes. This is, a new valid configuration that considers the
+    latest property update will be derived. This ensures that the classes properties are consistent
+    at all times.
 
     An example of using this class is as follows:
 

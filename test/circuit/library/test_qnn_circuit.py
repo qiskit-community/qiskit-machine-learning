@@ -37,13 +37,38 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(type(circuit.ansatz), RealAmplitudes)
             self.assertEqual(circuit.ansatz.num_qubits, 2)
 
+    def test_construction_fails(self):
+        """Test the faulty construction"""
+
+        # If no argument is passed a QiskitMachineLearningError is raised
+        # when the class is attempted to be instantiated (before the circuit is built).
+        with self.assertRaises(QiskitMachineLearningError):
+            QNNCircuit(feature_map=ZZFeatureMap(2), ansatz=RealAmplitudes(1))
+
+        # If no argument is passed a QiskitMachineLearningError is raised
+        # when the class is attempted to be instantiated (before the circuit is built).
+        with self.assertRaises(QiskitMachineLearningError):
+            QNNCircuit()
+
+        # If the feature map is invalid the class cannot be built.
+        with self.assertRaises(AttributeError):
+            QNNCircuit(feature_map=1)
+
+        # If the ansatz is invalid the class cannot be built.
+        with self.assertRaises(AttributeError):
+            QNNCircuit(feature_map=1.1)
+
+        # If the number of qubits is invalid the class cannot be built.
+        with self.assertRaises(ValueError):
+            QNNCircuit(-1)
+
     def test_num_qubit_construction(self):
         """Test building the ``QNNCircuit`` with number of qubits."""
 
         circuit = QNNCircuit(1)
         circuit._build()
 
-        # If not otherwise specified, the defaults are a ZFeatureMap or ZZFeatureMap and a
+        # If not otherwise specified, the defaults are a ZFeatureMap/ZZFeatureMap and a
         # RealAmplitudes ansatz.
         with self.subTest("check input configuration after the circuit is build"):
             self.assertEqual(circuit.num_qubits, 1)
@@ -89,22 +114,6 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
 
         with self.subTest("check number of qubits for ansatz"):
             self.assertEqual(circuit.ansatz.num_qubits, 4)
-
-    def test_no_input_construction(self):
-        """Test construction of ``QNNCircuit`` if no input argument is provided."""
-
-        # If no argument is passed a QiskitMachineLearningError is raised
-        # when the class is attempted to be instantiated (before the circuit is built).
-        with self.assertRaises(QiskitMachineLearningError):
-            QNNCircuit()
-
-    def test_invalid_input_construction(self):
-        """Test construction of ``QNNCircuit`` for invalid arguments."""
-
-        # If no argument is passed a QiskitMachineLearningError is raised
-        # when the class is attempted to be instantiated (before the circuit is built).
-        with self.assertRaises(QiskitMachineLearningError):
-            QNNCircuit(feature_map=ZZFeatureMap(2), ansatz=RealAmplitudes(1))
 
     def test_num_qubit_setter(self):
         """Test the properties after the number of qubits are updated."""
