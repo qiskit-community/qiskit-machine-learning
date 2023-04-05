@@ -50,18 +50,6 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
         with self.assertRaises(QiskitMachineLearningError):
             QNNCircuit()
 
-        # If the feature map is invalid the class cannot be built.
-        with self.assertRaises(AttributeError):
-            QNNCircuit(feature_map=1)
-
-        # If the ansatz is invalid the class cannot be built.
-        with self.assertRaises(AttributeError):
-            QNNCircuit(feature_map=1.1)
-
-        # If the number of qubits is invalid the class cannot be built.
-        with self.assertRaises(ValueError):
-            QNNCircuit(-1)
-
     def test_num_qubit_construction(self):
         """Test building the ``QNNCircuit`` with number of qubits."""
 

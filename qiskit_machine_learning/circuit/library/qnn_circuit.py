@@ -25,22 +25,23 @@ class QNNCircuit(BlueprintCircuit):
     The QNN circuit is a blueprint circuit that wraps feature map and ansatz circuits.
     It can be used to simplify the composition of these two.
 
-    If only the number of qubits is provided the ``RealAmplitudes`` ansatz and the ``ZZFeatureMap``
-    feature map are used. If the number of qubits is 1 the ``ZFeatureMap`` is used.
-    If only a feature map is provided, the ``RealAmplitudes`` ansatz with the
-    corresponding number of qubits is used. If only an ansatz is provided the ``ZZFeatureMap``
-    with the corresponding number of qubits is used.
+    If only the number of qubits is provided the :class:`~qiskit.circuit.library.RealAmplitudes`
+    ansatz and the :class:`~qiskit.circuit.library.ZZFeatureMap` feature map are used. If the
+    number of qubits is 1 the :class:`~qiskit.circuit.library.ZFeatureMap` is used. If only a
+    feature map is provided, the :class:`~qiskit.circuit.library.RealAmplitudes` ansatz with the
+    corresponding number of qubits is used. If only an ansatz is provided the
+    :class:`~qiskit.circuit.library.ZZFeatureMap` with the corresponding number of qubits is used.
 
     At least one parameter has to be provided. If a feature map and an ansatz is provided, the
     number of qubits must be the same.
 
     In case number of qubits is provided along with either a feature map, an ansatz or both, a
-    potential mismatch between the three inputs with respect to the number of qubits is
-    resolved by constructing the ``QNNCircuit`` with the given number of qubits.
-    If one of the ``QNNCircuit`` properties is set after the class construction, the circuit is
-    is adjusted  to incorporate the changes. This is, a new valid configuration that considers the
-    latest property update will be derived. This ensures that the classes properties are consistent
-    at all times.
+    potential mismatch between the three inputs with respect to the number of qubits is resolved by
+    constructing the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` with the given
+    number of qubits. If one of the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`
+    properties is set after the class construction, the circuit is adjusted  to incorporate the
+    changes. This means, a new valid configuration that considers the latest property update will be
+    derived. This ensures that the classes properties are consistent at all times.
 
     Example:
 
@@ -85,9 +86,11 @@ class QNNCircuit(BlueprintCircuit):
         the number of qubits from it, when the instance is created.
 
         If more than one parameter is passed:
+
         1) If num_qubits is provided the feature map and/or ansatz supplied will be overridden to
         circuits with num_qubits, as long as the respective circuit supports updating its number of
         qubits.
+
         2) If num_qubits is not provided the feature_map and ansatz must be set to the same number
         of qubits.
 
@@ -96,19 +99,20 @@ class QNNCircuit(BlueprintCircuit):
                          provided, otherwise required. If not provided num_qubits defaults from the
                          sizes of feature_map and ansatz.
             feature_map: A feature map. Optional if num_qubits or ansatz is provided, otherwise
-                         required. If not provided defaults to ``ZZFeatureMap`` or ``ZFeatureMap``
-                         if num_qubits is determined to be 1.
+                         required. If not provided defaults to
+                         :class:`~qiskit.circuit.library.ZZFeatureMap` or
+                         :class:`~qiskit.circuit.library.ZFeatureMap` if num_qubits is determined
+                         to be 1.
             ansatz:      An ansatz. Optional if num_qubits or feature_map is provided, otherwise
-                         required. If not provided defaults to ``RealAmplitudes``.
+                         required. If not provided defaults to
+                         :class:`~qiskit.circuit.library.RealAmplitudes`.
 
         Returns:
-            The composed feature map and the ansatz circuit.
+            The composed feature map and ansatz circuit.
 
         Raises:
-            QiskitMachineLearningError: If the correct number of qubits cannot be derived form
-            the provided input arguments.
-            ValueError: If the number of qubits is invalid.
-            AttributeError: If the feature_map or ansatz is invalid.
+            QiskitMachineLearningError: If a valid number of qubits cannot be derived from the \
+            provided input arguments.
         """
 
         super().__init__()
@@ -182,9 +186,6 @@ class QNNCircuit(BlueprintCircuit):
 
         Args:
             feature_map: The feature map.
-
-        Raises:
-            AttributeError: If the feature map is invalid.
         """
         if self.feature_map != feature_map:
             # invalidate the circuit
@@ -212,9 +213,6 @@ class QNNCircuit(BlueprintCircuit):
 
         Args:
             ansatz: The ansatz.
-
-        Raises:
-            AttributeError: If the ansatz is invalid.
         """
         if self.ansatz != ansatz:
             # invalidate the circuit
