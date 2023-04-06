@@ -1,0 +1,8 @@
+---
+
+upgrade:
+  - |
+    The previously deprecated `qgan` and `runtime` packages have been removed. Please refer to
+    the new QGAN tutorial and new primitive based quantum neural networks such as
+    :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` and
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` respectively.
