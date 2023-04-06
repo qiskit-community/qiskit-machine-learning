@@ -58,7 +58,7 @@ Algorithms for data classification.
 
 Regressors
 ++++++++++
-Quantum Support Vector Regressor.
+Algorithms for data regression.
 
 .. autosummary::
    :toctree: ../stubs/
@@ -67,20 +67,6 @@ Quantum Support Vector Regressor.
    QSVR
    NeuralNetworkRegressor
    VQR
-
-Distribution Learners
-+++++++++++++++++++++
-
-.. autosummary::
-   :toctree: ../stubs/
-   :nosignatures:
-
-   DiscriminativeNetwork
-   GenerativeNetwork
-   NumPyDiscriminator
-   PyTorchDiscriminator
-   QuantumGenerator
-   QGAN
 
 """
 from .trainable_model import TrainableModel
@@ -93,14 +79,6 @@ from .objective_functions import (
 )
 from .classifiers import QSVC, PegasosQSVC, VQC, NeuralNetworkClassifier
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
-from .distribution_learners import (
-    DiscriminativeNetwork,
-    GenerativeNetwork,
-    NumPyDiscriminator,
-    PyTorchDiscriminator,
-    QuantumGenerator,
-    QGAN,
-)
 
 __all__ = [
     "TrainableModel",
@@ -116,10 +94,4 @@ __all__ = [
     "QSVR",
     "NeuralNetworkRegressor",
     "VQR",
-    "DiscriminativeNetwork",
-    "GenerativeNetwork",
-    "NumPyDiscriminator",
-    "PyTorchDiscriminator",
-    "QuantumGenerator",
-    "QGAN",
 ]
