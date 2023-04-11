@@ -2,13 +2,12 @@
 
 upgrade:
   - |
-    The previously deprecated `qgan` and `runtime` packages have been removed. Please refer to
+    The previously deprecated `qgan` and `runtime` packages have been removed. Please refer to:
 
-      - New [QGAN tutorial](tutorials/04_torch_qgan.ipynb) to train a generative quantum neural
-        network.
-      - New primitive based quantum neural networks (
-        :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`,
-        :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`), PyTorch connector
+      - New [QGAN tutorial](https://qiskit.org/documentation/machine-learning/tutorials/04_torch_qgan.html)
+        to train a generative quantum neural network.
+      - New primitive based quantum neural networks :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`,
+        :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`, PyTorch connector
         :class:`~qiskit_machine_learning.connectors.TorchConnector`, and
         [Qiskit Runtime Service](https://qiskit.org/documentation/partners/qiskit_ibm_runtime/apidocs/runtime_service.html)
         to get functionality similar to what the removed `runtime` package provided.
