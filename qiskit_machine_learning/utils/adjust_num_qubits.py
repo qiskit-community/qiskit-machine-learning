@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -54,13 +54,14 @@ def derive_num_qubits_feature_map_ansatz(
     Raises:
         QiskitMachineLearningError: If correct values can not be derived from the parameters.
     """
+
     # check num_qubits, feature_map, and ansatz
-    if num_qubits is None and feature_map is None and ansatz is None:
+    if num_qubits in (0, None) and feature_map is None and ansatz is None:
         raise QiskitMachineLearningError(
             "Need at least one of number of qubits, feature map, or ansatz!"
         )
 
-    if num_qubits is not None:
+    if num_qubits not in (0, None):
         if feature_map is not None:
             if feature_map.num_qubits != num_qubits:
                 _adjust_num_qubits(feature_map, "feature map", num_qubits)

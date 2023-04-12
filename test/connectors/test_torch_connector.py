@@ -11,29 +11,48 @@
 # that they have been altered from the originals.
 
 """Test Torch Connector."""
-
-from typing import List
 import builtins
+import itertools
+import sys
+from typing import List, cast
+
 from test.connectors.test_torch import TestTorch
 
 import numpy as np
-
-from ddt import ddt, data
-
+from ddt import ddt, data, unpack, idata
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
 from qiskit.opflow import StateFn, ListOp, PauliSumOp
+from qiskit.quantum_info import SparsePauliOp
 
 from qiskit_machine_learning import QiskitMachineLearningError
-from qiskit_machine_learning.neural_networks import CircuitQNN, TwoLayerQNN, OpflowQNN
 from qiskit_machine_learning.connectors import TorchConnector
-import qiskit_machine_learning.optionals as _optionals
+from qiskit_machine_learning.neural_networks import (
+    CircuitQNN,
+    TwoLayerQNN,
+    OpflowQNN,
+    SamplerQNN,
+    EstimatorQNN,
+)
 
 
 @ddt
 class TestTorchConnector(TestTorch):
     """Torch Connector Tests."""
+
+    def setup_test(self):
+        super().setup_test()
+        import torch
+
+        # pylint: disable=attribute-defined-outside-init
+        self._test_data = [
+            torch.tensor([1.0]),
+            torch.tensor([1.0, 2.0]),
+            torch.tensor([[1.0, 2.0]]),
+            torch.tensor([[1.0], [2.0]]),
+            torch.tensor([[[1.0], [2.0]], [[3.0], [4.0]]]),
+        ]
 
     def _validate_output_shape(self, model: TorchConnector, test_data: List) -> None:
         """Creates a Linear PyTorch module with the same in/out dimensions as the given model,
@@ -71,7 +90,13 @@ class TestTorchConnector(TestTorch):
             # test quantum model and track whether it failed or store the output shape
             q_worked = True
             try:
-                q_shape = model(x).shape
+                output = model(x)
+
+                # check output is sparse
+                model_sparse = model.sparse if model.sparse else False
+                self.assertEqual(output.is_sparse, model_sparse)
+
+                q_shape = output.shape
             except builtins.Exception:  # pylint: disable=broad-except
                 q_worked = False
 
@@ -82,7 +107,7 @@ class TestTorchConnector(TestTorch):
                 with self.subTest("c_shape == q_shape", tensor=x):
                     self.assertEqual(c_shape, q_shape)
 
-    def _validate_backward_pass(self, model: TorchConnector) -> None:
+    def _validate_backward_automatically(self, model: TorchConnector) -> None:
         """Uses PyTorch to validate the backward pass / autograd.
 
         Args:
@@ -114,8 +139,6 @@ class TestTorchConnector(TestTorch):
     @data("sv", "qasm")
     def test_opflow_qnn_1_1(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 1/1."""
-        from torch import Tensor
-
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
         else:
@@ -137,22 +160,14 @@ class TestTorchConnector(TestTorch):
         )
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
-            self._validate_backward_pass(model)
+            self._validate_backward_automatically(model)
 
     @data("sv", "qasm")
     def test_opflow_qnn_2_1(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 2/1."""
-        from torch import Tensor
 
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
@@ -163,23 +178,14 @@ class TestTorchConnector(TestTorch):
         qnn = TwoLayerQNN(2, quantum_instance=quantum_instance, input_gradients=True)
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1, 2]]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
-            self._validate_backward_pass(model)
+            self._validate_backward_automatically(model)
 
     @data("sv", "qasm")
     def test_opflow_qnn_2_2(self, q_i):
         """Test Torch Connector + Opflow QNN with input/output dimension 2/2."""
-        from torch import Tensor
 
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
@@ -225,17 +231,10 @@ class TestTorchConnector(TestTorch):
         )
         model = TorchConnector(qnn)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[1, 2], [3, 4]]),
-        ]
-
         # test model
-        self._validate_output_shape(model, test_data)
+        self._validate_output_shape(model, self._test_data)
         if q_i == "sv":
-            self._validate_backward_pass(model)
+            self._validate_backward_automatically(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -248,15 +247,11 @@ class TestTorchConnector(TestTorch):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    def test_circuit_qnn_1_1(self, config):
+    @unpack
+    def test_circuit_qnn_1_1(self, interpret, output_shape, sparse, q_i):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/1 ."""
-        from torch import Tensor
 
-        interpret, output_shape, sparse, q_i = config
-        if sparse and not _optionals.HAS_SPARSE:
-            self.skipTest("sparse library is required to run this test")
-            return
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
         else:
@@ -283,19 +278,16 @@ class TestTorchConnector(TestTorch):
             quantum_instance=quantum_instance,
             input_gradients=True,
         )
-        model = TorchConnector(qnn)
+        if sparse and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse)
+        else:
+            model = TorchConnector(qnn, sparse=sparse)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
-        # test model
-        self._validate_output_shape(model, test_data)
-        if q_i == "sv":
-            self._validate_backward_pass(model)
+            # test model
+            self._validate_output_shape(model, self._test_data)
+            if q_i == "sv":
+                self._validate_backward_automatically(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -308,15 +300,11 @@ class TestTorchConnector(TestTorch):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    def test_circuit_qnn_1_8(self, config):
+    @unpack
+    def test_circuit_qnn_1_8(self, interpret, output_shape, sparse, q_i):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
-        from torch import Tensor
 
-        interpret, output_shape, sparse, q_i = config
-        if sparse and not _optionals.HAS_SPARSE:
-            self.skipTest("sparse library is required to run this test")
-            return
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
         else:
@@ -343,19 +331,16 @@ class TestTorchConnector(TestTorch):
             quantum_instance=quantum_instance,
             input_gradients=True,
         )
-        model = TorchConnector(qnn)
+        if sparse and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse)
+        else:
+            model = TorchConnector(qnn, sparse=sparse)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
-        # test model
-        self._validate_output_shape(model, test_data)
-        if q_i == "sv":
-            self._validate_backward_pass(model)
+            # test model
+            self._validate_output_shape(model, self._test_data)
+            if q_i == "sv":
+                self._validate_backward_automatically(model)
 
     @data(
         # interpret, output_shape, sparse, quantum_instance
@@ -368,15 +353,11 @@ class TestTorchConnector(TestTorch):
         (lambda x: np.sum(x) % 2, 2, False, "qasm"),
         (lambda x: np.sum(x) % 2, 2, True, "qasm"),
     )
-    def test_circuit_qnn_2_4(self, config):
+    @unpack
+    def test_circuit_qnn_2_4(self, interpret, output_shape, sparse, q_i):
         """Torch Connector + Circuit QNN with no interpret, dense output,
         and input/output shape 1/8 ."""
-        from torch import Tensor
 
-        interpret, output_shape, sparse, q_i = config
-        if sparse and not _optionals.HAS_SPARSE:
-            self.skipTest("sparse library is required to run this test")
-            return
         if q_i == "sv":
             quantum_instance = self._sv_quantum_instance
         else:
@@ -404,20 +385,16 @@ class TestTorchConnector(TestTorch):
             quantum_instance=quantum_instance,
             input_gradients=True,
         )
-        model = TorchConnector(qnn)
+        if sparse and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse)
+        else:
+            model = TorchConnector(qnn, sparse=sparse)
 
-        test_data = [
-            Tensor([1]),
-            Tensor([1, 2]),
-            Tensor([[1], [2]]),
-            Tensor([[1, 2], [3, 4]]),
-            Tensor([[[1], [2]], [[3], [4]]]),
-        ]
-
-        # test model
-        self._validate_output_shape(model, test_data)
-        if q_i == "sv":
-            self._validate_backward_pass(model)
+            # test model
+            self._validate_output_shape(model, self._test_data)
+            if q_i == "sv":
+                self._validate_backward_automatically(model)
 
     def test_circuit_qnn_without_parameters(self):
         """Tests CircuitQNN without parameters."""
@@ -434,7 +411,7 @@ class TestTorchConnector(TestTorch):
             input_gradients=True,
         )
         model = TorchConnector(qnn)
-        self._validate_backward_pass(model)
+        self._validate_backward_automatically(model)
 
         qnn = CircuitQNN(
             circuit=qc,
@@ -444,7 +421,7 @@ class TestTorchConnector(TestTorch):
             input_gradients=True,
         )
         model = TorchConnector(qnn)
-        self._validate_backward_pass(model)
+        self._validate_backward_automatically(model)
 
     @data(
         # interpret
@@ -570,14 +547,14 @@ class TestTorchConnector(TestTorch):
         (4, None),
         (2, lambda x: f"{x:b}".count("1") % 2),
     )
-    def test_circuit_qnn_batch_gradients(self, config):
+    @unpack
+    def test_circuit_qnn_batch_gradients(self, output_shape, interpret):
         """Test batch gradient computation of CircuitQNN gives the same result as the sum of
         individual gradients."""
         import torch
         from torch.nn import MSELoss
         from torch.optim import SGD
 
-        output_shape, interpret = config
         num_inputs = 2
 
         feature_map = ZZFeatureMap(num_inputs)
@@ -636,3 +613,171 @@ class TestTorchConnector(TestTorch):
             batch_loss.detach().cpu().numpy(),
             places=4,
         )
+
+    def _validate_forward(self, model: TorchConnector):
+        import torch
+
+        for batch_size in [1, 2]:
+            input_data = torch.rand((batch_size, model.neural_network.num_inputs))
+
+            connector_output = model(input_data).detach()
+            qnn_output = model.neural_network.forward(
+                input_data.detach().numpy(), model.weight.detach().numpy()
+            )
+
+            self.assertEqual(connector_output.is_sparse, model.sparse)
+
+            if model.sparse:
+                connector_output = connector_output.to_dense()
+            if model.neural_network.sparse:
+                import sparse
+
+                self.assertTrue(isinstance(qnn_output, sparse.SparseArray))
+                # mypy
+                qnn_output = cast(sparse.SparseArray, qnn_output)
+                qnn_output = qnn_output.todense()
+
+            np.testing.assert_almost_equal(connector_output.numpy(), qnn_output)
+
+    def _validate_backward(self, model: TorchConnector):
+        import torch
+
+        for batch_size in [1, 2]:
+            input_data = torch.rand((batch_size, model.neural_network.num_inputs))
+
+            model.zero_grad()
+
+            connector_fwd_out = model(input_data)
+            if model.sparse:
+                connector_fwd_out = connector_fwd_out.to_dense()
+
+            # we need a scalar function to trigger gradients
+            torch.sum(connector_fwd_out).backward()
+
+            connector_backward = model.weight.grad
+            self.assertEqual(connector_backward.is_sparse, model.sparse)
+            if model.sparse:
+                self.assertTrue(connector_backward.is_sparse)
+                connector_backward = connector_backward.to_dense()
+
+            _, qnn_backward = model.neural_network.backward(
+                input_data.detach().numpy(), model.weight.detach().numpy()
+            )
+            if model.neural_network.sparse:
+                import sparse
+
+                self.assertTrue(isinstance(qnn_backward, sparse.SparseArray))
+                # mypy
+                qnn_backward = cast(sparse.SparseArray, qnn_backward)
+                qnn_backward = qnn_backward.todense()
+
+            fin_diff_grad = self._evaluate_fin_diff_gradient(model, input_data)
+            np.testing.assert_almost_equal(fin_diff_grad, qnn_backward, decimal=4)
+
+            # sum up across batch size and across all parameters
+            qnn_backward = np.sum(qnn_backward, axis=(0, 1))
+
+            np.testing.assert_almost_equal(connector_backward.numpy(), qnn_backward)
+
+    def _evaluate_fin_diff_gradient(self, model: TorchConnector, input_data):
+        qnn = model.neural_network
+        weights = model.weight.detach().numpy()
+
+        eps = 1e-4
+        grad = np.zeros((len(input_data), *qnn.output_shape, qnn.num_weights))
+        for k in range(qnn.num_weights):
+            delta = np.zeros_like(weights)
+            delta[k] += eps
+
+            f_1 = qnn.forward(input_data, weights + delta)
+            f_2 = qnn.forward(input_data, weights - delta)
+            if qnn.sparse:
+                import sparse
+
+                # mypy
+                f_1 = cast(sparse.SparseArray, f_1)
+                f_2 = cast(sparse.SparseArray, f_2)
+
+                f_1 = f_1.todense()
+                f_2 = f_2.todense()
+
+            grad[:, :, k] = (f_1 - f_2) / (2 * eps)
+        return grad
+
+    @idata(
+        # num qubits, sparse_connector, sparse_qnn, interpret
+        itertools.product(
+            [1, 2], [True, False], [True, False], [lambda x: f"{x:b}".count("1") % 2, None]
+        )
+    )
+    @unpack
+    def test_sampler_qnn(self, num_qubits, sparse_connector, sparse_qnn, interpret):
+        """Test TorchConnector on SamplerQNN."""
+        if interpret is not None:
+            output_shape = 2
+        else:
+            output_shape = None
+
+        fmap = ZFeatureMap(num_qubits, reps=1)
+        ansatz = RealAmplitudes(num_qubits, reps=1)
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(fmap, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+        qnn = SamplerQNN(
+            circuit=qc,
+            input_params=fmap.parameters,
+            weight_params=ansatz.parameters,
+            sparse=sparse_qnn,
+            interpret=interpret,
+            output_shape=output_shape,
+            input_gradients=True,
+        )
+
+        if sparse_connector and sys.version_info < (3, 8):
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = TorchConnector(qnn, sparse=sparse_connector)
+        else:
+            try:
+                model = TorchConnector(qnn, sparse=sparse_connector)
+            except QiskitMachineLearningError as qml_ex:
+                if sparse_connector and not sparse_qnn:
+                    self.skipTest("Skipping test when connector is sparse and qnn is not sparse")
+                else:
+                    raise QiskitMachineLearningError(
+                        "Unexpected exception during initialization"
+                    ) from qml_ex
+
+            self._validate_forward(model)
+            self._validate_backward(model)
+            self._validate_backward_automatically(model)
+
+    @data(
+        (1, None),
+        (1, SparsePauliOp.from_list([("Z", 1)])),
+        (2, None),
+        (2, SparsePauliOp.from_list([("ZZ", 1)])),
+        (2, [SparsePauliOp.from_list([("ZI", 1)]), SparsePauliOp.from_list([("IZ", 1)])]),
+    )
+    @unpack
+    def test_estimator_qnn(self, num_qubits, observables):
+        """Test TorchConnector on EstimatorQNN."""
+        fmap = ZFeatureMap(num_qubits, reps=1)
+        ansatz = RealAmplitudes(num_qubits, reps=1)
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(fmap, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+        qnn = EstimatorQNN(
+            circuit=qc,
+            observables=observables,
+            input_params=fmap.parameters,
+            weight_params=ansatz.parameters,
+            input_gradients=True,
+        )
+
+        model = TorchConnector(qnn)
+
+        self._validate_forward(model)
+        self._validate_backward(model)
+        self._validate_backward_automatically(model)
