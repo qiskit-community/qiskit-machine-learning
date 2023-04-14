@@ -64,7 +64,7 @@ def _create_dataset(n_samples: int, n_classes: int, one_hot=True) -> _Dataset:
     )
     x = MinMaxScaler().fit_transform(x)
     if one_hot:
-        y = OneHotEncoder(sparse=False).fit_transform(y.reshape(-1, 1))
+        y = OneHotEncoder(sparse_output=False).fit_transform(y.reshape(-1, 1))
     return _Dataset(x, y)
 
 
