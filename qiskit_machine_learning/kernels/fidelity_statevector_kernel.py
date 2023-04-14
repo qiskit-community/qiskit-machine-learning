@@ -129,8 +129,8 @@ class FidelityStatevectorKernel(BaseKernel):
                     continue
                 kernel_matrix[i, j] = self._compute_kernel_entry(x, y)
 
-        if self._shots is not None and self._enforce_psd and is_symmetric:
-            kernel_matrix = self._make_psd(kernel_matrix)
+        if self._enforce_psd and is_symmetric and self._shots is not None:
+            kernel_matrix = self._make_psd(kernel_matrix).real
 
         return kernel_matrix
 
