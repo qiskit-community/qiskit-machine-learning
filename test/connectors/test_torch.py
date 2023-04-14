@@ -103,4 +103,4 @@ class TestTorch(ABC):
     @abstractmethod
     def assertRaises(self, expected_exception):
         """Assert raises an exception."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
