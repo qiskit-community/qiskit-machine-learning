@@ -133,7 +133,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         with self.subTest("Test kernel matrix is real-valued."):
             kernel = FidelityStatevectorKernel(enforce_psd=True, shots=1)
-            kernel._make_psd = lambda *args, **kwargs: np.asarray([1j,])
+            kernel._make_psd = lambda *args, **kwargs: np.asarray([1j])
             matrix = kernel.evaluate(self.sample_train)
             self.assertTrue(np.issubdtype(matrix.dtype, float))
 
