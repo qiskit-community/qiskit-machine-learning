@@ -119,17 +119,17 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             kernel = FidelityStatevectorKernel(enforce_psd=False, shots=1)
             kernel._add_shot_noise = lambda *args, **kwargs: -1
             matrix = kernel.evaluate(self.sample_train)
-            eigen_values = np.linalg.eigvals(matrix)
+            w = np.linalg.eigvals(matrix)
             # there's a negative eigenvalue
-            self.assertFalse(np.all(np.greater_equal(eigen_values, -1e-10)))
+            self.assertFalse(np.all(np.greater_equal(w, -1e-10)))
 
         with self.subTest("PSD enforced"):
             kernel = FidelityStatevectorKernel(enforce_psd=True, shots=1)
             kernel._add_shot_noise = lambda *args, **kwargs: -1
             matrix = kernel.evaluate(self.sample_train)
-            eigen_values = np.linalg.eigvals(matrix)
+            w = np.linalg.eigvals(matrix)
             # all eigenvalues are non-negative with some tolerance
-            self.assertTrue(np.all(np.greater_equal(eigen_values, -1e-10)))
+            self.assertTrue(np.all(np.greater_equal(w, -1e-10)))
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_aer_statevector(self):
