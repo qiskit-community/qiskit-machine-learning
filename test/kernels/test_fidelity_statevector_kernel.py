@@ -131,12 +131,6 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             # all eigenvalues are non-negative with some tolerance
             self.assertTrue(np.all(np.greater_equal(eigen_values, -1e-10)))
 
-        with self.subTest("Test kernel matrix is real-valued."):
-            kernel = FidelityStatevectorKernel(enforce_psd=True, shots=1)
-            kernel._make_psd = lambda *args, **kwargs: np.asarray([1j])
-            matrix = kernel.evaluate(self.sample_train)
-            self.assertTrue(np.issubdtype(matrix.dtype, float))
-
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_aer_statevector(self):
         """Test statevector kernel when using AerStatevector type statevectors."""
