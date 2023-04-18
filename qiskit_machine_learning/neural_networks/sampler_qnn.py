@@ -26,6 +26,7 @@ from qiskit.algorithms.gradients import (
 )
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 import qiskit_machine_learning.optionals as _optionals
 
@@ -105,7 +106,7 @@ class SamplerQNN(NeuralNetwork):
     def __init__(
         self,
         *,
-        circuit: QuantumCircuit,
+        circuit: QuantumCircuit | QNNCircuit,
         sampler: BaseSampler | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
@@ -155,13 +156,17 @@ class SamplerQNN(NeuralNetwork):
         if len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
-        if input_params is None:
-            input_params = []
-        self._input_params = list(input_params)
+        if isinstance(circuit,QNNCircuit):
+            self._input_params = list(circuit.input_parameters)
+            self._weight_params = list(circuit.weight_parameters)
+        else: #more compact coding? compare estimator_qnn!
+            if input_params is None:
+                input_params = []
+            self._input_params = list(input_params)
 
-        if weight_params is None:
-            weight_params = []
-        self._weight_params = list(weight_params)
+            if weight_params is None:
+                weight_params = []
+            self._weight_params = list(weight_params)
 
         if sparse:
             _optionals.HAS_SPARSE.require_now("DOK")

@@ -30,6 +30,7 @@ from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 
+from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
@@ -85,7 +86,7 @@ class EstimatorQNN(NeuralNetwork):
     def __init__(
         self,
         *,
-        circuit: QuantumCircuit,
+        circuit: QuantumCircuit | QNNCircuit,
         estimator: BaseEstimator | None = None,
         observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp | None = None,
         input_params: Sequence[Parameter] | None = None,
@@ -125,8 +126,13 @@ class EstimatorQNN(NeuralNetwork):
         if isinstance(observables, (PauliSumOp, BaseOperator)):
             observables = (observables,)
         self._observables = observables
-        self._input_params = list(input_params) if input_params is not None else []
-        self._weight_params = list(weight_params) if weight_params is not None else []
+        if isinstance(circuit,QNNCircuit):
+            #circuit._build() #circuit must be build before to achife same results. Why?
+            self._input_params = list(circuit.input_parameters)
+            self._weight_params = list(circuit.weight_parameters)
+        else:
+            self._input_params = list(input_params) if input_params is not None else []
+            self._weight_params = list(weight_params) if weight_params is not None else []
         if gradient is None:
             gradient = ParamShiftEstimatorGradient(self.estimator)
         self.gradient = gradient
