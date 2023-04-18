@@ -13,6 +13,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import List, Tuple
 
 import numpy as np
@@ -114,9 +115,6 @@ class FidelityQuantumKernel(BaseKernel):
         if is_symmetric and self._enforce_psd:
             kernel_matrix = self._make_psd(kernel_matrix)
 
-        # due to truncation and rounding errors we may get complex numbers
-        kernel_matrix = np.real(kernel_matrix)
-
         return kernel_matrix
 
     def _get_parameterization(
@@ -202,7 +200,9 @@ class FidelityQuantumKernel(BaseKernel):
 
         return kernel_matrix
 
-    def _get_kernel_entries(self, left_parameters: np.ndarray, right_parameters: np.ndarray):
+    def _get_kernel_entries(
+        self, left_parameters: np.ndarray, right_parameters: np.ndarray
+    ) -> Sequence[float]:
         """
         Gets kernel entries by executing the underlying fidelity instance and getting the results
         back from the async job.
@@ -215,7 +215,7 @@ class FidelityQuantumKernel(BaseKernel):
                 left_parameters,
                 right_parameters,
             )
-            kernel_entries = np.real(job.result().fidelities)
+            kernel_entries = job.result().fidelities
         else:
             # trivial case, only identical samples
             kernel_entries = []

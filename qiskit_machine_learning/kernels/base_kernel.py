@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -136,18 +136,18 @@ class BaseKernel(ABC):
 
         return x_vec, y_vec
 
-    # pylint: disable=invalid-name
     def _make_psd(self, kernel_matrix: np.ndarray) -> np.ndarray:
         r"""
-        Find the closest positive semi-definite approximation to symmetric kernel matrix.
+        Find the closest positive semi-definite approximation to a symmetric kernel matrix.
         The (symmetric) matrix should always be positive semi-definite by construction,
         but this can be violated in case of noise, such as sampling noise.
 
         Args:
-            kernel_matrix: symmetric 2D array of the kernel entries
+            kernel_matrix: Symmetric 2D array of the kernel entries.
 
         Returns:
-            the closest positive semi-definite matrix.
+            The closest positive semi-definite matrix.
         """
-        d, u = np.linalg.eig(kernel_matrix)
-        return u @ np.diag(np.maximum(0, d)) @ u.transpose()
+        w, v = np.linalg.eig(kernel_matrix)
+        m = v @ np.diag(np.maximum(0, w)) @ v.transpose()
+        return m.real
