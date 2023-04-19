@@ -1,4 +1,59 @@
 ---
 features:
   - |
-    
+    The newly introduced :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` simplifies
+    the interfaces of :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` and
+    :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`.
+
+    If a combined quantum circuit, built from a feature map and an ansatz, is used for a
+    :class:`~qiskit.primitives.Sampler` or :class:`~qiskit.primitives.Estimator` based neural
+    network implementation, the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` class
+    can be passed as circuit parameter.
+    Using the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` comes with the benefit
+    that the feature map and ansatz do not have to be composed explicitly.
+    Also the input and weight parameters do not have to be passed to
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` or
+    :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`
+    since these properties are held in the
+    :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` already.
+
+    An example of using :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` with the
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` class is as follows:
+
+    .. code-block:: python
+
+        from qiskit_machine_learning.circuit.library import QNNCircuit
+        from qiskit_machine_learning.neural_networks import SamplerQNN
+
+        def parity(x):
+            return "{:b}".format(x).count("1") % 2
+        
+        # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
+        # and RealAmplitudes ansatz with 3 repetitions.
+        qnn_qc = QNNCircuit(num_qubits = 2)
+
+        qnn = SamplerQNN(
+            circuit=qnn_qc,
+            interpret=parity,
+            output_shape=2
+        )
+
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
+
+    The :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is used with the
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` class in the same fashion:
+
+    .. code-block:: python
+
+      from qiskit_machine_learning.circuit.library import QNNCircuit
+      from qiskit_machine_learning.neural_networks import EstimatorQNN
+      
+      # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
+      # and RealAmplitudes ansatz with 3 repetitions.
+      qnn_qc = QNNCircuit(num_qubits = 2)
+
+      qnn = EstimatorQNN(
+          circuit=qnn_qc
+      )
+
+      qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])

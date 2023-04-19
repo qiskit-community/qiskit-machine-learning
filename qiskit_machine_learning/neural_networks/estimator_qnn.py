@@ -46,6 +46,11 @@ class EstimatorQNN(NeuralNetwork):
     their expectation value(s). Quite often, a combined quantum circuit is used. Such a circuit is
     built from two circuits: a feature map, it provides input parameters for the network, and an
     ansatz (weight parameters).
+    In this case a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` can be passed as
+    circuit to simplify the composition of a feature map and ansatz.
+    If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
+    input and weight parameters are held as internal properties of the circuit and are therefore
+    omitted.
 
     Example:
 
@@ -53,12 +58,27 @@ class EstimatorQNN(NeuralNetwork):
 
         from qiskit import QuantumCircuit
         from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+        from qiskit_machine_learning.circuit.library import QNNCircuit
 
         from qiskit_machine_learning.neural_networks import EstimatorQNN
 
         num_qubits = 2
+
+        # Using the QNNCircuit:
+        # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
+        # and RealAmplitudes ansatz with 3 repetitions.
+        qnn_qc = QNNCircuit(num_qubits)
+
+        qnn = EstimatorQNN(
+            circuit=qnn_qc
+        )
+
+        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
+        # prints: [[0.33039274]]
+
+        # Explicitly specifying the ansatz and feature map:
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=3)
 
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
@@ -70,7 +90,8 @@ class EstimatorQNN(NeuralNetwork):
             weight_params=ansatz.parameters
         )
 
-        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
+        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
+        # prints: [[0.33039274]]
 
 
     The following attributes can be set via the constructor but can also be read and
@@ -99,13 +120,20 @@ class EstimatorQNN(NeuralNetwork):
             estimator: The estimator used to compute neural network's results.
                 If ``None``, a default instance of the reference estimator,
                 :class:`~qiskit.primitives.Estimator`, will be used.
-            circuit: The quantum circuit to represent the neural network.
+            circuit: The quantum circuit to represent the neural network. If a
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed,
+                input_params and weight_params are omitted. In this case these two properties are
+                held in the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             observables: The observables for outputs of the neural network. If ``None``,
                 use the default :math:`Z^{\otimes num\_qubits}` observable.
             input_params: The parameters that correspond to the input data of the network.
                 If ``None``, the input data is not bound to any parameters.
+                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as
+                circuit, this input is not considered.
             weight_params: The parameters that correspond to the trainable weights.
                 If ``None``, the weights are not bound to any parameters.
+                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as
+                circuit, this input is not considered.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
                 :class:`~qiskit.algorithms.gradients.ParamShiftEstimatorGradient`, will be used.
@@ -126,8 +154,7 @@ class EstimatorQNN(NeuralNetwork):
         if isinstance(observables, (PauliSumOp, BaseOperator)):
             observables = (observables,)
         self._observables = observables
-        if isinstance(circuit,QNNCircuit):
-            #circuit._build() #circuit must be build before to achife same results. Why?
+        if isinstance(circuit, QNNCircuit):
             self._input_params = list(circuit.input_parameters)
             self._weight_params = list(circuit.weight_parameters)
         else:

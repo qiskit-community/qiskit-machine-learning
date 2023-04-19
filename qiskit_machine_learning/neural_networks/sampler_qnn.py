@@ -56,6 +56,11 @@ class SamplerQNN(NeuralNetwork):
     estimated by the :class:`~qiskit.primitives.Sampler` primitive into predicted classes. Quite
     often, a combined quantum circuit is used. Such a circuit is built from two circuits:
     a feature map, it provides input parameters for the network, and an ansatz (weight parameters).
+    In this case a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` can be passed as
+    circuit to simplify the composition of a feature map and ansatz.
+    If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
+    input and weight parameters are held as internal properties of the circuit and are therefore
+    omitted.
 
     The output can be set up in different formats, and an optional post-processing step
     can be used to interpret the sampler's output in a particular context (e.g. mapping the
@@ -68,21 +73,36 @@ class SamplerQNN(NeuralNetwork):
 
         from qiskit import QuantumCircuit
         from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+        from qiskit_machine_learning.circuit.library import QNNCircuit
 
         from qiskit_machine_learning.neural_networks import SamplerQNN
 
         num_qubits = 2
-        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
-
-        qc = QuantumCircuit(num_qubits)
-        qc.compose(feature_map, inplace=True)
-        qc.compose(ansatz, inplace=True)
-
 
         def parity(x):
             return "{:b}".format(x).count("1") % 2
 
+        # Using the QNNCircuit:
+        # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
+        # and RealAmplitudes ansatz with 3 repetitions.
+        qnn_qc = QNNCircuit(num_qubits)
+
+        qnn = SamplerQNN(
+            circuit=qnn_qc,
+            interpret=parity,
+            output_shape=2
+        )
+
+        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
+        # prints: [[0.66519637 0.33480363]]
+
+        # Explicitly specifying the ansatz and feature map:
+        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
+        ansatz = RealAmplitudes(num_qubits=num_qubits)
+
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(feature_map, inplace=True)
+        qc.compose(ansatz, inplace=True)
 
         qnn = SamplerQNN(
             circuit=qc,
@@ -92,7 +112,8 @@ class SamplerQNN(NeuralNetwork):
             output_shape=2
         )
 
-        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
+        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
+        # prints: [[0.66519637 0.33480363]]
 
     The following attributes can be set via the constructor but can also be read and
     updated once the SamplerQNN object has been constructed.
@@ -131,7 +152,7 @@ class SamplerQNN(NeuralNetwork):
                 passed, then an identity function will be used by this neural network.
             output_shape: The output shape of the custom interpretation. It is ignored if no custom
                 interpret method is provided where the shape is taken to be
-                ``2^circuit.num_qubits``..
+                ``2^circuit.num_qubits``.
             gradient: An optional sampler gradient to be used for the backward pass.
                 If ``None`` is given, a default instance of
                 :class:`~qiskit.algorithms.gradients.ParamShiftSamplerGradient` will be used.
@@ -156,17 +177,12 @@ class SamplerQNN(NeuralNetwork):
         if len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
-        if isinstance(circuit,QNNCircuit):
+        if isinstance(circuit, QNNCircuit):
             self._input_params = list(circuit.input_parameters)
             self._weight_params = list(circuit.weight_parameters)
-        else: #more compact coding? compare estimator_qnn!
-            if input_params is None:
-                input_params = []
-            self._input_params = list(input_params)
-
-            if weight_params is None:
-                weight_params = []
-            self._weight_params = list(weight_params)
+        else:
+            self._input_params = list(input_params) if input_params is not None else []
+            self._weight_params = list(weight_params) if weight_params is not None else []
 
         if sparse:
             _optionals.HAS_SPARSE.require_now("DOK")
