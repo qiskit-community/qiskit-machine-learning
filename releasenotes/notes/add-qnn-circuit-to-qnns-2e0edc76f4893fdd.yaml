@@ -1,21 +1,20 @@
 ---
 features:
   - |
-    The newly introduced :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` simplifies
-    the interfaces of :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` and
-    :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`.
+    The :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` class can be passed as circuit
+    to the :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`
+    and :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`.
+    This simplifies the interfaces to build a :class:`~qiskit.primitives.Sampler` or
+    :class:`~qiskit.primitives.Estimator` based neural network implementation from a feature map
+    and an ansatz circuit.
 
-    If a combined quantum circuit, built from a feature map and an ansatz, is used for a
-    :class:`~qiskit.primitives.Sampler` or :class:`~qiskit.primitives.Estimator` based neural
-    network implementation, the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` class
-    can be passed as circuit parameter.
     Using the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` comes with the benefit
-    that the feature map and ansatz do not have to be composed explicitly.
-    Also the input and weight parameters do not have to be passed to
-    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` or
-    :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`
-    since these properties are held in the
-    :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` already.
+    that the feature map and ansatz do not have to be composed explicitly. 
+    If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed to the 
+    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` or 
+    :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` the input and weight parameters
+    can be omitted since these properties are already held in the
+    :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
 
     An example of using :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` with the
     :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` class is as follows:
@@ -41,7 +40,7 @@ features:
         qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
     The :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is used with the
-    :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` class in the same fashion:
+    :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` class in the same fashion:
 
     .. code-block:: python
 

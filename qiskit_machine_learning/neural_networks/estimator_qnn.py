@@ -73,8 +73,7 @@ class EstimatorQNN(NeuralNetwork):
             circuit=qnn_qc
         )
 
-        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
-        # prints: [[0.33039274]]
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
         # Explicitly specifying the ansatz and feature map:
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)
@@ -90,8 +89,7 @@ class EstimatorQNN(NeuralNetwork):
             weight_params=ansatz.parameters
         )
 
-        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
-        # prints: [[0.33039274]]
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
 
     The following attributes can be set via the constructor but can also be read and
@@ -129,11 +127,11 @@ class EstimatorQNN(NeuralNetwork):
             input_params: The parameters that correspond to the input data of the network.
                 If ``None``, the input data is not bound to any parameters.
                 If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as
-                circuit, this input is not considered.
+                circuit, this input is omitted.
             weight_params: The parameters that correspond to the trainable weights.
                 If ``None``, the weights are not bound to any parameters.
                 If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as
-                circuit, this input is not considered.
+                circuit, this input is omitted.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
                 :class:`~qiskit.algorithms.gradients.ParamShiftEstimatorGradient`, will be used.

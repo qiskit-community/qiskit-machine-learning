@@ -93,8 +93,7 @@ class SamplerQNN(NeuralNetwork):
             output_shape=2
         )
 
-        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
-        # prints: [[0.66519637 0.33480363]]
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
         # Explicitly specifying the ansatz and feature map:
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)
@@ -112,8 +111,7 @@ class SamplerQNN(NeuralNetwork):
             output_shape=2
         )
 
-        print(qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8]))
-        # prints: [[0.66519637 0.33480363]]
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
     The following attributes can be set via the constructor but can also be read and
     updated once the SamplerQNN object has been constructed.
@@ -143,8 +141,15 @@ class SamplerQNN(NeuralNetwork):
                 If ``None`` is given, a default instance of the reference sampler defined
                 by :class:`~qiskit.primitives.Sampler` will be used.
             circuit: The parametrized quantum circuit that generates the samples of this network.
-            input_params: The parameters of the circuit corresponding to the input.
-            weight_params: The parameters of the circuit corresponding to the trainable weights.
+                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed,
+                input_params and weight_params are omitted. In this case these two properties are
+                held in the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+            input_params: The parameters of the circuit corresponding to the input. If a
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit,
+                this input is omitted.
+            weight_params: The parameters of the circuit corresponding to the trainable weights. If
+                a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit,
+                this input is omitted.
             sparse: Returns whether the output is sparse or not.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
