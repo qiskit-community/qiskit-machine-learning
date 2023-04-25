@@ -349,11 +349,9 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         num_qubits = 2
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)
         ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
-        # pylint: disable=consider-using-f-string
-        def parity(x):
-            return "{:b}".format(x).count("1") % 2
 
-        # pylint: enable=consider-using-f-string
+        def parity(x):
+            return f"{bin(x)}".count("1") % 2
 
         qnn_qc = QNNCircuit(num_qubits=num_qubits, feature_map=feature_map, ansatz=ansatz)
         qc = QuantumCircuit(num_qubits)

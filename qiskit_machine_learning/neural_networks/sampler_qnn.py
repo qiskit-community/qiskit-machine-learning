@@ -80,7 +80,7 @@ class SamplerQNN(NeuralNetwork):
         num_qubits = 2
 
         def parity(x):
-            return "{:b}".format(x).count("1") % 2
+            return f"{bin(x)}".count("1") % 2
 
         # Using the QNNCircuit:
         # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
