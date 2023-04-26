@@ -13,8 +13,8 @@ features:
     If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed to the 
     :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` or 
     :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` the input and weight parameters
-    can be omitted since these properties are already held in the
-    :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+    do not have to be provided, because these two properties are taken
+    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
 
     An example of using :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` with the
     :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` class is as follows:
@@ -28,7 +28,7 @@ features:
             return f"{bin(x)}".count("1") % 2
         
         # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
-        # and RealAmplitudes ansatz with 3 repetitions.
+        # and RealAmplitudes ansatz.
         qnn_qc = QNNCircuit(num_qubits = 2)
 
         qnn = SamplerQNN(
@@ -48,7 +48,7 @@ features:
       from qiskit_machine_learning.neural_networks import EstimatorQNN
       
       # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
-      # and RealAmplitudes ansatz with 3 repetitions.
+      # and RealAmplitudes ansatz.
       qnn_qc = QNNCircuit(num_qubits = 2)
 
       qnn = EstimatorQNN(

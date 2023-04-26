@@ -49,8 +49,8 @@ class EstimatorQNN(NeuralNetwork):
     In this case a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` can be passed as
     circuit to simplify the composition of a feature map and ansatz.
     If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
-    input and weight parameters are held as internal properties of the circuit and are therefore
-    omitted.
+    input and weight parameters do not have to be provided, because these two properties are taken
+    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
 
     Example:
 
@@ -66,7 +66,7 @@ class EstimatorQNN(NeuralNetwork):
 
         # Using the QNNCircuit:
         # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
-        # and RealAmplitudes ansatz with 3 repetitions.
+        # and RealAmplitudes ansatz.
         qnn_qc = QNNCircuit(num_qubits)
 
         qnn = EstimatorQNN(
@@ -77,7 +77,7 @@ class EstimatorQNN(NeuralNetwork):
 
         # Explicitly specifying the ansatz and feature map:
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=3)
+        ansatz = RealAmplitudes(num_qubits=num_qubits)
 
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
@@ -105,7 +105,7 @@ class EstimatorQNN(NeuralNetwork):
     def __init__(
         self,
         *,
-        circuit: QuantumCircuit | QNNCircuit,
+        circuit: QuantumCircuit,
         estimator: BaseEstimator | None = None,
         observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp | None = None,
         input_params: Sequence[Parameter] | None = None,
@@ -119,19 +119,22 @@ class EstimatorQNN(NeuralNetwork):
                 If ``None``, a default instance of the reference estimator,
                 :class:`~qiskit.primitives.Estimator`, will be used.
             circuit: The quantum circuit to represent the neural network. If a
-                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed,
-                input_params and weight_params are omitted. In this case these two properties are
-                held in the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
+                input_params and weight_params do not have to be provided, because these two
+                properties are taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             observables: The observables for outputs of the neural network. If ``None``,
                 use the default :math:`Z^{\otimes num\_qubits}` observable.
             input_params: The parameters that correspond to the input data of the network.
                 If ``None``, the input data is not bound to any parameters.
-                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as
-                circuit, this input is omitted.
+                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
+                input_params value here is ignored. Instead the value is taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` input_parameters.
             weight_params: The parameters that correspond to the trainable weights.
                 If ``None``, the weights are not bound to any parameters.
-                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as
-                circuit, this input is omitted.
+                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
+                weight_params value here is ignored. Instead the value is taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
                 :class:`~qiskit.algorithms.gradients.ParamShiftEstimatorGradient`, will be used.

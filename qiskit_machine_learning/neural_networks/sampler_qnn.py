@@ -59,8 +59,8 @@ class SamplerQNN(NeuralNetwork):
     In this case a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` can be passed as
     circuit to simplify the composition of a feature map and ansatz.
     If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
-    input and weight parameters are held as internal properties of the circuit and are therefore
-    omitted.
+    input and weight parameters do not have to be provided, because these two properties are taken
+    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
 
     The output can be set up in different formats, and an optional post-processing step
     can be used to interpret the sampler's output in a particular context (e.g. mapping the
@@ -84,7 +84,7 @@ class SamplerQNN(NeuralNetwork):
 
         # Using the QNNCircuit:
         # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
-        # and RealAmplitudes ansatz with 3 repetitions.
+        # and RealAmplitudes ansatz.
         qnn_qc = QNNCircuit(num_qubits)
 
         qnn = SamplerQNN(
@@ -125,7 +125,7 @@ class SamplerQNN(NeuralNetwork):
     def __init__(
         self,
         *,
-        circuit: QuantumCircuit | QNNCircuit,
+        circuit: QuantumCircuit,
         sampler: BaseSampler | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
@@ -141,15 +141,18 @@ class SamplerQNN(NeuralNetwork):
                 If ``None`` is given, a default instance of the reference sampler defined
                 by :class:`~qiskit.primitives.Sampler` will be used.
             circuit: The parametrized quantum circuit that generates the samples of this network.
-                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed,
-                input_params and weight_params are omitted. In this case these two properties are
-                held in the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
+                input_params and weight_params do not have to be provided, because these two
+                properties are taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             input_params: The parameters of the circuit corresponding to the input. If a
-                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit,
-                this input is omitted.
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
+                input_params value here is ignored. Instead the value is taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` input_parameters.
             weight_params: The parameters of the circuit corresponding to the trainable weights. If
-                a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit,
-                this input is omitted.
+                a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
+                weight_params value here is ignored. Instead the value is taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             sparse: Returns whether the output is sparse or not.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
