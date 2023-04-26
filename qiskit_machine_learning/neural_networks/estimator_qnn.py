@@ -133,7 +133,7 @@ class EstimatorQNN(NeuralNetwork):
             weight_params: The parameters that correspond to the trainable weights.
                 If ``None``, the weights are not bound to any parameters.
                 If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
-                weight_params value here is ignored. Instead the value is taken from the
+                `weight_params` value here is ignored. Instead the value is taken from the
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
