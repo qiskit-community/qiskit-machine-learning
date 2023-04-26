@@ -120,7 +120,7 @@ class EstimatorQNN(NeuralNetwork):
                 :class:`~qiskit.primitives.Estimator`, will be used.
             circuit: The quantum circuit to represent the neural network. If a
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
-                input_params and weight_params do not have to be provided, because these two
+                `input_params` and `weight_params` do not have to be provided, because these two
                 properties are taken from the
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             observables: The observables for outputs of the neural network. If ``None``,
