@@ -142,7 +142,7 @@ class SamplerQNN(NeuralNetwork):
                 by :class:`~qiskit.primitives.Sampler` will be used.
             circuit: The parametrized quantum circuit that generates the samples of this network.
                 If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
-                input_params and weight_params do not have to be provided, because these two
+                `input_params` and `weight_params` do not have to be provided, because these two
                 properties are taken from the
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             input_params: The parameters of the circuit corresponding to the input. If a
