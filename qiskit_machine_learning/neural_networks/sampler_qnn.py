@@ -147,7 +147,7 @@ class SamplerQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             input_params: The parameters of the circuit corresponding to the input. If a
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
-                input_params value here is ignored. Instead the value is taken from the
+                `input_params` value here is ignored. Instead the value is taken from the
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` input_parameters.
             weight_params: The parameters of the circuit corresponding to the trainable weights. If
                 a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
