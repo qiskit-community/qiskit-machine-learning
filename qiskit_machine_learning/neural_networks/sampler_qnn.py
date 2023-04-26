@@ -151,7 +151,7 @@ class SamplerQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` input_parameters.
             weight_params: The parameters of the circuit corresponding to the trainable weights. If
                 a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
-                weight_params value here is ignored. Instead the value is taken from the
+                `weight_params` value here is ignored. Instead the value is taken from the
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             sparse: Returns whether the output is sparse or not.
             interpret: A callable that maps the measured integer to another unsigned integer or
