@@ -128,7 +128,7 @@ class EstimatorQNN(NeuralNetwork):
             input_params: The parameters that correspond to the input data of the network.
                 If ``None``, the input data is not bound to any parameters.
                 If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
-                input_params value here is ignored. Instead the value is taken from the
+                `input_params` value here is ignored. Instead the value is taken from the
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` input_parameters.
             weight_params: The parameters that correspond to the trainable weights.
                 If ``None``, the weights are not bound to any parameters.
