@@ -32,7 +32,6 @@ translations_list = [
     ("it_IT", "Italian"),
     ("ja_JP", "Japanese"),
     ("ko_KR", "Korean"),
-    ("ml_IN", "Malayalam"),
     ("ru_RU", "Russian"),
     ("es_UN", "Spanish"),
     ("ta_IN", "Tamil"),
