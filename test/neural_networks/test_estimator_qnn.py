@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,9 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.quantum_info import SparsePauliOp
+from qiskit_machine_learning.circuit.library import QNNCircuit
 
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 
@@ -404,6 +406,46 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
             self.assertFalse(estimator_qnn.input_gradients)
             estimator_qnn.input_gradients = True
             self.assertTrue(estimator_qnn.input_gradients)
+
+    def test_qnn_qc_circui_construction(self):
+        """Test Estimator QNN properties and forward/backward pass for QNNCircuit construction"""
+        num_qubits = 2
+        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
+        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+
+        qnn_qc = QNNCircuit(num_qubits=num_qubits, feature_map=feature_map, ansatz=ansatz)
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(feature_map, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+        estimator_qc = EstimatorQNN(
+            circuit=qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            input_gradients=True,
+        )
+        estimator_qnn_qc = EstimatorQNN(circuit=qnn_qc, input_gradients=True)
+
+        input_data = [1, 2]
+        weights = [1, 2, 3, 4]
+
+        with self.subTest("Test if Estimator QNN properties are equal."):
+            self.assertEqual(estimator_qnn_qc.input_params, estimator_qc.input_params)
+            self.assertEqual(estimator_qnn_qc.weight_params, estimator_qc.weight_params)
+            self.assertEqual(estimator_qnn_qc.observables, estimator_qc.observables)
+
+        with self.subTest("Test if forward pass yields equal results."):
+            forward_qc = estimator_qc.forward(input_data=input_data, weights=weights)
+            forward_qnn_qc = estimator_qnn_qc.forward(input_data=input_data, weights=weights)
+            np.testing.assert_array_almost_equal(forward_qc, forward_qnn_qc)
+
+        with self.subTest("Test if backward pass yields equal results."):
+            backward_qc = estimator_qc.backward(input_data=input_data, weights=weights)
+            backward_qnn_qc = estimator_qnn_qc.backward(input_data=input_data, weights=weights)
+            # Test if input grad is identical
+            np.testing.assert_array_almost_equal(backward_qc[0], backward_qnn_qc[0])
+            # Test if weights grad is identical
+            np.testing.assert_array_almost_equal(backward_qc[1], backward_qnn_qc[1])
 
 
 if __name__ == "__main__":
