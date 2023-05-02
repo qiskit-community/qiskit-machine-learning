@@ -26,6 +26,7 @@ from qiskit.primitives import Sampler
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import algorithm_globals
 
+from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
 import qiskit_machine_learning.optionals as _optionals
 
@@ -342,3 +343,49 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
             sampler_qnn.input_gradients = True
             self._verify_qnn(sampler_qnn, 1, input_data=None, weights=None)
+
+    def test_qnn_qc_circui_construction(self):
+        """Test Sampler QNN properties and forward/backward pass for QNNCircuit construction"""
+        num_qubits = 2
+        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
+        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+
+        def parity(x):
+            return f"{bin(x)}".count("1") % 2
+
+        qnn_qc = QNNCircuit(num_qubits=num_qubits, feature_map=feature_map, ansatz=ansatz)
+        qc = QuantumCircuit(num_qubits)
+        qc.compose(feature_map, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+        sampler_qc = SamplerQNN(
+            circuit=qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            interpret=parity,
+            output_shape=2,
+            input_gradients=True,
+        )
+        sampler_qnn_qc = SamplerQNN(
+            circuit=qnn_qc, interpret=parity, output_shape=2, input_gradients=True
+        )
+
+        input_data = [1, 2]
+        weights = [1, 2, 3, 4]
+
+        with self.subTest("Test circuit properties."):
+            self.assertEqual(sampler_qnn_qc.input_params, sampler_qc.input_params)
+            self.assertEqual(sampler_qnn_qc.weight_params, sampler_qc.weight_params)
+
+        with self.subTest("Test forward pass."):
+            forward_qc = sampler_qc.forward(input_data=input_data, weights=weights)
+            forward_qnn_qc = sampler_qnn_qc.forward(input_data=input_data, weights=weights)
+            np.testing.assert_array_almost_equal(forward_qc, forward_qnn_qc)
+
+        with self.subTest("Test backward pass."):
+            backward_qc = sampler_qc.backward(input_data=input_data, weights=weights)
+            backward_qnn_qc = sampler_qnn_qc.backward(input_data=input_data, weights=weights)
+            # Test if input grad is identical
+            np.testing.assert_array_almost_equal(backward_qc[0], backward_qnn_qc[0])
+            # Test if weights grad is identical
+            np.testing.assert_array_almost_equal(backward_qc[1], backward_qnn_qc[1])
