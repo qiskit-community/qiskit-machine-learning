@@ -69,8 +69,9 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         # pylint: disable=invalid-name
         lb, ub = -np.pi, np.pi
-        self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
-        self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
+        rng = np.random.default_rng(101)
+        self.X = (ub - lb) * rng.random((num_samples, 1)) + lb
+        self.y = np.sin(self.X[:, 0]) + eps * (2 * rng.random(num_samples) - 1)
 
     def tearDown(self) -> None:
         super().tearDown()
