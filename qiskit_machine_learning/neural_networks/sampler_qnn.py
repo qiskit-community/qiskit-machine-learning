@@ -26,6 +26,7 @@ from qiskit.algorithms.gradients import (
 )
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 import qiskit_machine_learning.optionals as _optionals
 
@@ -55,6 +56,11 @@ class SamplerQNN(NeuralNetwork):
     estimated by the :class:`~qiskit.primitives.Sampler` primitive into predicted classes. Quite
     often, a combined quantum circuit is used. Such a circuit is built from two circuits:
     a feature map, it provides input parameters for the network, and an ansatz (weight parameters).
+    In this case a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` can be passed as
+    circuit to simplify the composition of a feature map and ansatz.
+    If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
+    input and weight parameters do not have to be provided, because these two properties are taken
+    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
 
     The output can be set up in different formats, and an optional post-processing step
     can be used to interpret the sampler's output in a particular context (e.g. mapping the
@@ -67,21 +73,35 @@ class SamplerQNN(NeuralNetwork):
 
         from qiskit import QuantumCircuit
         from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+        from qiskit_machine_learning.circuit.library import QNNCircuit
 
         from qiskit_machine_learning.neural_networks import SamplerQNN
 
         num_qubits = 2
+
+        def parity(x):
+            return f"{bin(x)}".count("1") % 2
+
+        # Using the QNNCircuit:
+        # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
+        # and RealAmplitudes ansatz.
+        qnn_qc = QNNCircuit(num_qubits)
+
+        qnn = SamplerQNN(
+            circuit=qnn_qc,
+            interpret=parity,
+            output_shape=2
+        )
+
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
+
+        # Explicitly specifying the ansatz and feature map:
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+        ansatz = RealAmplitudes(num_qubits=num_qubits)
 
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
-
-
-        def parity(x):
-            return "{:b}".format(x).count("1") % 2
-
 
         qnn = SamplerQNN(
             circuit=qc,
@@ -91,7 +111,7 @@ class SamplerQNN(NeuralNetwork):
             output_shape=2
         )
 
-        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4])
+        qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
     The following attributes can be set via the constructor but can also be read and
     updated once the SamplerQNN object has been constructed.
@@ -121,8 +141,18 @@ class SamplerQNN(NeuralNetwork):
                 If ``None`` is given, a default instance of the reference sampler defined
                 by :class:`~qiskit.primitives.Sampler` will be used.
             circuit: The parametrized quantum circuit that generates the samples of this network.
-            input_params: The parameters of the circuit corresponding to the input.
-            weight_params: The parameters of the circuit corresponding to the trainable weights.
+                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
+                `input_params` and `weight_params` do not have to be provided, because these two
+                properties are taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+            input_params: The parameters of the circuit corresponding to the input. If a
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
+                `input_params` value here is ignored. Instead the value is taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` input_parameters.
+            weight_params: The parameters of the circuit corresponding to the trainable weights. If
+                a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
+                `weight_params` value here is ignored. Instead the value is taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             sparse: Returns whether the output is sparse or not.
             interpret: A callable that maps the measured integer to another unsigned integer or
                 tuple of unsigned integers. These are used as new indices for the (potentially
@@ -130,7 +160,7 @@ class SamplerQNN(NeuralNetwork):
                 passed, then an identity function will be used by this neural network.
             output_shape: The output shape of the custom interpretation. It is ignored if no custom
                 interpret method is provided where the shape is taken to be
-                ``2^circuit.num_qubits``..
+                ``2^circuit.num_qubits``.
             gradient: An optional sampler gradient to be used for the backward pass.
                 If ``None`` is given, a default instance of
                 :class:`~qiskit.algorithms.gradients.ParamShiftSamplerGradient` will be used.
@@ -155,13 +185,12 @@ class SamplerQNN(NeuralNetwork):
         if len(self._circuit.clbits) == 0:
             self._circuit.measure_all()
 
-        if input_params is None:
-            input_params = []
-        self._input_params = list(input_params)
-
-        if weight_params is None:
-            weight_params = []
-        self._weight_params = list(weight_params)
+        if isinstance(circuit, QNNCircuit):
+            self._input_params = list(circuit.input_parameters)
+            self._weight_params = list(circuit.weight_parameters)
+        else:
+            self._input_params = list(input_params) if input_params is not None else []
+            self._weight_params = list(weight_params) if weight_params is not None else []
 
         if sparse:
             _optionals.HAS_SPARSE.require_now("DOK")
