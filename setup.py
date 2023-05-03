@@ -70,8 +70,8 @@ setuptools.setup(
     include_package_data=True,
     python_requires=">=3.7",
     extras_require={
-        'torch': ["torch; python_version < '3.10'"],
-        'sparse': ["sparse;python_version < '3.11'"],
+        'torch': ["torch"],
+        'sparse': ["sparse"],
     },
     zip_safe=False
 )
