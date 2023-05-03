@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -29,15 +29,12 @@ translations_list = [
     ("bn_BN", "Bengali"),
     ("fr_FR", "French"),
     ("hi_IN", "Hindi"),
-    ("it_IT", "Italian"),
     ("ja_JP", "Japanese"),
     ("ko_KR", "Korean"),
-    ("ml_IN", "Malayalam"),
     ("ru_RU", "Russian"),
     ("es_UN", "Spanish"),
     ("ta_IN", "Tamil"),
     ("tr_TR", "Turkish"),
-    ("vi_VN", "Vietnamese"),
 ]
 
 default_language = "en"

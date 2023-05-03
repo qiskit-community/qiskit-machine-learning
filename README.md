@@ -12,22 +12,22 @@ Qiskit Machine Learning provides the
 [FidelityQuantumKernel](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel)
 class that makes use of the [Fidelity](https://qiskit.org/documentation/stubs/qiskit.algorithms.state_fidelities.BaseStateFidelity.html) algorithm introduced in Qiskit and can be easily used to directly compute
 kernel matrices for given datasets or can be passed to a Quantum Support Vector Classifier 
-[QSVC](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC) or
+[QSVC](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC) or
 Quantum Support Vector Regressor
-[QSVR](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR)
+[QSVR](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR)
 to quickly start solving classification or regression problems.
 It also can be used with many other existing kernel-based machine learning algorithms from established
 classical frameworks.
 
 Qiskit Machine Learning defines a generic interface for neural networks that is implemented by different
 quantum neural networks. Two core implementations are readily provided, such as the
-[EstimatorQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html),
-and the [SamplerQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html).
-The [EstimatorQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html)
+[EstimatorQNN](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html),
+and the [SamplerQNN](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html).
+The [EstimatorQNN](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html)
 leverages the [Estimator](https://qiskit.org/documentation/stubs/qiskit.primitives.BaseEstimator.html) primitive from Qiskit and 
 allows users to combine parametrized quantum circuits with quantum mechanical observables. The circuits can be constructed using, for example, building blocks
 from Qiskit’s circuit library, and the QNN’s output is given by the expected value of the observable.
-The [SamplerQNN](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html)
+The [SamplerQNN](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html)
 leverages another primitive introduced in Qiskit, the [Sampler](https://qiskit.org/documentation/stubs/qiskit.primitives.BaseSampler.html) primitive. 
 This neural network translates quasi-probabilities of bitstrings estimated by the primitive into a desired output. This 
 translation step can be used to interpret a given bitstring in a particular context, e.g. translating it into a set of classes.
@@ -35,18 +35,18 @@ translation step can be used to interpret a given bitstring in a particular cont
 The neural networks include the functionality to evaluate them for a given input as well as to compute the
 corresponding gradients, which is important for efficient training. To train and use neural networks,
 Qiskit Machine Learning provides a variety of learning algorithms such as the
-[NeuralNetworkClassifier](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier)
+[NeuralNetworkClassifier](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier)
 and
-[NeuralNetworkRegressor](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor).
+[NeuralNetworkRegressor](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor).
 Both take a QNN as input and then use it in a classification or regression context.
 To allow an easy start, two convenience implementations are provided - the Variational Quantum Classifier
-[VQC](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC)
+[VQC](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC)
 as well as the Variational Quantum Regressor
-[VQR](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR).
+[VQR](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR).
 Both take just a feature map and an ansatz and construct the underlying QNN automatically.
 
 In addition to the models provided directly in Qiskit Machine Learning, it has the
-[TorchConnector](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector),
+[TorchConnector](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector),
 which allows users to integrate all of our quantum neural networks directly into the
 [PyTorch](https://pytorch.org)
 open source machine learning library. Thanks to Qiskit’s gradient algorithms, this includes automatic
@@ -69,7 +69,7 @@ pip install qiskit-machine-learning
 If you want to work on the very latest work-in-progress versions, either to try features ahead of
 their official release or if you want to contribute to Machine Learning, then you can install from source.
 To do this follow the instructions in the
- [documentation](https://qiskit.org/documentation/machine-learning/getting_started.html#installation).
+ [documentation](https://qiskit.org/ecosystem/machine-learning/getting_started.html#installation).
 
 
 ----------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ print(f"Testing accuracy: {score:0.2f}")
 ### Further examples
 
 Learning path notebooks may be found in the
-[Machine Learning tutorials](https://qiskit.org/documentation/machine-learning/tutorials/index.html) section
+[Machine Learning tutorials](https://qiskit.org/ecosystem/machine-learning/tutorials/index.html) section
 of the documentation and are a great place to start. 
 
 Another good place to learn the fundamentals of quantum machine learning is the
@@ -164,10 +164,6 @@ Machine Learning continues to grow with the help and work of
 to the project at different levels.
 If you use Qiskit, please cite as per the provided
 [BibTeX file](https://github.com/Qiskit/qiskit/blob/master/Qiskit.bib).
-
-Please note that if you do not like the way your name is cited in the BibTex file then consult
-the information found in the [.mailmap](https://github.com/Qiskit/qiskit-machine-learning/blob/main/.mailmap)
-file.
 
 ## License
 
