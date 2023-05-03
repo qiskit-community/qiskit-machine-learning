@@ -1,4 +1,4 @@
 ---
-upgrade:
+fixes:
   - |
-    Added support for running with Python 3.11.
+    Compatibility fix to support Python 3.11.
