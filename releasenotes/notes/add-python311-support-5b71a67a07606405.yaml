@@ -2,4 +2,3 @@
 upgrade:
   - |
     Added support for running with Python 3.11.
-    At the the time of the release, Sparse didn't have a python 3.11 version.
