@@ -60,13 +60,13 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         self.sampler = Sampler()
         self.fidelity = ComputeUncompute(self.sampler)
 
-        self.properties = dict(
-            samples_1=self.sample_train[0],
-            samples_4=self.sample_train,
-            samples_test=self.sample_test,
-            z_fm=self.feature_map,
-            no_fm=None,
-        )
+        self.properties = {
+            "samples_1": self.sample_train[0],
+            "samples_4": self.sample_train,
+            "samples_test": self.sample_test,
+            "z_fm": self.feature_map,
+            "no_fm": None,
+        }
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""

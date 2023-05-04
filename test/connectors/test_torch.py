@@ -13,6 +13,7 @@
 """Test Torch Base."""
 
 import unittest
+import builtins
 import warnings
 from abc import ABC, abstractmethod
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
@@ -62,44 +63,44 @@ class TestTorch(ABC):
     def subTest(self, msg, **kwargs):
         # pylint: disable=invalid-name
         """Sub test."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def assertAlmostEqual(self, first, second, places=None, msg=None, delta=None):
         """Assert almost equal."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def assertEqual(self, first, second, msg=None):
         """Assert equal."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def assertTrue(self, expr, msg=None):
         """Assert true."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def assertFalse(self, expr, msg=None):
         """assert False"""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def skipTest(self, reason):  # pylint: disable=invalid-name
         """Skip test."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def assertLogs(self, logger=None, level=None):
         """Assert logs."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def assertListEqual(self, list1, list2, msg=None):
         """Assert list equal."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")
 
     @abstractmethod
     def assertRaises(self, expected_exception):
         """Assert raises an exception."""
-        raise Exception("Abstract method")
+        raise builtins.Exception("Abstract method")

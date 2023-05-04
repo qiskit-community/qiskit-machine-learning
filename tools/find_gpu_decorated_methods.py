@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,6 +14,7 @@
 """Utility script to find gpu decorated test methods"""
 
 import os
+import builtins
 import unittest
 import sys
 import argparse
@@ -42,7 +43,7 @@ def _find_methods(suite):
                 cls_str = f"{obj.__module__}.{obj.__class__.__name__}"
                 methods.append(f"{_TEST}.{cls_str}.{test_method.__name__}")
         else:
-            raise Exception(f"Unexpected class {type(obj)}")
+            raise builtins.Exception(f"Unexpected class {type(obj)}")
     return methods
 
 
@@ -51,7 +52,7 @@ def _save_methods_to_file(path):
     suite = unittest.TestLoader().discover(_TEST, pattern="test*.py", top_level_dir=_TEST)
     methods = _find_methods(suite)
     if len(methods) == 0:
-        raise Exception("No GPU decorated test methods found.")
+        raise builtins.Exception("No GPU decorated test methods found.")
     with open(path, "w", encoding="utf8") as textfile:
         textfile.write("\n".join(methods))
 

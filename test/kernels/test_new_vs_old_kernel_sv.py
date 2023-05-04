@@ -41,13 +41,13 @@ class TestNewVsOldFidelityStatevectorKernel(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(BasicAer.get_backend("statevector_simulator"))
-        self.properties = dict(
-            z1=ZFeatureMap(1),
-            z2=ZFeatureMap(2),
-            zz2=ZZFeatureMap(2),
-            z4=ZFeatureMap(4),
-            zz4=ZZFeatureMap(4),
-        )
+        self.properties = {
+            "z1": ZFeatureMap(1),
+            "z2": ZFeatureMap(2),
+            "zz2": ZZFeatureMap(2),
+            "z4": ZFeatureMap(4),
+            "zz4": ZZFeatureMap(4),
+        }
 
     def tearDown(self) -> None:
         super().tearDown()

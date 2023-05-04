@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -64,13 +64,13 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         self.sampler = Sampler()
         self.fidelity = ComputeUncompute(self.sampler)
 
-        self.properties = dict(
-            samples_1=self.sample_train[0],
-            samples_4=self.sample_train,
-            samples_test=self.sample_test,
-            z_fm=self.feature_map,
-            no_fm=None,
-        )
+        self.properties = {
+            "samples_1": self.sample_train[0],
+            "samples_4": self.sample_train,
+            "samples_test": self.sample_test,
+            "z_fm": self.feature_map,
+            "no_fm": None,
+        }
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""
