@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -60,8 +60,11 @@ class TestTorchNetworks(TestTorch):
         return Net()
 
     def _create_circuit_qnn(self) -> CircuitQNN:
-        output_shape, interpret = 2, lambda x: f"{x:b}".count("1") % 2
+        output_shape = 2
         num_inputs = 2
+
+        def interpret(x):
+            return f"{x:b}".count("1") % 2
 
         feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, entanglement="linear", reps=1)
@@ -111,8 +114,11 @@ class TestTorchNetworks(TestTorch):
         return qnn
 
     def _create_sampler_qnn(self) -> SamplerQNN:
-        output_shape, interpret = 2, lambda x: f"{x:b}".count("1") % 2
+        output_shape = 2
         num_inputs = 2
+
+        def interpret(x):
+            return f"{x:b}".count("1") % 2
 
         feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, entanglement="linear", reps=1)

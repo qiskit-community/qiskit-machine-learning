@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,6 +13,7 @@
 """ Fix copyright year in header """
 
 from typing import Tuple, Union, List
+import builtins
 import sys
 import os
 import datetime
@@ -75,7 +76,7 @@ class CopyrightChecker:
     def _get_changed_files(self) -> List[str]:
         out_str, err_str = self._cmd_execute(["git", "diff", "--name-only", "HEAD"])
         if err_str:
-            raise Exception(err_str)
+            raise builtins.Exception(err_str)
 
         return out_str.splitlines()
 
@@ -89,7 +90,7 @@ class CopyrightChecker:
             last_year = CopyrightChecker._get_year_from_date(out_str)
             if err_str:
                 errors.append(err_str)
-        except Exception as ex:  # pylint: disable=broad-except
+        except builtins.Exception as ex:  # pylint: disable=broad-except
             errors.append(f"'{relative_path}' Last year: {str(ex)}")
 
         if errors:
