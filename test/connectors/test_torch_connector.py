@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test Torch Connector."""
+import builtins
 import itertools
 import sys
 from typing import List, cast
@@ -83,7 +84,7 @@ class TestTorchConnector(TestTorch):
             c_worked = True
             try:
                 c_shape = linear(x).shape
-            except Exception:  # pylint: disable=broad-except
+            except builtins.Exception:  # pylint: disable=broad-except
                 c_worked = False
 
             # test quantum model and track whether it failed or store the output shape
@@ -96,7 +97,7 @@ class TestTorchConnector(TestTorch):
                 self.assertEqual(output.is_sparse, model_sparse)
 
                 q_shape = output.shape
-            except Exception:  # pylint: disable=broad-except
+            except builtins.Exception:  # pylint: disable=broad-except
                 q_worked = False
 
             # compare results and assert that the behavior is equal
