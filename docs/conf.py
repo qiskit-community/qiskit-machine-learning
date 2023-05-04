@@ -101,6 +101,7 @@ extensions = [
     "sphinx.ext.doctest",
     "nbsphinx",
     "sphinx.ext.intersphinx",
+    "sphinxcontrib.jquery",  # Remove when changing html_theme to qiskit_ecosystem.
 ]
 html_static_path = ["_static"]
 templates_path = ["_templates"]
