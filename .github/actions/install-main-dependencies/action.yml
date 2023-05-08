@@ -19,13 +19,15 @@ inputs:
   python-version:
     description: 'Python version'
     required: true
+  terra-main:
+    description: 'Use Terra main'
+    required: true
 runs:
   using: "composite"
   steps:
     - name: Get main last commit ids
       run: |
         echo "TERRA_HASH=$(git ls-remote --heads https://github.com/Qiskit/qiskit-terra.git refs/heads/main  | awk '{print $1}')" >> $GITHUB_ENV
-        echo "AER_HASH=$(git ls-remote --heads https://github.com/Qiskit/qiskit-aer.git refs/heads/main  | awk '{print $1}')" >> $GITHUB_ENV
       shell: bash
     - name: Terra Cache
       env:
@@ -35,104 +37,47 @@ runs:
       with:
         path: terra-cache
         key: terra-cache-${{ inputs.os }}-${{ inputs.python-version }}-${{ env.TERRA_HASH }}-${{ env.CACHE_VERSION }}
-    - name: Aer Cache
-      env:
-        CACHE_VERSION: v1
-      id: aer-cache
-      uses: actions/cache@v3
-      with:
-        path: aer-cache
-        key: aer-cache-${{ inputs.os }}-${{ inputs.python-version }}-${{ env.AER_HASH }}-${{ env.CACHE_VERSION }}
     - name: Install Terra from Main
       env:
         MACOSX_DEPLOYMENT_TARGET: 10.15
       run: |
-        echo 'Install Terra from Main'
-        BASE_DIR=terra-cache
-        build_from_main=true
-        cache_hit=${{ steps.terra-cache.outputs.cache-hit }}
-        echo "cache hit: ${cache_hit}"
-        if [ "$cache_hit" == "true" ]; then
-          pip_result=0
-          pushd "${BASE_DIR}"
-          python -m pip install *.whl && pip_result=$? || pip_result=$?
-          popd
-          if [ $pip_result == 0 ]; then
-            build_from_main=false
+        if [ "${{ inputs.terra-main }}" == "true" ]; then
+          echo 'Install Terra from Main'
+          BASE_DIR=terra-cache
+          build_from_main=true
+          cache_hit=${{ steps.terra-cache.outputs.cache-hit }}
+          echo "cache hit: ${cache_hit}"
+          if [ "$cache_hit" == "true" ]; then
+            pip_result=0
+            pushd "${BASE_DIR}"
+            python -m pip install *.whl && pip_result=$? || pip_result=$?
+            popd
+            if [ $pip_result == 0 ]; then
+              build_from_main=false
+            fi
+          else
+            mkdir -p ${BASE_DIR}
+          fi
+          if [ "$build_from_main" == "true" ]; then
+            echo 'Create wheel file from main'
+            pip install -U wheel setuptools_rust
+            git clone --depth 1 --branch main https://github.com/Qiskit/qiskit-terra.git /tmp/qiskit-terra
+            pushd /tmp/qiskit-terra
+            python setup.py bdist_wheel
+            popd
+            cp -rf /tmp/qiskit-terra/dist/*.whl "${BASE_DIR}"
+            pushd "${BASE_DIR}"
+            python -m pip install *.whl
+            popd
+            pip uninstall -y setuptools_rust
           fi
         else
-          mkdir -p ${BASE_DIR}
-        fi
-        if [ "$build_from_main" == "true" ]; then
-          echo 'Create wheel file from main'
-          pip install -U wheel setuptools_rust
-          git clone --depth 1 --branch main https://github.com/Qiskit/qiskit-terra.git /tmp/qiskit-terra
-          pushd /tmp/qiskit-terra
-          python setup.py bdist_wheel
-          popd
-          cp -rf /tmp/qiskit-terra/dist/*.whl "${BASE_DIR}"
-          pushd "${BASE_DIR}"
-          python -m pip install *.whl
-          popd
-          pip uninstall -y setuptools_rust
+          echo 'Install Terra from Stable'
+          pip install -U qiskit-terra
         fi
       shell: bash
-    - name: Install Aer from Main
-      env:
-        MACOSX_DEPLOYMENT_TARGET: 10.16
+    - name: Install stable Aer
       run: |
-        echo 'Install Aer from Main'
-        if [ "${{ inputs.os }}" == "ubuntu-latest" ]; then
-          export DISABLE_CONAN=1
-          sudo apt-get -y install nlohmann-json3-dev
-          sudo apt-get -y install libspdlog-dev
-          sudo apt-get -y install libmuparserx-dev
-        fi
-        git clone --depth 1 --branch main https://github.com/Qiskit/qiskit-aer.git /tmp/qiskit-aer
-        BASE_DIR=aer-cache
-        build_from_main=true
-        cache_hit=${{ steps.aer-cache.outputs.cache-hit }}
-        echo "cache hit: ${cache_hit}"
-        if [ "$cache_hit" == "true" ]; then
-          pip_result=0
-          pushd "${BASE_DIR}"
-          python -m pip install *.whl && pip_result=$? || pip_result=$?
-          popd
-          if [ $pip_result == 0 ]; then
-            echo 'Verifying cached Aer with tools/verify_wheels.py ...'
-            verify_result=0
-            pushd /tmp/qiskit-aer
-            python tools/verify_wheels.py && verify_result=$? || verify_result=$?
-            popd
-            if [ $verify_result == 0 ]; then
-              echo 'Cached Aer passed verification.'
-              build_from_main=false
-            else
-              echo 'Cached Aer failed verification.'
-              pip uninstall -y qiskit-aer
-            fi
-          fi
-        else
-          mkdir -p ${BASE_DIR}
-        fi
-        if [ "$build_from_main" == "true" ]; then
-          echo 'Create wheel file from main'
-          pip install -U wheel
-          pushd /tmp/qiskit-aer
-          pip install -U -c constraints.txt -r requirements-dev.txt
-          pip install pybind11
-          if [ "${{ inputs.os }}" == "windows-2019" ]; then
-            python setup.py bdist_wheel -- -G 'Visual Studio 16 2019'
-          elif  [ "${{ inputs.os }}" == "macos-latest" ]; then
-            pip install -U -c constraints.txt -r requirements-dev.txt
-            python setup.py bdist_wheel --plat-name macosx-10.16-x86_64
-          else
-            python setup.py bdist_wheel
-          fi
-          popd
-          cp -rf /tmp/qiskit-aer/dist/*.whl "${BASE_DIR}"
-          pushd "${BASE_DIR}"
-          python -m pip install *.whl
-          popd
-        fi
+        echo 'Install stable Aer'
+        pip install -U qiskit-aer
       shell: bash
