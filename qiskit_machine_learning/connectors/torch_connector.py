@@ -279,7 +279,7 @@ class TorchConnector(Module):
 
         Raises:
             QiskitMachineLearningError: If the connector is configured as sparse and the underlying
-                network is not sparse. Or if python version is 3.7.
+                network is not sparse.
         """
         super().__init__()
         self._neural_network = neural_network

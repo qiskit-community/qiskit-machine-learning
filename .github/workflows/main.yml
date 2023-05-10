@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.8]
     steps:
       - name: Print Concurrency Group
         env:
@@ -112,7 +112,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7, 3.8, 3.9, '3.10', 3.11]
+        python-version: [3.8, 3.9, '3.10', 3.11]
         include:
           - os: macos-latest
             python-version: 3.8
@@ -159,7 +159,7 @@ jobs:
         run: |
           coverage3 combine
           mv .coverage ./ci-artifact-data/ml.dat
-        if: ${{ matrix.python-version == 3.7 }}
+        if: ${{ matrix.python-version == 3.8 }}
         shell: bash
       - uses: actions/upload-artifact@v3
         with:
@@ -257,16 +257,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/download-artifact@v3
-        with:
-          name: ubuntu-latest-3.7
-          path: /tmp/u37
       - uses: actions/download-artifact@v3
         with:
           name: ubuntu-latest-3.8
@@ -304,10 +300,10 @@ jobs:
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/u37/ml.dep /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/m38/ml.dep /tmp/m311/ml.dep /tmp/w38/ml.dep /tmp/w311/ml.dep || true
+          sort -f -u /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/m38/ml.dep /tmp/m311/ml.dep /tmp/w38/ml.dep /tmp/w311/ml.dep || true
         shell: bash
       - name: Coverage combine
-        run: coverage3 combine /tmp/u37/ml.dat
+        run: coverage3 combine /tmp/u38/ml.dat
         shell: bash
       - name: Upload to Coveralls
         env:

@@ -33,7 +33,7 @@ runs:
         if [ "${{ inputs.event-name }}" == "schedule" ] || [ "${{ inputs.run-slow }}" == "true" ]; then
           export QISKIT_TESTS="run_slow"
         fi
-        if [ "${{ inputs.python-version }}" == "3.7" ]; then
+        if [ "${{ inputs.python-version }}" == "3.8" ]; then
           export PYTHON="coverage3 run --source qiskit_machine_learning --parallel-mode"
         fi
         stestr --test-path test run 2> >(tee /dev/stderr out.txt > /dev/null)
