@@ -232,6 +232,15 @@ class QNNCircuit(BlueprintCircuit):
         return self._feature_map.parameters
 
     @property
+    def num_input_parameters(self) -> int:
+        """Returns the number of input parameters in the circuit.
+
+        Returns:
+            The number of input parameters.
+        """
+        return len(self._feature_map.parameters)
+
+    @property
     def weight_parameters(self) -> ParameterView:
         """Returns the parameters of the ansatz. These corresponding to the trainable weights.
 
@@ -239,3 +248,12 @@ class QNNCircuit(BlueprintCircuit):
             The parameters of the ansatz.
         """
         return self._ansatz.parameters
+
+    @property
+    def num_weight_parameters(self) -> int:
+        """Returns the number of weights in the circuit.
+
+        Returns:
+            The number of weights.
+        """
+        return len(self._ansatz.parameters)
