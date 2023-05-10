@@ -36,6 +36,8 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.feature_map.num_qubits, 2)
             self.assertEqual(type(circuit.ansatz), RealAmplitudes)
             self.assertEqual(circuit.ansatz.num_qubits, 2)
+            self.assertEqual(circuit.num_input_parameters, 2)
+            self.assertEqual(circuit.num_weight_parameters, 8)
 
     def test_construction_fails(self):
         """Test the faulty construction"""
@@ -64,6 +66,8 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.feature_map.num_qubits, 1)
             self.assertEqual(type(circuit.ansatz), RealAmplitudes)
             self.assertEqual(circuit.ansatz.num_qubits, 1)
+            self.assertEqual(circuit.num_input_parameters, 1)
+            self.assertEqual(circuit.num_weight_parameters, 4)
 
     def test_feature_map_construction(self):
         """Test building the ``QNNCircuit`` with a feature map"""
@@ -115,6 +119,8 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_qubits, 4)
             self.assertEqual(circuit.feature_map.num_qubits, 4)
             self.assertEqual(circuit.ansatz.num_qubits, 4)
+            self.assertEqual(circuit.num_input_parameters, 4)
+            self.assertEqual(circuit.num_weight_parameters, 16)
 
     def test_ansatz_setter(self):
         """Test the properties after the ansatz is updated."""
@@ -127,6 +133,8 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_qubits, 3)
             self.assertEqual(circuit.feature_map.num_qubits, 3)
             self.assertEqual(circuit.ansatz.num_qubits, 3)
+            self.assertEqual(circuit.num_input_parameters, 3)
+            self.assertEqual(circuit.num_weight_parameters, 24)
         with self.subTest("check updated ansatz"):
             self.assertEqual(type(circuit.feature_map), PauliFeatureMap)
             self.assertEqual(type(circuit.ansatz), EfficientSU2)
@@ -144,6 +152,8 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_qubits, 1)
             self.assertEqual(circuit.feature_map.num_qubits, 1)
             self.assertEqual(circuit.ansatz.num_qubits, 1)
+            self.assertEqual(circuit.num_input_parameters, 1)
+            self.assertEqual(circuit.num_weight_parameters, 4)
         with self.subTest("check updated ansatz"):
             self.assertEqual(type(circuit.feature_map), ZFeatureMap)
 
