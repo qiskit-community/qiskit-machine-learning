@@ -274,8 +274,7 @@ class TorchConnector(Module):
             sparse: Whether this connector should return sparse output or not. If sparse is set
                 to None, then the setting from the given neural network is used. Note that sparse
                 output is only returned if the underlying neural network also returns sparse output,
-                otherwise an error will be raised. Sparse support works on python
-                3.8 or higher.
+                otherwise an error will be raised.
 
         Raises:
             QiskitMachineLearningError: If the connector is configured as sparse and the underlying
@@ -285,8 +284,6 @@ class TorchConnector(Module):
         self._neural_network = neural_network
         if sparse is None:
             sparse = self._neural_network.sparse
-        if sparse and sys.version_info < (3, 8):
-            raise QiskitMachineLearningError("Sparse is supported on python 3.8+")
 
         self._sparse = sparse
 

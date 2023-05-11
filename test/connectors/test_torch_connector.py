@@ -734,23 +734,19 @@ class TestTorchConnector(TestTorch):
             input_gradients=True,
         )
 
-        if sparse_connector and sys.version_info < (3, 8):
-            with self.assertRaises(QiskitMachineLearningError):
-                _ = TorchConnector(qnn, sparse=sparse_connector)
-        else:
-            try:
-                model = TorchConnector(qnn, sparse=sparse_connector)
-            except QiskitMachineLearningError as qml_ex:
-                if sparse_connector and not sparse_qnn:
-                    self.skipTest("Skipping test when connector is sparse and qnn is not sparse")
-                else:
-                    raise QiskitMachineLearningError(
-                        "Unexpected exception during initialization"
-                    ) from qml_ex
+        try:
+            model = TorchConnector(qnn, sparse=sparse_connector)
+        except QiskitMachineLearningError as qml_ex:
+            if sparse_connector and not sparse_qnn:
+                self.skipTest("Skipping test when connector is sparse and qnn is not sparse")
+            else:
+                raise QiskitMachineLearningError(
+                    "Unexpected exception during initialization"
+                ) from qml_ex
 
-            self._validate_forward(model)
-            self._validate_backward(model)
-            self._validate_backward_automatically(model)
+        self._validate_forward(model)
+        self._validate_backward(model)
+        self._validate_backward_automatically(model)
 
     @data(
         (1, None),
