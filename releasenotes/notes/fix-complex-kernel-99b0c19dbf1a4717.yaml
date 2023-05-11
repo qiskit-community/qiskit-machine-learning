@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixes a bug in :class:`~qiskit_machine_learning.kernels.FidelityStatevectorKernel` where kernel
+    entries could potentially have nonzero complex components due to truncation and rounding
+    errors when enforcing a PSD matrix.

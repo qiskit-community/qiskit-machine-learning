@@ -60,13 +60,13 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         self.sampler = Sampler()
         self.fidelity = ComputeUncompute(self.sampler)
 
-        self.properties = dict(
-            samples_1=self.sample_train[0],
-            samples_4=self.sample_train,
-            samples_test=self.sample_test,
-            z_fm=self.feature_map,
-            no_fm=None,
-        )
+        self.properties = {
+            "samples_1": self.sample_train[0],
+            "samples_4": self.sample_train,
+            "samples_test": self.sample_test,
+            "z_fm": self.feature_map,
+            "no_fm": None,
+        }
 
     def test_svc_callable(self):
         """Test callable kernel in sklearn."""
@@ -116,20 +116,20 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         """Test enforce_psd"""
 
         with self.subTest("No PSD enforcement"):
-            kernel = FidelityStatevectorKernel(enforce_psd=False)
-            kernel._compute_kernel_entry = lambda *args, **kwargs: -1
+            kernel = FidelityStatevectorKernel(enforce_psd=False, shots=1)
+            kernel._add_shot_noise = lambda *args, **kwargs: -1
             matrix = kernel.evaluate(self.sample_train)
-            eigen_values = np.linalg.eigvals(matrix)
+            w = np.linalg.eigvals(matrix)
             # there's a negative eigenvalue
-            self.assertFalse(np.all(np.greater_equal(eigen_values, -1e-10)))
+            self.assertFalse(np.all(np.greater_equal(w, -1e-10)))
 
         with self.subTest("PSD enforced"):
-            kernel = FidelityStatevectorKernel(enforce_psd=True)
-            kernel._compute_kernel_element = lambda *args, **kwargs: -1
+            kernel = FidelityStatevectorKernel(enforce_psd=True, shots=1)
+            kernel._add_shot_noise = lambda *args, **kwargs: -1
             matrix = kernel.evaluate(self.sample_train)
-            eigen_values = np.linalg.eigvals(matrix)
+            w = np.linalg.eigvals(matrix)
             # all eigenvalues are non-negative with some tolerance
-            self.assertTrue(np.all(np.greater_equal(eigen_values, -1e-10)))
+            self.assertTrue(np.all(np.greater_equal(w, -1e-10)))
 
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def test_aer_statevector(self):

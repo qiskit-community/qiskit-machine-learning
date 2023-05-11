@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Compatibility fix to support Python 3.11.

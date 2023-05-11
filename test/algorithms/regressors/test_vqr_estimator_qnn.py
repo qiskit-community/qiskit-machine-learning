@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -43,8 +43,9 @@ class TestVQR(QiskitMachineLearningTestCase):
 
         # pylint: disable=invalid-name
         lb, ub = -np.pi, np.pi
-        self.X = (ub - lb) * np.random.rand(num_samples, 1) + lb
-        self.y = np.sin(self.X[:, 0]) + eps * (2 * np.random.rand(num_samples) - 1)
+        rng = np.random.default_rng(101)
+        self.X = (ub - lb) * rng.random((num_samples, 1)) + lb
+        self.y = np.sin(self.X[:, 0]) + eps * (2 * rng.random(num_samples) - 1)
 
     @data(
         # optimizer, has ansatz

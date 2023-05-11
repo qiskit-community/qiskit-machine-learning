@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -42,13 +42,13 @@ class TestNewVsOldQuantumKernel(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(BasicAer.get_backend("statevector_simulator"))
-        self.properties = dict(
-            z1=ZFeatureMap(1),
-            z2=ZFeatureMap(2),
-            zz2=ZZFeatureMap(2),
-            z4=ZFeatureMap(4),
-            zz4=ZZFeatureMap(4),
-        )
+        self.properties = {
+            "z1": ZFeatureMap(1),
+            "z2": ZFeatureMap(2),
+            "zz2": ZZFeatureMap(2),
+            "z4": ZFeatureMap(4),
+            "zz4": ZZFeatureMap(4),
+        }
 
     def tearDown(self) -> None:
         super().tearDown()

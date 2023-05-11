@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2022.
+# (C) Copyright IBM 2018, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,16 +13,15 @@
 """
 ad hoc dataset
 """
+from __future__ import annotations
 
-from typing import Union, Tuple
 import itertools as it
 from functools import reduce
+from typing import Tuple, Dict, List
+
 import numpy as np
 from qiskit.utils import algorithm_globals, optionals
-
-from qiskit_machine_learning.datasets.dataset_helper import (
-    features_and_labels_transform,
-)
+from sklearn import preprocessing
 
 
 def ad_hoc_data(
@@ -33,9 +32,8 @@ def ad_hoc_data(
     plot_data: bool = False,
     one_hot: bool = True,
     include_sample_total: bool = False,
-) -> Union[
-    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
-    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray],
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] | Tuple[
+    np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray
 ]:
     r"""Generates a toy dataset that can be fully separated with
     ``qiskit.circuit.library.ZZ_Feature_Map`` according to the procedure
@@ -172,10 +170,10 @@ def ad_hoc_data(
         for k, key in enumerate(class_labels)
     }
 
-    training_feature_array, training_label_array = features_and_labels_transform(
+    training_feature_array, training_label_array = _features_and_labels_transform(
         training_input, class_labels, one_hot
     )
-    test_feature_array, test_label_array = features_and_labels_transform(
+    test_feature_array, test_label_array = _features_and_labels_transform(
         test_input, class_labels, one_hot
     )
 
@@ -224,3 +222,43 @@ def _plot_ad_hoc_data(x_total, y_total, training_size):
         ax1.scatter(*x_total[y_total == k][:training_size].T)
     ax1.set_title("Ad-hoc Data")
     plt.show()
+
+
+def _features_and_labels_transform(
+    dataset: Dict[str, np.ndarray], class_labels: List[str], one_hot: bool = True
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Converts a dataset into arrays of features and labels.
+
+    Args:
+        dataset: A dictionary in the format of {'A': numpy.ndarray, 'B': numpy.ndarray, ...}
+        class_labels: A list of classes in the dataset
+        one_hot (bool): if True - return one-hot encoded label
+
+    Returns:
+        A tuple of features as np.ndarray, label as np.ndarray
+    """
+    features = np.concatenate(list(dataset.values()))
+
+    raw_labels = []
+    for category in dataset.keys():
+        num_samples = dataset[category].shape[0]
+        raw_labels += [category] * num_samples
+
+    if not raw_labels:
+        # no labels, empty dataset
+        labels = np.zeros((0, len(class_labels)))
+        return features, labels
+
+    if one_hot:
+        encoder = preprocessing.OneHotEncoder()
+        encoder.fit(np.array(class_labels).reshape(-1, 1))
+        labels = encoder.transform(np.array(raw_labels).reshape(-1, 1))
+        if not isinstance(labels, np.ndarray):
+            labels = np.array(labels.todense())
+    else:
+        encoder = preprocessing.LabelEncoder()
+        encoder.fit(np.array(class_labels))
+        labels = encoder.transform(np.array(raw_labels))
+
+    return features, labels
