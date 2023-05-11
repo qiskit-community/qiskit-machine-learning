@@ -13,7 +13,6 @@
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 from __future__ import annotations
 
-import sys
 from typing import Tuple, Any, cast
 
 import numpy as np
