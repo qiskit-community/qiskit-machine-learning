@@ -146,6 +146,7 @@ jobs:
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
         with:
+          os: ${{ matrix.os }}
           event-name: ${{ github.event_name }}
           run-slow: ${{ contains(github.event.pull_request.labels.*.name, 'run_slow') }}
           python-version: ${{ matrix.python-version }}
