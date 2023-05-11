@@ -160,7 +160,7 @@ jobs:
         run: |
           coverage3 combine
           mv .coverage ./ci-artifact-data/ml.dat
-        if: ${{ matrix.python-version == 3.8 }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == 3.8 }}
         shell: bash
       - uses: actions/upload-artifact@v3
         with:
