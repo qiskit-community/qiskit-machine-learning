@@ -39,6 +39,7 @@ import qiskit_machine_learning
 from custom_directives import CustomCalloutItemDirective
 
 
+
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
 os.environ["QISKIT_DOCS"] = "TRUE"
@@ -195,8 +196,8 @@ intersphinx_mapping = {
 
 html_context = {"analytics_enabled": True}
 
-# Torch fails loading as Module base.
-# Mock its imports in order to ignore it
+# Torch fails loading as Module base class.
+# Mock its imports in order to ignore it.
 autodoc_mock_imports = ["torch"]
 
 
