@@ -1,6 +1,10 @@
+import os
+import re
+
 from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 from docutils import nodes
+<<<<<<< HEAD
 import re
 import os
 import sphinx_gallery
@@ -284,6 +288,8 @@ CARD_TEMPLATE = """
 
     </div>
 """
+=======
+>>>>>>> bbc7341 (Remove the `includenodoc` and `customcarditem` directives (#628))
 
 
 class CustomCalloutItemDirective(Directive):

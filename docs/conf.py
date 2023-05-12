@@ -36,6 +36,7 @@ Sphinx documentation builder
 
 import qiskit_sphinx_theme
 import qiskit_machine_learning
+<<<<<<< HEAD
 from custom_directives import (
     IncludeDirective,
     GalleryItemDirective,
@@ -43,6 +44,10 @@ from custom_directives import (
     CustomCalloutItemDirective,
     CustomCardItemDirective,
 )
+=======
+from custom_directives import CustomCalloutItemDirective
+
+>>>>>>> bbc7341 (Remove the `includenodoc` and `customcarditem` directives (#628))
 
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
@@ -229,10 +234,13 @@ def autodoc_process_bases(app, name, obj, options, bases):
 
 
 def setup(app):
+<<<<<<< HEAD
     app.add_directive("includenodoc", IncludeDirective)
     app.add_directive("galleryitem", GalleryItemDirective)
     app.add_directive("customgalleryitem", CustomGalleryItemDirective)
     app.add_directive("customcarditem", CustomCardItemDirective)
+=======
+>>>>>>> bbc7341 (Remove the `includenodoc` and `customcarditem` directives (#628))
     app.add_directive("customcalloutitem", CustomCalloutItemDirective)
     app.setup_extension("versionutils")
     if sphinx.__version__ >= "4.1.0":
