@@ -39,7 +39,6 @@ import qiskit_machine_learning
 from custom_directives import CustomCalloutItemDirective
 
 
-
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
 os.environ["QISKIT_DOCS"] = "TRUE"
