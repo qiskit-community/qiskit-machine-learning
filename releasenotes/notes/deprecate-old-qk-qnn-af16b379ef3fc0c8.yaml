@@ -4,7 +4,7 @@ deprecations:
     The :mod:`qiskit.opflow` and :class:`~qiskit.utils.QuantumInstance` based classes have been deprecated:
 
       - Class :class:`qiskit_machine_learning.neural_networks.CircuitQNN` is deprecated and
-        is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.
+          is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.11
 
       - Class :class:`qiskit_machine_learning.neural_networks.OpflowQNN` is deprecated and
         is superseded by :class:`qiskit_machine_learning.neural_networks.EstimatorQNN`.
