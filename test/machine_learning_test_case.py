@@ -66,6 +66,7 @@ class QiskitMachineLearningTestCase(unittest.TestCase, ABC):
     log = None
 
     def setUp(self) -> None:
+        warnings.filterwarnings("default", category=DeprecationWarning)
         self._started_at = time.time()
         self._class_location = __file__
 
