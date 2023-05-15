@@ -30,10 +30,9 @@ class TwoLayerQNN(OpflowQNN):
     """
 
     @deprecate_function(
-        "The TwoLayerQNN class is pending deprecation and has no direct replacement. Make use of "
+        "The TwoLayerQNN class is deprecated and has no direct replacement. Make use of "
         "qiskit_machine_learning.neural_networks.EstimatorQNN instead."
-        "This class will be deprecated in a future release and subsequently "
-        "removed after that.",
+        "This class will be removed in a future release."
     )
     def __init__(
         self,

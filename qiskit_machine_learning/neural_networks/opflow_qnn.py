@@ -53,10 +53,9 @@ class OpflowQNN(NeuralNetwork):
     """Deprecated: Opflow Quantum Neural Network."""
 
     @deprecate_function(
-        "The OpflowQNN class has been superseded by the "
-        "qiskit_machine_learning.neural_networks.EstimatorQNN "
-        "This class will be deprecated in a future release and subsequently "
-        "removed after that.",
+        "The OpflowQNN is deprecated and has been superseded by "
+        "qiskit_machine_learning.neural_networks.EstimatorQNN. "
+        "This class will be removed in a future release."
     )
     def __init__(
         self,

@@ -49,10 +49,9 @@ class CircuitQNN(SamplingNeuralNetwork):
     """Deprecated: A sampling neural network based on a given quantum circuit."""
 
     @deprecate_function(
-        "The CircuitQNN class has been superseded by the "
-        "qiskit_machine_learning.neural_networks.SamplerQNN "
-        "This class will be deprecated in a future release and subsequently "
-        "removed after that.",
+        "The CircuitQNN is deprecated and has been superseded by "
+        "qiskit_machine_learning.neural_networks.SamplerQNN. "
+        "This class will be removed in a future release."
     )
     def __init__(
         self,
