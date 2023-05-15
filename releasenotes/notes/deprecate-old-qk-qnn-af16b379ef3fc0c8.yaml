@@ -4,18 +4,18 @@ deprecations:
     The :mod:`qiskit.opflow` and :class:`~qiskit.utils.QuantumInstance` based classes have been deprecated:
 
       - Class :class:`qiskit_machine_learning.neural_networks.CircuitQNN` is deprecated and
-      is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.
+        is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.
 
       - Class :class:`qiskit_machine_learning.neural_networks.OpflowQNN` is deprecated and
-      is superseded by :class:`qiskit_machine_learning.neural_networks.EstimatorQNN`.
+        is superseded by :class:`qiskit_machine_learning.neural_networks.EstimatorQNN`.
 
       - Class :class:`qiskit_machine_learning.neural_networks.TwoLayerQNN` is deprecated and
-      has no direct replacement. Please make use of
-      :class:`qiskit_machine_learning.neural_networks.EstimatorQNN` instead.
+        has no direct replacement. Please make use of
+        :class:`qiskit_machine_learning.neural_networks.EstimatorQNN` instead.
 
       - Class :class:`qiskit_machine_learning.kernels.QuantumKernel` is deprecated and
-      is superseded by :class:`qiskit_machine_learning.kernels.FidelityQuantumKernel`,
-      :class:`qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`, and
-      :class:`qiskit_machine_learning.kernels.FidelityStatevectorKernel`.
+        is superseded by :class:`qiskit_machine_learning.kernels.FidelityQuantumKernel`,
+        :class:`qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`, and
+        :class:`qiskit_machine_learning.kernels.FidelityStatevectorKernel`.
 
     The above mentioned classes will be removed no sooner than 3 months after the release.
