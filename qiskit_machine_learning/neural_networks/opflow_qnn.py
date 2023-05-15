@@ -50,15 +50,13 @@ logger = logging.getLogger(__name__)
 
 
 class OpflowQNN(NeuralNetwork):
-    """Pending deprecation: Opflow Quantum Neural Network."""
+    """Deprecated: Opflow Quantum Neural Network."""
 
     @deprecate_function(
         "The OpflowQNN class has been superseded by the "
         "qiskit_machine_learning.neural_networks.EstimatorQNN "
         "This class will be deprecated in a future release and subsequently "
         "removed after that.",
-        stacklevel=3,
-        category=PendingDeprecationWarning,
     )
     def __init__(
         self,

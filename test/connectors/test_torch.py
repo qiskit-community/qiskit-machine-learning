@@ -33,7 +33,7 @@ class TestTorch(ABC):
     def setup_test(self):
         """Base setup."""
         # suppress warnings from the deprecated networks
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         algorithm_globals.random_seed = 12345
         # specify quantum instances
@@ -57,7 +57,7 @@ class TestTorch(ABC):
 
     def tear_down(self):
         """Tear down the test."""
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @abstractmethod
     def subTest(self, msg, **kwargs):

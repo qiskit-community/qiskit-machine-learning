@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -40,7 +40,6 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         algorithm_globals.random_seed = 10598
 
         self.statevector_simulator = QuantumInstance(
@@ -68,7 +67,6 @@ class TestQuantumKernelClassify(QiskitMachineLearningTestCase):
     def tearDown(self) -> None:
         super().tearDown()
         warnings.filterwarnings("always", category=DeprecationWarning)
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_callable(self):
         """Test callable kernel in sklearn"""
@@ -132,7 +130,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         algorithm_globals.random_seed = 10598
         self.shots = 12000
@@ -231,7 +229,7 @@ class TestQuantumKernelEvaluate(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def test_qasm_symmetric(self):
         """Test symmetric matrix evaluation using qasm simulator"""
@@ -367,7 +365,7 @@ class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         self.x = [1, 1]
         self.y = [2, 2]
@@ -377,7 +375,7 @@ class TestQuantumKernelConstructCircuit(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def _check_circuit(self, qc: QuantumCircuit, check_measurements: bool, check_inverse: bool):
         self.assertEqual(qc.num_qubits, self.feature_map.num_qubits)
@@ -450,7 +448,7 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
@@ -479,7 +477,7 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def test_training_parameters(self):
         """Test assigning/re-assigning user parameters"""
@@ -690,7 +688,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         algorithm_globals.random_seed = 10598
 
@@ -738,7 +736,7 @@ class TestQuantumKernelBatching(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def test_statevector_batching(self):
         """Test batching when using the statevector simulator"""
@@ -806,7 +804,7 @@ class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         algorithm_globals.random_seed = 10598
         self.circuit_counts = 0
 
@@ -829,7 +827,7 @@ class TestQuantumKernelEvaluateDuplicates(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @idata(
         [

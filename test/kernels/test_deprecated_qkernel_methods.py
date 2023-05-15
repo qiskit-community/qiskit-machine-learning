@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -33,7 +33,6 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
 
         # Create an arbitrary 3-qubit feature map circuit
         circ1 = ZZFeatureMap(3)
@@ -46,7 +45,6 @@ class TestQuantumKernelTrainingParameters(QiskitMachineLearningTestCase):
     def tearDown(self) -> None:
         super().tearDown()
         warnings.filterwarnings("always", category=DeprecationWarning)
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
 
     def test_positional_user_parameters(self):
         """Test assigning user parameters with positional argument"""

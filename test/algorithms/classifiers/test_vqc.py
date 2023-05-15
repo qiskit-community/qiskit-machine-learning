@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2022.
+# (C) Copyright IBM 2018, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -109,13 +109,11 @@ class TestVQC(QiskitMachineLearningTestCase):
             "qasm": (None, qasm),
         }
         # ignore deprecation warnings
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
     def tearDown(self) -> None:
         # restore warnings
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
         warnings.filterwarnings("always", category=DeprecationWarning)
 
     @idata(

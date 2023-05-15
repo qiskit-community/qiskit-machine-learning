@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -38,7 +38,7 @@ from ..exceptions import QiskitMachineLearningError
 
 
 class QuantumKernel(TrainableKernel, BaseKernel):
-    r"""Pending deprecation: A dedicated trainable quantum kernel implementation that constructs
+    r"""Deprecated: A dedicated trainable quantum kernel implementation that constructs
     and executes quantum circuits directly.
 
     The general task of machine learning is to find and study patterns in data. For many
@@ -65,8 +65,6 @@ class QuantumKernel(TrainableKernel, BaseKernel):
         "qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel classes. "
         "This class will be deprecated in a future release and subsequently "
         "removed after that.",
-        stacklevel=3,
-        category=PendingDeprecationWarning,
     )
     def __init__(
         self,

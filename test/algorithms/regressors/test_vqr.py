@@ -35,7 +35,6 @@ class TestVQR(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # specify quantum instances
@@ -65,7 +64,6 @@ class TestVQR(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
         warnings.filterwarnings("always", category=DeprecationWarning)
 
     @data(

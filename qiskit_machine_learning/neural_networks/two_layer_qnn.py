@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,7 +25,7 @@ from ..utils import derive_num_qubits_feature_map_ansatz
 
 
 class TwoLayerQNN(OpflowQNN):
-    """Pending deprecation: Two Layer Quantum Neural Network consisting of a feature map, a ansatz,
+    """Deprecated: Two Layer Quantum Neural Network consisting of a feature map, a ansatz,
     and an observable.
     """
 
@@ -34,8 +34,6 @@ class TwoLayerQNN(OpflowQNN):
         "qiskit_machine_learning.neural_networks.EstimatorQNN instead."
         "This class will be deprecated in a future release and subsequently "
         "removed after that.",
-        stacklevel=3,
-        category=PendingDeprecationWarning,
     )
     def __init__(
         self,

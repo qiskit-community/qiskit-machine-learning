@@ -46,15 +46,13 @@ logger = logging.getLogger(__name__)
 
 
 class CircuitQNN(SamplingNeuralNetwork):
-    """Pending deprecation: A sampling neural network based on a given quantum circuit."""
+    """Deprecated: A sampling neural network based on a given quantum circuit."""
 
     @deprecate_function(
         "The CircuitQNN class has been superseded by the "
         "qiskit_machine_learning.neural_networks.SamplerQNN "
         "This class will be deprecated in a future release and subsequently "
         "removed after that.",
-        stacklevel=3,
-        category=PendingDeprecationWarning,
     )
     def __init__(
         self,
