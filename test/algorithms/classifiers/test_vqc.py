@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2022.
+# (C) Copyright IBM 2018, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -64,7 +64,7 @@ def _create_dataset(n_samples: int, n_classes: int, one_hot=True) -> _Dataset:
     )
     x = MinMaxScaler().fit_transform(x)
     if one_hot:
-        y = OneHotEncoder(sparse=False).fit_transform(y.reshape(-1, 1))
+        y = OneHotEncoder(sparse_output=False).fit_transform(y.reshape(-1, 1))
     return _Dataset(x, y)
 
 
