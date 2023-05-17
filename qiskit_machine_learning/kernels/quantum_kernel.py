@@ -25,10 +25,9 @@ from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.providers import Backend
 from qiskit.result import Result
 from qiskit.utils import QuantumInstance
-from qiskit.utils.deprecation import deprecate_function
+from qiskit.utils.deprecation import deprecate_func
 
 from qiskit_machine_learning.deprecation import (
-    deprecate_arguments,
     deprecate_method,
     deprecate_property,
 )
@@ -58,12 +57,11 @@ class QuantumKernel(TrainableKernel, BaseKernel):
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
-    @deprecate_function(
-        "The QuantumKernel class is deprecated and has been superseded by the "
-        "qiskit_machine_learning.kernels.FidelityQuantumKernel and "
-        "qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel classes. "
-        "This class will be removed in a future release.",
+    @deprecate_func(
+        since="0.5",
+        additional_msg="Instead, use the ``qiskit_machine_learning.kernels.FidelityQuantumKernel``"
+        " and ``qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`` classes.",
+        package_name="qiskit-machine-learning",
     )
     def __init__(
         self,

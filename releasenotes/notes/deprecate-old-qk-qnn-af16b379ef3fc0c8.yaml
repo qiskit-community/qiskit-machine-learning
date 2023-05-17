@@ -1,7 +1,9 @@
 ---
 deprecations:
   - |
-    The :mod:`qiskit.opflow` and :class:`~qiskit.utils.QuantumInstance` based classes have been deprecated:
+    Since :mod:`qiskit.opflow` and :class:`~qiskit.utils.QuantumInstance` are deprecated in Qiskit,
+    Qiskit Machine Learning classes based on the deprecated Qiskit classes have been
+    deprecated as well:
 
       - Class :class:`qiskit_machine_learning.neural_networks.CircuitQNN` is deprecated and
         is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.
@@ -18,4 +20,7 @@ deprecations:
         :class:`qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`, and
         :class:`qiskit_machine_learning.kernels.FidelityStatevectorKernel`.
 
-    The above mentioned classes will be removed no sooner than 3 months after the release.
+    The above mentioned classes will be removed no sooner than 3 months after the release. Please
+    refer to the `migration guide <https://qiskit.org/ecosystem/machine-learning/migration/01_migration_guide_0.5.html>`__
+    on how to replace the deprecated classes with new ones.
+

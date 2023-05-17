@@ -18,7 +18,7 @@ from __future__ import annotations
 from qiskit import QuantumCircuit
 from qiskit.opflow import PauliSumOp, StateFn, OperatorBase, ExpectationBase
 from qiskit.providers import Backend
-from qiskit.utils import QuantumInstance, deprecate_function
+from qiskit.utils import QuantumInstance, deprecate_func
 
 from .opflow_qnn import OpflowQNN
 from ..utils import derive_num_qubits_feature_map_ansatz
@@ -29,10 +29,11 @@ class TwoLayerQNN(OpflowQNN):
     and an observable.
     """
 
-    @deprecate_function(
-        "The TwoLayerQNN class is deprecated and has no direct replacement. Make use of "
-        "qiskit_machine_learning.neural_networks.EstimatorQNN instead."
-        "This class will be removed in a future release."
+    @deprecate_func(
+        since="0.7.0",
+        additional_msg="Instead, use the ``qiskit_machine_learning.neural_networks.EstimatorQNN``"
+        " class.",
+        package_name="qiskit-machine-learning",
     )
     def __init__(
         self,
