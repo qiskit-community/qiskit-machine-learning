@@ -58,7 +58,7 @@ class QuantumKernel(TrainableKernel, BaseKernel):
     """
 
     @deprecate_func(
-        since="0.5",
+        since="0.7.0",
         additional_msg="Instead, use the ``qiskit_machine_learning.kernels.FidelityQuantumKernel``"
         " and ``qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`` classes.",
         package_name="qiskit-machine-learning",
