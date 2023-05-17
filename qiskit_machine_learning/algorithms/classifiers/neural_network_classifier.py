@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -92,7 +92,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         super().__init__(neural_network, loss, optimizer, warm_start, initial_point, callback)
         self._one_hot = one_hot
         # encodes the target data if categorical
-        self._target_encoder = OneHotEncoder(sparse=False) if one_hot else LabelEncoder()
+        self._target_encoder = OneHotEncoder(sparse_output=False) if one_hot else LabelEncoder()
 
         # For ensuring the number of classes matches those of the previous
         # batch when training from a warm start.
