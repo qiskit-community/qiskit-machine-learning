@@ -39,7 +39,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         algorithm_globals.random_seed = 1234
         from qiskit_aer import Aer
@@ -100,7 +100,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @data(
         # qnn_name, num_inputs, num_weights, result

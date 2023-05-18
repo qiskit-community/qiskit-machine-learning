@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -20,16 +20,16 @@ class TestCPUTorchConnector(QiskitMachineLearningTestCase, TestTorchConnector):
     """CPU based tests of the PyTorch connector."""
 
     def setUp(self):
-        super().setup_test()
         super().setUp()
+        super().setup_test()
 
         import torch
 
         self._device = torch.device("cpu")
 
     def tearDown(self) -> None:
-        super().tearDown()
         super().tear_down()
+        super().tearDown()
 
 
 if __name__ == "__main__":

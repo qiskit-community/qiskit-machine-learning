@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2022.
+# (C) Copyright IBM 2018, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -49,7 +49,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         algorithm_globals.random_seed = 12345
         from qiskit_aer import Aer, AerSimulator
 
@@ -107,7 +107,7 @@ class TestCircuitQNN(QiskitMachineLearningTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
-        warnings.filterwarnings("always", category=PendingDeprecationWarning)
+        warnings.filterwarnings("always", category=DeprecationWarning)
 
     def _get_qnn(self, sparse, sampling, quantum_instance_type, interpret_id):
         """Construct QNN from configuration."""

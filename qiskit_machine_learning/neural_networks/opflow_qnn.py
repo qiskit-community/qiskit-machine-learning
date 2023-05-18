@@ -27,7 +27,7 @@ from qiskit.opflow import (
     ComposedOp,
 )
 from qiskit.providers import Backend
-from qiskit.utils import QuantumInstance, deprecate_function
+from qiskit.utils import QuantumInstance, deprecate_func
 from qiskit.utils.backend_utils import is_aer_provider
 import qiskit_machine_learning.optionals as _optionals
 from .neural_network import NeuralNetwork
@@ -50,15 +50,13 @@ logger = logging.getLogger(__name__)
 
 
 class OpflowQNN(NeuralNetwork):
-    """Pending deprecation: Opflow Quantum Neural Network."""
+    """Deprecated: Opflow Quantum Neural Network."""
 
-    @deprecate_function(
-        "The OpflowQNN class has been superseded by the "
-        "qiskit_machine_learning.neural_networks.EstimatorQNN "
-        "This class will be deprecated in a future release and subsequently "
-        "removed after that.",
-        stacklevel=3,
-        category=PendingDeprecationWarning,
+    @deprecate_func(
+        since="0.7.0",
+        additional_msg="Instead, use the ``qiskit_machine_learning.neural_networks.EstimatorQNN``"
+        " class.",
+        package_name="qiskit-machine-learning",
     )
     def __init__(
         self,

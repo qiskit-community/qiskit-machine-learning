@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,10 +25,9 @@ from qiskit.circuit.parameterexpression import ParameterValueType
 from qiskit.providers import Backend
 from qiskit.result import Result
 from qiskit.utils import QuantumInstance
-from qiskit.utils.deprecation import deprecate_function
+from qiskit.utils.deprecation import deprecate_func
 
 from qiskit_machine_learning.deprecation import (
-    deprecate_arguments,
     deprecate_method,
     deprecate_property,
 )
@@ -38,7 +37,7 @@ from ..exceptions import QiskitMachineLearningError
 
 
 class QuantumKernel(TrainableKernel, BaseKernel):
-    r"""Pending deprecation: A dedicated trainable quantum kernel implementation that constructs
+    r"""Deprecated: A dedicated trainable quantum kernel implementation that constructs
     and executes quantum circuits directly.
 
     The general task of machine learning is to find and study patterns in data. For many
@@ -58,15 +57,11 @@ class QuantumKernel(TrainableKernel, BaseKernel):
     algorithms such as support vector classification, spectral clustering or ridge regression.
     """
 
-    @deprecate_arguments("0.5.0", {"user_parameters": "training_parameters"})
-    @deprecate_function(
-        "The QuantumKernel class has been superseded by the "
-        "qiskit_machine_learning.kernels.FidelityQuantumKernel and "
-        "qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel classes. "
-        "This class will be deprecated in a future release and subsequently "
-        "removed after that.",
-        stacklevel=3,
-        category=PendingDeprecationWarning,
+    @deprecate_func(
+        since="0.7.0",
+        additional_msg="Instead, use the ``qiskit_machine_learning.kernels.FidelityQuantumKernel``"
+        " and ``qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`` classes.",
+        package_name="qiskit-machine-learning",
     )
     def __init__(
         self,
