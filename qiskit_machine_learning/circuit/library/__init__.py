@@ -25,6 +25,7 @@ Feature Maps
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
+   :template: autosummary/class_no_inherited_members.rst
 
    RawFeatureVector
 
@@ -34,6 +35,7 @@ Helper Circuits
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
+   :template: autosummary/class_no_inherited_members.rst
 
    QNNCircuit
 """
