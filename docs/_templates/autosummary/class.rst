@@ -8,6 +8,7 @@
 .. currentmodule:: {{ module }}
 
 .. autoclass:: {{ objname }}
+   :show-inheritance:
    :no-members:
    :no-inherited-members:
    :no-special-members:
