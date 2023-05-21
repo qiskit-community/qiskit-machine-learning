@@ -68,6 +68,7 @@ discriminative
 distro
 dok
 dt
+eigenstate
 eigenstates
 einsum
 endian
@@ -171,6 +172,7 @@ params
 pauli
 pegasos
 pixelated
+pratt
 pre
 precompute
 precomputed
