@@ -25,9 +25,22 @@ Feature Maps
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
+   :template: autosummary/class_no_inherited_members.rst
 
    RawFeatureVector
 
+<<<<<<< HEAD
+=======
+Helper Circuits
+===============
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+   :template: autosummary/class_no_inherited_members.rst
+
+   QNNCircuit
+>>>>>>> fa1067b (Improve docs (#635))
 """
 
 from .raw_feature_vector import RawFeatureVector
