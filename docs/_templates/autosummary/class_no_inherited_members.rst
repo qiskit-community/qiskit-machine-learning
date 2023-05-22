@@ -21,9 +21,11 @@
    .. autosummary::
       :toctree: ../stubs/
    {% for item in all_attributes %}
-      {%- if not item.startswith('_') %}
-          ~{{ name }}.{{ item }}
-      {%- endif -%}
+      {%- if item not in inherited_members %}
+        {%- if not item.startswith('_') %}
+            ~{{ name }}.{{ item }}
+        {%- endif -%}
+      {%- endif %}
    {%- endfor %}
    {% endif %}
    {% endblock %}
@@ -36,9 +38,11 @@
    .. autosummary::
       :toctree: ../stubs/
    {% for item in all_methods %}
-      {%- if not item.startswith('_') %}
-          ~{{ name }}.{{ item }}
-      {%- endif -%}
+      {%- if item not in inherited_members %}
+        {%- if not item.startswith('_') %}
+            ~{{ name }}.{{ item }}
+        {%- endif -%}
+      {%- endif %}
    {%- endfor %}
 
    {% endif %}
