@@ -22,7 +22,6 @@ from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from qiskit.primitives import BaseSampler
 
-from ...deprecation import warn_deprecated, DeprecatedType
 from ...neural_networks import CircuitQNN, SamplerQNN
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
@@ -55,7 +54,6 @@ class VQC(NeuralNetworkClassifier):
         loss: str | Loss = "cross_entropy",
         optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
-        quantum_instance: QuantumInstance | Backend | None = None,
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
@@ -80,22 +78,14 @@ class VQC(NeuralNetworkClassifier):
                 the callable protocol. When `None` defaults to
                 :class:`~qiskit.algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
-            quantum_instance: Deprecated: If a quantum instance is sent and ``sampler`` is ``None``,
-                the underlying QNN will be of type
-                :class:`~qiskit_machine_learning.neural_networks.CircuitQNN`, and the quantum
-                instance will be used to compute the neural network's results. If a sampler
-                instance is also set, it will override the `quantum_instance` parameter and
-                a :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`
-                will be used instead.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and
                 returns ``None``. The callback can access intermediate data during training.
                 On each iteration an optimizer invokes the callback and passes current weights
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
-            sampler: If a sampler instance is sent, the underlying QNN will be of type
-                :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`, and the sampler
-                primitive will be used to compute the neural network's results.
+            sampler: a Sampler primitive instance to be used by the underlying
+                :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` neural network.
         Raises:
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
@@ -114,32 +104,15 @@ class VQC(NeuralNetworkClassifier):
         self._circuit.compose(self.feature_map, inplace=True)
         self._circuit.compose(self.ansatz, inplace=True)
 
-        # needed for mypy
-        neural_network: SamplerQNN | CircuitQNN = None
-        if quantum_instance is not None and sampler is None:
-            warn_deprecated(
-                "0.5.0", DeprecatedType.ARGUMENT, old_name="quantum_instance", new_name="sampler"
-            )
-            neural_network = CircuitQNN(
-                self._circuit,
-                input_params=self.feature_map.parameters,
-                weight_params=self.ansatz.parameters,
-                interpret=self._get_interpret(2),
-                output_shape=2,
-                quantum_instance=quantum_instance,
-                input_gradients=False,
-            )
-        else:
-            # construct sampler QNN by default
-            neural_network = SamplerQNN(
-                sampler=sampler,
-                circuit=self._circuit,
-                input_params=self.feature_map.parameters,
-                weight_params=self.ansatz.parameters,
-                interpret=self._get_interpret(2),
-                output_shape=2,
-                input_gradients=False,
-            )
+        neural_network = SamplerQNN(
+            sampler=sampler,
+            circuit=self._circuit,
+            input_params=self.feature_map.parameters,
+            weight_params=self.ansatz.parameters,
+            interpret=self._get_interpret(2),
+            output_shape=2,
+            input_gradients=False,
+        )
 
         super().__init__(
             neural_network=neural_network,

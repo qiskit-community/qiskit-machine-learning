@@ -313,55 +313,6 @@ class QuantumKernel(TrainableKernel, BaseKernel):
 
         return unbound_training_params
 
-    @property
-    @deprecate_property("0.5.0", new_name="training_parameters")
-    def user_parameters(self) -> ParameterVector | Sequence[Parameter] | None:
-        """[Deprecated property]Return the vector of training parameters."""
-        return self.training_parameters
-
-    @user_parameters.setter
-    @deprecate_property("0.5.0", new_name="training_parameters")
-    def user_parameters(self, training_params: ParameterVector | Sequence[Parameter]) -> None:
-        """[Deprecated property setter]Set the training parameters"""
-        self.training_parameters = training_params
-
-    @deprecate_method("0.5.0", new_name="assign_training_parameters")
-    def assign_user_parameters(
-        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
-    ) -> None:
-        """
-        [Deprecated method]Assign training parameters in the ``QuantumKernel`` feature map.
-        Otherwise, just like ``assign_training_parameters``.
-
-        """
-        self.assign_training_parameters(values)
-
-    @property
-    @deprecate_property("0.5.0", new_name="training_parameter_binds")
-    def user_param_binds(self) -> Mapping[Parameter, float] | None:
-        """
-        [Deprecated property]Return a copy of the current training parameter mappings
-        for the feature map circuit.
-        """
-        return self.training_parameter_binds
-
-    @deprecate_method("0.5.0", new_name="bind_training_parameters")
-    def bind_user_parameters(
-        self, values: Mapping[Parameter, ParameterValueType] | Sequence[ParameterValueType]
-    ) -> None:
-        """
-        [Deprecated method]Alternate function signature for ``assign_training_parameters``
-        """
-        self.bind_training_parameters(values)
-
-    @deprecate_method("0.5.0", new_name="get_unbound_training_parameters")
-    def get_unbound_user_parameters(self) -> List[Parameter]:
-        """
-        [Deprecated method]Return a list of any unbound training parameters in the feature
-        map circuit.
-        """
-        return self.get_unbound_training_parameters()
-
     def construct_circuit(
         self,
         x: ParameterVector,

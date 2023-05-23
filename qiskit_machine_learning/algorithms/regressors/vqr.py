@@ -20,11 +20,9 @@ from qiskit.algorithms.optimizers import Optimizer, Minimizer
 from qiskit.opflow import OperatorBase, PauliSumOp
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
-from qiskit.utils import QuantumInstance
 
 from .neural_network_regressor import NeuralNetworkRegressor
-from ...deprecation import warn_deprecated, DeprecatedType
-from ...neural_networks import TwoLayerQNN, EstimatorQNN
+from ...neural_networks import EstimatorQNN
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 
@@ -41,7 +39,6 @@ class VQR(NeuralNetworkRegressor):
         loss: str | Loss = "squared_error",
         optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
-        quantum_instance: QuantumInstance | None = None,
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
@@ -74,13 +71,6 @@ class VQR(NeuralNetworkRegressor):
                 the callable protocol. When `None` defaults to
                 :class:`~qiskit.algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
-            quantum_instance: Deprecated: If a quantum instance is set and ``estimator`` is ``None``,
-                the underlying QNN will be of type
-                :class:`~qiskit_machine_learning.neural_networks.TwoLayerQNN`, and the quantum
-                instance will be used to compute the neural network's results. If an estimator
-                instance is also set, it will override the `quantum_instance` parameter and
-                a :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`
-                will be used instead.
             initial_point: Initial point for the optimizer to start from.
             callback: A reference to a user's callback function that has two parameters and
                 returns ``None``. The callback can access intermediate data during training.
@@ -99,67 +89,35 @@ class VQR(NeuralNetworkRegressor):
             ValueError: if the type of the observable is not compatible with ``quantum_instance`` or
                 ``estimator``.
         """
-        # needed for mypy
-        if quantum_instance is not None and estimator is None:
-            warn_deprecated(
-                "0.5.0", DeprecatedType.ARGUMENT, old_name="quantum_instance", new_name="estimator"
+        if observable is not None and not isinstance(observable, (BaseOperator, PauliSumOp)):
+            raise ValueError(
+                f"Unsupported type of the observable, expected "
+                f"'BaseOperator | PauliSumOp', got {type(observable)}"
             )
 
-            if observable is not None and not isinstance(
-                observable, (QuantumCircuit, OperatorBase)
-            ):
-                raise ValueError(
-                    f"Unsupported type of the observable, expected "
-                    f"'QuantumCircuit | OperatorBase', got {type(observable)}"
-                )
+        self._estimator = estimator
 
-            self._quantum_instance = quantum_instance
-            self._estimator = None
+        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
+            num_qubits, feature_map, ansatz
+        )
 
-            # construct QNN
-            neural_network = TwoLayerQNN(
-                num_qubits=num_qubits,
-                feature_map=feature_map,
-                ansatz=ansatz,
-                observable=observable,
-                quantum_instance=quantum_instance,
-                input_gradients=False,
-            )
-            self._feature_map = neural_network.feature_map
-            self._ansatz = neural_network.ansatz
-            self._num_qubits = neural_network.num_qubits
-        else:
-            if observable is not None and not isinstance(observable, (BaseOperator, PauliSumOp)):
-                raise ValueError(
-                    f"Unsupported type of the observable, expected "
-                    f"'BaseOperator | PauliSumOp', got {type(observable)}"
-                )
+        # construct circuit
+        self._feature_map = feature_map
+        self._ansatz = ansatz
+        self._num_qubits = num_qubits
+        circuit = QuantumCircuit(self._num_qubits)
+        circuit.compose(self._feature_map, inplace=True)
+        circuit.compose(self._ansatz, inplace=True)
 
-            # construct estimator QNN by default
-            self._quantum_instance = None
-            self._estimator = estimator
+        observables = [observable] if observable is not None else None
 
-            num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-                num_qubits, feature_map, ansatz
-            )
-
-            # construct circuit
-            self._feature_map = feature_map
-            self._ansatz = ansatz
-            self._num_qubits = num_qubits
-            circuit = QuantumCircuit(self._num_qubits)
-            circuit.compose(self._feature_map, inplace=True)
-            circuit.compose(self._ansatz, inplace=True)
-
-            observables = [observable] if observable is not None else None
-
-            neural_network = EstimatorQNN(
-                estimator=estimator,
-                circuit=circuit,
-                observables=observables,
-                input_params=feature_map.parameters,
-                weight_params=ansatz.parameters,
-            )
+        neural_network = EstimatorQNN(
+            estimator=estimator,
+            circuit=circuit,
+            observables=observables,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+        )
 
         super().__init__(
             neural_network=neural_network,
