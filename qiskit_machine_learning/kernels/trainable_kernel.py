@@ -101,13 +101,7 @@ class TrainableKernel(BaseKernel, ABC):
         """
         Combines the feature values and the trainable parameters into one array.
         """
-        for param in self._training_parameters:
-            if self._parameter_dict[param] is None:
-                raise QiskitMachineLearningError(
-                    f"Trainable parameter {param} has not been bound. Make sure to bind all"
-                    "trainable parameters to numerical values using `.assign_training_parameters()`"
-                    "before calling `.evaluate()`."
-                )
+        self._check_trainable_parameters()
         full_array = np.zeros((x_vec.shape[0], self._num_features + self._num_training_parameters))
         for i, x in enumerate(x_vec):
             self._parameter_dict.update(
@@ -115,3 +109,12 @@ class TrainableKernel(BaseKernel, ABC):
             )
             full_array[i, :] = list(self._parameter_dict.values())
         return full_array
+
+    def _check_trainable_parameters(self) -> None:
+        for param in self._training_parameters:
+            if self._parameter_dict[param] is None:
+                raise QiskitMachineLearningError(
+                    f"Trainable parameter {param} has not been bound. Make sure to bind all"
+                    "trainable parameters to numerical values using `.assign_training_parameters()`"
+                    "before calling `.evaluate()`."
+                )
