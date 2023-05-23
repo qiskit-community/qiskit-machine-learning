@@ -21,6 +21,7 @@ from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.parameterexpression import ParameterValueType
 
 from .base_kernel import BaseKernel
+from ..exceptions import QiskitMachineLearningError
 
 
 class TrainableKernel(BaseKernel, ABC):
@@ -43,6 +44,8 @@ class TrainableKernel(BaseKernel, ABC):
         self._num_training_parameters = len(self._training_parameters)
 
         self._parameter_dict = {parameter: None for parameter in training_parameters}
+
+        self._feature_parameters: Sequence[Parameter] = []
 
     def assign_training_parameters(
         self,
@@ -93,3 +96,22 @@ class TrainableKernel(BaseKernel, ABC):
         Returns the number of training parameters.
         """
         return len(self._training_parameters)
+
+    def _parameter_array(self, x_vec: np.ndarray) -> np.ndarray:
+        """
+        Combines the feature values and the trainable parameters into one array.
+        """
+        for param in self._training_parameters:
+            if self._parameter_dict[param] is None:
+                raise QiskitMachineLearningError(
+                    f"Trainable parameter {param} has not been bound. Make sure to bind all"
+                    "trainable parameters to numerical values using `.assign_training_parameters()`"
+                    "before calling `.evaluate()`."
+                )
+        full_array = np.zeros((x_vec.shape[0], self._num_features + self._num_training_parameters))
+        for i, x in enumerate(x_vec):
+            self._parameter_dict.update(
+                {feature_param: x[j] for j, feature_param in enumerate(self._feature_parameters)}
+            )
+            full_array[i, :] = list(self._parameter_dict.values())
+        return full_array
