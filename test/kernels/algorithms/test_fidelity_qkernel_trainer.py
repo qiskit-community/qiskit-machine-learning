@@ -39,7 +39,7 @@ from qiskit_machine_learning.utils.loss_functions import SVCLoss
 class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     """Test QuantumKernelTrainer Algorithm
 
-    Tests usage with TrainableFidelityQuantumKernel and TrainableFidelityStatevectorKernel
+    Tests usage with ``TrainableFidelityQuantumKernel`` and ``TrainableFidelityStatevectorKernel``.
     """
 
     def setUp(self):
@@ -65,9 +65,9 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([1, 0])
 
-
     @data(
-        TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel,
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
     )
     def test_default_fit(self, trainable_kernel_type):
         """Test trainer with default parameters."""
@@ -81,7 +81,8 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self._fit_and_assert_score(qkt_result)
 
     @data(
-        TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel,
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
     )
     def test_fit_with_params(self, trainable_kernel_type):
         """Test trainer with custom parameters."""
@@ -102,7 +103,8 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self._fit_and_assert_score(qkt_result)
 
     @data(
-        TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel,
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
     )
     def test_asymmetric_trainable_parameters(self, trainable_kernel_type):
         """Test when the number of trainable parameters does not equal to the number of features."""
