@@ -27,10 +27,6 @@ from qiskit.result import Result
 from qiskit.utils import QuantumInstance
 from qiskit.utils.deprecation import deprecate_func
 
-from qiskit_machine_learning.deprecation import (
-    deprecate_method,
-    deprecate_property,
-)
 from .trainable_kernel import TrainableKernel
 from .base_kernel import BaseKernel
 from ..exceptions import QiskitMachineLearningError

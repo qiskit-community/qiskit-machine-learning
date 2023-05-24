@@ -31,8 +31,7 @@ from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
-from qiskit.utils import algorithm_globals, optionals
-from qiskit.primitives import Sampler
+from qiskit.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -71,14 +70,11 @@ def _create_dataset(n_samples: int, n_classes: int, one_hot=True) -> _Dataset:
 class TestVQC(QiskitMachineLearningTestCase):
     """VQC Tests."""
 
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 1111111
         self.num_classes_by_batch = []
-        from qiskit_aer import Aer
 
-        sampler = Sampler()
         # We want string keys to ensure DDT-generated tests have meaningful names.
         self.properties = {
             "bfgs": L_BFGS_B(maxiter=5),

@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,8 +17,6 @@ from typing import Callable
 import numpy as np
 
 from qiskit import QuantumCircuit
-from qiskit.providers import Backend
-from qiskit.utils import QuantumInstance
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from qiskit.primitives import BaseSampler
 
