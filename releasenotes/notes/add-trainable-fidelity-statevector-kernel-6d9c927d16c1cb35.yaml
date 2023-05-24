@@ -21,6 +21,7 @@ features:
     Example usage snippet:
 
     .. code-block:: python
+
       # Instantiate trainable fidelity statevector kernel.
       quant_kernel = TrainableFidelityStatevectorKernel(
           feature_map=feature_map,
