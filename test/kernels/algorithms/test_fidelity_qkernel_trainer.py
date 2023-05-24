@@ -92,9 +92,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         )
         loss = SVCLoss(C=0.8, gamma="auto")
         optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
-        qkt = QuantumKernelTrainer(
-            quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer
-        )
+        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer)
         qkt_result = qkt.fit(self.sample_train, self.label_train)
 
         # Ensure user parameters are bound to real values
