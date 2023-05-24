@@ -9,24 +9,28 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-""" Test TrainableQuantumKernel using primitives """
+""" Test trainable quantum kernels using primitives """
 
+import itertools
 import unittest
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from ddt import ddt, data
+from ddt import ddt, data, idata, unpack
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZZFeatureMap
 
 from qiskit_machine_learning import QiskitMachineLearningError
-from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
+from qiskit_machine_learning.kernels import (
+    TrainableFidelityQuantumKernel,
+    TrainableFidelityStatevectorKernel,
+)
 
 
 @ddt
 class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase):
-    """Test trainable QuantumKernel."""
+    """Test the Primitive-based trainable quantum kernel, and the trainable statevector kernel."""
 
     def setUp(self):
         super().setUp()
@@ -43,10 +47,11 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         )
         self.sample_test = np.array([0.0, 1.0, 2.0])
 
-    def test_training_parameters(self):
+    @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
+    def test_training_parameters(self, trainable_kernel_type):
         """Test assigning/re-assigning user parameters"""
 
-        kernel = TrainableFidelityQuantumKernel(
+        kernel = trainable_kernel_type(
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
@@ -103,15 +108,21 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
             # Ensure the values are properly bound
             np.testing.assert_array_equal(kernel.parameter_values, param_binds)
 
-    @data("params_1", "params_2")
-    def test_evaluate_symmetric(self, params):
+    @idata(
+        itertools.product(
+            [TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel],
+            ["params_1", "params_2"],
+        )
+    )
+    @unpack
+    def test_evaluate_symmetric(self, trainable_kernel_type, params):
         """Test kernel evaluations for different training parameters"""
         if params == "params_1":
             training_params = [0.0, 0.0, 0.0]
         else:
             training_params = [0.1, 0.531, 4.12]
 
-        kernel = TrainableFidelityQuantumKernel(
+        kernel = trainable_kernel_type(
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
@@ -129,8 +140,14 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
             return np.array([[1.0, 0.03351197], [0.03351197, 1.0]])
         return np.array([[1.0, 0.082392], [0.082392, 1.0]])
 
-    @data("params_1", "params_2")
-    def test_evaluate_asymmetric(self, params):
+    @idata(
+        itertools.product(
+            [TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel],
+            ["params_1", "params_2"],
+        )
+    )
+    @unpack
+    def test_evaluate_asymmetric(self, trainable_kernel_type, params):
         """Test kernel evaluations for different training parameters"""
         if params == "params_1":
             training_params = [0.0, 0.0, 0.0]
@@ -155,14 +172,15 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
             return np.array([[0.00569059], [0.07038205]])
         return np.array([[0.10568674], [0.122404]])
 
-    def test_incomplete_binding(self):
+    @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
+    def test_incomplete_binding(self, trainable_kernel_type):
         """Test if an exception is raised when not all training parameter are bound."""
         # assign all parameters except the last one
         training_params = {
             self.training_parameters[i]: 0 for i in range(len(self.training_parameters) - 1)
         }
 
-        kernel = TrainableFidelityQuantumKernel(
+        kernel = trainable_kernel_type(
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
@@ -171,9 +189,10 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         with self.assertRaises(QiskitMachineLearningError):
             kernel.evaluate(self.sample_train)
 
-    def test_properties(self):
+    @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
+    def test_properties(self, trainable_kernel_type):
         """Test properties of the trainable quantum kernel."""
-        kernel = TrainableFidelityQuantumKernel(
+        kernel = trainable_kernel_type(
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
