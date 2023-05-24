@@ -1,0 +1,42 @@
+---
+features:
+  - |
+    Added a new :class:`~qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel` class
+    that provides a trainable version of
+    :class:`~qiskit_machine_learning.kernels.FidelityStatevectorKernel`.
+    This mirrors the relationship between
+    :class:`~qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel` and
+    :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
+    I.e., :class:`~qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel` inherits from
+    :class:`~qiskit_machine_learning.kernels.FidelityStatevectorKernel` and
+    :class:`~qiskit_machine_learning.kernels.TrainableKernel`.
+
+    Excepting the
+    :class:`~qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel`-specific
+    features, this is used with
+    :class:`~qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer`,
+    identically to
+    :class:`~qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel`.
+
+    Example usage snippet:
+
+    .. code-block:: python
+      # Instantiate trainable fidelity statevector kernel.
+      quant_kernel = TrainableFidelityStatevectorKernel(
+          feature_map=feature_map,
+          training_parameters=training_parameters,
+      )
+
+      # Set up the optimizer.
+      cb_qkt = QKTCallback()
+      spsa_opt = SPSA(maxiter=10, callback=cb_qkt.callback, learning_rate=0.05, perturbation=0.05)
+
+      # Instantiate a quantum kernel trainer.
+      qkt = QuantumKernelTrainer(
+          quantum_kernel=quant_kernel, loss="svc_loss", optimizer=spsa_opt, initial_point=[np.pi / 2]
+      )
+
+      # Train the kernel using QKT directly.
+      qkt_results = qkt.fit(X_train, y_train)
+      optimized_kernel = qkt_results.quantum_kernel
+      print(qkt_results)
