@@ -2,10 +2,10 @@
 upgrade:
   - |
     Removed support of the deprecated parameter `user_parameters` in the constructor of
-    `~qiskit_machine_learning.kernels.QuantumKernel`. Please use `training_parameters` instead.
+    :class:`~qiskit_machine_learning.kernels.QuantumKernel`. Please use `training_parameters` instead.
 
     Removed support of the deprecated parameter `quantum_instance` in the constructor of
-    `~qiskit_machine_learning.algorithms.VQC` and in `~qiskit_machine_learning.algorithms.VQR`.
+    :class:`~qiskit_machine_learning.algorithms.VQC` and in :class:`~qiskit_machine_learning.algorithms.VQR`.
     Please use `sampler` and `estimator` respectively. Refer to the
     `migration guide <https://qiskit.org/ecosystem/machine-learning/migration/01_migration_guide_0.5.html>`__
     for more information.
