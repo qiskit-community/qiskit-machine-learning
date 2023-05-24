@@ -86,14 +86,14 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     )
     def test_fit_with_params(self, trainable_kernel_type):
         """Test trainer with custom parameters."""
-        self.quantum_kernel = trainable_kernel_type(
+        quantum_kernel = trainable_kernel_type(
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
         loss = SVCLoss(C=0.8, gamma="auto")
         optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
         qkt = QuantumKernelTrainer(
-            quantum_kernel=self.quantum_kernel, loss=loss, optimizer=optimizer
+            quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer
         )
         qkt_result = qkt.fit(self.sample_train, self.label_train)
 
