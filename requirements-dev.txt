@@ -7,14 +7,8 @@ pylatexenc>=1.4
 stestr>=2.0.0
 ddt>=1.2.0,!=1.4.0
 reno>=3.4.0
-<<<<<<< HEAD
-Sphinx>=1.8.3,!=3.1.0,!=5.2.0,!=5.2.0.post0
-sphinx-design>=0.2.0
-sphinx-autodoc-typehints<1.14.0
-=======
 Sphinx>=5.0
 sphinx-design>=0.4.0
->>>>>>> 1b4f00a (Upgrade to qiskit_sphinx_theme 1.12 (#641))
 sphinxcontrib-spelling
 jupyter-sphinx
 discover
