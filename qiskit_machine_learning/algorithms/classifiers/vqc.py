@@ -82,8 +82,9 @@ class VQC(NeuralNetworkClassifier):
                 On each iteration an optimizer invokes the callback and passes current weights
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
-            sampler: a Sampler primitive instance to be used by the underlying
-                :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` neural network.
+            sampler: an optional Sampler primitive instance to be used by the underlying
+                :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` neural network. If
+                ``None`` is passed then an instance of the reference Sampler will be used.
         Raises:
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz

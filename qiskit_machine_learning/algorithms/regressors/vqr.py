@@ -59,12 +59,7 @@ class VQR(NeuralNetworkRegressor):
                 QNN. If ``None`` then the :class:`~qiskit.circuit.library.RealAmplitudes`
                 circuit is used.
             observable: The observable to be measured in the underlying QNN. If ``None``,
-                use the default :math:`Z^{\otimes num\_qubits}` observable. If ``quantum_instance``
-                is set and the ``estimator`` is ``None`` then the observable must be of type
-                :class:`~qiskit.QuantumCircuit` or :class:`~qiskit.opflow.OperatorBase`. Otherwise,
-                the type must be either
-                :class:`~qiskit.quantum_info.operators.base_operator.BaseOperator` or
-                :class:`~qiskit.opflow.PauliSumOp`.
+                use the default :math:`Z^{\otimes num\_qubits}` observable.
             loss: A target loss function to be used in training. Default is squared error.
             optimizer: An instance of an optimizer or a callable to be used in training.
                 Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
@@ -77,11 +72,9 @@ class VQR(NeuralNetworkRegressor):
                 On each iteration an optimizer invokes the callback and passes current weights
                 as an array and a computed value as a float of the objective function being
                 optimized. This allows to track how well optimization / training process is going on.
-            estimator: An estimator to be used to evaluate expectation values of the observable.
-                If ``None`` and quantum instance is not set, the
-                :class:`qiskit.primitives.Estimator` is used. The underlying QNN will be of type
-                :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`, and the estimator
-                primitive will be used to compute the neural network's results.
+            estimator: an optional Estimator primitive instance to be used by the underlying
+                :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` neural network. If
+                ``None`` is passed then an instance of the reference Estimator will be used.
         Raises:
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
