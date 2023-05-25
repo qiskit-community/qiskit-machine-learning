@@ -9,11 +9,6 @@ ddt>=1.2.0,!=1.4.0
 reno>=3.4.0
 Sphinx>=5.0
 sphinx-design>=0.2.0
-<<<<<<< HEAD
-sphinx-autodoc-typehints<1.14.0
-=======
-sphinx-gallery
->>>>>>> bd378ae (Docs, typehints and thumbnail (#596))
 sphinxcontrib-spelling
 jupyter-sphinx
 discover
