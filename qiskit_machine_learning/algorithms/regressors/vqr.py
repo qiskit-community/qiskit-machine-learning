@@ -17,7 +17,7 @@ from typing import Callable
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import Optimizer, Minimizer
-from qiskit.opflow import OperatorBase, PauliSumOp
+from qiskit.opflow import PauliSumOp
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 
@@ -35,7 +35,7 @@ class VQR(NeuralNetworkRegressor):
         num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
-        observable: QuantumCircuit | OperatorBase | BaseOperator | PauliSumOp | None = None,
+        observable: BaseOperator | PauliSumOp | None = None,
         loss: str | Loss = "squared_error",
         optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
