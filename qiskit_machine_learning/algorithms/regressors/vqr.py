@@ -79,8 +79,7 @@ class VQR(NeuralNetworkRegressor):
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
                 can't be adjusted to ``num_qubits``.
-            ValueError: if the type of the observable is not compatible with ``quantum_instance`` or
-                ``estimator``.
+            ValueError: if the type of the observable is not compatible with ``estimator``.
         """
         if observable is not None and not isinstance(observable, (BaseOperator, PauliSumOp)):
             raise ValueError(
