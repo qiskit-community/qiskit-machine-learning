@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -24,10 +24,9 @@ class SerializableModelMixin:
     def save(self, file_name: str) -> None:
         """
         Saves this model to the specified file. Internally, the model is serialized via ``dill``.
-        All parameters are saved, including a quantum instance that is referenced by internal
+        All parameters are saved, including a primitive instance that is referenced by internal
         objects. That means if a model is loaded from a file and is used, for instance, for
-        inference, the same quantum instance and a corresponding backend will be used even
-        if a cloud backend was used.
+        inference, the same primitive will be used even if a cloud primitive was used.
 
         Args:
             file_name: a file name or path where to save the model.
