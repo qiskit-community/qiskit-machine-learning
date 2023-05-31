@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    Fixed incorrect type conversions in :class:`~qiskit_machine_learning.connectors.TorchConnector`.
+    The bug was causing the connector to convert the output to the same type as the input data.
+    As a result, when an integer tensor was passed, the output would also be converted to an integer
+    tensor, leading to rounding errors.
