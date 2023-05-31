@@ -73,5 +73,10 @@ setuptools.setup(
         'torch': ["torch"],
         'sparse': ["sparse"],
     },
+    project_urls={
+        "Bug Tracker": "https://github.com/Qiskit/qiskit-machine-learning/issues",
+        "Documentation": "https://qiskit.org/ecosystem/machine-learning/",
+        "Source Code": "https://github.com/Qiskit/qiskit-machine-learning",
+    },
     zip_safe=False
 )
