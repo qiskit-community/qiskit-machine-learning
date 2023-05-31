@@ -122,8 +122,7 @@ class TorchConnector(Module):
 
                     # cast is required by mypy
                     result = cast(SparseArray, result).todense()
-                result_tensor = torch.from_numpy(result)
-                result_tensor = result_tensor.to(input_data.dtype)
+                result_tensor = torch.as_tensor(result, dtype=torch.float)
 
             # if the input was not a batch, then remove the batch-dimension from the result,
             # since the neural network will always treat input as a batch and cast to a
@@ -203,8 +202,8 @@ class TorchConnector(Module):
                     if neural_network.sparse:
                         # convert to dense
                         input_grad = input_grad.todense()
-                    input_grad = torch.from_numpy(input_grad)
-                    input_grad = input_grad.to(grad_output.dtype)
+                    input_grad = torch.as_tensor(input_grad, dtype=torch.float)
+
                     # same as above
                     input_grad = torch.einsum("ij,ijk->ik", grad_output.detach().cpu(), input_grad)
 
@@ -243,8 +242,7 @@ class TorchConnector(Module):
                     if neural_network.sparse:
                         # convert to dense
                         weights_grad = weights_grad.todense()
-                    weights_grad = torch.from_numpy(weights_grad)
-                    weights_grad = weights_grad.to(grad_output.dtype)
+                    weights_grad = torch.as_tensor(weights_grad, dtype=torch.float)
                     # same as above
                     weights_grad = torch.einsum(
                         "ij,ijk->k", grad_output.detach().cpu(), weights_grad
