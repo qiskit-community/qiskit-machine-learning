@@ -17,26 +17,28 @@ features:
     arguments specific to
     :class:`~qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel`.
 
-    For example, see the snippet below:
+    For an example, see the snippet below:
 
     .. code-block:: python
 
+       from qiskit.quantum_info import Statevector
+       from qiskit_machine_learning.kernels import TrainableFidelityStatevectorKernel
+       from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
+
        # Instantiate trainable fidelity statevector kernel.
        quantum_kernel = TrainableFidelityStatevectorKernel(
-           feature_map=fm,
+           feature_map=<your_feature_map>,
            statevector_type=Statevector,
-           training_parameters=training_parameters,
+           training_parameters=<your_training_parameters>,
            cache_size=None,
            auto_clear_cache=True,
            shots=None,
            enforce_psd=True,
        )
 
-       # Instantiate a quantum kernel trainer.
-       qkt = QuantumKernelTrainer(
-           quantum_kernel=quantum_kernel, loss="svc_loss", initial_point=[np.pi / 2]
-       )
+       # Instantiate a quantum kernel trainer (QKT).
+       qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel)
 
        # Train the kernel using QKT directly.
-       qkt_results = qkt.fit(X_train, y_train)
+       qkt_results = qkt.fit(<your_X_train>, <your_y_train>)
        optimized_kernel = qkt_results.quantum_kernel
