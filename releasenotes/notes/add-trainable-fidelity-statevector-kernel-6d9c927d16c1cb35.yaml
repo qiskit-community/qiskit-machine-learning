@@ -13,7 +13,7 @@ features:
 
     This class is used with
     :class:`~qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer` in an identical way to
-    :class:`~qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel`, except for the
+    :class:`~qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`, except for the
     arguments specific to
     :class:`~qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel`.
 
