@@ -164,7 +164,7 @@ class ParameterizedInitialize(Instruction):
         # cast ParameterExpressions that are fully bound to numbers
         cleaned_params = []
         for param in self.params:
-            if isinstance(param, (float, complex)) or len(param.parameters) == 0:
+            if not isinstance(param, ParameterExpression) or len(param.parameters) == 0:
                 cleaned_params.append(complex(param))
             else:
                 raise QiskitError("Cannot define a ParameterizedInitialize with unbound parameters")
