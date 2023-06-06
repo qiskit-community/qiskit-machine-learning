@@ -15,7 +15,13 @@
 from typing import Optional, List
 import numpy as np
 from qiskit.exceptions import QiskitError
-from qiskit.circuit import QuantumRegister, QuantumCircuit, ParameterVector, Instruction
+from qiskit.circuit import (
+    QuantumRegister,
+    QuantumCircuit,
+    ParameterVector,
+    Instruction,
+    ParameterExpression,
+)
 from qiskit.circuit.library import BlueprintCircuit
 
 
