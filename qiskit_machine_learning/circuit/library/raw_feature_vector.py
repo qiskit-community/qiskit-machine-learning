@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,7 +15,13 @@
 from typing import Optional, List
 import numpy as np
 from qiskit.exceptions import QiskitError
-from qiskit.circuit import QuantumRegister, QuantumCircuit, ParameterVector, Instruction
+from qiskit.circuit import (
+    QuantumRegister,
+    QuantumCircuit,
+    ParameterVector,
+    Instruction,
+    ParameterExpression,
+)
 from qiskit.circuit.library import BlueprintCircuit
 
 
@@ -164,7 +170,7 @@ class ParameterizedInitialize(Instruction):
         # cast ParameterExpressions that are fully bound to numbers
         cleaned_params = []
         for param in self.params:
-            if len(param.parameters) == 0:
+            if not isinstance(param, ParameterExpression) or len(param.parameters) == 0:
                 cleaned_params.append(complex(param))
             else:
                 raise QiskitError("Cannot define a ParameterizedInitialize with unbound parameters")
