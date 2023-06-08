@@ -73,7 +73,7 @@ nbsphinx_prolog = """
 
 vers = version.split(".")
 link_str = (
-    f" https://github.com/Qiskit/qiskit-machine-learning/blob/stable/{vers[0]}.{vers[1]}/docs/"
+    f" https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/{vers[0]}.{vers[1]}/docs/"
 )
 nbsphinx_prolog += link_str + "{{ docname }}"
 

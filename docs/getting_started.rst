@@ -62,7 +62,7 @@ See :ref:`optional_installs` for more information.
 
           .. code:: sh
 
-             git clone https://github.com/Qiskit/qiskit-machine-learning.git
+             git clone https://github.com/qiskit-community/qiskit-machine-learning.git
 
        2. Cloning the repository creates a local folder called ``qiskit-machine-learning``.
 

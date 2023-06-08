@@ -242,7 +242,7 @@ particular will be located at `docs/_build/html/release_notes.html`
 ## Installing Qiskit Machine Learning from source
 
 Please see the [Installing Qiskit Machine Learning from
-Source](https://github.com/Qiskit/qiskit-machine-learning#installation)
+Source](https://github.com/qiskit-community/qiskit-machine-learning#installation)
 section of the Qiskit documentation.
 
 Note: Machine Learning depends on Terra, and has optional dependence on Aer and IBM Q Provider, so
@@ -251,7 +251,7 @@ main branches so these should be installed from source too following the instruc
 the same location
 
 Machine Learning also has some other optional dependents see 
-[Machine Learning optional installs](https://github.com/Qiskit/qiskit-machine-learning#optional-installs) for
+[Machine Learning optional installs](https://github.com/qiskit-community/qiskit-machine-learning#optional-installs) for
 further information. Unit tests that require any of the optional dependents will check
 and skip the test if not installed.
 
