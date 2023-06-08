@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Updated :class:`~qiskit_machine_learning.circuit.library.RawFeatureVector` to support
+    `changes <https://github.com/Qiskit/qiskit-terra/pull/10183>`__ in the parameter assignment
+    introduced in Qiskit.
