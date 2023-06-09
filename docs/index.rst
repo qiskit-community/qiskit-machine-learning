@@ -77,7 +77,7 @@ Next Steps
     Tutorials <tutorials/index>
     API Reference <apidocs/qiskit_machine_learning>
     Release Notes <release_notes>
-    GitHub <https://github.com/Qiskit/qiskit-machine-learning>
+    GitHub <https://github.com/qiskit-community/qiskit-machine-learning>
 
 
 
