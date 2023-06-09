@@ -232,7 +232,7 @@ jobs:
           # get current version
           version=$(pip show qiskit-machine-learning | awk -F. '/^Version:/ { print substr($1,10), $2-1 }' OFS=.)
           # download stable version
-          wget https://codeload.github.com/Qiskit/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
+          wget https://codeload.github.com/qiskit-community/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
           unzip /tmp/repo.zip -d /tmp/
           # copy stable tutorials to main tutorials
           cp -R /tmp/qiskit-machine-learning-stable-$version/docs/tutorials/* docs/tutorials
