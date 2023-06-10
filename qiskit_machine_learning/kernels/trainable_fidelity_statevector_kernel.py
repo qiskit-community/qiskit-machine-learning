@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,26 +10,26 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Trainable Quantum Kernel"""
+"""Trainable Fidelity Statevector Kernel"""
 
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Sequence, Type
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms.state_fidelities import BaseStateFidelity
 from qiskit.circuit import Parameter, ParameterVector
+from qiskit.quantum_info import Statevector
 
-from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
+
+from .fidelity_statevector_kernel import FidelityStatevectorKernel, SV
 from .trainable_kernel import TrainableKernel
 
 
-class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
+class TrainableFidelityStatevectorKernel(TrainableKernel, FidelityStatevectorKernel):
     r"""
-    An implementation of the quantum kernel that is based on the
-    :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` algorithm and provides ability to
-    train it.
+    A trainable version of the
+    :class:`~qiskit_machine_learning.kernels.FidelityStatevectorKernel`.
 
     Finding good quantum kernels for a specific machine learning task is a big challenge in quantum
     machine learning. One way to choose the kernel is to add trainable parameters to the feature
@@ -47,10 +47,12 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
         self,
         *,
         feature_map: QuantumCircuit | None = None,
-        fidelity: BaseStateFidelity | None = None,
+        statevector_type: Type[SV] = Statevector,
         training_parameters: ParameterVector | Sequence[Parameter] | None = None,
+        cache_size: int | None = None,
+        auto_clear_cache: bool = True,
+        shots: int | None = None,
         enforce_psd: bool = True,
-        evaluate_duplicates: str = "off_diagonal",
     ) -> None:
         """
         Args:
@@ -59,58 +61,42 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
-            fidelity: An instance of the
-                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` primitive to be used
-                to compute fidelity between states. Default is
-                :class:`~qiskit.algorithms.state_fidelities.ComputeUncompute` which is created on
-                top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
+            statevector_type: The type of Statevector that will be instantiated using the
+                ``feature_map`` quantum circuit and used to compute the fidelity kernel. This type
+                should inherit from (and defaults to) :class:`~qiskit.quantum_info.Statevector`.
             training_parameters: Iterable containing :class:`~qiskit.circuit.Parameter` objects
                 which correspond to quantum gates on the feature map circuit which may be tuned.
                 If users intend to tune feature map parameters to find optimal values, this field
                 should be set.
+            cache_size: Maximum size of the statevector cache. When ``None`` this is unbounded.
+            auto_clear_cache: Determines whether the statevector cache is retained when
+                :meth:`evaluate` is called. The cache is automatically cleared by default.
+            shots: The number of shots. If ``None``, the exact fidelity is used. Otherwise, the
+                mean is taken of samples drawn from a binomial distribution with probability equal
+                to the exact fidelity.
             enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
-            evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
-               duplicate samples are found. Possible values are:
-
-                    - ``all`` means that all kernel matrix elements are evaluated, even the diagonal
-                      ones when training. This may introduce additional noise in the matrix.
-                    - ``off_diagonal`` when training the matrix diagonal is set to `1`, the rest
-                      elements are fully evaluated, e.g., for two identical samples in the
-                      dataset. When inferring, all elements are evaluated. This is the default
-                      value.
-                    - ``none`` when training the diagonal is set to `1` and if two identical samples
-                      are found in the dataset the corresponding matrix element is set to `1`.
-                      When inferring, matrix elements for identical samples are set to `1`.
         """
         super().__init__(
             feature_map=feature_map,
-            fidelity=fidelity,
+            statevector_type=statevector_type,
             training_parameters=training_parameters,
+            cache_size=cache_size,
+            auto_clear_cache=auto_clear_cache,
+            shots=shots,
             enforce_psd=enforce_psd,
-            evaluate_duplicates=evaluate_duplicates,
         )
 
-        # override the num of features defined in the base class
+        # Override the number of features defined in the base class.
         self._num_features = feature_map.num_parameters - self._num_training_parameters
         self._feature_parameters = [
             parameter
             for parameter in feature_map.parameters
             if parameter not in training_parameters
         ]
-        self._parameter_dict = {parameter: None for parameter in feature_map.parameters}
+        self._parameter_dict = {parameter: None for parameter in self.feature_map.parameters}
 
-    def _get_parameterization(
-        self, x_vec: np.ndarray, y_vec: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
+    def _evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool):
         new_x_vec = self._parameter_array(x_vec)
         new_y_vec = self._parameter_array(y_vec)
-
-        return super()._get_parameterization(new_x_vec, new_y_vec)
-
-    def _get_symmetric_parameterization(
-        self, x_vec: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
-        new_x_vec = self._parameter_array(x_vec)
-
-        return super()._get_symmetric_parameterization(new_x_vec)
+        return super()._evaluate(new_x_vec, new_y_vec, is_symmetric)

@@ -24,10 +24,8 @@ from ddt import ddt, idata, unpack
 from sklearn.svm import SVC
 
 from qiskit import QuantumCircuit
-from qiskit.algorithms.state_fidelities import ComputeUncompute
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
-from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals, optionals
 
 from qiskit_machine_learning.kernels import FidelityStatevectorKernel
@@ -56,9 +54,6 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
-
-        self.sampler = Sampler()
-        self.fidelity = ComputeUncompute(self.sampler)
 
         self.properties = {
             "samples_1": self.sample_train[0],
