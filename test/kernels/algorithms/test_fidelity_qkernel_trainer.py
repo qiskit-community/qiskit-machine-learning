@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,6 +18,7 @@ from functools import partial
 
 from test import QiskitMachineLearningTestCase
 
+from ddt import ddt, data
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
@@ -26,13 +27,20 @@ from qiskit.utils import algorithm_globals
 from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms.classifiers import QSVC
-from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
+from qiskit_machine_learning.kernels import (
+    TrainableFidelityQuantumKernel,
+    TrainableFidelityStatevectorKernel,
+)
 from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
 from qiskit_machine_learning.utils.loss_functions import SVCLoss
 
 
+@ddt
 class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
-    """Test QuantumKernelTrainer Algorithm"""
+    """Test QuantumKernelTrainer Algorithm
+
+    Tests usage with ``TrainableFidelityQuantumKernel`` and ``TrainableFidelityStatevectorKernel``.
+    """
 
     def setUp(self):
         super().setUp()
@@ -57,25 +65,34 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([1, 0])
 
-        self.quantum_kernel = TrainableFidelityQuantumKernel(
+    @data(
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
+    )
+    def test_default_fit(self, trainable_kernel_type):
+        """Test trainer with default parameters."""
+        quantum_kernel = trainable_kernel_type(
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
-
-    def test_default_fit(self):
-        """Test trainer with default parameters."""
-        qkt = QuantumKernelTrainer(quantum_kernel=self.quantum_kernel)
+        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel)
         qkt_result = qkt.fit(self.sample_train, self.label_train)
 
         self._fit_and_assert_score(qkt_result)
 
-    def test_fit_with_params(self):
+    @data(
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
+    )
+    def test_fit_with_params(self, trainable_kernel_type):
         """Test trainer with custom parameters."""
+        quantum_kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
         loss = SVCLoss(C=0.8, gamma="auto")
         optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
-        qkt = QuantumKernelTrainer(
-            quantum_kernel=self.quantum_kernel, loss=loss, optimizer=optimizer
-        )
+        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer)
         qkt_result = qkt.fit(self.sample_train, self.label_train)
 
         # Ensure user parameters are bound to real values
@@ -83,7 +100,11 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
 
         self._fit_and_assert_score(qkt_result)
 
-    def test_asymmetric_trainable_parameters(self):
+    @data(
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
+    )
+    def test_asymmetric_trainable_parameters(self, trainable_kernel_type):
         """Test when the number of trainable parameters does not equal to the number of features."""
         qc = QuantumCircuit(2)
         training_parameters = Parameter("θ")
@@ -92,7 +113,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         qc.rz(feature_params[0], 0)
         qc.rz(feature_params[1], 1)
 
-        quantum_kernel = TrainableFidelityQuantumKernel(
+        quantum_kernel = trainable_kernel_type(
             feature_map=qc,
             training_parameters=[training_parameters],
         )
