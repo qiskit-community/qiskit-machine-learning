@@ -117,6 +117,9 @@ class FidelityStatevectorKernel(BaseKernel):
         elif not np.array_equal(x_vec, y_vec):
             is_symmetric = False
 
+        return self._evaluate(x_vec, y_vec, is_symmetric)
+
+    def _evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool):
         kernel_shape = (x_vec.shape[0], y_vec.shape[0])
 
         x_svs = [self._get_statevector(tuple(x)) for x in x_vec]
