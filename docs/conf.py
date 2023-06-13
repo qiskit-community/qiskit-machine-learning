@@ -94,7 +94,7 @@ extensions = [
 ]
 templates_path = ["_templates"]
 
-nbsphinx_timeout = 360
+nbsphinx_timeout = 600
 nbsphinx_execute = os.getenv("QISKIT_DOCS_BUILD_TUTORIALS", "never")
 nbsphinx_widgets_path = ""
 nbsphinx_thumbnails = {
