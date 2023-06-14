@@ -159,7 +159,7 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
             # vector.
             # loss vector is a loss of a particular output value(value of i) versus true labels.
             # we do this across all samples.
-            val += probs[:, i] @ self._loss(np.full(num_samples, i), self._y)
+            val += probs[:, i] @ self._loss(np.full(num_samples, i), self._y[:, i])
         val = val / self._num_samples
 
         return val
@@ -174,7 +174,7 @@ class MultiClassObjectiveFunction(ObjectiveFunction):
         for i in range(num_outputs):
             # similar to what is in the objective, but we compute a matrix multiplication of
             # weight probability gradients and a loss vector.
-            grad += weight_prob_grad[:, i, :].T @ self._loss(np.full(num_samples, i), self._y)
+            grad += weight_prob_grad[:, i, :].T @ self._loss(np.full(num_samples, i), self._y[:, i])
 
         grad = grad / self._num_samples
         return grad
