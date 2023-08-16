@@ -24,8 +24,9 @@ import numpy as np
 from qiskit.circuit import QuantumCircuit, Parameter
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import QuantumInstance, algorithm_globals, optionals
-from qiskit.compiler.transpiler import PassManagerConfig, level_1_pass_manager, level_2_pass_manager
 from qiskit.providers.fake_provider import FakeToronto
+from qiskit.transpiler import PassManagerConfig
+from qiskit.transpiler.preset_passmanagers import level_1_pass_manager, level_2_pass_manager
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import CircuitQNN
