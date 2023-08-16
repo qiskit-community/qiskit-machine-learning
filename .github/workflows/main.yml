@@ -204,6 +204,7 @@ jobs:
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
+          pip install jupyter
           pip install torchvision
           sudo apt-get install -y pandoc graphviz
         shell: bash
