@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2021.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -47,7 +47,7 @@ def discover_files(code_paths, exclude_folders):
 
 def validate_header(file_path):
     """Validate the header for a single file"""
-    header = """# This code is part of Qiskit.
+    header = """# This code is part of a Qiskit project.
 #
 """
     apache_text = """#
@@ -69,7 +69,7 @@ def validate_header(file_path):
             return file_path, False, "Header not found in first 5 lines"
         if count <= 2 and pep263.match(line):
             return file_path, False, "Unnecessary encoding specification (PEP 263, 3120)"
-        if line == "# This code is part of Qiskit.\n":
+        if line == "# This code is part of a Qiskit project.\n":
             start = index
             break
     if "".join(lines[start : start + 2]) != header:
