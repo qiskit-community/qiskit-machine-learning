@@ -20,7 +20,7 @@ SOURCE_DIR=`pwd`
 SOURCE_LANG='en'
 
 TARGET_REPOSITORY="git@github.com:qiskit-community/qiskit-translations.git"
-TARGET_BRANCH_PO="master"
+TARGET_BRANCH_PO="main"
 
 DOC_DIR_PO="docs/locale/"
 
