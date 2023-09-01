@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2018, 2021.
+# (C) Copyright IBM 2018, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -20,7 +20,7 @@ SOURCE_DIR=`pwd`
 SOURCE_LANG='en'
 
 TARGET_REPOSITORY="git@github.com:qiskit-community/qiskit-translations.git"
-TARGET_BRANCH_PO="master"
+TARGET_BRANCH_PO="main"
 
 DOC_DIR_PO="docs/locale/"
 
