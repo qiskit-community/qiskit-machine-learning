@@ -35,8 +35,8 @@ else:
 
 class SamplingNeuralNetwork(NeuralNetwork):
     """
-    A sampling neural network abstract class for all (quantum) neural networks within Qiskit's
-    machine learning module that generate samples instead of (expected) values.
+    A sampling neural network abstract class for all (quantum) neural networks within the
+    Qiskit Machine Learning module that generate samples instead of (expected) values.
     """
 
     def __init__(

@@ -16,13 +16,13 @@ from qiskit.exceptions import QiskitError
 
 
 class QiskitMachineLearningError(QiskitError):
-    """Class for errors returned by Qiskit's machine learning module."""
+    """Class for errors returned by Qiskit Machine Learning module."""
 
     pass
 
 
 class QiskitMachineLearningWarning(UserWarning):
-    """Class for warning returned by Qiskit's machine learning module."""
+    """Class for warning returned by Qiskit Machine Learning module."""
 
     def __init__(self, *message):
         """Set the error message."""

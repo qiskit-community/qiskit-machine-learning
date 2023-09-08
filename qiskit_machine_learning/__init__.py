@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-=================================================================
-Qiskit's Machine Learning module (:mod:`qiskit_machine_learning`)
-=================================================================
+===============================================================
+Qiskit Machine Learning module (:mod:`qiskit_machine_learning`)
+===============================================================
 
 .. currentmodule:: qiskit_machine_learning
 
-This is the Qiskit`s machine learning module. There is an initial set of function here that
-will be built out over time. At present it has sample sets that can be used with
+This is the Qiskit Machine Learning module. There is an initial set of function here that
+will be built out over time. At present, it has sample sets that can be used with
 :mod:`~qiskit_machine_learning.algorithms.classifiers` and circuits used in machine learning
 applications.
 

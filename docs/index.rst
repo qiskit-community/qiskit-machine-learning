@@ -51,7 +51,8 @@ In addition to the models provided directly in Qiskit Machine Learning, it has t
 :class:`~qiskit_machine_learning.connectors.TorchConnector`,
 which allows users to integrate all of our quantum neural networks directly into the
 `PyTorch <https://pytorch.org>`__
-open source machine learning library. Thanks to Qiskit's gradient algorithms, this includes automatic
+open source machine learning library. Thanks to Qiskit Algorithm's gradient algorithms,
+this includes automatic
 differentiation - the overall gradients computed by `PyTorch <https://pytorch.org>`__
 during the backpropagation take into
 account quantum neural networks, too. The flexible design also allows the building of connectors
