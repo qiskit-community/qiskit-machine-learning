@@ -163,7 +163,7 @@ Machine Learning continues to grow with the help and work of
 [many people](https://github.com/qiskit-community/qiskit-machine-learning/graphs/contributors), who contribute
 to the project at different levels.
 If you use Qiskit, please cite as per the provided
-[BibTeX file](https://github.com/Qiskit/qiskit/blob/master/Qiskit.bib).
+[BibTeX file](https://github.com/Qiskit/qiskit/blob/main/CITATION.bib).
 
 ## License
 
