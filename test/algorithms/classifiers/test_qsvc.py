@@ -14,7 +14,6 @@
 import os
 import tempfile
 import unittest
-import warnings
 
 from test import QiskitMachineLearningTestCase
 

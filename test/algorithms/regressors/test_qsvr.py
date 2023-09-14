@@ -14,7 +14,6 @@
 import os
 import tempfile
 import unittest
-import warnings
 
 from test import QiskitMachineLearningTestCase
 
@@ -23,10 +22,7 @@ import numpy as np
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVR, SerializableModelMixin
-from qiskit_machine_learning.exceptions import (
-    QiskitMachineLearningError,
-    QiskitMachineLearningWarning,
-)
+from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 

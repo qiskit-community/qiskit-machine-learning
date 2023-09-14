@@ -20,7 +20,6 @@ from test import QiskitMachineLearningTestCase
 import functools
 import itertools
 import unittest
-import warnings
 
 from ddt import ddt, idata, unpack
 import numpy as np
