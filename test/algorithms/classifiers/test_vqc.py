@@ -86,14 +86,6 @@ class TestVQC(QiskitMachineLearningTestCase):
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
         }
 
-        # ignore deprecation warnings
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-    def tearDown(self) -> None:
-        # restore warnings
-        super().tearDown()
-        warnings.filterwarnings("always", category=DeprecationWarning)
-
     @idata(itertools.product(NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS))
     @unpack
     def test_VQC(self, num_qubits, f_m, ans, opt, d_s):
