@@ -42,7 +42,6 @@ Quantum Kernels
    :toctree: ../stubs/
    :nosignatures:
 
-   QuantumKernel
    BaseKernel
    FidelityQuantumKernel
    FidelityStatevectorKernel
@@ -59,7 +58,6 @@ Submodules
    algorithms
 """
 
-from .quantum_kernel import QuantumKernel
 from .base_kernel import BaseKernel
 from .fidelity_quantum_kernel import FidelityQuantumKernel
 from .fidelity_statevector_kernel import FidelityStatevectorKernel
@@ -68,7 +66,6 @@ from .trainable_fidelity_quantum_kernel import TrainableFidelityQuantumKernel
 from .trainable_fidelity_statevector_kernel import TrainableFidelityStatevectorKernel
 
 __all__ = [
-    "QuantumKernel",
     "BaseKernel",
     "FidelityQuantumKernel",
     "FidelityStatevectorKernel",
