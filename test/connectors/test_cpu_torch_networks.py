@@ -29,7 +29,6 @@ class TestCPUTorchNetworks(QiskitMachineLearningTestCase, TestTorchNetworks):
 
     def tearDown(self) -> None:
         super().tearDown()
-        super().tear_down()
 
 
 if __name__ == "__main__":

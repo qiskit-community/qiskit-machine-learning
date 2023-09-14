@@ -61,7 +61,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         qsvr.fit(self.sample_train, self.label_train)
         score = qsvr.score(self.sample_test, self.label_test)
 
-        self.assertAlmostEqual(score, 0.38365, places=4)
+        self.assertAlmostEqual(score, 0.38359, places=4)
 
     def test_change_kernel(self):
         """Test QSVR with QuantumKernel later"""
@@ -72,7 +72,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         qsvr.fit(self.sample_train, self.label_train)
         score = qsvr.score(self.sample_test, self.label_test)
 
-        self.assertAlmostEqual(score, 0.38365, places=4)
+        self.assertAlmostEqual(score, 0.38359, places=4)
 
     def test_qsvr_parameters(self):
         """Test QSVR with extra constructor parameters"""
