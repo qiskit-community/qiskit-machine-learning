@@ -20,7 +20,7 @@ from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from qiskit.primitives import BaseSampler
 
-from ...neural_networks import CircuitQNN, SamplerQNN
+from ...neural_networks import SamplerQNN
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 
@@ -158,7 +158,7 @@ class VQC(NeuralNetworkClassifier):
         num_classes = self._num_classes
 
         # instance check required by mypy (alternative to cast)
-        if isinstance(self._neural_network, (CircuitQNN, SamplerQNN)):
+        if isinstance(self._neural_network, SamplerQNN):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
 
         function = self._create_objective(X, y)

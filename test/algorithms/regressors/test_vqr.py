@@ -19,7 +19,6 @@ from ddt import data, ddt
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit.opflow import StateFn
 from qiskit.primitives import Estimator
 from qiskit.utils import algorithm_globals
 
@@ -117,8 +116,6 @@ class TestVQR(QiskitMachineLearningTestCase):
         """Test VQR with a wrong observable."""
         with self.assertRaises(ValueError):
             _ = VQR(num_qubits=2, observable=QuantumCircuit(2))
-        with self.assertRaises(ValueError):
-            _ = VQR(num_qubits=2, observable=StateFn(QuantumCircuit(2)))
 
 
 if __name__ == "__main__":

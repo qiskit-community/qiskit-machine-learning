@@ -17,7 +17,6 @@ from typing import Callable
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import Optimizer, Minimizer
-from qiskit.opflow import PauliSumOp
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 
@@ -35,7 +34,7 @@ class VQR(NeuralNetworkRegressor):
         num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
-        observable: BaseOperator | PauliSumOp | None = None,
+        observable: BaseOperator | None = None,
         loss: str | Loss = "squared_error",
         optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
@@ -81,10 +80,10 @@ class VQR(NeuralNetworkRegressor):
                 can't be adjusted to ``num_qubits``.
             ValueError: if the type of the observable is not compatible with ``estimator``.
         """
-        if observable is not None and not isinstance(observable, (BaseOperator, PauliSumOp)):
+        if observable is not None and not isinstance(observable, BaseOperator):
             raise ValueError(
                 f"Unsupported type of the observable, expected "
-                f"'BaseOperator | PauliSumOp', got {type(observable)}"
+                f"'BaseOperator', got {type(observable)}"
             )
 
         self._estimator = estimator
