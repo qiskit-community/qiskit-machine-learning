@@ -11,6 +11,9 @@ upgrade:
     Qiskit Machine Learning classes based on the deprecated Qiskit classes have been
     removed:
 
+      - Class :class:`qiskit_machine_learning.neural_networks.SamplingNeuralNetwork` is removed and
+        has no direct replacement as this is a base class.
+
       - Class :class:`qiskit_machine_learning.neural_networks.CircuitQNN` is removed and
         is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.
 

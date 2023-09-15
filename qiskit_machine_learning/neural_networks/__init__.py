@@ -35,7 +35,6 @@ Neural Network Base Classes
    :nosignatures:
 
    NeuralNetwork
-   SamplingNeuralNetwork
 
 Neural Networks
 ===============
@@ -61,12 +60,10 @@ Neural Network Metrics
 from .effective_dimension import EffectiveDimension, LocalEffectiveDimension
 from .estimator_qnn import EstimatorQNN
 from .neural_network import NeuralNetwork
-from .sampling_neural_network import SamplingNeuralNetwork
 from .sampler_qnn import SamplerQNN
 
 __all__ = [
     "NeuralNetwork",
-    "SamplingNeuralNetwork",
     "EffectiveDimension",
     "LocalEffectiveDimension",
     "EstimatorQNN",
