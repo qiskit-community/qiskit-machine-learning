@@ -96,7 +96,7 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
         self._feature_parameters = [
             parameter
             for parameter in feature_map.parameters
-            if parameter not in training_parameters
+            if parameter not in self._training_parameters
         ]
         self._parameter_dict = {parameter: None for parameter in feature_map.parameters}
 

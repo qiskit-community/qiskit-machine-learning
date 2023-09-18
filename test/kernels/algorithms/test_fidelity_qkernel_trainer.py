@@ -104,6 +104,22 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         TrainableFidelityQuantumKernel,
         TrainableFidelityStatevectorKernel,
     )
+    def test_fit_with_no_params(self, trainable_kernel_type):
+        """Test trainer with custom parameters."""
+        quantum_kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=None,
+        )
+        loss = SVCLoss(C=0.8, gamma="auto")
+        optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
+        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer)
+        with self.assertRaises(ValueError):
+            qkt.fit(self.sample_train, self.label_train)
+
+    @data(
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
+    )
     def test_asymmetric_trainable_parameters(self, trainable_kernel_type):
         """Test when the number of trainable parameters does not equal to the number of features."""
         qc = QuantumCircuit(2)
