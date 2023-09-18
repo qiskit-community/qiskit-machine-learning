@@ -139,7 +139,7 @@ class FidelityStatevectorKernel(BaseKernel):
 
     def _get_statevector_(self, param_values: tuple[float]) -> np.ndarray:
         # lru_cache requires hashable function arguments.
-        qc = self._feature_map.bind_parameters(param_values)
+        qc = self._feature_map.assign_parameters(param_values)
         return self._statevector_type(qc).data
 
     def _compute_kernel_entry(self, x: np.ndarray, y: np.ndarray) -> float:

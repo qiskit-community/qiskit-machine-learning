@@ -55,7 +55,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         params = np.random.random(8) + 1j * np.random.random(8)
         params /= np.linalg.norm(params)
 
-        bound = circuit.bind_parameters(params)
+        bound = circuit.assign_parameters(params)
 
         ref = QuantumCircuit(3)
         ref.initialize(params, ref.qubits)
@@ -128,7 +128,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         raw = RawFeatureVector(4)
         circuit.append(raw, [0, 1])
 
-        bound = circuit.bind_parameters([1, 0, 0, 0])
+        bound = circuit.assign_parameters([1, 0, 0, 0])
 
         self.assertTrue(Statevector.from_label("00").equiv(bound))
 
