@@ -98,6 +98,11 @@ class TestTorchConnector(TestTorch):
 
             np.testing.assert_almost_equal(connector_output.numpy(), qnn_output)
 
+        # test with a wrong input size
+        wrong_input = torch.rand((1, model.neural_network.num_inputs + 1))
+        with self.assertRaises(QiskitMachineLearningError):
+            model(wrong_input)
+
     def _validate_backward(self, model: TorchConnector):
         import torch
 
