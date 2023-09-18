@@ -1,2 +1,3 @@
 numpy>=1.20.0
 ipython<8.13;python_version<'3.9'
+python-subunit<1.4.3
