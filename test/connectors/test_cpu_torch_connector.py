@@ -27,10 +27,6 @@ class TestCPUTorchConnector(QiskitMachineLearningTestCase, TestTorchConnector):
 
         self._device = torch.device("cpu")
 
-    def tearDown(self) -> None:
-        super().tear_down()
-        super().tearDown()
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -20,7 +20,6 @@ from test import QiskitMachineLearningTestCase
 import functools
 import itertools
 import unittest
-import warnings
 
 from ddt import ddt, idata, unpack
 import numpy as np
@@ -85,14 +84,6 @@ class TestVQC(QiskitMachineLearningTestCase):
             "multiclass": _create_dataset(10, 3),
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
         }
-
-        # ignore deprecation warnings
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-    def tearDown(self) -> None:
-        # restore warnings
-        super().tearDown()
-        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @idata(itertools.product(NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS))
     @unpack
@@ -171,7 +162,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         self.assertGreater(score, 0.5)
 
     def _get_num_classes(self, func):
-        """Wrapper to record the number of classes assumed when building CircuitQNN."""
+        """Wrapper to record the number of classes assumed when building SamplerQNN."""
 
         @functools.wraps(func)
         def wrapper(num_classes):
@@ -207,7 +198,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         with self.subTest("Test all batches assume the correct number of classes."):
             self.assertTrue((np.asarray(num_classes_list) == 3).all())
 
-        with self.subTest("Check correct number of classes is used to build CircuitQNN."):
+        with self.subTest("Check correct number of classes is used to build SamplerQNN."):
             self.assertTrue((np.asarray(self.num_classes_by_batch) == 3).all())
 
     def test_multilabel_targets_raise_an_error(self):

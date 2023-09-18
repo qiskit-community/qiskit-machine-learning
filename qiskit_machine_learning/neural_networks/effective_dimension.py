@@ -21,7 +21,6 @@ from scipy.special import logsumexp
 from qiskit.utils import algorithm_globals
 from qiskit_machine_learning import QiskitMachineLearningError
 from .estimator_qnn import EstimatorQNN
-from .opflow_qnn import OpflowQNN
 from .neural_network import NeuralNetwork
 
 logger = logging.getLogger(__name__)
@@ -173,9 +172,9 @@ class EffectiveDimension:
             grads[self._num_input_samples * i : self._num_input_samples * (i + 1)] = backward_pass
             outputs[self._num_input_samples * i : self._num_input_samples * (i + 1)] = forward_pass
 
-        # post-processing in the case of OpflowQNN and EstimatorQNN output, to match
-        # the CircuitQNN output format
-        if isinstance(self._model, (OpflowQNN, EstimatorQNN)):
+        # post-processing in the case of EstimatorQNN output, to match
+        # the SamplerQNN output format
+        if isinstance(self._model, EstimatorQNN):
             grads = np.concatenate([grads / 2, -1 * grads / 2], 1)
             outputs = np.concatenate([(outputs + 1) / 2, (1 - outputs) / 2], 1)
 

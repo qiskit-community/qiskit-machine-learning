@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import functools
 import itertools
+import sys
 import unittest
 
 from test import QiskitMachineLearningTestCase
@@ -126,7 +127,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             # all eigenvalues are non-negative with some tolerance
             self.assertTrue(np.all(np.greater_equal(w, -1e-10)))
 
+    # todo: enable the test on macOS when fixed: https://github.com/Qiskit/qiskit-aer/issues/1886
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    @unittest.skipIf(sys.platform.startswith("darwin"), "macOS is not supported")
     def test_aer_statevector(self):
         """Test statevector kernel when using AerStatevector type statevectors."""
         from qiskit_aer.quantum_info import AerStatevector

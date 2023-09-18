@@ -25,7 +25,6 @@ from qiskit.algorithms.gradients import (
     ParamShiftEstimatorGradient,
 )
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.opflow import PauliSumOp
 from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
@@ -107,7 +106,7 @@ class EstimatorQNN(NeuralNetwork):
         *,
         circuit: QuantumCircuit,
         estimator: BaseEstimator | None = None,
-        observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp | None = None,
+        observables: Sequence[BaseOperator] | BaseOperator | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         gradient: BaseEstimatorGradient | None = None,
@@ -152,7 +151,7 @@ class EstimatorQNN(NeuralNetwork):
         self._circuit = circuit
         if observables is None:
             observables = SparsePauliOp.from_list([("Z" * circuit.num_qubits, 1)])
-        if isinstance(observables, (PauliSumOp, BaseOperator)):
+        if isinstance(observables, BaseOperator):
             observables = (observables,)
         self._observables = observables
         if isinstance(circuit, QNNCircuit):
@@ -180,7 +179,7 @@ class EstimatorQNN(NeuralNetwork):
         return copy(self._circuit)
 
     @property
-    def observables(self) -> Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp:
+    def observables(self) -> Sequence[BaseOperator] | BaseOperator:
         """Returns the underlying observables of this QNN."""
         return copy(self._observables)
 

@@ -333,7 +333,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
 
         with self.subTest("no parameters"):
-            qc = qc.bind_parameters([1, 2])
+            qc = qc.assign_parameters([1, 2])
 
             sampler_qnn = SamplerQNN(
                 circuit=qc,

@@ -35,7 +35,6 @@ Neural Network Base Classes
    :nosignatures:
 
    NeuralNetwork
-   SamplingNeuralNetwork
 
 Neural Networks
 ===============
@@ -44,9 +43,6 @@ Neural Networks
    :toctree: ../stubs/
    :nosignatures:
 
-   OpflowQNN
-   TwoLayerQNN
-   CircuitQNN
    EstimatorQNN
    SamplerQNN
 
@@ -61,21 +57,13 @@ Neural Network Metrics
    LocalEffectiveDimension
 """
 
-from .circuit_qnn import CircuitQNN
 from .effective_dimension import EffectiveDimension, LocalEffectiveDimension
 from .estimator_qnn import EstimatorQNN
 from .neural_network import NeuralNetwork
-from .opflow_qnn import OpflowQNN
-from .sampling_neural_network import SamplingNeuralNetwork
-from .two_layer_qnn import TwoLayerQNN
 from .sampler_qnn import SamplerQNN
 
 __all__ = [
     "NeuralNetwork",
-    "OpflowQNN",
-    "TwoLayerQNN",
-    "SamplingNeuralNetwork",
-    "CircuitQNN",
     "EffectiveDimension",
     "LocalEffectiveDimension",
     "EstimatorQNN",

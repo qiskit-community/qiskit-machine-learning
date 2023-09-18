@@ -171,7 +171,7 @@ CASE_DATA = {
 
 
 class TestEstimatorQNN(QiskitMachineLearningTestCase):
-    """EstimatorQNN Tests. The correct references is obtained from OpflowQNN"""
+    """EstimatorQNN Tests. The correct references is obtained from EstimatorQNN"""
 
     def _test_network_passes(
         self,
