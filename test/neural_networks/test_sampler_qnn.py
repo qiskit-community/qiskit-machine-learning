@@ -24,7 +24,7 @@ from ddt import ddt, idata
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN

@@ -20,7 +20,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC, SerializableModelMixin
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.exceptions import (

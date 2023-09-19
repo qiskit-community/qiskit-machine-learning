@@ -19,8 +19,8 @@ from typing import Sequence
 
 import numpy as np
 
-from qiskit.utils.algorithm_globals import algorithm_globals
 from qiskit_algorithms.optimizers import Optimizer, SPSA, Minimizer
+from qiskit_algorithms.utils import algorithm_globals
 from qiskit_algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
 

@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Dict
 
 import numpy as np
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin

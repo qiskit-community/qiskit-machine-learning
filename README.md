@@ -92,9 +92,8 @@ be classified.
 
 ```python
 from qiskit.circuit.library import TwoLocal, ZZFeatureMap
-from qiskit.utils import algorithm_globals
-
 from qiskit_algorithms.optimizers import COBYLA
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.datasets import ad_hoc_data

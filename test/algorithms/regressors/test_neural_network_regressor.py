@@ -24,8 +24,8 @@ import numpy as np
 from ddt import ddt, unpack, idata
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit.utils import algorithm_globals
 from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
+from qiskit_algorithms.utils import algorithm_globals
 from scipy.optimize import minimize
 
 from qiskit_machine_learning import QiskitMachineLearningError

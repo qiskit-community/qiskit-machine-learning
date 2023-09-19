@@ -20,7 +20,8 @@ from functools import reduce
 from typing import Tuple, Dict, List
 
 import numpy as np
-from qiskit.utils import algorithm_globals, optionals
+from qiskit.utils import optionals
+from qiskit_algorithms.utils import algorithm_globals
 from sklearn import preprocessing
 
 

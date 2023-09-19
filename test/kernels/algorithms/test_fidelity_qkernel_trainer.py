@@ -23,7 +23,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms.classifiers import QSVC

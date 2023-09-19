@@ -26,8 +26,8 @@ import scipy
 from ddt import ddt, data, idata, unpack
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import algorithm_globals, optionals
 from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
+from qiskit_algorithms.utils import algorithm_globals, optionals
 from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms import SerializableModelMixin

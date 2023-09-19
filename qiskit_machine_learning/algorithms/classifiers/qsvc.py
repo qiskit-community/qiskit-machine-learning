@@ -15,7 +15,7 @@
 import warnings
 from typing import Optional
 
-from qiskit.utils.algorithm_globals import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin

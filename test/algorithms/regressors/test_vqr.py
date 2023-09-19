@@ -19,8 +19,8 @@ from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.primitives import Estimator
-from qiskit.utils import algorithm_globals
 from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQR
 

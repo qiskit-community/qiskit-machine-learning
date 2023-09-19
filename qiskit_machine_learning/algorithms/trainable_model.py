@@ -16,8 +16,8 @@ from abc import abstractmethod
 from typing import Callable
 
 import numpy as np
-from qiskit.utils import algorithm_globals
 from qiskit_algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
