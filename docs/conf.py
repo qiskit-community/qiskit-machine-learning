@@ -197,6 +197,7 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
     "qiskit": ("https://qiskit.org/documentation/", None),
+    "qiskit-algorithms": ("https://qiskit.org/ecosystem/algorithms/", None),
 }
 
 html_context = {"analytics_enabled": True}

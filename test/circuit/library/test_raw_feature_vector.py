@@ -18,12 +18,12 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import qiskit
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
 from qiskit.utils import algorithm_globals
+from qiskit_algorithms.optimizers import COBYLA
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector

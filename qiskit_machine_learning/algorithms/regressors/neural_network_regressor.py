@@ -14,7 +14,7 @@
 from typing import Optional
 
 import numpy as np
-from qiskit.algorithms.optimizers import OptimizerResult
+from qiskit_algorithms.optimizers import OptimizerResult
 from sklearn.base import RegressorMixin
 
 from ..objective_functions import (

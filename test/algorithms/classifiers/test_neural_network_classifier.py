@@ -24,10 +24,10 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 import scipy
 from ddt import ddt, data, idata, unpack
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
 from qiskit.utils import algorithm_globals, optionals
+from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
 from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms import SerializableModelMixin

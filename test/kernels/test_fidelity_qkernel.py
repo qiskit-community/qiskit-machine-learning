@@ -23,15 +23,15 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import ddt, idata, unpack
 from qiskit import QuantumCircuit
-from qiskit.algorithms.state_fidelities import (
-    ComputeUncompute,
-    BaseStateFidelity,
-    StateFidelityResult,
-)
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
 from qiskit.utils import algorithm_globals
+from qiskit_algorithms.state_fidelities import (
+    ComputeUncompute,
+    BaseStateFidelity,
+    StateFidelityResult,
+)
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
