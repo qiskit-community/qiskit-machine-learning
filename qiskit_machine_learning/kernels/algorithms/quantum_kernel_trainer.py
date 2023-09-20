@@ -19,9 +19,9 @@ from typing import Sequence
 
 import numpy as np
 
-from qiskit.utils.algorithm_globals import algorithm_globals
-from qiskit.algorithms.optimizers import Optimizer, SPSA, Minimizer
-from qiskit.algorithms.variational_algorithm import VariationalResult
+from qiskit_algorithms.optimizers import Optimizer, SPSA, Minimizer
+from qiskit_algorithms.utils import algorithm_globals
+from qiskit_algorithms.variational_algorithm import VariationalResult
 from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
 
 from qiskit_machine_learning.kernels import TrainableKernel
@@ -102,12 +102,12 @@ class QuantumKernelTrainer:
                 passed as the loss function, then the underlying
                 :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss` object will exhibit
                 default behavior.
-            optimizer: An instance of :class:`~qiskit.algorithms.optimizers.Optimizer` or a
+            optimizer: An instance of :class:`~qiskit_algorithms.optimizers.Optimizer` or a
                 callable to be used in training. Refer to
-                :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on the
+                :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on the
                 callable protocol. Since no analytical gradient is defined for kernel loss
                 functions, gradient-based optimizers are not recommended for training kernels. When
-                `None` defaults to :class:`~qiskit.algorithms.optimizers.SPSA`.
+                `None` defaults to :class:`~qiskit_algorithms.optimizers.SPSA`.
             initial_point: Initial point from which the optimizer will begin.
 
         Raises:

@@ -12,7 +12,7 @@ without deep quantum computing knowledge. On the other hand, Qiskit Machine Lear
 and users can easily extend it to support cutting-edge quantum machine learning research.
 
 Qiskit Machine Learning provides the :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`
-class class that makes use of the :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` algorithm
+class class that makes use of the :class:`~qiskit_algorithms.state_fidelities.BaseStateFidelity` algorithm
 introduced in Qiskit and can be easily used to directly compute kernel matrices for given datasets
 or can be passed to a Quantum Support Vector Classifier
 (:class:`~qiskit_machine_learning.algorithms.QSVC`) or

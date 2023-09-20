@@ -17,10 +17,9 @@ Qiskit Machine Learning module (:mod:`qiskit_machine_learning`)
 
 .. currentmodule:: qiskit_machine_learning
 
-This is the Qiskit Machine Learning module. There is an initial set of function here that
-will be built out over time. At present, it has sample sets that can be used with
-:mod:`~qiskit_machine_learning.algorithms.classifiers` and circuits used in machine learning
-applications.
+Qiskit Machine Learning is an ML framework that comes with essential tools like quantum kernels and
+quantum neural networks. These tools are the building blocks of the framework and can be used for
+building and training classification, regression, and other models.
 
 .. autosummary::
    :toctree: ../stubs/

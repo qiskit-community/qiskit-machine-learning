@@ -16,9 +16,9 @@ from typing import Callable
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms.optimizers import Optimizer, Minimizer
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit_algorithms.optimizers import Optimizer, Minimizer
 
 from .neural_network_regressor import NeuralNetworkRegressor
 from ...neural_networks import EstimatorQNN
@@ -61,9 +61,9 @@ class VQR(NeuralNetworkRegressor):
                 use the default :math:`Z^{\otimes num\_qubits}` observable.
             loss: A target loss function to be used in training. Default is squared error.
             optimizer: An instance of an optimizer or a callable to be used in training.
-                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                Refer to :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on
                 the callable protocol. When `None` defaults to
-                :class:`~qiskit.algorithms.optimizers.SLSQP`.
+                :class:`~qiskit_algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: A reference to a user's callback function that has two parameters and

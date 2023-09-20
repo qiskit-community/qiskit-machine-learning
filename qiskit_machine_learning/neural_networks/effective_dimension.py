@@ -18,7 +18,7 @@ from typing import Union, List, Tuple
 import numpy as np
 from scipy.special import logsumexp
 
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from qiskit_machine_learning import QiskitMachineLearningError
 from .estimator_qnn import EstimatorQNN
 from .neural_network import NeuralNetwork

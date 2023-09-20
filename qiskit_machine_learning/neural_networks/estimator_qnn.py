@@ -19,15 +19,15 @@ from copy import copy
 from typing import Sequence
 
 import numpy as np
-from qiskit.algorithms.gradients import (
-    BaseEstimatorGradient,
-    EstimatorGradientResult,
-    ParamShiftEstimatorGradient,
-)
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit_algorithms.gradients import (
+    BaseEstimatorGradient,
+    EstimatorGradientResult,
+    ParamShiftEstimatorGradient,
+)
 
 from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -136,7 +136,7 @@ class EstimatorQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
-                :class:`~qiskit.algorithms.gradients.ParamShiftEstimatorGradient`, will be used.
+                :class:`~qiskit_algorithms.gradients.ParamShiftEstimatorGradient`, will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using

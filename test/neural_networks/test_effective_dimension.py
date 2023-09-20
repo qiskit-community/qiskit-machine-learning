@@ -20,7 +20,7 @@ from ddt import ddt, data, unpack
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.neural_networks import (
     EffectiveDimension,

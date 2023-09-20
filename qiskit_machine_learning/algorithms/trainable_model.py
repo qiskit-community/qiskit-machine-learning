@@ -16,8 +16,8 @@ from abc import abstractmethod
 from typing import Callable
 
 import numpy as np
-from qiskit.algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.neural_networks import NeuralNetwork
@@ -61,9 +61,9 @@ class TrainableModel(SerializableModelMixin):
                 'squared_error', 'cross_entropy', or as a loss function
                 implementing the Loss interface.
             optimizer: An instance of an optimizer or a callable to be used in training.
-                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                Refer to :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on
                 the callable protocol. When `None` defaults to
-                :class:`~qiskit.algorithms.optimizers.SLSQP`.
+                :class:`~qiskit_algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: A reference to a user's callback function that has two parameters and
@@ -155,7 +155,7 @@ class TrainableModel(SerializableModelMixin):
     def fit_result(self) -> OptimizerResult:
         """Returns a resulting object from the optimization procedure. Please refer to the
         documentation of the `OptimizerResult
-        <https://qiskit.org/documentation/stubs/qiskit.algorithms.optimizers.OptimizerResult.html>`_
+        <https://qiskit.org/documentation/stubs/qiskit_algorithms.optimizers.OptimizerResult.html>`_
         class for more details.
 
         Raises:

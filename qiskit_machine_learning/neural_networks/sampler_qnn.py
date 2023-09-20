@@ -19,13 +19,14 @@ from numbers import Integral
 from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
-from qiskit.algorithms.gradients import (
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+from qiskit_algorithms.gradients import (
     BaseSamplerGradient,
     ParamShiftSamplerGradient,
     SamplerGradientResult,
 )
-from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+
 from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 import qiskit_machine_learning.optionals as _optionals
@@ -163,7 +164,7 @@ class SamplerQNN(NeuralNetwork):
                 ``2^circuit.num_qubits``.
             gradient: An optional sampler gradient to be used for the backward pass.
                 If ``None`` is given, a default instance of
-                :class:`~qiskit.algorithms.gradients.ParamShiftSamplerGradient` will be used.
+                :class:`~qiskit_algorithms.gradients.ParamShiftSamplerGradient` will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                  Note that this parameter is ``False`` by default, and must be explicitly set to
                  ``True`` for a proper gradient computation when using

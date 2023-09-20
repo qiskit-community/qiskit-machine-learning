@@ -9,8 +9,8 @@ without deep quantum computing knowledge. On the other hand, Qiskit Machine Lear
 and users can easily extend it to support cutting-edge quantum machine learning research.
 
 Qiskit Machine Learning provides the
-[FidelityQuantumKernel](https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel)
-class that makes use of the [Fidelity](https://qiskit.org/documentation/stubs/qiskit.algorithms.state_fidelities.BaseStateFidelity.html) algorithm introduced in Qiskit and can be easily used to directly compute
+[FidelityQuantumKernel](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel)
+class that makes use of the [Fidelity](https://qiskit.org/ecosystem/algorithms/stubs/qiskit_algorithms.state_fidelities.BaseStateFidelity.html) algorithm introduced in Qiskit and can be easily used to directly compute
 kernel matrices for given datasets or can be passed to a Quantum Support Vector Classifier 
 [QSVC](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC) or
 Quantum Support Vector Regressor
@@ -91,9 +91,9 @@ train and test samples from a data set to see how accurately the test set can
 be classified.
 
 ```python
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal, ZZFeatureMap
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.optimizers import COBYLA
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.datasets import ad_hoc_data
