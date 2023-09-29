@@ -140,7 +140,7 @@ class NeuralNetwork(ABC):
             input_ = input_.reshape((1, -1))
         elif len(shape) > 2:
             # flatten lower dimensions, keep num_inputs as a last dimension
-            input_ = input_.reshape((np.product(input_.shape[:-1]), -1))
+            input_ = input_.reshape((np.prod(input_.shape[:-1]), -1))
 
         return input_, shape
 
