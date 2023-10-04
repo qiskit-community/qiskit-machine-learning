@@ -73,7 +73,10 @@ class TestLossFunctions(QiskitMachineLearningTestCase):
             raise ValueError(f"Unsupported loss function: {loss_function}")
 
         # q values
-        qloss = q_loss_fun(qpredict, qtarget)
+        # Note: the numpy as array method was not here before. That loss call returns
+        # a numpy array but the pylint 3.0.0 that was just released ends up with
+        # a recursion error when accessing shape from it afterward that this circumvents.
+        qloss = np.asarray(q_loss_fun(qpredict, qtarget))
         np.testing.assert_equal(qloss.shape, loss_shape)
         qloss_sum = np.sum(q_loss_fun(qpredict, qtarget))
         qgrad = q_loss_fun.gradient(qpredict, qtarget)
