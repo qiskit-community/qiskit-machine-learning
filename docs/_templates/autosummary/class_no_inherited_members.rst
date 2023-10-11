@@ -18,12 +18,10 @@
 
    .. rubric:: Attributes
 
-   .. autosummary::
-      :toctree: ../stubs/
    {% for item in all_attributes %}
       {%- if item not in inherited_members %}
         {%- if not item.startswith('_') %}
-            ~{{ name }}.{{ item }}
+   .. autoattribute:: {{ name }}.{{ item }}
         {%- endif -%}
       {%- endif %}
    {%- endfor %}
@@ -35,12 +33,10 @@
 
    .. rubric:: Methods
 
-   .. autosummary::
-      :toctree: ../stubs/
    {% for item in all_methods %}
       {%- if item not in inherited_members %}
         {%- if not item.startswith('_') %}
-            ~{{ name }}.{{ item }}
+   .. automethod:: {{ name }}.{{ item }}
         {%- endif -%}
       {%- endif %}
    {%- endfor %}
