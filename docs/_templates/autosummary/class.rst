@@ -31,8 +31,6 @@
 
    .. rubric:: Methods
 
-   .. autosummary::
-      :toctree: ../stubs/
    {% for item in all_methods %}
       {%- if not item.startswith('_') %}
    .. automethod:: {{ name }}.{{ item }}
