@@ -19,7 +19,7 @@ A set of sample datasets suitable for machine learning problems
 .. currentmodule:: qiskit_machine_learning.datasets
 
 Datasets
-========
+--------
 
 .. autosummary::
    :toctree: ../stubs/
