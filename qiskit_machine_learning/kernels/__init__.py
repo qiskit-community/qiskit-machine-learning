@@ -36,7 +36,7 @@ clustering or ridge regression.
 .. currentmodule:: qiskit_machine_learning.kernels
 
 Quantum Kernels
-===============
+---------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -50,7 +50,7 @@ Quantum Kernels
    TrainableFidelityStatevectorKernel
 
 Submodules
-==========
+----------
 
 .. autosummary::
    :toctree:

@@ -19,7 +19,7 @@ Connectors from Qiskit Machine Learning to other frameworks.
 .. currentmodule:: qiskit_machine_learning.connectors
 
 Connectors
-======================
+----------------------
 
 .. autosummary::
    :toctree: ../stubs/

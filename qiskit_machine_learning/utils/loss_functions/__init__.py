@@ -20,7 +20,7 @@ by Qiskit Machine Learning.
 .. currentmodule:: qiskit_machine_learning.utils.loss_functions
 
 Loss Function Base Class
-========================
+------------------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -30,7 +30,7 @@ Loss Function Base Class
    KernelLoss
 
 Loss Functions
-==============
+--------------
 
 .. autosummary::
    :toctree: ../stubs/
