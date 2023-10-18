@@ -19,7 +19,7 @@ A collection of utility functions and classes provided by Qiskit Machine Learnin
 .. currentmodule:: qiskit_machine_learning.utils
 
 Utilities
-==========
+----------
 
 .. autosummary::
    :toctree:

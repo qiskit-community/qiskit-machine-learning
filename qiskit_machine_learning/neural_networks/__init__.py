@@ -28,7 +28,7 @@ use of these neural networks in code written to `PyTorch <https://pytorch.org/>`
 .. currentmodule:: qiskit_machine_learning.neural_networks
 
 Neural Network Base Classes
-===========================
+---------------------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -37,7 +37,7 @@ Neural Network Base Classes
    NeuralNetwork
 
 Neural Networks
-===============
+---------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -47,7 +47,7 @@ Neural Networks
    SamplerQNN
 
 Neural Network Metrics
-======================
+----------------------
 
 .. autosummary::
    :toctree: ../stubs/
