@@ -55,7 +55,8 @@ class KernelLoss(ABC):
 
         Args:
             parameter_values: an array of values to assign to the user params
-            quantum_kernel: A ``QuantumKernel`` object to evaluate
+            quantum_kernel: A :class:`~qiskit_machine_learning.kernels.BaseKernel` object
+                to evaluate
             data: An ``(N, M)`` matrix containing the data
                     ``N = # samples, M = dimension of data``
             labels: A length-N array containing the truth labels
