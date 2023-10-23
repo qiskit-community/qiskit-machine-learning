@@ -67,9 +67,9 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     ) -> None:
         """
         Args:
-            quantum_kernel: A subclass of :class:`~qiskit_machine_learning.kernels.BaseKernel`
-                to be used for classification.
-                Has to be ``None`` when a precomputed kernel is used.
+            quantum_kernel: A quantum kernel to be used for classification.
+                Has to be ``None`` when a precomputed kernel is used. If None,
+                default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             C: Positive regularization parameter. The strength of the regularization is inversely
                 proportional to C. Smaller ``C`` induce smaller weights which generally helps
                 preventing overfitting. However, due to the nature of this algorithm, some of the
