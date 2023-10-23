@@ -40,7 +40,7 @@ class FidelityStatevectorKernel(BaseKernel):
 
         K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2.
 
-    In this implementation, :math:`|\phi(y)\rangle` is given by a the ``data`` attribute of a
+    In this implementation, :math:`|\phi(y)\rangle` is given by the ``data`` attribute of a
     :class:`~qiskit.quantum_info.Statevector` object or one of its subclasses. These
     arrays are stored in a statevector cache to avoid repeated evaluation of the quantum circuit.
     This cache can be cleared using :meth:`clear_cache`. By default the cache is cleared when
