@@ -69,7 +69,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         Args:
             quantum_kernel: A quantum kernel to be used for classification.
                 Has to be ``None`` when a precomputed kernel is used. If None,
-                and ``precomputed``is ``False``, the quantum kernel will default to
+                and ``precomputed`` is ``False``, the quantum kernel will default to
                 :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             C: Positive regularization parameter. The strength of the regularization is inversely
                 proportional to C. Smaller ``C`` induce smaller weights which generally helps
