@@ -45,7 +45,9 @@ class QSVC(SVC, SerializableModelMixin):
     def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: Quantum kernel to be used for classification.
+            quantum_kernel: A quantum kernel to be used for classification.
+                Has to be ``None`` when a precomputed kernel is used. If None,
+                default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """

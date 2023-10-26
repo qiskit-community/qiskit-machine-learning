@@ -44,7 +44,8 @@ class QSVR(SVR, SerializableModelMixin):
     def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: Quantum kernel to be used for regression.
+            quantum_kernel: A quantum kernel to be used for regression. If None,
+                default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             *args: Variable length argument list to pass to SVR constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
         """

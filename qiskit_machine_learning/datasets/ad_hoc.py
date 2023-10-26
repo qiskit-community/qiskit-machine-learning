@@ -37,7 +37,7 @@ def ad_hoc_data(
     np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray
 ]:
     r"""Generates a toy dataset that can be fully separated with
-    ``qiskit.circuit.library.ZZ_Feature_Map`` according to the procedure
+    :class:`~qiskit.circuit.library.ZZFeatureMap` according to the procedure
     outlined in [1]. To construct the dataset, we first sample uniformly
     distributed vectors :math:`\vec{x} \in (0, 2\pi]^{n}` and apply the
     feature map
