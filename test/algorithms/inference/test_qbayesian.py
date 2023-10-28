@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 import numpy as np
+import math
 import unittest
 from test import QiskitMachineLearningTestCase
 from qiskit_algorithms.utils import algorithm_globals
@@ -79,7 +80,21 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
             print(samples)
         #self.assertTrue(np.all(samples>0))
     def test_inference(self):
-        ...
+        test_q_1, test_e_1 = ({'B': 1}, {'A': 1, 'C': 1})
+        test_q_2 = {'B': 0}
+        true_res = [0.79, 0.21]
+        res = []
+        samples = []
+        # 1. Query
+        res.append(self.qbayesian.inference(query=test_q_1, evidence=test_e_1))
+        samples.append(self.qbayesian.samples)
+        # 2. Query
+        res.append(self.qbayesian.inference(query=test_q_2))
+        samples.append(self.qbayesian.samples)
+        # Correct inference
+        self.assertTrue(np.all(np.isclose(true_res, res, rtol=0.05)))
+        # No change in samples
+        self.assertTrue(samples[0] == samples[1])
 
     def test_parameter(self):
         ...

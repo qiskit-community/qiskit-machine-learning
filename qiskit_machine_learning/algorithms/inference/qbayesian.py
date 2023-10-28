@@ -106,6 +106,7 @@ class QBayesian:
         if shots is None:
             counts = run_circuit(qc)
         else:
+            print("here")
             counts = run_circuit(qc, shots)
         # Retrieve valid samples
         self.samples = {}
@@ -121,6 +122,7 @@ class QBayesian:
                 self.samples[key] = val
             else:
                 re+=val
+        print(counts)
         print(re)
         return self.samples
 
@@ -132,7 +134,7 @@ class QBayesian:
         insert an empty list. If you want to indicate no new evidence keep this variable empty.
         """
         if evidence is not None:
-            self.rejectionSampling(query, evidence, shots)
+            self.rejectionSampling(evidence, shots)
         else:
             if not self.samples:
                 raise ValueError("Provide evidence for rejection sampling or indicate no evidence with empty list")
