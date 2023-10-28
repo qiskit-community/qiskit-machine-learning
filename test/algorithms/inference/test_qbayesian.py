@@ -11,85 +11,78 @@
 # that they have been altered from the originals.
 
 import numpy as np
+import unittest
+from test import QiskitMachineLearningTestCase
+from qiskit_algorithms.utils import algorithm_globals
 from qiskit_machine_learning.algorithms.inference.qbayesian import QBayesian
-from qiskit import Aer, QuantumCircuit, transpile
+from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
 
-def test_ciruit():
-    theta_A = 2 * np.arcsin(np.sqrt(0.25))
-    theta_B_nA = 2 * np.arcsin(np.sqrt(0.6))
-    theta_B_A = 2 * np.arcsin(np.sqrt(0.7))
-    theta_C_nBnA = 2 * np.arcsin(np.sqrt(0.1))
-    theta_C_nBA = 2 * np.arcsin(np.sqrt(0.55))
-    theta_C_BnA = 2 * np.arcsin(np.sqrt(0.7))
-    theta_C_BA = 2 * np.arcsin(np.sqrt(0.9))
+class TestQBayesianInference(QiskitMachineLearningTestCase):
+    """Test QBayesianInference Algorithm"""
+    def setUp(self):
+        super().setUp()
+        algorithm_globals.random_seed = 10598
+        # Probabilities
+        theta_A = 2 * np.arcsin(np.sqrt(0.25))
+        theta_B_nA = 2 * np.arcsin(np.sqrt(0.6))
+        theta_B_A = 2 * np.arcsin(np.sqrt(0.7))
+        theta_C_nBnA = 2 * np.arcsin(np.sqrt(0.1))
+        theta_C_nBA = 2 * np.arcsin(np.sqrt(0.55))
+        theta_C_BnA = 2 * np.arcsin(np.sqrt(0.7))
+        theta_C_BA = 2 * np.arcsin(np.sqrt(0.9))
+        # Random variables
+        qrA = QuantumRegister(1, name='A')
+        qrB = QuantumRegister(1, name='B')
+        qrC = QuantumRegister(1, name='C')
+        # Define a 3-qubit quantum circuit
+        qcA = QuantumCircuit(qrA, qrB, qrC, name="Bayes net")
+        # P(A)
+        qcA.ry(theta_A, 0)
+        # P(B|-A)
+        qcA.x(0)
+        qcA.cry(theta_B_nA, qrA, qrB)
+        qcA.x(0)
+        # P(B|A)
+        qcA.cry(theta_B_A, qrA, qrB)
+        # P(C|-B,-A)
+        qcA.x(0)
+        qcA.x(1)
+        qcA.mcry(theta_C_nBnA, [qrA[0], qrB[0]], qrC[0])
+        qcA.x(0)
+        qcA.x(1)
+        # P(C|-B,A)
+        qcA.x(1)
+        qcA.mcry(theta_C_nBA, [qrA[0], qrB[0]], qrC[0])
+        qcA.x(1)
+        # P(C|B,-A)
+        qcA.x(0)
+        qcA.mcry(theta_C_BnA, [qrA[0], qrB[0]], qrC[0])
+        qcA.x(0)
+        # P(C|B,A)
+        qcA.mcry(theta_C_BA, [qrA[0], qrB[0]], qrC[0])
+        # Quantum Bayesian inference
+        self.qbayesian = QBayesian(qcA)
 
-    qrA = QuantumRegister(1, name='A')
-    qrB = QuantumRegister(1, name='B')
-    qrC = QuantumRegister(1, name='C')
 
-    # Define a 3-qubit quantum circuit
-    qcA = QuantumCircuit(qrA, qrB, qrC, name="Bayes net")
+    def test_rejection_sampling(self):
+        """Test rejection sampling with different amount of evidence"""
+        test_cases = [{'A': 0, 'B': 0}, {'A': 0}, {}]
+        true_res = [
+            {'000': 2700, '001': 300},
+            {'011': 1763, '001': 3504, '010': 13483, '000': 26948},
+            {'100': 3042, '110': 31606, '001': 3341, '011': 1731, '111': 15653, '010': 13511, '000': 27109, '101': 4007}
+                    ]
+        for e in test_cases:
+            samples = self.qbayesian.rejectionSampling(evidence=e)
 
-    # P(A)
-    qcA.ry(theta_A, 0)
+            print(samples)
+        #self.assertTrue(np.all(samples>0))
+    def test_inference(self):
+        ...
 
-    # P(B|-A)
-    qcA.x(0)
-    qcA.cry(theta_B_nA, qrA, qrB)
-    qcA.x(0)
+    def test_parameter(self):
+        ...
 
-    # P(B|A)
-    qcA.cry(theta_B_A, qrA, qrB)
-
-    # P(C|-B,-A)
-    qcA.x(0)
-    qcA.x(1)
-    qcA.mcry(theta_C_nBnA, [qrA[0], qrB[0]], qrC[0])
-    qcA.x(0)
-    qcA.x(1)
-
-    # P(C|-B,A)
-    qcA.x(1)
-    qcA.mcry(theta_C_nBA, [qrA[0], qrB[0]], qrC[0])
-    qcA.x(1)
-
-    # P(C|B,-A)
-    qcA.x(0)
-    qcA.mcry(theta_C_BnA, [qrA[0], qrB[0]], qrC[0])
-    qcA.x(0)
-
-    # P(C|B,A)
-    qcA.mcry(theta_C_BA, [qrA[0], qrB[0]], qrC[0])
-
-    qcA.draw('mpl', style='bw', plot_barriers=False, justify='none', fold=-1).show()
-    # In the order the qubits were added
-    qubits = qcA.qubits
-    #print(qubits)
-    #print(qcA.num_qubits)
-    #print(qcA.qregs)
-    qbayesian = QBayesian(qcA)
-    evidence = {'A': 0, 'C': 0}
-    #a = qcA.qregs
-    #print('a: ',a)
-    #b = [qcA.qregs[0],qcA.qregs[2]]
-    #print('b: ', b)
-    #c = list(set(a)-set(b))
-    #print(c)
-    #ctrls = [qrg for qrg in qcA.qregs if qrg.name in evidence]
-    #print(ctrls)
-    #for q in c:
-    #    print(q)
-    #    qcA.mcx(ctrls, q)
-    #print(qcA.qregs[0])
-    #qcA.h(qcA.qregs[0])
-    #qcA.draw('mpl', style='bw', plot_barriers=False, justify='none', fold=-1).show()
-    #qc = QuantumCircuit(*qcA.qregs)
-    #test_cases = [format(i, '03b') for i in range(8)]
-    samples = qbayesian.rejectionSampling(evidence=evidence)
-
-    query = {'B': 1}
-    print(qbayesian.inference(query))
-    print(samples)
-
-test_ciruit()
+if __name__ == "__main__":
+    unittest.main()

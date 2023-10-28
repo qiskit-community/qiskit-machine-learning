@@ -13,27 +13,20 @@
 
 from qiskit import Aer, QuantumCircuit, transpile
 from qiskit.visualization import plot_histogram
-from qiskit.circuit import QuantumRegister
 from qiskit.circuit.library import GroverOperator
 
 class QBayesian:
 
     # Discrete quantum Bayesian network
-    def __init__(self, circuit: QuantumCircuit = None):
+    def __init__(self, circuit: QuantumCircuit):
         """
         Run the provided quantum circuit on the Aer simulator backend.
 
         Parameters:
             - circuit: The quantum circuit to be executed.
             Every r.v. should be assigned exactly one register of one distinct qubit.
-            The qubits in the circuit should be enumerated by
 
         """
-        # TODO: test if every register contains only one unique qubit
-
-        if circuit is None:
-            raise ValueError("Quantum circuit must be provided")
-
         self.circ = circuit
         # Label of register mapped to its qubit
         self.label2qubit = {qrg.name: qrg[0] for qrg in self.circ.qregs}
@@ -68,8 +61,8 @@ class QBayesian:
             opSe.x(q)
         return opSe
 
-    def rejectionSampling(self, evidence):
-        def run_circuit(circuit, shots=10_000):
+    def rejectionSampling(self, evidence, shots: int=None):
+        def run_circuit(circuit, shots=100_000):
             """
             Run the provided quantum circuit on the Aer simulator backend.
 
@@ -80,7 +73,7 @@ class QBayesian:
             Returns:
             - counts: A dictionary with the counts of each quantum state result.
             """
-
+            print(shots)
             # Get the Aer simulator backend
             simulator_backend = Aer.get_backend('aer_simulator')
 
@@ -96,22 +89,27 @@ class QBayesian:
 
             return counts
 
-        # Get Se
+        # Create circuit
+        qc = QuantumCircuit(*self.circ.qregs)
+        qc.append(self.circ, self.circ.qregs)
+        # Amplitude amplification circuit if evidence not empty
         e_reg = [self.label2qubit[qrg.name] for qrg in self.circ.qregs if qrg.name in evidence]
-        opSe = self.getSe(e_reg)
-        # Grover
-        opG = GroverOperator(opSe, self.circ)
-        # Amplitude amplification circuit
-        qregs = self.circ.qregs
-        qc = QuantumCircuit(*qregs)
-        qc.append(self.circ, qregs)
-        qc.append(opG, qregs)
+        if len(e_reg) != 0:
+            # Get Se
+            opSe = self.getSe(e_reg)
+            # Grover
+            opG = GroverOperator(opSe, self.circ)
+            qc.append(opG, self.circ.qregs)
         # Measure
         qc.measure_all()
         # Run circuit
-        counts = run_circuit(qc)
+        if shots is None:
+            counts = run_circuit(qc)
+        else:
+            counts = run_circuit(qc, shots)
         # Retrieve valid samples
         self.samples = {}
+        re=0
         # Assume key is bin and e_key is the qubits number
         for key, val in counts.items():
             accept = True
@@ -121,17 +119,20 @@ class QBayesian:
                     break
             if accept:
                 self.samples[key] = val
+            else:
+                re+=val
+        print(re)
         return self.samples
 
 
-    def inference(self, query, evidence: dict=None):
+    def inference(self, query, evidence: dict=None, shots: int=None):
         """
         - query: The query variables. If Q is a real subset of X\E the rest will be filled
         - evidence: Provide evidence if rejection sampling should be executed. If you want to indicate no evidence
         insert an empty list. If you want to indicate no new evidence keep this variable empty.
         """
         if evidence is not None:
-            self.rejectionSampling(query, evidence)
+            self.rejectionSampling(query, evidence, shots)
         else:
             if not self.samples:
                 raise ValueError("Provide evidence for rejection sampling or indicate no evidence with empty list")
