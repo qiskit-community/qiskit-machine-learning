@@ -9,11 +9,14 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-
+import numpy as np
 from qiskit import Aer, QuantumCircuit, transpile
 from qiskit.visualization import plot_histogram
-from qiskit.circuit.library import GroverOperator
+from qiskit.quantum_info import Statevector
+from qiskit.algorithms import AmplificationProblem
+from qiskit.primitives import Sampler
+from qiskit_algorithms import Grover
+from qiskit.primitives import Sampler
 
 class QBayesian:
 
@@ -35,33 +38,27 @@ class QBayesian:
         self.samples = {}
 
 
-    def getSe(self, ctrls):
+    def getAmplifyPrb(self, evidence):
         """
-        Creates Se for Grover
+        Creates Amplification Problem
 
-        ctrls: control qubits represent the evidence var
+        evidence: ...
         """
-        # Create circuit with registers from given quantum circuit
-        opSe = QuantumCircuit(*self.circ.qregs)
-        # Q=X\E
-        query_var = {self.label2qubit[reg.name] for reg in self.circ.qregs} - set(ctrls)
-        # Generate Se
-        for q in query_var:
-            # multi control z gate
-            opSe.h(q)
-            opSe.mcx(ctrls, q)
-            opSe.h(q)
-            # x gate
-            opSe.x(q)
-            # multi control z gate
-            opSe.h(q)
-            opSe.mcx(ctrls, q)
-            opSe.h(q)
-            # x gate
-            opSe.x(q)
-        return opSe
+        # Evidence to qubit index
+        e_idx = [self.label2qidx[e] for e in evidence].sort()
+        # Binary format of good states
+        bin_str = [format(i, f'0{(self.circ.num_qubits-len(e_idx))}b') for i in range(2**(self.circ.num_qubits-len(e_idx)))]
+        # Get good states
+        good_states = []
+        for b in bin_str:
+            for e in e_idx:
+                good_states.append(b[:e]+evidence[e]+b[:e])
+        # Get statevector by transform good states like 010 regarding its idx (2+1=3) of statevector to 1 and o/w to 0
+        oracle = Statevector([(format(i, f'0{self.circ.num_qubits}b') in good_states) for i in range(2**self.circ.num_qubits)])
+        return AmplificationProblem(oracle, state_preparation=self.circ, is_good_state=good_states)
 
-    def rejectionSampling(self, evidence, shots: int=None):
+
+    def rejectionSampling(self, evidence, shots: int=None, grover_iter=None, backend=None):
         def run_circuit(circuit, shots=100_000):
             """
             Run the provided quantum circuit on the Aer simulator backend.
@@ -89,28 +86,25 @@ class QBayesian:
 
             return counts
 
-        # Create circuit
-        qc = QuantumCircuit(*self.circ.qregs)
-        qc.append(self.circ, self.circ.qregs)
+        # If evidence is empty
+        if len(evidence) == 0:
+            # Create circuit
+            qc = QuantumCircuit(*self.circ.qregs)
+            qc.append(self.circ, self.circ.qregs)
+            # Measure
+            qc.measure_all()
+            # Run circuit
+            samples = run_circuit(qc, shots)
+            return samples
+
         # Amplitude amplification circuit if evidence not empty
-        e_reg = [self.label2qubit[qrg.name] for qrg in self.circ.qregs if qrg.name in evidence]
-        if len(e_reg) != 0:
-            # Get Se
-            opSe = self.getSe(e_reg)
-            # Grover
-            opG = GroverOperator(opSe, self.circ)
-            qc.append(opG, self.circ.qregs)
-        # Measure
-        qc.measure_all()
+        ampPrb = self.getAmplifyPrb(evidence)
+        # Grover with default number of iterations given by good states from amplitude amplification problem
+        grover = Grover(Sampler(shots))
         # Run circuit
-        if shots is None:
-            counts = run_circuit(qc)
-        else:
-            print("here")
-            counts = run_circuit(qc, shots)
+        counts = grover.amplify(ampPrb)
         # Retrieve valid samples
         self.samples = {}
-        re=0
         # Assume key is bin and e_key is the qubits number
         for key, val in counts.items():
             accept = True
@@ -120,10 +114,6 @@ class QBayesian:
                     break
             if accept:
                 self.samples[key] = val
-            else:
-                re+=val
-        print(counts)
-        print(re)
         return self.samples
 
 
