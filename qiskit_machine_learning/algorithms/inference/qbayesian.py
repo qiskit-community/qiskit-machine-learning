@@ -14,7 +14,6 @@ from qiskit import Aer, QuantumCircuit, transpile
 from qiskit.visualization import plot_histogram
 from qiskit.quantum_info import Statevector
 from qiskit.algorithms import AmplificationProblem
-from qiskit.primitives import Sampler
 from qiskit_algorithms import Grover
 from qiskit.primitives import Sampler
 
@@ -44,22 +43,33 @@ class QBayesian:
 
         evidence: ...
         """
-        # Evidence to qubit index
-        e_idx = [self.label2qidx[e] for e in evidence].sort()
+        # Evidence to reversed qubit index sorted by index
+        num_qubits = self.circ.num_qubits
+        e2idx = sorted(
+            [(num_qubits-self.label2qidx[e_key]-1, e_val) for e_key, e_val in evidence.items()], key=lambda x: x[0]
+        )
         # Binary format of good states
-        bin_str = [format(i, f'0{(self.circ.num_qubits-len(e_idx))}b') for i in range(2**(self.circ.num_qubits-len(e_idx)))]
+        num_evd = len(e2idx)
+        bin_str = [format(i, f'0{(num_qubits-num_evd)}b') for i in range(2**(num_qubits-num_evd))]
         # Get good states
         good_states = []
+        print(bin_str)
         for b in bin_str:
-            for e in e_idx:
-                good_states.append(b[:e]+evidence[e]+b[:e])
+            for e_idx, e_val in e2idx:
+                b = b[:e_idx]+str(e_val)+b[e_idx:]
+            good_states.append(b)
+        print(evidence)
+        print("GOOD states")
+        print(good_states)
         # Get statevector by transform good states like 010 regarding its idx (2+1=3) of statevector to 1 and o/w to 0
-        oracle = Statevector([(format(i, f'0{self.circ.num_qubits}b') in good_states) for i in range(2**self.circ.num_qubits)])
+        print([int(format(i, f'0{num_qubits}b') in good_states) for i in range(2**num_qubits)])
+        oracle = Statevector([int(format(i, f'0{num_qubits}b') in good_states) for i in range(2**num_qubits)])
         return AmplificationProblem(oracle, state_preparation=self.circ, is_good_state=good_states)
 
 
     def rejectionSampling(self, evidence, shots: int=None, grover_iter=None, backend=None):
         def run_circuit(circuit, shots=100_000):
+            # TODO: needed??
             """
             Run the provided quantum circuit on the Aer simulator backend.
 
@@ -70,7 +80,6 @@ class QBayesian:
             Returns:
             - counts: A dictionary with the counts of each quantum state result.
             """
-            print(shots)
             # Get the Aer simulator backend
             simulator_backend = Aer.get_backend('aer_simulator')
 
@@ -100,16 +109,24 @@ class QBayesian:
         # Amplitude amplification circuit if evidence not empty
         ampPrb = self.getAmplifyPrb(evidence)
         # Grover with default number of iterations given by good states from amplitude amplification problem
-        grover = Grover(Sampler(shots))
+        grover = Grover(sampler=Sampler())
         # Run circuit
-        counts = grover.amplify(ampPrb)
+        a=grover.amplify(ampPrb)
+        print(a.circuit_results)
+        print(a.circuit_results[0])
+        #TODO why multiple results here
+        #print(grover.amplify(ampPrb).iterations)
+        #print(grover.amplify(ampPrb).max_probability)
+        counts = grover.amplify(ampPrb).circuit_results[-1]
+        print("Result is ")
+        print(counts)
         # Retrieve valid samples
         self.samples = {}
-        # Assume key is bin and e_key is the qubits number
         for key, val in counts.items():
             accept = True
             for e_key, e_val in evidence.items():
-                if int(key[self.label2qidx[e_key]]) != e_val:
+                # Check if evidence fits with sample
+                if int(key[self.circ.num_qubits-self.label2qidx[e_key]-1]) != e_val:
                     accept = False
                     break
             if accept:

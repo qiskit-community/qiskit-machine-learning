@@ -76,7 +76,6 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
                     ]
         for e in test_cases:
             samples = self.qbayesian.rejectionSampling(evidence=e)
-
             print(samples)
         #self.assertTrue(np.all(samples>0))
     def test_inference(self):
