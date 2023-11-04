@@ -10,12 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 import numpy as np
-from qiskit import Aer, QuantumCircuit, transpile
+from qiskit import Aer, QuantumCircuit, transpile, QuantumRegister, ClassicalRegister
 from qiskit.visualization import plot_histogram
 from qiskit.quantum_info import Statevector
-from qiskit.algorithms import AmplificationProblem
-from qiskit_algorithms import Grover
-from qiskit.primitives import Sampler
+from qiskit.circuit.library import GroverOperator
 
 class QBayesian:
 
@@ -36,8 +34,7 @@ class QBayesian:
         self.label2qidx = {qrg.name: idx for idx, qrg in enumerate(self.circ.qregs)}
         self.samples = {}
 
-
-    def getAmplifyPrb(self, evidence):
+    def getGroverOp(self, evidence):
         """
         Creates Amplification Problem
 
@@ -64,7 +61,7 @@ class QBayesian:
         # Get statevector by transform good states like 010 regarding its idx (2+1=3) of statevector to 1 and o/w to 0
         print([int(format(i, f'0{num_qubits}b') in good_states) for i in range(2**num_qubits)])
         oracle = Statevector([int(format(i, f'0{num_qubits}b') in good_states) for i in range(2**num_qubits)])
-        return AmplificationProblem(oracle, state_preparation=self.circ, is_good_state=good_states)
+        return GroverOperator(oracle, state_preparation=self.circ)
 
 
     def rejectionSampling(self, evidence, shots: int=None, grover_iter=None, backend=None):
@@ -95,29 +92,61 @@ class QBayesian:
 
             return counts
 
+        # Create circuit
+        qc = QuantumCircuit(*self.circ.qregs)
+        qc.append(self.circ, self.circ.qregs)
         # If evidence is empty
         if len(evidence) == 0:
-            # Create circuit
-            qc = QuantumCircuit(*self.circ.qregs)
-            qc.append(self.circ, self.circ.qregs)
             # Measure
             qc.measure_all()
             # Run circuit
             samples = run_circuit(qc, shots)
             return samples
+        else:
+            # Get grover operator if evidence not empty
+            groverOp = self.getGroverOp(evidence)
+            # Amplitude amplification
+            e = {(self.label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
+            E = {}
+            k=-1
+            # If the measurement of the evidence qubits matches the evidence stop
+            while e!=E:
+                # Increment power
+                k += 1
+                # Create circuit
+                qc = QuantumCircuit(*self.circ.qregs)
+                qc.append(self.circ, self.circ.qregs)
+                # Apply grover operator 2^k times
+                qcGrover = QuantumCircuit(*self.circ.qregs)
+                qcGrover.append(groverOp, self.circ.qregs)
+                qcGrover = qcGrover.power(2**k)
+                qc.append(qcGrover, self.circ.qregs)
+                # Create a classical register with the size of the evidence
+                measurement_cr = ClassicalRegister(len(evidence))
+                qc.add_register(measurement_cr)
+                # Map the evidence qubits to the classical bits and measure them
+                evidence_qubits = [self.label2qubit[e_key] for e_key in evidence]
+                qc.measure([q for q in evidence_qubits], measurement_cr)
+                # Run the circuit with the Grover operator and measurements
+                e_samples = run_circuit(qc, shots=1024)
+                E_count = {self.label2qubit[e]: 0 for e in evidence}
+                for e_sample_key, e_sample_val in e_samples.items():
+                    # Go through reverse binary that matches order of qubits
+                    for i, char in enumerate(e_sample_key[::-1]):
+                        if int(char) == 1:
+                            E_count[evidence_qubits[i]] += e_sample_val
+                        else:
+                            E_count[evidence_qubits[i]] += -e_sample_val
+                # Assign to every qubit if it is more often measured 1 -> 1 o/w 0
+                E = {e_count_key: int(e_count_val >= 0) for e_count_key, e_count_val in E_count.items()}
 
-        # Amplitude amplification circuit if evidence not empty
-        ampPrb = self.getAmplifyPrb(evidence)
+
+        # TODO: measure query variables and return their count
+
         # Grover with default number of iterations given by good states from amplitude amplification problem
-        grover = Grover(sampler=Sampler())
+        counts = {}
         # Run circuit
-        a=grover.amplify(ampPrb)
-        print(a.circuit_results)
-        print(a.circuit_results[0])
-        #TODO why multiple results here
-        #print(grover.amplify(ampPrb).iterations)
-        #print(grover.amplify(ampPrb).max_probability)
-        counts = grover.amplify(ampPrb).circuit_results[-1]
+
         print("Result is ")
         print(counts)
         # Retrieve valid samples
