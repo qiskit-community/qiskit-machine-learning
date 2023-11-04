@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 import numpy as np
-from qiskit import Aer, QuantumCircuit, transpile, QuantumRegister, ClassicalRegister
+from qiskit import Aer, QuantumCircuit, transpile, ClassicalRegister
 from qiskit.visualization import plot_histogram
 from qiskit.quantum_info import Statevector
 from qiskit.circuit.library import GroverOperator
@@ -110,7 +110,7 @@ class QBayesian:
             E = {}
             k=-1
             # If the measurement of the evidence qubits matches the evidence stop
-            while e!=E:
+            while (e != E) or (k > 10):
                 # Increment power
                 k += 1
                 # Create circuit
@@ -121,14 +121,17 @@ class QBayesian:
                 qcGrover.append(groverOp, self.circ.qregs)
                 qcGrover = qcGrover.power(2**k)
                 qc.append(qcGrover, self.circ.qregs)
+                # Add quantum circuit for measuring
+                qc_measure = QuantumCircuit(*self.circ.qregs)
+                qc_measure.append(qc, self.circ.qregs)
                 # Create a classical register with the size of the evidence
-                measurement_cr = ClassicalRegister(len(evidence))
-                qc.add_register(measurement_cr)
+                measurement_ecr = ClassicalRegister(len(evidence))
+                qc_measure.add_register(measurement_ecr)
                 # Map the evidence qubits to the classical bits and measure them
                 evidence_qubits = [self.label2qubit[e_key] for e_key in evidence]
-                qc.measure([q for q in evidence_qubits], measurement_cr)
+                qc_measure.measure([q for q in evidence_qubits], measurement_ecr)
                 # Run the circuit with the Grover operator and measurements
-                e_samples = run_circuit(qc, shots=1024)
+                e_samples = run_circuit(qc_measure, shots=1024)
                 E_count = {self.label2qubit[e]: 0 for e in evidence}
                 for e_sample_key, e_sample_val in e_samples.items():
                     # Go through reverse binary that matches order of qubits
@@ -138,28 +141,40 @@ class QBayesian:
                         else:
                             E_count[evidence_qubits[i]] += -e_sample_val
                 # Assign to every qubit if it is more often measured 1 -> 1 o/w 0
-                E = {e_count_key: int(e_count_val >= 0) for e_count_key, e_count_val in E_count.items()}
+                E = {(e_count_key, int(e_count_val >= 0)) for e_count_key, e_count_val in E_count.items()}
 
+        print(k)
 
-        # TODO: measure query variables and return their count
-
-        # Grover with default number of iterations given by good states from amplitude amplification problem
-        counts = {}
+        # Create a classical register with the size of the evidence
+        measurement_qcr = ClassicalRegister(self.circ.num_qubits-len(evidence))
+        qc.add_register(measurement_qcr)
+        # Map the query qubits to the classical bits and measure them
+        query_qubits = [(label, self.label2qidx[label], qubit) for label, qubit in self.label2qubit.items() if label not in evidence]
+        query_qubits_sorted = sorted(query_qubits, key=lambda x: x[1])
+        # Measure query variables and return their count
+        qc.measure([q[2] for q in query_qubits_sorted], measurement_qcr)
         # Run circuit
-
-        print("Result is ")
+        counts = run_circuit(qc, shots=100000)
+        print("Counts")
         print(counts)
+        # Build default string with evidence
+        query_string = ''
+        varIdxSorted = [label for label, _ in sorted(self.label2qidx.items(), key=lambda x: x[1], reverse=True)]
+        for var in varIdxSorted:
+            if var in evidence:
+                query_string += str(evidence[var])
+            else:
+                query_string += 'q'
         # Retrieve valid samples
         self.samples = {}
+        # Replace placeholder q with query variables from samples
         for key, val in counts.items():
-            accept = True
-            for e_key, e_val in evidence.items():
-                # Check if evidence fits with sample
-                if int(key[self.circ.num_qubits-self.label2qidx[e_key]-1]) != e_val:
-                    accept = False
-                    break
-            if accept:
-                self.samples[key] = val
+            query = query_string
+            for char in key:
+                query=query.replace('q', char, 1)
+            self.samples[query] = val
+        print('samples')
+        print(self.samples)
         return self.samples
 
 
