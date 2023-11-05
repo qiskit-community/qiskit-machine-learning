@@ -106,6 +106,8 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
 
     def test_parameter(self):
         """Tests properties of QBayesian"""
+        # Test
+        self.qbayesian.inference(query={'B': 1}, evidence={'A': 0, 'C': 0}, shots=10)
         # Create a quantum circuit with a register that has more than one qubit
         with self.assertRaises(ValueError, msg="QBayesian constructor did not raise ValueError with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(2, 'qr')))
