@@ -70,33 +70,48 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         """Test rejection sampling with different amount of evidence"""
         test_cases = [{'A': 0, 'B': 0}, {'A': 0}, {}]
         true_res = [
-            {'000': 2700, '001': 300},
-            {'011': 1763, '001': 3504, '010': 13483, '000': 26948},
-            {'100': 3042, '110': 31606, '001': 3341, '011': 1731, '111': 15653, '010': 13511, '000': 27109, '101': 4007}
+            {'000': 0.9, '100': 0.1},
+            {'000': 0.36, '100': 0.04, '010': 0.18, '110': 0.42},
+            {'000': 0.27, '001': 0.03375, '010': 0.135, '011': 0.0175,
+             '100': 0.03, '101': 0.04125, '110': 0.315, '111': 0.1575}
                     ]
-        for e in test_cases:
-            samples = self.qbayesian.rejectionSampling(evidence=e)
-            print(samples)
-        #self.assertTrue(np.all(samples>0))
+        for e, res in zip(test_cases, true_res):
+            samples = self.qbayesian.rejectionSampling(evidence=e, shots=100000)
+            self.assertTrue(np.all([np.isclose(res[sample_key], sample_val, atol=0.1)
+                                    for sample_key, sample_val in samples.items()]))
+
     def test_inference(self):
         test_q_1, test_e_1 = ({'B': 1}, {'A': 1, 'C': 1})
         test_q_2 = {'B': 0}
-        true_res = [0.79, 0.21]
+        test_q_3 = {}
+        test_q_4, test_e_4 = ({'B': 1}, {'A': 0})
+        true_res = [0.79, 0.21, 1, 0.6]
         res = []
         samples = []
-        # 1. Query
+        # 1. Query basic inference
         res.append(self.qbayesian.inference(query=test_q_1, evidence=test_e_1))
         samples.append(self.qbayesian.samples)
-        # 2. Query
+        # 2. Query basic inference
         res.append(self.qbayesian.inference(query=test_q_2))
         samples.append(self.qbayesian.samples)
+        # 3. Query marginalized inference
+        res.append(self.qbayesian.inference(query=test_q_3))
+        samples.append(self.qbayesian.samples)
+        # 4. Query marginalized inference
+        res.append(self.qbayesian.inference(query=test_q_4, evidence=test_e_4))
         # Correct inference
         self.assertTrue(np.all(np.isclose(true_res, res, rtol=0.05)))
         # No change in samples
         self.assertTrue(samples[0] == samples[1])
 
     def test_parameter(self):
-        ...
+        """Tests properties of QBayesian"""
+        # Create a quantum circuit with a register that has more than one qubit
+        with self.assertRaises(ValueError, msg="QBayesian constructor did not raise ValueError with invalid input."):
+            QBayesian(QuantumCircuit(QuantumRegister(2, 'qr')))
+        # Test
+        with self.assertRaises(ValueError, msg="QBayesian constructor did not raise ValueError with invalid input."):
+            QBayesian(QuantumCircuit(QuantumRegister(1, 'qr'))).inference({'A': 0})
 
 if __name__ == "__main__":
     unittest.main()

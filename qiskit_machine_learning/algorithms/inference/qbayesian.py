@@ -10,12 +10,43 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 import numpy as np
-from qiskit import Aer, QuantumCircuit, transpile, ClassicalRegister
-from qiskit.visualization import plot_histogram
+from qiskit import QuantumCircuit, transpile, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit.library import GroverOperator
+from qiskit_aer import AerSimulator
+
+"""Quantum Bayesian Inference"""
 
 class QBayesian:
+    r"""
+    Implements Quantum Bayesian Inference algorithm. The algorithm has been developed in [1]
+    and includes methods ``getGroverOp``, ``rejectionSampling`` and ``inference``.
+
+    **References**
+        [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang.
+        "Quantum inference on Bayesian networks." Physical Review A 89.6 (2014): 062315.
+
+
+    Usage:
+    ------
+    To use the `QBayesian` class, instantiate it with a quantum circuit that represents the Bayesian network.
+    You can then use the `inference` method to estimate probabilities given evidence, optionally using
+    rejection sampling and Grover's algorithm for amplification.
+
+    Example:
+    --------
+
+    # Define a quantum circuit
+    qc = QuantumCircuit(...)
+
+    # Initialize the QBayesian class with the circuit
+    qb = QBayesian(qc)
+
+    # Perform inference
+    result = qb.inference(query={...}, evidence={...})
+
+    print("Probability of query given evidence:", result)
+    """
 
     # Discrete quantum Bayesian network
     def __init__(self, circuit: QuantumCircuit):
@@ -27,6 +58,11 @@ class QBayesian:
             Every r.v. should be assigned exactly one register of one distinct qubit.
 
         """
+        # Test valid input
+        for qrg in circuit.qregs:
+            if qrg.size>1:
+                raise ValueError("Every register needs to be mapped to exactly one unique qubit")
+        # Initialize QBayesian
         self.circ = circuit
         # Label of register mapped to its qubit
         self.label2qubit = {qrg.name: qrg[0] for qrg in self.circ.qregs}
@@ -34,7 +70,7 @@ class QBayesian:
         self.label2qidx = {qrg.name: idx for idx, qrg in enumerate(self.circ.qregs)}
         self.samples = {}
 
-    def getGroverOp(self, evidence):
+    def getGroverOp(self, evidence: dict):
         """
         Creates Amplification Problem
 
@@ -50,23 +86,19 @@ class QBayesian:
         bin_str = [format(i, f'0{(num_qubits-num_evd)}b') for i in range(2**(num_qubits-num_evd))]
         # Get good states
         good_states = []
-        print(bin_str)
         for b in bin_str:
             for e_idx, e_val in e2idx:
                 b = b[:e_idx]+str(e_val)+b[e_idx:]
             good_states.append(b)
-        print(evidence)
-        print("GOOD states")
-        print(good_states)
         # Get statevector by transform good states like 010 regarding its idx (2+1=3) of statevector to 1 and o/w to 0
-        print([int(format(i, f'0{num_qubits}b') in good_states) for i in range(2**num_qubits)])
         oracle = Statevector([int(format(i, f'0{num_qubits}b') in good_states) for i in range(2**num_qubits)])
         return GroverOperator(oracle, state_preparation=self.circ)
 
 
-    def rejectionSampling(self, evidence, shots: int=None, grover_iter=None, backend=None):
+    def rejectionSampling(self, evidence: dict,
+                          shots: int=None,
+                          grover_iter=None):
         def run_circuit(circuit, shots=100_000):
-            # TODO: needed??
             """
             Run the provided quantum circuit on the Aer simulator backend.
 
@@ -78,29 +110,27 @@ class QBayesian:
             - counts: A dictionary with the counts of each quantum state result.
             """
             # Get the Aer simulator backend
-            simulator_backend = Aer.get_backend('aer_simulator')
-
+            simulator_backend = AerSimulator()
             # Transpile the circuit for the given backend
             transpiled_circuit = transpile(circuit, simulator_backend)
-
             # Run the transpiled circuit on the simulator
             job = simulator_backend.run(transpiled_circuit, shots=shots)
             result = job.result()
-
             # Get the counts of quantum state results
             counts = result.get_counts(transpiled_circuit)
+            # Convert counts to relative counts (probabilities)
+            relative_counts = {state: count / shots for state, count in counts.items()}
+            return relative_counts
 
-            return counts
-
-        # Create circuit
-        qc = QuantumCircuit(*self.circ.qregs)
-        qc.append(self.circ, self.circ.qregs)
         # If evidence is empty
         if len(evidence) == 0:
+            # Create circuit
+            qc = QuantumCircuit(*self.circ.qregs)
+            qc.append(self.circ, self.circ.qregs)
             # Measure
             qc.measure_all()
             # Run circuit
-            samples = run_circuit(qc, shots)
+            samples = run_circuit(qc, shots=100000)
             return samples
         else:
             # Get grover operator if evidence not empty
@@ -110,7 +140,7 @@ class QBayesian:
             E = {}
             k=-1
             # If the measurement of the evidence qubits matches the evidence stop
-            while (e != E) or (k > 10):
+            while (e != E) and (k < 10):
                 # Increment power
                 k += 1
                 # Create circuit
@@ -140,10 +170,9 @@ class QBayesian:
                             E_count[evidence_qubits[i]] += e_sample_val
                         else:
                             E_count[evidence_qubits[i]] += -e_sample_val
+
                 # Assign to every qubit if it is more often measured 1 -> 1 o/w 0
                 E = {(e_count_key, int(e_count_val >= 0)) for e_count_key, e_count_val in E_count.items()}
-
-        print(k)
 
         # Create a classical register with the size of the evidence
         measurement_qcr = ClassicalRegister(self.circ.num_qubits-len(evidence))
@@ -155,8 +184,6 @@ class QBayesian:
         qc.measure([q[2] for q in query_qubits_sorted], measurement_qcr)
         # Run circuit
         counts = run_circuit(qc, shots=100000)
-        print("Counts")
-        print(counts)
         # Build default string with evidence
         query_string = ''
         varIdxSorted = [label for label, _ in sorted(self.label2qidx.items(), key=lambda x: x[1], reverse=True)]
@@ -171,16 +198,14 @@ class QBayesian:
         for key, val in counts.items():
             query = query_string
             for char in key:
-                query=query.replace('q', char, 1)
+                query = query.replace('q', char, 1)
             self.samples[query] = val
-        print('samples')
-        print(self.samples)
         return self.samples
 
 
-    def inference(self, query, evidence: dict=None, shots: int=None):
+    def inference(self, query: dict, evidence: dict=None, shots: int=None):
         """
-        - query: The query variables. If Q is a real subset of X\E the rest will be filled
+        - query: The query variables. If Q is a real subset of X\E, it will be marginalized.
         - evidence: Provide evidence if rejection sampling should be executed. If you want to indicate no evidence
         insert an empty list. If you want to indicate no new evidence keep this variable empty.
         """
@@ -190,23 +215,23 @@ class QBayesian:
             if not self.samples:
                 raise ValueError("Provide evidence for rejection sampling or indicate no evidence with empty list")
 
-        q_count = 0
-        tValidS = 0
+
+        # Get probability of query
+        query_indices = [(self.label2qidx[q_key], q_val) for q_key, q_val in query.items()]
+        query_indices_sorted = sorted(query_indices, key=lambda x: x[0], reverse=True)
+        # Get probability of query
+        res = 0
         for sample_key, sample_val in self.samples.items():
             add = True
-            for q_key, q_val in query.items():
-                if int(sample_key[self.label2qidx[q_key]]) != q_val:
+            for q_idx, q_val in query_indices_sorted:
+                if int(sample_key[q_idx]) != q_val:
                     add = False
                     break
             if add:
-                q_count += sample_val
-            tValidS += sample_val
-        return q_count/tValidS
+                res += sample_val
+        return res
 
 
-    def visualize(self):
-        """Visualizes valid samples"""
-        return plot_histogram(self.samples)
 
 
 
