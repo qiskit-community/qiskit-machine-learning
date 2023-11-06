@@ -11,7 +11,6 @@
 # that they have been altered from the originals.
 
 import numpy as np
-import math
 import unittest
 from test import QiskitMachineLearningTestCase
 from qiskit_algorithms.utils import algorithm_globals
@@ -114,6 +113,27 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # Test
         with self.assertRaises(ValueError, msg="QBayesian constructor did not raise ValueError with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(1, 'qr'))).inference({'A': 0})
+
+    def test_trivial_circuit(self):
+        # Define rotation angles
+        theta_A = 2 * np.arcsin(np.sqrt(0.2))
+        theta_B_A = 2 * np.arcsin(np.sqrt(0.9))
+        theta_B_nA = 2 * np.arcsin(np.sqrt(0.3))
+        # Define quantum registers
+        qrA = QuantumRegister(1, name='A')
+        qrB = QuantumRegister(1, name='B')
+        # Define a 2-qubit quantum circuit
+        qc = QuantumCircuit(qrA, qrB, name="Bayes net small")
+        qc.ry(theta_A, 0)
+        qc.cry(theta_B_A, control_qubit=qrA, target_qubit=qrB)
+        qc.x(0)
+        qc.cry(theta_B_nA, control_qubit=qrA, target_qubit=qrB)
+        qc.x(0)
+        qc.draw('mpl', style='bw', plot_barriers=False, justify='none', fold=-1)
+        # Initialize quantum bayesian
+        qb = QBayesian(circuit=qc)
+        # Inference
+        self.assertTrue(np.all(np.isclose(0.1, qb.inference(query={'B': 0}, evidence={'A': 1}), atol=0.05)))
 
 if __name__ == "__main__":
     unittest.main()

@@ -210,13 +210,14 @@ class QBayesian:
             if not self.samples:
                 raise ValueError("Provide evidence for rejection sampling or indicate no evidence with empty list")
         # Get sorted indices of query qubits
-        query_indices = [(self.label2qidx[q_key], q_val) for q_key, q_val in query.items()]
-        query_indices_sorted = sorted(query_indices, key=lambda x: x[0], reverse=True)
+        query_indices_rev = [
+            (self.circ.num_qubits-self.label2qidx[q_key]-1, q_val) for q_key, q_val in query.items()
+        ]
         # Get probability of query
         res = 0
         for sample_key, sample_val in self.samples.items():
             add = True
-            for q_idx, q_val in query_indices_sorted:
+            for q_idx, q_val in query_indices_rev:
                 if int(sample_key[q_idx]) != q_val:
                     add = False
                     break
