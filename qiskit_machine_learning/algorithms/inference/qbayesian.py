@@ -9,6 +9,8 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+import copy
+
 import numpy as np
 from qiskit import QuantumCircuit, transpile, ClassicalRegister
 from qiskit.quantum_info import Statevector
@@ -23,7 +25,7 @@ class QBayesian:
 
     **References**
         [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang.
-        "Quantum inference on Bayesian networks." Physical Review A 89.6 (2014): 062315.
+        "Quantum inference on Bayesian networks", Physical Review A 89.6 (2014): 062315.
 
 
     Usage:
@@ -50,11 +52,15 @@ class QBayesian:
     # Discrete quantum Bayesian network
     def __init__(self, circuit: QuantumCircuit):
         """
-        Run the provided quantum circuit on the Aer simulator backend.
+        Run the provided quantum circuit on the Aer simulator backend. For other simulator overwrite the method
+        run_circuit().
 
-        Parameters:
-            - circuit: The quantum circuit to be executed.
-            Every r.v. should be assigned exactly one register of one distinct qubit.
+        Args:
+            circuit (QuantumCircuit): The quantum circuit representing the Bayesian network. Each random variable
+                                  should be assigned to exactly one register of one qubit.
+
+        Raises:
+            ValueError: If any register in the circuit is not mapped to exactly one qubit.
 
         """
         # Test valid input
@@ -67,12 +73,20 @@ class QBayesian:
         self.label2qubit = {qrg.name: qrg[0] for qrg in self.circ.qregs}
         # Label of register mapped to its qubit index
         self.label2qidx = {qrg.name: idx for idx, qrg in enumerate(self.circ.qregs)}
+        # Samples from rejection sampling
         self.samples = {}
+        # True if rejection sampling converged after limit
+        self.converged = bool
 
     def getGroverOp(self, evidence: dict) -> GroverOperator:
         """
         Constructs a Grover operator based on the provided evidence. The evidence is used to determine
-        the "good states" that the returned Grover operator can amplify.
+        the "good states" that the Grover operator will amplify.
+        Args:
+            evidence (dict): A dictionary representing the evidence with keys as variable labels and
+                             values as states.
+        Returns:
+            GroverOperator: The constructed Grover operator.
         """
         # Evidence to reversed qubit index sorted by index
         num_qubits = self.circ.num_qubits
@@ -109,8 +123,14 @@ class QBayesian:
 
     def powerGrover(self, groverOp: GroverOperator, evidence: dict, k: int) -> (GroverOperator, set):
         """
-        Applies the Grover operator to the quantum circuit 2^k times. It measures the evidence qubits and returns a
-        tuple containing the updated quantum circuit and a set of the measured evidence qubits.
+        Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits, and returns
+        a tuple containing the updated quantum circuit and a set of the measured evidence qubits.
+        Args:
+            groverOp (GroverOperator): The Grover operator to be applied.
+            evidence (dict): A dictionary representing the evidence.
+            k (int): The power to which the Grover operator is raised.
+        Returns:
+            tuple: A tuple containing the updated quantum circuit and a set of the measured evidence qubits.
         """
         # Create circuit
         qc = QuantumCircuit(*self.circ.qregs)
@@ -143,8 +163,18 @@ class QBayesian:
         E = {(e_count_key, int(e_count_val >= 0)) for e_count_key, e_count_val in E_count.items()}
         return qc, E
 
-    def rejectionSampling(self, evidence: dict, shots: int = 100000) -> dict:
-
+    def rejectionSampling(self, evidence: dict, shots: int = 100000, limit: int = 10) -> dict:
+        """
+        Performs rejection sampling given the evidence. If evidence is empty, it runs the circuit and measures
+        all qubits. If evidence is provided, it uses the Grover operator for amplitude amplification and iterates
+        until the evidence matches or a limit is reached.
+        Args:
+            evidence (dict): A dictionary representing the evidence.
+            shots (int): The number of times the circuit will be executed.
+            limit (int): The maximum number of iterations for the Grover operator.
+        Returns:
+            dict: A dictionary containing the samples as a dictionary
+        """
         # If evidence is empty
         if len(evidence) == 0:
             # Create circuit
@@ -155,30 +185,35 @@ class QBayesian:
             # Run circuit
             samples = self.run_circuit(qc, shots=shots)
             return samples
-        else:
-            # Get grover operator if evidence not empty
-            groverOp = self.getGroverOp(evidence)
-            # Amplitude amplification
-            e = {(self.label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
-            E = {}
-            k = -1
-            # If the measurement of the evidence qubits matches the evidence stop
-            while (e != E) and (k < 10):
-                # Increment power
-                k += 1
-                # Create circuit with 2^k times grover operator
-                qc, E = self.powerGrover(groverOp=groverOp, evidence=evidence, k=k)
+        # Get grover operator if evidence not empty
+        groverOp = self.getGroverOp(evidence)
+        # Amplitude amplification
+        e, E = {(self.label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}, {}
+        best_QC, best_inter = QuantumCircuit(), 0
+        self.converged = False
+        k = -1
+        # If the measurement of the evidence qubits matches the evidence stop
+        while (e != E) and (k < limit):
+            # Increment power
+            k += 1
+            # Create circuit with 2^k times grover operator
+            qc, E = self.powerGrover(groverOp=groverOp, evidence=evidence, k=k)
+            # Test number of
+            if len(e.intersection(E)) > best_inter:
+                best_qc = qc
+        if e == E:
+            self.converged = True
 
         # Create a classical register with the size of the evidence
         measurement_qcr = ClassicalRegister(self.circ.num_qubits-len(evidence))
-        qc.add_register(measurement_qcr)
+        best_qc.add_register(measurement_qcr)
         # Map the query qubits to the classical bits and measure them
         query_qubits = [(label, self.label2qidx[label], qubit) for label, qubit in self.label2qubit.items() if label not in evidence]
         query_qubits_sorted = sorted(query_qubits, key=lambda x: x[1])
         # Measure query variables and return their count
-        qc.measure([q[2] for q in query_qubits_sorted], measurement_qcr)
+        best_qc.measure([q[2] for q in query_qubits_sorted], measurement_qcr)
         # Run circuit
-        counts = self.run_circuit(qc, shots=shots)
+        counts = self.run_circuit(best_qc, shots=shots)
         # Build default string with evidence
         query_string = ''
         varIdxSorted = [label for label, _ in sorted(self.label2qidx.items(), key=lambda x: x[1], reverse=True)]
@@ -200,9 +235,19 @@ class QBayesian:
 
     def inference(self, query: dict, evidence: dict=None, shots: int=100000) -> float:
         """
-        - query: The query variables. If Q is a real subset of X\E, it will be marginalized.
-        - evidence: Provide evidence if rejection sampling should be executed. If you want to indicate no evidence
-        insert an empty list. If you want to indicate no new evidence keep this variable empty.
+        Performs inference on the query variables given the evidence. It uses rejection sampling if evidence
+        is provided and calculates the probability of the query.
+        Args:
+            query (dict): The query variables with keys as variable labels and values as states. If Q is a real subset
+            of X\E, it will be marginalized.
+            evidence (dict, optional): The evidence variables. If provided, rejection sampling is executed.  If you want
+             to indicate no evidence
+        insert an empty list.
+            shots (int): The number of times the circuit will be executed.
+        Returns:
+            float: The probability of the query given the evidence.
+        Raises:
+            ValueError: If evidence is required for rejection sampling and none is provided.
         """
         if evidence is not None:
             self.rejectionSampling(evidence, shots)

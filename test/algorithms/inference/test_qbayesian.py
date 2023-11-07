@@ -75,11 +75,12 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
              '100': 0.03, '101': 0.04125, '110': 0.315, '111': 0.1575}
                     ]
         for e, res in zip(test_cases, true_res):
-            samples = self.qbayesian.rejectionSampling(evidence=e, shots=100000)
+            samples = self.qbayesian.rejectionSampling(evidence=e)
             self.assertTrue(np.all([np.isclose(res[sample_key], sample_val, atol=0.1)
                                     for sample_key, sample_val in samples.items()]))
 
     def test_inference(self):
+        """Test inference with different amount of evidence"""
         test_q_1, test_e_1 = ({'B': 1}, {'A': 1, 'C': 1})
         test_q_2 = {'B': 0}
         test_q_3 = {}
@@ -104,17 +105,20 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         self.assertTrue(samples[0] == samples[1])
 
     def test_parameter(self):
-        """Tests properties of QBayesian"""
-        # Test
+        """Tests parameter of QBayesian methods"""
+        # Test set limit
+        self.qbayesian.rejectionSampling(evidence={'B': 1}, limit=1)
+        # Test set shots
         self.qbayesian.inference(query={'B': 1}, evidence={'A': 0, 'C': 0}, shots=10)
         # Create a quantum circuit with a register that has more than one qubit
         with self.assertRaises(ValueError, msg="QBayesian constructor did not raise ValueError with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(2, 'qr')))
-        # Test
-        with self.assertRaises(ValueError, msg="QBayesian constructor did not raise ValueError with invalid input."):
+        # Test invalid inference without evidence or generated samples
+        with self.assertRaises(ValueError, msg="QBayesian inference did not raise ValueError with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(1, 'qr'))).inference({'A': 0})
 
     def test_trivial_circuit(self):
+        """Tests trivial quantum circuit"""
         # Define rotation angles
         theta_A = 2 * np.arcsin(np.sqrt(0.2))
         theta_B_A = 2 * np.arcsin(np.sqrt(0.9))
