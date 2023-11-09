@@ -159,6 +159,7 @@ class QBayesian:
                     E_count[evidence_qubits[i]] += e_sample_val
                 else:
                     E_count[evidence_qubits[i]] += -e_sample_val
+        print(E_count)
         # Assign to every qubit if it is more often measured 1 -> 1 o/w 0
         E = {(e_count_key, int(e_count_val >= 0)) for e_count_key, e_count_val in E_count.items()}
         return qc, E
@@ -201,6 +202,7 @@ class QBayesian:
             # Test number of
             if len(e.intersection(E)) > best_inter:
                 best_qc = qc
+            print("k:",k)
         if e == E:
             self.converged = True
 
@@ -233,7 +235,7 @@ class QBayesian:
         return self.samples
 
 
-    def inference(self, query: dict, evidence: dict=None, shots: int=100000) -> float:
+    def inference(self, query: dict, evidence: dict=None, shots: int=100000, limit: int=10) -> float:
         """
         Performs inference on the query variables given the evidence. It uses rejection sampling if evidence
         is provided and calculates the probability of the query.
@@ -250,7 +252,7 @@ class QBayesian:
             ValueError: If evidence is required for rejection sampling and none is provided.
         """
         if evidence is not None:
-            self.rejectionSampling(evidence, shots)
+            self.rejectionSampling(evidence, shots, limit)
         else:
             if not self.samples:
                 raise ValueError("Provide evidence for rejection sampling or indicate no evidence with empty list")
