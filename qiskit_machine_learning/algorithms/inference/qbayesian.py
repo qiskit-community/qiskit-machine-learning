@@ -56,7 +56,8 @@ class QBayesian:
 
         Args:
             circuit (QuantumCircuit): The quantum circuit representing the Bayesian network.
-            Each random variable should be assigned to exactly one register of one qubit.
+            Each random variable should be assigned to exactly one register of one qubit. The
+            first qubit in the circuit will be the one of highest order.
 
         Raises:
             ValueError: If any register in the circuit is not mapped to exactly one qubit.
@@ -70,8 +71,10 @@ class QBayesian:
         self.circ = circuit
         # Label of register mapped to its qubit
         self.label2qubit = {qrg.name: qrg[0] for qrg in self.circ.qregs}
-        # Label of register mapped to its qubit index
-        self.label2qidx = {qrg.name: idx for idx, qrg in enumerate(self.circ.qregs)}
+        # Label of register mapped to its qubit index bottom up in significance
+        self.label2qidx = {
+            qrg.name: self.circ.num_qubits-idx-1 for idx, qrg in enumerate(self.circ.qregs)
+        }
         # Samples from rejection sampling
         self.samples = {}
         # True if rejection sampling converged after limit
@@ -90,7 +93,7 @@ class QBayesian:
         # Evidence to reversed qubit index sorted by index
         num_qubits = self.circ.num_qubits
         e2idx = sorted(
-            [(num_qubits - self.label2qidx[e_key] - 1, e_val)
+            [(self.label2qidx[e_key], e_val)
              for e_key, e_val in evidence.items()], key=lambda x: x[0]
         )
         # Binary format of good states
@@ -105,7 +108,9 @@ class QBayesian:
                 b = b[:e_idx] + str(e_val) + b[e_idx:]
             good_states.append(b)
         # Get statevector by transform good states w.r.t its idx to 1 and o/w to 0
-        oracle = Statevector([int(format(i, f'0{num_qubits}b') in good_states) for i in range(2 ** num_qubits)])
+        oracle = Statevector(
+            [int(format(i, f'0{num_qubits}b') in good_states) for i in range(2 ** num_qubits)]
+        )
         return GroverOperator(oracle, state_preparation=self.circ)
 
     def run_circuit(self, circuit: QuantumCircuit, shots=100_000) -> dict:
@@ -166,7 +171,9 @@ class QBayesian:
                 else:
                     e_count[evidence_qubits[i]] += -e_sample_val
         # Assign to every qubit if it is more often measured 1 -> 1 o/w 0
-        e_meas = {(e_count_key, int(e_count_val >= 0)) for e_count_key, e_count_val in e_count.items()}
+        e_meas = {
+            (e_count_key, int(e_count_val >= 0)) for e_count_key, e_count_val in e_count.items()
+        }
         return qc, e_meas
 
     def rejection_sampling(self, evidence: dict, shots: int = 100000, limit: int = 10) -> dict:
@@ -189,8 +196,8 @@ class QBayesian:
             # Measure
             qc.measure_all()
             # Run circuit
-            samples = self.run_circuit(qc, shots=shots)
-            return samples
+            self.samples = self.run_circuit(qc, shots=shots)
+            return self.samples
         # Get grover operator if evidence not empty
         grover_op = self.get_grover_op(evidence)
         # Amplitude amplification
@@ -214,8 +221,10 @@ class QBayesian:
         measurement_qcr = ClassicalRegister(self.circ.num_qubits - len(evidence))
         best_qc.add_register(measurement_qcr)
         # Map the query qubits to the classical bits and measure them
-        query_qubits = [(label, self.label2qidx[label], qubit) for label, qubit in self.label2qubit.items() if
-                        label not in evidence]
+        query_qubits = [
+            (label, self.label2qidx[label], qubit) for label, qubit in self.label2qubit.items() if
+            label not in evidence
+        ]
         query_qubits_sorted = sorted(query_qubits, key=lambda x: x[1])
         # Measure query variables and return their count
         best_qc.measure([q[2] for q in query_qubits_sorted], measurement_qcr)
@@ -223,7 +232,9 @@ class QBayesian:
         counts = self.run_circuit(best_qc, shots=shots)
         # Build default string with evidence
         query_string = ''
-        var_idx_sorted = [label for label, _ in sorted(self.label2qidx.items(), key=lambda x: x[1], reverse=True)]
+        var_idx_sorted = [
+            label for label, _ in sorted(self.label2qidx.items(), key=lambda x: x[1])
+        ]
         for var in var_idx_sorted:
             if var in evidence:
                 query_string += str(evidence[var])
@@ -263,9 +274,7 @@ class QBayesian:
             if not self.samples:
                 raise ValueError("Provide evidence or indicate no evidence with empty list")
         # Get sorted indices of query qubits
-        query_indices_rev = [
-            (self.circ.num_qubits-self.label2qidx[q_key]-1, q_val) for q_key, q_val in query.items()
-        ]
+        query_indices_rev = [(self.label2qidx[q_key], q_val) for q_key, q_val in query.items()]
         # Get probability of query
         res = 0
         for sample_key, sample_val in self.samples.items():
