@@ -157,7 +157,6 @@ class QBayesian:
         qc_measure.measure([q for q in evidence_qubits], measurement_ecr)
         # Run the circuit with the Grover operator and measurements
         e_samples = self.run_circuit(qc_measure, shots=1024*self.circ.num_qubits)
-        print(e_samples)
         e_count = {self.label2qubit[e]: 0 for e in evidence}
         for e_sample_key, e_sample_val in e_samples.items():
             # Go through reverse binary that matches order of qubits
@@ -267,7 +266,6 @@ class QBayesian:
         query_indices_rev = [
             (self.circ.num_qubits-self.label2qidx[q_key]-1, q_val) for q_key, q_val in query.items()
         ]
-        print([(key, val) for key, val in self.samples.items() if val>0.05])
         # Get probability of query
         res = 0
         for sample_key, sample_val in self.samples.items():
