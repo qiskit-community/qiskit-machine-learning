@@ -18,8 +18,10 @@ from qiskit_machine_learning.algorithms.inference.qbayesian import QBayesian
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
 
+
 class TestQBayesianInference(QiskitMachineLearningTestCase):
     """Test QBayesianInference Algorithm"""
+
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 10598
@@ -64,7 +66,6 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # Quantum Bayesian inference
         self.qbayesian = QBayesian(qcA)
 
-
     def test_rejection_sampling(self):
         """Test rejection sampling with different amount of evidence"""
         test_cases = [{'A': 0, 'B': 0}, {'A': 0}, {}]
@@ -73,9 +74,9 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
             {'000': 0.36, '100': 0.04, '010': 0.18, '110': 0.42},
             {'000': 0.27, '001': 0.03375, '010': 0.135, '011': 0.0175,
              '100': 0.03, '101': 0.04125, '110': 0.315, '111': 0.1575}
-                    ]
+        ]
         for e, res in zip(test_cases, true_res):
-            samples = self.qbayesian.rejectionSampling(evidence=e)
+            samples = self.qbayesian.rejection_sampling(evidence=e)
             self.assertTrue(np.all([np.isclose(res[sample_key], sample_val, atol=0.1)
                                     for sample_key, sample_val in samples.items()]))
 
@@ -107,14 +108,14 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
     def test_parameter(self):
         """Tests parameter of QBayesian methods"""
         # Test set limit
-        self.qbayesian.rejectionSampling(evidence={'B': 1}, limit=1)
+        self.qbayesian.rejection_sampling(evidence={'B': 1}, limit=1)
         # Test set shots
         self.qbayesian.inference(query={'B': 1}, evidence={'A': 0, 'C': 0}, shots=10)
         # Create a quantum circuit with a register that has more than one qubit
-        with self.assertRaises(ValueError, msg="QBayesian constructor did not raise ValueError with invalid input."):
+        with self.assertRaises(ValueError, msg="No ValueError in constructor with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(2, 'qr')))
         # Test invalid inference without evidence or generated samples
-        with self.assertRaises(ValueError, msg="QBayesian inference did not raise ValueError with invalid input."):
+        with self.assertRaises(ValueError, msg="No ValueError in inference with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(1, 'qr'))).inference({'A': 0})
 
     def test_trivial_circuit(self):
@@ -137,7 +138,10 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # Initialize quantum bayesian
         qb = QBayesian(circuit=qc)
         # Inference
-        self.assertTrue(np.all(np.isclose(0.1, qb.inference(query={'B': 0}, evidence={'A': 1}), atol=0.05)))
+        self.assertTrue(
+            np.all(np.isclose(0.1, qb.inference(query={'B': 0}, evidence={'A': 1}), atol=0.05))
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
