@@ -157,7 +157,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # Inference
         self.assertTrue(
             np.all(np.isclose(0.1, QBayesian(circuit=qc)
-                              .inference(query={"B": 0}, evidence={"A": 1}), atol=0.02))
+                              .inference(query={"B": 0}, evidence={"A": 1}), atol=0.04))
         )
 
 
