@@ -10,13 +10,16 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-import numpy as np
+""" Test Quantum Bayesian Inference """
+
 import unittest
 from test import QiskitMachineLearningTestCase
+
+import numpy as np
 from qiskit_algorithms.utils import algorithm_globals
-from qiskit_machine_learning.algorithms import QBayesian
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
+from qiskit_machine_learning.algorithms import QBayesian
 
 
 class TestQBayesianInference(QiskitMachineLearningTestCase):
@@ -26,66 +29,80 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.random_seed = 10598
         # Probabilities
-        theta_A = 2 * np.arcsin(np.sqrt(0.25))
-        theta_B_nA = 2 * np.arcsin(np.sqrt(0.6))
-        theta_B_A = 2 * np.arcsin(np.sqrt(0.7))
-        theta_C_nBnA = 2 * np.arcsin(np.sqrt(0.1))
-        theta_C_nBA = 2 * np.arcsin(np.sqrt(0.55))
-        theta_C_BnA = 2 * np.arcsin(np.sqrt(0.7))
-        theta_C_BA = 2 * np.arcsin(np.sqrt(0.9))
+        theta_a = 2 * np.arcsin(np.sqrt(0.25))
+        theta_b_na = 2 * np.arcsin(np.sqrt(0.6))
+        theta_b_a = 2 * np.arcsin(np.sqrt(0.7))
+        theta_c_nbna = 2 * np.arcsin(np.sqrt(0.1))
+        theta_c_nba = 2 * np.arcsin(np.sqrt(0.55))
+        theta_c_bna = 2 * np.arcsin(np.sqrt(0.7))
+        theta_c_ba = 2 * np.arcsin(np.sqrt(0.9))
         # Random variables
-        qrA = QuantumRegister(1, name='A')
-        qrB = QuantumRegister(1, name='B')
-        qrC = QuantumRegister(1, name='C')
+        qr_a = QuantumRegister(1, name="A")
+        qr_b = QuantumRegister(1, name="B")
+        qr_c = QuantumRegister(1, name="C")
         # Define a 3-qubit quantum circuit
-        qcA = QuantumCircuit(qrA, qrB, qrC, name="Bayes net")
+        qc = QuantumCircuit(qr_a, qr_b, qr_c, name="Bayes net")
         # P(A)
-        qcA.ry(theta_A, 0)
+        qc.ry(theta_a, 0)
         # P(B|-A)
-        qcA.x(0)
-        qcA.cry(theta_B_nA, qrA, qrB)
-        qcA.x(0)
+        qc.x(0)
+        qc.cry(theta_b_na, qr_a, qr_b)
+        qc.x(0)
         # P(B|A)
-        qcA.cry(theta_B_A, qrA, qrB)
+        qc.cry(theta_b_a, qr_a, qr_b)
         # P(C|-B,-A)
-        qcA.x(0)
-        qcA.x(1)
-        qcA.mcry(theta_C_nBnA, [qrA[0], qrB[0]], qrC[0])
-        qcA.x(0)
-        qcA.x(1)
+        qc.x(0)
+        qc.x(1)
+        qc.mcry(theta_c_nbna, [qr_a[0], qr_b[0]], qr_c[0])
+        qc.x(0)
+        qc.x(1)
         # P(C|-B,A)
-        qcA.x(1)
-        qcA.mcry(theta_C_nBA, [qrA[0], qrB[0]], qrC[0])
-        qcA.x(1)
+        qc.x(1)
+        qc.mcry(theta_c_nba, [qr_a[0], qr_b[0]], qr_c[0])
+        qc.x(1)
         # P(C|B,-A)
-        qcA.x(0)
-        qcA.mcry(theta_C_BnA, [qrA[0], qrB[0]], qrC[0])
-        qcA.x(0)
+        qc.x(0)
+        qc.mcry(theta_c_bna, [qr_a[0], qr_b[0]], qr_c[0])
+        qc.x(0)
         # P(C|B,A)
-        qcA.mcry(theta_C_BA, [qrA[0], qrB[0]], qrC[0])
+        qc.mcry(theta_c_ba, [qr_a[0], qr_b[0]], qr_c[0])
         # Quantum Bayesian inference
-        self.qbayesian = QBayesian(qcA)
+        self.qbayesian = QBayesian(qc)
 
     def test_rejection_sampling(self):
         """Test rejection sampling with different amount of evidence"""
-        test_cases = [{'A': 0, 'B': 0}, {'A': 0}, {}]
+        test_cases = [{"A": 0, "B": 0}, {"A": 0}, {}]
         true_res = [
-            {'000': 0.9, '100': 0.1},
-            {'000': 0.36, '100': 0.04, '010': 0.18, '110': 0.42},
-            {'000': 0.27, '001': 0.03375, '010': 0.135, '011': 0.0175,
-             '100': 0.03, '101': 0.04125, '110': 0.315, '111': 0.1575}
+            {"000": 0.9, "100": 0.1},
+            {"000": 0.36, "100": 0.04, "010": 0.18, "110": 0.42},
+            {
+                "000": 0.27,
+                "001": 0.03375,
+                "010": 0.135,
+                "011": 0.0175,
+                "100": 0.03,
+                "101": 0.04125,
+                "110": 0.315,
+                "111": 0.1575,
+            },
         ]
-        for e, res in zip(test_cases, true_res):
-            samples = self.qbayesian.rejection_sampling(evidence=e)
-            self.assertTrue(np.all([np.isclose(res[sample_key], sample_val, atol=0.08)
-                                    for sample_key, sample_val in samples.items()]))
+        for evd, res in zip(test_cases, true_res):
+            samples = self.qbayesian.rejection_sampling(evidence=evd)
+            self.assertTrue(
+                np.all(
+                    [
+                        np.isclose(res[sample_key], sample_val, atol=0.08)
+                        for sample_key, sample_val in samples.items()
+                    ]
+                )
+            )
 
     def test_inference(self):
         """Test inference with different amount of evidence"""
-        test_q_1, test_e_1 = ({'B': 1}, {'A': 1, 'C': 1})
-        test_q_2 = {'B': 0}
+        test_q_1, test_e_1 = ({"B": 1}, {"A": 1, "C": 1})
+        test_q_2 = {"B": 0}
         test_q_3 = {}
-        test_q_4, test_e_4 = ({'B': 1}, {'A': 0})
+        test_q_4, test_e_4 = ({"B": 1}, {"A": 0})
         true_res = [0.79, 0.21, 1, 0.6]
         res = []
         samples = []
@@ -108,40 +125,39 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
     def test_parameter(self):
         """Tests parameter of QBayesian methods"""
         # Test set threshold
-        self.qbayesian.rejection_sampling(evidence={'B': 1}, th=0.9)
+        self.qbayesian.rejection_sampling(evidence={"B": 1}, threshold=0.9)
         # Test set limit
-        self.qbayesian.rejection_sampling(evidence={'B': 1}, limit=1)
+        self.qbayesian.rejection_sampling(evidence={"B": 1}, limit=1)
         # Test set shots
-        self.qbayesian.inference(query={'B': 1}, evidence={'A': 0, 'C': 0}, shots=10)
+        self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0}, shots=10)
         # Create a quantum circuit with a register that has more than one qubit
         with self.assertRaises(ValueError, msg="No ValueError in constructor with invalid input."):
-            QBayesian(QuantumCircuit(QuantumRegister(2, 'qr')))
+            QBayesian(QuantumCircuit(QuantumRegister(2, "qr")))
         # Test invalid inference without evidence or generated samples
         with self.assertRaises(ValueError, msg="No ValueError in inference with invalid input."):
-            QBayesian(QuantumCircuit(QuantumRegister(1, 'qr'))).inference({'A': 0})
+            QBayesian(QuantumCircuit(QuantumRegister(1, "qr"))).inference({"A": 0})
 
     def test_trivial_circuit(self):
         """Tests trivial quantum circuit"""
         # Define rotation angles
-        theta_A = 2 * np.arcsin(np.sqrt(0.2))
-        theta_B_A = 2 * np.arcsin(np.sqrt(0.9))
-        theta_B_nA = 2 * np.arcsin(np.sqrt(0.3))
+        theta_a = 2 * np.arcsin(np.sqrt(0.2))
+        theta_b_a = 2 * np.arcsin(np.sqrt(0.9))
+        theta_b_na = 2 * np.arcsin(np.sqrt(0.3))
         # Define quantum registers
-        qrA = QuantumRegister(1, name='A')
-        qrB = QuantumRegister(1, name='B')
+        qr_a = QuantumRegister(1, name="A")
+        qr_b = QuantumRegister(1, name="B")
         # Define a 2-qubit quantum circuit
-        qc = QuantumCircuit(qrA, qrB, name="Bayes net small")
-        qc.ry(theta_A, 0)
-        qc.cry(theta_B_A, control_qubit=qrA, target_qubit=qrB)
+        qc = QuantumCircuit(qr_a, qr_b, name="Bayes net small")
+        qc.ry(theta_a, 0)
+        qc.cry(theta_b_a, control_qubit=qr_a, target_qubit=qr_b)
         qc.x(0)
-        qc.cry(theta_B_nA, control_qubit=qrA, target_qubit=qrB)
+        qc.cry(theta_b_na, control_qubit=qr_a, target_qubit=qr_b)
         qc.x(0)
-        qc.draw('mpl', style='bw', plot_barriers=False, justify='none', fold=-1)
-        # Initialize quantum bayesian
-        qb = QBayesian(circuit=qc)
+        qc.draw("mpl", style="bw", plot_barriers=False, justify="none", fold=-1)
         # Inference
         self.assertTrue(
-            np.all(np.isclose(0.1, qb.inference(query={'B': 0}, evidence={'A': 1}), atol=0.02))
+            np.all(np.isclose(0.1, QBayesian(circuit=qc)
+                              .inference(query={"B": 0}, evidence={"A": 1}), atol=0.02))
         )
 
 
