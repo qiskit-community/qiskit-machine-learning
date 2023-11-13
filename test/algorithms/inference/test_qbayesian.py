@@ -14,7 +14,7 @@ import numpy as np
 import unittest
 from test import QiskitMachineLearningTestCase
 from qiskit_algorithms.utils import algorithm_globals
-from qiskit_machine_learning.algorithms.inference.qbayesian import QBayesian
+from qiskit_machine_learning.algorithms import QBayesian
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
 
@@ -77,7 +77,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         ]
         for e, res in zip(test_cases, true_res):
             samples = self.qbayesian.rejection_sampling(evidence=e)
-            self.assertTrue(np.all([np.isclose(res[sample_key], sample_val, atol=0.12)
+            self.assertTrue(np.all([np.isclose(res[sample_key], sample_val, atol=0.08)
                                     for sample_key, sample_val in samples.items()]))
 
     def test_inference(self):
@@ -101,12 +101,14 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # 4. Query marginalized inference
         res.append(self.qbayesian.inference(query=test_q_4, evidence=test_e_4))
         # Correct inference
-        self.assertTrue(np.all(np.isclose(true_res, res, atol=0.6)))
+        self.assertTrue(np.all(np.isclose(true_res, res, atol=0.04)))
         # No change in samples
         self.assertTrue(samples[0] == samples[1])
 
     def test_parameter(self):
         """Tests parameter of QBayesian methods"""
+        # Test set threshold
+        self.qbayesian.rejection_sampling(evidence={'B': 1}, th=0.9)
         # Test set limit
         self.qbayesian.rejection_sampling(evidence={'B': 1}, limit=1)
         # Test set shots
@@ -139,7 +141,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         qb = QBayesian(circuit=qc)
         # Inference
         self.assertTrue(
-            np.all(np.isclose(0.1, qb.inference(query={'B': 0}, evidence={'A': 1}), atol=0.05))
+            np.all(np.isclose(0.1, qb.inference(query={'B': 0}, evidence={'A': 1}), atol=0.02))
         )
 
 
