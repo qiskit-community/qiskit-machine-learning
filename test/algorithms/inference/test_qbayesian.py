@@ -123,7 +123,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         self.assertTrue(samples[0] == samples[1])
 
     def test_parameter(self):
-        """Tests parameter of QBayesian methods"""
+        """Tests parameter of methods"""
         # Test set threshold
         self.qbayesian.rejection_sampling(evidence={"B": 1}, threshold=0.9)
         # Test set limit
@@ -156,8 +156,13 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         qc.draw("mpl", style="bw", plot_barriers=False, justify="none", fold=-1)
         # Inference
         self.assertTrue(
-            np.all(np.isclose(0.1, QBayesian(circuit=qc)
-                              .inference(query={"B": 0}, evidence={"A": 1}), atol=0.04))
+            np.all(
+                np.isclose(
+                    0.1,
+                    QBayesian(circuit=qc).inference(query={"B": 0}, evidence={"A": 1}),
+                    atol=0.04,
+                )
+            )
         )
 
 

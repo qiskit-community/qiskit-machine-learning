@@ -15,6 +15,7 @@ from qiskit import QuantumCircuit, transpile, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit.library import GroverOperator
 from qiskit_aer import AerSimulator
+from typing import Tuple
 
 
 class QBayesian:
@@ -24,6 +25,7 @@ class QBayesian:
     **References**
         [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang.
         "Quantum inference on Bayesian networks", Physical Review A 89.6 (2014): 062315.
+
     Usage:
     ------
     To use the `QBayesian` class, instantiate it with a quantum circuit that represents the
@@ -36,7 +38,7 @@ class QBayesian:
     # Define a quantum circuit
     qc = QuantumCircuit(...)
 
-    # Initialize the QBayesian class with the circuit
+    # Initialize the framework
     qb = QBayesian(qc)
 
     # Perform inference
@@ -64,7 +66,7 @@ class QBayesian:
         for qrg in circuit.qregs:
             if qrg.size > 1:
                 raise ValueError("Every register needs to be mapped to exactly one unique qubit")
-        # Initialize QBayesian
+        # Initialize parameter
         self.circ = circuit
         # Label of register mapped to its qubit
         self.label2qubit = {qrg.name: qrg[0] for qrg in self.circ.qregs}
@@ -73,9 +75,9 @@ class QBayesian:
             qrg.name: self.circ.num_qubits - idx - 1 for idx, qrg in enumerate(self.circ.qregs)
         }
         # Samples from rejection sampling
-        self.samples = {}
+        self.samples = dict()
         # True if rejection sampling converged after limit
-        self.converged = bool
+        self.converged = bool()
 
     def get_grover_op(self, evidence: dict) -> GroverOperator:
         """
@@ -104,7 +106,7 @@ class QBayesian:
             for e_idx, e_val in e2idx:
                 b = b[:e_idx] + str(e_val) + b[e_idx:]
             good_states.append(b)
-        # Get statevector by transform good states w.r.t its idx to 1 and o/w to 0
+        # Get statevector by transform good states w.r.t its index to 1 and o/w to 0
         oracle = Statevector(
             [int(format(i, f"0{num_qubits}b") in good_states) for i in range(2**num_qubits)]
         )
@@ -127,7 +129,7 @@ class QBayesian:
 
     def power_grover(
         self, grover_op: GroverOperator, evidence: dict, k: int, threshold: float
-    ) -> (GroverOperator, set):
+    ) -> Tuple[GroverOperator, set]:
         """
         Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits,
         and returns a tuple containing the updated quantum circuit and a set of the measured
@@ -144,7 +146,7 @@ class QBayesian:
         # Create circuit
         qc = QuantumCircuit(*self.circ.qregs)
         qc.append(self.circ, self.circ.qregs)
-        # Apply grover operator 2^k times
+        # Apply Grover operator 2^k times
         qc_grover = QuantumCircuit(*self.circ.qregs)
         qc_grover.append(grover_op, self.circ.qregs)
         qc_grover = qc_grover.power(2**k)
@@ -200,10 +202,11 @@ class QBayesian:
             # Run circuit
             self.samples = self.run_circuit(qc, shots=shots)
             return self.samples
-        # Get grover operator if evidence not empty
+        # Get Grover operator if evidence not empty
         grover_op = self.get_grover_op(evidence)
         # Amplitude amplification
-        true_e, meas_e = {(self.label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}, {}
+        true_e = {(self.label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
+        meas_e = dict()
         best_qc, best_inter = QuantumCircuit(), 0
         self.converged = False
         k = -1
@@ -211,7 +214,7 @@ class QBayesian:
         while (true_e != meas_e) and (k < limit):
             # Increment power
             k += 1
-            # Create circuit with 2^k times grover operator
+            # Create circuit with 2^k times Grover operator
             qc, meas_e = self.power_grover(
                 grover_op=grover_op, evidence=evidence, k=k, threshold=threshold
             )
