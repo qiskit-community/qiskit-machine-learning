@@ -88,8 +88,10 @@ gaussian
 gellmann
 getter
 gpu
+guang
 guzik
 hamiltonian
+hao
 hashable
 havlíček
 hilbert
@@ -188,6 +190,8 @@ qae
 qarg
 qargs
 qasm
+qb
+qbayesian
 qc
 qgan
 qgans
@@ -276,6 +280,7 @@ vz
 wikipedia
 williams
 wrt
+yoder
 zoufal
 zsh
 θ
