@@ -15,7 +15,7 @@ from qiskit import QuantumCircuit, transpile, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit.library import GroverOperator
 from qiskit_aer import AerSimulator
-from typing import Tuple
+from typing import Tuple, Dict, Set
 
 
 class QBayesian:
@@ -75,7 +75,7 @@ class QBayesian:
             qrg.name: self.circ.num_qubits - idx - 1 for idx, qrg in enumerate(self.circ.qregs)
         }
         # Samples from rejection sampling
-        self.samples = dict()
+        self.samples: Dict[str, int] = {}
         # True if rejection sampling converged after limit
         self.converged = bool()
 
@@ -206,7 +206,7 @@ class QBayesian:
         grover_op = self.get_grover_op(evidence)
         # Amplitude amplification
         true_e = {(self.label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
-        meas_e = dict()
+        meas_e: Set[Tuple[str, int]] = set()
         best_qc, best_inter = QuantumCircuit(), 0
         self.converged = False
         k = -1
