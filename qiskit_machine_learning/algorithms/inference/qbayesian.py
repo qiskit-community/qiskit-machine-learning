@@ -11,11 +11,11 @@
 # that they have been altered from the originals.
 """Quantum Bayesian Inference"""
 
+from typing import Tuple, Dict, Set
 from qiskit import QuantumCircuit, transpile, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit.library import GroverOperator
 from qiskit_aer import AerSimulator
-from typing import Tuple, Dict, Set
 
 
 class QBayesian:

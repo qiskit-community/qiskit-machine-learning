@@ -18,6 +18,7 @@ autosummary
 backend
 backends
 backpropagation
+bayesian
 benchmarking
 bergholm
 bitstring
@@ -88,6 +89,7 @@ gaussian
 gellmann
 getter
 gpu
+grover
 guang
 guzik
 hamiltonian
@@ -106,6 +108,7 @@ inlier
 inplace
 instantiation
 instantiations
+isaac
 isometry
 iten
 iterable
@@ -124,6 +127,7 @@ langle
 lukin
 macos
 makefile
+mary
 matmul
 matplotlib
 maxiter
@@ -235,6 +239,7 @@ stdlib
 stdlib
 stdout
 str
+subclasses
 subcircuits
 submodules
 subobjects
@@ -248,6 +253,7 @@ temme
 tensored
 terra
 th
+theodore
 toctree
 todo
 traceback
