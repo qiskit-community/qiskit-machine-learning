@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -20,7 +20,7 @@ from qiskit_algorithms.utils import algorithm_globals
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
 from qiskit_machine_learning.algorithms import QBayesian
-
+from qiskit.primitives import Sampler
 
 class TestQBayesianInference(QiskitMachineLearningTestCase):
     """Test QBayesianInference Algorithm"""
@@ -130,8 +130,8 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # Test set limit
         self.qbayesian.limit = 1
         self.qbayesian.rejection_sampling(evidence={"B": 1})
-        # Test set shots
-        self.qbayesian.shots = 10
+        # Test sampler
+        self.qbayesian.sampler = Sampler()
         self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0})
         # Create a quantum circuit with a register that has more than one qubit
         with self.assertRaises(ValueError, msg="No ValueError in constructor with invalid input."):

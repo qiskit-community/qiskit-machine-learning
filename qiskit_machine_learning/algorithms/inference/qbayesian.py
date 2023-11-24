@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -70,7 +70,6 @@ class QBayesian:
         limit: The maximum number of times the Grover operator is integrated (2^limit).
         sampler (BaseSampler): The sampler primitive used to compute the samples and inferences.
         samples (Dict[str, float]): Samples generated from the rejection sampling.
-        shots (int): The number of samples that are obtained.
         threshold (float): The threshold to accept the evidence.
 
     """
@@ -79,7 +78,6 @@ class QBayesian:
     def __init__(
         self,
         circuit: QuantumCircuit,
-        shots: int = 10_000,
         limit: int = 10,
         threshold: float = 0.9,
         sampler: BaseSampler = Sampler(),
@@ -91,7 +89,6 @@ class QBayesian:
                 an oracle for the Grover operator. The last qubit in the circuit corresponds to the
                 most significant bit passed in the state vector. Example: In a circuit with 2 qubits
                 and the first qubit as evidence with value 0, the good states are 00 and 10.
-            shots: The number of samples drawn from the circuit.
             limit: The maximum number of times the Grover operator is integrated (2^limit).
             threshold (float): The threshold to accept the evidence. The threshold value for the
                 acceptance of the evidence. For example, if set to 0.9, this means that each
@@ -109,7 +106,6 @@ class QBayesian:
                 raise ValueError("Every register needs to be mapped to exactly one unique qubit")
         # Initialize parameter
         self._circ = circuit
-        self.shots = shots
         self.limit = limit
         self.threshold = threshold
         if sampler is None:
@@ -162,9 +158,9 @@ class QBayesian:
         return GroverOperator(oracle, state_preparation=self._circ)
 
     def _run_circuit(self, circuit: QuantumCircuit) -> Dict[str, float]:
-        """Run the quantum circuit for the number of shots on the Aer simulator backend."""
+        """Run the quantum circuit with the sampler."""
         # Sample from circuit
-        job = self.sampler.run(circuit, shots=self.shots)
+        job = self.sampler.run(circuit)
         result = job.result()
         # Get the counts of quantum state results
         counts = result.quasi_dists[0].binary_probabilities()
