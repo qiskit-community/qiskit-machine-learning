@@ -1,22 +1,13 @@
 ---
-prelude: >
-    The Qiskit Machine Learning library introduces the `QBayesian` class,
-    implementing the Quantum Bayesian Inference algorithm. This new feature
-    enhances the library's capabilities in quantum machine learning,
-    particularly in the area of probabilistic reasoning and inference
-    on quantum computers.
-
 features:
   - |
     Introduction of the `QBayesian` class in the Qiskit Machine Learning library.
-    This class implements Quantum Bayesian Inference, allowing users to perform
+    This class implements quantum Bayesian inference, allowing users to perform
     probabilistic reasoning with quantum circuits. The implementation is based on the
     algorithm described in the paper "Quantum inference on Bayesian networks"
     by Low, Yoder, and Chuang.
-
   - |
     The `QBayesian` class supports various functionalities including:
-      - Initialization with a quantum circuit representing a Bayesian network.
       - Rejection sampling for estimating probabilities given evidence, with
         Grover's algorithm-based amplification.
       - Approximate Bayesian inference using rejection sampling,
@@ -24,21 +15,3 @@ features:
   - |
     The `13_quantum_bayesian_inference` notebook describes a tutorial for the
     usage of the `QBayesian` class
-
-issues:
-  - |
-    Users should ensure that each register in the quantum circuit passed to
-    `QBayesian` is mapped to exactly one qubit. The class raises a `ValueError`
-    if this condition is not met.
-
-upgrade:
-  - |
-    Users looking to leverage advanced probabilistic inference techniques in
-    quantum computing can now use the `QBayesian` class. To use this feature,
-    ensure that the latest version of the Qiskit Machine Learning library is installed.
-
-other:
-  - |
-    The `QBayesian` class is a significant addition for researchers and practitioners
-    working in quantum machine learning, particularly in the domain of Bayesian inference.
-    It opens up new possibilities for complex probabilistic modeling on quantum computers.

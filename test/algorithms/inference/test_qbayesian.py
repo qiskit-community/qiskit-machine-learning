@@ -125,11 +125,14 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
     def test_parameter(self):
         """Tests parameter of methods"""
         # Test set threshold
-        self.qbayesian.rejection_sampling(evidence={"B": 1}, threshold=0.9)
+        self.qbayesian.threshold = 0.9
+        self.qbayesian.rejection_sampling(evidence={"B": 1})
         # Test set limit
-        self.qbayesian.rejection_sampling(evidence={"B": 1}, limit=1)
+        self.qbayesian.limit = 1
+        self.qbayesian.rejection_sampling(evidence={"B": 1})
         # Test set shots
-        self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0}, shots=10)
+        self.qbayesian.shots = 10
+        self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0})
         # Create a quantum circuit with a register that has more than one qubit
         with self.assertRaises(ValueError, msg="No ValueError in constructor with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(2, "qr")))
