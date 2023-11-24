@@ -21,7 +21,7 @@ from qiskit.circuit import Qubit
 
 class QBayesian:
     r"""
-    Implements a convenient Quantum Bayesian Inference algorithm that has been developed in [1].
+    Implements a convenient quantum Bayesian inference algorithm that has been developed in [1].
 
     The quantum Bayesian inference (QBI) does quantum rejection sampling and inference for a
     Bayesian network with binary random variables represented by a given quantum circuit.
@@ -33,14 +33,15 @@ class QBayesian:
     into the circuit in this order with (A=1, B=0 and C=0), the probability is represented by the
     probability amplitude of quantum state 001.
 
-    Only binary random variables are supported. For a random variable with more than two states, see
-    for example [2].
+    For Bayesian networks with random variables that have more than two states, see for example [2].
 
     **References**
+
         [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang.
         "Quantum inference on Bayesian networks", Physical Review A 89.6 (2014): 062315.
         [2]: Borujeni, Sima E., et al. "Quantum circuit representation of Bayesian networks."
         Expert Systems with Applications 176 (2021): 114768.
+
     Usage:
     ------
         To use the `QBayesian` class, instantiate it with a quantum circuit that represents the
@@ -49,7 +50,6 @@ class QBayesian:
 
     Example:
     --------
-
         # Define a quantum circuit
         qc = QuantumCircuit(...)
 
@@ -61,8 +61,8 @@ class QBayesian:
 
         print("Probability of query given evidence:", result)
 
-    The following attributes can be set via the constructor but can also be read and
-    updated once the QBayesian object has been constructed.
+    The following attributes can be set via the constructor but can also be read and updated once
+    the QBayesian object has been constructed.
 
     Attributes:
         converged (bool): True if a solution for the evidence with the given threshold was found
@@ -71,9 +71,11 @@ class QBayesian:
         sampler (BaseSampler): The sampler primitive used to compute the samples and inferences.
         samples (Dict[str, float]): Samples generated from the rejection sampling.
         shots (int): The number of samples that are obtained.
-        threshold (float): The threshold to accept the evidence
+        threshold (float): The threshold to accept the evidence.
+
     """
 
+    # Discrete quantum Bayesian network
     def __init__(
         self,
         circuit: QuantumCircuit,
@@ -129,6 +131,7 @@ class QBayesian:
         """
         Constructs a Grover operator based on the provided evidence. The evidence is used to
         determine the "good states" that the Grover operator will amplify.
+
         Args:
             evidence: A dictionary representing the evidence with keys as variable labels
                 and values as states.
@@ -174,13 +177,14 @@ class QBayesian:
         Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits,
         and returns a tuple containing the updated quantum circuit and a set of the measured
         evidence qubits.
+
         Args:
             grover_op: The Grover operator to be applied.
             evidence: A dictionary representing the evidence.
             k: The power to which the Grover operator is raised.
         Returns:
-            tuple: A tuple containing the updated quantum circuit and a set of the
-                measured evidence qubits.
+            tuple: A tuple containing the updated quantum circuit and a set of the measured evidence
+                qubits.
         """
         # Create circuit
         qc = QuantumCircuit(*self._circ.qregs)
@@ -219,6 +223,7 @@ class QBayesian:
         Performs rejection sampling given the evidence. If evidence is empty, it runs the circuit
         and measures all qubits. If evidence is provided, it uses the Grover operator for amplitude
         amplification and iterates until the evidence matches or a limit is reached.
+
         Args:
             evidence: A dictionary representing the evidence.
         Returns:
@@ -298,6 +303,7 @@ class QBayesian:
         """
         Performs inference on the query variables given the evidence. It uses rejection sampling if
         evidence is provided and calculates the probability of the query.
+
         Args:
             query: The query variables with keys as variable labels and values as states.
                 If Q is a real subset of X without E, it will be marginalized.

@@ -14,4 +14,4 @@ features:
         with Grover's algorithm-based amplification.
   - |
     The `13_quantum_bayesian_inference` notebook describes a tutorial for the
-    usage of the `QBayesian` class
+    usage of the `QBayesian` class.
