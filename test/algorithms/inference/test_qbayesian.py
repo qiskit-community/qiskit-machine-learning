@@ -98,6 +98,28 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
                 )
             )
 
+    def test_rejection_sampling_format_res(self):
+        """Test rejection sampling with different result format"""
+        test_cases = [{"A": 0, "C": 1}, {"C": 1}, {}]
+        true_res = [
+            {"P(B=0|A=0,C=1)", "P(B=1|A=0,C=1)"},
+            {"P(A=0,B=0|C=1)", "P(A=1,B=0|C=1)", "P(A=0,B=1|C=1)", "P(A=1,B=1|C=1)"},
+            {
+                "P(A=0,B=0,C=0)",
+                "P(A=1,B=0,C=0)",
+                "P(A=0,B=1,C=0)",
+                "P(A=1,B=1,C=0)",
+                "P(A=0,B=0,C=1)",
+                "P(A=1,B=0,C=1)",
+                "P(A=0,B=1,C=1)",
+                "P(A=1,B=1,C=1)",
+            },
+        ]
+        for evd, res in zip(test_cases, true_res):
+            self.assertTrue(
+                res == set(self.qbayesian.rejection_sampling(evidence=evd, format_res=True).keys())
+            )
+
     def test_inference(self):
         """Test inference with different amount of evidence"""
         test_q_1, test_e_1 = ({"B": 1}, {"A": 1, "C": 1})
@@ -127,7 +149,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         """Tests parameter of methods"""
         # Test set threshold
         self.qbayesian.threshold = 0.9
-        self.qbayesian.rejection_sampling(evidence={"B": 1})
+        self.qbayesian.rejection_sampling(evidence={"A": 1})
         # Test set limit
         self.qbayesian.limit = 1
         self.qbayesian.rejection_sampling(evidence={"B": 1})

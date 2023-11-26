@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """Quantum Bayesian Inference"""
 
-from typing import Tuple, Dict, Set
+from typing import Tuple, Dict, Set, List
 from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit.library import GroverOperator
@@ -21,57 +21,34 @@ from qiskit.circuit import Qubit
 
 class QBayesian:
     r"""
-    Implements a convenient quantum Bayesian inference algorithm that has been developed in [1].
-
-    The quantum Bayesian inference (QBI) does quantum rejection sampling and inference for a
-    Bayesian network with binary random variables represented by a given quantum circuit.
-
-    A quantum circuit can be passed in various forms as long as it represents the joint probability
-    distribution of the Bayesian network. Note that 'QBayesian' defines an order for the qubits in
-    the circuit. The last qubit in the circuit will correspond to the most significant bit in the
-    joint probability distribution. For example, if the random variables A, B, and C are entered
-    into the circuit in this order with (A=1, B=0 and C=0), the probability is represented by the
-    probability amplitude of quantum state 001.
+    Implements a quantum Bayesian inference (QBI) algorithm that has been developed in [1]. The QBI
+    includes methods ``rejection_sampling`` and ``inference`` for a Bayesian network with binary
+    random variables represented by a quantum circuit. A quantum circuit can be passed in various
+    forms as long as it represents the joint probability distribution of the Bayesian network.
 
     For Bayesian networks with random variables that have more than two states, see for example [2].
 
-    **References**
+    Note that ``QBayesian`` defines an order for the qubits in the circuit. The last qubit in the
+    circuit will correspond to the most significant bit in the joint probability distribution. For
+    example, if the random variables A, B, and C are entered into the circuit in this order with
+    (A=1, B=0 and C=0), the probability is represented by the probability amplitude of quantum
+    state 001.
 
-        [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang.
-        "Quantum inference on Bayesian networks", Physical Review A 89.6 (2014): 062315.
-        [2]: Borujeni, Sima E., et al. "Quantum circuit representation of Bayesian networks."
-        Expert Systems with Applications 176 (2021): 114768.
+    **Example**
 
-    Usage:
-    ------
-        To use the `QBayesian` class, instantiate it with a quantum circuit that represents the
-        Bayesian network. You can then use the `inference` method to estimate probabilities given
-        evidence, optionally using rejection sampling and Grover's algorithm for amplification.
+    .. code-block:: python
 
-    Example:
-    --------
-        # Define a quantum circuit
         qc = QuantumCircuit(...)
 
-        # Initialize the framework
         qb = QBayesian(qc)
-
-        # Perform inference
         result = qb.inference(query={...}, evidence={...})
+        print("Probability of query given evidence: ", result)
 
-        print("Probability of query given evidence:", result)
-
-    The following attributes can be set via the constructor but can also be read and updated once
-    the QBayesian object has been constructed.
-
-    Attributes:
-        converged (bool): True if a solution for the evidence with the given threshold was found
-            without reaching the maximum number of times the Grover operator was integrated (limit).
-        limit: The maximum number of times the Grover operator is integrated (2^limit).
-        sampler (BaseSampler): The sampler primitive used to compute the samples and inferences.
-        samples (Dict[str, float]): Samples generated from the rejection sampling.
-        threshold (float): The threshold to accept the evidence.
-
+    **References**
+        [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang. "Quantum inference on Bayesian
+        networks", Physical Review A 89.6 (2014): 062315.
+        [2]: Borujeni, Sima E., et al. "Quantum circuit representation of Bayesian networks."
+        Expert Systems with Applications 176 (2021): 114768.
     """
 
     # Discrete quantum Bayesian network
@@ -85,15 +62,13 @@ class QBayesian:
         """
         Args:
             circuit: The quantum circuit that represents the Bayesian network. Each random variable
-                should be assigned to exactly one register of one qubit. A state vector is used as
-                an oracle for the Grover operator. The last qubit in the circuit corresponds to the
-                most significant bit passed in the state vector. Example: In a circuit with 2 qubits
-                and the first qubit as evidence with value 0, the good states are 00 and 10.
+                should be assigned to exactly one register of one qubit. The last qubit in the
+                circuit corresponds to the most significant bit in the binary string, which
+                represents the measured quantum state.
             limit: The maximum number of times the Grover operator is integrated (2^limit).
-            threshold (float): The threshold to accept the evidence. The threshold value for the
-                acceptance of the evidence. For example, if set to 0.9, this means that each
-                evidence qubit must be equal to the value of the evidence variable at least 90% of
-                the time in order to be accepted.
+            threshold (float): The threshold to accept the evidence. For example, if set to 0.9,
+                this means that each evidence qubit must be equal to the value of the evidence
+                variable at least 90% of the time.
             sampler: The sampler primitive used to compute the Bayesian inference.
                 If ``None`` is given, a default instance of the reference sampler defined
                 by :class:`~qiskit.primitives.Sampler` will be used.
@@ -106,11 +81,11 @@ class QBayesian:
                 raise ValueError("Every register needs to be mapped to exactly one unique qubit")
         # Initialize parameter
         self._circ = circuit
-        self.limit = limit
-        self.threshold = threshold
+        self._limit = limit
+        self._threshold = threshold
         if sampler is None:
             sampler = Sampler()
-        self.sampler = sampler
+        self._sampler = sampler
 
         # Label of register mapped to its qubit
         self._label2qubit = {qrg.name: qrg[0] for qrg in self._circ.qregs}
@@ -119,9 +94,9 @@ class QBayesian:
             qrg.name: self._circ.num_qubits - idx - 1 for idx, qrg in enumerate(self._circ.qregs)
         }
         # Distribution of samples from rejection sampling
-        self.samples: Dict[str, float] = {}
+        self._samples: Dict[str, float] = {}
         # True if rejection sampling converged after limit
-        self.converged = bool()
+        self._converged = bool()
 
     def _get_grover_op(self, evidence: Dict[str, int]) -> GroverOperator:
         """
@@ -160,10 +135,10 @@ class QBayesian:
     def _run_circuit(self, circuit: QuantumCircuit) -> Dict[str, float]:
         """Run the quantum circuit with the sampler."""
         # Sample from circuit
-        job = self.sampler.run(circuit)
+        job = self._sampler.run(circuit)
         result = job.result()
         # Get the counts of quantum state results
-        counts = result.quasi_dists[0].binary_probabilities()
+        counts = result.quasi_dists[0].nearest_probability_distribution().binary_probabilities()
         return counts
 
     def __power_grover(
@@ -209,21 +184,47 @@ class QBayesian:
                     e_count[evidence_qubits[i]] += e_sample_val
         # Assign to every evidence qubit if it is measured with high probability (th) 1 o/w 0
         e_meas = {
-            (e_count_key, int(e_count_val >= self.threshold))
+            (e_count_key, int(e_count_val >= self._threshold))
             for e_count_key, e_count_val in e_count.items()
         }
         return qc, e_meas
 
-    def rejection_sampling(self, evidence: Dict[str, int]) -> Dict[str, float]:
+    def _format_samples(self, samples: Dict[str, float], evidence: List[str]) -> Dict[str, float]:
+        """Transforms samples keys back to their variables names."""
+        f_samples: Dict[str, float] = {}
+        for smpl_key, smpl_val in samples.items():
+            q_str, e_str = "", ""
+            for var_name, var_idx in sorted(self._label2qidx.items(), key=lambda x: -x[1]):
+                if var_name in evidence:
+                    e_str += f"{var_name}={smpl_key[var_idx]},"
+                else:
+                    q_str += f"{var_name}={smpl_key[var_idx]},"
+            if evidence:
+                f_samples[f"P({q_str[:-1]}|{e_str[:-1]})"] = smpl_val
+            else:
+                f_samples[f"P({q_str[:-1]})"] = smpl_val
+        return f_samples
+
+    def rejection_sampling(
+        self, evidence: Dict[str, int], format_res: bool = False
+    ) -> Dict[str, float]:
         """
-        Performs rejection sampling given the evidence. If evidence is empty, it runs the circuit
-        and measures all qubits. If evidence is provided, it uses the Grover operator for amplitude
-        amplification and iterates until the evidence matches or a limit is reached.
+        Performs rejection sampling given the evidence.
 
         Args:
-            evidence: A dictionary representing the evidence.
+            evidence: The evidence variables with keys that are linked to the corresponding quantum
+                register with their names and values, which are binary states of 0 or 1. If evidence
+                is empty, it measures all qubits. If evidence is provided, it uses the Grover
+                operator for amplitude amplification and iterates until the evidence matches or a
+                limit is reached.
+            format_res: If true, maps the output back to variable names. For example, the output
+                {'100': 0.23} with evidence A=0, B=0 will be mapped to {'P(C=1|A=0,B=0)': 0.23}.
         Returns:
-            dict: A dictionary containing the distribution of the samples
+            dict: A dictionary that contains the distribution of the samples. The keys are the
+                values of the variables and the values the probability distribution given the
+                evidence. The last variable value will appear as first character for the key. If
+                format_res is true, the output will be mapped back to variables names, for example
+                {'P(C=1|A=0,B=0)': 0.23}.
         """
         # If evidence is empty
         if len(evidence) == 0:
@@ -233,63 +234,66 @@ class QBayesian:
             # Measure
             qc.measure_all()
             # Run circuit
-            self.samples = self._run_circuit(qc)
-            return self.samples
-        # Get Grover operator if evidence not empty
-        grover_op = self._get_grover_op(evidence)
-        # Amplitude amplification
-        true_e = {(self._label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
-        meas_e: Set[Tuple[str, int]] = set()
-        best_qc, best_inter = QuantumCircuit(), 0
-        self.converged = False
-        k = -1
-        # If the measurement of the evidence qubits matches the evidence stop
-        while (true_e != meas_e) and (k < self.limit):
-            # Increment power
-            k += 1
-            # Create circuit with 2^k times Grover operator
-            qc, meas_e = self.__power_grover(grover_op=grover_op, evidence=evidence, k=k)
-            # Test number of
-            if len(true_e.intersection(meas_e)) > best_inter:
-                best_qc = qc
-        if true_e == meas_e:
-            self.converged = True
+            self._samples = self._run_circuit(qc)
+        else:
+            # Get Grover operator if evidence not empty
+            grover_op = self._get_grover_op(evidence)
+            # Amplitude amplification
+            true_e = {(self._label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
+            meas_e: Set[Tuple[str, int]] = set()
+            best_qc, best_inter = QuantumCircuit(), 0
+            self._converged = False
+            k = -1
+            # If the measurement of the evidence qubits matches the evidence stop
+            while (true_e != meas_e) and (k < self._limit):
+                # Increment power
+                k += 1
+                # Create circuit with 2^k times Grover operator
+                qc, meas_e = self.__power_grover(grover_op=grover_op, evidence=evidence, k=k)
+                # Test number of
+                if len(true_e.intersection(meas_e)) > best_inter:
+                    best_qc = qc
+            if true_e == meas_e:
+                self._converged = True
 
-        # Create a classical register with the size of the evidence
-        best_qc_meas = QuantumCircuit(*self._circ.qregs)
-        best_qc_meas.append(best_qc, self._circ.qregs)
-        measurement_qcr = ClassicalRegister(self._circ.num_qubits - len(evidence))
-        best_qc_meas.add_register(measurement_qcr)
-        # Map the query qubits to the classical bits and measure them
-        query_qubits = [
-            (label, self._label2qidx[label], qubit)
-            for label, qubit in self._label2qubit.items()
-            if label not in evidence
-        ]
-        query_qubits_sorted = sorted(query_qubits, key=lambda x: x[1], reverse=True)
-        # Measure query variables and return their count
-        best_qc_meas.measure([q[2] for q in query_qubits_sorted], measurement_qcr)
-        # Run circuit
-        counts = self._run_circuit(best_qc_meas)
-        # Build default string with evidence
-        query_string = ""
-        var_idx_sorted = [
-            label for label, _ in sorted(self._label2qidx.items(), key=lambda x: x[1])
-        ]
-        for var in var_idx_sorted:
-            if var in evidence:
-                query_string += str(evidence[var])
-            else:
-                query_string += "q"
-        # Retrieve valid samples
-        self.samples = {}
-        # Replace placeholder q with query variables from samples
-        for key, val in counts.items():
-            query = query_string
-            for char in key:
-                query = query.replace("q", char, 1)
-            self.samples[query] = val
-        return self.samples
+            # Create a classical register with the size of the evidence
+            best_qc_meas = QuantumCircuit(*self._circ.qregs)
+            best_qc_meas.append(best_qc, self._circ.qregs)
+            measurement_qcr = ClassicalRegister(self._circ.num_qubits - len(evidence))
+            best_qc_meas.add_register(measurement_qcr)
+            # Map the query qubits to the classical bits and measure them
+            query_qubits = [
+                (label, self._label2qidx[label], qubit)
+                for label, qubit in self._label2qubit.items()
+                if label not in evidence
+            ]
+            query_qubits_sorted = sorted(query_qubits, key=lambda x: x[1], reverse=True)
+            # Measure query variables and return their count
+            best_qc_meas.measure([q[2] for q in query_qubits_sorted], measurement_qcr)
+            # Run circuit
+            counts = self._run_circuit(best_qc_meas)
+            # Build default string with evidence
+            query_string = ""
+            var_idx_sorted = [
+                label for label, _ in sorted(self._label2qidx.items(), key=lambda x: x[1])
+            ]
+            for var in var_idx_sorted:
+                if var in evidence:
+                    query_string += str(evidence[var])
+                else:
+                    query_string += "q"
+            # Retrieve valid samples
+            self._samples = {}
+            # Replace placeholder q with query variables from samples
+            for key, val in counts.items():
+                query = query_string
+                for char in key:
+                    query = query.replace("q", char, 1)
+                self._samples[query] = val
+        if not format_res:
+            return self._samples
+        else:
+            return self._format_samples(self._samples, list(evidence.keys()))
 
     def inference(
         self,
@@ -301,11 +305,13 @@ class QBayesian:
         evidence is provided and calculates the probability of the query.
 
         Args:
-            query: The query variables with keys as variable labels and values as states.
-                If Q is a real subset of X without E, it will be marginalized.
-            evidence: The evidence variables. If specified, rejection sampling is executed. If you
-                want to indicate the case of no evidence, insert an empty list. If you do not
-                provide any evidence, the samples from previous rejection sampling are used.
+            query: The query variables with keys that are linked to the corresponding quantum
+                register with their names and values, which are binary states of 0 or 1. If Q is a
+                real subset of X without E, it will be marginalized.
+            evidence: The evidence variables. If evidence is a dictionary, the rejection sampling is
+                executed with the keys linked to the corresponding quantum register by their names
+                and binary values of 0 or 1. If evidence is `None`, the default, then samples from
+                the previous rejection sampling are used.
         Returns:
             float: The probability of the query given the evidence.
         Raises:
@@ -313,14 +319,13 @@ class QBayesian:
         """
         if evidence is not None:
             self.rejection_sampling(evidence)
-        else:
-            if not self.samples:
-                raise ValueError("Provide evidence or indicate no evidence with empty list")
+        elif not self._samples:
+            raise ValueError("Provide evidence or indicate no evidence with an empty dictionary")
         # Get sorted indices of query qubits
         query_indices_rev = [(self._label2qidx[q_key], q_val) for q_key, q_val in query.items()]
         # Get probability of query
         res = 0.0
-        for sample_key, sample_val in self.samples.items():
+        for sample_key, sample_val in self._samples.items():
             add = True
             for q_idx, q_val in query_indices_rev:
                 if int(sample_key[q_idx]) != q_val:
@@ -329,3 +334,44 @@ class QBayesian:
             if add:
                 res += sample_val
         return res
+
+    @property
+    def converged(self) -> bool:
+        """Returns ``True`` if a solution for the evidence with the given threshold was found
+        without reaching the maximum number of times the Grover operator was integrated (limit)."""
+        return self._converged
+
+    @property
+    def samples(self) -> Dict[str, float]:
+        """Returns the samples generated from the rejection sampling."""
+        return self._samples
+
+    @property
+    def limit(self) -> int:
+        """The maximum number of times the Grover operator is integrated (2^limit)."""
+        return self._limit
+
+    @limit.setter
+    def limit(self, limit: int):
+        """Set the maximum number of times the Grover operator is integrated (2^limit)."""
+        self._limit = limit
+
+    @property
+    def sampler(self) -> BaseSampler:
+        """The sampler primitive used to compute the samples and inferences."""
+        return self._sampler
+
+    @sampler.setter
+    def sampler(self, sampler: BaseSampler):
+        """Set the sampler primitive used to compute the samples and inferences."""
+        self._sampler = sampler
+
+    @property
+    def threshold(self) -> float:
+        """The threshold to accept the evidence."""
+        return self._threshold
+
+    @threshold.setter
+    def threshold(self, threshold: float):
+        """Set the threshold to accept the evidence."""
+        self._threshold = threshold
