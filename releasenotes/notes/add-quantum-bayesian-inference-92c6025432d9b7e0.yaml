@@ -33,7 +33,8 @@ features:
         print("Probability of query given evidence:", result)
 
   - |
-    For the new (:class:~qiskit_machine_learning.algorithms.QBayesian) class a tutorial was added. Please refer to:
+    For the new :class:`~qiskit_machine_learning.algorithms.QBayesian` class, a tutorial was added. Please refer to:
 
       - New `QBI tutorial <https://qiskit.org/documentation/machine-learning/tutorials/13_quantum_bayesian_inference.html>`__
-      introduces step-by-step how to do quantum Bayesian inference on a Bayesian network.
+        introduces step-by-step how to do quantum Bayesian inference on a Bayesian network.
+
