@@ -127,7 +127,7 @@ class FidelityQuantumKernel(BaseKernel):
         left_parameters = np.zeros((0, num_features))
         right_parameters = np.zeros((0, num_features))
 
-        indices = np.array(
+        indices = np.asarray(
             [
                 (i, j)
                 for i, x_i in enumerate(x_vec)
