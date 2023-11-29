@@ -137,8 +137,8 @@ class FidelityQuantumKernel(BaseKernel):
         )
 
         if indices.size > 0:
-            left_parameters = np.vstack((left_parameters, x_vec[indices[:, 0]]))
-            right_parameters = np.vstack((right_parameters, y_vec[indices[:, 1]]))
+            left_parameters = x_vec[indices[:, 0]]
+            right_parameters = y_vec[indices[:, 1]]
 
         return left_parameters, right_parameters, indices.tolist()
 
@@ -162,8 +162,8 @@ class FidelityQuantumKernel(BaseKernel):
         )
 
         if indices.size > 0:
-            left_parameters = np.vstack((left_parameters, x_vec[indices[:, 0]]))
-            right_parameters = np.vstack((right_parameters, x_vec[indices[:, 1]]))
+            left_parameters = x_vec[indices[:, 0]]
+            right_parameters = x_vec[indices[:, 1]]
 
         return left_parameters, right_parameters, indices.tolist()
 
