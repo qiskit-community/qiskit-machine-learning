@@ -21,10 +21,10 @@ from qiskit.circuit import Qubit
 
 class QBayesian:
     r"""
-    Implements a quantum Bayesian inference (QBI) algorithm that has been developed in [1]. The QBI
-    includes methods ``rejection_sampling`` and ``inference`` for a Bayesian network with binary
-    random variables represented by a quantum circuit. A quantum circuit can be passed in various
-    forms as long as it represents the joint probability distribution of the Bayesian network.
+    Implements a quantum Bayesian inference (QBI) algorithm that has been developed in [1]. The
+    Bayesian network must be based on binary random variables (0/1) and represented by a quantum
+    circuit. The quantum circuit can be passed in various forms as long as it represents the joint
+    probability distribution of the network.
 
     For Bayesian networks with random variables that have more than two states, see for example [2].
 
@@ -47,6 +47,7 @@ class QBayesian:
     **References**
         [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang. "Quantum inference on Bayesian
         networks", Physical Review A 89.6 (2014): 062315.
+
         [2]: Borujeni, Sima E., et al. "Quantum circuit representation of Bayesian networks."
         Expert Systems with Applications 176 (2021): 114768.
     """
@@ -68,7 +69,7 @@ class QBayesian:
             limit: The maximum number of times the Grover operator is integrated (2^limit).
             threshold (float): The threshold to accept the evidence. For example, if set to 0.9,
                 this means that each evidence qubit must be equal to the value of the evidence
-                variable at least 90% of the time.
+                variable at least 90% of the measurements.
             sampler: The sampler primitive used to compute the Bayesian inference.
                 If ``None`` is given, a default instance of the reference sampler defined
                 by :class:`~qiskit.primitives.Sampler` will be used.
@@ -209,22 +210,20 @@ class QBayesian:
         self, evidence: Dict[str, int], format_res: bool = False
     ) -> Dict[str, float]:
         """
-        Performs rejection sampling given the evidence.
+        Performs quantum rejection sampling given the evidence.
 
         Args:
-            evidence: The evidence variables with keys that are linked to the corresponding quantum
-                register with their names and values, which are binary states of 0 or 1. If evidence
-                is empty, it measures all qubits. If evidence is provided, it uses the Grover
-                operator for amplitude amplification and iterates until the evidence matches or a
-                limit is reached.
+            evidence: The keys of the dictionary are the evidence variables that are linked to the
+                corresponding quantum register with their names and values (0/1). If evidence is
+                empty, it measures all qubits. If evidence is given, it uses the Grover operator for
+                amplitude amplification and repeats until the evidence matches or limit is reached.
             format_res: If true, maps the output back to variable names. For example, the output
                 {'100': 0.23} with evidence A=0, B=0 will be mapped to {'P(C=1|A=0,B=0)': 0.23}.
         Returns:
-            dict: A dictionary that contains the distribution of the samples. The keys are the
-                values of the variables and the values the probability distribution given the
-                evidence. The last variable value will appear as first character for the key. If
-                format_res is true, the output will be mapped back to variables names, for example
-                {'P(C=1|A=0,B=0)': 0.23}.
+            A dictionary with the probability distribution of the samples given the evidence, where
+            the keys are the sequential values of the variables. Note that the last variable value
+            appears as the first character for the key. If format_res is true, the output will be
+            mapped back to the variable names, for example {'P(C=1|A=0,B=0)': 0.23}.
         """
         # If evidence is empty
         if len(evidence) == 0:
@@ -301,21 +300,22 @@ class QBayesian:
         evidence: Dict[str, int] = None,
     ) -> float:
         """
-        Performs inference on the query variables given the evidence. It uses rejection sampling if
-        evidence is provided and calculates the probability of the query.
+        Performs quantum inference for the query variables given the evidence. It uses quantum
+        rejection sampling if evidence is given and calculates the probability of the query.
 
         Args:
-            query: The query variables with keys that are linked to the corresponding quantum
-                register with their names and values, which are binary states of 0 or 1. If Q is a
-                real subset of X without E, it will be marginalized.
+            query: The keys of the dictionary are the query variables that are linked to the
+                corresponding quantum registers with their names and values (0/1). If the query
+                variables are a real subset of all variables without the evidence, the query will be
+                marginalized.
             evidence: The evidence variables. If evidence is a dictionary, the rejection sampling is
-                executed with the keys linked to the corresponding quantum register by their names
-                and binary values of 0 or 1. If evidence is `None`, the default, then samples from
-                the previous rejection sampling are used.
+                executed with the keys representing the variables linked to the corresponding
+                quantum register by their names and values (0/1). If evidence is ``None``, the
+                default, then samples from the previous rejection sampling are used.
         Returns:
-            float: The probability of the query given the evidence.
+            The probability of the query given the evidence.
         Raises:
-            ValueError: If evidence is required for rejection sampling and none is provided.
+            ValueError: If evidence is required for rejection sampling and ``None`` is given.
         """
         if evidence is not None:
             self.rejection_sampling(evidence)
@@ -338,7 +338,7 @@ class QBayesian:
     @property
     def converged(self) -> bool:
         """Returns ``True`` if a solution for the evidence with the given threshold was found
-        without reaching the maximum number of times the Grover operator was integrated (limit)."""
+        without reaching the maximum number of times the Grover operator was applied (2^limit)."""
         return self._converged
 
     @property
@@ -348,27 +348,27 @@ class QBayesian:
 
     @property
     def limit(self) -> int:
-        """The maximum number of times the Grover operator is integrated (2^limit)."""
+        """Returns the maximum number of times the Grover operator can be applied (2^limit)."""
         return self._limit
 
     @limit.setter
     def limit(self, limit: int):
-        """Set the maximum number of times the Grover operator is integrated (2^limit)."""
+        """Set the maximum number of times the Grover operator can be applied (2^limit)."""
         self._limit = limit
 
     @property
     def sampler(self) -> BaseSampler:
-        """The sampler primitive used to compute the samples and inferences."""
+        """Returns the sampler primitive used to compute the samples."""
         return self._sampler
 
     @sampler.setter
     def sampler(self, sampler: BaseSampler):
-        """Set the sampler primitive used to compute the samples and inferences."""
+        """Set the sampler primitive used to compute the samples."""
         self._sampler = sampler
 
     @property
     def threshold(self) -> float:
-        """The threshold to accept the evidence."""
+        """Returns the threshold to accept the evidence."""
         return self._threshold
 
     @threshold.setter
