@@ -448,6 +448,7 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
             np.testing.assert_array_almost_equal(backward_qc[1], backward_qnn_qc[1])
 
     def test_binding_order(self):
+        """Test parameter binding order gives result as expected"""
         qc = ZFeatureMap(feature_dimension=2, reps=1)
         input_params = qc.parameters
         weight = Parameter("weight")
