@@ -210,7 +210,6 @@ class SamplerQNN(NeuralNetwork):
             circuit.measure_all()
         self._circuit = self._reparameterize_circuit(circuit, input_params, weight_params)
 
-
     @property
     def circuit(self) -> QuantumCircuit:
         """Returns the underlying quantum circuit."""

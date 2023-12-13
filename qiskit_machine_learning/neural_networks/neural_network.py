@@ -278,18 +278,24 @@ class NeuralNetwork(ABC):
         # parameters to ensure this. "inputs" as a name comes before "weights" and within they are
         # numerically ordered.
         if input_params and self.num_inputs != len(input_params):
-            raise ValueError(f"input_params length {len(input_params)}"
-                             f" mismatch with num_inputs (self.num_inputs)")
+            raise ValueError(
+                f"input_params length {len(input_params)}"
+                f" mismatch with num_inputs (self.num_inputs)"
+            )
         if weight_params and self.num_weights != len(weight_params):
-            raise ValueError(f"weight_params length {len(weight_params)}"
-                             f" mismatch with num_weights (self.num_weights)")
+            raise ValueError(
+                f"weight_params length {len(weight_params)}"
+                f" mismatch with num_weights (self.num_weights)"
+            )
 
         parameters = circuit.parameters
 
         if len(parameters) != (self.num_inputs + self.num_weights):
-            raise ValueError(f"Number of circuit parameters {len(parameters)}"
-                             f" mismatch with sum of num inputs and weights"
-                             f" {self.num_inputs + self.num_weights}")
+            raise ValueError(
+                f"Number of circuit parameters {len(parameters)}"
+                f" mismatch with sum of num inputs and weights"
+                f" {self.num_inputs + self.num_weights}"
+            )
 
         new_input_params = ParameterVector("inputs", self.num_inputs)
         new_weight_params = ParameterVector("weights", self.num_weights)

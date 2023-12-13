@@ -450,13 +450,14 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
     def test_binding_order(self):
         qc = ZFeatureMap(feature_dimension=2, reps=1)
         input_params = qc.parameters
-        weight = Parameter('weight')
+        weight = Parameter("weight")
         for i in range(qc.num_qubits):
             qc.rx(weight, i)
 
         observable1 = SparsePauliOp.from_list([("Z" * qc.num_qubits, 1)])
         estimator_qnn = EstimatorQNN(
-            circuit=qc, observables=observable1, input_params=input_params, weight_params=[weight])
+            circuit=qc, observables=observable1, input_params=input_params, weight_params=[weight]
+        )
 
         estimator_qnn_weights = [3]
         estimator_qnn_input = [2, 33]
