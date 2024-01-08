@@ -1,0 +1,13 @@
+---
+fixes:
+  - |
+    Fixes an issue for the Quantum Neural Networks where the binding order of the inputs
+    and weights might end up being incorrect. Though the params for the inputs and weights
+    are specified to the QNN, the code previously bound the inputs and weights in the order
+    given by the circuit.parameters. This would end up being the right order for the Qiskit
+    circuit library feature maps and ansatzes most often used, as the default parameter
+    names led to the order being as expected. However for custom names etc. this was not
+    always the case and then led to unexpected behavior. The sequences for the input and
+    weights parameters, as supplied, are now always used as the binding order, for the inputs
+    and weights respectively, such that the order of the parameters in the overall circuit
+    no longer matters.
