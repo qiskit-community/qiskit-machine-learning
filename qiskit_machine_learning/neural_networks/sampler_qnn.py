@@ -182,9 +182,7 @@ class SamplerQNN(NeuralNetwork):
             gradient = ParamShiftSamplerGradient(self.sampler)
         self.gradient = gradient
 
-        self._circuit = circuit.copy()
-        if len(self._circuit.clbits) == 0:
-            self._circuit.measure_all()
+        self._org_circuit = circuit
 
         if isinstance(circuit, QNNCircuit):
             self._input_params = list(circuit.input_parameters)
@@ -207,10 +205,15 @@ class SamplerQNN(NeuralNetwork):
             input_gradients=self._input_gradients,
         )
 
+        if len(circuit.clbits) == 0:
+            circuit = circuit.copy()
+            circuit.measure_all()
+        self._circuit = self._reparameterize_circuit(circuit, input_params, weight_params)
+
     @property
     def circuit(self) -> QuantumCircuit:
         """Returns the underlying quantum circuit."""
-        return self._circuit
+        return self._org_circuit
 
     @property
     def input_params(self) -> Sequence[Parameter]:
@@ -274,7 +277,7 @@ class SamplerQNN(NeuralNetwork):
                     "No interpret function given, output_shape will be automatically "
                     "determined as 2^num_qubits."
                 )
-            output_shape_ = (2**self._circuit.num_qubits,)
+            output_shape_ = (2**self.circuit.num_qubits,)
 
         return output_shape_
 
