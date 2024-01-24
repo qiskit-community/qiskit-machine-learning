@@ -39,18 +39,16 @@ jobs:
           pip install jupyter qiskit[visualization] 'torchvision<0.10.0'
           sudo apt-get install -y pandoc graphviz
         shell: bash
-      - name: Build and publish
+      - name: Build docs
         env:
-          encrypted_rclone_key: ${{ secrets.encrypted_rclone_key }}
-          encrypted_rclone_iv: ${{ secrets.encrypted_rclone_iv }}
           QISKIT_PARALLEL: False
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
           echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
           tools/ignore_untagged_notes.sh
           make html
-          tools/deploy_documentation.sh
         shell: bash
+<<<<<<< HEAD
   deploy-translatable-strings:
     if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","stefan-woerner","woodsp-ibm"]', github.actor) }}
     runs-on: ubuntu-latest
@@ -81,3 +79,13 @@ jobs:
         tools/ignore_untagged_notes.sh
         tools/deploy_translatable_strings.sh
       shell: bash
+=======
+      - name: Bypass Jekyll Processing # Necessary for setting the correct css path
+        run: touch docs/_build/html/.nojekyll
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/_build/html/
+          clean-exclude: |
+            locale/*
+>>>>>>> 7e860cc (Deploy docs to GitHub Pages (#739))

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -42,7 +42,7 @@ project = "Qiskit Machine Learning"
 copyright = f"2018, {date.today().year}, Qiskit Machine Learning Development Team"  # pylint: disable=redefined-builtin
 author = "Qiskit Machine Learning Development Team"
 
-docs_url_prefix = "ecosystem/machine-learning"
+docs_url_prefix = "qiskit-machine-learning"
 
 # The short X.Y version
 version = qiskit_machine_learning.__version__
@@ -149,8 +149,6 @@ translations_list = [
     ("tr_TR", "Turkish"),
 ]
 language = "en"
-locale_dirs = ["locale/"]
-gettext_compact = False  # optional.
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
