@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   docs_publish:
-    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","stefan-woerner","woodsp-ibm"]', github.actor) }}
+    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('[adekusar-drl","mtreinish","woodsp-ibm","smens","edoaltamura","oscar-wallis","OkuyanBoga","Benjamin-Symons"]', github.actor) }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -48,38 +48,6 @@ jobs:
           tools/ignore_untagged_notes.sh
           make html
         shell: bash
-<<<<<<< HEAD
-  deploy-translatable-strings:
-    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","stefan-woerner","woodsp-ibm"]', github.actor) }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install jupyter qiskit[visualization] 'torchvision<0.10.0' tox
-        sudo apt-get install -y graphviz pandoc
-    - name: Build and publish
-      env:
-        encrypted_deploy_po_branch_key: ${{ secrets.encrypted_deploy_po_branch_key }}
-        encrypted_deploy_po_branch_iv: ${{ secrets.encrypted_deploy_po_branch_iv }}
-        QISKIT_PARALLEL: False
-        QISKIT_DOCS_BUILD_TUTORIALS: 'always'
-      run: |
-        echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
-        tools/ignore_untagged_notes.sh
-        tools/deploy_translatable_strings.sh
-      shell: bash
-=======
       - name: Bypass Jekyll Processing # Necessary for setting the correct css path
         run: touch docs/_build/html/.nojekyll
       - name: Deploy
@@ -88,4 +56,3 @@ jobs:
           folder: docs/_build/html/
           clean-exclude: |
             locale/*
->>>>>>> 7e860cc (Deploy docs to GitHub Pages (#739))
