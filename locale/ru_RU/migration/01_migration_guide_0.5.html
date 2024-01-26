@@ -1,0 +1,1103 @@
+<!doctype html>
+<html class="no-js" lang="ru-RU">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Алфавитный указатель" href="../genindex.html" /><link rel="search" title="Поиск" href="../search.html" /><link rel="next" title="Учебные материалы по машинному обучению" href="../tutorials/index.html" /><link rel="prev" title="Qiskit Machine Learning Migration Guide" href="index.html" />
+
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+        <title>Qiskit Machine Learning v0.5 Migration Guide - Qiskit Machine Learning 0.7.1</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fd506691" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="../_static/js/web-components/top-nav-bar.js"></script>
+<script>
+  (function () {
+    window._analytics = {
+      segment_key: 'ffdYLviQze3kzomaINXNk6NwpY9LlXcw',
+      coremetrics: false,
+      optimizely: false,
+      googleAddServices: false,
+      fullStory: false,
+      autoPageEventSpa: false,
+      autoFormEvents: false,
+      autoPageView: false
+    }
+
+    window.digitalData = {
+      page: {
+        pageInfo: {
+          productTitle: 'IBM Q Experience',
+          analytics: {
+            category: 'Qiskit.org'
+          }
+        }
+      }
+    }
+  }());
+</script>
+<script src="https://cloud.ibm.com/analytics/build/bluemix-analytics.min.js"></script>
+<script>
+  (function () {
+    'use strict'
+
+    if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+    const category = window.digitalData.page.pageInfo.analytics.category
+    const productTitle = window.digitalData.page.pageInfo.productTitle
+    const routeName = 'documentation'
+
+    window.bluemixAnalytics.pageEvent(category, routeName, {
+      navigationType: 'pushState',
+      productTitle: productTitle,
+      title: document.title
+    })
+
+    window.trackCta = (action) => {
+      if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+      const category = window.digitalData.page.pageInfo.analytics.category
+      const productTitle = window.digitalData.page.pageInfo.productTitle
+
+      window.bluemixAnalytics.trackEvent('CTA Clicked', {
+        productTitle,
+        category,
+        CTA: action
+      })
+    }
+
+  }());
+</script></head>
+  <body>
+    
+    <script>document.body.dataset.theme = "light";</script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM4,6H20V26H4ZM28,26H22V6h6Z"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <rect x="4" y="6" width="24" height="2"/>
+      <rect x="4" y="24" width="24" height="2"/>
+      <rect x="4" y="12" width="24" height="2"/>
+      <rect x="4" y="18" width="24" height="2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+         viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve"><polygon points="22,16 12,26 10.6,24.6 19.2,16 10.6,7.4 12,6 " stroke="currentColor"/>
+      <rect id="_x3C_Transparent_Rectangle_x3E_" fill="none" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-new-tab" viewBox="0 0 32 32">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs>
+        <style>
+          .cls-1 {
+            fill: none;
+          }
+        </style>
+      </defs>
+      <path fill="#6929C4" d="M26,28H6a2.0027,2.0027,0,0,1-2-2V6A2.0027,2.0027,0,0,1,6,4H16V6H6V26H26V16h2V26A2.0027,2.0027,0,0,1,26,28Z"/>
+      <polygon fill="#6929C4" points="20 2 20 4 26.586 4 18 12.586 19.414 14 28 5.414 28 12 30 12 30 2 20 2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     This project's translations are no longer maintained. See the <a href=https://github.com/qiskit-community/qiskit-translations/tree/main#readme>announcement</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.1</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-brand">
+  <a href="https://www.qiskit.org/ecosystem">
+    <div class="sidebar-logo-container">
+      <img class="sidebar-logo" src="../_static/images/ecosystem-logo.svg" alt="Qiskit Ecosystem logo"/>
+    </div>
+  </a>
+  
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.1</span>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Поиск">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">С чего начать</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Migration Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Migration Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Qiskit Machine Learning v0.5 Migration Guide</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Учебные руководства</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Учебные руководства</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_neural_networks.html">Квантовые нейронные сети</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_neural_network_classifier_and_regressor.html">Классификатор нейросети и регрессор</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Training a Quantum Model on a Real Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_quantum_kernel.html">Квантовый ядерный метод машинного обучения</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_torch_qgan.html">PyTorch qGAN Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_torch_connector.html">Torch Connector и гибридные QNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/07_pegasos_qsvc.html">Pegasos Quantum Support Vector Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_quantum_kernel_trainer.html">Quantum Kernel Training for Machine Learning Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/09_saving_and_loading_models.html">Saving, Loading Qiskit Machine Learning Models and Continuous Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../stubs/qiskit_machine_learning.QiskitMachineLearningError.html">QiskitMachineLearningError</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.algorithms.html">Quantum machine learning algorithms (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.algorithms</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Quantum machine learning algorithms (qiskit_machine_learning.algorithms)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.TrainableModel.html">TrainableModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html">ObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.SerializableModelMixin.html">SerializableModelMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html">BinaryObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html">MultiClassObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html">OneHotObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html">PegasosQSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.connectors.TorchConnector.html">TorchConnector</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityStatevectorKernel.html">FidelityStatevectorKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.html">TrainableFidelityStatevectorKernel</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html">QuantumKernelTrainerResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html">EffectiveDimension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html">LocalEffectiveDimension</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Список изменений</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning">GitHub</a></li>
+</ul>
+
+</div></div><div class="qiskit-translations-container" aria-label="languages">
+  <input id="translations-checkbox" name="translations-checkbox" role="switch" type="checkbox">
+  <div class="qiskit-translations-header-container"><label for="translations-checkbox">
+      <p role="note">Russian</p>
+      <div class="qiskit-translations-toggle-container">
+        <div class="visually-hidden">Toggle translations list</div>
+        <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+      </div>
+    </label>
+  </div>
+  <div class="qiskit-translations-list-container">
+    <ul>
+      
+        <li><a href="/qiskit-machine-learning/migration/01_migration_guide_0.5.html">English</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/bn_BN/migration/01_migration_guide_0.5.html">Bengali</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/fr_FR/migration/01_migration_guide_0.5.html">French</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/hi_IN/migration/01_migration_guide_0.5.html">Hindi</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ja_JP/migration/01_migration_guide_0.5.html">Japanese</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ko_KR/migration/01_migration_guide_0.5.html">Korean</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ru_RU/migration/01_migration_guide_0.5.html">Russian</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/es_UN/migration/01_migration_guide_0.5.html">Spanish</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ta_IN/migration/01_migration_guide_0.5.html">Tamil</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/tr_TR/migration/01_migration_guide_0.5.html">Turkish</a></li>
+      
+    </ul>
+  </div>
+  <script>
+    document.querySelectorAll('.version').forEach((element) => {
+      element.addEventListener('click', (evt) => {
+        const hash = window.location.hash;
+        const complete_url = evt.target.href + hash;
+        window.location = complete_url;
+        evt.preventDefault();
+      });
+    });
+  </script>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <br><br><br><section id="qiskit-machine-learning-v0-5-migration-guide">
+<h1>Qiskit Machine Learning v0.5 Migration Guide<a class="headerlink" href="#qiskit-machine-learning-v0-5-migration-guide" title="Permalink to this heading">#</a></h1>
+<p>This tutorial will guide you through the process of migrating your code
+from Qiskit Machine Learning v0.4 to v0.5.</p>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p>The main focus of the 0.5 release of Qiskit Machine Learning is the
+migration of the base computational blocks like quantum kernels and
+quantum neural networks to the primitives introduced in Qiskit as well
+as extended support of the primitives in the algorithms.</p>
+<p>Contents:</p>
+<ul class="simple">
+<li><p>Overview of the primitives</p></li>
+<li><p>New quantum kernel</p></li>
+<li><p>New quantum neural networks</p></li>
+<li><p>Other notable deprecation</p></li>
+</ul>
+</section>
+<section id="overview-of-the-primitives">
+<h2>Overview of the primitives<a class="headerlink" href="#overview-of-the-primitives" title="Permalink to this heading">#</a></h2>
+<p>The core capability of quantum computers that sets them apart from from
+classical computers is their ability to generate non-classical
+probability distributions at their outputs. The native operations that
+one can do with a probability distribution is to sample from it or to
+estimate quantities on it. Consequently, these operations of sampling
+and estimating form the fundamental building blocks of quantum algorithm
+development. Thus, as it was
+<a class="reference external" href="https://research.ibm.com/blog/qiskit-runtime-for-useful-quantum-computing">announced</a>,
+two basic primitives were introduced, Sampler and Estimator,
+respectively, that implement these two operations:</p>
+<ul class="simple">
+<li><p>Sampler class calculates probabilities or quasi-probabilities of
+bitstrings from quantum circuits. The base class is
+<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.BaseSampler.html">qiskit.primitives.BaseSampler</a>.</p></li>
+<li><p>Estimator class estimates expectation values of quantum circuits and
+observables. The base class is
+<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.BaseEstimator.html">qiskit.primitives.BaseEstimator</a>.</p></li>
+</ul>
+<p>Qiskit Terra provides core interfaces and two implementations:</p>
+<ul class="simple">
+<li><p>The reference implementation that is statevector based. This
+implementation does require a backend or a simulator, it relies on
+the classes from the
+<a class="reference external" href="https://qiskit.org/documentation/apidoc/quantum_info.html">quantum_info</a>
+package.</p></li>
+<li><p>The backend based primitives are to support provider/backends that do
+not support primitives directly. This implementation requires an
+instance of a backend to be passed to a primitive.</p></li>
+</ul>
+<p>More information on the Qiskit Terra primitives can be found in the
+<a class="reference external" href="https://qiskit.org/documentation/apidoc/primitives.html">documentation</a>.</p>
+<p>It is worth mentioning other implementations as well:</p>
+<ul class="simple">
+<li><p>Aer primitives should be used for Aer simulator. They extend
+corresponding interfaces from Terra and can be used in the same way
+as primitives from Terra. See
+<a class="reference external" href="https://qiskit.org/documentation/apidoc/aer_primitives.html">documentation</a>
+for more information.</p></li>
+<li><p>The runtime primitives to be used with IBM devices. This is an
+implementation that is focused on cloud computing on actual hardware.
+See
+<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/apidocs/runtime_service.html">here</a>.</p></li>
+</ul>
+<p>Along with the primitives Terra has some primitive-like algorithms that
+are highly useful in QML and used by the new 0.5 functions:</p>
+<ul class="simple">
+<li><p>Algorithms to calculate the gradient of a quantum circuit. For each
+core primitive there’s a corresponding base interface that defines
+quantum circuit gradient. The documentation on gradients is
+<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.algorithms.gradients.html">here</a>.</p></li>
+<li><p>Algorithms that compute the fidelity or “closeness” of pairs of
+quantum states. Currently, only one implementation is available that
+requires a sampler primitive and is based on the compute-uncompute
+method. The documentation is
+<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.algorithms.state_fidelities.html">here</a>.</p></li>
+</ul>
+<p>Both two new algorithms are very similar to the core primitives, they
+share the same method signatures, so they may be called as high level
+primitives despite they are not in the primitives package.</p>
+</section>
+<section id="new-quantum-kernel">
+<h2>New quantum kernel<a class="headerlink" href="#new-quantum-kernel" title="Permalink to this heading">#</a></h2>
+<p>The previous implementation consisted of a single class
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html">QuantumKernel</a>
+that did everything:</p>
+<ul class="simple">
+<li><p>Constructed circuits</p></li>
+<li><p>Executed circuits and evaluated overlap between circuits</p></li>
+<li><p>Provided training parameters</p></li>
+<li><p>Kept track of the values assigned to the parameters.</p></li>
+</ul>
+<p>The implementation became sophisticated and inflexible and adding
+support of the new primitives could be tricky. To address the issues, a
+new flexible and extendable design of quantum kernels was introduced.
+The goals of the new design are:</p>
+<ul class="simple">
+<li><p>Migrate to the primitives and leverage the fidelity algorithm. Now
+users may plug in their own implementations of fidelity calculations.</p></li>
+<li><p>Extract trainability feature to a dedicated class.</p></li>
+<li><p>Introduce a base class that can be extended by other kernel
+implementations.</p></li>
+</ul>
+<p>The new design of quantum kernel is shown on the next diagram.</p>
+<figure class="align-default">
+<img alt="Quantum Kernel Diagram" src="../_images/quantum_kernel.png" />
+</figure>
+<p>The new kernels expose the same interface and the same parameters except
+the <code class="docutils literal notranslate"><span class="pre">quantum_instance</span></code> parameter. This parameter does not have a
+direct replacement and instead the <code class="docutils literal notranslate"><span class="pre">fidelity</span></code> parameter must be used.
+The backend handling/selection, which was previously done using the
+<code class="docutils literal notranslate"><span class="pre">quantum_instance</span></code>, is now taken care of via the Sampler primitive
+given to the <code class="docutils literal notranslate"><span class="pre">fidelity</span></code>.</p>
+<p>A new hierarchy shown on the diagram introduces:</p>
+<ul class="simple">
+<li><p>A base and abstract class
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a>
+is introduced. All concrete implementation must inherit this class.</p></li>
+<li><p>A fidelity based quantum kernel
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a>
+is added. This is a direct <strong>replacement</strong> of the previous quantum
+kernel implementation. The difference is that the new class takes a
+fidelity instance to estimate overlaps and construct kernel matrix.</p></li>
+<li><p>A new abstract class
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a>
+is introduced to generalize ability to train quantum kernels.</p></li>
+<li><p>A fidelity-based trainable quantum kernel
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a>
+is introduced. This is a <strong>replacement</strong> of the previous quantum
+kernel if a trainable kernel is required. The trainer
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.alogrithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a>
+now accepts both quantum kernel implementations, the new one and the
+previous one.</p></li>
+</ul>
+<p>For convenience, the previous quantum kernel implementation,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html">QuantumKernel</a>,
+now extends both new abstract classes and thus it is compatible with the
+new introduced interfaces. This implementation is now <strong>pending
+deprecation</strong>, will be deprecated in a future release and subsequently
+removed after that. New, primitive-based quantum kernels should be used
+instead.</p>
+<p>The existing algorithms such as
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a>,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a>
+and other kernel-based algorithms are updated and work with both
+implementations.</p>
+<p>For example a QSVM classifier can be trained as follows.</p>
+</section>
+<section id="create-a-dataset">
+<h2>Create a dataset<a class="headerlink" href="#create-a-dataset" title="Permalink to this heading">#</a></h2>
+<p>Fixing randomization.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+
+<span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">123456</span>
+</pre></div>
+</div>
+<p>Generate a simple dataset using scikit-learn.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_blobs</span>
+
+<span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">centers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">center_box</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">cluster_std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="previous-implementation-of-quantum-kernel">
+<h3>Previous implementation of quantum kernel<a class="headerlink" href="#previous-implementation-of-quantum-kernel" title="Permalink to this heading">#</a></h3>
+<p>In the previous implementation we start from creating an instance of
+<code class="docutils literal notranslate"><span class="pre">QuantumInstance</span></code>. This class defines where our quantum circuits are
+executed. In this case we wrap a statevector simulator in the quantum
+instance.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">BasicAer</span>
+<span class="kn">from</span> <span class="nn">qiskit.utils</span> <span class="kn">import</span> <span class="n">QuantumInstance</span>
+
+<span class="n">sv_qi</span> <span class="o">=</span> <span class="n">QuantumInstance</span><span class="p">(</span>
+    <span class="n">BasicAer</span><span class="o">.</span><span class="n">get_backend</span><span class="p">(</span><span class="s2">&quot;statevector_simulator&quot;</span><span class="p">),</span>
+    <span class="n">seed_simulator</span><span class="o">=</span><span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span><span class="p">,</span>
+    <span class="n">seed_transpiler</span><span class="o">=</span><span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Then create a quantum kernel.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">ZZFeatureMap</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">QuantumKernel</span>
+
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">previous_kernel</span> <span class="o">=</span> <span class="n">QuantumKernel</span><span class="p">(</span><span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">quantum_instance</span><span class="o">=</span><span class="n">sv_qi</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And finally we fit an SVM classifier.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">QSVC</span>
+
+<span class="n">qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">previous_kernel</span><span class="p">)</span>
+<span class="n">qsvc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">qsvc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.95</span>
+</pre></div>
+</div>
+</section>
+<section id="new-implementation-of-quantum-kernel">
+<h3>New implementation of quantum kernel<a class="headerlink" href="#new-implementation-of-quantum-kernel" title="Permalink to this heading">#</a></h3>
+<p>In the new implementation we start from creating a Fidelity instance.
+Fidelity is optional and quantum kernel will create it automatically if
+none is passed. But here, we create it manually for illustrative
+purposes. To create a fidelity instance we pass a sampler. The sampler
+is the reference implementation and defines where our quantum circuits
+are executed. You may create a sampler instance from
+<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/stubs/qiskit_ibm_runtime.QiskitRuntimeService.html">QiskitRuntimeService</a>
+to leverage Qiskit runtime services.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+
+<span class="n">fidelity</span> <span class="o">=</span> <span class="n">ComputeUncompute</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">Sampler</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Next, we create a new quantum kernel with the fidelity instance.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
+
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">new_kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">(</span><span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">fidelity</span><span class="o">=</span><span class="n">fidelity</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then we fit an SVM classifier the same way as before.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">QSVC</span>
+
+<span class="n">qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">new_kernel</span><span class="p">)</span>
+<span class="n">qsvc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">qsvc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.95</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="new-quantum-neural-networks">
+<h2>New quantum neural networks<a class="headerlink" href="#new-quantum-neural-networks" title="Permalink to this heading">#</a></h2>
+<p>Changes in the quantum neural networks are not as dramatic as in quantum
+kernels. In addition, and as a replacement to the existing neural
+networks, two new networks are introduced. The new networks introduced
+are
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a>
+and
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
+which are detailed below and are replacements for the pre-existing
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>
+and
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html">TwoLayerQNN</a>
+which are now pending deprecated.</p>
+<section id="samplerqnn">
+<h3>SamplerQNN<a class="headerlink" href="#samplerqnn" title="Permalink to this heading">#</a></h3>
+<p>A new <a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">Sampler Quantum Neural
+Network</a>
+leverages the sampler primitive, sampler gradients and is a <strong>direct
+replacement</strong> of
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>.</p>
+<p>The new
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a>
+exposes a similar interface to the existing
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>,
+with a few differences. One is the <code class="docutils literal notranslate"><span class="pre">quantum_instance</span></code> parameter. This
+parameter does not have a direct replacement, and instead the
+<code class="docutils literal notranslate"><span class="pre">sampler</span></code> parameter must be used. The <code class="docutils literal notranslate"><span class="pre">gradient</span></code> parameter keeps the
+same name as in the
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>
+implementation, but it no longer accepts Opflow gradient classes as
+inputs; instead, this parameter expects an (optionally custom) primitive
+gradient. The <code class="docutils literal notranslate"><span class="pre">sampling</span></code> option has been removed for the time being,
+as this information is not currently exposed by the sampler, and might
+correspond to future lower-level primitives.</p>
+<p>The existing training algorithms such as
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a>
+that were based on
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>,
+are updated to accept both implementations. The implementation of
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a>
+has not changed.</p>
+<p>The existing
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>
+is now <strong>pending deprecation</strong>, will be deprecated in a future release
+and subsequently removed after that.</p>
+<p>We’ll show how to train a variational quantum classifier using both
+networks. For this purposes we re-use the dataset generated for the
+quantum kernel. For both quantum neural networks we still have to
+construct a feature map, an ansatz and combine them into a single
+quantum circuit.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">RealAmplitudes</span>
+
+<span class="n">num_inputs</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">RealAmplitudes</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We need an interpret function as well. We define our usual parity
+function that maps bitstrings either to <span class="math notranslate nohighlight">\(0\)</span> or <span class="math notranslate nohighlight">\(1\)</span>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{:b}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>We fix the initial point to get the same results from both networks.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">initial_point</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">ansatz</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-classifier-using-circuitqnn">
+<h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code><a class="headerlink" href="#building-a-classifier-using-circuitqnn" title="Permalink to this heading">#</a></h3>
+<p>We create a <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code> instance and re-use the quantum instance
+created for the quantum kernel.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">CircuitQNN</span>
+
+<span class="n">circuit_qnn</span> <span class="o">=</span> <span class="n">CircuitQNN</span><span class="p">(</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">,</span>
+    <span class="n">input_params</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">weight_params</span><span class="o">=</span><span class="n">ansatz</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">interpret</span><span class="o">=</span><span class="n">parity</span><span class="p">,</span>
+    <span class="n">output_shape</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">quantum_instance</span><span class="o">=</span><span class="n">sv_qi</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Construct a classifier out of the network, train it and score it. We are
+not aiming for good results, so the number of iterations is set to a
+small number to reduce overall execution time.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">NeuralNetworkClassifier</span>
+
+<span class="n">classifier</span> <span class="o">=</span> <span class="n">NeuralNetworkClassifier</span><span class="p">(</span>
+    <span class="n">neural_network</span><span class="o">=</span><span class="n">circuit_qnn</span><span class="p">,</span>
+    <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;cross_entropy&quot;</span><span class="p">,</span>
+    <span class="n">one_hot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="n">initial_point</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">classifier</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.6</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-classifier-using-samplerqnn">
+<h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#building-a-classifier-using-samplerqnn" title="Permalink to this heading">#</a></h3>
+<p>Instead of <code class="docutils literal notranslate"><span class="pre">QuantumInstance</span></code> create an instance of the reference
+<code class="docutils literal notranslate"><span class="pre">Sampler</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now, we create a instance of <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>. The difference with
+<code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code> is that we pass a sampler instead of a quantum instance.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">SamplerQNN</span>
+
+<span class="n">sampler_qnn</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">,</span>
+    <span class="n">input_params</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">weight_params</span><span class="o">=</span><span class="n">ansatz</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">interpret</span><span class="o">=</span><span class="n">parity</span><span class="p">,</span>
+    <span class="n">output_shape</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Construct a classifier and fit it as usual. As <code class="docutils literal notranslate"><span class="pre">neural_network</span></code> we
+pass a created <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> and this is the only difference.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">NeuralNetworkClassifier</span><span class="p">(</span>
+    <span class="n">neural_network</span><span class="o">=</span><span class="n">sampler_qnn</span><span class="p">,</span>
+    <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;cross_entropy&quot;</span><span class="p">,</span>
+    <span class="n">one_hot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="n">initial_point</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">classifier</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.6</span>
+</pre></div>
+</div>
+<p>Instead of constructing a quantum neural network manually, you may train
+<code class="docutils literal notranslate"><span class="pre">VQC</span></code>. It takes either a quantum instance or a sampler, depending on
+what is passed it automatically constructs either <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code> or
+<code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> respectively.</p>
+</section>
+<section id="estimatorqnn">
+<h3>EstimatorQNN<a class="headerlink" href="#estimatorqnn" title="Permalink to this heading">#</a></h3>
+<p>A new <a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">Estimator quantum neural
+network</a>
+leverages the estimator primitive, estimator gradients and is a <strong>direct
+replacement</strong> of
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>.</p>
+<p>The new
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
+exposes a similar interface to the existing
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>,
+with a few differences. One is the <code class="docutils literal notranslate"><span class="pre">quantum_instance</span></code> parameter. This
+parameter does not have a direct replacement, and instead the
+<code class="docutils literal notranslate"><span class="pre">estimator</span></code> parameter must be used. The <code class="docutils literal notranslate"><span class="pre">gradient</span></code> parameter keeps
+the same name as in the
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>
+implementation, but it no longer accepts Opflow gradient classes as
+inputs; instead, this parameter expects an (optionally custom) primitive
+gradient.</p>
+<p>The existing training algorithms such as
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a>
+that were based on the
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html">TwoLayerQNN</a>,
+are updated to accept both implementations. The implementation of
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a>
+has not changed.</p>
+<p>The existing
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>
+is now <strong>pending deprecation</strong>, will be deprecated in a future release
+and subsequently removed after that.</p>
+<p>We’ll show how to train a variational quantum regressor using both
+networks. We start from generating a simple regression dataset.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="n">features</span> <span class="o">=</span> <span class="p">(</span><span class="n">ub</span> <span class="o">-</span> <span class="n">lb</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">lb</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We still have to construct a feature map, an ansatz and combine them
+into a single quantum circuit for both quantum neural networks.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">Parameter</span>
+
+<span class="n">num_inputs</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">feature_map</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ansatz</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We fix the initial point to get the same results from both networks.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">initial_point</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">ansatz</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-regressor-using-opflowqnn">
+<h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code><a class="headerlink" href="#building-a-regressor-using-opflowqnn" title="Permalink to this heading">#</a></h3>
+<p>We create an <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code> instance and re-use the quantum instance
+created for the quantum kernel.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.opflow</span> <span class="kn">import</span> <span class="n">PauliSumOp</span><span class="p">,</span> <span class="n">StateFn</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">OpflowQNN</span>
+
+<span class="n">observable</span> <span class="o">=</span> <span class="n">PauliSumOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">operator</span> <span class="o">=</span> <span class="n">StateFn</span><span class="p">(</span><span class="n">observable</span><span class="p">,</span> <span class="n">is_measurement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">@</span> <span class="n">StateFn</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+
+<span class="n">opflow_qnn</span> <span class="o">=</span> <span class="n">OpflowQNN</span><span class="p">(</span>
+    <span class="n">operator</span><span class="o">=</span><span class="n">operator</span><span class="p">,</span>
+    <span class="n">input_params</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">weight_params</span><span class="o">=</span><span class="n">ansatz</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">quantum_instance</span><span class="o">=</span><span class="n">sv_qi</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Construct a regressor out of the network, train it and score it. In this
+case we use a gradient based optimizer, thus the network makes use of
+the gradient framework and due to nature of the dataset converges very
+quickly.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">L_BFGS_B</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">NeuralNetworkRegressor</span>
+
+<span class="n">regressor</span> <span class="o">=</span> <span class="n">NeuralNetworkRegressor</span><span class="p">(</span>
+    <span class="n">neural_network</span><span class="o">=</span><span class="n">opflow_qnn</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">L_BFGS_B</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="n">initial_point</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.9681198723451012</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-regressor-using-estimatorqnn">
+<h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#building-a-regressor-using-estimatorqnn" title="Permalink to this heading">#</a></h3>
+<p>Create an instance of the reference Estimator. You may create an
+estimator instance from
+<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/stubs/qiskit_ibm_runtime.QiskitRuntimeService.html">QiskitRuntimeService</a>
+to leverage Qiskit runtime services.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Estimator</span>
+
+<span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now, we create a instance of <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>. The network creates an
+observable as <span class="math notranslate nohighlight">\(Z^{\otimes n}\)</span>, where <span class="math notranslate nohighlight">\(n\)</span> is the number of
+qubit, if it is not specified.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">EstimatorQNN</span>
+
+<span class="n">estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">,</span>
+    <span class="n">input_params</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">weight_params</span><span class="o">=</span><span class="n">ansatz</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Construct a variational quantum regressor and fit it. In this case we
+use a gradient based optimizer, thus the network makes use of the
+<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.algorithms.gradients.ParamShiftEstimatorGradient.html">default estimator
+gradient</a>
+that is created automatically.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">L_BFGS_B</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">VQR</span>
+
+<span class="n">regressor</span> <span class="o">=</span> <span class="n">NeuralNetworkRegressor</span><span class="p">(</span>
+    <span class="n">neural_network</span><span class="o">=</span><span class="n">estimator_qnn</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">L_BFGS_B</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="n">initial_point</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.9681198723451012</span>
+</pre></div>
+</div>
+<p>Instead of constructing a quantum neural network manually, you may train
+<code class="docutils literal notranslate"><span class="pre">VQR</span></code>. It takes either a quantum instance or an estimator, depending
+on what is passed it automatically constructs either <code class="docutils literal notranslate"><span class="pre">TwoLayerQNN</span></code> or
+<code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> respectively.</p>
+</section>
+</section>
+<section id="other-notable-deprecation">
+<h2>Other notable deprecation<a class="headerlink" href="#other-notable-deprecation" title="Permalink to this heading">#</a></h2>
+<p>A few other components, not mentioned explicitly above, are also
+deprecated or pending deprecation:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html">TwoLayerQNN</a>
+is pending deprecation. Users should use
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
+instead.</p></li>
+<li><p>The Distribution Learners package is deprecated fully. This package
+contains such classes as
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.DiscriminativeNetwork.html">DiscriminativeNetwork</a>,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.GenerativeNetwork.html">GenerativeNetwork</a>,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NumPyDiscriminator.html">NumPyDiscriminator</a>,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.PyTorchDiscriminator.html">PyTorchDiscriminator</a>,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QuantumGenerator.html">QuantumGenerator</a>,
+<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QGAN.html">QGAN</a>.
+Instead, please refer to the <a class="reference internal" href="../tutorials/04_torch_qgan.html"><span class="doc">new QGAN
+tutorial</span></a>. This tutorial
+introduces step-by-step how to build a PyTorch-based QGAN using
+quantum neural networks.</p></li>
+<li><p>The Runtime package is deprecated. This package contains a client to
+Qiskit Programs that embed Qiskit Runtime in the algorithmic
+interfaces and facilitate usage of algorithms and scripts in the
+cloud. You should use
+<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/stubs/qiskit_ibm_runtime.QiskitRuntimeService.html">QiskitRuntimeService</a>
+to leverage primitives and runtimes.</p></li>
+</ul>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">qiskit.tools.jupyter</span>
+
+<span class="o">%</span><span class="k">qiskit_version_table</span>
+<span class="o">%</span><span class="k">qiskit_copyright</span>
+</pre></div>
+</div>
+<h3>Version Information</h3><table><tr><th>Qiskit Software</th><th>Version</th></tr><tr><td><code>qiskit-terra</code></td><td>0.25.0</td></tr><tr><td><code>qiskit-aer</code></td><td>0.13.0</td></tr><tr><td><code>qiskit-machine-learning</code></td><td>0.7.0</td></tr><tr><th>System information</th></tr><tr><td>Python version</td><td>3.8.13</td></tr><tr><td>Python compiler</td><td>Clang 12.0.0 </td></tr><tr><td>Python build</td><td>default, Oct 19 2022 17:54:22</td></tr><tr><td>OS</td><td>Darwin</td></tr><tr><td>CPUs</td><td>10</td></tr><tr><td>Memory (Gb)</td><td>64.0</td></tr><tr><td colspan='2'>Thu Sep 14 13:57:31 2023 IST</td></tr></table><div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of Qiskit</h3><p>&copy; Copyright IBM 2017, 2023.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+  <script>
+    function userFeedbackClicked(ctaType) {
+      document.getElementById('qiskit-analytics-thank-you').style.visibility = 'visible';
+      window.trackCta(`Helpful - ${ctaType}`);
+    }
+  </script>
+    <div class="qiskit-analytics-container">
+      <div>Was this page helpful?</div>
+      <a onclick="userFeedbackClicked('yes')">Yes</a>
+      <a onclick="userFeedbackClicked('no')">No</a>
+      <div id="qiskit-analytics-thank-you">Thank you!</div>
+    </div>
+<div class="related-pages">
+          <a class="next-page" href="../tutorials/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Учебные материалы по машинному обучению</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Qiskit Machine Learning Migration Guide</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Qiskit Machine Learning v0.5 Migration Guide</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#overview-of-the-primitives">Overview of the primitives</a></li>
+<li><a class="reference internal" href="#new-quantum-kernel">New quantum kernel</a></li>
+<li><a class="reference internal" href="#create-a-dataset">Create a dataset</a><ul>
+<li><a class="reference internal" href="#previous-implementation-of-quantum-kernel">Previous implementation of quantum kernel</a></li>
+<li><a class="reference internal" href="#new-implementation-of-quantum-kernel">New implementation of quantum kernel</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#new-quantum-neural-networks">New quantum neural networks</a><ul>
+<li><a class="reference internal" href="#samplerqnn">SamplerQNN</a></li>
+<li><a class="reference internal" href="#building-a-classifier-using-circuitqnn">Building a classifier using <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code></a></li>
+<li><a class="reference internal" href="#building-a-classifier-using-samplerqnn">Building a classifier using <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a></li>
+<li><a class="reference internal" href="#estimatorqnn">EstimatorQNN</a></li>
+<li><a class="reference internal" href="#building-a-regressor-using-opflowqnn">Building a regressor using <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code></a></li>
+<li><a class="reference internal" href="#building-a-regressor-using-estimatorqnn">Building a regressor using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-notable-deprecation">Other notable deprecation</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0263125e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

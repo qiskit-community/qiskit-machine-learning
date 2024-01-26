@@ -1,0 +1,37 @@
+﻿
+
+FidelityQuantumKernel
+=====================================================
+
+.. currentmodule:: qiskit_machine_learning.kernels
+
+.. autoclass:: FidelityQuantumKernel
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: FidelityQuantumKernel.enforce_psd
+   .. autoattribute:: FidelityQuantumKernel.evaluate_duplicates
+   .. autoattribute:: FidelityQuantumKernel.feature_map
+   .. autoattribute:: FidelityQuantumKernel.fidelity
+   .. autoattribute:: FidelityQuantumKernel.num_features
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: FidelityQuantumKernel.evaluate
+
+   
+   

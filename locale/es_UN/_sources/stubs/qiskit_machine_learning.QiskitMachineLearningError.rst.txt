@@ -1,0 +1,8 @@
+﻿
+
+QiskitMachineLearningError
+==================================================
+
+.. currentmodule:: qiskit_machine_learning
+
+.. autoexception:: QiskitMachineLearningError

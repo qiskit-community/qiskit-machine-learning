@@ -1,0 +1,28 @@
+﻿
+
+L2Loss
+===================================================
+
+.. currentmodule:: qiskit_machine_learning.utils.loss_functions
+
+.. autoclass:: L2Loss
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: L2Loss.evaluate
+   .. automethod:: L2Loss.gradient
+
+   
+   

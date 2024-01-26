@@ -1,0 +1,35 @@
+﻿
+
+TorchConnector
+=================================================
+
+.. currentmodule:: qiskit_machine_learning.connectors
+
+.. autoclass:: TorchConnector
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: TorchConnector.neural_network
+   .. autoattribute:: TorchConnector.sparse
+   .. autoattribute:: TorchConnector.weight
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: TorchConnector.forward
+
+   
+   

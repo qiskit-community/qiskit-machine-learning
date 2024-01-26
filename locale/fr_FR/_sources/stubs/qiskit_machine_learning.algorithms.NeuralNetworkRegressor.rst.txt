@@ -1,0 +1,44 @@
+﻿
+
+NeuralNetworkRegressor
+=========================================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: NeuralNetworkRegressor
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: NeuralNetworkRegressor.callback
+   .. autoattribute:: NeuralNetworkRegressor.fit_result
+   .. autoattribute:: NeuralNetworkRegressor.initial_point
+   .. autoattribute:: NeuralNetworkRegressor.loss
+   .. autoattribute:: NeuralNetworkRegressor.neural_network
+   .. autoattribute:: NeuralNetworkRegressor.optimizer
+   .. autoattribute:: NeuralNetworkRegressor.warm_start
+   .. autoattribute:: NeuralNetworkRegressor.weights
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: NeuralNetworkRegressor.fit
+   .. automethod:: NeuralNetworkRegressor.load
+   .. automethod:: NeuralNetworkRegressor.predict
+   .. automethod:: NeuralNetworkRegressor.save
+   .. automethod:: NeuralNetworkRegressor.score
+
+   
+   

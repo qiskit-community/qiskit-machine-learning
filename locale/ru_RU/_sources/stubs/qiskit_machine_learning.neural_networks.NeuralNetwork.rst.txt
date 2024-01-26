@@ -1,0 +1,38 @@
+﻿
+
+NeuralNetwork
+=====================================================
+
+.. currentmodule:: qiskit_machine_learning.neural_networks
+
+.. autoclass:: NeuralNetwork
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: NeuralNetwork.input_gradients
+   .. autoattribute:: NeuralNetwork.num_inputs
+   .. autoattribute:: NeuralNetwork.num_weights
+   .. autoattribute:: NeuralNetwork.output_shape
+   .. autoattribute:: NeuralNetwork.sparse
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: NeuralNetwork.backward
+   .. automethod:: NeuralNetwork.forward
+
+   
+   

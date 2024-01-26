@@ -1,0 +1,27 @@
+﻿
+
+KernelLoss
+=======================================================
+
+.. currentmodule:: qiskit_machine_learning.utils.loss_functions
+
+.. autoclass:: KernelLoss
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: KernelLoss.evaluate
+
+   
+   

@@ -1,0 +1,39 @@
+﻿
+
+TrainableKernel
+===============================================
+
+.. currentmodule:: qiskit_machine_learning.kernels
+
+.. autoclass:: TrainableKernel
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: TrainableKernel.enforce_psd
+   .. autoattribute:: TrainableKernel.feature_map
+   .. autoattribute:: TrainableKernel.num_features
+   .. autoattribute:: TrainableKernel.num_training_parameters
+   .. autoattribute:: TrainableKernel.parameter_values
+   .. autoattribute:: TrainableKernel.training_parameters
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: TrainableKernel.assign_training_parameters
+   .. automethod:: TrainableKernel.evaluate
+
+   
+   

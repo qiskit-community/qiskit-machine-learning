@@ -1,0 +1,28 @@
+﻿
+
+ObjectiveFunction
+====================================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: ObjectiveFunction
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: ObjectiveFunction.gradient
+   .. automethod:: ObjectiveFunction.objective
+
+   
+   

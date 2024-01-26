@@ -1,0 +1,37 @@
+﻿
+
+EffectiveDimension
+==========================================================
+
+.. currentmodule:: qiskit_machine_learning.neural_networks
+
+.. autoclass:: EffectiveDimension
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: EffectiveDimension.input_samples
+   .. autoattribute:: EffectiveDimension.weight_samples
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: EffectiveDimension.get_effective_dimension
+   .. automethod:: EffectiveDimension.get_fisher_information
+   .. automethod:: EffectiveDimension.get_normalized_fisher
+   .. automethod:: EffectiveDimension.run_monte_carlo
+
+   
+   

@@ -1,0 +1,40 @@
+﻿
+
+QuantumKernelTrainerResult
+=====================================================================
+
+.. currentmodule:: qiskit_machine_learning.kernels.algorithms
+
+.. autoclass:: QuantumKernelTrainerResult
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: QuantumKernelTrainerResult.optimal_circuit
+   .. autoattribute:: QuantumKernelTrainerResult.optimal_parameters
+   .. autoattribute:: QuantumKernelTrainerResult.optimal_point
+   .. autoattribute:: QuantumKernelTrainerResult.optimal_value
+   .. autoattribute:: QuantumKernelTrainerResult.optimizer_evals
+   .. autoattribute:: QuantumKernelTrainerResult.optimizer_result
+   .. autoattribute:: QuantumKernelTrainerResult.optimizer_time
+   .. autoattribute:: QuantumKernelTrainerResult.quantum_kernel
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: QuantumKernelTrainerResult.combine
+
+   
+   

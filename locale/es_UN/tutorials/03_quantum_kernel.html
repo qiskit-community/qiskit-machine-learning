@@ -1,0 +1,1205 @@
+<!doctype html>
+<html class="no-js" lang="es-UN">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Índice" href="../genindex.html" /><link rel="search" title="Búsqueda" href="../search.html" /><link rel="next" title="Implementación de PyTorch qGAN" href="04_torch_qgan.html" /><link rel="prev" title="Entrenamiento de un Modelo Cuántico en un Conjunto de Datos Real" href="02a_training_a_quantum_model_on_a_real_dataset.html" />
+
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+        <title>Machine Learning con Kernel Cuántico - Qiskit Machine Learning 0.7.1</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fd506691" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="../_static/js/web-components/top-nav-bar.js"></script>
+<script>
+  (function () {
+    window._analytics = {
+      segment_key: 'ffdYLviQze3kzomaINXNk6NwpY9LlXcw',
+      coremetrics: false,
+      optimizely: false,
+      googleAddServices: false,
+      fullStory: false,
+      autoPageEventSpa: false,
+      autoFormEvents: false,
+      autoPageView: false
+    }
+
+    window.digitalData = {
+      page: {
+        pageInfo: {
+          productTitle: 'IBM Q Experience',
+          analytics: {
+            category: 'Qiskit.org'
+          }
+        }
+      }
+    }
+  }());
+</script>
+<script src="https://cloud.ibm.com/analytics/build/bluemix-analytics.min.js"></script>
+<script>
+  (function () {
+    'use strict'
+
+    if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+    const category = window.digitalData.page.pageInfo.analytics.category
+    const productTitle = window.digitalData.page.pageInfo.productTitle
+    const routeName = 'documentation'
+
+    window.bluemixAnalytics.pageEvent(category, routeName, {
+      navigationType: 'pushState',
+      productTitle: productTitle,
+      title: document.title
+    })
+
+    window.trackCta = (action) => {
+      if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+      const category = window.digitalData.page.pageInfo.analytics.category
+      const productTitle = window.digitalData.page.pageInfo.productTitle
+
+      window.bluemixAnalytics.trackEvent('CTA Clicked', {
+        productTitle,
+        category,
+        CTA: action
+      })
+    }
+
+  }());
+</script></head>
+  <body>
+    
+    <script>document.body.dataset.theme = "light";</script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM4,6H20V26H4ZM28,26H22V6h6Z"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <rect x="4" y="6" width="24" height="2"/>
+      <rect x="4" y="24" width="24" height="2"/>
+      <rect x="4" y="12" width="24" height="2"/>
+      <rect x="4" y="18" width="24" height="2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+         viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve"><polygon points="22,16 12,26 10.6,24.6 19.2,16 10.6,7.4 12,6 " stroke="currentColor"/>
+      <rect id="_x3C_Transparent_Rectangle_x3E_" fill="none" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-new-tab" viewBox="0 0 32 32">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs>
+        <style>
+          .cls-1 {
+            fill: none;
+          }
+        </style>
+      </defs>
+      <path fill="#6929C4" d="M26,28H6a2.0027,2.0027,0,0,1-2-2V6A2.0027,2.0027,0,0,1,6,4H16V6H6V26H26V16h2V26A2.0027,2.0027,0,0,1,26,28Z"/>
+      <polygon fill="#6929C4" points="20 2 20 4 26.586 4 18 12.586 19.414 14 28 5.414 28 12 30 12 30 2 20 2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     This project's translations are no longer maintained. See the <a href=https://github.com/qiskit-community/qiskit-translations/tree/main#readme>announcement</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.1</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-brand">
+  <a href="https://www.qiskit.org/ecosystem">
+    <div class="sidebar-logo-container">
+      <img class="sidebar-logo" src="../_static/images/ecosystem-logo.svg" alt="Qiskit Ecosystem logo"/>
+    </div>
+  </a>
+  
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.1</span>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Búsqueda">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Descripción general</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Primeros Pasos</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Guía de Migración</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Guía de Migración</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/01_migration_guide_0.5.html">Guía de Migración de Qiskit Machine Learning v0.5</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutoriales</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Tutoriales</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_neural_networks.html">Redes Neuronales Cuánticas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_neural_network_classifier_and_regressor.html">Redes Neuronales de Clasificación y Regresión</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02a_training_a_quantum_model_on_a_real_dataset.html">Entrenamiento de un Modelo Cuántico en un Conjunto de Datos Real</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Machine Learning con Kernel Cuántico</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_torch_qgan.html">Implementación de PyTorch qGAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_torch_connector.html">Conector Torch y QNNs Híbridas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_pegasos_qsvc.html">Clasificador Cuántico de Vectores de Soporte tipo Pegasos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_quantum_kernel_trainer.html">Entrenamiento de Kernel Cuántico para Aplicaciones de Machine Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_saving_and_loading_models.html">Guardar, Cargar Modelos de Qiskit Machine Learning y Entrenamiento Continuo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Dimensión Efectiva de las Redes Neuronales de Qiskit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">La Red Neuronal Convolucional Cuántica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">El Autocodificador Cuántico</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">Referencia de la API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Referencia de la API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../stubs/qiskit_machine_learning.QiskitMachineLearningError.html">QiskitMachineLearningError</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.algorithms.html">Quantum machine learning algorithms (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.algorithms</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Quantum machine learning algorithms (qiskit_machine_learning.algorithms)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.TrainableModel.html">TrainableModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html">ObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.SerializableModelMixin.html">SerializableModelMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html">BinaryObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html">MultiClassObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html">OneHotObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html">PegasosQSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.connectors.TorchConnector.html">TorchConnector</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityStatevectorKernel.html">FidelityStatevectorKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.html">TrainableFidelityStatevectorKernel</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html">QuantumKernelTrainerResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html">EffectiveDimension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html">LocalEffectiveDimension</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Notas de la Versión</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning">GitHub</a></li>
+</ul>
+
+</div></div><div class="qiskit-translations-container" aria-label="languages">
+  <input id="translations-checkbox" name="translations-checkbox" role="switch" type="checkbox">
+  <div class="qiskit-translations-header-container"><label for="translations-checkbox">
+      <p role="note">Spanish</p>
+      <div class="qiskit-translations-toggle-container">
+        <div class="visually-hidden">Toggle translations list</div>
+        <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+      </div>
+    </label>
+  </div>
+  <div class="qiskit-translations-list-container">
+    <ul>
+      
+        <li><a href="/qiskit-machine-learning/tutorials/03_quantum_kernel.html">English</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/bn_BN/tutorials/03_quantum_kernel.html">Bengali</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/fr_FR/tutorials/03_quantum_kernel.html">French</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/hi_IN/tutorials/03_quantum_kernel.html">Hindi</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ja_JP/tutorials/03_quantum_kernel.html">Japanese</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ko_KR/tutorials/03_quantum_kernel.html">Korean</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ru_RU/tutorials/03_quantum_kernel.html">Russian</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/es_UN/tutorials/03_quantum_kernel.html">Spanish</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ta_IN/tutorials/03_quantum_kernel.html">Tamil</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/tr_TR/tutorials/03_quantum_kernel.html">Turkish</a></li>
+      
+    </ul>
+  </div>
+  <script>
+    document.querySelectorAll('.version').forEach((element) => {
+      element.addEventListener('click', (evt) => {
+        const hash = window.location.hash;
+        const complete_url = evt.target.href + hash;
+        window.location = complete_url;
+        evt.preventDefault();
+      });
+    });
+  </script>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="admonition note">
+<p class="admonition-title">Nota</p>
+<p>Esta página fue generada a partir de <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/03_quantum_kernel.ipynb">docs/tutorials/03_quantum_kernel.ipynb</a>.</p>
+</div>
+<section id="Machine-Learning-con-Kernel-Cuántico">
+<h1>Machine Learning con Kernel Cuántico<a class="headerlink" href="#Machine-Learning-con-Kernel-Cuántico" title="Enlace permanente a este encabezado">#</a></h1>
+<section id="Descripción-General">
+<h2>Descripción General<a class="headerlink" href="#Descripción-General" title="Enlace permanente a este encabezado">#</a></h2>
+<p>La tarea general del machine learning es encontrar y estudiar patrones en los datos. Para muchos conjuntos de datos, los puntos de datos se comprenden mejor en un espacio de características de mayor dimensión. Este es el principio fundamental detrás de una serie de algoritmos de machine learning conocidos como <em>métodos de kernel</em>.</p>
+<p>En este cuaderno, aprenderás a definir kernels cuánticos utilizando <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> y cómo estos pueden conectarse a diferentes algoritmos para resolver problemas de clasificación y agrupación (clustering).</p>
+<p>Todos los ejemplos utilizados en este tutorial se basan en este artículo de referencia: <a class="reference external" href="https://arxiv.org/pdf/1804.11326.pdf">Supervised learning with quantum enhanced feature spaces</a>.</p>
+<p>El contenido está estructurado de la siguiente manera:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#1.-Introducción"><span class="std std-ref">Introducción</span></a></p></li>
+<li><p><a class="reference internal" href="#2.-Clasificación"><span class="std std-ref">Clasificación</span></a></p></li>
+<li><p><a class="reference internal" href="#3.-Agrupación-(Clustering)"><span class="std std-ref">Agrupación (Clustering)</span></a></p></li>
+<li><p>Análisis de los Componentes Principales del Kernel</p></li>
+<li><p><a class="reference internal" href="#5.-Conclusión"><span class="std std-ref">Conclusión</span></a></p></li>
+</ol>
+</section>
+<section id="1.-Introducción">
+<h2>1. Introducción<a class="headerlink" href="#1.-Introducción" title="Enlace permanente a este encabezado">#</a></h2>
+<section id="1.1.-Métodos-de-Kernel-para-Machine-Learning">
+<h3>1.1. Métodos de Kernel para Machine Learning<a class="headerlink" href="#1.1.-Métodos-de-Kernel-para-Machine-Learning" title="Enlace permanente a este encabezado">#</a></h3>
+<p>Los métodos de kernel son una colección de algoritmos de análisis de patrones que utilizan funciones de kernel para operar en un espacio de características de alta dimensión. La aplicación más conocida de los métodos de kernel se encuentra en <strong>Soporte de Máquinas de Vectores (Support Vector Machines, SVM)</strong>, algoritmos de aprendizaje supervisado comúnmente utilizados para tareas de clasificación. El objetivo principal de las SVM es encontrar límites de decisión para separar un conjunto dado de puntos de datos en clases. Cuando estos espacios de datos no son linealmente separables, las SVM pueden beneficiarse del uso de kernels para encontrar estos límites.</p>
+<p>Formalmente, los límites de decisión son hiperplanos en un espacio de alta dimensionalidad. La función de kernel mapea implícitamente los datos de entrada en este espacio dimensional superior, donde puede ser más fácil resolver el problema inicial. En otras palabras, los kernels pueden permitir que las distribuciones de datos que originalmente no eran separables linealmente se conviertan en un problema separable linealmente. Este es un efecto conocido como el «truco del kernel».</p>
+<p>También hay casos de uso para algoritmos no supervisados basados ​​en kernel, por ejemplo, en el contexto de la agrupación (clustering). <strong>La Agrupación Espectral</strong> es una técnica en la que los puntos de datos se tratan como nodos de un grafo y la tarea de agrupación en clústeres se ve como un problema de partición de grafos en el que los nodos se asignan a un espacio en el que se pueden segregar fácilmente para formar grupos.</p>
+</section>
+<section id="1.2.-Funciones-de-Kernel">
+<h3>1.2. Funciones de Kernel<a class="headerlink" href="#1.2.-Funciones-de-Kernel" title="Enlace permanente a este encabezado">#</a></h3>
+<p>Matemáticamente, las funciones de kernel siguen:</p>
+<p><span class="math notranslate nohighlight">\(k(\vec{x}_i, \vec{x}_j) = \langle f(\vec{x}_i), f(\vec{x}_j) \rangle\)</span></p>
+<p>donde * <span class="math notranslate nohighlight">\(k\)</span> es la función de kernel * <span class="math notranslate nohighlight">\(\vec{x}_i, \vec{x}_j\)</span> son entradas <span class="math notranslate nohighlight">\(n\)</span> dimensionales * <span class="math notranslate nohighlight">\(f\)</span> es un mapa del espacio <span class="math notranslate nohighlight">\(n\)</span>-dimensional al espacio <span class="math notranslate nohighlight">\(m\)</span>-dimensional y * <span class="math notranslate nohighlight">\(\langle a,b \rangle\)</span> denota el producto interno</p>
+<p>Al considerar datos finitos, una función de kernel se puede representar como una matriz:</p>
+<p><span class="math notranslate nohighlight">\(K_{ij} = k(\vec{x}_i,\vec{x}_j)\)</span>.</p>
+</section>
+<section id="1.3.-Kernels-Cuánticos">
+<h3>1.3. Kernels Cuánticos<a class="headerlink" href="#1.3.-Kernels-Cuánticos" title="Enlace permanente a este encabezado">#</a></h3>
+<p>La idea principal detrás del machine learning de kernel cuántico es aprovechar los mapas de características cuánticos para realizar el truco del kernel. En este caso, el kernel cuántico se crea asignando un vector de características clásico <span class="math notranslate nohighlight">\(\vec{x}\)</span> a un espacio de Hilbert usando un mapa de características cuánticas <span class="math notranslate nohighlight">\(\phi(\vec{x})\)</span>. Matemáticamente:</p>
+<p><span class="math notranslate nohighlight">\(K_{ij} = \left| \langle \phi(\vec{x}_i)| \phi(\vec{x}_j) \rangle \right|^{2}\)</span></p>
+<p>donde * <span class="math notranslate nohighlight">\(K_{ij}\)</span> es la matriz del kernel * <span class="math notranslate nohighlight">\(\vec{x}_i, \vec{x}_j\)</span> son entradas <span class="math notranslate nohighlight">\(n\)</span> dimensionales * <span class="math notranslate nohighlight">\(\phi(\vec{x})\)</span> es el mapa de características cuántico * <span class="math notranslate nohighlight">\(\left| \langle a|b \rangle \right|^{2}\)</span> denota la superposición de dos estados cuánticos <span class="math notranslate nohighlight">\(a\)</span> y <span class="math notranslate nohighlight">\(b\)</span></p>
+<p>Los kernels cuánticos se pueden conectar a algoritmos de aprendizaje de kernel clásicos comunes, como SVM o algoritmos de agrupamiento (clustering), como verás en los ejemplos a continuación. También se pueden aprovechar en nuevos métodos de kernel cuánticos como la clase <a class="reference external" href="https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a> proporcionada por <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> que se explora en este tutorial y otros métodos, como se muestra en tutoriales posteriores sobre <a class="reference internal" href="07_pegasos_qsvc.html"><span class="doc">Pegasos QSVC</span></a> y <a class="reference internal" href="08_quantum_kernel_trainer.html"><span class="doc">Quantum Kernel Training</span></a>.</p>
+<hr class="docutils" />
+<p>Antes de presentar cualquier ejemplo, configuramos la semilla global para garantizar la reproducibilidad:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+
+<span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">12345</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="2.-Clasificación">
+<h2>2. Clasificación<a class="headerlink" href="#2.-Clasificación" title="Enlace permanente a este encabezado">#</a></h2>
+<p>Esta sección ilustra un flujo de trabajo de clasificación de kernel cuántico usando <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code>.</p>
+<section id="2.1.-Definición-del-conjunto-de-datos">
+<h3>2.1. Definición del conjunto de datos<a class="headerlink" href="#2.1.-Definición-del-conjunto-de-datos" title="Enlace permanente a este encabezado">#</a></h3>
+<p>Para este ejemplo, usaremos el <em>conjunto de datos ad hoc</em> como se describe en el <a class="reference external" href="https://arxiv.org/pdf/1804.11326.pdf">artículo</a> de referencia.</p>
+<p>Podemos definir la dimensión del conjunto de datos y obtener nuestros subconjuntos de entrenamiento y prueba:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.datasets</span> <span class="kn">import</span> <span class="n">ad_hoc_data</span>
+
+<span class="n">adhoc_dimension</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="n">adhoc_total</span> <span class="o">=</span> <span class="n">ad_hoc_data</span><span class="p">(</span>
+    <span class="n">training_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span>
+    <span class="n">gap</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">one_hot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">include_sample_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Este conjunto de datos es bidimensional, las dos características están representadas por las coordenadas <span class="math notranslate nohighlight">\(x\)</span> y <span class="math notranslate nohighlight">\(y\)</span>, y tiene dos etiquetas de clase: A y B. Podemos graficarlo y ver cómo se ve la distribución. Definimos funciones de utilidad para graficar el conjunto de datos.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">plot_features</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">class_label</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="n">face</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="c1"># A train plot</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="c1"># x coordinate of labels where class is class_label</span>
+        <span class="n">features</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">labels</span><span class="p">[:]</span> <span class="o">==</span> <span class="n">class_label</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="c1"># y coordinate of labels where class is class_label</span>
+        <span class="n">features</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">labels</span><span class="p">[:]</span> <span class="o">==</span> <span class="n">class_label</span><span class="p">),</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
+        <span class="n">facecolors</span><span class="o">=</span><span class="n">face</span><span class="p">,</span>
+        <span class="n">edgecolors</span><span class="o">=</span><span class="n">edge</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_dataset</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="n">adhoc_total</span><span class="p">):</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_total</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu&quot;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="c1"># A train plot</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;A train&quot;</span><span class="p">)</span>
+
+    <span class="c1"># B train plot</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B train&quot;</span><span class="p">)</span>
+
+    <span class="c1"># A test plot</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+
+    <span class="c1"># B test plot</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;B test&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ad hoc dataset&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Ahora graficamos el conjunto de datos para la clasificación:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_dataset</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="n">adhoc_total</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_03_quantum_kernel_10_0.png" src="../_images/tutorials_03_quantum_kernel_10_0.png" />
+</div>
+</div>
+</section>
+<section id="2.2.-Definición-del-kernel-cuántico">
+<h3>2.2. Definición del kernel cuántico<a class="headerlink" href="#2.2.-Definición-del-kernel-cuántico" title="Enlace permanente a este encabezado">#</a></h3>
+<p>El siguiente paso es crear una instancia del kernel cuántico que ayude a clasificar estos datos.</p>
+<p>Usamos la clase <a class="reference external" href="https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a>, y pasamos dos argumentos de entrada a su constructor:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">feature_map</span></code>: en este caso, un <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.ZZFeatureMap.html">ZZFeatureMap</a> de dos qubits.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fidelity</span></code>: en este caso, la subrutina de fidelidad <a class="reference external" href="https://qiskit.org/ecosystem/algorithms/stubs/qiskit_algorithms.state_fidelities.ComputeUncompute.html">ComputeUncompute</a> que aprovecha la primitiva <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.Sampler.html">Sampler</a>.</p></li>
+</ol>
+<p><strong>NOTA:</strong> Si no pasas una instancia <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> o <code class="docutils literal notranslate"><span class="pre">Fidelity</span></code>, entonces las instancias de las clases de referencia <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> y <code class="docutils literal notranslate"><span class="pre">ComputeUncompute</span></code> (que se encuentran en <code class="docutils literal notranslate"><span class="pre">qiskit.primitives</span></code>) serán creadas de forma predeterminada.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">ZZFeatureMap</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+<span class="kn">from</span> <span class="nn">qiskit_algorithms.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
+
+<span class="n">adhoc_feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
+
+<span class="n">fidelity</span> <span class="o">=</span> <span class="n">ComputeUncompute</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">)</span>
+
+<span class="n">adhoc_kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">(</span><span class="n">fidelity</span><span class="o">=</span><span class="n">fidelity</span><span class="p">,</span> <span class="n">feature_map</span><span class="o">=</span><span class="n">adhoc_feature_map</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.3.-Clasificación-con-SVC">
+<h3>2.3. Clasificación con SVC<a class="headerlink" href="#2.3.-Clasificación-con-SVC" title="Enlace permanente a este encabezado">#</a></h3>
+<p>El kernel cuántico ahora se puede conectar a métodos de kernel clásicos, como el algoritmo <a class="reference external" href="https://scikit-learn.org/stable/modules/svm.html">SVC</a> de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>. Este algoritmo nos permite definir un <a class="reference external" href="https://scikit-learn.org/stable/modules/svm.html#custom-kernels">kernel personalizado</a> de dos maneras:</p>
+<ol class="arabic simple">
+<li><p>proporcionando el kernel como una <strong>función invocable</strong></p></li>
+<li><p>precalculando la <strong>matriz del kernel</strong></p></li>
+</ol>
+<section id="Kernel-como-una-función-invocable">
+<h4>Kernel como una función invocable<a class="headerlink" href="#Kernel-como-una-función-invocable" title="Enlace permanente a este encabezado">#</a></h4>
+<p>Definimos un modelo SVC y pasamos directamente la función <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> del kernel cuántico como un invocable. Una vez que se crea el modelo, lo entrenamos llamando al método <code class="docutils literal notranslate"><span class="pre">fit</span></code> en el conjunto de datos de entrenamiento y evaluamos la precisión del modelo con <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+
+<span class="n">adhoc_svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="n">adhoc_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">)</span>
+
+<span class="n">adhoc_svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+
+<span class="n">adhoc_score_callable_function</span> <span class="o">=</span> <span class="n">adhoc_svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Callable kernel classification test score: </span><span class="si">{</span><span class="n">adhoc_score_callable_function</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Callable kernel classification test score: 1.0
+</pre></div></div>
+</div>
+</section>
+<section id="Matriz-de-kernel-precalculada">
+<h4>Matriz de kernel precalculada<a class="headerlink" href="#Matriz-de-kernel-precalculada" title="Enlace permanente a este encabezado">#</a></h4>
+<p>En lugar de pasar una función de kernel cuántico como invocable, también podemos calcular previamente las matrices del kernel de entrenamiento y prueba antes de pasarlas al algoritmo <code class="docutils literal notranslate"><span class="pre">SVC</span></code> de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>.</p>
+<p>Para extraer las matrices de entrenamiento y prueba, podemos llamar a <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> en el kernel previamente definido y visualizarlas gráficamente de la siguiente manera:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_matrix_train</span> <span class="o">=</span> <span class="n">adhoc_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_vec</span><span class="o">=</span><span class="n">train_features</span><span class="p">)</span>
+<span class="n">adhoc_matrix_test</span> <span class="o">=</span> <span class="n">adhoc_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_vec</span><span class="o">=</span><span class="n">test_features</span><span class="p">,</span> <span class="n">y_vec</span><span class="o">=</span><span class="n">train_features</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix_train</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span>
+<span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ad hoc training kernel matrix&quot;</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix_test</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Reds&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ad hoc testing kernel matrix&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_03_quantum_kernel_17_0.png" src="../_images/tutorials_03_quantum_kernel_17_0.png" />
+</div>
+</div>
+<p>Para usar estas matrices, establecemos el parámetro <code class="docutils literal notranslate"><span class="pre">kernel</span></code> de una nueva instancia de <code class="docutils literal notranslate"><span class="pre">SVC</span></code> con <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>. Entrenamos al clasificador llamando a <code class="docutils literal notranslate"><span class="pre">fit</span></code> con la matriz de entrenamiento y el conjunto de datos de entrenamiento. Una vez que se entrena el modelo, lo evaluamos usando la matriz de prueba en el conjunto de datos de prueba.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">)</span>
+
+<span class="n">adhoc_svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">adhoc_matrix_train</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+
+<span class="n">adhoc_score_precomputed_kernel</span> <span class="o">=</span> <span class="n">adhoc_svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">adhoc_matrix_test</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precomputed kernel classification test score: </span><span class="si">{</span><span class="n">adhoc_score_precomputed_kernel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Precomputed kernel classification test score: 1.0
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="2.4.-Clasificación-con-QSVC">
+<h3>2.4. Clasificación con QSVC<a class="headerlink" href="#2.4.-Clasificación-con-QSVC" title="Enlace permanente a este encabezado">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">QSVC</span></code> es un algoritmo de entrenamiento alternativo proporcionado por <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> por conveniencia. Es una extensión de <code class="docutils literal notranslate"><span class="pre">SVC</span></code> que acepta un kernel cuántico en lugar del método <code class="docutils literal notranslate"><span class="pre">kernel.evaluate</span></code> mostrado anteriormente.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">QSVC</span>
+
+<span class="n">qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">adhoc_kernel</span><span class="p">)</span>
+
+<span class="n">qsvc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+
+<span class="n">qsvc_score</span> <span class="o">=</span> <span class="n">qsvc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;QSVC classification test score: </span><span class="si">{</span><span class="n">qsvc_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+QSVC classification test score: 1.0
+</pre></div></div>
+</div>
+</section>
+<section id="2.5.-Evaluación-de-modelos-utilizados-para-la-clasificación">
+<h3>2.5. Evaluación de modelos utilizados para la clasificación<a class="headerlink" href="#2.5.-Evaluación-de-modelos-utilizados-para-la-clasificación" title="Enlace permanente a este encabezado">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classification Model                    | Accuracy Score&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---------------------------------------------------------&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SVC using kernel as a callable function | </span><span class="si">{</span><span class="n">adhoc_score_callable_function</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SVC using precomputed kernel matrix     | </span><span class="si">{</span><span class="n">adhoc_score_precomputed_kernel</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;QSVC                                    | </span><span class="si">{</span><span class="n">qsvc_score</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Classification Model                    | Accuracy Score
+---------------------------------------------------------
+SVC using kernel as a callable function |       1.00
+SVC using precomputed kernel matrix     |       1.00
+QSVC                                    |       1.00
+</pre></div></div>
+</div>
+<p>Como el conjunto de datos de clasificación es pequeño, encontramos que los tres modelos logran una precisión del 100%.</p>
+</section>
+</section>
+<section id="3.-Agrupación-(Clustering)">
+<h2>3. Agrupación (Clustering)<a class="headerlink" href="#3.-Agrupación-(Clustering)" title="Enlace permanente a este encabezado">#</a></h2>
+<p>El segundo flujo de trabajo de este tutorial se centra en una tarea de agrupamiento (clustering) utilizando <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> y el algoritmo de agrupamiento espectral de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>.</p>
+<section id="3.1.-Definición-del-conjunto-de-datos">
+<h3>3.1. Definición del conjunto de datos<a class="headerlink" href="#3.1.-Definición-del-conjunto-de-datos" title="Enlace permanente a este encabezado">#</a></h3>
+<p>Una vez más usaremos el <em>conjunto de datos ad hoc</em>, pero ahora generado con una brecha mayor de <code class="docutils literal notranslate"><span class="pre">0.6</span></code> (ejemplo anterior: <code class="docutils literal notranslate"><span class="pre">0.3</span></code>) entre las dos clases.</p>
+<p>Ten en cuenta que la agrupación en clústeres se incluye en la categoría de machine learning no supervisado, por lo que no se requiere un conjunto de datos de prueba.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_dimension</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="n">adhoc_total</span> <span class="o">=</span> <span class="n">ad_hoc_data</span><span class="p">(</span>
+    <span class="n">training_size</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span>
+    <span class="n">gap</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">one_hot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">include_sample_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Graficamos el conjunto de datos de agrupamiento a continuación:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_total</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+    <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu&quot;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># A label plot</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+
+<span class="c1"># B label plot</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ad hoc dataset for clustering&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_03_quantum_kernel_29_0.png" src="../_images/tutorials_03_quantum_kernel_29_0.png" />
+</div>
+</div>
+</section>
+<section id="3.2.-Definición-del-Kernel-Cuántico">
+<h3>3.2. Definición del Kernel Cuántico<a class="headerlink" href="#3.2.-Definición-del-Kernel-Cuántico" title="Enlace permanente a este encabezado">#</a></h3>
+<p>Usamos una configuración idéntica a la del ejemplo de clasificación. Creamos otra instancia de la clase <code class="docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code> con un <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code>, pero puedes notar que en este caso no proporcionamos una instancia de <code class="docutils literal notranslate"><span class="pre">fidelity</span></code>. Esto se debe a que el método <code class="docutils literal notranslate"><span class="pre">ComputeUncompute</span></code> proporcionado en el caso anterior es instanciado de forma predeterminada cuando la instancia de fidelidad no se proporciona explícitamente.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+
+<span class="n">adhoc_kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">(</span><span class="n">feature_map</span><span class="o">=</span><span class="n">adhoc_feature_map</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.3.-Agrupamiento-(Clustering)-con-el-Modelo-de-Agrupamiento-Espectral">
+<h3>3.3. Agrupamiento (Clustering) con el Modelo de Agrupamiento Espectral<a class="headerlink" href="#3.3.-Agrupamiento-(Clustering)-con-el-Modelo-de-Agrupamiento-Espectral" title="Enlace permanente a este encabezado">#</a></h3>
+<p>El algoritmo de agrupamiento espectral de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> nos permite definir un kernel personalizado de dos maneras (al igual que <code class="docutils literal notranslate"><span class="pre">SVC</span></code>):</p>
+<ol class="arabic simple">
+<li><p>proporcionando el kernel como una <strong>función invocable</strong></p></li>
+<li><p>precalculando la <strong>matriz del kernel</strong>.</p></li>
+</ol>
+<p>Con la clase <code class="docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code> actual en <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code>, solo podemos usar la última opción, por lo que precalculamos la matriz del kernel llamando a <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> y la visualizamos de la siguiente manera:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_matrix</span> <span class="o">=</span> <span class="n">adhoc_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_vec</span><span class="o">=</span><span class="n">train_features</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greens&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ad hoc clustering kernel matrix&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_03_quantum_kernel_33_0.png" src="../_images/tutorials_03_quantum_kernel_33_0.png" />
+</div>
+</div>
+<p>A continuación, definimos un modelo de agrupamiento espectral y lo ajustamos utilizando el kernel precalculado. Además, calificamos las etiquetas utilizando información mutua normalizada, ya que conocemos las etiquetas de clase a priori (de antemano).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">SpectralClustering</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">normalized_mutual_info_score</span>
+
+<span class="n">adhoc_spectral</span> <span class="o">=</span> <span class="n">SpectralClustering</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">)</span>
+
+<span class="n">cluster_labels</span> <span class="o">=</span> <span class="n">adhoc_spectral</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">adhoc_matrix</span><span class="p">)</span>
+
+<span class="n">cluster_score</span> <span class="o">=</span> <span class="n">normalized_mutual_info_score</span><span class="p">(</span><span class="n">cluster_labels</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Clustering score: </span><span class="si">{</span><span class="n">cluster_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Clustering score: 0.7287008798015754
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="4.-Análisis-de-Componentes-Principales-del-Kernel">
+<h2>4. Análisis de Componentes Principales del Kernel<a class="headerlink" href="#4.-Análisis-de-Componentes-Principales-del-Kernel" title="Enlace permanente a este encabezado">#</a></h2>
+<p>Esta sección se centra en una tarea de análisis de componentes principales utilizando un algoritmo PCA de kernel. Calculamos una matriz del kernel usando un <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code> y mostramos que este enfoque traduce las características originales a un nuevo espacio, donde los ejes se eligen a lo largo de los componentes principales. En este espacio, la tarea de clasificación se puede realizar con un modelo más simple en lugar de una SVM.</p>
+<section id="4.1.-Definición-del-conjunto-de-datos">
+<h3>4.1. Definición del conjunto de datos<a class="headerlink" href="#4.1.-Definición-del-conjunto-de-datos" title="Enlace permanente a este encabezado">#</a></h3>
+<p>Nuevamente, usamos el <em>conjunto de datos ad hoc</em> con una brecha de <code class="docutils literal notranslate"><span class="pre">0.6</span></code> entre las dos clases. Este conjunto de datos se asemeja al conjunto de datos que teníamos en la sección de agrupamiento, la diferencia es que en este caso <code class="docutils literal notranslate"><span class="pre">test_size</span></code> no es cero.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_dimension</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="n">adhoc_total</span> <span class="o">=</span> <span class="n">ad_hoc_data</span><span class="p">(</span>
+    <span class="n">training_size</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span>
+    <span class="n">gap</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">one_hot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">include_sample_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Graficamos los conjuntos de datos de entrenamiento y prueba a continuación. Nuestro objetivo final en esta sección es construir nuevas coordenadas donde las dos clases se puedan separar linealmente.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_dataset</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="n">adhoc_total</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_03_quantum_kernel_40_0.png" src="../_images/tutorials_03_quantum_kernel_40_0.png" />
+</div>
+</div>
+</section>
+<section id="4.2.-Definición-del-Kernel-Cuántico">
+<h3>4.2. Definición del Kernel Cuántico<a class="headerlink" href="#4.2.-Definición-del-Kernel-Cuántico" title="Enlace permanente a este encabezado">#</a></h3>
+<p>Procedemos con la misma configuración del kernel que en la tarea de clasificación, es decir, un circuito <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code> como un mapa de características y una instancia de <code class="docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+<span class="n">qpca_kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">(</span><span class="n">fidelity</span><span class="o">=</span><span class="n">fidelity</span><span class="p">,</span> <span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Luego, evaluamos las matrices del kernel para las características de entrenamiento y prueba.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">matrix_train</span> <span class="o">=</span> <span class="n">qpca_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_vec</span><span class="o">=</span><span class="n">train_features</span><span class="p">)</span>
+<span class="n">matrix_test</span> <span class="o">=</span> <span class="n">qpca_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_vec</span><span class="o">=</span><span class="n">test_features</span><span class="p">,</span> <span class="n">y_vec</span><span class="o">=</span><span class="n">train_features</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.3.-Comparación-del-Kernel-PCA-con-kernel-gaussiano-y-cuántico">
+<h3>4.3. Comparación del Kernel PCA con kernel gaussiano y cuántico<a class="headerlink" href="#4.3.-Comparación-del-Kernel-PCA-con-kernel-gaussiano-y-cuántico" title="Enlace permanente a este encabezado">#</a></h3>
+<p>En esta sección usamos la implementación <code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code> de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>, con el parámetro <code class="docutils literal notranslate"><span class="pre">kernel</span></code> establecido en «rbf» para un kernel gaussiano y «precalculado» para un kernel cuántico. El primero es muy popular en los modelos clásicos de machine learning, mientras que el segundo permite usar un kernel cuántico definido como <code class="docutils literal notranslate"><span class="pre">qpca_kernel</span></code>.</p>
+<p>Se puede observar que el modelo Kernel PCA basado en el kernel gaussiano no logra que el conjunto de datos sea linealmente separable, mientras que el kernel cuántico sí lo logra.</p>
+<p>Si bien PCA generalmente se usa para reducir la cantidad de características en un conjunto de datos o, en otras palabras, para reducir la dimensionalidad de un conjunto de datos, no lo hacemos aquí. Más bien, mantenemos el número de dimensiones y empleamos el kernel PCA, principalmente con fines de visualización, para mostrar que la clasificación en el conjunto de datos transformado se vuelve fácilmente tratable mediante métodos lineales, como la regresión logística. Usamos este método para separar dos clases en el espacio de componentes principales con un modelo <code class="docutils literal notranslate"><span class="pre">LogisticRegression</span></code> de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>. Como de costumbre, lo entrenamos llamando al método <code class="docutils literal notranslate"><span class="pre">fit</span></code> en el conjunto de datos de entrenamiento y evaluamos la precisión del modelo con <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">KernelPCA</span>
+
+<span class="n">kernel_pca_rbf</span> <span class="o">=</span> <span class="n">KernelPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;rbf&quot;</span><span class="p">)</span>
+<span class="n">kernel_pca_rbf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">)</span>
+<span class="n">train_features_rbf</span> <span class="o">=</span> <span class="n">kernel_pca_rbf</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train_features</span><span class="p">)</span>
+<span class="n">test_features_rbf</span> <span class="o">=</span> <span class="n">kernel_pca_rbf</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test_features</span><span class="p">)</span>
+
+<span class="n">kernel_pca_q</span> <span class="o">=</span> <span class="n">KernelPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">)</span>
+<span class="n">train_features_q</span> <span class="o">=</span> <span class="n">kernel_pca_q</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">matrix_train</span><span class="p">)</span>
+<span class="n">test_features_q</span> <span class="o">=</span> <span class="n">kernel_pca_q</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">matrix_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Aquí entrenamos y puntuamos un modelo.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+
+<span class="n">logistic_regression</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span>
+<span class="n">logistic_regression</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+
+<span class="n">logistic_score</span> <span class="o">=</span> <span class="n">logistic_regression</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logistic regression score: </span><span class="si">{</span><span class="n">logistic_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Logistic regression score: 0.9
+</pre></div></div>
+</div>
+<p>Grafiquemos los resultados. Primero, graficamos el conjunto de datos transformados que obtenemos con el kernel cuántico. En la misma gráfica también agregamos los resultados del modelo. Luego, graficamos el conjunto de datos transformados que obtenemos con el kernel gaussiano.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">rbf_ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;A train&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B train&quot;</span><span class="p">)</span>
+
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+
+<span class="n">q_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Principal component #1&quot;</span><span class="p">)</span>
+<span class="n">q_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Principal component #0&quot;</span><span class="p">)</span>
+<span class="n">q_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Projection of training and test data</span><span class="se">\n</span><span class="s2"> using KPCA with Quantum Kernel&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plotting the linear separation</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># step size in the mesh</span>
+
+<span class="c1"># create a mesh to plot in</span>
+<span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">train_features_q</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">train_features_q</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">logistic_regression</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span>
+
+<span class="c1"># Put the result into a color plot</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">q_ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdBu</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">train_features_rbf</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;A train&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">train_features_rbf</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B train&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">test_features_rbf</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">test_features_rbf</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+
+<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Principal component #1&quot;</span><span class="p">)</span>
+<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Principal component #0&quot;</span><span class="p">)</span>
+<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Projection of training data</span><span class="se">\n</span><span class="s2"> using KernelPCA&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_03_quantum_kernel_50_0.png" src="../_images/tutorials_03_quantum_kernel_50_0.png" />
+</div>
+</div>
+<p>Como podemos ver, los puntos de datos en la figura de la derecha no son separables, pero están en la figura de la izquierda, por lo tanto, en el caso del kernel cuántico, podemos aplicar modelos lineales en el conjunto de datos transformado y es por eso que el clasificador SVM funciona perfectamente bien en el conjunto de datos <em>ad hoc</em> como vimos en la <a class="reference internal" href="#2.-Clasificación"><span class="std std-ref">sección de clasificación</span></a>.</p>
+</section>
+</section>
+<section id="5.-Conclusión">
+<h2>5. Conclusión<a class="headerlink" href="#5.-Conclusión" title="Enlace permanente a este encabezado">#</a></h2>
+<p>En este tutorial:</p>
+<ul class="simple">
+<li><p>Revisamos los fundamentos del aprendizaje del kernel cuántico</p></li>
+<li><p>Entendimos cómo definir kernels cuánticos como instancias de <code class="docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code></p></li>
+<li><p>Aprendimos a usar el algoritmo <code class="docutils literal notranslate"><span class="pre">SVC</span></code> de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> con un kernel cuántico personalizado como una función invocable frente a una matriz de kernel cuántico precalculada para la clasificación</p></li>
+<li><p>Aprendimos a entrenar clasificadores con el algoritmo <code class="docutils literal notranslate"><span class="pre">QSVC</span></code> de <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code></p></li>
+<li><p>Aprendimos a usar los algoritmos <code class="docutils literal notranslate"><span class="pre">SpectralClustering</span></code> de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> con una matriz de kernel cuántico precalculada para la agrupación (clustering)</p></li>
+<li><p>Investigamos cómo conectar un kernel cuántico en el algoritmo <code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code> de <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> y transformar el conjunto de datos ad-hoc en uno nuevo que pueda ser abordado por un modelo lineal.</p></li>
+</ul>
+<p>Para mayor referencia, <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> tiene otros algoritmos que pueden usar una matriz de kernel precalculada, como:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html">Agglomerative clustering</a></p></li>
+<li><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html">Support vector regression</a></p></li>
+<li><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html">Ridge regression</a></p></li>
+<li><p><a class="reference external" href="https://scikit-learn.org/stable/modules/gaussian_process.html">Guassian process regression</a></p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">qiskit.tools.jupyter</span>
+
+<span class="o">%</span><span class="k">qiskit_version_table</span>
+<span class="o">%</span><span class="k">qiskit_copyright</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>Version Information</h3><table><tr><th>Qiskit Software</th><th>Version</th></tr><tr><td><code>qiskit-terra</code></td><td>0.23.1</td></tr><tr><td><code>qiskit-aer</code></td><td>0.11.2</td></tr><tr><td><code>qiskit-ibmq-provider</code></td><td>0.20.0</td></tr><tr><td><code>qiskit</code></td><td>0.41.0</td></tr><tr><td><code>qiskit-machine-learning</code></td><td>0.5.0</td></tr><tr><th>System information</th></tr><tr><td>Python version</td><td>3.10.9</td></tr><tr><td>Python compiler</td><td>GCC 11.2.0</td></tr><tr><td>Python build</td><td>main, Jan 11 2023 15:21:40</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td>CPUs</td><td>10</td></tr><tr><td>Memory (Gb)</td><td>7.394691467285156</td></tr><tr><td colspan='2'>Wed Feb 22 10:36:16 2023 CET</td></tr></table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of Qiskit</h3><p>&copy; Copyright IBM 2017, 2023.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+  <script>
+    function userFeedbackClicked(ctaType) {
+      document.getElementById('qiskit-analytics-thank-you').style.visibility = 'visible';
+      window.trackCta(`Helpful - ${ctaType}`);
+    }
+  </script>
+    <div class="qiskit-analytics-container">
+      <div>Was this page helpful?</div>
+      <a onclick="userFeedbackClicked('yes')">Yes</a>
+      <a onclick="userFeedbackClicked('no')">No</a>
+      <div id="qiskit-analytics-thank-you">Thank you!</div>
+    </div>
+<div class="related-pages">
+          <a class="next-page" href="04_torch_qgan.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Implementación de PyTorch qGAN</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="02a_training_a_quantum_model_on_a_real_dataset.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Entrenamiento de un Modelo Cuántico en un Conjunto de Datos Real</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Machine Learning con Kernel Cuántico</a><ul>
+<li><a class="reference internal" href="#Descripción-General">Descripción General</a></li>
+<li><a class="reference internal" href="#1.-Introducción">1. Introducción</a><ul>
+<li><a class="reference internal" href="#1.1.-Métodos-de-Kernel-para-Machine-Learning">1.1. Métodos de Kernel para Machine Learning</a></li>
+<li><a class="reference internal" href="#1.2.-Funciones-de-Kernel">1.2. Funciones de Kernel</a></li>
+<li><a class="reference internal" href="#1.3.-Kernels-Cuánticos">1.3. Kernels Cuánticos</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#2.-Clasificación">2. Clasificación</a><ul>
+<li><a class="reference internal" href="#2.1.-Definición-del-conjunto-de-datos">2.1. Definición del conjunto de datos</a></li>
+<li><a class="reference internal" href="#2.2.-Definición-del-kernel-cuántico">2.2. Definición del kernel cuántico</a></li>
+<li><a class="reference internal" href="#2.3.-Clasificación-con-SVC">2.3. Clasificación con SVC</a><ul>
+<li><a class="reference internal" href="#Kernel-como-una-función-invocable">Kernel como una función invocable</a></li>
+<li><a class="reference internal" href="#Matriz-de-kernel-precalculada">Matriz de kernel precalculada</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#2.4.-Clasificación-con-QSVC">2.4. Clasificación con QSVC</a></li>
+<li><a class="reference internal" href="#2.5.-Evaluación-de-modelos-utilizados-para-la-clasificación">2.5. Evaluación de modelos utilizados para la clasificación</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#3.-Agrupación-(Clustering)">3. Agrupación (Clustering)</a><ul>
+<li><a class="reference internal" href="#3.1.-Definición-del-conjunto-de-datos">3.1. Definición del conjunto de datos</a></li>
+<li><a class="reference internal" href="#3.2.-Definición-del-Kernel-Cuántico">3.2. Definición del Kernel Cuántico</a></li>
+<li><a class="reference internal" href="#3.3.-Agrupamiento-(Clustering)-con-el-Modelo-de-Agrupamiento-Espectral">3.3. Agrupamiento (Clustering) con el Modelo de Agrupamiento Espectral</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#4.-Análisis-de-Componentes-Principales-del-Kernel">4. Análisis de Componentes Principales del Kernel</a><ul>
+<li><a class="reference internal" href="#4.1.-Definición-del-conjunto-de-datos">4.1. Definición del conjunto de datos</a></li>
+<li><a class="reference internal" href="#4.2.-Definición-del-Kernel-Cuántico">4.2. Definición del Kernel Cuántico</a></li>
+<li><a class="reference internal" href="#4.3.-Comparación-del-Kernel-PCA-con-kernel-gaussiano-y-cuántico">4.3. Comparación del Kernel PCA con kernel gaussiano y cuántico</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#5.-Conclusión">5. Conclusión</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=99a64b57"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

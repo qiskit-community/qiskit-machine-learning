@@ -1,0 +1,41 @@
+﻿
+
+TrainableFidelityQuantumKernel
+==============================================================
+
+.. currentmodule:: qiskit_machine_learning.kernels
+
+.. autoclass:: TrainableFidelityQuantumKernel
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: TrainableFidelityQuantumKernel.enforce_psd
+   .. autoattribute:: TrainableFidelityQuantumKernel.evaluate_duplicates
+   .. autoattribute:: TrainableFidelityQuantumKernel.feature_map
+   .. autoattribute:: TrainableFidelityQuantumKernel.fidelity
+   .. autoattribute:: TrainableFidelityQuantumKernel.num_features
+   .. autoattribute:: TrainableFidelityQuantumKernel.num_training_parameters
+   .. autoattribute:: TrainableFidelityQuantumKernel.parameter_values
+   .. autoattribute:: TrainableFidelityQuantumKernel.training_parameters
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: TrainableFidelityQuantumKernel.assign_training_parameters
+   .. automethod:: TrainableFidelityQuantumKernel.evaluate
+
+   
+   

@@ -1,0 +1,28 @@
+﻿
+
+OneHotObjectiveFunction
+==========================================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: OneHotObjectiveFunction
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: OneHotObjectiveFunction.gradient
+   .. automethod:: OneHotObjectiveFunction.objective
+
+   
+   

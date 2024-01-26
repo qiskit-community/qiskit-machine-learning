@@ -1,0 +1,46 @@
+﻿
+
+QSVR
+=======================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: QSVR
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: QSVR.class_weight_
+   .. autoattribute:: QSVR.coef_
+   .. autoattribute:: QSVR.n_support_
+   .. autoattribute:: QSVR.quantum_kernel
+   .. autoattribute:: QSVR.unused_param
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: QSVR.fit
+   .. automethod:: QSVR.get_metadata_routing
+   .. automethod:: QSVR.get_params
+   .. automethod:: QSVR.load
+   .. automethod:: QSVR.predict
+   .. automethod:: QSVR.save
+   .. automethod:: QSVR.score
+   .. automethod:: QSVR.set_fit_request
+   .. automethod:: QSVR.set_params
+   .. automethod:: QSVR.set_score_request
+
+   
+   

@@ -1,0 +1,38 @@
+﻿
+
+QNNCircuit
+==================================================
+
+.. currentmodule:: qiskit_machine_learning.circuit.library
+
+.. autoclass:: QNNCircuit
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: QNNCircuit.ansatz
+   .. autoattribute:: QNNCircuit.feature_map
+   .. autoattribute:: QNNCircuit.input_parameters
+   .. autoattribute:: QNNCircuit.num_input_parameters
+   .. autoattribute:: QNNCircuit.num_qubits
+   .. autoattribute:: QNNCircuit.num_weight_parameters
+   .. autoattribute:: QNNCircuit.weight_parameters
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+
+   
+   
