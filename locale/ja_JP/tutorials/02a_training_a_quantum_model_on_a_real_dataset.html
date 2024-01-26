@@ -1,0 +1,1180 @@
+<!doctype html>
+<html class="no-js" lang="ja-JP">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="量子カーネル法機械学習" href="03_quantum_kernel.html" /><link rel="prev" title="ニューラル・ネットワーク分類器と回帰器" href="02_neural_network_classifier_and_regressor.html" />
+
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+        <title>実際のデータセットでの量子モデルの学習 - Qiskit Machine Learning 0.7.1</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fd506691" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="../_static/js/web-components/top-nav-bar.js"></script>
+<script>
+  (function () {
+    window._analytics = {
+      segment_key: 'ffdYLviQze3kzomaINXNk6NwpY9LlXcw',
+      coremetrics: false,
+      optimizely: false,
+      googleAddServices: false,
+      fullStory: false,
+      autoPageEventSpa: false,
+      autoFormEvents: false,
+      autoPageView: false
+    }
+
+    window.digitalData = {
+      page: {
+        pageInfo: {
+          productTitle: 'IBM Q Experience',
+          analytics: {
+            category: 'Qiskit.org'
+          }
+        }
+      }
+    }
+  }());
+</script>
+<script src="https://cloud.ibm.com/analytics/build/bluemix-analytics.min.js"></script>
+<script>
+  (function () {
+    'use strict'
+
+    if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+    const category = window.digitalData.page.pageInfo.analytics.category
+    const productTitle = window.digitalData.page.pageInfo.productTitle
+    const routeName = 'documentation'
+
+    window.bluemixAnalytics.pageEvent(category, routeName, {
+      navigationType: 'pushState',
+      productTitle: productTitle,
+      title: document.title
+    })
+
+    window.trackCta = (action) => {
+      if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+      const category = window.digitalData.page.pageInfo.analytics.category
+      const productTitle = window.digitalData.page.pageInfo.productTitle
+
+      window.bluemixAnalytics.trackEvent('CTA Clicked', {
+        productTitle,
+        category,
+        CTA: action
+      })
+    }
+
+  }());
+</script></head>
+  <body>
+    
+    <script>document.body.dataset.theme = "light";</script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM4,6H20V26H4ZM28,26H22V6h6Z"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <rect x="4" y="6" width="24" height="2"/>
+      <rect x="4" y="24" width="24" height="2"/>
+      <rect x="4" y="12" width="24" height="2"/>
+      <rect x="4" y="18" width="24" height="2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+         viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve"><polygon points="22,16 12,26 10.6,24.6 19.2,16 10.6,7.4 12,6 " stroke="currentColor"/>
+      <rect id="_x3C_Transparent_Rectangle_x3E_" fill="none" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-new-tab" viewBox="0 0 32 32">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs>
+        <style>
+          .cls-1 {
+            fill: none;
+          }
+        </style>
+      </defs>
+      <path fill="#6929C4" d="M26,28H6a2.0027,2.0027,0,0,1-2-2V6A2.0027,2.0027,0,0,1,6,4H16V6H6V26H26V16h2V26A2.0027,2.0027,0,0,1,26,28Z"/>
+      <polygon fill="#6929C4" points="20 2 20 4 26.586 4 18 12.586 19.414 14 28 5.414 28 12 30 12 30 2 20 2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     This project's translations are no longer maintained. See the <a href=https://github.com/qiskit-community/qiskit-translations/tree/main#readme>announcement</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.1</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-brand">
+  <a href="https://www.qiskit.org/ecosystem">
+    <div class="sidebar-logo-container">
+      <img class="sidebar-logo" src="../_static/images/ecosystem-logo.svg" alt="Qiskit Ecosystem logo"/>
+    </div>
+  </a>
+  
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.1</span>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="検索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">概要</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">はじめに</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">移行ガイド</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 移行ガイド</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/01_migration_guide_0.5.html">Qiskit Machine Learning v0.5 移行ガイド</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">チュートリアル</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of チュートリアル</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_neural_networks.html">量子ニューラル・ネットワーク</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_neural_network_classifier_and_regressor.html">ニューラル・ネットワーク分類器と回帰器</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">実際のデータセットでの量子モデルの学習</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_quantum_kernel.html">量子カーネル法機械学習</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_torch_qgan.html">PyTorchによるqGANの実装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_torch_connector.html">Torch コネクターおよびハイブリッド QNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_pegasos_qsvc.html">ペガソス量子サポートベクター分類器サポート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_quantum_kernel_trainer.html">機械学習アプリケーション向けの量子カーネルトレーニング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_saving_and_loading_models.html">Qiskit機械学習モデルの保存、読み込み、継続的なトレーニング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Qiskitニューラルネットワークの有効な次元</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">量子畳み込みニューラル・ネットワーク</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">量子オートエンコーダー</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API リファレンス</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API リファレンス</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../stubs/qiskit_machine_learning.QiskitMachineLearningError.html">QiskitMachineLearningError</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.algorithms.html">Quantum machine learning algorithms (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.algorithms</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Quantum machine learning algorithms (qiskit_machine_learning.algorithms)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.TrainableModel.html">TrainableModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html">ObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.SerializableModelMixin.html">SerializableModelMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html">BinaryObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html">MultiClassObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html">OneHotObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html">PegasosQSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.connectors.TorchConnector.html">TorchConnector</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityStatevectorKernel.html">FidelityStatevectorKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.html">TrainableFidelityStatevectorKernel</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html">QuantumKernelTrainerResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html">EffectiveDimension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html">LocalEffectiveDimension</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">リリースノート</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning">GitHub</a></li>
+</ul>
+
+</div></div><div class="qiskit-translations-container" aria-label="languages">
+  <input id="translations-checkbox" name="translations-checkbox" role="switch" type="checkbox">
+  <div class="qiskit-translations-header-container"><label for="translations-checkbox">
+      <p role="note">Japanese</p>
+      <div class="qiskit-translations-toggle-container">
+        <div class="visually-hidden">Toggle translations list</div>
+        <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+      </div>
+    </label>
+  </div>
+  <div class="qiskit-translations-list-container">
+    <ul>
+      
+        <li><a href="/qiskit-machine-learning/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">English</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/bn_BN/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Bengali</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/fr_FR/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">French</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/hi_IN/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Hindi</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ja_JP/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Japanese</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ko_KR/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Korean</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ru_RU/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Russian</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/es_UN/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Spanish</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ta_IN/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Tamil</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/tr_TR/tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Turkish</a></li>
+      
+    </ul>
+  </div>
+  <script>
+    document.querySelectorAll('.version').forEach((element) => {
+      element.addEventListener('click', (evt) => {
+        const hash = window.location.hash;
+        const complete_url = evt.target.href + hash;
+        window.location = complete_url;
+        evt.preventDefault();
+      });
+    });
+  </script>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>このページは <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/02a_training_a_quantum_model_on_a_real_dataset.ipynb">docs/tutorials/02a_training_a_quantum_model_on_a_real_dataset.ipynb</a> から生成されました。</p>
+</div>
+<section id="実際のデータセットでの量子モデルの学習">
+<h1>実際のデータセットでの量子モデルの学習<a class="headerlink" href="#実際のデータセットでの量子モデルの学習" title="この見出しへのパーマリンク">#</a></h1>
+<p>このチュートリアルでは、分類問題に取り組むために、量子機械学習モデルをどのように学習させるかを説明します。これまでのチュートリアルでは、小規模で人工的なデータセットを取り上げてきました。今回は、現実の古典的なデータセットを用いて、問題の複雑性を高めることにします。我々は、非常に有名ですが、まだ比較的小さな問題であるアイリスの花のデータセットを選ぶことにしました。このデータセットにはWikipediaの <a class="reference external" href="https://en.wikipedia.org/wiki/Iris_flower_data_set">ページ</a> があるくらいです。アイリスデータセットはデータサイエンティストにはよく知られていますが、記憶を呼び覚ますために簡単に紹介します。比較のために、まず量子モデルに対応する古典的なモデルを学習します。</p>
+<p>では、さっそく始めましょう：</p>
+<ul class="simple">
+<li><p>まず、データセットをロードし、それがどのように見えるかを探ります。</p></li>
+<li><p>次に、<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> の <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html">SVC</a> を使って古典的なモデルを学習し、古典的な手法で分類問題がどの程度解決できるかを見てみましょう。</p></li>
+<li><p>その後、Variational Quantum Classifier(VQC) を紹介します。</p></li>
+<li><p>最後に、両方のモデルから得られた結果を比較します。</p></li>
+</ul>
+<section id="1.-データ分析の探索">
+<h2>1. データ分析の探索<a class="headerlink" href="#1.-データ分析の探索" title="この見出しへのパーマリンク">#</a></h2>
+<p>まず、このチュートリアルで使用するアイリスのデータセットを調べて、何が含まれているかを見てみましょう。便宜上、この <a class="reference external" href="https://scikit-learn.org/stable/datasets/toy_dataset.html#iris-dataset">データセット</a> は scikit-learn で利用可能で、簡単にロードすることができます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+
+<span class="n">iris_data</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">load_iris</span></code> 関数でパラメーターを指定しなかった場合、辞書のようなオブジェクトが scikit-learn によって返されます。データセットの記述を出力して、中身を見てみましょう。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">iris_data</span><span class="o">.</span><span class="n">DESCR</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+.. _iris_dataset:
+
+Iris plants dataset
+--------------------
+
+**Data Set Characteristics:**
+
+    :Number of Instances: 150 (50 in each of three classes)
+    :Number of Attributes: 4 numeric, predictive attributes and the class
+    :Attribute Information:
+        - sepal length in cm
+        - sepal width in cm
+        - petal length in cm
+        - petal width in cm
+        - class:
+                - Iris-Setosa
+                - Iris-Versicolour
+                - Iris-Virginica
+
+    :Summary Statistics:
+
+    ============== ==== ==== ======= ===== ====================
+                    Min  Max   Mean    SD   Class Correlation
+    ============== ==== ==== ======= ===== ====================
+    sepal length:   4.3  7.9   5.84   0.83    0.7826
+    sepal width:    2.0  4.4   3.05   0.43   -0.4194
+    petal length:   1.0  6.9   3.76   1.76    0.9490  (high!)
+    petal width:    0.1  2.5   1.20   0.76    0.9565  (high!)
+    ============== ==== ==== ======= ===== ====================
+
+    :Missing Attribute Values: None
+    :Class Distribution: 33.3% for each of 3 classes.
+    :Creator: R.A. Fisher
+    :Donor: Michael Marshall (MARSHALL%PLU@io.arc.nasa.gov)
+    :Date: July, 1988
+
+The famous Iris database, first used by Sir R.A. Fisher. The dataset is taken
+from Fisher&#39;s paper. Note that it&#39;s the same as in R, but not as in the UCI
+Machine Learning Repository, which has two wrong data points.
+
+This is perhaps the best known database to be found in the
+pattern recognition literature.  Fisher&#39;s paper is a classic in the field and
+is referenced frequently to this day.  (See Duda &amp; Hart, for example.)  The
+data set contains 3 classes of 50 instances each, where each class refers to a
+type of iris plant.  One class is linearly separable from the other 2; the
+latter are NOT linearly separable from each other.
+
+.. topic:: References
+
+   - Fisher, R.A. &#34;The use of multiple measurements in taxonomic problems&#34;
+     Annual Eugenics, 7, Part II, 179-188 (1936); also in &#34;Contributions to
+     Mathematical Statistics&#34; (John Wiley, NY, 1950).
+   - Duda, R.O., &amp; Hart, P.E. (1973) Pattern Classification and Scene Analysis.
+     (Q327.D83) John Wiley &amp; Sons.  ISBN 0-471-22361-1.  See page 218.
+   - Dasarathy, B.V. (1980) &#34;Nosing Around the Neighborhood: A New System
+     Structure and Classification Rule for Recognition in Partially Exposed
+     Environments&#34;.  IEEE Transactions on Pattern Analysis and Machine
+     Intelligence, Vol. PAMI-2, No. 1, 67-71.
+   - Gates, G.W. (1972) &#34;The Reduced Nearest Neighbor Rule&#34;.  IEEE Transactions
+     on Information Theory, May 1972, 431-433.
+   - See also: 1988 MLC Proceedings, 54-64.  Cheeseman et al&#34;s AUTOCLASS II
+     conceptual clustering system finds 3 classes in the data.
+   - Many, many more ...
+</pre></div></div>
+</div>
+<p>このデータセットの説明から、いくつかの興味深い点を見出すことができます。</p>
+<ul class="simple">
+<li><p>データセットには150のサンプル(インスタンス) があります。</p></li>
+<li><p>各サンプルには4つの特徴量 (属性) があります。</p></li>
+<li><p>データセットには3つのラベル(クラス) があります。</p></li>
+<li><p>各クラスに同じ数のサンプル(50) があるため、データセットは完全にバランスが取れています。</p></li>
+<li><p>例えば、がくの長さ(sepal width)は <span class="math notranslate nohighlight">\([4.3, 7.9]\)</span> 、花弁の幅(petal width)は <span class="math notranslate nohighlight">\([0.1, 2.5]\)</span> というように、特徴量が正規化されておらず、値の範囲も異なっていることが分かります。そこで、特徴量を同じスケールに変換することが有効な場合があります。</p></li>
+<li><p>上の表にあるように、いくつかのケースでは特徴量とクラスの相関が非常に高く、このことから、我々のモデルはデータセットにうまく対応できるはずだと思われるかもしれません。</p></li>
+</ul>
+<p>今回はデータセットの説明だけを調べましたが、 <code class="docutils literal notranslate"><span class="pre">iris_data</span></code> オブジェクトにはその他のプロパティも用意されています。それでは、データセットに含まれる特徴量とラベルを操作してみましょう。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">features</span> <span class="o">=</span> <span class="n">iris_data</span><span class="o">.</span><span class="n">data</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">iris_data</span><span class="o">.</span><span class="n">target</span>
+</pre></div>
+</div>
+</div>
+<p>まず、特徴量を正規化します。つまり、すべての特徴量を同じ尺度で表現するために、簡単な変換を行います。この例では、すべての特徴量を区間 <span class="math notranslate nohighlight">\([0, 1]\)</span> に絞り込みます。正規化は機械学習において一般的な手法であり、しばしばアルゴリズムの数値的安定性や収束性を向上させることにつながります。</p>
+<p>Scikit-learn の <code class="docutils literal notranslate"><span class="pre">MinMaxScaler</span></code> を使用して、この処理を行うことができます。これはパラメーターを指定せずに、必要なことだけを行うもので、データを <span class="math notranslate nohighlight">\([0, 1]\)</span> にマップします。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>では、データがどのように見えるか見てみましょう。特徴量を対にしてプロットし、それらの間に観測可能な相関があるかどうかを確認します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">iris_data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">iris_data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">iris_data</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">pairplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;tab10&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;seaborn.axisgrid.PairGrid at 0x1c92dbc4188&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_9_1.png" src="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_9_1.png" />
+</div>
+</div>
+<p>プロットから、クラス <code class="docutils literal notranslate"><span class="pre">0</span></code> と他の2つのクラスは容易に分離可能であることがわかりますが、クラス <code class="docutils literal notranslate"><span class="pre">1</span></code> と <code class="docutils literal notranslate"><span class="pre">2</span></code> は、特に「がくの幅（sepal width）」の特徴に関して、時々絡み合っていることがわかります。</p>
+<p>次に、古典的な機械学習がこのデータセットをどのように扱うか見てみましょう。</p>
+</section>
+<section id="2.-古典的な機械学習モデルの学習">
+<h2>2. 古典的な機械学習モデルの学習<a class="headerlink" href="#2.-古典的な機械学習モデルの学習" title="この見出しへのパーマリンク">#</a></h2>
+<p>モデルを学習する前に、データセットをトレーニングデータセットとテストデータセットの2つに分ける必要があります。前者はモデルの学習に、後者は未知のデータに対してモデルがどの程度の性能を発揮するかを検証するために使います。</p>
+<p>いつものように、退屈な仕事はscikit-learnにお願いすることにします。また、結果が再現できるようにseedを固定します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+
+<span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">123</span>
+<span class="n">train_features</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_labels</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Scikit-learnの古典的なサポートベクター分類器を学習させます。簡単のため、パラメーターはいじらず、デフォルトの値を使用します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+
+<span class="n">svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>  <span class="c1"># suppress printing the return value</span>
+</pre></div>
+</div>
+</div>
+<p>ここで、我々の古典的なモデルがどの程度のパフォーマンスを示すかを確認します。結論の部分でそのスコアを分析します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_score_c4</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">test_score_c4</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classical SVC on the training dataset: </span><span class="si">{</span><span class="n">train_score_c4</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classical SVC on the test dataset:     </span><span class="si">{</span><span class="n">test_score_c4</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Classical SVC on the training dataset: 0.99
+Classical SVC on the test dataset:     0.97
+</pre></div></div>
+</div>
+<p>スコアからわかるように、古典的なSVCアルゴリズムは非常に良いパフォーマンスを見せています。次は、量子機械学習モデルについてです。</p>
+</section>
+<section id="2.-量子機械学習モデルの学習">
+<h2>2. 量子機械学習モデルの学習<a class="headerlink" href="#2.-量子機械学習モデルの学習" title="この見出しへのパーマリンク">#</a></h2>
+<p>量子モデルの例として、変分量子分類器(VQC) を学習します。VQCは Qiskit Machine Learning で利用できる最もシンプルな分類器であり、古典的な機械学習のバックグラウンドを持つ量子機械学習初心者に適した出発点です。</p>
+<p>しかし、モデルを学習する前に、<code class="docutils literal notranslate"><span class="pre">VQC</span></code> クラスを構成するものを調べてみましょう。その中心的な要素は特徴量マップとansatzです。これらが何かを説明します。</p>
+<p>私たちのデータは古典的なもので、量子ビットではなくビットの集合で構成されています。データを量子ビットとして符号化する方法が必要なのです。このプロセスは、有効な量子モデルを得るために非常に重要です。我々は通常、このマッピングをデータエンコーディング、データエンベッディング、データローディングと呼び、これが特徴量マップの役割となります。特徴量マップは一般的なMLメカニズムですが、この量子状態へのデータロードのプロセスは、古典的な世界でのみ作用するため、古典的な機械学習には登場しません。</p>
+<p>データを読み込んだら、すぐにパラメーター化された量子回路を適用しなければなりません。この回路は、古典的なニューラルネットワークの層と直接的に類似しています。この回路は、調整可能なパラメーター（重み）を持っています。重みは、ある目的関数を最小化するように最適化されます。この目的関数は、予測値と既知のラベル付けされたデータとの距離を特徴づけます。パラメーター化された量子回路は、パラメーター化された試行状態、変分形式、ansatzとも呼ばれます。おそらく、後者が最も広く用いられている用語でしょう。</p>
+<p>詳しくは、 <a class="reference external" href="https://learn.qiskit.org/course/machine-learning">量子機械学習のコース</a> をご覧ください。</p>
+<p>ここでは <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code> を使用することにします。 <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code> はQiskitのcircuit ライブラリーに含まれる標準的な特徴量マップの一つです。 <code class="docutils literal notranslate"><span class="pre">num_features</span></code> を <code class="docutils literal notranslate"><span class="pre">feature_dimension</span></code> として渡すと、特徴量マップは <code class="docutils literal notranslate"><span class="pre">num_features</span></code> または <code class="docutils literal notranslate"><span class="pre">4</span></code> 個の量子ビットを持つことになります。</p>
+<p>特徴量マップをゲートに分解し、特徴量マップがどのように見えるかを伝えます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">ZZFeatureMap</span>
+
+<span class="n">num_features</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">feature_map</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_17_0.png" src="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_17_0.png" />
+</div>
+</div>
+<p>特徴量ダイアグラムをよく見ると、パラメーター <code class="docutils literal notranslate"><span class="pre">x[0],</span> <span class="pre">...,</span> <span class="pre">x[3]</span></code> が見えます。これらは、特徴量のプレースホルダーです。</p>
+<p>Ansatzを作成してプロットします。Ansatz回路の反復構造に注意してください。 これらの繰り返しの数は <code class="docutils literal notranslate"><span class="pre">reps</span></code> パラメーターを使用して定義します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">RealAmplitudes</span>
+
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">RealAmplitudes</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ansatz</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_19_0.png" src="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_19_0.png" />
+</div>
+</div>
+<p>この回路には16個のパラメーターがあり、そのパラメーターには <code class="docutils literal notranslate"><span class="pre">θ[0],</span> <span class="pre">...,</span> <span class="pre">θ[15]</span></code> があります。これらは分類器の訓練可能な重みです。</p>
+<p>次に、学習プロセスで使用する最適化アルゴリズムを選択します。このステップは、古典的な深層学習フレームワークで見られるものと似ています。学習プロセスを高速化するために、勾配なしオプティマイザーを選択します。Qiskitで利用可能な他のオプティマイザーを探索することもできます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>次のステップでは、分類器をどこで学習させるかを定義します。学習にはシミュレーターと実物の量子コンピューターがあります。ここでは、シミュレーターを使用します。 <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> primitiveのインスタンスを作成します。これは状態ベクトルベースのリファレンス実装です。qiskitのruntimeサービスを使用すると、量子コンピューターを使ったsamplerを作成することができます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>ここでは、<code class="docutils literal notranslate"><span class="pre">callback_graph</span></code> というコールバック関数を追加します。VQCは目的関数を評価するたびに、現在の重みとその重みにおける目的関数の値という2つのパラメーターを指定して、この関数を呼び出します。コールバックは目的関数の値を配列に追加し、反復計算を目的関数の値に対してプロットできるようにします。コールバックは各反復ごとにプロットを更新します。コールバック関数の内部では、先ほど説明した2パラメーターのシグネチャーを持つ限り、どんなことでもできることに注意してください。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">clear_output</span>
+
+<span class="n">objective_func_vals</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">callback_graph</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">obj_func_eval</span><span class="p">):</span>
+    <span class="n">clear_output</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">objective_func_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj_func_eval</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Objective function value against iteration&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Iteration&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Objective function value&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objective_func_vals</span><span class="p">)),</span> <span class="n">objective_func_vals</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>これで、分類器を構築し、適合させる準備が整いました。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VQC</span></code> は、「変分量子分類器」の略称です。特徴量とansatzを受け取り、量子ニューラルネットワークを自動的に構築します。最も単純なケースでは、量子ビットの数と量子インスタンスを渡すだけで、有効な分類器を構築することができます。 <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> パラメーターを省略することも可能です。この場合、先ほど作成した方法で <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> インスタンスが作成されます。ここでは、説明のために手動で作成しました。</p>
+<p>学習には時間がかかる場合があります。少しお待ちください。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms.classifiers</span> <span class="kn">import</span> <span class="n">VQC</span>
+
+<span class="n">vqc</span> <span class="o">=</span> <span class="n">VQC</span><span class="p">(</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
+    <span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span>
+    <span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">callback_graph</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># clear objective value history</span>
+<span class="n">objective_func_vals</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training time: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">elapsed</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_27_0.png" src="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_27_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Training time: 303 seconds
+</pre></div></div>
+</div>
+<p>それでは、量子モデルが実際のデータセットでどのようなパフォーマンスを発揮するのか見てみましょう。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_score_q4</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">test_score_q4</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quantum VQC on the training dataset: </span><span class="si">{</span><span class="n">train_score_q4</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quantum VQC on the test dataset:     </span><span class="si">{</span><span class="n">test_score_q4</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Quantum VQC on the training dataset: 0.85
+Quantum VQC on the test dataset:     0.87
+</pre></div></div>
+</div>
+<p>見ての通り、スコアは高く、このモデルを使って未見のデータに対するラベルを予測することが可能です。</p>
+<p>では、さらに良いモデルを得るために、どのようなチューニングをすればよいのかを見ていきましょう。</p>
+<ul class="simple">
+<li><p>重要な構成要素は、特徴量マップとansatzです。パラメーターを調整することができます。この例では、回路に追加するゲートパターンの繰り返しを指定する <code class="docutils literal notranslate"><span class="pre">reps</span></code> パラメーターを変更することができます。この値を大きくすると、より多くのエンタングルメント演算が行われるようになり、パラメーターも多くなります。このように、モデルはより柔軟になりますが、パラメーターが多くなることで複雑さが増し、モデルのトレーニングに時間がかかるのが一般的です。さらに、モデルをオーバーフィットさせてしまう可能性もあります。 <a class="reference external" href="https://qiskit.org/documentation/apidoc/circuit_library.html#n-local-circuits">Qiskit circuit library</a> で利用可能な他の特徴量マップやansatzを試すこともできますし、カスタム回路を考え出すこともできます。</p></li>
+<li><p>他のオプティマイザーを試してみるのもよいでしょう。Qiskitには色々なオプティマイザーがあります。その中には勾配がないものもあれば、そうでないものもあります。例えば <code class="docutils literal notranslate"><span class="pre">L_BFGS_B</span></code> のような勾配ベースのオプティマイザーを選択した場合、トレーニング時間が増加することが予想されます。目的関数に加えて、これらのオプティマイザーは学習パラメーターに関して勾配を評価する必要があり、これは反復あたりの回路実行数の増加につながります。</p></li>
+<li><p>もう一つの方法は、ランダムに（または決定論的に） <code class="docutils literal notranslate"><span class="pre">initial_point</span></code> をサンプリングし、何度もモデルを適合させることです。</p></li>
+</ul>
+<p>しかし、データセットに含まれる素性が、最新の量子コンピューターが処理できる量よりも多い場合はどうでしょうか。この例では、データセットの特徴量と同じ数の量子ビットを用意しましたが、必ずしもそうではないかもしれません。</p>
+</section>
+<section id="4.-特徴量の数の削減">
+<h2>4. 特徴量の数の削減<a class="headerlink" href="#4.-特徴量の数の削減" title="この見出しへのパーマリンク">#</a></h2>
+<p>このセクションでは、データセットの特徴量数を減らし、再度モデルを学習します。今回は、最初のPCA変換を行う以外は同じステップなので、より速く進めます。</p>
+<p>4つの特徴量を2つの特徴量のみに変換します。この次元削減は教育的な目的のために行うのであり、前節で見たように、データセットの4つの特徴量を全て使って量子モデルを学習することができます。</p>
+<p>さて、この2つの特徴量を1つの図に簡単にプロットすることができます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">hue</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;tab10&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_31_1.png" src="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_31_1.png" />
+</div>
+</div>
+<p>いつものように、まずデータセットを分割し、次に古典的なモデルを当てはめます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_features</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_labels</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span>
+<span class="p">)</span>
+
+<span class="n">svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+
+<span class="n">train_score_c2</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">test_score_c2</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classical SVC on the training dataset: </span><span class="si">{</span><span class="n">train_score_c2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classical SVC on the test dataset:     </span><span class="si">{</span><span class="n">test_score_c2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Classical SVC on the training dataset: 0.97
+Classical SVC on the test dataset:     0.90
+</pre></div></div>
+</div>
+<p>結果はまだ良いのですが、最初のバージョンと比べると若干悪くなっています。量子モデルがそれらをどのように扱うか見てみましょう。量子ビットが2つになったので、特徴量マップとAnsatzを作り直さなければなりません。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_features</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">RealAmplitudes</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>また、最適化プロセスを実行する反復回数の最大値を減らしました。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>ここで、新しいパラメーターから量子分類器を構築し、学習させます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vqc</span> <span class="o">=</span> <span class="n">VQC</span><span class="p">(</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
+    <span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span>
+    <span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">callback_graph</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># clear objective value history</span>
+<span class="n">objective_func_vals</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># make the objective function plot look nicer.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training time: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">elapsed</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_39_0.png" src="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_39_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Training time: 58 seconds
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_score_q2_ra</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">test_score_q2_ra</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quantum VQC on the training dataset using RealAmplitudes: </span><span class="si">{</span><span class="n">train_score_q2_ra</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quantum VQC on the test dataset using RealAmplitudes:     </span><span class="si">{</span><span class="n">test_score_q2_ra</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Quantum VQC on the training dataset using RealAmplitudes: 0.58
+Quantum VQC on the test dataset using RealAmplitudes:     0.63
+</pre></div></div>
+</div>
+<p>さて、スコアは公平なコイントスよりも高いのですが、もっと良くなる可能性があります。目的関数は最後に向かってほぼフラットです。つまり、反復回数を増やしても、モデルの性能は変わらないということです。別のansatzで何ができるかを見てみましょう。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">EfficientSU2</span>
+
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">EfficientSU2</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+
+<span class="n">vqc</span> <span class="o">=</span> <span class="n">VQC</span><span class="p">(</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
+    <span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span>
+    <span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">callback_graph</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># clear objective value history</span>
+<span class="n">objective_func_vals</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training time: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">elapsed</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_42_0.png" src="../_images/tutorials_02a_training_a_quantum_model_on_a_real_dataset_42_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Training time: 74 seconds
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_score_q2_eff</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">test_score_q2_eff</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quantum VQC on the training dataset using EfficientSU2: </span><span class="si">{</span><span class="n">train_score_q2_eff</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quantum VQC on the test dataset using EfficientSU2:     </span><span class="si">{</span><span class="n">test_score_q2_eff</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Quantum VQC on the training dataset using EfficientSU2: 0.78
+Quantum VQC on the test dataset using EfficientSU2:     0.80
+</pre></div></div>
+</div>
+<p>スコアは前回の設定よりも良くなっています。おそらく、もっと反復回数を増やせば、さらに良い結果が得られると思います。</p>
+</section>
+<section id="5.-結論">
+<h2>5. 結論<a class="headerlink" href="#5.-結論" title="この見出しへのパーマリンク">#</a></h2>
+<p>このチュートリアルでは、2つの古典的なモデルと3つの量子機械学習モデルを構築しました。結果とともに全体的な表を出力してみます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model                           | Test Score | Train Score&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SVC, 4 features                 | </span><span class="si">{</span><span class="n">train_score_c4</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">test_score_c4</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VQC, 4 features, RealAmplitudes | </span><span class="si">{</span><span class="n">train_score_q4</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">test_score_q4</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;----------------------------------------------------------&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SVC, 2 features                 | </span><span class="si">{</span><span class="n">train_score_c2</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">test_score_c2</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VQC, 2 features, RealAmplitudes | </span><span class="si">{</span><span class="n">train_score_q2_ra</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">test_score_q2_ra</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VQC, 2 features, EfficientSU2   | </span><span class="si">{</span><span class="n">train_score_q2_eff</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">test_score_q2_eff</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model                           | Test Score | Train Score
+SVC, 4 features                 |       0.99 |       0.97
+VQC, 4 features, RealAmplitudes |       0.85 |       0.87
+----------------------------------------------------------
+SVC, 2 features                 |       0.97 |       0.90
+VQC, 2 features, RealAmplitudes |       0.58 |       0.63
+VQC, 2 features, EfficientSU2   |       0.78 |       0.80
+</pre></div></div>
+</div>
+<p>当然ながら、古典的なモデルの方が量子的なモデルよりも性能が良いです。古典的なMLは長い道のりを歩んできており、量子MLはまだそのレベルに到達していないのです。見ての通り、我々は古典的なサポートベクターマシンを使って最高の結果を得ました。しかし、4つの特徴量で学習させた量子モデルも非常に良い結果でした。しかし、特徴量の数を減らすと、予想通り全てのモデルの性能が落ちました。ですから、もしリソースが許すのであれば、全特徴を持つデータセットでモデルを学習させるべきでしょう。そうでない場合は、データセットサイズ、学習時間、スコアの間で妥協することになるかもしれません。</p>
+<p>もう一つの観察は、単純なAnsatzの変更でさえ、より良い結果につながるということです。 <code class="docutils literal notranslate"><span class="pre">EfficientSU2</span></code> ansatz を用いた2成分モデルは、 <code class="docutils literal notranslate"><span class="pre">RealAmplitudes</span></code> を用いたモデルよりも良好な結果を得ることができました。つまり、量子MLでも古典MLと同様にハイパーパラメーターの選択が重要であり、最適なハイパーパラメーターを探索するには長い時間がかかる可能性があります。古典的なMLと同じ手法、例えばランダム/グリッドや、より洗練されたアプローチを適用することができます。</p>
+<p>この簡単なチュートリアルで、あなたが古典から量子MLへと飛躍することを期待しています。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">qiskit.tools.jupyter</span>
+
+<span class="o">%</span><span class="k">qiskit_version_table</span>
+<span class="o">%</span><span class="k">qiskit_copyright</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>Version Information</h3><table><tr><th>Qiskit Software</th><th>Version</th></tr><tr><td><code>qiskit-terra</code></td><td>0.22.0</td></tr><tr><td><code>qiskit-aer</code></td><td>0.11.0</td></tr><tr><td><code>qiskit-ignis</code></td><td>0.7.0</td></tr><tr><td><code>qiskit</code></td><td>0.33.0</td></tr><tr><td><code>qiskit-machine-learning</code></td><td>0.5.0</td></tr><tr><th>System information</th></tr><tr><td>Python version</td><td>3.7.9</td></tr><tr><td>Python compiler</td><td>MSC v.1916 64 bit (AMD64)</td></tr><tr><td>Python build</td><td>default, Aug 31 2020 17:10:11</td></tr><tr><td>OS</td><td>Windows</td></tr><tr><td>CPUs</td><td>4</td></tr><tr><td>Memory (Gb)</td><td>31.837730407714844</td></tr><tr><td colspan='2'>Fri Oct 14 14:33:06 2022 GMT Daylight Time</td></tr></table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of Qiskit</h3><p>&copy; Copyright IBM 2017, 2022.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+  <script>
+    function userFeedbackClicked(ctaType) {
+      document.getElementById('qiskit-analytics-thank-you').style.visibility = 'visible';
+      window.trackCta(`Helpful - ${ctaType}`);
+    }
+  </script>
+    <div class="qiskit-analytics-container">
+      <div>Was this page helpful?</div>
+      <a onclick="userFeedbackClicked('yes')">Yes</a>
+      <a onclick="userFeedbackClicked('no')">No</a>
+      <div id="qiskit-analytics-thank-you">Thank you!</div>
+    </div>
+<div class="related-pages">
+          <a class="next-page" href="03_quantum_kernel.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">量子カーネル法機械学習</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="02_neural_network_classifier_and_regressor.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">ニューラル・ネットワーク分類器と回帰器</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">実際のデータセットでの量子モデルの学習</a><ul>
+<li><a class="reference internal" href="#1.-データ分析の探索">1. データ分析の探索</a></li>
+<li><a class="reference internal" href="#2.-古典的な機械学習モデルの学習">2. 古典的な機械学習モデルの学習</a></li>
+<li><a class="reference internal" href="#2.-量子機械学習モデルの学習">2. 量子機械学習モデルの学習</a></li>
+<li><a class="reference internal" href="#4.-特徴量の数の削減">4. 特徴量の数の削減</a></li>
+<li><a class="reference internal" href="#5.-結論">5. 結論</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f72cd71f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

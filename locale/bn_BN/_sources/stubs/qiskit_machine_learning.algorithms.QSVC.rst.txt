@@ -1,0 +1,50 @@
+﻿
+
+QSVC
+=======================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: QSVC
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: QSVC.coef_
+   .. autoattribute:: QSVC.n_support_
+   .. autoattribute:: QSVC.probA_
+   .. autoattribute:: QSVC.probB_
+   .. autoattribute:: QSVC.quantum_kernel
+   .. autoattribute:: QSVC.unused_param
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: QSVC.decision_function
+   .. automethod:: QSVC.fit
+   .. automethod:: QSVC.get_metadata_routing
+   .. automethod:: QSVC.get_params
+   .. automethod:: QSVC.load
+   .. automethod:: QSVC.predict
+   .. automethod:: QSVC.predict_log_proba
+   .. automethod:: QSVC.predict_proba
+   .. automethod:: QSVC.save
+   .. automethod:: QSVC.score
+   .. automethod:: QSVC.set_fit_request
+   .. automethod:: QSVC.set_params
+   .. automethod:: QSVC.set_score_request
+
+   
+   

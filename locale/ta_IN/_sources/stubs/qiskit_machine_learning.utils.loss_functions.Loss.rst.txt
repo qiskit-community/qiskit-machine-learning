@@ -1,0 +1,28 @@
+﻿
+
+Loss
+=================================================
+
+.. currentmodule:: qiskit_machine_learning.utils.loss_functions
+
+.. autoclass:: Loss
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: Loss.evaluate
+   .. automethod:: Loss.gradient
+
+   
+   

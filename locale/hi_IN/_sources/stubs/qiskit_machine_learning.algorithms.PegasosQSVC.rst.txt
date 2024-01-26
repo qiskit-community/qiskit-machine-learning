@@ -1,0 +1,42 @@
+﻿
+
+PegasosQSVC
+==============================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: PegasosQSVC
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: PegasosQSVC.FITTED
+   .. autoattribute:: PegasosQSVC.UNFITTED
+   .. autoattribute:: PegasosQSVC.num_steps
+   .. autoattribute:: PegasosQSVC.precomputed
+   .. autoattribute:: PegasosQSVC.quantum_kernel
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: PegasosQSVC.decision_function
+   .. automethod:: PegasosQSVC.fit
+   .. automethod:: PegasosQSVC.load
+   .. automethod:: PegasosQSVC.predict
+   .. automethod:: PegasosQSVC.save
+   .. automethod:: PegasosQSVC.score
+
+   
+   

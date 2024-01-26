@@ -1,0 +1,47 @@
+﻿
+
+VQR
+======================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: VQR
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: VQR.ansatz
+   .. autoattribute:: VQR.callback
+   .. autoattribute:: VQR.feature_map
+   .. autoattribute:: VQR.fit_result
+   .. autoattribute:: VQR.initial_point
+   .. autoattribute:: VQR.loss
+   .. autoattribute:: VQR.neural_network
+   .. autoattribute:: VQR.num_qubits
+   .. autoattribute:: VQR.optimizer
+   .. autoattribute:: VQR.warm_start
+   .. autoattribute:: VQR.weights
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: VQR.fit
+   .. automethod:: VQR.load
+   .. automethod:: VQR.predict
+   .. automethod:: VQR.save
+   .. automethod:: VQR.score
+
+   
+   

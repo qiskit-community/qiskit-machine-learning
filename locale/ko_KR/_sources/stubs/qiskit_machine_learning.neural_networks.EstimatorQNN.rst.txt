@@ -1,0 +1,42 @@
+﻿
+
+EstimatorQNN
+====================================================
+
+.. currentmodule:: qiskit_machine_learning.neural_networks
+
+.. autoclass:: EstimatorQNN
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: EstimatorQNN.circuit
+   .. autoattribute:: EstimatorQNN.input_gradients
+   .. autoattribute:: EstimatorQNN.input_params
+   .. autoattribute:: EstimatorQNN.num_inputs
+   .. autoattribute:: EstimatorQNN.num_weights
+   .. autoattribute:: EstimatorQNN.observables
+   .. autoattribute:: EstimatorQNN.output_shape
+   .. autoattribute:: EstimatorQNN.sparse
+   .. autoattribute:: EstimatorQNN.weight_params
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: EstimatorQNN.backward
+   .. automethod:: EstimatorQNN.forward
+
+   
+   

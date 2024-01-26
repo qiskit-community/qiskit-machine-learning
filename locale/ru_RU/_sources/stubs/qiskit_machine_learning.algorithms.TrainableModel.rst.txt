@@ -1,0 +1,44 @@
+﻿
+
+TrainableModel
+=================================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: TrainableModel
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: TrainableModel.callback
+   .. autoattribute:: TrainableModel.fit_result
+   .. autoattribute:: TrainableModel.initial_point
+   .. autoattribute:: TrainableModel.loss
+   .. autoattribute:: TrainableModel.neural_network
+   .. autoattribute:: TrainableModel.optimizer
+   .. autoattribute:: TrainableModel.warm_start
+   .. autoattribute:: TrainableModel.weights
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: TrainableModel.fit
+   .. automethod:: TrainableModel.load
+   .. automethod:: TrainableModel.predict
+   .. automethod:: TrainableModel.save
+   .. automethod:: TrainableModel.score
+
+   
+   

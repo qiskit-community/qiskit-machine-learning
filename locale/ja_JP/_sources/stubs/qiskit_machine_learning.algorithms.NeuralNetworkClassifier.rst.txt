@@ -1,0 +1,45 @@
+﻿
+
+NeuralNetworkClassifier
+==========================================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: NeuralNetworkClassifier
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: NeuralNetworkClassifier.callback
+   .. autoattribute:: NeuralNetworkClassifier.fit_result
+   .. autoattribute:: NeuralNetworkClassifier.initial_point
+   .. autoattribute:: NeuralNetworkClassifier.loss
+   .. autoattribute:: NeuralNetworkClassifier.neural_network
+   .. autoattribute:: NeuralNetworkClassifier.num_classes
+   .. autoattribute:: NeuralNetworkClassifier.optimizer
+   .. autoattribute:: NeuralNetworkClassifier.warm_start
+   .. autoattribute:: NeuralNetworkClassifier.weights
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: NeuralNetworkClassifier.fit
+   .. automethod:: NeuralNetworkClassifier.load
+   .. automethod:: NeuralNetworkClassifier.predict
+   .. automethod:: NeuralNetworkClassifier.save
+   .. automethod:: NeuralNetworkClassifier.score
+
+   
+   

@@ -1,0 +1,37 @@
+﻿
+
+LocalEffectiveDimension
+===============================================================
+
+.. currentmodule:: qiskit_machine_learning.neural_networks
+
+.. autoclass:: LocalEffectiveDimension
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: LocalEffectiveDimension.input_samples
+   .. autoattribute:: LocalEffectiveDimension.weight_samples
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: LocalEffectiveDimension.get_effective_dimension
+   .. automethod:: LocalEffectiveDimension.get_fisher_information
+   .. automethod:: LocalEffectiveDimension.get_normalized_fisher
+   .. automethod:: LocalEffectiveDimension.run_monte_carlo
+
+   
+   

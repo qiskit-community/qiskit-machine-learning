@@ -1,0 +1,43 @@
+﻿
+
+SamplerQNN
+==================================================
+
+.. currentmodule:: qiskit_machine_learning.neural_networks
+
+.. autoclass:: SamplerQNN
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: SamplerQNN.circuit
+   .. autoattribute:: SamplerQNN.input_gradients
+   .. autoattribute:: SamplerQNN.input_params
+   .. autoattribute:: SamplerQNN.interpret
+   .. autoattribute:: SamplerQNN.num_inputs
+   .. autoattribute:: SamplerQNN.num_weights
+   .. autoattribute:: SamplerQNN.output_shape
+   .. autoattribute:: SamplerQNN.sparse
+   .. autoattribute:: SamplerQNN.weight_params
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: SamplerQNN.backward
+   .. automethod:: SamplerQNN.forward
+   .. automethod:: SamplerQNN.set_interpret
+
+   
+   

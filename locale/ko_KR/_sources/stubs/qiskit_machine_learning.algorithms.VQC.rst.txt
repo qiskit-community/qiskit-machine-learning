@@ -1,0 +1,49 @@
+﻿
+
+VQC
+======================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: VQC
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: VQC.ansatz
+   .. autoattribute:: VQC.callback
+   .. autoattribute:: VQC.circuit
+   .. autoattribute:: VQC.feature_map
+   .. autoattribute:: VQC.fit_result
+   .. autoattribute:: VQC.initial_point
+   .. autoattribute:: VQC.loss
+   .. autoattribute:: VQC.neural_network
+   .. autoattribute:: VQC.num_classes
+   .. autoattribute:: VQC.num_qubits
+   .. autoattribute:: VQC.optimizer
+   .. autoattribute:: VQC.warm_start
+   .. autoattribute:: VQC.weights
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: VQC.fit
+   .. automethod:: VQC.load
+   .. automethod:: VQC.predict
+   .. automethod:: VQC.save
+   .. automethod:: VQC.score
+
+   
+   

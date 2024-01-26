@@ -1,0 +1,1494 @@
+<!doctype html>
+<html class="no-js" lang="ta-IN">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="பெகாசோஸ் குவாண்டம் ஆதரவு திசையன் வகைப்படுத்தி" href="07_pegasos_qsvc.html" /><link rel="prev" title="PyTorch qGAN செயல்படுத்தல்" href="04_torch_qgan.html" />
+
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+        <title>டார்ச் இணைப்பான் மற்றும் கலப்பின QNN கள் - Qiskit Machine Learning 0.7.1</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fd506691" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="../_static/js/web-components/top-nav-bar.js"></script>
+<script>
+  (function () {
+    window._analytics = {
+      segment_key: 'ffdYLviQze3kzomaINXNk6NwpY9LlXcw',
+      coremetrics: false,
+      optimizely: false,
+      googleAddServices: false,
+      fullStory: false,
+      autoPageEventSpa: false,
+      autoFormEvents: false,
+      autoPageView: false
+    }
+
+    window.digitalData = {
+      page: {
+        pageInfo: {
+          productTitle: 'IBM Q Experience',
+          analytics: {
+            category: 'Qiskit.org'
+          }
+        }
+      }
+    }
+  }());
+</script>
+<script src="https://cloud.ibm.com/analytics/build/bluemix-analytics.min.js"></script>
+<script>
+  (function () {
+    'use strict'
+
+    if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+    const category = window.digitalData.page.pageInfo.analytics.category
+    const productTitle = window.digitalData.page.pageInfo.productTitle
+    const routeName = 'documentation'
+
+    window.bluemixAnalytics.pageEvent(category, routeName, {
+      navigationType: 'pushState',
+      productTitle: productTitle,
+      title: document.title
+    })
+
+    window.trackCta = (action) => {
+      if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+      const category = window.digitalData.page.pageInfo.analytics.category
+      const productTitle = window.digitalData.page.pageInfo.productTitle
+
+      window.bluemixAnalytics.trackEvent('CTA Clicked', {
+        productTitle,
+        category,
+        CTA: action
+      })
+    }
+
+  }());
+</script></head>
+  <body>
+    
+    <script>document.body.dataset.theme = "light";</script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM4,6H20V26H4ZM28,26H22V6h6Z"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <rect x="4" y="6" width="24" height="2"/>
+      <rect x="4" y="24" width="24" height="2"/>
+      <rect x="4" y="12" width="24" height="2"/>
+      <rect x="4" y="18" width="24" height="2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+         viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve"><polygon points="22,16 12,26 10.6,24.6 19.2,16 10.6,7.4 12,6 " stroke="currentColor"/>
+      <rect id="_x3C_Transparent_Rectangle_x3E_" fill="none" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-new-tab" viewBox="0 0 32 32">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs>
+        <style>
+          .cls-1 {
+            fill: none;
+          }
+        </style>
+      </defs>
+      <path fill="#6929C4" d="M26,28H6a2.0027,2.0027,0,0,1-2-2V6A2.0027,2.0027,0,0,1,6,4H16V6H6V26H26V16h2V26A2.0027,2.0027,0,0,1,26,28Z"/>
+      <polygon fill="#6929C4" points="20 2 20 4 26.586 4 18 12.586 19.414 14 28 5.414 28 12 30 12 30 2 20 2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     This project's translations are no longer maintained. See the <a href=https://github.com/qiskit-community/qiskit-translations/tree/main#readme>announcement</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.1</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-brand">
+  <a href="https://www.qiskit.org/ecosystem">
+    <div class="sidebar-logo-container">
+      <img class="sidebar-logo" src="../_static/images/ecosystem-logo.svg" alt="Qiskit Ecosystem logo"/>
+    </div>
+  </a>
+  
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.1</span>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">கண்ணோட்டம்</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">தொடங்குதல்</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">இடம்பெயர்வு வழிகாட்டி</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of இடம்பெயர்வு வழிகாட்டி</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/01_migration_guide_0.5.html">கிஸ்கிட் இயந்திர கற்றல் v0.5 இடம்பெயர்வு வழிகாட்டி</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">பயிற்சிகள்</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of பயிற்சிகள்</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_neural_networks.html">குவாண்டம் நியூரல் நெட்வொர்க்குகள்</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_neural_network_classifier_and_regressor.html">நரம்பியல் நெட்வொர்க் வகைப்படுத்தி &amp; பின்னடைவு</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02a_training_a_quantum_model_on_a_real_dataset.html">உண்மையான தரவுத்தொகுப்பில் குவாண்டம் மாதிரியைப் பயிற்றுவித்தல்</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_quantum_kernel.html">குவாண்டம் கர்னல் இயந்திர வழி கற்றல்</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_torch_qgan.html">PyTorch qGAN செயல்படுத்தல்</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">டார்ச் இணைப்பான் மற்றும் கலப்பின QNN கள்</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_pegasos_qsvc.html">பெகாசோஸ் குவாண்டம் ஆதரவு திசையன் வகைப்படுத்தி</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_quantum_kernel_trainer.html">இயந்திர கற்றல் பயன்பாடுகளுக்கான குவாண்டம் கர்னல் பயிற்சி</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_saving_and_loading_models.html">சேமிப்பு, கிஸ்கிட் இயந்திர கற்றல் மாதிரிகளை ஏற்றுதல் மற்றும் தொடர்ச்சியான பயிற்சி</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">கிஸ்கிட் நரம்பியல் நெட்வொர்க்குகளின் பயனுள்ள பரிமாணம்</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">குவாண்டம் கன்வல்யூஷன் நியூரல் நெட்வொர்க்</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">குவாண்டம் ஆட்டோஎன்கோடர்</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API குறிப்பு</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API குறிப்பு</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../stubs/qiskit_machine_learning.QiskitMachineLearningError.html">QiskitMachineLearningError</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.algorithms.html">Quantum machine learning algorithms (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.algorithms</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Quantum machine learning algorithms (qiskit_machine_learning.algorithms)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.TrainableModel.html">TrainableModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html">ObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.SerializableModelMixin.html">SerializableModelMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html">BinaryObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html">MultiClassObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html">OneHotObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html">PegasosQSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.connectors.TorchConnector.html">TorchConnector</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityStatevectorKernel.html">FidelityStatevectorKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.html">TrainableFidelityStatevectorKernel</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html">QuantumKernelTrainerResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html">EffectiveDimension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html">LocalEffectiveDimension</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">வெளியீட்டு குறிப்புகள்</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning">கிட்ஹப்</a></li>
+</ul>
+
+</div></div><div class="qiskit-translations-container" aria-label="languages">
+  <input id="translations-checkbox" name="translations-checkbox" role="switch" type="checkbox">
+  <div class="qiskit-translations-header-container"><label for="translations-checkbox">
+      <p role="note">Tamil</p>
+      <div class="qiskit-translations-toggle-container">
+        <div class="visually-hidden">Toggle translations list</div>
+        <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+      </div>
+    </label>
+  </div>
+  <div class="qiskit-translations-list-container">
+    <ul>
+      
+        <li><a href="/qiskit-machine-learning/tutorials/05_torch_connector.html">English</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/bn_BN/tutorials/05_torch_connector.html">Bengali</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/fr_FR/tutorials/05_torch_connector.html">French</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/hi_IN/tutorials/05_torch_connector.html">Hindi</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ja_JP/tutorials/05_torch_connector.html">Japanese</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ko_KR/tutorials/05_torch_connector.html">Korean</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ru_RU/tutorials/05_torch_connector.html">Russian</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/es_UN/tutorials/05_torch_connector.html">Spanish</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ta_IN/tutorials/05_torch_connector.html">Tamil</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/tr_TR/tutorials/05_torch_connector.html">Turkish</a></li>
+      
+    </ul>
+  </div>
+  <script>
+    document.querySelectorAll('.version').forEach((element) => {
+      element.addEventListener('click', (evt) => {
+        const hash = window.location.hash;
+        const complete_url = evt.target.href + hash;
+        window.location = complete_url;
+        evt.preventDefault();
+      });
+    });
+  </script>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>இந்தப் பக்கம் <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/05_torch_connector.ipynb">docs/tutorials/05_torch_connector.ipynb</a> இலிருந்து உருவாக்கப்பட்டது.</p>
+</div>
+<section id="டார்ச்-இணைப்பான்-மற்றும்-கலப்பின-QNN-கள்">
+<h1>டார்ச் இணைப்பான் மற்றும் கலப்பின QNN கள்<a class="headerlink" href="#டார்ச்-இணைப்பான்-மற்றும்-கலப்பின-QNN-கள்" title="Permalink to this heading">#</a></h1>
+<p>This tutorial introduces the <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code> class, and demonstrates how it allows for a natural integration of any <code class="docutils literal notranslate"><span class="pre">NeuralNetwork</span></code> from Qiskit Machine Learning into a PyTorch workflow. <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code> takes a <code class="docutils literal notranslate"><span class="pre">NeuralNetwork</span></code> and makes it available as a PyTorch <code class="docutils literal notranslate"><span class="pre">Module</span></code>. The resulting module can be seamlessly incorporated into PyTorch classical architectures and trained jointly without additional considerations, enabling the development and testing of novel <strong>hybrid
+quantum-classical</strong> machine learning architectures.</p>
+<section id="உள்ளடக்கம்:">
+<h2>உள்ளடக்கம்:<a class="headerlink" href="#உள்ளடக்கம்:" title="Permalink to this heading">#</a></h2>
+<p>பகுதி 1: எளிய வகைப்பாடு &amp; பின்னடைவு</p>
+<p>The first part of this tutorial shows how quantum neural networks can be trained using PyTorch’s automatic differentiation engine (<code class="docutils literal notranslate"><span class="pre">torch.autograd</span></code>, <a class="reference external" href="https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html">link</a>) for simple classification and regression tasks.</p>
+<ol class="arabic simple">
+<li><p>வகைப்பாடு</p>
+<ol class="arabic simple">
+<li><p>Classification with PyTorch and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></p></li>
+<li><p>Classification with PyTorch and <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code></p></li>
+</ol>
+</li>
+<li><p>பின்னடைவு</p>
+<ol class="arabic simple">
+<li><p>Regression with PyTorch and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></p></li>
+</ol>
+</li>
+</ol>
+<p>பகுதி 2: MNIST வகைப்பாடு, கலப்பின QNN கள்</p>
+<p>இந்த பயிற்சிகளின் இரண்டாம் பாகம் ஒரு (குவாண்டம்) <code class="docutils literal notranslate"><span class="pre">நியூரல்நெட்வொர்க்</span></code> ஐ ஒரு இலக்கு PyTorch பணிப்பாய்வு (இந்த வழக்கில், ஒரு பொதுவான CNN கட்டமைப்பு) ஒரு கலப்பின குவாண்டம்-கிளாசிக்கல் முறையில் MNIST தரவை வகைப்படுத்த விளக்குகிறது.</p>
+<hr class="docutils" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Necessary imports</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">CrossEntropyLoss</span><span class="p">,</span> <span class="n">MSELoss</span>
+<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">LBFGS</span>
+
+<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">RealAmplitudes</span><span class="p">,</span> <span class="n">ZZFeatureMap</span>
+<span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">SamplerQNN</span><span class="p">,</span> <span class="n">EstimatorQNN</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.connectors</span> <span class="kn">import</span> <span class="n">TorchConnector</span>
+
+<span class="c1"># Set seed for random generators</span>
+<span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">42</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="பகுதி-1:-எளிய-வகைப்பாடு-மற்றும்-பின்னடைவு">
+<h2>பகுதி 1: எளிய வகைப்பாடு மற்றும் பின்னடைவு<a class="headerlink" href="#பகுதி-1:-எளிய-வகைப்பாடு-மற்றும்-பின்னடைவு" title="Permalink to this heading">#</a></h2>
+<section id="1.-வகைப்பாடு">
+<h3>1. வகைப்பாடு<a class="headerlink" href="#1.-வகைப்பாடு" title="Permalink to this heading">#</a></h3>
+<p>First, we show how <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code> allows to train a Quantum <code class="docutils literal notranslate"><span class="pre">NeuralNetwork</span></code> to solve a classification tasks using PyTorch’s automatic differentiation engine. In order to illustrate this, we will perform <strong>binary classification</strong> on a randomly generated dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate random dataset</span>
+
+<span class="c1"># Select dataset dimension (num_inputs) and size (num_samples)</span>
+<span class="n">num_inputs</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="c1"># Generate random input coordinates (X) and binary labels (y)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">num_inputs</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">y01</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># in { 0,  1}, y01 will be used for SamplerQNN example</span>
+<span class="n">y</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y01</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># in {-1, +1}, y will be used for EstimatorQNN example</span>
+
+<span class="c1"># Convert to torch Tensors</span>
+<span class="n">X_</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">y01_</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">y01</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+<span class="n">y_</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Plot dataset</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_target</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">y_target</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;go&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_4_0.png" src="../_images/tutorials_05_torch_connector_4_0.png" />
+</div>
+</div>
+<section id="A.-Classification-with-PyTorch-and-EstimatorQNN">
+<h4>A. Classification with PyTorch and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#A.-Classification-with-PyTorch-and-EstimatorQNN" title="Permalink to this heading">#</a></h4>
+<p>Linking an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> to PyTorch is relatively straightforward. Here we illustrate this by using the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> constructed from a feature map and an ansatz.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up a circuit</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">RealAmplitudes</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_6_0.png" src="../_images/tutorials_05_torch_connector_6_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup QNN</span>
+<span class="n">qnn1</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span> <span class="n">input_params</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">weight_params</span><span class="o">=</span><span class="n">ansatz</span><span class="o">.</span><span class="n">parameters</span>
+<span class="p">)</span>
+
+<span class="c1"># Set up PyTorch module</span>
+<span class="c1"># Note: If we don&#39;t explicitly declare the initial weights</span>
+<span class="c1"># they are chosen uniformly at random from [-1, 1].</span>
+<span class="n">initial_weights</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">qnn1</span><span class="o">.</span><span class="n">num_weights</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">model1</span> <span class="o">=</span> <span class="n">TorchConnector</span><span class="p">(</span><span class="n">qnn1</span><span class="p">,</span> <span class="n">initial_weights</span><span class="o">=</span><span class="n">initial_weights</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial weights: &quot;</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial weights:  [-0.01256962  0.06653564  0.04005302 -0.03752667  0.06645196  0.06095287
+ -0.02250432 -0.04233438]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test with a single input</span>
+<span class="n">model1</span><span class="p">(</span><span class="n">X_</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tensor([-0.3285], grad_fn=&lt;_TorchNNFunctionBackward&gt;)
+</pre></div></div>
+</div>
+<section id="ஆப்டிமைசெர்">
+<h5>ஆப்டிமைசெர்<a class="headerlink" href="#ஆப்டிமைசெர்" title="Permalink to this heading">#</a></h5>
+<p>The choice of optimizer for training any machine learning model can be crucial in determining the success of our training’s outcome. When using <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code>, we get access to all of the optimizer algorithms defined in the [<code class="docutils literal notranslate"><span class="pre">torch.optim</span></code>] package (<a class="reference external" href="https://pytorch.org/docs/stable/optim.html">link</a>). Some of the most famous algorithms used in popular machine learning architectures include <em>Adam</em>, <em>SGD</em>, or <em>Adagrad</em>. However, for this tutorial we will be using the L-BFGS algorithm
+(<code class="docutils literal notranslate"><span class="pre">torch.optim.LBFGS</span></code>), one of the most well know second-order optimization algorithms for numerical optimization.</p>
+</section>
+<section id="Loss-Function">
+<h5>Loss Function<a class="headerlink" href="#Loss-Function" title="Permalink to this heading">#</a></h5>
+<p>As for the loss function, we can also take advantage of PyTorch’s pre-defined modules from <code class="docutils literal notranslate"><span class="pre">torch.nn</span></code>, such as the <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html">Cross-Entropy</a> or <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.MSELoss.html">Mean Squared Error</a> losses.</p>
+<p><strong>💡 Clarification :</strong> In classical machine learning, the general rule of thumb is to apply a Cross-Entropy loss to classification tasks, and MSE loss to regression tasks. However, this recommendation is given under the assumption that the output of the classification network is a class probability value in the <span class="math notranslate nohighlight">\([0, 1]\)</span> range (usually this is achieved through a Softmax layer). Because the following example for <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> does not include such layer, and we don’t apply any mapping to
+the output (the following section shows an example of application of parity mapping with <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>s), the QNN’s output can take any value in the range <span class="math notranslate nohighlight">\([-1, 1]\)</span>. In case you were wondering, this is the reason why this particular example uses MSELoss for classification despite it not being the norm (but we encourage you to experiment with different loss functions and see how they can impact training results).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define optimizer and loss</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">LBFGS</span><span class="p">(</span><span class="n">model1</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="n">f_loss</span> <span class="o">=</span> <span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+
+<span class="c1"># Start training</span>
+<span class="n">model1</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># set model to training mode</span>
+
+
+<span class="c1"># Note from (https://pytorch.org/docs/stable/optim.html):</span>
+<span class="c1"># Some optimization algorithms such as LBFGS need to</span>
+<span class="c1"># reevaluate the function multiple times, so you have to</span>
+<span class="c1"># pass in a closure that allows them to recompute your model.</span>
+<span class="c1"># The closure should clear the gradients, compute the loss,</span>
+<span class="c1"># and return it.</span>
+<span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>  <span class="c1"># Initialize/clear gradients</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">f_loss</span><span class="p">(</span><span class="n">model1</span><span class="p">(</span><span class="n">X_</span><span class="p">),</span> <span class="n">y_</span><span class="p">)</span>  <span class="c1"># Evaluate loss function</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>  <span class="c1"># Backward pass</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>  <span class="c1"># Print loss</span>
+    <span class="k">return</span> <span class="n">loss</span>
+
+
+<span class="c1"># Run optimizer step4</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">closure</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+25.535646438598633
+22.696760177612305
+20.039228439331055
+19.687908172607422
+19.267208099365234
+19.025373458862305
+18.154708862304688
+17.337854385375977
+19.082578659057617
+17.073287963867188
+16.21839141845703
+14.992582321166992
+14.929339408874512
+14.914533615112305
+14.907636642456055
+14.902364730834961
+14.902134895324707
+14.90211009979248
+14.902111053466797
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tensor(25.5356, grad_fn=&lt;MseLossBackward0&gt;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate model and compute accuracy</span>
+<span class="n">model1</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="n">y_predict</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_target</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">model1</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">y_predict</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_predict</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+<span class="c1"># Plot results</span>
+<span class="c1"># red == wrongly classified</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">y_p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">y_target</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;go&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">y_target</span> <span class="o">!=</span> <span class="n">y_p</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Accuracy: 0.8
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_11_1.png" src="../_images/tutorials_05_torch_connector_11_1.png" />
+</div>
+</div>
+<p>சிவப்பு வட்டங்கள் தவறாக வகைப்படுத்தப்பட்ட தரவு புள்ளிகளைக் குறிக்கின்றன.</p>
+</section>
+</section>
+<section id="B.-Classification-with-PyTorch-and-SamplerQNN">
+<h4>B. Classification with PyTorch and <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#B.-Classification-with-PyTorch-and-SamplerQNN" title="Permalink to this heading">#</a></h4>
+<p>Linking a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> to PyTorch requires a bit more attention than <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>. Without the correct setup, backpropagation is not possible.</p>
+<p>In particular, we must make sure that we are returning a dense array of probabilities in the network’s forward pass (<code class="docutils literal notranslate"><span class="pre">sparse=False</span></code>). This parameter is set up to <code class="docutils literal notranslate"><span class="pre">False</span></code> by default, so we just have to make sure that it has not been changed.</p>
+<p><strong>⚠️ Attention:</strong> If we define a custom interpret function ( in the example: <code class="docutils literal notranslate"><span class="pre">parity</span></code>), we must remember to explicitly provide the desired output shape ( in the example: <code class="docutils literal notranslate"><span class="pre">2</span></code>). For more info on the initial parameter setup for <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>, please check out the <a class="reference external" href="https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">official qiskit documentation</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define feature map and ansatz</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">RealAmplitudes</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Define quantum circuit of num_qubits = input dim</span>
+<span class="c1"># Append feature map and ansatz</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Define SamplerQNN and initial setup</span>
+<span class="n">parity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{:b}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>  <span class="c1"># optional interpret function</span>
+<span class="n">output_shape</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># parity = 0, 1</span>
+<span class="n">qnn2</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span>
+    <span class="n">input_params</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">weight_params</span><span class="o">=</span><span class="n">ansatz</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="n">interpret</span><span class="o">=</span><span class="n">parity</span><span class="p">,</span>
+    <span class="n">output_shape</span><span class="o">=</span><span class="n">output_shape</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Set up PyTorch module</span>
+<span class="c1"># Reminder: If we don&#39;t explicitly declare the initial weights</span>
+<span class="c1"># they are chosen uniformly at random from [-1, 1].</span>
+<span class="n">initial_weights</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">qnn2</span><span class="o">.</span><span class="n">num_weights</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial weights: &quot;</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
+<span class="n">model2</span> <span class="o">=</span> <span class="n">TorchConnector</span><span class="p">(</span><span class="n">qnn2</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
+</pre></div></div>
+</div>
+<p>ஆப்டிமைசெர் மற்றும் loss function தேர்வுகள் பற்றிய நினைவூட்டலுக்கு, நீங்கள் இந்தப் பிரிவுக்குச் செல்லலாம்.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define model, optimizer, and loss</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">LBFGS</span><span class="p">(</span><span class="n">model2</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="n">f_loss</span> <span class="o">=</span> <span class="n">CrossEntropyLoss</span><span class="p">()</span>  <span class="c1"># Our output will be in the [0,1] range</span>
+
+<span class="c1"># Start training</span>
+<span class="n">model2</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+<span class="c1"># Define LBFGS closure method (explained in previous section)</span>
+<span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">(</span><span class="n">set_to_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Initialize gradient</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">f_loss</span><span class="p">(</span><span class="n">model2</span><span class="p">(</span><span class="n">X_</span><span class="p">),</span> <span class="n">y01_</span><span class="p">)</span>  <span class="c1"># Calculate loss</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>  <span class="c1"># Backward pass</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>  <span class="c1"># Print loss</span>
+    <span class="k">return</span> <span class="n">loss</span>
+
+
+<span class="c1"># Run optimizer (LBFGS requires closure)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">closure</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.6925069093704224
+0.6881508231163025
+0.6516683101654053
+0.6485998034477234
+0.6394743919372559
+0.7057444453239441
+0.669085681438446
+0.766187310218811
+0.7188469171524048
+0.7919709086418152
+0.7598814964294434
+0.7028256058692932
+0.7486447095870972
+0.6890242695808411
+0.7760348916053772
+0.7892935276031494
+0.7556288242340088
+0.7058126330375671
+0.7203161716461182
+0.7030722498893738
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate model and compute accuracy</span>
+<span class="n">model2</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="n">y_predict</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">model2</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">y_predict</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_predict</span> <span class="o">==</span> <span class="n">y01</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y01</span><span class="p">))</span>
+
+<span class="c1"># plot results</span>
+<span class="c1"># red == wrongly classified</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">y_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y01</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">y_target</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;go&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">y_target</span> <span class="o">!=</span> <span class="n">y_</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Accuracy: 0.5
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_17_1.png" src="../_images/tutorials_05_torch_connector_17_1.png" />
+</div>
+</div>
+<p>சிவப்பு வட்டங்கள் தவறாக வகைப்படுத்தப்பட்ட தரவு புள்ளிகளைக் குறிக்கின்றன.</p>
+</section>
+</section>
+<section id="2.-பின்னடைவு">
+<h3>2. பின்னடைவு<a class="headerlink" href="#2.-பின்னடைவு" title="Permalink to this heading">#</a></h3>
+<p>We use a model based on the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> to also illustrate how to perform a regression task. The chosen dataset in this case is randomly generated following a sine wave.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate random dataset</span>
+
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">ub</span> <span class="o">-</span> <span class="n">lb</span><span class="p">)</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">lb</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)),</span> <span class="s2">&quot;r--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_20_0.png" src="../_images/tutorials_05_torch_connector_20_0.png" />
+</div>
+</div>
+<section id="A.-Regression-with-PyTorch-and-EstimatorQNN">
+<h4>A. Regression with PyTorch and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#A.-Regression-with-PyTorch-and-EstimatorQNN" title="Permalink to this heading">#</a></h4>
+<p>The network definition and training loop will be analogous to those of the classification task using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>. In this case, we define our own feature map and ansatz, but let’s do it a little different.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Construct simple feature map</span>
+<span class="n">param_x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fm&quot;</span><span class="p">)</span>
+<span class="n">feature_map</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">param_x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Construct simple parameterized ansatz</span>
+<span class="n">param_y</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vf&quot;</span><span class="p">)</span>
+<span class="n">ansatz</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">param_y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Construct QNN</span>
+<span class="n">qnn3</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span> <span class="n">input_params</span><span class="o">=</span><span class="p">[</span><span class="n">param_x</span><span class="p">],</span> <span class="n">weight_params</span><span class="o">=</span><span class="p">[</span><span class="n">param_y</span><span class="p">])</span>
+
+<span class="c1"># Set up PyTorch module</span>
+<span class="c1"># Reminder: If we don&#39;t explicitly declare the initial weights</span>
+<span class="c1"># they are chosen uniformly at random from [-1, 1].</span>
+<span class="n">initial_weights</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">qnn3</span><span class="o">.</span><span class="n">num_weights</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">model3</span> <span class="o">=</span> <span class="n">TorchConnector</span><span class="p">(</span><span class="n">qnn3</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>ஆப்டிமைசெர் மற்றும் loss function தேர்வுகள் பற்றிய நினைவூட்டலுக்கு, நீங்கள் இந்தப் பிரிவுக்குச் செல்லலாம்.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define optimizer and loss function</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">LBFGS</span><span class="p">(</span><span class="n">model3</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="n">f_loss</span> <span class="o">=</span> <span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+
+<span class="c1"># Start training</span>
+<span class="n">model3</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># set model to training mode</span>
+
+<span class="c1"># Define objective function</span>
+<span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">(</span><span class="n">set_to_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Initialize gradient</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">f_loss</span><span class="p">(</span><span class="n">model3</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">X</span><span class="p">)),</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>  <span class="c1"># Compute batch loss</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>  <span class="c1"># Backward pass</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>  <span class="c1"># Print loss</span>
+    <span class="k">return</span> <span class="n">loss</span>
+
+
+<span class="c1"># Run optimizer</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">closure</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+14.947757720947266
+2.948650360107422
+8.952412605285645
+0.37905153632164
+0.24995625019073486
+0.2483610212802887
+0.24835753440856934
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tensor(14.9478, grad_fn=&lt;MseLossBackward0&gt;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot target function</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)),</span> <span class="s2">&quot;r--&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot data</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot fitted line</span>
+<span class="n">model3</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="n">y_</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">model3</span><span class="p">(</span><span class="n">Tensor</span><span class="p">([</span><span class="n">x</span><span class="p">]))</span>
+    <span class="n">y_</span> <span class="o">+=</span> <span class="p">[</span><span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">y_</span><span class="p">,</span> <span class="s2">&quot;g-&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_26_0.png" src="../_images/tutorials_05_torch_connector_26_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="பகுதி-2:-MNIST-வகைப்பாடு,-கலப்பின-QNN-கள்">
+<h2>பகுதி 2: MNIST வகைப்பாடு, கலப்பின QNN கள்<a class="headerlink" href="#பகுதி-2:-MNIST-வகைப்பாடு,-கலப்பின-QNN-கள்" title="Permalink to this heading">#</a></h2>
+<p>இந்த இரண்டாம் பாகத்தில், MNIST கையால் எழுதப்பட்ட இலக்கங்கள் தரவுத்தொகுப்பில் மிகவும் சிக்கலான பட வகைப்பாடு பணியைச் செய்ய, <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code> ஐப் பயன்படுத்தி ஒரு கலப்பின குவாண்டம்-கிளாசிக்கல் நரம்பியல் நெட்வொர்க்கை எவ்வாறு மேம்படுத்துவது என்பதைக் காண்பிப்போம்.</p>
+<p>ஹைபிரிட் குவாண்டம்-கிளாசிக்கல் நியூரல் நெட்வொர்க்குகள் பற்றிய விரிவான (முன்-<code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code>) விளக்கத்திற்கு, நீங்கள் <a class="reference external" href="https://qiskit.org/textbook/ch-machine-learning/machine-learning-qiskit-pytorch.html">Qiskit Textbook</a> இல் தொடர்புடைய பிரிவைப் பார்க்கலாம்.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Additional torch-related imports</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">cat</span><span class="p">,</span> <span class="n">no_grad</span><span class="p">,</span> <span class="n">manual_seed</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Module</span><span class="p">,</span>
+    <span class="n">Conv2d</span><span class="p">,</span>
+    <span class="n">Linear</span><span class="p">,</span>
+    <span class="n">Dropout2d</span><span class="p">,</span>
+    <span class="n">NLLLoss</span><span class="p">,</span>
+    <span class="n">MaxPool2d</span><span class="p">,</span>
+    <span class="n">Flatten</span><span class="p">,</span>
+    <span class="n">Sequential</span><span class="p">,</span>
+    <span class="n">ReLU</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+</pre></div>
+</div>
+</div>
+<section id="படி-1:-ரயில்-மற்றும்-சோதனைக்கான-தரவு-ஏற்றிகளை-வரையறுத்தல்">
+<h3>படி 1: ரயில் மற்றும் சோதனைக்கான தரவு ஏற்றிகளை வரையறுத்தல்<a class="headerlink" href="#படி-1:-ரயில்-மற்றும்-சோதனைக்கான-தரவு-ஏற்றிகளை-வரையறுத்தல்" title="Permalink to this heading">#</a></h3>
+<p>நாங்கள் <code class="docutils literal notranslate"><span class="pre">torchvision</span></code> <a class="reference external" href="https://pytorch.org/vision/stable/datasets.html">API</a> ஐப் பயன்படுத்தி <a class="reference external" href="https://en.org/wiki/MNIST_database">MNIST தரவுத்தொகுப்பு</a> மற்றும் டார்ச்சை வரையறுக்கவும் <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>s (<a class="reference external" href="https://pytorch.org/docs/stable/data.html">இணைப்பு</a>) ரயில் மற்றும் சோதனை.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train Dataset</span>
+<span class="c1"># -------------</span>
+
+<span class="c1"># Set train shuffle seed (for reproducibility)</span>
+<span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># We will concentrate on the first 100 samples</span>
+
+<span class="c1"># Use pre-defined torchvision function to load MNIST train data</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;./data&quot;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()])</span>
+<span class="p">)</span>
+
+<span class="c1"># Filter out labels (originally 0-9), leaving only labels 0 and 1</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">targets</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:</span><span class="n">n_samples</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">targets</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:</span><span class="n">n_samples</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">X_train</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">X_train</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+<span class="c1"># Define torch dataloader with filtered data</span>
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>நாம் விரைவான காட்சிப்படுத்தலைச் செய்தால், ரயில் தரவுத்தொகுப்பு கையால் எழுதப்பட்ட 0 கள் மற்றும் 1 களின் படங்களைக் கொண்டிருப்பதைக் காணலாம்.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_samples_show</span> <span class="o">=</span> <span class="mi">6</span>
+
+<span class="n">data_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="n">n_samples_show</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="k">while</span> <span class="n">n_samples_show</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">images</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">data_iter</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Labeled: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+
+    <span class="n">n_samples_show</span> <span class="o">-=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_33_0.png" src="../_images/tutorials_05_torch_connector_33_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test Dataset</span>
+<span class="c1"># -------------</span>
+
+<span class="c1"># Set test shuffle seed (for reproducibility)</span>
+<span class="c1"># manual_seed(5)</span>
+
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># Use pre-defined torchvision function to load MNIST test data</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;./data&quot;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()])</span>
+<span class="p">)</span>
+
+<span class="c1"># Filter out labels (originally 0-9), leaving only labels 0 and 1</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">targets</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:</span><span class="n">n_samples</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">targets</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:</span><span class="n">n_samples</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">X_test</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">X_test</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+<span class="c1"># Define torch dataloader with filtered data</span>
+<span class="n">test_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="படி-2:-QNN-மற்றும்-கலப்பின-மாதிரியை-வரையறுத்தல்">
+<h3>படி 2: QNN மற்றும் கலப்பின மாதிரியை வரையறுத்தல்<a class="headerlink" href="#படி-2:-QNN-மற்றும்-கலப்பின-மாதிரியை-வரையறுத்தல்" title="Permalink to this heading">#</a></h3>
+<p>This second step shows the power of the <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code>. After defining our quantum neural network layer (in this case, a <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>), we can embed it into a layer in our torch <code class="docutils literal notranslate"><span class="pre">Module</span></code> by initializing a torch connector as <code class="docutils literal notranslate"><span class="pre">TorchConnector(qnn)</span></code>.</p>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>⚠️கவனம்: ** கலப்பின மாடல்களில் போதிய சாய்வு பின்னணி இருக்க, நாம் qnn துவக்கத்தின் போது ஆரம்ப அளவுரு <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code> ஐ TRUE க்கு அமைக்க வேண்டும்.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define and create QNN</span>
+<span class="k">def</span> <span class="nf">create_qnn</span><span class="p">():</span>
+    <span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ansatz</span> <span class="o">=</span> <span class="n">RealAmplitudes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># REMEMBER TO SET input_gradients=True FOR ENABLING HYBRID GRADIENT BACKPROP</span>
+    <span class="n">qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span>
+        <span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span>
+        <span class="n">input_params</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+        <span class="n">weight_params</span><span class="o">=</span><span class="n">ansatz</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+        <span class="n">input_gradients</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">qnn</span>
+
+
+<span class="n">qnn4</span> <span class="o">=</span> <span class="n">create_qnn</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define torch NN module</span>
+
+
+<span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qnn</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">Conv2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">Dropout2d</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 2-dimensional input to QNN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qnn</span> <span class="o">=</span> <span class="n">TorchConnector</span><span class="p">(</span><span class="n">qnn</span><span class="p">)</span>  <span class="c1"># Apply torch connector, weights chosen</span>
+        <span class="c1"># uniformly at random from interval [-1,1].</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 1-dimensional output from QNN</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">max_pool2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">max_pool2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qnn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># apply QNN</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cat</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">model4</span> <span class="o">=</span> <span class="n">Net</span><span class="p">(</span><span class="n">qnn4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="படி-3:-பயிற்சி">
+<h3>படி 3: பயிற்சி<a class="headerlink" href="#படி-3:-பயிற்சி" title="Permalink to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define model, optimizer, and loss function</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model4</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="n">loss_func</span> <span class="o">=</span> <span class="n">NLLLoss</span><span class="p">()</span>
+
+<span class="c1"># Start training</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Set number of epochs</span>
+<span class="n">loss_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Store loss history</span>
+<span class="n">model4</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># Set model to training mode</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+    <span class="n">total_loss</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_loader</span><span class="p">):</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">(</span><span class="n">set_to_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Initialize gradient</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model4</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Forward pass</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_func</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># Calculate loss</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>  <span class="c1"># Backward pass</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>  <span class="c1"># Optimize weights</span>
+        <span class="n">total_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>  <span class="c1"># Store loss</span>
+    <span class="n">loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">total_loss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">total_loss</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Training [</span><span class="si">{:.0f}</span><span class="s2">%]</span><span class="se">\t</span><span class="s2">Loss: </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">loss_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Training [10%]  Loss: -1.1630
+Training [20%]  Loss: -1.5294
+Training [30%]  Loss: -1.7855
+Training [40%]  Loss: -1.9863
+Training [50%]  Loss: -2.2257
+Training [60%]  Loss: -2.4513
+Training [70%]  Loss: -2.6758
+Training [80%]  Loss: -2.8832
+Training [90%]  Loss: -3.1006
+Training [100%] Loss: -3.3061
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot loss convergence</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_list</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Hybrid NN Training Convergence&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Training Iterations&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Neg. Log Likelihood Loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_41_0.png" src="../_images/tutorials_05_torch_connector_41_0.png" />
+</div>
+</div>
+<p>Now we’ll save the trained model, just to show how a hybrid model can be saved and re-used later for inference. To save and load hybrid models, when using the TorchConnector, follow the PyTorch recommendations of saving and loading the models.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model4</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;model4.pt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="படி-4:-மதிப்பீடு">
+<h3>படி 4: மதிப்பீடு<a class="headerlink" href="#படி-4:-மதிப்பீடு" title="Permalink to this heading">#</a></h3>
+<p>மாதிரியை மீண்டும் உருவாக்கி, முன்பு சேமித்த கோப்பிலிருந்து நிலையை ஏற்றுவதிலிருந்து தொடங்குகிறோம். நீங்கள் மற்றொரு சிமுலேட்டர் அல்லது உண்மையான வன்பொருளைப் பயன்படுத்தி QNN அடுக்கு உருவாக்குகிறீர்கள். எனவே, நீங்கள் மேகக்கணியில் கிடைக்கும் உண்மையான வன்பொருளில் ஒரு மாதிரியைப் பயிற்றுவிக்கலாம், பின்னர் அனுமானத்திற்கு ஒரு சிமுலேட்டர் அல்லது துணை வசனத்தைப் பயன்படுத்தலாம். எளிமைக்காக, மேலே உள்ள அதே வழியில் ஒரு புதிய குவாண்டம் நியூரல் நெட்வொர்க்கை உருவாக்குகிறோம்.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qnn5</span> <span class="o">=</span> <span class="n">create_qnn</span><span class="p">()</span>
+<span class="n">model5</span> <span class="o">=</span> <span class="n">Net</span><span class="p">(</span><span class="n">qnn5</span><span class="p">)</span>
+<span class="n">model5</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model4.pt&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;All keys matched successfully&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model5</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>  <span class="c1"># set model to evaluation mode</span>
+<span class="k">with</span> <span class="n">no_grad</span><span class="p">():</span>
+
+    <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_loader</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model5</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">correct</span> <span class="o">+=</span> <span class="n">pred</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">view_as</span><span class="p">(</span><span class="n">pred</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_func</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">total_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Performance on test data:</span><span class="se">\n\t</span><span class="s2">Loss: </span><span class="si">{:.4f}</span><span class="se">\n\t</span><span class="s2">Accuracy: </span><span class="si">{:.1f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">sum</span><span class="p">(</span><span class="n">total_loss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">total_loss</span><span class="p">),</span> <span class="n">correct</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Performance on test data:
+        Loss: -3.3585
+        Accuracy: 100.0%
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot predicted labels</span>
+
+<span class="n">n_samples_show</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="n">n_samples_show</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">model5</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">no_grad</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_loader</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="n">n_samples_show</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model5</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+
+        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Predicted </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pred</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_05_torch_connector_48_0.png" src="../_images/tutorials_05_torch_connector_48_0.png" />
+</div>
+</div>
+<p>🎉🎉🎉🎉 <strong>நீங்கள் இப்போது உங்கள் சொந்த கலப்பின தரவுத்தொகுப்புகள் மற்றும் கட்டிடக்கலைகளை Qiskit இயந்திரக் கற்றலைப் பயன்படுத்திப் பரிசோதிக்க முடியும்.</strong> <strong>அதிர்ஷ்டம் உங்களுக்கு உரித்தாகட்டும்!</strong></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">qiskit.tools.jupyter</span>
+
+<span class="o">%</span><span class="k">qiskit_version_table</span>
+<span class="o">%</span><span class="k">qiskit_copyright</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>Version Information</h3><table><tr><th>Qiskit Software</th><th>Version</th></tr><tr><td><code>qiskit-terra</code></td><td>0.22.0</td></tr><tr><td><code>qiskit-aer</code></td><td>0.11.1</td></tr><tr><td><code>qiskit-ignis</code></td><td>0.7.0</td></tr><tr><td><code>qiskit</code></td><td>0.33.0</td></tr><tr><td><code>qiskit-machine-learning</code></td><td>0.5.0</td></tr><tr><th>System information</th></tr><tr><td>Python version</td><td>3.7.9</td></tr><tr><td>Python compiler</td><td>MSC v.1916 64 bit (AMD64)</td></tr><tr><td>Python build</td><td>default, Aug 31 2020 17:10:11</td></tr><tr><td>OS</td><td>Windows</td></tr><tr><td>CPUs</td><td>4</td></tr><tr><td>Memory (Gb)</td><td>31.837730407714844</td></tr><tr><td colspan='2'>Thu Nov 03 09:57:38 2022 GMT Standard Time</td></tr></table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of Qiskit</h3><p>&copy; Copyright IBM 2017, 2022.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+  <script>
+    function userFeedbackClicked(ctaType) {
+      document.getElementById('qiskit-analytics-thank-you').style.visibility = 'visible';
+      window.trackCta(`Helpful - ${ctaType}`);
+    }
+  </script>
+    <div class="qiskit-analytics-container">
+      <div>Was this page helpful?</div>
+      <a onclick="userFeedbackClicked('yes')">Yes</a>
+      <a onclick="userFeedbackClicked('no')">No</a>
+      <div id="qiskit-analytics-thank-you">Thank you!</div>
+    </div>
+<div class="related-pages">
+          <a class="next-page" href="07_pegasos_qsvc.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">பெகாசோஸ் குவாண்டம் ஆதரவு திசையன் வகைப்படுத்தி</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="04_torch_qgan.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">PyTorch qGAN செயல்படுத்தல்</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">டார்ச் இணைப்பான் மற்றும் கலப்பின QNN கள்</a><ul>
+<li><a class="reference internal" href="#உள்ளடக்கம்:">உள்ளடக்கம்:</a></li>
+<li><a class="reference internal" href="#பகுதி-1:-எளிய-வகைப்பாடு-மற்றும்-பின்னடைவு">பகுதி 1: எளிய வகைப்பாடு மற்றும் பின்னடைவு</a><ul>
+<li><a class="reference internal" href="#1.-வகைப்பாடு">1. வகைப்பாடு</a><ul>
+<li><a class="reference internal" href="#A.-Classification-with-PyTorch-and-EstimatorQNN">A. Classification with PyTorch and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></a><ul>
+<li><a class="reference internal" href="#ஆப்டிமைசெர்">ஆப்டிமைசெர்</a></li>
+<li><a class="reference internal" href="#Loss-Function">Loss Function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#B.-Classification-with-PyTorch-and-SamplerQNN">B. Classification with PyTorch and <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#2.-பின்னடைவு">2. பின்னடைவு</a><ul>
+<li><a class="reference internal" href="#A.-Regression-with-PyTorch-and-EstimatorQNN">A. Regression with PyTorch and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#பகுதி-2:-MNIST-வகைப்பாடு,-கலப்பின-QNN-கள்">பகுதி 2: MNIST வகைப்பாடு, கலப்பின QNN கள்</a><ul>
+<li><a class="reference internal" href="#படி-1:-ரயில்-மற்றும்-சோதனைக்கான-தரவு-ஏற்றிகளை-வரையறுத்தல்">படி 1: ரயில் மற்றும் சோதனைக்கான தரவு ஏற்றிகளை வரையறுத்தல்</a></li>
+<li><a class="reference internal" href="#படி-2:-QNN-மற்றும்-கலப்பின-மாதிரியை-வரையறுத்தல்">படி 2: QNN மற்றும் கலப்பின மாதிரியை வரையறுத்தல்</a></li>
+<li><a class="reference internal" href="#படி-3:-பயிற்சி">படி 3: பயிற்சி</a></li>
+<li><a class="reference internal" href="#படி-4:-மதிப்பீடு">படி 4: மதிப்பீடு</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=ca9046fe"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

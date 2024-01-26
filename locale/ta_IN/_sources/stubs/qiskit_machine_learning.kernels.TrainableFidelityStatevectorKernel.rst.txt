@@ -1,0 +1,40 @@
+﻿
+
+TrainableFidelityStatevectorKernel
+==================================================================
+
+.. currentmodule:: qiskit_machine_learning.kernels
+
+.. autoclass:: TrainableFidelityStatevectorKernel
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: TrainableFidelityStatevectorKernel.enforce_psd
+   .. autoattribute:: TrainableFidelityStatevectorKernel.feature_map
+   .. autoattribute:: TrainableFidelityStatevectorKernel.num_features
+   .. autoattribute:: TrainableFidelityStatevectorKernel.num_training_parameters
+   .. autoattribute:: TrainableFidelityStatevectorKernel.parameter_values
+   .. autoattribute:: TrainableFidelityStatevectorKernel.training_parameters
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: TrainableFidelityStatevectorKernel.assign_training_parameters
+   .. automethod:: TrainableFidelityStatevectorKernel.clear_cache
+   .. automethod:: TrainableFidelityStatevectorKernel.evaluate
+
+   
+   

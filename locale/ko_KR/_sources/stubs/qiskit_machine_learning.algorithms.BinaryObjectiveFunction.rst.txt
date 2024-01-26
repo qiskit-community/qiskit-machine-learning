@@ -1,0 +1,28 @@
+﻿
+
+BinaryObjectiveFunction
+==========================================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: BinaryObjectiveFunction
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: BinaryObjectiveFunction.gradient
+   .. automethod:: BinaryObjectiveFunction.objective
+
+   
+   

@@ -1,0 +1,33 @@
+﻿
+
+RawFeatureVector
+========================================================
+
+.. currentmodule:: qiskit_machine_learning.circuit.library
+
+.. autoclass:: RawFeatureVector
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: RawFeatureVector.feature_dimension
+   .. autoattribute:: RawFeatureVector.num_qubits
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+
+   
+   

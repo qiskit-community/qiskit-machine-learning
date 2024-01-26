@@ -1,0 +1,28 @@
+﻿
+
+MultiClassObjectiveFunction
+==============================================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: MultiClassObjectiveFunction
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: MultiClassObjectiveFunction.gradient
+   .. automethod:: MultiClassObjectiveFunction.objective
+
+   
+   

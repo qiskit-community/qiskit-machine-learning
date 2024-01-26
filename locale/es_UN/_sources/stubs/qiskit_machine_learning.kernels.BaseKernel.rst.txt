@@ -1,0 +1,35 @@
+﻿
+
+BaseKernel
+==========================================
+
+.. currentmodule:: qiskit_machine_learning.kernels
+
+.. autoclass:: BaseKernel
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: BaseKernel.enforce_psd
+   .. autoattribute:: BaseKernel.feature_map
+   .. autoattribute:: BaseKernel.num_features
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: BaseKernel.evaluate
+
+   
+   
