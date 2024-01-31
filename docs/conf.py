@@ -183,8 +183,8 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
-    "qiskit": ("https://qiskit.org/documentation/", None),
-    "qiskit-algorithms": ("https://qiskit.org/ecosystem/algorithms/", None),
+    "qiskit": ("https://docs.quantum.ibm.com/api/qiskit", None),
+    "qiskit-algorithms": ("https://qiskit-community.github.io/qiskit-algorithms", None),
 }
 
 html_context = {"analytics_enabled": True}
