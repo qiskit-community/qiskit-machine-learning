@@ -27,15 +27,15 @@ jobs:
       matrix:
         python-version: [3.8]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install deps
         run: pip install -U pip setuptools virtualenv wheel
       - name: Build sdist
         run: python3 setup.py sdist bdist_wheel
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./dist/*
       - name: Deploy to Pypi
