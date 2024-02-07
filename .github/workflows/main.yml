@@ -44,10 +44,10 @@ jobs:
           echo -e "\033[31;1;4mConcurrency Group\033[0m"
           echo -e "$CONCURRENCY_GROUP\n"
         shell: bash
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -123,8 +123,8 @@ jobs:
           - os: windows-latest
             python-version: 3.11
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -185,10 +185,10 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.8, 3.11]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -261,8 +261,8 @@ jobs:
       matrix:
         python-version: [3.8]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - uses: actions/download-artifact@v4
