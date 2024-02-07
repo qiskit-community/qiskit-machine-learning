@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -26,6 +26,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
+from qiskit_algorithms import AlgorithmJob
 from qiskit_algorithms.utils import algorithm_globals
 from qiskit_algorithms.state_fidelities import (
     ComputeUncompute,
@@ -267,9 +268,26 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                 values_1: Sequence[float] | Sequence[Sequence[float]] | None = None,
                 values_2: Sequence[float] | Sequence[Sequence[float]] | None = None,
                 **options,
-            ) -> StateFidelityResult:
+            ) -> StateFidelityResult | AlgorithmJob:
                 values = np.asarray(values_1)
                 fidelities = np.full(values.shape[0], -0.5)
+
+                # Qiskit algorithms changed the internals of the base state fidelity
+                # class and what this method returns to avoid a threading issue. See
+                # https://github.com/qiskit-community/qiskit-algorithms/pull/92 for
+                # more information. That pull request will land in 0.3.0. I made
+                # this test work with the current released version 0.2.2, so tests
+                # pass at present, but in the future this logic can be reduced to
+                # just that needed for 0.3.0 and above if desired when testing against
+                # earlier algorithm versions is no longer needed or wanted.
+                from qiskit_algorithms import __version__ as algs_version
+                if algs_version < "0.3.0":
+                    return StateFidelityResult(fidelities, [], {}, options)
+                else:
+                    return AlgorithmJob(MockFidelity._call, fidelities, options)
+
+            @staticmethod
+            def _call(fidelities, options) -> StateFidelityResult:
                 return StateFidelityResult(fidelities, [], {}, options)
 
         with self.subTest("No PSD enforcement"):
