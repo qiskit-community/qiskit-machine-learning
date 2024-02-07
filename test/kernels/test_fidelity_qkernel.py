@@ -281,6 +281,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                 # just that needed for 0.3.0 and above if desired when testing against
                 # earlier algorithm versions is no longer needed or wanted.
                 from qiskit_algorithms import __version__ as algs_version
+
                 if algs_version < "0.3.0":
                     return StateFidelityResult(fidelities, [], {}, options)
                 else:
