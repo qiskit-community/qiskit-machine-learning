@@ -4,7 +4,7 @@ upgrade:
     Removed support of the deprecated parameter `quantum_instance` in the constructor of
     :class:`~qiskit_machine_learning.algorithms.VQC` and in :class:`~qiskit_machine_learning.algorithms.VQR`.
     Please use `sampler` and `estimator` respectively. Refer to the
-    `migration guide <https://qiskit.org/ecosystem/machine-learning/migration/01_migration_guide_0.5.html>`__
+    `migration guide <https://qiskit-community.github.io/qiskit-machine-learning/migration/01_migration_guide_0.5.html>`__
     for more information.
 
     Since :mod:`qiskit.opflow` and :class:`~qiskit.utils.QuantumInstance` are deprecated in Qiskit,
@@ -30,5 +30,5 @@ upgrade:
         :class:`qiskit_machine_learning.kernels.FidelityStatevectorKernel`.
 
     Please refer to the
-    `migration guide <https://qiskit.org/ecosystem/machine-learning/migration/01_migration_guide_0.5.html>`__
+    `migration guide <https://qiskit-community.github.io/qiskit-machine-learning/migration/01_migration_guide_0.5.html>`__
     on how to replace the deprecated classes with new ones.
