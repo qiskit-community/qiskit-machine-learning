@@ -24,11 +24,11 @@ quantum neural networks. Two core implementations are readily provided, such as 
 [EstimatorQNN](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html),
 and the [SamplerQNN](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html).
 The [EstimatorQNN](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html)
-leverages the [Estimator](https://qiskit.org/documentation/stubs/qiskit.primitives.BaseEstimator.html) primitive from Qiskit and 
+leverages the [Estimator](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator) primitive from Qiskit and 
 allows users to combine parametrized quantum circuits with quantum mechanical observables. The circuits can be constructed using, for example, building blocks
 from Qiskit’s circuit library, and the QNN’s output is given by the expected value of the observable.
 The [SamplerQNN](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html)
-leverages another primitive introduced in Qiskit, the [Sampler](https://qiskit.org/documentation/stubs/qiskit.primitives.BaseSampler.html) primitive. 
+leverages another primitive introduced in Qiskit, the [Sampler](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler) primitive. 
 This neural network translates quasi-probabilities of bitstrings estimated by the primitive into a desired output. This 
 translation step can be used to interpret a given bitstring in a particular context, e.g. translating it into a set of classes.
 
@@ -132,14 +132,13 @@ Learning path notebooks may be found in the
 of the documentation and are a great place to start. 
 
 Another good place to learn the fundamentals of quantum machine learning is the
-[Quantum Machine Learning](https://learn.qiskit.org/course/machine-learning/introduction) course 
-on the Qiskit Textbook's website. The course is very convenient for beginners who are eager to learn 
+[Quantum Machine Learning](https://github.com/Qiskit/textbook/tree/main/notebooks/quantum-machine-learning#) notebooks from the original Qiskit Textbook. The notebooks are convenient for beginners who are eager to learn 
 quantum machine learning from scratch, as well as understand the background and theory behind algorithms in
-Qiskit Machine Learning. The course covers a variety of topics to build understanding of parameterized
+Qiskit Machine Learning. The notebooks cover a variety of topics to build understanding of parameterized
 circuits, data encoding, variational algorithms etc., and in the end the ultimate goal of machine
 learning - how to build and train quantum ML models for supervised and unsupervised learning. 
-The textbook course is complementary to the tutorials of this module, where the tutorials focus
-on actual Qiskit Machine Learning algorithms, the course more explains and details underlying fundamentals
+The Textbook notebooks are complementary to the tutorials of this module; whereas these tutorials focus
+on actual Qiskit Machine Learning algorithms, the Textbook notebooks more explain and detail underlying fundamentals
 of quantum machine learning.
 
 ----------------------------------------------------------------------------------------------------

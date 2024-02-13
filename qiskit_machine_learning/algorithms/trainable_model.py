@@ -155,7 +155,7 @@ class TrainableModel(SerializableModelMixin):
     def fit_result(self) -> OptimizerResult:
         """Returns a resulting object from the optimization procedure. Please refer to the
         documentation of the `OptimizerResult
-        <https://qiskit.org/documentation/stubs/qiskit_algorithms.optimizers.OptimizerResult.html>`_
+        <https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.optimizers.OptimizerResult.html>`_
         class for more details.
 
         Raises:
