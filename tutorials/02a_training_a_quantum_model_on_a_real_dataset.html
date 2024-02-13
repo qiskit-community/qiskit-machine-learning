@@ -568,7 +568,7 @@ latter are NOT linearly separable from each other.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;seaborn.axisgrid.PairGrid at 0x7f9bb8caa280&gt;
+&lt;seaborn.axisgrid.PairGrid at 0x7f43f0fc8040&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -643,7 +643,7 @@ Classical SVC on the test dataset:     0.97
 world.</p>
 <p>Once the data is loaded, we must immediately apply a parameterized quantum circuit. This circuit is a direct analog to the layers in classical neural networks. It has a set of tunable parameters or weights. The weights are optimized such that they minimize an objective function. This objective function characterizes the distance between the predictions and known labeled data. A parameterized quantum circuit is also called a parameterized trial state, variational form, or ansatz. Perhaps, the
 latter is the most widely used term.</p>
-<p>For more information, we direct the reader to the <a class="reference external" href="https://learn.qiskit.org/course/machine-learning">Quantum Machine Learning Course</a>.</p>
+<p>For more information, we direct the reader to the <a class="reference external" href="https://github.com/Qiskit/textbook/tree/main/notebooks/quantum-machine-learning#">Quantum Machine Learning Course GitHub</a>.</p>
 <p>Our choice of feature map will be the <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code>. The <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code> is one of the standard feature maps in the Qiskit circuit library. We pass <code class="docutils literal notranslate"><span class="pre">num_features</span></code> as <code class="docutils literal notranslate"><span class="pre">feature_dimension</span></code>, meaning the feature map will have <code class="docutils literal notranslate"><span class="pre">num_features</span></code> or <code class="docutils literal notranslate"><span class="pre">4</span></code> qubits.</p>
 <p>We decompose the feature map into its constituent gates to give the reader a flavor of how feature maps may look.</p>
 <div class="nbinput docutils container">
@@ -776,7 +776,7 @@ long as it has the two-parameter signature we mentioned above.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Training time: 73 seconds
+Training time: 74 seconds
 </pre></div></div>
 </div>
 <p>Let’s see how the quantum model performs on the real-life dataset.</p>
@@ -805,7 +805,7 @@ Quantum VQC on the test dataset:     0.87
 <p>Now let’s see what we can tune to get even better models.</p>
 <ul class="simple">
 <li><p>The key components are the feature map and the ansatz. You can tweak parameters. In our case, you may change the <code class="docutils literal notranslate"><span class="pre">reps</span></code> parameter that specifies how repetitions of a gate pattern we add to the circuit. Larger values lead to more entanglement operations and more parameters. Thus, the model can be more flexible, but the higher number of parameters also adds complexity, and training such a model usually takes more time. Furthermore, we may end up overfitting the model. You can try the other
-feature maps and ansatzes available in the <a class="reference external" href="https://qiskit.org/documentation/apidoc/circuit_library.html#n-local-circuits">Qiskit circuit library</a>, or you can come up with custom circuits.</p></li>
+feature maps and ansatzes available in the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/circuit_library#n-local-circuits">Qiskit circuit library</a>, or you can come up with custom circuits.</p></li>
 <li><p>You may try other optimizers. Qiskit contains a bunch of them. Some of them are gradient-free, others not. If you choose a gradient-based optimizer, e.g., <code class="docutils literal notranslate"><span class="pre">L_BFGS_B</span></code>, expect the training time to increase. Additionally to the objective function, these optimizers must evaluate the gradient with respect to the training parameters, which leads to an increased number of circuit executions per iteration.</p></li>
 <li><p>Another option is to randomly (or deterministically) sample <code class="docutils literal notranslate"><span class="pre">initial_point</span></code> and fit the model several times.</p></li>
 </ul>
@@ -1074,8 +1074,17 @@ without any reduction, you should train such a model. If not, you may expect to 
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_3260/1492642725.py:1: DeprecationWarning: qiskit.tools.jupyter is deprecated and will be removed in Qiskit 1.0.0
+  import qiskit.tools.jupyter
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>0.45.2</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.1</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.2.2</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>Python compiler</td><td>GCC 11.4.0</td></tr><tr><td>Python build</td><td>default, Aug 28 2023 08:27:22</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td>CPUs</td><td>2</td></tr><tr><td>Memory (Gb)</td><td>15.60690689086914</td></tr><tr><td colspan='2'>Mon Jan 29 18:50:24 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>0.46.0</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.1</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.2.2</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>Python compiler</td><td>GCC 11.4.0</td></tr><tr><td>Python build</td><td>default, Aug 28 2023 08:27:22</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td>CPUs</td><td>2</td></tr><tr><td>Memory (Gb)</td><td>15.60690689086914</td></tr><tr><td colspan='2'>Tue Feb 13 22:28:08 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1084,7 +1093,7 @@ without any reduction, you should train such a model. If not, you may expect to 
 <div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of Qiskit</h3><p>&copy; Copyright IBM 2017, 2024.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
 </div>
 <script type="application/vnd.jupyter.widget-state+json">
-{"state": {"09b19f5eeeee4c5dbdfa9764434a8b62": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0px 0px 10px 0px", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "ff7e1c0bfad644ac885f22b352339b01": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "5565d42ec5f14a06b8dc49e4ddf806a1": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_09b19f5eeeee4c5dbdfa9764434a8b62", "placeholder": "\u200b", "style": "IPY_MODEL_ff7e1c0bfad644ac885f22b352339b01", "tabbable": null, "tooltip": null, "value": "<p style='font-family: IBM Plex Sans, Arial, Helvetica, sans-serif; font-size: 20px; font-weight: medium;'>Circuit Properties</p>"}}}, "version_major": 2, "version_minor": 0}
+{"state": {"592bdb2479164ee494a04efd470d577e": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0px 0px 10px 0px", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "466fbfa24e494705babf06a9bcd71a27": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "1c19231e1cdd4514850ba2cd6d7c1bc7": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_592bdb2479164ee494a04efd470d577e", "placeholder": "\u200b", "style": "IPY_MODEL_466fbfa24e494705babf06a9bcd71a27", "tabbable": null, "tooltip": null, "value": "<p style='font-family: IBM Plex Sans, Arial, Helvetica, sans-serif; font-size: 20px; font-weight: medium;'>Circuit Properties</p>"}}}, "version_major": 2, "version_minor": 0}
 </script></section>
 </section>
 

@@ -488,7 +488,7 @@ pass.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>estimator</strong> (<em>BaseEstimator</em><em> | </em><em>None</em>) – The estimator used to compute neural network’s results.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a default instance of the reference estimator,
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.Estimator.html#qiskit.primitives.Estimator" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Estimator</span></code></a>, will be used.</p></li>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.Estimator" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Estimator</span></code></a>, will be used.</p></li>
 <li><p><strong>circuit</strong> (<em>QuantumCircuit</em>) – The quantum circuit to represent the neural network. If a
 <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is passed, the
 <cite>input_params</cite> and <cite>weight_params</cite> do not have to be provided, because these two
@@ -508,7 +508,7 @@ If a <a class="reference internal" href="qiskit_machine_learning.circuit.library
 <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> weight_parameters.</p></li>
 <li><p><strong>gradient</strong> (<em>BaseEstimatorGradient</em><em> | </em><em>None</em>) – The estimator gradient to be used for the backward pass.
 If None, a default instance of the estimator gradient,
-<a class="reference external" href="https://qiskit.org/ecosystem/algorithms/stubs/qiskit_algorithms.gradients.ParamShiftEstimatorGradient.html#qiskit_algorithms.gradients.ParamShiftEstimatorGradient" title="(in Qiskit Algorithms v0.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamShiftEstimatorGradient</span></code></a>, will be used.</p></li>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.gradients.ParamShiftEstimatorGradient.html#qiskit_algorithms.gradients.ParamShiftEstimatorGradient" title="(in Qiskit Algorithms v0.2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamShiftEstimatorGradient</span></code></a>, will be used.</p></li>
 <li><p><strong>input_gradients</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Determines whether to compute gradients with respect to input data.
 Note that this parameter is <code class="docutils literal notranslate"><span class="pre">False</span></code> by default, and must be explicitly set to
 <code class="docutils literal notranslate"><span class="pre">True</span></code> for a proper gradient computation when using

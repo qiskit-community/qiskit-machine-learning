@@ -437,35 +437,35 @@ respectively, that implement these two operations:</p>
 <ul class="simple">
 <li><p>Sampler class calculates probabilities or quasi-probabilities of
 bitstrings from quantum circuits. The base class is
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.BaseSampler.html">qiskit.primitives.BaseSampler</a>.</p></li>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler">qiskit.primitives.BaseSampler</a>.</p></li>
 <li><p>Estimator class estimates expectation values of quantum circuits and
 observables. The base class is
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.BaseEstimator.html">qiskit.primitives.BaseEstimator</a>.</p></li>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator">qiskit.primitives.BaseEstimator</a>.</p></li>
 </ul>
 <p>Qiskit Terra provides core interfaces and two implementations:</p>
 <ul class="simple">
 <li><p>The reference implementation that is statevector based. This
 implementation does require a backend or a simulator, it relies on
 the classes from the
-<a class="reference external" href="https://qiskit.org/documentation/apidoc/quantum_info.html">quantum_info</a>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/quantum_info">quantum_info</a>
 package.</p></li>
 <li><p>The backend based primitives are to support provider/backends that do
 not support primitives directly. This implementation requires an
 instance of a backend to be passed to a primitive.</p></li>
 </ul>
 <p>More information on the Qiskit Terra primitives can be found in the
-<a class="reference external" href="https://qiskit.org/documentation/apidoc/primitives.html">documentation</a>.</p>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/primitives">documentation</a>.</p>
 <p>It is worth mentioning other implementations as well:</p>
 <ul class="simple">
 <li><p>Aer primitives should be used for Aer simulator. They extend
 corresponding interfaces from Terra and can be used in the same way
 as primitives from Terra. See
-<a class="reference external" href="https://qiskit.org/documentation/apidoc/aer_primitives.html">documentation</a>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/0.39/aer_primitives">documentation</a>
 for more information.</p></li>
 <li><p>The runtime primitives to be used with IBM devices. This is an
 implementation that is focused on cloud computing on actual hardware.
 See
-<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/apidocs/runtime_service.html">here</a>.</p></li>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime">here</a>.</p></li>
 </ul>
 <p>Along with the primitives Terra has some primitive-like algorithms that
 are highly useful in QML and used by the new 0.5 functions:</p>
@@ -473,12 +473,12 @@ are highly useful in QML and used by the new 0.5 functions:</p>
 <li><p>Algorithms to calculate the gradient of a quantum circuit. For each
 core primitive there’s a corresponding base interface that defines
 quantum circuit gradient. The documentation on gradients is
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.algorithms.gradients.html">here</a>.</p></li>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/apidocs/qiskit_algorithms.gradients.html">here</a>.</p></li>
 <li><p>Algorithms that compute the fidelity or “closeness” of pairs of
 quantum states. Currently, only one implementation is available that
 requires a sampler primitive and is based on the compute-uncompute
 method. The documentation is
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.algorithms.state_fidelities.html">here</a>.</p></li>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/apidocs/qiskit_algorithms.state_fidelities.html">here</a>.</p></li>
 </ul>
 <p>Both two new algorithms are very similar to the core primitives, they
 share the same method signatures, so they may be called as high level
@@ -487,8 +487,7 @@ primitives despite they are not in the primitives package.</p>
 <section id="new-quantum-kernel">
 <h2>New quantum kernel<a class="headerlink" href="#new-quantum-kernel" title="Permalink to this heading">#</a></h2>
 <p>The previous implementation consisted of a single class
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html">QuantumKernel</a>
-that did everything:</p>
+<code class="docutils literal notranslate"><span class="pre">QuantumKernel</span></code> that did everything:</p>
 <ul class="simple">
 <li><p>Constructed circuits</p></li>
 <li><p>Executed circuits and evaluated overlap between circuits</p></li>
@@ -519,34 +518,34 @@ given to the <code class="docutils literal notranslate"><span class="pre">fideli
 <p>A new hierarchy shown on the diagram introduces:</p>
 <ul class="simple">
 <li><p>A base and abstract class
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a>
 is introduced. All concrete implementation must inherit this class.</p></li>
 <li><p>A fidelity based quantum kernel
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a>
 is added. This is a direct <strong>replacement</strong> of the previous quantum
 kernel implementation. The difference is that the new class takes a
 fidelity instance to estimate overlaps and construct kernel matrix.</p></li>
 <li><p>A new abstract class
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a>
 is introduced to generalize ability to train quantum kernels.</p></li>
 <li><p>A fidelity-based trainable quantum kernel
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a>
 is introduced. This is a <strong>replacement</strong> of the previous quantum
 kernel if a trainable kernel is required. The trainer
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.alogrithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a>
+<code class="docutils literal notranslate"><span class="pre">QuantumKernelTrainer</span></code>
 now accepts both quantum kernel implementations, the new one and the
 previous one.</p></li>
 </ul>
 <p>For convenience, the previous quantum kernel implementation,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html">QuantumKernel</a>,
+<code class="docutils literal notranslate"><span class="pre">QuantumKernel</span></code>,
 now extends both new abstract classes and thus it is compatible with the
 new introduced interfaces. This implementation is now <strong>pending
 deprecation</strong>, will be deprecated in a future release and subsequently
 removed after that. New, primitive-based quantum kernels should be used
 instead.</p>
 <p>The existing algorithms such as
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a>,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a>,
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a>
 and other kernel-based algorithms are updated and work with both
 implementations.</p>
 <p>For example a QSVM classifier can be trained as follows.</p>
@@ -615,7 +614,7 @@ none is passed. But here, we create it manually for illustrative
 purposes. To create a fidelity instance we pass a sampler. The sampler
 is the reference implementation and defines where our quantum circuits
 are executed. You may create a sampler instance from
-<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/stubs/qiskit_ibm_runtime.QiskitRuntimeService.html">QiskitRuntimeService</a>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService">QiskitRuntimeService</a>
 to leverage Qiskit runtime services.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
 <span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
@@ -649,45 +648,45 @@ to leverage Qiskit runtime services.</p>
 kernels. In addition, and as a replacement to the existing neural
 networks, two new networks are introduced. The new networks introduced
 are
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a>
 and
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
 which are detailed below and are replacements for the pre-existing
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>
+<code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code>,
+<code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code>
 and
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html">TwoLayerQNN</a>
+<code class="docutils literal notranslate"><span class="pre">TwoLayerQNN</span></code>
 which are now pending deprecated.</p>
 <section id="samplerqnn">
 <h3>SamplerQNN<a class="headerlink" href="#samplerqnn" title="Permalink to this heading">#</a></h3>
-<p>A new <a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">Sampler Quantum Neural
+<p>A new <a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">Sampler Quantum Neural
 Network</a>
 leverages the sampler primitive, sampler gradients and is a <strong>direct
 replacement</strong> of
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>.</p>
+<code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code>.</p>
 <p>The new
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a>
 exposes a similar interface to the existing
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>,
+<code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code>,
 with a few differences. One is the <code class="docutils literal notranslate"><span class="pre">quantum_instance</span></code> parameter. This
 parameter does not have a direct replacement, and instead the
 <code class="docutils literal notranslate"><span class="pre">sampler</span></code> parameter must be used. The <code class="docutils literal notranslate"><span class="pre">gradient</span></code> parameter keeps the
 same name as in the
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>
+<code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code>
 implementation, but it no longer accepts Opflow gradient classes as
 inputs; instead, this parameter expects an (optionally custom) primitive
 gradient. The <code class="docutils literal notranslate"><span class="pre">sampling</span></code> option has been removed for the time being,
 as this information is not currently exposed by the sampler, and might
 correspond to future lower-level primitives.</p>
 <p>The existing training algorithms such as
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a>
 that were based on
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>,
+<code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code>,
 are updated to accept both implementations. The implementation of
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a>
 has not changed.</p>
 <p>The existing
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.CircuitQNN.html">CircuitQNN</a>
+<code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code>
 is now <strong>pending deprecation</strong>, will be deprecated in a future release
 and subsequently removed after that.</p>
 <p>We’ll show how to train a variational quantum classifier using both
@@ -801,32 +800,32 @@ what is passed it automatically constructs either <code class="docutils literal 
 </section>
 <section id="estimatorqnn">
 <h3>EstimatorQNN<a class="headerlink" href="#estimatorqnn" title="Permalink to this heading">#</a></h3>
-<p>A new <a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">Estimator quantum neural
+<p>A new <a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">Estimator quantum neural
 network</a>
 leverages the estimator primitive, estimator gradients and is a <strong>direct
 replacement</strong> of
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>.</p>
+<code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code>.</p>
 <p>The new
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#">EstimatorQNN</a>
 exposes a similar interface to the existing
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>,
+<code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code>,
 with a few differences. One is the <code class="docutils literal notranslate"><span class="pre">quantum_instance</span></code> parameter. This
 parameter does not have a direct replacement, and instead the
 <code class="docutils literal notranslate"><span class="pre">estimator</span></code> parameter must be used. The <code class="docutils literal notranslate"><span class="pre">gradient</span></code> parameter keeps
 the same name as in the
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>
+<code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code>
 implementation, but it no longer accepts Opflow gradient classes as
 inputs; instead, this parameter expects an (optionally custom) primitive
 gradient.</p>
 <p>The existing training algorithms such as
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a>
 that were based on the
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html">TwoLayerQNN</a>,
+<code class="docutils literal notranslate"><span class="pre">TwoLayerQNN</span></code>,
 are updated to accept both implementations. The implementation of
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a>
 has not changed.</p>
 <p>The existing
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.OpflowQNN.html">OpflowQNN</a>
+<code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code>
 is now <strong>pending deprecation</strong>, will be deprecated in a future release
 and subsequently removed after that.</p>
 <p>We’ll show how to train a variational quantum regressor using both
@@ -903,7 +902,7 @@ quickly.</p>
 <h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#building-a-regressor-using-estimatorqnn" title="Permalink to this heading">#</a></h3>
 <p>Create an instance of the reference Estimator. You may create an
 estimator instance from
-<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/stubs/qiskit_ibm_runtime.QiskitRuntimeService.html">QiskitRuntimeService</a>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService">QiskitRuntimeService</a>
 to leverage Qiskit runtime services.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Estimator</span>
 
@@ -925,7 +924,7 @@ qubit, if it is not specified.</p>
 </div>
 <p>Construct a variational quantum regressor and fit it. In this case we
 use a gradient based optimizer, thus the network makes use of the
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.algorithms.gradients.ParamShiftEstimatorGradient.html">default estimator
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.gradients.ParamShiftEstimatorGradient.html">default estimator
 gradient</a>
 that is created automatically.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">L_BFGS_B</span>
@@ -954,18 +953,18 @@ on what is passed it automatically constructs either <code class="docutils liter
 <p>A few other components, not mentioned explicitly above, are also
 deprecated or pending deprecation:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.TwoLayerQNN.html">TwoLayerQNN</a>
+<li><p><code class="docutils literal notranslate"><span class="pre">TwoLayerQNN</span></code>
 is pending deprecation. Users should use
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a>
 instead.</p></li>
 <li><p>The Distribution Learners package is deprecated fully. This package
 contains such classes as
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.DiscriminativeNetwork.html">DiscriminativeNetwork</a>,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.GenerativeNetwork.html">GenerativeNetwork</a>,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.NumPyDiscriminator.html">NumPyDiscriminator</a>,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.PyTorchDiscriminator.html">PyTorchDiscriminator</a>,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QuantumGenerator.html">QuantumGenerator</a>,
-<a class="reference external" href="https://qiskit.org/documentation/machine-learning/stubs/qiskit_machine_learning.algorithms.QGAN.html">QGAN</a>.
+<code class="docutils literal notranslate"><span class="pre">DiscriminativeNetwork</span></code>,
+<code class="docutils literal notranslate"><span class="pre">GenerativeNetwork</span></code>,
+<code class="docutils literal notranslate"><span class="pre">NumPyDiscriminator</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PyTorchDiscriminator</span></code>,
+<code class="docutils literal notranslate"><span class="pre">QuantumGenerator</span></code>,
+<code class="docutils literal notranslate"><span class="pre">QGAN</span></code>.
 Instead, please refer to the <a class="reference internal" href="../tutorials/04_torch_qgan.html"><span class="doc">new QGAN
 tutorial</span></a>. This tutorial
 introduces step-by-step how to build a PyTorch-based QGAN using
@@ -974,7 +973,7 @@ quantum neural networks.</p></li>
 Qiskit Programs that embed Qiskit Runtime in the algorithmic
 interfaces and facilitate usage of algorithms and scripts in the
 cloud. You should use
-<a class="reference external" href="https://qiskit.org/documentation/partners/qiskit_ibm_runtime/stubs/qiskit_ibm_runtime.QiskitRuntimeService.html">QiskitRuntimeService</a>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService">QiskitRuntimeService</a>
 to leverage primitives and runtimes.</p></li>
 </ul>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">qiskit.tools.jupyter</span>

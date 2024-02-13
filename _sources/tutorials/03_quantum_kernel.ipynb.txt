@@ -65,7 +65,7 @@
     "* $\\phi(\\vec{x})$ is the quantum feature map\n",
     "* $\\left| \\langle a|b \\rangle \\right|^{2}$ denotes the overlap of two quantum states $a$ and $b$\n",
     "\n",
-    "Quantum kernels can be plugged into common classical kernel learning algorithms such as SVMs or clustering algorithms, as you will see in the examples below. They can also be leveraged in new quantum kernel methods like [QSVC](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html) class  provided by `qiskit-machine-learning` which is explored in this tutorial, and other methods as shown in later tutorials on [Pegasos QSVC](07_pegasos_qsvc.ipynb) and [Quantum Kernel Training](08_quantum_kernel_trainer.ipynb).\n",
+    "Quantum kernels can be plugged into common classical kernel learning algorithms such as SVMs or clustering algorithms, as you will see in the examples below. They can also be leveraged in new quantum kernel methods like [QSVC](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html) class  provided by `qiskit-machine-learning` which is explored in this tutorial, and other methods as shown in later tutorials on [Pegasos QSVC](07_pegasos_qsvc.ipynb) and [Quantum Kernel Training](08_quantum_kernel_trainer.ipynb).\n",
     "\n",
     "***\n",
     "\n",
@@ -229,11 +229,11 @@
     "\n",
     "The next step is to create a quantum kernel instance that will help classify this data. \n",
     "\n",
-    "We use the [FidelityQuantumKernel](https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html) class, and pass two input arguments to its constructor: \n",
+    "We use the [FidelityQuantumKernel](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html) class, and pass two input arguments to its constructor: \n",
     "\n",
-    "1. `feature_map`: in this case, a two-qubit [ZZFeatureMap](https://qiskit.org/documentation/stubs/qiskit.circuit.library.ZZFeatureMap.html).\n",
+    "1. `feature_map`: in this case, a two-qubit [ZZFeatureMap](https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap).\n",
     "\n",
-    "2. `fidelity`: in this case, the [ComputeUncompute](https://qiskit.org/ecosystem/algorithms/stubs/qiskit_algorithms.state_fidelities.ComputeUncompute.html) fidelity subroutine that leverages the [Sampler](https://qiskit.org/documentation/stubs/qiskit.primitives.Sampler.html) primitive.\n",
+    "2. `fidelity`: in this case, the [ComputeUncompute](https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.state_fidelities.ComputeUncompute.html) fidelity subroutine that leverages the [Sampler](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.Sampler) primitive.\n",
     "\n",
     "**NOTE:** If you don't pass a `Sampler` or `Fidelity` instance, then the instances of the reference `Sampler` and `ComputeUncompute` classes (found in `qiskit.primitives`) will be created by default."
    ]

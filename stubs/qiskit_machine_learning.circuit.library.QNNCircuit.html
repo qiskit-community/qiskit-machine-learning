@@ -412,12 +412,12 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BlueprintCircuit</span></code></p>
 <p>The QNN circuit is a blueprint circuit that wraps feature map and ansatz circuits.
 It can be used to simplify the composition of these two.</p>
-<p>If only the number of qubits is provided the <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.RealAmplitudes.html#qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>
-ansatz and the <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.ZZFeatureMap.html#qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> feature map are used. If the
-number of qubits is 1 the <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.ZFeatureMap.html#qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> is used. If only a
-feature map is provided, the <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.RealAmplitudes.html#qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a> ansatz with the
+<p>If only the number of qubits is provided the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>
+ansatz and the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> feature map are used. If the
+number of qubits is 1 the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> is used. If only a
+feature map is provided, the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a> ansatz with the
 corresponding number of qubits is used. If only an ansatz is provided the
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.ZZFeatureMap.html#qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> with the corresponding number of qubits is used.</p>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> with the corresponding number of qubits is used.</p>
 <p>At least one parameter has to be provided. If a feature map and an ansatz is provided, the
 number of qubits must be the same.</p>
 <p>In case number of qubits is provided along with either a feature map, an ansatz or both, a
@@ -472,12 +472,12 @@ provided, otherwise required. If not provided num_qubits defaults from the
 sizes of feature_map and ansatz.</p></li>
 <li><p><strong>feature_map</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – A feature map. Optional if num_qubits or ansatz is provided, otherwise
 required. If not provided defaults to
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.ZZFeatureMap.html#qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> or
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.ZFeatureMap.html#qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> if num_qubits is determined
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> or
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> if num_qubits is determined
 to be 1.</p></li>
 <li><p><strong>ansatz</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – An ansatz. Optional if num_qubits or feature_map is provided, otherwise
 required. If not provided defaults to
-<a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.RealAmplitudes.html#qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>.</p></li>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

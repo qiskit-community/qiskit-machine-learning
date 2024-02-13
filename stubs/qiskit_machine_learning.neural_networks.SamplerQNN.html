@@ -413,7 +413,7 @@
 <p>A neural network implementation based on the Sampler primitive.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is a neural network that takes in a parametrized quantum circuit
 with designated parameters for input data and/or weights and translates the quasi-probabilities
-estimated by the <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.Sampler.html#qiskit.primitives.Sampler" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> primitive into predicted classes. Quite
+estimated by the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.Sampler" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> primitive into predicted classes. Quite
 often, a combined quantum circuit is used. Such a circuit is built from two circuits:
 a feature map, it provides input parameters for the network, and an ansatz (weight parameters).
 In this case a <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> can be passed as
@@ -498,7 +498,7 @@ updated once the SamplerQNN object has been constructed.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sampler</strong> (<em>BaseSampler</em><em> | </em><em>None</em>) – The sampler primitive used to compute the neural network’s results.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, a default instance of the reference sampler defined
-by <a class="reference external" href="https://qiskit.org/documentation/stubs/qiskit.primitives.Sampler.html#qiskit.primitives.Sampler" title="(in Qiskit v0.45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> will be used.</p></li>
+by <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.Sampler" title="(in Qiskit v0.46)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> will be used.</p></li>
 <li><p><strong>circuit</strong> (<em>QuantumCircuit</em>) – The parametrized quantum circuit that generates the samples of this network.
 If a <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is passed, the
 <cite>input_params</cite> and <cite>weight_params</cite> do not have to be provided, because these two
@@ -522,7 +522,7 @@ interpret method is provided where the shape is taken to be
 <code class="docutils literal notranslate"><span class="pre">2^circuit.num_qubits</span></code>.</p></li>
 <li><p><strong>gradient</strong> (<em>BaseSamplerGradient</em><em> | </em><em>None</em>) – An optional sampler gradient to be used for the backward pass.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, a default instance of
-<a class="reference external" href="https://qiskit.org/ecosystem/algorithms/stubs/qiskit_algorithms.gradients.ParamShiftSamplerGradient.html#qiskit_algorithms.gradients.ParamShiftSamplerGradient" title="(in Qiskit Algorithms v0.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamShiftSamplerGradient</span></code></a> will be used.</p></li>
+<a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.gradients.ParamShiftSamplerGradient.html#qiskit_algorithms.gradients.ParamShiftSamplerGradient" title="(in Qiskit Algorithms v0.2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamShiftSamplerGradient</span></code></a> will be used.</p></li>
 <li><p><strong>input_gradients</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Determines whether to compute gradients with respect to input data.
 Note that this parameter is <code class="docutils literal notranslate"><span class="pre">False</span></code> by default, and must be explicitly set to
 <code class="docutils literal notranslate"><span class="pre">True</span></code> for a proper gradient computation when using
