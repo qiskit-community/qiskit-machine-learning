@@ -46,7 +46,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url='https://github.com/qiskit-community/qiskit-machine-learning',
     author='Qiskit Machine Learning Development Team',
-    author_email='hello@qiskit.org',
+    author_email='qiskit@us.ibm.com',
     license='Apache-2.0',
     classifiers=[
         "Environment :: Console",
