@@ -207,24 +207,37 @@ class FidelityQuantumKernel(BaseKernel):
         return kernel_matrix
 
     def _get_kernel_entries(
-        self, left_parameters: np.ndarray, right_parameters: np.ndarray
+        self, left_parameters: np.ndarray, right_parameters: np.ndarray, max_circuits_per_job: int = 300
     ) -> Sequence[float]:
         """
         Gets kernel entries by executing the underlying fidelity instance and getting the results
-        back from the async job.
+        back from the async job. The number of circuits per job is limited by the max_circuits_per_job parameter.
         """
         num_circuits = left_parameters.shape[0]
-        if num_circuits != 0:
+        kernel_entries = []
+        
+        # Determine the number of chunks needed
+        num_chunks = (num_circuits + max_circuits_per_job - 1) // max_circuits_per_job
+        
+        for i in range(num_chunks):
+            # Determine the range of indices for this chunk
+            start_idx = i * max_circuits_per_job
+            end_idx = min((i + 1) * max_circuits_per_job, num_circuits)
+            
+            # Extract the parameters for this chunk
+            chunk_left_parameters = left_parameters[start_idx:end_idx]
+            chunk_right_parameters = right_parameters[start_idx:end_idx]
+            
+            # Execute this chunk
             job = self._fidelity.run(
-                [self._feature_map] * num_circuits,
-                [self._feature_map] * num_circuits,
-                left_parameters,
-                right_parameters,
+                [self._feature_map] * (end_idx - start_idx),
+                [self._feature_map] * (end_idx - start_idx),
+                chunk_left_parameters,
+                chunk_right_parameters,
             )
-            kernel_entries = job.result().fidelities
-        else:
-            # trivial case, only identical samples
-            kernel_entries = []
+            
+            # Extend the kernel_entries list with the results from this chunk
+            kernel_entries.extend(job.result().fidelities)
         return kernel_entries
 
     def _is_trivial(
