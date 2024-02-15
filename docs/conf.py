@@ -138,15 +138,8 @@ numfig_format = {"table": "Table %s"}
 
 translations_list = [
     ("en", "English"),
-    ("bn_BN", "Bengali"),
-    ("fr_FR", "French"),
-    ("hi_IN", "Hindi"),
     ("ja_JP", "Japanese"),
-    ("ko_KR", "Korean"),
-    ("ru_RU", "Russian"),
     ("es_UN", "Spanish"),
-    ("ta_IN", "Tamil"),
-    ("tr_TR", "Turkish"),
 ]
 language = "en"
 
