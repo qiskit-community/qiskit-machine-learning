@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -148,7 +148,7 @@ class EstimatorQNN(NeuralNetwork):
         if estimator is None:
             estimator = Estimator()
         self.estimator = estimator
-        self._circuit = circuit
+        self._org_circuit = circuit
         if observables is None:
             observables = SparsePauliOp.from_list([("Z" * circuit.num_qubits, 1)])
         if isinstance(observables, BaseOperator):
@@ -173,10 +173,12 @@ class EstimatorQNN(NeuralNetwork):
             input_gradients=input_gradients,
         )
 
+        self._circuit = self._reparameterize_circuit(circuit, input_params, weight_params)
+
     @property
     def circuit(self) -> QuantumCircuit:
         """The quantum circuit representing the neural network."""
-        return copy(self._circuit)
+        return copy(self._org_circuit)
 
     @property
     def observables(self) -> Sequence[BaseOperator] | BaseOperator:

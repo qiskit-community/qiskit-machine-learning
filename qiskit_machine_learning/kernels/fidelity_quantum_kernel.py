@@ -127,17 +127,20 @@ class FidelityQuantumKernel(BaseKernel):
         left_parameters = np.zeros((0, num_features))
         right_parameters = np.zeros((0, num_features))
 
-        indices = []
-        for i, x_i in enumerate(x_vec):
-            for j, y_j in enumerate(y_vec):
-                if self._is_trivial(i, j, x_i, y_j, False):
-                    continue
+        indices = np.asarray(
+            [
+                (i, j)
+                for i, x_i in enumerate(x_vec)
+                for j, y_j in enumerate(y_vec)
+                if not self._is_trivial(i, j, x_i, y_j, False)
+            ]
+        )
 
-                left_parameters = np.vstack((left_parameters, x_i))
-                right_parameters = np.vstack((right_parameters, y_j))
-                indices.append((i, j))
+        if indices.size > 0:
+            left_parameters = x_vec[indices[:, 0]]
+            right_parameters = y_vec[indices[:, 1]]
 
-        return left_parameters, right_parameters, indices
+        return left_parameters, right_parameters, indices.tolist()
 
     def _get_symmetric_parameterization(
         self, x_vec: np.ndarray
@@ -149,17 +152,20 @@ class FidelityQuantumKernel(BaseKernel):
         left_parameters = np.zeros((0, num_features))
         right_parameters = np.zeros((0, num_features))
 
-        indices = []
-        for i, x_i in enumerate(x_vec):
-            for j, x_j in enumerate(x_vec[i:]):
-                if self._is_trivial(i, i + j, x_i, x_j, True):
-                    continue
+        indices = np.asarray(
+            [
+                (i, i + j)
+                for i, x_i in enumerate(x_vec)
+                for j, x_j in enumerate(x_vec[i:])
+                if not self._is_trivial(i, i + j, x_i, x_j, True)
+            ]
+        )
 
-                left_parameters = np.vstack((left_parameters, x_i))
-                right_parameters = np.vstack((right_parameters, x_j))
-                indices.append((i, i + j))
+        if indices.size > 0:
+            left_parameters = x_vec[indices[:, 0]]
+            right_parameters = x_vec[indices[:, 1]]
 
-        return left_parameters, right_parameters, indices
+        return left_parameters, right_parameters, indices.tolist()
 
     def _get_kernel_matrix(
         self,
