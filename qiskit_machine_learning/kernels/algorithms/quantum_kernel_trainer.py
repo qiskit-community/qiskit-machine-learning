@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,7 +13,6 @@
 """Quantum Kernel Trainer"""
 from __future__ import annotations
 
-import copy
 from functools import partial
 from typing import Sequence
 
@@ -198,12 +197,16 @@ class QuantumKernelTrainer:
             msg = "Quantum kernel cannot be fit because there are no user parameters specified."
             raise ValueError(msg)
 
-        # Bind inputs to objective function
-        output_kernel = copy.deepcopy(self._quantum_kernel)
-
         # Randomly initialize the initial point if one was not passed
         if self._initial_point is None:
             self._initial_point = algorithm_globals.random.random(num_params)
+
+        # Bind inputs to objective function
+        output_kernel = type(self._quantum_kernel)(
+            feature_map=self._quantum_kernel.feature_map,
+            training_parameters=self._quantum_kernel.training_parameters,
+        )
+        output_kernel.assign_training_parameters(parameter_values=self.initial_point)
 
         # Perform kernel optimization
         loss_function = partial(
