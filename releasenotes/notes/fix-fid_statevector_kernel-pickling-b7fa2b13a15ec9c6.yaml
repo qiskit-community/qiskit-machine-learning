@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Fixed bug where fidelity_statevector_kernel could not be pickled. This was due to the functools 
+    lru cache having a known error with pickling. Added __getstate__ and __setstate__ attributes
+    to deal with the cache when pickling by setting it to None type then re-initialising when
+    unpickled. Added a self.cache_size param for unpickling process.
+
