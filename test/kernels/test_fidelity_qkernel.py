@@ -110,15 +110,16 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         """Test max_circuits_per_job parameters."""
         kernel_all = FidelityQuantumKernel(feature_map=self.feature_map, max_circuits_per_job=None)
         kernel_matrix_all = kernel_all.evaluate(x_vec=self.sample_train)
-
-        kernel_more = FidelityQuantumKernel(feature_map=self.feature_map, max_circuits_per_job=20)
-        kernel_matrix_more = kernel_more.evaluate(x_vec=self.sample_train)
-
-        kernel_1 = FidelityQuantumKernel(feature_map=self.feature_map, max_circuits_per_job=1)
-        kernel_matrix_1 = kernel_1.evaluate(x_vec=self.sample_train)
-
-        np.testing.assert_equal(kernel_matrix_all, kernel_matrix_more)
-        np.testing.assert_equal(kernel_matrix_all, kernel_matrix_1)
+        with self.subTest("Check when max_circuits_per_job > left_parameters"):
+            kernel_more = FidelityQuantumKernel(
+                feature_map=self.feature_map, max_circuits_per_job=20
+            )
+            kernel_matrix_more = kernel_more.evaluate(x_vec=self.sample_train)
+            np.testing.assert_equal(kernel_matrix_all, kernel_matrix_more)
+        with self.subTest("Check when max_circuits_per_job = 1"):
+            kernel_1 = FidelityQuantumKernel(feature_map=self.feature_map, max_circuits_per_job=1)
+            kernel_matrix_1 = kernel_1.evaluate(x_vec=self.sample_train)
+            np.testing.assert_equal(kernel_matrix_all, kernel_matrix_1)
 
     def test_exceptions(self):
         """Test quantum kernel raises exceptions and warnings."""

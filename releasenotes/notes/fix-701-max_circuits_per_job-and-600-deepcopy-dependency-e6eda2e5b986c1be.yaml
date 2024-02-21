@@ -5,6 +5,6 @@ fixes:
     in the case that if more circuits are submitted than the job limit for the 
     backend, the circuits are split up and run through separate jobs.
   - |    
-    Removed :class:`.QuantumKernelTrainer`dependency on `copy.deepcopy` that was
+    Removed :class:`.QuantumKernelTrainer` dependency on `copy.deepcopy` that was
     throwing an error with real backends. Now, it creates a new `instance`
     of the :class:`.QuantumKernelTrainer` and assigns parameters manually.
