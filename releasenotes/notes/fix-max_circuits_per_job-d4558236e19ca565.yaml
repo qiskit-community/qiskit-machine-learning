@@ -5,11 +5,11 @@ issues:
     problems. #701
     There is a problem with the way _get_kernel_entries handles the jobs sent
     to hardware. max_circuits_per_job is half of the kernel size, which is 
-    not suitable for the real hardware for larger problems.
+    not suitable for the hardware for larger problems.
 
 fixes:
   - |
-    #701: Added a max_circuits_per_job parameter to fidelity quantum kernel used
+    Added a max_circuits_per_job parameter to fidelity quantum kernel used
     in the case that if more circuits are submitted than the job limit for the 
     backend, the circuits are split up and ran through separate jobs. 
     Documentation was added and formatted for this.

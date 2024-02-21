@@ -1,7 +1,7 @@
 ---
 issues:
   - |
-    QKT deepcopies kernel internally, fails with runtime primitives #600
+    QKT deepcopy kernel internally, fails with runtime primitives #600
     On line 202, the quantum kernel trainer deepcopy, which is incompatible 
     with the runtime primitives, as they do not support deepcopy. If you try 
     to run it, a recursion error is raised. (this does not happen with the 
@@ -10,6 +10,6 @@ issues:
 fixes:
   - |
     Removed quantum kernel trainers dependency on copy.deepcopy that was
-    throwing an error with real backends. Now initialise a new instance
+    throwing an error with real backends. Now create a new instance
     of a class and assign parameters manually. As change is purely 
     internal, no new documentation required.
