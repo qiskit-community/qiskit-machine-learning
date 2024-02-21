@@ -1,0 +1,9 @@
+---
+fixes:
+  - |
+    #701 Added a max_circuits_per_job parameter to fidelity quantum kernel used
+    in the case that if more circuits are submitted than the job limit for the 
+    backend, the circuits are split up and ran through separate jobs.
+    #600 Removed quantum kernel trainers dependency on copy.deepcopy that was
+    throwing an error with real backends. Now, it creates a new instance
+    of the class and assign parameters manually.

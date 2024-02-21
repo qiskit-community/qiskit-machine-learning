@@ -106,10 +106,26 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
         self.assertGreaterEqual(score, 0.5)
 
+    def test_max_circuits_per_job(self):
+        """Test max_circuits_per_job parameters."""
+        kernel_all = FidelityQuantumKernel(feature_map=self.feature_map, max_circuits_per_job=None)
+        kernel_matrix_all = kernel_all.evaluate(x_vec=self.sample_train)
+
+        kernel_more = FidelityQuantumKernel(feature_map=self.feature_map, max_circuits_per_job=20)
+        kernel_matrix_more = kernel_more.evaluate(x_vec=self.sample_train)
+
+        kernel_1 = FidelityQuantumKernel(feature_map=self.feature_map, max_circuits_per_job=1)
+        kernel_matrix_1 = kernel_1.evaluate(x_vec=self.sample_train)
+
+        np.testing.assert_equal(kernel_matrix_all, kernel_matrix_more)
+        np.testing.assert_equal(kernel_matrix_all, kernel_matrix_1)
+
     def test_exceptions(self):
         """Test quantum kernel raises exceptions and warnings."""
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
             _ = FidelityQuantumKernel(evaluate_duplicates="wrong")
+        with self.assertRaises(ValueError, msg="Unsupported value of 'max_circuits_per_job'."):
+            _ = FidelityQuantumKernel(max_circuits_per_job=-1)
 
     @idata(
         # params, fidelity, feature map, enforce_psd, duplicate

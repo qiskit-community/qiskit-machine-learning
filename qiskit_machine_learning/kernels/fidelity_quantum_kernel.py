@@ -46,7 +46,7 @@ class FidelityQuantumKernel(BaseKernel):
         fidelity: BaseStateFidelity | None = None,
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
-        max_circuits_per_job: int = 300,
+        max_circuits_per_job: int = None,
     ) -> None:
         """
         Args:
@@ -75,7 +75,7 @@ class FidelityQuantumKernel(BaseKernel):
                       are found in the dataset the corresponding matrix element is set to `1`.
                       When inferring, matrix elements for identical samples are set to `1`.
             max_circuits_per_job: Maximum number of circuits per job for the backend. Please
-               check the backend specifications. Use ``None`` for all entries per job. Default ``300``.
+               check the backend specifications. Use ``None`` for all entries per job. Default ``None``.
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
@@ -90,6 +90,11 @@ class FidelityQuantumKernel(BaseKernel):
         if fidelity is None:
             fidelity = ComputeUncompute(sampler=Sampler())
         self._fidelity = fidelity
+        if max_circuits_per_job is not None:
+            if max_circuits_per_job < 1:
+                raise ValueError(
+                    f"Unsupported value passed as max_circuits_per_job: {max_circuits_per_job}"
+                )
         self.max_circuits_per_job = max_circuits_per_job
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
