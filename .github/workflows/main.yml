@@ -112,16 +112,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8, 3.9, '3.10', 3.11, 3.12.0]
+        python-version: [3.8, 3.9, '3.10', 3.11, 3.12]
         include:
           - os: macos-latest
             python-version: 3.8
           - os: macos-latest
-            python-version: 3.12.0
+            python-version: 3.12
           - os: windows-latest
             python-version: 3.8
           - os: windows-latest
-            python-version: 3.12.0
+            python-version: 3.12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -283,7 +283,7 @@ jobs:
           path: /tmp/u311
       - uses: actions/download-artifact@v4
         with:
-          name: ubuntu-latest-3.12.0
+          name: ubuntu-latest-3.12
           path: /tmp/u312
       - uses: actions/download-artifact@v4
         with:
@@ -291,7 +291,7 @@ jobs:
           path: /tmp/m38
       - uses: actions/download-artifact@v4
         with:
-          name: macos-latest-3.12.0
+          name: macos-latest-3.12
           path: /tmp/m312
       - uses: actions/download-artifact@v4
         with:
@@ -299,7 +299,7 @@ jobs:
           path: /tmp/w38
       - uses: actions/download-artifact@v4
         with:
-          name: windows-latest-3.12.0
+          name: windows-latest-3.12
           path: /tmp/w312
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
