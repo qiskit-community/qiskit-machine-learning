@@ -1,8 +1,10 @@
 ---
 fixes:
   - |
-    Fixed bug where fidelity_statevector_kernel could not be pickled. This was due to the functools 
-    lru cache having a known error with pickling. Added __getstate__ and __setstate__ attributes
-    to deal with the cache when pickling by setting it to None type then re-initialising when
-    unpickled. Added a self.cache_size param for unpickling process.
+    Fixed a bug where :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` threw an error when pickled. This was due 
+    to :mod:`functools.lru_cache` having a known error with pickling. This was solved by implementing
+    custom :mod:`__getstate__` and :mod:`__setstate__` functions to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`
+    to deal with the cache when pickling. When pickled the cache is set to :mod:`None` within the object
+    :mod:`dict`. When unpickling, a new :mod:`self.cache_size` parameter is used to re-initialise the 
+    :mod:`lru_cache`.
 
