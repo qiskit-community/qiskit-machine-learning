@@ -162,10 +162,10 @@ class FidelityStatevectorKernel(BaseKernel):
         self._get_statevector.cache_clear()
 
     def __getstate__(self) -> dict:
-        picklable_kernel = dict(self.__dict__)
-        picklable_kernel["_get_statevector"] = None
-        return picklable_kernel
+        kernel = dict(self.__dict__)
+        kernel["_get_statevector"] = None
+        return kernel
 
-    def __setstate__(self, unpickled_kernel):
-        self.__dict__ = unpickled_kernel
+    def __setstate__(self, kernel):
+        self.__dict__ = kernel
         self._get_statevector = lru_cache(maxsize=self.cache_size)(self._get_statevector_)
