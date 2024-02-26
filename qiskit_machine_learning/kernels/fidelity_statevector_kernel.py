@@ -97,7 +97,7 @@ class FidelityStatevectorKernel(BaseKernel):
         self._auto_clear_cache = auto_clear_cache
         self._shots = shots
         self._enforce_psd = enforce_psd
-        self.cache_size = cache_size
+        self._cache_size = cache_size
         # Create the statevector cache at the instance level.
         self._get_statevector = lru_cache(maxsize=cache_size)(self._get_statevector_)
 
@@ -168,4 +168,4 @@ class FidelityStatevectorKernel(BaseKernel):
 
     def __setstate__(self, kernel):
         self.__dict__ = kernel
-        self._get_statevector = lru_cache(maxsize=self.cache_size)(self._get_statevector_)
+        self._get_statevector = lru_cache(maxsize=self._cache_size)(self._get_statevector_)

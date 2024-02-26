@@ -5,6 +5,6 @@ fixes:
     to :mod:`functools.lru_cache` having a known error with pickling. This was solved by implementing
     custom :mod:`__getstate__` and :mod:`__setstate__` functions to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`
     to deal with the cache when pickling. When pickled the cache is set to :mod:`None` within the object
-    :mod:`dict`. When unpickling, a new :mod:`self.cache_size` parameter is used to re-initialise the 
+    :mod:`dict`. When un-pickling, a new :mod:`self.cache_size` parameter is used to re-initialize the 
     :mod:`lru_cache`.
 
