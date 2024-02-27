@@ -17,6 +17,7 @@ import functools
 import itertools
 import sys
 import unittest
+import pickle
 
 from test import QiskitMachineLearningTestCase
 
@@ -342,6 +343,52 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         self.assertEqual(qc, kernel.feature_map)
         self.assertEqual(1, kernel.num_features)
+
+    def test_pickling(self):
+        """Test that the kernel can be pickled correctly and without error."""
+        qc = QuantumCircuit(1)
+        qc.ry(Parameter("w"), 0)
+        kernel1 = FidelityStatevectorKernel(feature_map=qc)
+
+        pickled_obj = pickle.dumps(kernel1)
+        kernel2 = pickle.loads(pickled_obj)
+
+        kernel3 = FidelityStatevectorKernel()
+        kernel3.__setstate__(kernel1.__getstate__())
+
+        with self.subTest("Fail if objects 1 and 2 are not the same type"):
+            self.assertEqual(type(kernel1), type(kernel2))
+
+        with self.subTest("Fail if objects 1 and 3 are not the same type"):
+            self.assertEqual(type(kernel1), type(kernel3))
+
+        with self.subTest("Fail if objects 1 and 2 are not unique"):
+            self.assertNotEqual(kernel1, kernel2)
+
+        with self.subTest("Fail if objects 1 and 3 are not unique"):
+            self.assertNotEqual(kernel1, kernel3)
+
+        with self.subTest("Fail if caches 1 and 2 are incorrectly initialised"):
+            self.assertEqual(type(kernel1._get_statevector), type(kernel2._get_statevector))
+
+        with self.subTest("Fail if caches 1 and 3 are incorrectly initialised"):
+            self.assertEqual(type(kernel1._get_statevector), type(kernel3._get_statevector))
+
+        # remove lru cache to check dict properties are otherwise identical
+        kernel1.__dict__["_get_statevector"] = None
+        kernel2.__dict__["_get_statevector"] = None
+        kernel3.__dict__["_get_statevector"] = None
+        # Confirm changes were made
+        with self.subTest("Fail if cache have not been removed from kernels"):
+            self.assertEqual(kernel1._get_statevector, None)
+            self.assertEqual(kernel2._get_statevector, None)
+            self.assertEqual(kernel3._get_statevector, None)
+
+        with self.subTest("Fail if properties of objects 1 and 2 are not identical"):
+            self.assertEqual(kernel1.__dict__, kernel2.__dict__)
+
+        with self.subTest("Fail if properties of objects 1 and 3 are not identical"):
+            self.assertEqual(kernel1.__dict__, kernel3.__dict__)
 
 
 @ddt
