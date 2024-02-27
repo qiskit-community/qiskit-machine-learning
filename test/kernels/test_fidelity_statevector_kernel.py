@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023.
+# (C) Copyright IBM 2023, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -374,7 +374,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         with self.subTest("Fail if caches 1 and 3 are incorrectly initialised"):
             self.assertEqual(type(kernel1._get_statevector), type(kernel3._get_statevector))
 
-        # remove lru cache to check dict properties are otherwise identical
+        # Remove cache to check dict properties are otherwise identical
         kernel1.__dict__["_get_statevector"] = None
         kernel2.__dict__["_get_statevector"] = None
         kernel3.__dict__["_get_statevector"] = None
