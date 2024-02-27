@@ -95,7 +95,8 @@ class QuantumKernelTrainer:
     ):
         """
         Args:
-            quantum_kernel: a trainable quantum kernel to be trained.
+            quantum_kernel: a trainable quantum kernel to be trained. The
+                :attr:`~.TrainableKernel.parameter_values` will be modified in place after the training.
             loss: A loss function available via string is "svc_loss" which is the same as
                 :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss`. If a string is
                 passed as the loss function, then the underlying
@@ -178,7 +179,7 @@ class QuantumKernelTrainer:
     ) -> QuantumKernelTrainerResult:
         """
         Train the QuantumKernel by minimizing loss over the kernel parameters. The input
-        quantum kernel will not be altered, and an optimized quantum kernel will be returned.
+        quantum kernel will be altered.
 
         Args:
             data (numpy.ndarray): ``(N, D)`` array of training data, where ``N`` is the
@@ -201,13 +202,6 @@ class QuantumKernelTrainer:
         if self._initial_point is None:
             self._initial_point = algorithm_globals.random.random(num_params)
 
-        # Bind inputs to objective function
-        output_kernel = type(self._quantum_kernel)(
-            feature_map=self._quantum_kernel.feature_map,
-            training_parameters=self._quantum_kernel.training_parameters,
-        )
-        output_kernel.assign_training_parameters(parameter_values=self.initial_point)
-
         # Perform kernel optimization
         loss_function = partial(
             self._loss.evaluate, quantum_kernel=self.quantum_kernel, data=data, labels=labels
@@ -225,11 +219,13 @@ class QuantumKernelTrainer:
         result.optimizer_evals = opt_results.nfev
         result.optimal_value = opt_results.fun
         result.optimal_point = opt_results.x
-        result.optimal_parameters = dict(zip(output_kernel.training_parameters, opt_results.x))
+        result.optimal_parameters = dict(
+            zip(self.quantum_kernel.training_parameters, opt_results.x)
+        )
 
         # Return the QuantumKernel in optimized state
-        output_kernel.assign_training_parameters(result.optimal_parameters)
-        result.quantum_kernel = output_kernel
+        self.quantum_kernel.assign_training_parameters(result.optimal_parameters)
+        result.quantum_kernel = self.quantum_kernel
 
         return result
 
