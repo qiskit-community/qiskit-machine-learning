@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -46,6 +46,7 @@ class FidelityQuantumKernel(BaseKernel):
         fidelity: BaseStateFidelity | None = None,
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",
+        max_circuits_per_job: int = None,
     ) -> None:
         """
         Args:
@@ -73,6 +74,8 @@ class FidelityQuantumKernel(BaseKernel):
                     - ``none`` when training the diagonal is set to `1` and if two identical samples
                       are found in the dataset the corresponding matrix element is set to `1`.
                       When inferring, matrix elements for identical samples are set to `1`.
+            max_circuits_per_job: Maximum number of circuits per job for the backend. Please
+               check the backend specifications. Use ``None`` for all entries per job. Default ``None``.
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
@@ -84,10 +87,15 @@ class FidelityQuantumKernel(BaseKernel):
                 f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
             )
         self._evaluate_duplicates = eval_duplicates
-
         if fidelity is None:
             fidelity = ComputeUncompute(sampler=Sampler())
         self._fidelity = fidelity
+        if max_circuits_per_job is not None:
+            if max_circuits_per_job < 1:
+                raise ValueError(
+                    f"Unsupported value passed as max_circuits_per_job: {max_circuits_per_job}"
+                )
+        self.max_circuits_per_job = max_circuits_per_job
 
     def evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray | None = None) -> np.ndarray:
         x_vec, y_vec = self._validate_input(x_vec, y_vec)
@@ -208,17 +216,38 @@ class FidelityQuantumKernel(BaseKernel):
         back from the async job.
         """
         num_circuits = left_parameters.shape[0]
+        kernel_entries = []
+        # Check if it is trivial case, only identical samples
         if num_circuits != 0:
-            job = self._fidelity.run(
-                [self._feature_map] * num_circuits,
-                [self._feature_map] * num_circuits,
-                left_parameters,
-                right_parameters,
-            )
-            kernel_entries = job.result().fidelities
-        else:
-            # trivial case, only identical samples
-            kernel_entries = []
+            if self.max_circuits_per_job is None:
+                job = self._fidelity.run(
+                    [self._feature_map] * num_circuits,
+                    [self._feature_map] * num_circuits,
+                    left_parameters,
+                    right_parameters,
+                )
+                kernel_entries = job.result().fidelities
+            else:
+                # Determine the number of chunks needed
+                num_chunks = (
+                    num_circuits + self.max_circuits_per_job - 1
+                ) // self.max_circuits_per_job
+                for i in range(num_chunks):
+                    # Determine the range of indices for this chunk
+                    start_idx = i * self.max_circuits_per_job
+                    end_idx = min((i + 1) * self.max_circuits_per_job, num_circuits)
+                    # Extract the parameters for this chunk
+                    chunk_left_parameters = left_parameters[start_idx:end_idx]
+                    chunk_right_parameters = right_parameters[start_idx:end_idx]
+                    # Execute this chunk
+                    job = self._fidelity.run(
+                        [self._feature_map] * (end_idx - start_idx),
+                        [self._feature_map] * (end_idx - start_idx),
+                        chunk_left_parameters,
+                        chunk_right_parameters,
+                    )
+                    # Extend the kernel_entries list with the results from this chunk
+                    kernel_entries.extend(job.result().fidelities)
         return kernel_entries
 
     def _is_trivial(
