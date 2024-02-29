@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Any
 
 import numpy as np
 
