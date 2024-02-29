@@ -346,6 +346,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_pickling(self):
         """Test that the kernel can be pickled correctly and without error."""
+        # Compares original kernel with copies made using pickle module and get/setstate directly
         qc = QuantumCircuit(1)
         qc.ry(Parameter("w"), 0)
         kernel1 = FidelityStatevectorKernel(feature_map=qc)
@@ -356,38 +357,40 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         kernel3 = FidelityStatevectorKernel()
         kernel3.__setstate__(kernel1.__getstate__())
 
-        with self.subTest("Fail if objects 1 and 2 are not the same type"):
+        with self.subTest("Pickle fail, kernels are not the same type"):
             self.assertEqual(type(kernel1), type(kernel2))
 
-        with self.subTest("Fail if objects 1 and 3 are not the same type"):
+        with self.subTest("Pickle fail, kernels are not the same type"):
             self.assertEqual(type(kernel1), type(kernel3))
 
-        with self.subTest("Fail if objects 1 and 2 are not unique"):
+        with self.subTest("Pickle fail, kernels are not unique objects"):
             self.assertNotEqual(kernel1, kernel2)
 
-        with self.subTest("Fail if objects 1 and 3 are not unique"):
+        with self.subTest("Pickle fail, kernels are not unique objects"):
             self.assertNotEqual(kernel1, kernel3)
 
-        with self.subTest("Fail if caches 1 and 2 are incorrectly initialised"):
+        with self.subTest("Pickle fail, caches are not the same type"):
             self.assertEqual(type(kernel1._get_statevector), type(kernel2._get_statevector))
 
-        with self.subTest("Fail if caches 1 and 3 are incorrectly initialised"):
+        with self.subTest("Pickel fail, caches are not the same type"):
             self.assertEqual(type(kernel1._get_statevector), type(kernel3._get_statevector))
 
-        # Remove cache to check dict properties are otherwise identical
+        # Remove cache to check dict properties are otherwise identical.
+        # - caches are never identical as they have different RAM locations.
         kernel1.__dict__["_get_statevector"] = None
         kernel2.__dict__["_get_statevector"] = None
         kernel3.__dict__["_get_statevector"] = None
-        # Confirm changes were made
-        with self.subTest("Fail if cache have not been removed from kernels"):
+
+        # Confirm changes were made.
+        with self.subTest("Pickle fail, caches have not been removed from kernels"):
             self.assertEqual(kernel1._get_statevector, None)
             self.assertEqual(kernel2._get_statevector, None)
             self.assertEqual(kernel3._get_statevector, None)
 
-        with self.subTest("Fail if properties of objects 1 and 2 are not identical"):
+        with self.subTest("Pickle fail, properties of kernels (bar cache) are not identical"):
             self.assertEqual(kernel1.__dict__, kernel2.__dict__)
 
-        with self.subTest("Fail if properties of objects 1 and 3 are not identical"):
+        with self.subTest("Pickle fail, properties of kernels (bar cache) are not identical"):
             self.assertEqual(kernel1.__dict__, kernel3.__dict__)
 
 
