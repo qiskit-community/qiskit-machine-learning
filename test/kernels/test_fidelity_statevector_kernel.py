@@ -372,7 +372,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         with self.subTest("Pickle fail, caches are not the same type"):
             self.assertEqual(type(kernel1._get_statevector), type(kernel2._get_statevector))
 
-        with self.subTest("Pickel fail, caches are not the same type"):
+        with self.subTest("Pickle fail, caches are not the same type"):
             self.assertEqual(type(kernel1._get_statevector), type(kernel3._get_statevector))
 
         # Remove cache to check dict properties are otherwise identical.
