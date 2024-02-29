@@ -346,7 +346,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_pickling(self):
         """Test that the kernel can be pickled correctly and without error."""
-        # Compares original kernel with copies made using pickle module and get/setstate directly
+        # Compares original kernel with copies made using pickle module and get & set state directly
         qc = QuantumCircuit(1)
         qc.ry(Parameter("w"), 0)
         kernel1 = FidelityStatevectorKernel(feature_map=qc)
