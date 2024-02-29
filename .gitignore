@@ -127,4 +127,3 @@ venv.bak/
 
 # stestr repostiory
 .stestr/
-bug607_replicated.py
