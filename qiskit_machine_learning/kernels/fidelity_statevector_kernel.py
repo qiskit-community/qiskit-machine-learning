@@ -166,6 +166,6 @@ class FidelityStatevectorKernel(BaseKernel):
         kernel["_get_statevector"] = None
         return kernel
 
-    def __setstate__(self, kernel):
+    def __setstate__(self, kernel: dict[str, Any]):
         self.__dict__ = kernel
         self._get_statevector = lru_cache(maxsize=self._cache_size)(self._get_statevector_)
