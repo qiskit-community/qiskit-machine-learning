@@ -161,7 +161,7 @@ class FidelityStatevectorKernel(BaseKernel):
         # pylint: disable=no-member
         self._get_statevector.cache_clear()
 
-    def __getstate__(self) -> dict:
+    def __getstate__(self) -> dict[str, Any]:
         kernel = dict(self.__dict__)
         kernel["_get_statevector"] = None
         return kernel
