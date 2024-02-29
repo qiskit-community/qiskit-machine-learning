@@ -1,0 +1,14 @@
+---
+fixes:
+  - |
+    Added a `max_circuits_per_job` parameter to the :class:`.FidelityQuantumKernel` used
+    in the case that if more circuits are submitted than the job limit for the 
+    backend, the circuits are split up and run through separate jobs.
+  - |    
+    Removed :class:`.QuantumKernelTrainer` dependency on `copy.deepcopy` that was
+    throwing an error with real backends. Now, it modifies the :class:`.TrainableKernel`
+    in place. If you would like to use the initial kernel, please call 
+    :meth:`~.TrainableKernel.assign_training_parameters` of the :class:`~.TrainableKernel`
+    using the :attr:`~.QuantumKernelTrainer.initial_point` attribute of 
+    :class:`~.QuantumKernelTrainer`.
+ 
