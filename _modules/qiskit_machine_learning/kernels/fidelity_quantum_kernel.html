@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>qiskit_machine_learning.kernels.fidelity_quantum_kernel - Qiskit Machine Learning 0.7.1</title>
+        <title>qiskit_machine_learning.kernels.fidelity_quantum_kernel - Qiskit Machine Learning 0.7.2</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.7.1</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.1</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -392,7 +392,7 @@
           <h1>Source code for qiskit_machine_learning.kernels.fidelity_quantum_kernel</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2023.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2024.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -438,6 +438,7 @@
         <span class="n">fidelity</span><span class="p">:</span> <span class="n">BaseStateFidelity</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">enforce_psd</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">evaluate_duplicates</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;off_diagonal&quot;</span><span class="p">,</span>
+        <span class="n">max_circuits_per_job</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -465,6 +466,8 @@
 <span class="sd">                    - ``none`` when training the diagonal is set to `1` and if two identical samples</span>
 <span class="sd">                      are found in the dataset the corresponding matrix element is set to `1`.</span>
 <span class="sd">                      When inferring, matrix elements for identical samples are set to `1`.</span>
+<span class="sd">            max_circuits_per_job: Maximum number of circuits per job for the backend. Please</span>
+<span class="sd">               check the backend specifications. Use ``None`` for all entries per job. Default ``None``.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: When unsupported value is passed to `evaluate_duplicates`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -476,10 +479,15 @@
                 <span class="sa">f</span><span class="s2">&quot;Unsupported value passed as evaluate_duplicates: </span><span class="si">{</span><span class="n">evaluate_duplicates</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">=</span> <span class="n">eval_duplicates</span>
-
         <span class="k">if</span> <span class="n">fidelity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fidelity</span> <span class="o">=</span> <span class="n">ComputeUncompute</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">Sampler</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fidelity</span> <span class="o">=</span> <span class="n">fidelity</span>
+        <span class="k">if</span> <span class="n">max_circuits_per_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">max_circuits_per_job</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unsupported value passed as max_circuits_per_job: </span><span class="si">{</span><span class="n">max_circuits_per_job</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_circuits_per_job</span> <span class="o">=</span> <span class="n">max_circuits_per_job</span>
 
 <div class="viewcode-block" id="FidelityQuantumKernel.evaluate"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_vec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y_vec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">x_vec</span><span class="p">,</span> <span class="n">y_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">x_vec</span><span class="p">,</span> <span class="n">y_vec</span><span class="p">)</span>
@@ -600,17 +608,38 @@
 <span class="sd">        back from the async job.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_circuits</span> <span class="o">=</span> <span class="n">left_parameters</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">kernel_entries</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Check if it is trivial case, only identical samples</span>
         <span class="k">if</span> <span class="n">num_circuits</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fidelity</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_map</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_circuits</span><span class="p">,</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_map</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_circuits</span><span class="p">,</span>
-                <span class="n">left_parameters</span><span class="p">,</span>
-                <span class="n">right_parameters</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">kernel_entries</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="o">.</span><span class="n">fidelities</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># trivial case, only identical samples</span>
-            <span class="n">kernel_entries</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_circuits_per_job</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fidelity</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_map</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_circuits</span><span class="p">,</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_map</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_circuits</span><span class="p">,</span>
+                    <span class="n">left_parameters</span><span class="p">,</span>
+                    <span class="n">right_parameters</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">kernel_entries</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="o">.</span><span class="n">fidelities</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Determine the number of chunks needed</span>
+                <span class="n">num_chunks</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">num_circuits</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_circuits_per_job</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_circuits_per_job</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_chunks</span><span class="p">):</span>
+                    <span class="c1"># Determine the range of indices for this chunk</span>
+                    <span class="n">start_idx</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_circuits_per_job</span>
+                    <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_circuits_per_job</span><span class="p">,</span> <span class="n">num_circuits</span><span class="p">)</span>
+                    <span class="c1"># Extract the parameters for this chunk</span>
+                    <span class="n">chunk_left_parameters</span> <span class="o">=</span> <span class="n">left_parameters</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+                    <span class="n">chunk_right_parameters</span> <span class="o">=</span> <span class="n">right_parameters</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+                    <span class="c1"># Execute this chunk</span>
+                    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fidelity</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_map</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">end_idx</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">),</span>
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_map</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">end_idx</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">),</span>
+                        <span class="n">chunk_left_parameters</span><span class="p">,</span>
+                        <span class="n">chunk_right_parameters</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="c1"># Extend the kernel_entries list with the results from this chunk</span>
+                    <span class="n">kernel_entries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="o">.</span><span class="n">fidelities</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">kernel_entries</span>
 
     <span class="k">def</span> <span class="nf">_is_trivial</span><span class="p">(</span>
@@ -700,7 +729,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=787fabe1"></script>
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=4f87218b"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

@@ -1,3 +1,1 @@
 .. release-notes:: Release Notes
-   :ignore-notes:
-     releasenotes/notes/fix_qnn_binding_order-74caef8a49ecffe5.yaml,
