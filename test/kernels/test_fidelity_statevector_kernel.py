@@ -15,9 +15,9 @@ from __future__ import annotations
 
 import functools
 import itertools
+import pickle
 import sys
 import unittest
-import pickle
 
 from test import QiskitMachineLearningTestCase
 
