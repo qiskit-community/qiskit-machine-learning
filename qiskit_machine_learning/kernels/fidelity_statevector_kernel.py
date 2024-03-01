@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023.
+# (C) Copyright IBM 2023, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Any
 
 import numpy as np
 
@@ -97,7 +97,7 @@ class FidelityStatevectorKernel(BaseKernel):
         self._auto_clear_cache = auto_clear_cache
         self._shots = shots
         self._enforce_psd = enforce_psd
-
+        self._cache_size = cache_size
         # Create the statevector cache at the instance level.
         self._get_statevector = lru_cache(maxsize=cache_size)(self._get_statevector_)
 
@@ -160,3 +160,12 @@ class FidelityStatevectorKernel(BaseKernel):
         """Clear the statevector cache."""
         # pylint: disable=no-member
         self._get_statevector.cache_clear()
+
+    def __getstate__(self) -> dict[str, Any]:
+        kernel = dict(self.__dict__)
+        kernel["_get_statevector"] = None
+        return kernel
+
+    def __setstate__(self, kernel: dict[str, Any]):
+        self.__dict__ = kernel
+        self._get_statevector = lru_cache(maxsize=self._cache_size)(self._get_statevector_)
