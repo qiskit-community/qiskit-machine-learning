@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2018, 2023.
 #
@@ -20,7 +20,8 @@ from functools import reduce
 from typing import Tuple, Dict, List
 
 import numpy as np
-from qiskit.utils import algorithm_globals, optionals
+from qiskit.utils import optionals
+from qiskit_algorithms.utils import algorithm_globals
 from sklearn import preprocessing
 
 
@@ -36,7 +37,7 @@ def ad_hoc_data(
     np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray
 ]:
     r"""Generates a toy dataset that can be fully separated with
-    ``qiskit.circuit.library.ZZ_Feature_Map`` according to the procedure
+    :class:`~qiskit.circuit.library.ZZFeatureMap` according to the procedure
     outlined in [1]. To construct the dataset, we first sample uniformly
     distributed vectors :math:`\vec{x} \in (0, 2\pi]^{n}` and apply the
     feature map
@@ -140,9 +141,11 @@ def ad_hoc_data(
     ind_pairs = list(it.combinations(range(n), 2))
     _sample_total = []
     for x in it.product(*[xvals] * n):
-        x = np.array(x)
-        phi = np.sum(x[:, None, None] * z_i, axis=0)
-        phi += sum(((np.pi - x[i1]) * (np.pi - x[i2]) * z_i[i1] @ z_i[i2] for i1, i2 in ind_pairs))
+        x_arr = np.array(x)
+        phi = np.sum(x_arr[:, None, None] * z_i, axis=0)
+        phi += sum(
+            ((np.pi - x_arr[i1]) * (np.pi - x_arr[i2]) * z_i[i1] @ z_i[i2] for i1, i2 in ind_pairs)
+        )
         # u_u was actually scipy.linalg.expm(1j * phi), but this method is
         # faster because phi is always a diagonal matrix.
         # We first extract the diagonal elements, then do exponentiation, then

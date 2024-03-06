@@ -1,0 +1,34 @@
+---
+upgrade:
+  - |
+    Removed support of the deprecated parameter `quantum_instance` in the constructor of
+    :class:`~qiskit_machine_learning.algorithms.VQC` and in :class:`~qiskit_machine_learning.algorithms.VQR`.
+    Please use `sampler` and `estimator` respectively. Refer to the
+    `migration guide <https://qiskit-community.github.io/qiskit-machine-learning/migration/01_migration_guide_0.5.html>`__
+    for more information.
+
+    Since :mod:`qiskit.opflow` and :class:`~qiskit.utils.QuantumInstance` are deprecated in Qiskit,
+    Qiskit Machine Learning classes based on the deprecated Qiskit classes have been
+    removed:
+
+      - Class :class:`qiskit_machine_learning.neural_networks.SamplingNeuralNetwork` is removed and
+        has no direct replacement as this is a base class.
+
+      - Class :class:`qiskit_machine_learning.neural_networks.CircuitQNN` is removed and
+        is superseded by :class:`qiskit_machine_learning.neural_networks.SamplerQNN`.
+
+      - Class :class:`qiskit_machine_learning.neural_networks.OpflowQNN` is removed and
+        is superseded by :class:`qiskit_machine_learning.neural_networks.EstimatorQNN`.
+
+      - Class :class:`qiskit_machine_learning.neural_networks.TwoLayerQNN` is removed and
+        has no direct replacement. Please make use of
+        :class:`qiskit_machine_learning.neural_networks.EstimatorQNN` instead.
+
+      - Class :class:`qiskit_machine_learning.kernels.QuantumKernel` is removed and
+        is superseded by :class:`qiskit_machine_learning.kernels.FidelityQuantumKernel`,
+        :class:`qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel`, and
+        :class:`qiskit_machine_learning.kernels.FidelityStatevectorKernel`.
+
+    Please refer to the
+    `migration guide <https://qiskit-community.github.io/qiskit-machine-learning/migration/01_migration_guide_0.5.html>`__
+    on how to replace the deprecated classes with new ones.

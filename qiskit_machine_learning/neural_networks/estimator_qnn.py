@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,16 +19,15 @@ from copy import copy
 from typing import Sequence
 
 import numpy as np
-from qiskit.algorithms.gradients import (
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
+from qiskit.quantum_info import SparsePauliOp
+from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit_algorithms.gradients import (
     BaseEstimatorGradient,
     EstimatorGradientResult,
     ParamShiftEstimatorGradient,
 )
-from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.opflow import PauliSumOp
-from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
-from qiskit.quantum_info import SparsePauliOp
-from qiskit.quantum_info.operators.base_operator import BaseOperator
 
 from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -107,7 +106,7 @@ class EstimatorQNN(NeuralNetwork):
         *,
         circuit: QuantumCircuit,
         estimator: BaseEstimator | None = None,
-        observables: Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp | None = None,
+        observables: Sequence[BaseOperator] | BaseOperator | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         gradient: BaseEstimatorGradient | None = None,
@@ -137,7 +136,7 @@ class EstimatorQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
-                :class:`~qiskit.algorithms.gradients.ParamShiftEstimatorGradient`, will be used.
+                :class:`~qiskit_algorithms.gradients.ParamShiftEstimatorGradient`, will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using
@@ -149,10 +148,10 @@ class EstimatorQNN(NeuralNetwork):
         if estimator is None:
             estimator = Estimator()
         self.estimator = estimator
-        self._circuit = circuit
+        self._org_circuit = circuit
         if observables is None:
             observables = SparsePauliOp.from_list([("Z" * circuit.num_qubits, 1)])
-        if isinstance(observables, (PauliSumOp, BaseOperator)):
+        if isinstance(observables, BaseOperator):
             observables = (observables,)
         self._observables = observables
         if isinstance(circuit, QNNCircuit):
@@ -174,13 +173,15 @@ class EstimatorQNN(NeuralNetwork):
             input_gradients=input_gradients,
         )
 
+        self._circuit = self._reparameterize_circuit(circuit, input_params, weight_params)
+
     @property
     def circuit(self) -> QuantumCircuit:
         """The quantum circuit representing the neural network."""
-        return copy(self._circuit)
+        return copy(self._org_circuit)
 
     @property
-    def observables(self) -> Sequence[BaseOperator | PauliSumOp] | BaseOperator | PauliSumOp:
+    def observables(self) -> Sequence[BaseOperator] | BaseOperator:
         """Returns the underlying observables of this QNN."""
         return copy(self._observables)
 

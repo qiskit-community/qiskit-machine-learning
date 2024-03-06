@@ -5,7 +5,7 @@
 First please read the overall project contributing guidelines. These are
 included in the Qiskit documentation here:
 
-https://qiskit.org/documentation/contributing_to_qiskit.html
+https://github.com/Qiskit/qiskit/blob/main/CONTRIBUTING.md
 
 ## Contributing to Qiskit Machine Learning
 
@@ -61,8 +61,7 @@ please ensure that:
    to see the changes formatted output is as expected. You will find an index.html
    file in docs\_build\html and you can navigate from there.
    
-   Please note that a spell check is run in CI, on the docstrings, since the text
-   becomes part of the online [API Documentation](https://qiskit.org/documentation/).
+   Please note that a spell check is run in CI, on the docstrings.
    
    You can run `make spell` locally to check spelling though you would need to
    [install pyenchant](https://pyenchant.github.io/pyenchant/install.html) and be using
@@ -98,26 +97,7 @@ please ensure that:
 
 ### Changelog generation
 
-The changelog is automatically generated as part of the release process
-automation. This works through a combination of the git log and the pull
-request. When a release is tagged and pushed to github the release automation
-bot looks at all commit messages from the git log for the release. It takes the
-PR numbers from the git log (assuming a squash merge) and checks if that PR had
-a `Changelog:` label on it. If there is a label it will add the git commit
-message summary line from the git log for the release to the changelog.
-
-If there are multiple `Changelog:` tags on a PR the git commit message summary
-line from the git log will be used for each changelog category tagged.
-
-The current categories for each label are as follows:
-
-| PR Label               | Changelog Category |
-| -----------------------|--------------------|
-| Changelog: Deprecation | Deprecated         |
-| Changelog: New Feature | Added              |
-| Changelog: API Change  | Changed            |
-| Changelog: Removal     | Removed            |
-| Changelog: Bugfix      | Fixed              |
+A changelog is manually generated as part of the release process from the release notes.
 
 ### Release Notes
 
@@ -201,8 +181,8 @@ deprecations:
 You can also look at other release notes for other examples.
 
 You can use any restructured text feature in them (code sections, tables,
-enumerated lists, bulleted list, etc) to express what is being changed as
-needed. In general you want the release notes to include as much detail as
+enumerated lists, bulleted list, etc.) to express what is being changed as
+needed. In general, you want the release notes to include as much detail as
 needed so that users will understand what has changed, why it changed, and how
 they'll have to update their code.
 
@@ -245,10 +225,8 @@ Please see the [Installing Qiskit Machine Learning from
 Source](https://github.com/qiskit-community/qiskit-machine-learning#installation)
 section of the Qiskit documentation.
 
-Note: Machine Learning depends on Terra, and has optional dependence on Aer and IBM Q Provider, so
-these should be installed too. The main branch of Machine Learning is kept working with those other element
-main branches so these should be installed from source too following the instructions at 
-the same location
+Note: Machine Learning depends on Qiskit, and has an optional dependence on Aer, so
+should be installed too.
 
 Machine Learning also has some other optional dependents see 
 [Machine Learning optional installs](https://github.com/qiskit-community/qiskit-machine-learning#optional-installs) for
@@ -266,12 +244,12 @@ The test suite can be run from a command line or via your IDE. You can run `make
 run all unit tests. Another way to run the test suite is to use
 [**tox**](https://tox.readthedocs.io/en/latest/#). For more information about using tox please
 refer to
-[Terra CONTRIBUTING](https://github.com/Qiskit/qiskit-terra/blob/main/CONTRIBUTING.md#test)
+[Qiskit CONTRIBUTING](https://github.com/Qiskit/qiskit/blob/main/CONTRIBUTING.md#test)
 Test section. However please note Machine Learning does not have any
-[online tests](https://github.com/Qiskit/qiskit-terra/blob/main/CONTRIBUTING.md#online-tests)
+[online tests](https://github.com/Qiskit/qiskit/blob/main/CONTRIBUTING.md#online-tests)
 nor does it have
 [test skip
- options](https://github.com/Qiskit/qiskit-terra/blob/main/CONTRIBUTING.md#test-skip-options).    
+ options](https://github.com/Qiskit/qiskit/blob/main/CONTRIBUTING.md#test-skip-options).    
 
 ### Development Cycle
 
@@ -294,23 +272,8 @@ stable and the only changes merged to it are bugfixes.
 
 ### Release Cycle
 
-From time to time, we will release brand new versions of Qiskit Machine Learning. These
+From time to time, we will release brand-new versions of Qiskit Machine Learning. These
 are well-tested versions of the software.
-
-When the time for a new release has come, we will:
-
-1.  Create a new tag with the version number and push it to github
-2.  Change the `main` version to the next release version.
-
-The release automation processes will be triggered by the new tag and perform
-the following steps:
-
-1.  Create a stable branch for the new minor version from the release tag
-    on the `main` branch
-2.  Build and upload binary wheels to pypi
-3.  Create a github release page with a generated changelog
-4.  Generate a PR on the meta-repository to bump the terra version and
-    meta-package version.
 
 The `stable/*` branches should only receive changes in the form of bug
 fixes.

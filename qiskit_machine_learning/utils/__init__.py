@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ A collection of utility functions and classes provided by Qiskit Machine Learnin
 .. currentmodule:: qiskit_machine_learning.utils
 
 Utilities
-==========
+----------
 
 .. autosummary::
    :toctree:

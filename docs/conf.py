@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -42,7 +42,7 @@ project = "Qiskit Machine Learning"
 copyright = f"2018, {date.today().year}, Qiskit Machine Learning Development Team"  # pylint: disable=redefined-builtin
 author = "Qiskit Machine Learning Development Team"
 
-docs_url_prefix = "ecosystem/machine-learning"
+docs_url_prefix = "qiskit-machine-learning"
 
 # The short X.Y version
 version = qiskit_machine_learning.__version__
@@ -138,19 +138,10 @@ numfig_format = {"table": "Table %s"}
 
 translations_list = [
     ("en", "English"),
-    ("bn_BN", "Bengali"),
-    ("fr_FR", "French"),
-    ("hi_IN", "Hindi"),
     ("ja_JP", "Japanese"),
-    ("ko_KR", "Korean"),
-    ("ru_RU", "Russian"),
     ("es_UN", "Spanish"),
-    ("ta_IN", "Tamil"),
-    ("tr_TR", "Turkish"),
 ]
 language = "en"
-locale_dirs = ["locale/"]
-gettext_compact = False  # optional.
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -177,26 +168,16 @@ modindex_common_prefix = ["qiskit_machine_learning."]
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "qiskit_sphinx_theme"
-html_theme_options = {
-    "logo_only": False,
-    "display_version": True,
-    "prev_next_buttons_location": "bottom",
-    "style_external_links": False,
-    # Toc options
-    "collapse_navigation": True,
-    "sticky_navigation": True,
-    "navigation_depth": 4,
-    "includehidden": True,
-    "titles_only": False,
-}
+html_theme = "qiskit-ecosystem"
+html_title = f"{project} {release}"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
-    "qiskit": ("https://qiskit.org/documentation/", None),
+    "qiskit": ("https://docs.quantum.ibm.com/api/qiskit", None),
+    "qiskit-algorithms": ("https://qiskit-community.github.io/qiskit-algorithms", None),
 }
 
 html_context = {"analytics_enabled": True}

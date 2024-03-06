@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2022.
+# (C) Copyright IBM 2019, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -28,30 +28,26 @@ use of these neural networks in code written to `PyTorch <https://pytorch.org/>`
 .. currentmodule:: qiskit_machine_learning.neural_networks
 
 Neural Network Base Classes
-===========================
+---------------------------
 
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
 
    NeuralNetwork
-   SamplingNeuralNetwork
 
 Neural Networks
-===============
+---------------
 
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
 
-   OpflowQNN
-   TwoLayerQNN
-   CircuitQNN
    EstimatorQNN
    SamplerQNN
 
 Neural Network Metrics
-======================
+----------------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -61,21 +57,13 @@ Neural Network Metrics
    LocalEffectiveDimension
 """
 
-from .circuit_qnn import CircuitQNN
 from .effective_dimension import EffectiveDimension, LocalEffectiveDimension
 from .estimator_qnn import EstimatorQNN
 from .neural_network import NeuralNetwork
-from .opflow_qnn import OpflowQNN
-from .sampling_neural_network import SamplingNeuralNetwork
-from .two_layer_qnn import TwoLayerQNN
 from .sampler_qnn import SamplerQNN
 
 __all__ = [
     "NeuralNetwork",
-    "OpflowQNN",
-    "TwoLayerQNN",
-    "SamplingNeuralNetwork",
-    "CircuitQNN",
     "EffectiveDimension",
     "LocalEffectiveDimension",
     "EstimatorQNN",

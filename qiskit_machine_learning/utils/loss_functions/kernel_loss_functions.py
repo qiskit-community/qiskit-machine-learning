@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -54,8 +54,8 @@ class KernelLoss(ABC):
         An abstract method for evaluating the loss of a kernel function on a labeled dataset.
 
         Args:
-            parameter_values: an array of values to assign to the user params
-            quantum_kernel: A ``QuantumKernel`` object to evaluate
+            parameter_values: An array of values to assign to the user params
+            quantum_kernel: A trainable quantum kernel object to evaluate
             data: An ``(N, M)`` matrix containing the data
                     ``N = # samples, M = dimension of data``
             labels: A length-N array containing the truth labels

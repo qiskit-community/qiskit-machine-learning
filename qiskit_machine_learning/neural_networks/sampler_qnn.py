@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,13 +19,14 @@ from numbers import Integral
 from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
-from qiskit.algorithms.gradients import (
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+from qiskit_algorithms.gradients import (
     BaseSamplerGradient,
     ParamShiftSamplerGradient,
     SamplerGradientResult,
 )
-from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+
 from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 import qiskit_machine_learning.optionals as _optionals
@@ -163,7 +164,7 @@ class SamplerQNN(NeuralNetwork):
                 ``2^circuit.num_qubits``.
             gradient: An optional sampler gradient to be used for the backward pass.
                 If ``None`` is given, a default instance of
-                :class:`~qiskit.algorithms.gradients.ParamShiftSamplerGradient` will be used.
+                :class:`~qiskit_algorithms.gradients.ParamShiftSamplerGradient` will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                  Note that this parameter is ``False`` by default, and must be explicitly set to
                  ``True`` for a proper gradient computation when using
@@ -181,9 +182,7 @@ class SamplerQNN(NeuralNetwork):
             gradient = ParamShiftSamplerGradient(self.sampler)
         self.gradient = gradient
 
-        self._circuit = circuit.copy()
-        if len(self._circuit.clbits) == 0:
-            self._circuit.measure_all()
+        self._org_circuit = circuit
 
         if isinstance(circuit, QNNCircuit):
             self._input_params = list(circuit.input_parameters)
@@ -206,10 +205,15 @@ class SamplerQNN(NeuralNetwork):
             input_gradients=self._input_gradients,
         )
 
+        if len(circuit.clbits) == 0:
+            circuit = circuit.copy()
+            circuit.measure_all()
+        self._circuit = self._reparameterize_circuit(circuit, input_params, weight_params)
+
     @property
     def circuit(self) -> QuantumCircuit:
         """Returns the underlying quantum circuit."""
-        return self._circuit
+        return self._org_circuit
 
     @property
     def input_params(self) -> Sequence[Parameter]:
@@ -273,7 +277,7 @@ class SamplerQNN(NeuralNetwork):
                     "No interpret function given, output_shape will be automatically "
                     "determined as 2^num_qubits."
                 )
-            output_shape_ = (2**self._circuit.num_qubits,)
+            output_shape_ = (2**self.circuit.num_qubits,)
 
         return output_shape_
 

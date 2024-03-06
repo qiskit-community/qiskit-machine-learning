@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes, ZFeatureMap
 from qiskit.quantum_info import SparsePauliOp
 from qiskit_machine_learning.circuit.library import QNNCircuit
 
@@ -171,7 +171,7 @@ CASE_DATA = {
 
 
 class TestEstimatorQNN(QiskitMachineLearningTestCase):
-    """EstimatorQNN Tests. The correct references is obtained from OpflowQNN"""
+    """EstimatorQNN Tests. The correct references is obtained from EstimatorQNN"""
 
     def _test_network_passes(
         self,
@@ -446,6 +446,26 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
             np.testing.assert_array_almost_equal(backward_qc[0], backward_qnn_qc[0])
             # Test if weights grad is identical
             np.testing.assert_array_almost_equal(backward_qc[1], backward_qnn_qc[1])
+
+    def test_binding_order(self):
+        """Test parameter binding order gives result as expected"""
+        qc = ZFeatureMap(feature_dimension=2, reps=1)
+        input_params = qc.parameters
+        weight = Parameter("weight")
+        for i in range(qc.num_qubits):
+            qc.rx(weight, i)
+
+        observable1 = SparsePauliOp.from_list([("Z" * qc.num_qubits, 1)])
+        estimator_qnn = EstimatorQNN(
+            circuit=qc, observables=observable1, input_params=input_params, weight_params=[weight]
+        )
+
+        estimator_qnn_weights = [3]
+        estimator_qnn_input = [2, 33]
+        res = estimator_qnn.forward(estimator_qnn_input, estimator_qnn_weights)
+        # When parameters were used in circuit order, before being assigned correctly, so inputs
+        # went to input params, weights to weight params, this gave 0.00613403
+        self.assertAlmostEqual(res[0][0], 0.00040017)
 
 
 if __name__ == "__main__":

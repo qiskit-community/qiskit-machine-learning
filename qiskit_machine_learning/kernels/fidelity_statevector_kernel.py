@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023.
+# (C) Copyright IBM 2023, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,13 +14,13 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Any
 
 import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 
 
 from .base_kernel import BaseKernel
@@ -40,7 +40,8 @@ class FidelityStatevectorKernel(BaseKernel):
 
         K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2.
 
-    In this implementation, :math:`|\phi(y)\rangle` is given by a ``Statevector.data`` array. These
+    In this implementation, :math:`|\phi(y)\rangle` is given by the ``data`` attribute of a
+    :class:`~qiskit.quantum_info.Statevector` object or one of its subclasses. These
     arrays are stored in a statevector cache to avoid repeated evaluation of the quantum circuit.
     This cache can be cleared using :meth:`clear_cache`. By default the cache is cleared when
     :meth:`evaluate` is called, unless ``auto_clear_cache`` is ``False``.
@@ -96,7 +97,7 @@ class FidelityStatevectorKernel(BaseKernel):
         self._auto_clear_cache = auto_clear_cache
         self._shots = shots
         self._enforce_psd = enforce_psd
-
+        self._cache_size = cache_size
         # Create the statevector cache at the instance level.
         self._get_statevector = lru_cache(maxsize=cache_size)(self._get_statevector_)
 
@@ -139,7 +140,7 @@ class FidelityStatevectorKernel(BaseKernel):
 
     def _get_statevector_(self, param_values: tuple[float]) -> np.ndarray:
         # lru_cache requires hashable function arguments.
-        qc = self._feature_map.bind_parameters(param_values)
+        qc = self._feature_map.assign_parameters(param_values)
         return self._statevector_type(qc).data
 
     def _compute_kernel_entry(self, x: np.ndarray, y: np.ndarray) -> float:
@@ -159,3 +160,12 @@ class FidelityStatevectorKernel(BaseKernel):
         """Clear the statevector cache."""
         # pylint: disable=no-member
         self._get_statevector.cache_clear()
+
+    def __getstate__(self) -> dict[str, Any]:
+        kernel = dict(self.__dict__)
+        kernel["_get_statevector"] = None
+        return kernel
+
+    def __setstate__(self, kernel: dict[str, Any]):
+        self.__dict__ = kernel
+        self._get_statevector = lru_cache(maxsize=self._cache_size)(self._get_statevector_)

@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2023.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,34 +10,34 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """ Test Neural Network Classifier """
+from __future__ import annotations
+
 import itertools
 import os
 import tempfile
 import unittest
-import warnings
 from functools import partial
-from typing import Tuple, Optional, Callable
+from typing import Callable
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import scipy
 from ddt import ddt, data, idata, unpack
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
+from qiskit_algorithms.utils import algorithm_globals
 from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
-from qiskit_machine_learning.neural_networks import TwoLayerQNN, CircuitQNN, NeuralNetwork
+from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.utils.loss_functions import CrossEntropyLoss
 
 OPTIMIZERS = ["cobyla", "bfgs", "callable", None]
 L1L2_ERRORS = ["absolute_error", "squared_error"]
-QUANTUM_INSTANCES = ["statevector", "qasm"]
 CALLBACKS = [True, False]
 
 
@@ -51,54 +51,23 @@ def _one_hot_encode(y: np.ndarray) -> np.ndarray:
 class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
     """Neural Network Classifier Tests."""
 
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # specify quantum instances
         algorithm_globals.random_seed = 12345
-        from qiskit_aer import Aer
 
-        self.sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        self.qasm_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator"),
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-
-    def tearDown(self) -> None:
-        super().tearDown()
-        warnings.filterwarnings("always", category=DeprecationWarning)
-        # enable the warnings if they were disabled for COBYLA
-        warnings.filterwarnings("always", category=RuntimeWarning)
-
-    def _create_optimizer(self, opt: str) -> Optional[Optimizer]:
+    def _create_optimizer(self, opt: str) -> Optimizer | None:
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         elif opt == "cobyla":
             optimizer = COBYLA(maxiter=25)
         elif opt == "callable":
-            # COBYLA raises a warning in the callable case
-            warnings.filterwarnings("ignore", category=RuntimeWarning)
             optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
         else:
             optimizer = None
 
         return optimizer
-
-    def _create_quantum_instance(self, q_i: str) -> QuantumInstance:
-        if q_i == "statevector":
-            quantum_instance = self.sv_quantum_instance
-        else:
-            quantum_instance = self.qasm_quantum_instance
-
-        return quantum_instance
 
     def _create_callback(self, cb_flag):
         if cb_flag:
@@ -113,18 +82,25 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             callback = None
         return callback, history
 
-    @idata(itertools.product(OPTIMIZERS, L1L2_ERRORS, QUANTUM_INSTANCES, CALLBACKS))
+    @idata(itertools.product(OPTIMIZERS, L1L2_ERRORS, CALLBACKS))
     @unpack
-    def test_classifier_with_opflow_qnn(self, opt, loss, q_i, cb_flag):
-        """Test Neural Network Classifier with Opflow QNN (Two Layer QNN)."""
+    def test_classifier_with_estimator_qnn(self, opt, loss, cb_flag):
+        """Test Neural Network Classifier with Estimator QNN."""
 
-        quantum_instance = self._create_quantum_instance(q_i)
         optimizer = self._create_optimizer(opt)
         callback, history = self._create_callback(cb_flag)
 
         num_inputs = 2
+        feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, reps=1)
-        qnn = TwoLayerQNN(num_inputs, ansatz=ansatz, quantum_instance=quantum_instance)
+
+        qc = QuantumCircuit(num_inputs)
+        qc.compose(feature_map, inplace=True)
+        qc.compose(ansatz, inplace=True)
+
+        qnn = EstimatorQNN(
+            circuit=qc, input_params=feature_map.parameters, weight_params=ansatz.parameters
+        )
 
         classifier = self._create_classifier(qnn, ansatz.num_parameters, optimizer, loss, callback)
 
@@ -156,9 +132,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                 self.assertEqual(len(weights), num_weights)
                 self.assertTrue(all(isinstance(weight, float) for weight in weights))
 
-    def _create_circuit_qnn(
-        self, quantum_instance: QuantumInstance, output_shape=2
-    ) -> Tuple[CircuitQNN, int, int]:
+    def _create_sampler_qnn(self, output_shape=2) -> tuple[SamplerQNN, int, int]:
         num_inputs = 2
         feature_map = ZZFeatureMap(num_inputs)
         ansatz = RealAmplitudes(num_inputs, reps=1)
@@ -172,19 +146,18 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         def parity(x):
             return f"{x:b}".count("1") % 2
 
-        qnn = CircuitQNN(
-            qc,
+        qnn = SamplerQNN(
+            circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
             sparse=False,
             interpret=parity,
             output_shape=output_shape,
-            quantum_instance=quantum_instance,
         )
 
         return qnn, num_inputs, ansatz.num_parameters
 
-    def _generate_data(self, num_inputs: int) -> Tuple[np.ndarray, np.ndarray]:
+    def _generate_data(self, num_inputs: int) -> tuple[np.ndarray, np.ndarray]:
         # construct data
         num_samples = 6
         features = algorithm_globals.random.random((num_samples, num_inputs))
@@ -198,7 +171,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         num_parameters: int,
         optimizer: Optimizer,
         loss: str,
-        callback: Optional[Callable[[np.ndarray, float], None]] = None,
+        callback: Callable[[np.ndarray, float], None] | None = None,
         one_hot: bool = False,
     ):
         initial_point = np.array([0.5] * num_parameters)
@@ -214,16 +187,15 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         )
         return classifier
 
-    @idata(itertools.product(OPTIMIZERS, L1L2_ERRORS, QUANTUM_INSTANCES, CALLBACKS))
+    @idata(itertools.product(OPTIMIZERS, L1L2_ERRORS, CALLBACKS))
     @unpack
-    def test_classifier_with_circuit_qnn(self, opt, loss, q_i, cb_flag):
-        """Test Neural Network Classifier with Circuit QNN."""
+    def test_classifier_with_sampler_qnn(self, opt, loss, cb_flag):
+        """Test Neural Network Classifier with SamplerQNN."""
 
-        quantum_instance = self._create_quantum_instance(q_i)
         optimizer = self._create_optimizer(opt)
         callback, history = self._create_callback(cb_flag)
 
-        qnn, num_inputs, num_parameters = self._create_circuit_qnn(quantum_instance)
+        qnn, num_inputs, num_parameters = self._create_sampler_qnn()
 
         classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, callback)
 
@@ -243,14 +215,12 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         np.testing.assert_array_equal(classifier.fit_result.x, classifier.weights)
         self.assertEqual(len(classifier.weights), num_parameters)
 
-    @idata(itertools.product(OPTIMIZERS, QUANTUM_INSTANCES))
-    @unpack
-    def test_classifier_with_circuit_qnn_and_cross_entropy(self, opt, q_i):
+    @idata(OPTIMIZERS)
+    def test_classifier_with_sampler_qnn_and_cross_entropy(self, opt):
         """Test Neural Network Classifier with Circuit QNN and Cross Entropy loss."""
 
-        quantum_instance = self._create_quantum_instance(q_i)
         optimizer = self._create_optimizer(opt)
-        qnn, num_inputs, num_parameters = self._create_circuit_qnn(quantum_instance)
+        qnn, num_inputs, num_parameters = self._create_sampler_qnn()
 
         loss = CrossEntropyLoss()
         classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, one_hot=True)
@@ -278,10 +248,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         one_hot, loss = config
 
-        quantum_instance = self.sv_quantum_instance
         optimizer = L_BFGS_B(maxiter=5)
 
-        qnn, num_inputs, num_parameters = self._create_circuit_qnn(quantum_instance)
+        qnn, num_inputs, num_parameters = self._create_sampler_qnn()
 
         classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, one_hot=one_hot)
 
@@ -301,13 +270,11 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         predict = classifier.predict(features[0, :])
         self.assertIn(predict, ["A", "B"])
 
-    @idata(itertools.product(QUANTUM_INSTANCES, L1L2_ERRORS + ["cross_entropy"]))
-    @unpack
-    def test_sparse_arrays(self, q_i, loss):
+    @idata(L1L2_ERRORS + ["cross_entropy"])
+    def test_sparse_arrays(self, loss):
         """Tests classifier with sparse arrays as features and labels."""
         optimizer = L_BFGS_B(maxiter=5)
-        quantum_instance = self._create_quantum_instance(q_i)
-        qnn, _, num_parameters = self._create_circuit_qnn(quantum_instance)
+        qnn, _, num_parameters = self._create_sampler_qnn()
         classifier = self._create_classifier(qnn, num_parameters, optimizer, loss, one_hot=True)
 
         features = scipy.sparse.csr_matrix([[0, 0], [1, 1]])
@@ -320,23 +287,29 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         score = classifier.score(features, labels)
         self.assertGreater(score, 0.5)
 
-    @idata(["opflow", "circuit_qnn"])
+    @idata(["estimator_qnn", "sampler_qnn"])
     def test_save_load(self, qnn_type):
         """Tests save and load models."""
         features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
 
-        if qnn_type == "opflow":
+        if qnn_type == "estimator_qnn":
             labels = np.array([-1, -1, 1, 1])
 
             num_qubits = 2
+            feature_map = ZZFeatureMap(num_qubits)
             ansatz = RealAmplitudes(num_qubits, reps=1)
-            qnn = TwoLayerQNN(
-                num_qubits, ansatz=ansatz, quantum_instance=self.qasm_quantum_instance
+            qc = QuantumCircuit(num_qubits)
+            qc.compose(feature_map, inplace=True)
+            qc.compose(ansatz, inplace=True)
+            qnn = EstimatorQNN(
+                circuit=qc,
+                input_params=feature_map.parameters,
+                weight_params=ansatz.parameters,
             )
             num_parameters = ansatz.num_parameters
-        elif qnn_type == "circuit_qnn":
+        elif qnn_type == "sampler_qnn":
             labels = np.array([0, 0, 1, 1])
-            qnn, _, num_parameters = self._create_circuit_qnn(self.qasm_quantum_instance)
+            qnn, _, num_parameters = self._create_sampler_qnn()
         else:
             raise ValueError(f"Unsupported QNN type: {qnn_type}")
 
@@ -373,7 +346,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         """Test the number of assumed classes for one-hot and not one-hot data."""
 
         optimizer = L_BFGS_B(maxiter=5)
-        qnn, num_inputs, num_parameters = self._create_circuit_qnn(self.sv_quantum_instance)
+        qnn, num_inputs, num_parameters = self._create_sampler_qnn()
         features, labels = self._generate_data(num_inputs)
 
         if one_hot:
@@ -399,9 +372,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         """Test that trying to train a binary classifier with multiclass data raises an error."""
 
         optimizer = L_BFGS_B(maxiter=5)
-        qnn, num_inputs, num_parameters = self._create_circuit_qnn(
-            self.sv_quantum_instance, output_shape=1
-        )
+        qnn, num_inputs, num_parameters = self._create_sampler_qnn(output_shape=1)
         classifier = self._create_classifier(
             qnn,
             num_parameters,
@@ -421,9 +392,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         """Test that trying to train a binary classifier with misshaped data raises an error."""
 
         optimizer = L_BFGS_B(maxiter=5)
-        qnn, num_inputs, num_parameters = self._create_circuit_qnn(
-            self.sv_quantum_instance, output_shape=1
-        )
+        qnn, num_inputs, num_parameters = self._create_sampler_qnn(output_shape=1)
         classifier = self._create_classifier(
             qnn,
             num_parameters,
@@ -443,9 +412,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         """Test that trying to train a one-hot classifier with incompatible data raises an error."""
 
         optimizer = L_BFGS_B(maxiter=5)
-        qnn, num_inputs, num_parameters = self._create_circuit_qnn(
-            self.sv_quantum_instance, output_shape=2
-        )
+        qnn, num_inputs, num_parameters = self._create_sampler_qnn(output_shape=2)
         classifier = self._create_classifier(
             qnn, num_parameters, optimizer, loss="absolute_error", one_hot=True
         )
@@ -460,7 +427,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     def test_untrained(self):
         """Test untrained classifier."""
-        qnn, _, _ = self._create_circuit_qnn(self.sv_quantum_instance)
+        qnn, _, _ = self._create_sampler_qnn()
         classifier = NeuralNetworkClassifier(qnn)
         with self.assertRaises(QiskitMachineLearningError, msg="classifier.predict()"):
             classifier.predict(np.asarray([]))
@@ -473,7 +440,15 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     def test_callback_setter(self):
         """Test the callback setter."""
-        qnn = TwoLayerQNN(2, quantum_instance=self.qasm_quantum_instance)
+        num_qubits = 2
+        feature_map = ZZFeatureMap(num_qubits)
+        ansatz = RealAmplitudes(num_qubits)
+        qc = QuantumCircuit(2)
+        qc.compose(feature_map, inplace=True)
+        qc.compose(ansatz, inplace=True)
+        qnn = EstimatorQNN(
+            circuit=qc, input_params=feature_map.parameters, weight_params=ansatz.parameters
+        )
         single_step_opt = SPSA(maxiter=1, learning_rate=0.01, perturbation=0.1)
         classifier = NeuralNetworkClassifier(qnn, optimizer=single_step_opt)
 

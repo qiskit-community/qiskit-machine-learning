@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2020, 2023.
 #
@@ -20,7 +20,7 @@ building blocks for machine learning algorithms.
 .. currentmodule:: qiskit_machine_learning.circuit.library
 
 Feature Maps
-============
+------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -30,7 +30,7 @@ Feature Maps
    RawFeatureVector
 
 Helper Circuits
-===============
+---------------
 
 .. autosummary::
    :toctree: ../stubs/

@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -23,7 +23,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from scipy.optimize import minimize
 
 from qiskit_machine_learning.algorithms.classifiers import QSVC
@@ -99,6 +99,22 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         self.assertTrue(np.all(qkt_result.quantum_kernel.parameter_values))
 
         self._fit_and_assert_score(qkt_result)
+
+    @data(
+        TrainableFidelityQuantumKernel,
+        TrainableFidelityStatevectorKernel,
+    )
+    def test_fit_with_no_params(self, trainable_kernel_type):
+        """Test trainer with custom parameters."""
+        quantum_kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=None,
+        )
+        loss = SVCLoss(C=0.8, gamma="auto")
+        optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
+        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer)
+        with self.assertRaises(ValueError):
+            qkt.fit(self.sample_train, self.label_train)
 
     @data(
         TrainableFidelityQuantumKernel,

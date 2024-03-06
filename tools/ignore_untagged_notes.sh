@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #

@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2022, 2023.
 #
@@ -24,7 +24,7 @@ from ddt import ddt, idata
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
@@ -333,7 +333,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
 
         with self.subTest("no parameters"):
-            qc = qc.bind_parameters([1, 2])
+            qc = qc.assign_parameters([1, 2])
 
             sampler_qnn = SamplerQNN(
                 circuit=qc,

@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -20,7 +20,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from qiskit.circuit.library import ZZFeatureMap
 from qiskit.primitives import Sampler
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import QSVR, SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
@@ -106,9 +106,10 @@ class TestQSVR(QiskitMachineLearningTestCase):
         original_predicts = regressor.predict(test_features)
 
         # save/load, change the quantum instance and check if predicted values are the same
-        file_name = os.path.join(tempfile.gettempdir(), "qsvr.model")
-        regressor.save(file_name)
-        try:
+        with tempfile.TemporaryDirectory() as dir_name:
+            file_name = os.path.join(dir_name, "qsvr.model")
+            regressor.save(file_name)
+
             regressor_load = QSVR.load(file_name)
             loaded_model_predicts = regressor_load.predict(test_features)
 
@@ -122,9 +123,6 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
             with self.assertRaises(TypeError):
                 FakeModel.load(file_name)
-
-        finally:
-            os.remove(file_name)
 
 
 if __name__ == "__main__":

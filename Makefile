@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -75,7 +75,7 @@ doctest:
 
 clean_sphinx:
 	make -C docs clean
-	
+
 coverage:
 	coverage3 run --source qiskit_machine_learning -m unittest discover -s test -q
 	coverage3 report
@@ -83,4 +83,4 @@ coverage:
 coverage_erase:
 	coverage erase
 
-clean: clean_sphinx coverage_erase; 
+clean: clean_sphinx coverage_erase;

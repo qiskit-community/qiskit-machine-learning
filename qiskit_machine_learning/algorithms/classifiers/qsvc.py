@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,7 +15,7 @@
 import warnings
 from typing import Optional
 
-from qiskit.utils.algorithm_globals import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
@@ -45,7 +45,9 @@ class QSVC(SVC, SerializableModelMixin):
     def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: Quantum kernel to be used for classification.
+            quantum_kernel: A quantum kernel to be used for classification.
+                Has to be ``None`` when a precomputed kernel is used. If None,
+                default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             *args: Variable length argument list to pass to SVC constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVC constructor.
         """

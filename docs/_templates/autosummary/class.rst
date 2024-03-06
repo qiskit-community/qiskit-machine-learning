@@ -18,11 +18,9 @@
 
    .. rubric:: Attributes
 
-   .. autosummary::
-      :toctree: ../stubs/
    {% for item in all_attributes %}
       {%- if not item.startswith('_') %}
-          ~{{ name }}.{{ item }}
+   .. autoattribute:: {{ name }}.{{ item }}
       {%- endif -%}
    {%- endfor %}
    {% endif %}
@@ -33,11 +31,9 @@
 
    .. rubric:: Methods
 
-   .. autosummary::
-      :toctree: ../stubs/
    {% for item in all_methods %}
       {%- if not item.startswith('_') %}
-          ~{{ name }}.{{ item }}
+   .. automethod:: {{ name }}.{{ item }}
       {%- endif -%}
    {%- endfor %}
 

@@ -16,4 +16,4 @@ qiskit-aer>=0.11.2
 mypy>=0.981
 mypy-extensions>=0.4.3
 nbsphinx
-qiskit_sphinx_theme~=1.12.0
+qiskit_sphinx_theme~=1.16.0

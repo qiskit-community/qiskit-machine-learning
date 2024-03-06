@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -19,7 +19,7 @@ The package contains core algorithms such as classifiers and classifiers.
 .. currentmodule:: qiskit_machine_learning.algorithms
 
 Machine Learning Base Classes
-=============================
+-----------------------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -30,7 +30,7 @@ Machine Learning Base Classes
    SerializableModelMixin
 
 Machine Learning Objective Functions
-====================================
+------------------------------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -41,7 +41,7 @@ Machine Learning Objective Functions
    OneHotObjectiveFunction
 
 Algorithms
-==========
+----------
 
 Classifiers
 +++++++++++

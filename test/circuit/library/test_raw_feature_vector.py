@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2022.
+# (C) Copyright IBM 2020, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,12 +18,12 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import qiskit
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.optimizers import COBYLA
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector
@@ -55,7 +55,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         params = np.random.random(8) + 1j * np.random.random(8)
         params /= np.linalg.norm(params)
 
-        bound = circuit.bind_parameters(params)
+        bound = circuit.assign_parameters(params)
 
         ref = QuantumCircuit(3)
         ref.initialize(params, ref.qubits)
@@ -128,7 +128,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         raw = RawFeatureVector(4)
         circuit.append(raw, [0, 1])
 
-        bound = circuit.bind_parameters([1, 0, 0, 0])
+        bound = circuit.assign_parameters([1, 0, 0, 0])
 
         self.assertTrue(Statevector.from_label("00").equiv(bound))
 

@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -46,7 +46,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url='https://github.com/qiskit-community/qiskit-machine-learning',
     author='Qiskit Machine Learning Development Team',
-    author_email='hello@qiskit.org',
+    author_email='qiskit@us.ibm.com',
     license='Apache-2.0',
     classifiers=[
         "Environment :: Console",
@@ -61,6 +61,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering"
     ],
     keywords='qiskit sdk quantum machine learning ml',
@@ -74,7 +75,7 @@ setuptools.setup(
     },
     project_urls={
         "Bug Tracker": "https://github.com/qiskit-community/qiskit-machine-learning/issues",
-        "Documentation": "https://qiskit.org/ecosystem/machine-learning/",
+        "Documentation": "https://qiskit-community.github.io/qiskit-machine-learning/",
         "Source Code": "https://github.com/qiskit-community/qiskit-machine-learning",
     },
     zip_safe=False

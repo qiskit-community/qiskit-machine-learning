@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2023.
+# (C) Copyright IBM 2020, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,15 +10,17 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""A Neural Network abstract class for all (quantum) neural networks within Qiskit's
-machine learning module."""
+"""A Neural Network abstract class for all (quantum) neural networks within Qiskit
+Machine Learning module."""
 
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Sequence
 
 import numpy as np
 
+from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
 import qiskit_machine_learning.optionals as _optionals
 from ..exceptions import QiskitMachineLearningError
 
@@ -140,7 +142,7 @@ class NeuralNetwork(ABC):
             input_ = input_.reshape((1, -1))
         elif len(shape) > 2:
             # flatten lower dimensions, keep num_inputs as a last dimension
-            input_ = input_.reshape((np.product(input_.shape[:-1]), -1))
+            input_ = input_.reshape((np.prod(input_.shape[:-1]), -1))
 
         return input_, shape
 
@@ -264,3 +266,54 @@ class NeuralNetwork(ABC):
         self, input_data: np.ndarray | None, weights: np.ndarray | None
     ) -> tuple[np.ndarray | SparseArray | None, np.ndarray | SparseArray | None]:
         raise NotImplementedError
+
+    def _reparameterize_circuit(
+        self,
+        circuit: QuantumCircuit,
+        input_params: Sequence[Parameter] | None = None,
+        weight_params: Sequence[Parameter] | None = None,
+    ) -> QuantumCircuit:
+        # As the data (parameter values) for the primitive is ordered as inputs followed by weights
+        # we need to ensure that the parameters are ordered like this naturally too so the rewrites
+        # parameters to ensure this. "inputs" as a name comes before "weights" and within they are
+        # numerically ordered.
+        if input_params and self.num_inputs != len(input_params):
+            raise ValueError(
+                f"input_params length {len(input_params)}"
+                f" mismatch with num_inputs (self.num_inputs)"
+            )
+        if weight_params and self.num_weights != len(weight_params):
+            raise ValueError(
+                f"weight_params length {len(weight_params)}"
+                f" mismatch with num_weights (self.num_weights)"
+            )
+
+        parameters = circuit.parameters
+
+        if len(parameters) != (self.num_inputs + self.num_weights):
+            raise ValueError(
+                f"Number of circuit parameters {len(parameters)}"
+                f" mismatch with sum of num inputs and weights"
+                f" {self.num_inputs + self.num_weights}"
+            )
+
+        new_input_params = ParameterVector("inputs", self.num_inputs)
+        new_weight_params = ParameterVector("weights", self.num_weights)
+
+        new_parameters = {}
+        if input_params:
+            for i, param in enumerate(input_params):
+                if param not in parameters:
+                    raise ValueError(f"Input param `{param.name}` not present in circuit")
+                new_parameters[param] = new_input_params[i]
+
+        if weight_params:
+            for i, param in enumerate(weight_params):
+                if param not in parameters:
+                    raise ValueError(f"Weight param {param.name} `not present in circuit")
+                new_parameters[param] = new_weight_params[i]
+
+        if new_parameters:
+            circuit = circuit.assign_parameters(new_parameters)
+
+        return circuit

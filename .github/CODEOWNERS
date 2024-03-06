@@ -3,5 +3,5 @@
 # least one codeowner. However, all Qiskit team members can (and should!) review the PRs.
 
 # Global rule, unless specialized by a later one
-* @stefan-woerner @woodsp-ibm @adekusar-drl
+* @woodsp-ibm @adekusar-drl @smens @edoaltamura @oscar-wallis @OkuyanBoga @Benjamin-Symons
 

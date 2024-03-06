@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -19,33 +19,33 @@ inputs:
   python-version:
     description: 'Python version'
     required: true
-  terra-main:
-    description: 'Use Terra main'
+  qiskit-main:
+    description: 'Use Qiskit main'
     required: true
 runs:
   using: "composite"
   steps:
     - name: Get main last commit ids
       run: |
-        echo "TERRA_HASH=$(git ls-remote --heads https://github.com/Qiskit/qiskit-terra.git refs/heads/main  | awk '{print $1}')" >> $GITHUB_ENV
+        echo "QISKIT_HASH=$(git ls-remote --heads https://github.com/Qiskit/qiskit.git refs/heads/main  | awk '{print $1}')" >> $GITHUB_ENV
       shell: bash
-    - name: Terra Cache
+    - name: Qiskit Cache
       env:
         CACHE_VERSION: v1
-      id: terra-cache
-      uses: actions/cache@v3
+      id: qiskit-cache
+      uses: actions/cache@v4
       with:
-        path: terra-cache
-        key: terra-cache-${{ inputs.os }}-${{ inputs.python-version }}-${{ env.TERRA_HASH }}-${{ env.CACHE_VERSION }}
-    - name: Install Terra from Main
+        path: qiskit-cache
+        key: qiskit-cache-${{ inputs.os }}-${{ inputs.python-version }}-${{ env.QISKIT_HASH }}-${{ env.CACHE_VERSION }}
+    - name: Install Qiskit from Main
       env:
         MACOSX_DEPLOYMENT_TARGET: 10.15
       run: |
-        if [ "${{ inputs.terra-main }}" == "true" ]; then
-          echo 'Install Terra from Main'
-          BASE_DIR=terra-cache
+        if [ "${{ inputs.qiskit-main }}" == "true" ]; then
+          echo 'Install Qiskit from Main'
+          BASE_DIR=qiskit-cache
           build_from_main=true
-          cache_hit=${{ steps.terra-cache.outputs.cache-hit }}
+          cache_hit=${{ steps.qiskit-cache.outputs.cache-hit }}
           echo "cache hit: ${cache_hit}"
           if [ "$cache_hit" == "true" ]; then
             pip_result=0
@@ -61,19 +61,19 @@ runs:
           if [ "$build_from_main" == "true" ]; then
             echo 'Create wheel file from main'
             pip install -U wheel setuptools_rust
-            git clone --depth 1 --branch main https://github.com/Qiskit/qiskit-terra.git /tmp/qiskit-terra
-            pushd /tmp/qiskit-terra
+            git clone --depth 1 --branch main https://github.com/Qiskit/qiskit.git /tmp/qiskit
+            pushd /tmp/qiskit
             python setup.py bdist_wheel
             popd
-            cp -rf /tmp/qiskit-terra/dist/*.whl "${BASE_DIR}"
+            cp -rf /tmp/qiskit/dist/*.whl "${BASE_DIR}"
             pushd "${BASE_DIR}"
             python -m pip install *.whl
             popd
             pip uninstall -y setuptools_rust
           fi
         else
-          echo 'Install Terra from Stable'
-          pip install -U qiskit-terra
+          echo 'Install Qiskit from Stable'
+          pip install -U qiskit
         fi
       shell: bash
     - name: Install stable Aer

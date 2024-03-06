@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,63 +21,38 @@ concurrency:
 
 jobs:
   docs_publish:
-    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","stefan-woerner","woodsp-ibm"]', github.actor) }}
+    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","woodsp-ibm","smens","edoaltamura","oscar-wallis","OkuyanBoga","Benjamin-Symons"]', github.actor) }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - uses: ./.github/actions/install-machine-learning
       - name: Install Dependencies
         run: |
-          pip install jupyter qiskit-terra[visualization] 'torchvision<0.10.0'
+          pip install jupyter qiskit[visualization] 'torchvision<0.10.0'
           sudo apt-get install -y pandoc graphviz
         shell: bash
-      - name: Build and publish
+      - name: Build docs
         env:
-          encrypted_rclone_key: ${{ secrets.encrypted_rclone_key }}
-          encrypted_rclone_iv: ${{ secrets.encrypted_rclone_iv }}
           QISKIT_PARALLEL: False
           QISKIT_DOCS_BUILD_TUTORIALS: 'always'
         run: |
           echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
           tools/ignore_untagged_notes.sh
           make html
-          tools/deploy_documentation.sh
         shell: bash
-  deploy-translatable-strings:
-    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","stefan-woerner","woodsp-ibm"]', github.actor) }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install jupyter qiskit-terra[visualization] 'torchvision<0.10.0' tox
-        sudo apt-get install -y graphviz pandoc
-    - name: Build and publish
-      env:
-        encrypted_deploy_po_branch_key: ${{ secrets.encrypted_deploy_po_branch_key }}
-        encrypted_deploy_po_branch_iv: ${{ secrets.encrypted_deploy_po_branch_iv }}
-        QISKIT_PARALLEL: False
-        QISKIT_DOCS_BUILD_TUTORIALS: 'always'
-      run: |
-        echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
-        tools/ignore_untagged_notes.sh
-        tools/deploy_translatable_strings.sh
-      shell: bash
+      - name: Bypass Jekyll Processing # Necessary for setting the correct css path
+        run: touch docs/_build/html/.nojekyll
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/_build/html/
+          clean-exclude: |
+            locale/*

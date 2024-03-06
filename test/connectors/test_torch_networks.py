@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2022, 2023.
 #
@@ -19,13 +19,7 @@ from ddt import ddt, idata
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit_machine_learning.neural_networks import (
-    CircuitQNN,
-    TwoLayerQNN,
-    NeuralNetwork,
-    EstimatorQNN,
-    SamplerQNN,
-)
+from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.connectors import TorchConnector
 
 
@@ -58,42 +52,6 @@ class TestTorchNetworks(TestTorch):
                 return cat((x, 1 - x), -1)
 
         return Net()
-
-    def _create_circuit_qnn(self) -> CircuitQNN:
-        output_shape = 2
-        num_inputs = 2
-
-        def interpret(x):
-            return f"{x:b}".count("1") % 2
-
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, entanglement="linear", reps=1)
-
-        qc = QuantumCircuit(num_inputs)
-        qc.append(feature_map, range(num_inputs))
-        qc.append(ansatz, range(num_inputs))
-
-        qnn = CircuitQNN(
-            qc,
-            input_params=feature_map.parameters,
-            weight_params=ansatz.parameters,
-            input_gradients=True,  # for hybrid qnn
-            interpret=interpret,
-            output_shape=output_shape,
-            quantum_instance=self._sv_quantum_instance,
-        )
-        return qnn
-
-    def _create_opflow_qnn(self) -> TwoLayerQNN:
-        num_inputs = 2
-
-        # set up QNN
-        qnn = TwoLayerQNN(
-            num_qubits=num_inputs,
-            quantum_instance=self._sv_quantum_instance,
-            input_gradients=True,  # for hybrid qnn
-        )
-        return qnn
 
     def _create_estimator_qnn(self) -> EstimatorQNN:
         num_inputs = 2
@@ -137,21 +95,15 @@ class TestTorchNetworks(TestTorch):
         )
         return qnn
 
-    @idata(["opflow", "circuit_qnn", "sampler_qnn", "estimator_qnn"])
+    @idata(["sampler_qnn", "estimator_qnn"])
     def test_hybrid_batch_gradients(self, qnn_type: str):
         """Test gradient back-prop for batch input in a qnn."""
         import torch
         from torch.nn import MSELoss
         from torch.optim import SGD
 
-        qnn: Optional[Union[CircuitQNN, TwoLayerQNN, SamplerQNN, EstimatorQNN]] = None
-        if qnn_type == "opflow":
-            qnn = self._create_opflow_qnn()
-            output_size = 1
-        elif qnn_type == "circuit_qnn":
-            qnn = self._create_circuit_qnn()
-            output_size = 2
-        elif qnn_type == "sampler_qnn":
+        qnn: Optional[Union[SamplerQNN, EstimatorQNN]] = None
+        if qnn_type == "sampler_qnn":
             qnn = self._create_sampler_qnn()
             output_size = 2
         elif qnn_type == "estimator_qnn":

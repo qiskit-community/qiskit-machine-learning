@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2022, 2023.
 #
@@ -16,12 +16,11 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import data, ddt
-from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit.opflow import StateFn
 from qiskit.primitives import Estimator
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQR
 
@@ -117,8 +116,6 @@ class TestVQR(QiskitMachineLearningTestCase):
         """Test VQR with a wrong observable."""
         with self.assertRaises(ValueError):
             _ = VQR(num_qubits=2, observable=QuantumCircuit(2))
-        with self.assertRaises(ValueError):
-            _ = VQR(num_qubits=2, observable=StateFn(QuantumCircuit(2)))
 
 
 if __name__ == "__main__":

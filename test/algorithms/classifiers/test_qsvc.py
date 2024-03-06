@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -14,19 +14,16 @@
 import os
 import tempfile
 import unittest
-import warnings
 
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 
-from qiskit import BasicAer
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC, SerializableModelMixin
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.exceptions import (
-    QiskitMachineLearningError,
     QiskitMachineLearningWarning,
 )
 
@@ -36,16 +33,8 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def setUp(self):
         super().setUp()
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         algorithm_globals.random_seed = 10598
-
-        self.statevector_simulator = QuantumInstance(
-            BasicAer.get_backend("statevector_simulator"),
-            shots=1,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
 
         self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
 
@@ -62,15 +51,9 @@ class TestQSVC(QiskitMachineLearningTestCase):
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
 
-    def tearDown(self) -> None:
-        super().tearDown()
-        warnings.filterwarnings("always", category=DeprecationWarning)
-
     def test_qsvc(self):
         """Test QSVC"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvc = QSVC(quantum_kernel=qkernel)
         qsvc.fit(self.sample_train, self.label_train)
@@ -78,19 +61,9 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
         self.assertEqual(score, 0.5)
 
-    def test_empty_kernel(self):
-        """Test QSVC with empty QuantumKernel"""
-        qkernel = QuantumKernel()
-        qsvc = QSVC(quantum_kernel=qkernel)
-
-        with self.assertRaises(QiskitMachineLearningError):
-            _ = qsvc.fit(self.sample_train, self.label_train)
-
     def test_change_kernel(self):
-        """Test QSVC with QuantumKernel later"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        """Test QSVC with FidelityQuantumKernel later"""
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvc = QSVC()
         qsvc.quantum_kernel = qkernel
@@ -101,9 +74,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc_parameters(self):
         """Test QSVC with extra constructor parameters"""
-        qkernel = QuantumKernel(
-            feature_map=self.feature_map, quantum_instance=self.statevector_simulator
-        )
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
         qsvc = QSVC(quantum_kernel=qkernel, tol=1e-4, C=0.5)
         qsvc.fit(self.sample_train, self.label_train)
@@ -126,9 +97,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
         labels = np.array([0, 0, 1, 1])
 
-        quantum_kernel = QuantumKernel(
-            feature_map=ZZFeatureMap(2), quantum_instance=self.statevector_simulator
-        )
+        quantum_kernel = FidelityQuantumKernel(feature_map=ZZFeatureMap(2))
         classifier = QSVC(quantum_kernel=quantum_kernel)
         classifier.fit(features, labels)
 

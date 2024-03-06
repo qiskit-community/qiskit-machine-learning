@@ -1,4 +1,5 @@
-qiskit-terra>=0.24
+qiskit>=0.44
+qiskit-algorithms>=0.2.0
 scipy>=1.4
 numpy>=1.17
 psutil>=5

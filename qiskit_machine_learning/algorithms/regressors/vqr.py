@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -16,10 +16,9 @@ from typing import Callable
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms.optimizers import Optimizer, Minimizer
-from qiskit.opflow import PauliSumOp
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit_algorithms.optimizers import Optimizer, Minimizer
 
 from .neural_network_regressor import NeuralNetworkRegressor
 from ...neural_networks import EstimatorQNN
@@ -35,7 +34,7 @@ class VQR(NeuralNetworkRegressor):
         num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
-        observable: BaseOperator | PauliSumOp | None = None,
+        observable: BaseOperator | None = None,
         loss: str | Loss = "squared_error",
         optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,
@@ -62,9 +61,9 @@ class VQR(NeuralNetworkRegressor):
                 use the default :math:`Z^{\otimes num\_qubits}` observable.
             loss: A target loss function to be used in training. Default is squared error.
             optimizer: An instance of an optimizer or a callable to be used in training.
-                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                Refer to :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on
                 the callable protocol. When `None` defaults to
-                :class:`~qiskit.algorithms.optimizers.SLSQP`.
+                :class:`~qiskit_algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: A reference to a user's callback function that has two parameters and
@@ -81,10 +80,10 @@ class VQR(NeuralNetworkRegressor):
                 can't be adjusted to ``num_qubits``.
             ValueError: if the type of the observable is not compatible with ``estimator``.
         """
-        if observable is not None and not isinstance(observable, (BaseOperator, PauliSumOp)):
+        if observable is not None and not isinstance(observable, BaseOperator):
             raise ValueError(
                 f"Unsupported type of the observable, expected "
-                f"'BaseOperator | PauliSumOp', got {type(observable)}"
+                f"'BaseOperator', got {type(observable)}"
             )
 
         self._estimator = estimator

@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Dict
 
 import numpy as np
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.utils import algorithm_globals
 from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin
@@ -67,8 +67,10 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     ) -> None:
         """
         Args:
-            quantum_kernel: a quantum kernel to be used for classification. Has to be ``None`` when
-                a precomputed kernel is used.
+            quantum_kernel: A quantum kernel to be used for classification.
+                Has to be ``None`` when a precomputed kernel is used. If None,
+                and ``precomputed`` is ``False``, the quantum kernel will default to
+                :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             C: Positive regularization parameter. The strength of the regularization is inversely
                 proportional to C. Smaller ``C`` induce smaller weights which generally helps
                 preventing overfitting. However, due to the nature of this algorithm, some of the
@@ -76,20 +78,17 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
                 the performance of the algorithm drastically. If the data is linearly separable
                 in feature space, ``C`` should be chosen to be large. If the separation is not
                 perfect, ``C`` should be chosen smaller to prevent overfitting.
-
-            num_steps: number of steps in the Pegasos algorithm. There is no early stopping
+            num_steps: The number of steps in the Pegasos algorithm. There is no early stopping
                 criterion. The algorithm iterates over all steps.
-            precomputed: a boolean flag indicating whether a precomputed kernel is used. Set it to
+            precomputed: A boolean flag indicating whether a precomputed kernel is used. Set it to
                 ``True`` in case of precomputed kernel.
-            seed: a seed for the random number generator
+            seed: A seed for the random number generator.
 
         Raises:
             ValueError:
                 - if ``quantum_kernel`` is passed and ``precomputed`` is set to ``True``. To use
                 a precomputed kernel, ``quantum_kernel`` has to be of the ``None`` type.
-            TypeError:
-                - if ``quantum_kernel`` neither instance of
-                  :class:`~qiskit_machine_learning.kernels.BaseKernel` nor ``None``.
+                - if C is not a positive number.
         """
 
         if precomputed:

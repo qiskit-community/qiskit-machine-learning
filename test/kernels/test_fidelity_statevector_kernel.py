@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023.
+# (C) Copyright IBM 2023, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import functools
 import itertools
+import pickle
+import sys
 import unittest
 
 from test import QiskitMachineLearningTestCase
@@ -26,7 +28,8 @@ from sklearn.svm import SVC
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
-from qiskit.utils import algorithm_globals, optionals
+from qiskit.utils import optionals
+from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning.kernels import FidelityStatevectorKernel
 
@@ -126,7 +129,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             # all eigenvalues are non-negative with some tolerance
             self.assertTrue(np.all(np.greater_equal(w, -1e-10)))
 
+    # todo: enable the test on macOS when fixed: https://github.com/Qiskit/qiskit-aer/issues/1886
     @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
+    @unittest.skipIf(sys.platform.startswith("darwin"), "macOS is not supported")
     def test_aer_statevector(self):
         """Test statevector kernel when using AerStatevector type statevectors."""
         from qiskit_aer.quantum_info import AerStatevector
@@ -338,6 +343,55 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
         self.assertEqual(qc, kernel.feature_map)
         self.assertEqual(1, kernel.num_features)
+
+    def test_pickling(self):
+        """Test that the kernel can be pickled correctly and without error."""
+        # Compares original kernel with copies made using pickle module and get & set state directly
+        qc = QuantumCircuit(1)
+        qc.ry(Parameter("w"), 0)
+        kernel1 = FidelityStatevectorKernel(feature_map=qc)
+
+        pickled_obj = pickle.dumps(kernel1)
+        kernel2 = pickle.loads(pickled_obj)
+
+        kernel3 = FidelityStatevectorKernel()
+        kernel3.__setstate__(kernel1.__getstate__())
+
+        with self.subTest("Pickle fail, kernels are not the same type"):
+            self.assertEqual(type(kernel1), type(kernel2))
+
+        with self.subTest("Pickle fail, kernels are not the same type"):
+            self.assertEqual(type(kernel1), type(kernel3))
+
+        with self.subTest("Pickle fail, kernels are not unique objects"):
+            self.assertNotEqual(kernel1, kernel2)
+
+        with self.subTest("Pickle fail, kernels are not unique objects"):
+            self.assertNotEqual(kernel1, kernel3)
+
+        with self.subTest("Pickle fail, caches are not the same type"):
+            self.assertEqual(type(kernel1._get_statevector), type(kernel2._get_statevector))
+
+        with self.subTest("Pickle fail, caches are not the same type"):
+            self.assertEqual(type(kernel1._get_statevector), type(kernel3._get_statevector))
+
+        # Remove cache to check dict properties are otherwise identical.
+        # - caches are never identical as they have different RAM locations.
+        kernel1.__dict__["_get_statevector"] = None
+        kernel2.__dict__["_get_statevector"] = None
+        kernel3.__dict__["_get_statevector"] = None
+
+        # Confirm changes were made.
+        with self.subTest("Pickle fail, caches have not been removed from kernels"):
+            self.assertEqual(kernel1._get_statevector, None)
+            self.assertEqual(kernel2._get_statevector, None)
+            self.assertEqual(kernel3._get_statevector, None)
+
+        with self.subTest("Pickle fail, properties of kernels (bar cache) are not identical"):
+            self.assertEqual(kernel1.__dict__, kernel2.__dict__)
+
+        with self.subTest("Pickle fail, properties of kernels (bar cache) are not identical"):
+            self.assertEqual(kernel1.__dict__, kernel3.__dict__)
 
 
 @ddt

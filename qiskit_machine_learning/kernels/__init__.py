@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -36,13 +36,12 @@ clustering or ridge regression.
 .. currentmodule:: qiskit_machine_learning.kernels
 
 Quantum Kernels
-===============
+---------------
 
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
 
-   QuantumKernel
    BaseKernel
    FidelityQuantumKernel
    FidelityStatevectorKernel
@@ -51,7 +50,7 @@ Quantum Kernels
    TrainableFidelityStatevectorKernel
 
 Submodules
-==========
+----------
 
 .. autosummary::
    :toctree:
@@ -59,7 +58,6 @@ Submodules
    algorithms
 """
 
-from .quantum_kernel import QuantumKernel
 from .base_kernel import BaseKernel
 from .fidelity_quantum_kernel import FidelityQuantumKernel
 from .fidelity_statevector_kernel import FidelityStatevectorKernel
@@ -68,7 +66,6 @@ from .trainable_fidelity_quantum_kernel import TrainableFidelityQuantumKernel
 from .trainable_fidelity_statevector_kernel import TrainableFidelityStatevectorKernel
 
 __all__ = [
-    "QuantumKernel",
     "BaseKernel",
     "FidelityQuantumKernel",
     "FidelityStatevectorKernel",

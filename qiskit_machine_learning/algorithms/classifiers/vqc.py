@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -17,10 +17,10 @@ from typing import Callable
 import numpy as np
 
 from qiskit import QuantumCircuit
-from qiskit.algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from qiskit.primitives import BaseSampler
+from qiskit_algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 
-from ...neural_networks import CircuitQNN, SamplerQNN
+from ...neural_networks import SamplerQNN
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 
@@ -65,16 +65,18 @@ class VQC(NeuralNetworkClassifier):
                 The number of qubits in the feature map and ansatz are adjusted to this
                 number if required.
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
-                QNN. If ``None`` is given, the ``ZZFeatureMap`` is used if the number of qubits
-                is larger than 1. For a single qubit classification problem the ``ZFeatureMap``
+                QNN. If ``None`` is given, the :class:`~qiskit.circuit.library.ZZFeatureMap`
+                is used if the number of qubits is larger than 1. For a single qubit
+                classification problem the :class:`~qiskit.circuit.library.ZFeatureMap`
                 is used by default.
-            ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
-                QNN. If ``None`` is given then the ``RealAmplitudes`` circuit is used.
+            ansatz: The (parametrized) circuit to be used as an ansatz for the underlying QNN.
+                If ``None`` is given then the :class:`~qiskit.circuit.library.RealAmplitudes`
+                circuit is used.
             loss: A target loss function to be used in training. Default value is ``cross_entropy``.
             optimizer: An instance of an optimizer or a callable to be used in training.
-                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                Refer to :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on
                 the callable protocol. When `None` defaults to
-                :class:`~qiskit.algorithms.optimizers.SLSQP`.
+                :class:`~qiskit_algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and
@@ -158,7 +160,7 @@ class VQC(NeuralNetworkClassifier):
         num_classes = self._num_classes
 
         # instance check required by mypy (alternative to cast)
-        if isinstance(self._neural_network, (CircuitQNN, SamplerQNN)):
+        if isinstance(self._neural_network, SamplerQNN):
             self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
 
         function = self._create_objective(X, y)

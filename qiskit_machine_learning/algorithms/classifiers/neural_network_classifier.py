@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2021, 2023.
 #
@@ -17,7 +17,7 @@ from typing import Callable, cast
 
 import numpy as np
 import scipy.sparse
-from qiskit.algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
+from qiskit_algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from scipy.sparse import spmatrix
 from sklearn.base import ClassifierMixin
 from sklearn.exceptions import NotFittedError
@@ -76,9 +76,9 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
                 loss). In case of a one-dimensional categorical output, this option determines how
                 to encode the target data (i.e. one-hot or integer encoding).
             optimizer: An instance of an optimizer or a callable to be used in training.
-                Refer to :class:`~qiskit.algorithms.optimizers.Minimizer` for more information on
+                Refer to  :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on
                 the callable protocol. When `None` defaults to
-                :class:`~qiskit.algorithms.optimizers.SLSQP`.
+                :class:`~qiskit_algorithms.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and

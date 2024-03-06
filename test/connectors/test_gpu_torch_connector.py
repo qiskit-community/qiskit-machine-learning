@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022.
+# (C) Copyright IBM 2022, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -31,10 +31,6 @@ class TestGPUTorchConnector(QiskitMachineLearningTestCase, TestTorchConnector):
             self.skipTest("CUDA is not available")
         else:
             self._device = torch.device("cuda")
-
-    def tearDown(self) -> None:
-        super().tearDown()
-        super().tear_down()
 
 
 if __name__ == "__main__":

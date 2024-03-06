@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2022, 2023.
 #
@@ -14,9 +14,8 @@
 
 import unittest
 import builtins
-import warnings
 from abc import ABC, abstractmethod
-from qiskit.utils import QuantumInstance, algorithm_globals, optionals
+from qiskit_algorithms.utils import algorithm_globals
 import qiskit_machine_learning.optionals as _optionals
 
 
@@ -28,36 +27,14 @@ class TestTorch(ABC):
         self._sv_quantum_instance = None
         self._qasm_quantum_instance = None
 
-    @unittest.skipUnless(optionals.HAS_AER, "qiskit-aer is required to run this test")
     @unittest.skipUnless(_optionals.HAS_TORCH, "PyTorch not available.")
     def setup_test(self):
         """Base setup."""
-        # suppress warnings from the deprecated networks
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         algorithm_globals.random_seed = 12345
-        # specify quantum instances
-        from qiskit_aer import Aer, AerSimulator
-
-        self._sv_quantum_instance = QuantumInstance(
-            Aer.get_backend("aer_simulator_statevector"),
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
-        # pylint: disable=no-member
-        self._qasm_quantum_instance = QuantumInstance(
-            AerSimulator(),
-            shots=100,
-            seed_simulator=algorithm_globals.random_seed,
-            seed_transpiler=algorithm_globals.random_seed,
-        )
         import torch
 
         torch.manual_seed(algorithm_globals.random_seed)
-
-    def tear_down(self):
-        """Tear down the test."""
-        warnings.filterwarnings("always", category=DeprecationWarning)
 
     @abstractmethod
     def subTest(self, msg, **kwargs):

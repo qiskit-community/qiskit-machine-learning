@@ -1,4 +1,4 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2022, 2023.
 #
@@ -18,8 +18,8 @@ from typing import Sequence
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms.state_fidelities import BaseStateFidelity
 from qiskit.circuit import Parameter, ParameterVector
+from qiskit_algorithms.state_fidelities import BaseStateFidelity
 
 from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
 from .trainable_kernel import TrainableKernel
@@ -28,7 +28,7 @@ from .trainable_kernel import TrainableKernel
 class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
     r"""
     An implementation of the quantum kernel that is based on the
-    :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` algorithm and provides ability to
+    :class:`~qiskit_algorithms.state_fidelities.BaseStateFidelity` algorithm and provides ability to
     train it.
 
     Finding good quantum kernels for a specific machine learning task is a big challenge in quantum
@@ -60,9 +60,9 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
             fidelity: An instance of the
-                :class:`~qiskit.algorithms.state_fidelities.BaseStateFidelity` primitive to be used
+                :class:`~qiskit_algorithms.state_fidelities.BaseStateFidelity` primitive to be used
                 to compute fidelity between states. Default is
-                :class:`~qiskit.algorithms.state_fidelities.ComputeUncompute` which is created on
+                :class:`~qiskit_algorithms.state_fidelities.ComputeUncompute` which is created on
                 top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
             training_parameters: Iterable containing :class:`~qiskit.circuit.Parameter` objects
                 which correspond to quantum gates on the feature map circuit which may be tuned.
@@ -96,7 +96,7 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
         self._feature_parameters = [
             parameter
             for parameter in feature_map.parameters
-            if parameter not in training_parameters
+            if parameter not in self._training_parameters
         ]
         self._parameter_dict = {parameter: None for parameter in feature_map.parameters}
 

@@ -1,0 +1,19 @@
+---
+prelude: >
+  Qiskit Machine Learning has been migrated to the `qiskit-community Github organization
+  <https://github.com/qiskit-community>`_ to further emphasize that it is a community-driven project.
+
+  To reflect this change, and because we are onboarding additional code-owners and maintainers,
+  with this version (0.7) we have decided to *remove all deprecated* code, regardless of the time of its deprecation.
+  This ensures that the new members of the development team do not have a large bulk of legacy code to maintain.
+
+  This can mean one of two things for you as the end-user:
+
+    #. Nothing, if you already migrated your code and no longer rely on any deprecated features.
+    #. Otherwise, you should make sure that your workflow doesn't rely on deprecated classes. If you cannot do that,
+       or want to continue using some of the features that were removed, you should pin your version of
+       Qiskit Machine Learning to 0.6.
+
+  For more context on the changes around Qiskit Machine Learning and the other application projects as well as the
+  Algorithms library in Qiskit, be sure to read this
+  `blog post <https://medium.com/qiskit/a-new-chapter-for-qiskit-algorithms-and-applications-5baff541e826>`_.

@@ -1,6 +1,6 @@
-# This code is part of Qiskit.
+# This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2022.
+# (C) Copyright IBM 2021, 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -44,7 +44,8 @@ class QSVR(SVR, SerializableModelMixin):
     def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
         """
         Args:
-            quantum_kernel: Quantum kernel to be used for regression.
+            quantum_kernel: A quantum kernel to be used for regression. If None,
+                default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             *args: Variable length argument list to pass to SVR constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
         """

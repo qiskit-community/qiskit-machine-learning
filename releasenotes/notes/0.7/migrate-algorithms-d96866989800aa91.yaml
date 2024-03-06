@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The module is migrated to `Qiskit Algorithms <https://qiskit-community.github.io/qiskit-algorithms/>`__
+    from the `qiskit.algorithms` package that is deprecated now.
