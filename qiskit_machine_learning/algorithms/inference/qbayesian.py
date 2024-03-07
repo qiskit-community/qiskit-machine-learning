@@ -58,7 +58,7 @@ class QBayesian:
         circuit: QuantumCircuit,
         limit: int = 10,
         threshold: float = 0.9,
-        sampler: BaseSampler = Sampler(),
+        sampler: BaseSampler | None = None,
     ):
         """
         Args:
