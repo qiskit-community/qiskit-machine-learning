@@ -29,6 +29,11 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 10598
+        # Quantum Bayesian inference
+        qc = self._create_bayes_net()
+        self.qbayesian = QBayesian(qc)
+
+    def _create_bayes_net(self):
         # Probabilities
         theta_a = 2 * np.arcsin(np.sqrt(0.25))
         theta_b_na = 2 * np.arcsin(np.sqrt(0.6))
@@ -67,8 +72,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         qc.x(0)
         # P(C|B,A)
         qc.mcry(theta_c_ba, [qr_a[0], qr_b[0]], qr_c[0])
-        # Quantum Bayesian inference
-        self.qbayesian = QBayesian(qc)
+        return qc
 
     def test_rejection_sampling(self):
         """Test rejection sampling with different amount of evidence"""
@@ -150,12 +154,23 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # Test set threshold
         self.qbayesian.threshold = 0.9
         self.qbayesian.rejection_sampling(evidence={"A": 1})
+        self.assertTrue(self.qbayesian.threshold == 0.9)
         # Test set limit
+        # Not converged
+        self.qbayesian.limit = 0
+        self.qbayesian.rejection_sampling(evidence={"B": 1})
+        self.assertFalse(self.qbayesian.converged)
+        self.assertTrue(self.qbayesian.limit == 0)
+        # Converged
         self.qbayesian.limit = 1
         self.qbayesian.rejection_sampling(evidence={"B": 1})
+        self.assertTrue(self.qbayesian.converged)
+        self.assertTrue(self.qbayesian.limit == 1)
         # Test sampler
-        self.qbayesian.sampler = Sampler()
+        sampler = Sampler()
+        self.qbayesian.sampler = sampler
         self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0})
+        self.assertTrue(self.qbayesian.sampler == sampler)
         # Create a quantum circuit with a register that has more than one qubit
         with self.assertRaises(ValueError, msg="No ValueError in constructor with invalid input."):
             QBayesian(QuantumCircuit(QuantumRegister(2, "qr")))
@@ -179,7 +194,6 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         qc.x(0)
         qc.cry(theta_b_na, control_qubit=qr_a, target_qubit=qr_b)
         qc.x(0)
-        qc.draw("mpl", style="bw", plot_barriers=False, justify="none", fold=-1)
         # Inference
         self.assertTrue(
             np.all(

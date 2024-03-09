@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 """Quantum Bayesian Inference"""
 
+import copy
 from typing import Tuple, Dict, Set, List
 from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.quantum_info import Statevector
@@ -56,6 +57,7 @@ class QBayesian:
     def __init__(
         self,
         circuit: QuantumCircuit,
+        *,
         limit: int = 10,
         threshold: float = 0.9,
         sampler: BaseSampler | None = None,
@@ -240,7 +242,7 @@ class QBayesian:
             # Amplitude amplification
             true_e = {(self._label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
             meas_e: Set[Tuple[str, int]] = set()
-            best_qc, best_inter = QuantumCircuit(), 0
+            best_qc, best_inter = QuantumCircuit(), -1
             self._converged = False
             k = -1
             # If the measurement of the evidence qubits matches the evidence stop
@@ -254,7 +256,6 @@ class QBayesian:
                     best_qc = qc
             if true_e == meas_e:
                 self._converged = True
-
             # Create a classical register with the size of the evidence
             best_qc_meas = QuantumCircuit(*self._circ.qregs)
             best_qc_meas.append(best_qc, self._circ.qregs)
@@ -290,7 +291,7 @@ class QBayesian:
                     query = query.replace("q", char, 1)
                 self._samples[query] = val
         if not format_res:
-            return self._samples
+            return copy.deepcopy(self._samples)
         else:
             return self._format_samples(self._samples, list(evidence.keys()))
 

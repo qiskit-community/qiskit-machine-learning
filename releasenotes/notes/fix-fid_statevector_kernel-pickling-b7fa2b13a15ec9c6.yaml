@@ -2,3 +2,4 @@
 fixes:
   - |
     Fixed a bug where :class:`.FidelityStatevectorKernel` threw an error when pickled.
+
