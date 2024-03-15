@@ -60,7 +60,7 @@ class QBayesian:
         *,
         limit: int = 10,
         threshold: float = 0.9,
-        sampler: BaseSampler | None = None,
+        sampler: BaseSampler = Sampler(),
     ):
         """
         Args:
@@ -86,8 +86,6 @@ class QBayesian:
         self._circ = circuit
         self._limit = limit
         self._threshold = threshold
-        if sampler is None:
-            sampler = Sampler()
         self._sampler = sampler
 
         # Label of register mapped to its qubit
