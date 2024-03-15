@@ -11,6 +11,8 @@
 # that they have been altered from the originals.
 """Quantum Bayesian Inference"""
 
+from __future__ import annotations
+
 import copy
 from typing import Tuple, Dict, Set, List
 from qiskit import QuantumCircuit, ClassicalRegister
