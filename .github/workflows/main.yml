@@ -122,6 +122,11 @@ jobs:
             python-version: 3.8
           - os: windows-latest
             python-version: 3.12
+          # macos-14 is an Arm64 image
+          - os: macos-14
+            python-version: '3.10'
+          - os: macos-14
+            python-version: 3.12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -301,12 +306,20 @@ jobs:
         with:
           name: windows-latest-3.12
           path: /tmp/w312
+      - uses: actions/download-artifact@v4
+        with:
+          name: macos-14-3.10
+          path: /tmp/a310
+      - uses: actions/download-artifact@v4
+        with:
+          name: macos-14-3.12
+          path: /tmp/a312
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m38/ml.dep /tmp/m312/ml.dep /tmp/w38/ml.dep /tmp/w312/ml.dep || true
+          sort -f -u /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m38/ml.dep /tmp/m312/ml.dep /tmp/w38/ml.dep /tmp/w312/ml.dep /tmp/a310/ml.dep /tmp/a312/ml.dep || true
         shell: bash
       - name: Coverage combine
         run: coverage3 combine /tmp/u38/ml.dat
