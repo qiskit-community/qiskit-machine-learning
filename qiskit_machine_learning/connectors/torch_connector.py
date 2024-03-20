@@ -52,7 +52,7 @@ else:
         pass
 
 
-def get_einsum_signature(n_dimensions: int, return_type: Literal["input", "weight"]) -> str:
+def _get_einsum_signature(n_dimensions: int, return_type: Literal["input", "weight"]) -> str:
     """
     Generate an Einstein summation signature for a given number of dimensions and return type.
 
@@ -71,7 +71,7 @@ def get_einsum_signature(n_dimensions: int, return_type: Literal["input", "weigh
 
     Example:
         Consider a scenario where n_dimensions is 3 and return_type is "input":
-        >>> get_einsum_signature(3, "input")
+        >>> _get_einsum_signature(3, "input")
         'ab,abc->ac'
         This returns the Einstein summation signature 'ab,abc->ac' for input with three dimensions.
     """
@@ -233,7 +233,7 @@ class TorchConnector(Module):
                         # Pytorch does not support sparse einsum, so we rely on Sparse.
                         # pylint: disable=no-member
                         n_dimension = max(grad_coo.ndim, input_grad.ndim)
-                        signature = get_einsum_signature(n_dimension, return_type="input")
+                        signature = _get_einsum_signature(n_dimension, return_type="input")
                         input_grad = sparse.einsum(signature, grad_coo, input_grad)
 
                         # return sparse gradients
@@ -253,7 +253,7 @@ class TorchConnector(Module):
 
                     # same as above
                     n_dimension = max(grad_output.detach().cpu().ndim, input_grad.ndim)
-                    signature = get_einsum_signature(n_dimension, return_type="input")
+                    signature = _get_einsum_signature(n_dimension, return_type="input")
                     input_grad = torch.einsum(signature, grad_output.detach().cpu(), input_grad)
 
                 # place the resulting tensor to the device where they were stored
@@ -276,7 +276,7 @@ class TorchConnector(Module):
                         # batch size.
                         # pylint: disable=no-member
                         n_dimension = max(grad_coo.ndim, weights_grad.ndim)
-                        signature = get_einsum_signature(n_dimension, return_type="weight")
+                        signature = _get_einsum_signature(n_dimension, return_type="weight")
                         weights_grad = sparse.einsum(signature, grad_coo, weights_grad)
 
                         # return sparse gradients
@@ -296,7 +296,7 @@ class TorchConnector(Module):
                     weights_grad = torch.as_tensor(weights_grad, dtype=torch.float)
                     # same as above
                     n_dimension = max(grad_output.detach().cpu().ndim, weights_grad.ndim)
-                    signature = get_einsum_signature(n_dimension, return_type="weight")
+                    signature = _get_einsum_signature(n_dimension, return_type="weight")
                     weights_grad = torch.einsum(signature, grad_output.detach().cpu(), weights_grad)
 
                 # place the resulting tensor to the device where they were stored
