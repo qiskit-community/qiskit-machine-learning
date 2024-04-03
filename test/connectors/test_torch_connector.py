@@ -46,6 +46,11 @@ class TestTorchConnector(TestTorch):
         ]
 
     def test_get_einsum_signature(self):
+        """
+        Tests the functionality of `_get_einsum_signature` function by providing
+        valid inputs (`n_dimensions` = 3) and expected outputs. It also checks for error
+        handling scenarios where invalid input arguments are provided.
+        """
         # Test valid inputs and outputs
         self.assertEqual(_get_einsum_signature(3, "input"), "ab,abc->ac")
         self.assertEqual(_get_einsum_signature(3, "weight"), "ab,abc->c")
