@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,6 +25,7 @@ from qiskit.quantum_info import SparsePauliOp
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
+from qiskit_machine_learning.connectors.torch_connector import _get_einsum_signature
 
 
 @ddt
@@ -43,6 +44,19 @@ class TestTorchConnector(TestTorch):
             torch.tensor([[1.0], [2.0]]),
             torch.tensor([[[1.0], [2.0]], [[3.0], [4.0]]]),
         ]
+
+    def test_get_einsum_signature(self):
+        # Test valid inputs and outputs
+        self.assertEqual(_get_einsum_signature(3, "input"), "ab,abc->ac")
+        self.assertEqual(_get_einsum_signature(3, "weight"), "ab,abc->c")
+
+        # Test raises for invalid return_type
+        with self.assertRaises(ValueError):
+            _get_einsum_signature(3, "invalid_type")
+
+        # Test raises for exceeding character limit
+        with self.assertRaises(RuntimeError):
+            _get_einsum_signature(30, "input")
 
     def _validate_backward_automatically(self, model: TorchConnector) -> None:
         """Uses PyTorch to validate the backward pass / autograd.
