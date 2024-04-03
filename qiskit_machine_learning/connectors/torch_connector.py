@@ -72,13 +72,15 @@ def _get_einsum_signature(n_dimensions: int, return_type: Literal["input", "weig
     Example:
         Consider a scenario where n_dimensions is 3 and return_type is "input":
         >>> _get_einsum_signature(3, "input")
-        'ab,abc->ac'
+        'ab,abc->ac' # pylint: disable=wrong-spelling-in-docstring
         This returns the Einstein summation signature for an input with three dimensions.
     """
     trace = ""
     char_limit = 26
     for i in range(n_dimensions):
-        trace += chr(97 + i)  # chr(97) == 'a'
+        # pylint: disable=wrong-spelling-in-comment
+        # chr(97) == 'a'
+        trace += chr(97 + i)
         if i >= char_limit:
             raise RuntimeError(
                 f"Cannot define an Einstein summation with more tha {char_limit:d} dimensions."
