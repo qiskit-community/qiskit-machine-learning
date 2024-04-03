@@ -68,12 +68,6 @@ def _get_einsum_signature(n_dimensions: int, return_type: Literal["input", "weig
     Raises:
         RuntimeError: If the number of dimensions exceeds the character limit.
         ValueError: If an invalid return type is provided.
-
-    Example:
-        Consider a scenario where n_dimensions is 3 and return_type is "input":
-        >>> _get_einsum_signature(3, "input")
-        'ab,abc->ac' # pylint: disable=wrong-spelling-in-docstring
-        This returns the Einstein summation signature for an input with three dimensions.
     """
     trace = ""
     char_limit = 26
