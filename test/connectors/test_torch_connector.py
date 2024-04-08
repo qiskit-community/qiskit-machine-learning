@@ -17,7 +17,6 @@ from typing import cast, Union, List, Tuple
 from test.connectors.test_torch import TestTorch
 
 import numpy as np
-import torch
 from ddt import ddt, data, unpack, idata
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZFeatureMap
@@ -35,6 +34,7 @@ class TestTorchConnector(TestTorch):
 
     def setup_test(self):
         super().setup_test()
+        import torch
 
         # pylint: disable=attribute-defined-outside-init
         self._test_data = [
@@ -51,6 +51,7 @@ class TestTorchConnector(TestTorch):
         Args:
             model: The model to be tested.
         """
+        import torch
 
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
@@ -74,6 +75,7 @@ class TestTorchConnector(TestTorch):
         self.assertTrue(test)
 
     def _validate_forward(self, model: TorchConnector):
+        import torch
 
         for batch_size in [1, 2]:
             input_data = torch.rand((batch_size, model.neural_network.num_inputs))
@@ -103,6 +105,7 @@ class TestTorchConnector(TestTorch):
             model(wrong_input)
 
     def _validate_backward(self, model: TorchConnector):
+        import torch
 
         for batch_size in [1, 2]:
             input_data = torch.rand((batch_size, model.neural_network.num_inputs))
@@ -243,6 +246,7 @@ class TestTorchConnector(TestTorch):
     def _create_convolutional_layer(
         self, input_channel: int, output_channel: int, num_qubits: int, num_weight: int
     ):
+        import torch
         from qiskit.circuit import Parameter
 
         class ConvolutionalLayer(torch.nn.Module):
@@ -415,6 +419,8 @@ class TestTorchConnector(TestTorch):
 
         # Test with a convolutional layer based on Sampler QNN and 4-D input
         # Refer to issue https://github.com/qiskit-community/qiskit-machine-learning/issues/716
+        import torch
+
         model = self._create_convolutional_layer(3, 1, 3, 3)
         input_tensor = torch.rand((2, 3, 6, 6))
         input_tensor.requires_grad = True
