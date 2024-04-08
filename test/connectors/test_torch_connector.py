@@ -12,11 +12,12 @@
 
 """Test Torch Connector."""
 import itertools
-from typing import cast
+from typing import cast, Union, List, Tuple
 
 from test.connectors.test_torch import TestTorch
 
 import numpy as np
+import torch
 from ddt import ddt, data, unpack, idata
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZFeatureMap
@@ -34,7 +35,6 @@ class TestTorchConnector(TestTorch):
 
     def setup_test(self):
         super().setup_test()
-        import torch
 
         # pylint: disable=attribute-defined-outside-init
         self._test_data = [
@@ -45,31 +45,12 @@ class TestTorchConnector(TestTorch):
             torch.tensor([[[1.0], [2.0]], [[3.0], [4.0]]]),
         ]
 
-    def test_get_einsum_signature(self):
-        """
-        Tests the functionality of `_get_einsum_signature` function by providing
-        valid inputs (`n_dimensions` = 3) and expected outputs. It also checks for error
-        handling scenarios where invalid input arguments are provided.
-        """
-        # Test valid inputs and outputs
-        self.assertEqual(_get_einsum_signature(3, "input"), "ab,abc->ac")
-        self.assertEqual(_get_einsum_signature(3, "weight"), "ab,abc->c")
-
-        # Test raises for invalid return_type
-        with self.assertRaises(ValueError):
-            _get_einsum_signature(3, "invalid_type")
-
-        # Test raises for exceeding character limit
-        with self.assertRaises(RuntimeError):
-            _get_einsum_signature(30, "input")
-
     def _validate_backward_automatically(self, model: TorchConnector) -> None:
         """Uses PyTorch to validate the backward pass / autograd.
 
         Args:
             model: The model to be tested.
         """
-        import torch
 
         # test autograd
         func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
@@ -93,7 +74,6 @@ class TestTorchConnector(TestTorch):
         self.assertTrue(test)
 
     def _validate_forward(self, model: TorchConnector):
-        import torch
 
         for batch_size in [1, 2]:
             input_data = torch.rand((batch_size, model.neural_network.num_inputs))
@@ -123,7 +103,6 @@ class TestTorchConnector(TestTorch):
             model(wrong_input)
 
     def _validate_backward(self, model: TorchConnector):
-        import torch
 
         for batch_size in [1, 2]:
             input_data = torch.rand((batch_size, model.neural_network.num_inputs))
@@ -260,3 +239,187 @@ class TestTorchConnector(TestTorch):
         self._validate_forward(model)
         self._validate_backward(model)
         self._validate_backward_automatically(model)
+
+    def _create_convolutional_layer(
+        self, input_channel: int, output_channel: int, num_qubits: int, num_weight: int
+    ):
+        from qiskit.circuit import Parameter
+
+        class ConvolutionalLayer(torch.nn.Module):
+            """
+            Quantum Convolutional Neural Network layer implemented using Qiskit and PyTorch.
+
+            Args:
+                input_channel (int): Number of input channels.
+                output_channel (int): Number of output channels.
+                num_qubits (int): Number of qubits to represent weights.
+                num_weight (int): Number of weight parameters in the quantum circuit.
+                kernel_size (int, optional): Size of the convolutional kernel. Defaults to 3.
+                stride (int, optional): Stride of the convolution. Defaults to 1.
+            """
+
+            def __init__(
+                self,
+                input_channel: int,
+                output_channel: int,
+                num_qubits: int,
+                num_weight: int,
+                kernel_size: int = 3,
+                stride: int = 1,
+            ):
+
+                super().__init__()
+                self.kernel_size = kernel_size
+                self.stride = stride
+                self.input_channel = input_channel
+                self.output_channel = output_channel
+                self.num_weight = num_weight
+                self.num_input = kernel_size * kernel_size * input_channel
+                self.num_qubits = num_qubits
+                self.qnn = TorchConnector(self.sampler())
+                if 2**num_qubits < output_channel:
+                    raise ValueError(
+                        (
+                            f"The output channel must be >= 2**num_qubits. "
+                            f"Got output_channel {output_channel:d} < 2 ** {num_qubits:d}"
+                        )
+                    )
+
+            @staticmethod
+            def build_circuit(
+                num_weights: int, num_input: int, num_qubits: int = 3
+            ) -> Tuple[QuantumCircuit, List[Parameter], List[Parameter]]:
+                """
+                Build the quantum circuit for the convolutional layer.
+
+                Args:
+                    num_weights (int): Number of weight parameters.
+                    num_input (int): Number of input parameters.
+                    num_qubits (int, optional): Number of qubits for representing parameters.
+                        Defaults to 3.
+
+                Returns:
+                    Tuple[QuantumCircuit, List[Parameter], List[Parameter]]: Quantum circuit,
+                        list of weight parameters, list of input parameters.
+                """
+                qc = QuantumCircuit(num_qubits)
+                weight_params = [Parameter(f"w{i}") for i in range(num_weights)]
+                input_params = [Parameter(f"x{i}") for i in range(num_input)]
+
+                # Construct the quantum circuit with the parameters
+                for i in range(num_qubits):
+                    qc.h(i)
+                for i in range(num_input):
+                    qc.ry(input_params[i] * 2 * torch.pi, i % num_qubits)
+                for i in range(num_qubits - 1):
+                    qc.cx(i, i + 1)
+                for i in range(num_weights):
+                    qc.rx(weight_params[i] * 2 * torch.pi, i % num_qubits)
+                for i in range(num_qubits - 1):
+                    qc.cx(i, i + 1)
+
+                return qc, weight_params, input_params
+
+            def sampler(self) -> SamplerQNN:
+                """
+                Creates a SamplerQNN object representing the quantum neural network.
+
+                Returns:
+                    SamplerQNN: Quantum neural network.
+                """
+                qc, weight_params, input_params = self.build_circuit(
+                    self.num_weight, self.num_input, 3
+                )
+
+                # Use SamplerQNN to convert the quantum circuit to a PyTorch module
+                return SamplerQNN(
+                    circuit=qc,
+                    weight_params=weight_params,
+                    interpret=self.interpret,
+                    input_params=input_params,
+                    output_shape=self.output_channel,
+                )
+
+            def interpret(self, output: Union[List[int], int]) -> Union[int, List[int]]:
+                """
+                Interprets the output from the quantum circuit.
+
+                Args:
+                    output (Union[List[int], int]): Output from the quantum circuit.
+
+                Returns:
+                    Union[int, List[int]]: Interpreted output.
+                """
+                return output % self.output_channel
+
+            def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+                """
+                Perform forward pass through the quantum convolutional layer.
+
+                Args:
+                    input_tensor (torch.Tensor): Input tensor.
+
+                Returns:
+                    torch.Tensor: Output tensor after convolution.
+                """
+                height = len(range(0, input_tensor.shape[-2] - self.kernel_size + 1, self.stride))
+                width = len(range(0, input_tensor.shape[-1] - self.kernel_size + 1, self.stride))
+                output = torch.zeros((input_tensor.shape[0], self.output_channel, height, width))
+                input_tensor = torch.nn.functional.unfold(
+                    input_tensor[...], kernel_size=self.kernel_size, stride=self.stride
+                )
+                qnn_output = self.qnn(input_tensor.permute(2, 0, 1)).permute(1, 2, 0)
+                qnn_output = torch.reshape(
+                    qnn_output, shape=(input_tensor.shape[0], self.output_channel, height, width)
+                )
+                output += qnn_output
+                return output
+
+        return ConvolutionalLayer(input_channel, output_channel, num_qubits, num_weight, stride=1)
+
+    def test_get_einsum_signature(self):
+        """
+        Tests the functionality of `_get_einsum_signature` function.
+
+        This function is tested with valid inputs (e.g., `n_dimensions` = 3) and expected outputs.
+        It also covers error handling scenarios for invalid input arguments.
+
+        Valid Input and Output Tests:
+        - Tests with `n_dimensions` equal to 3 and different return types ('input' and 'weight')
+          to ensure correct signature generation for Einstein summation notation.
+
+        Error Handling Tests:
+        - Raises a ValueError when an invalid return_type is provided.
+        - Raises a RuntimeError when the character limit for signature generation is exceeded.
+
+        Additional Test Scenario:
+        - Tests `_get_einsum_signature` in the context of a convolutional layer based on Sampler QNN,
+          using a 4-D input tensor (batch, channel, height, width) to ensure compatibility.
+          This test mirrors Issue https://github.com/qiskit-community/qiskit-machine-learning/issues/716
+
+        Note: Backward test is run implicitly within the context of convolutional layer execution.
+
+        pylint disable=SPELLING
+        """
+        # Test valid inputs and outputs
+        self.assertEqual(_get_einsum_signature(3, "input"), "ab,abc->ac")
+        self.assertEqual(_get_einsum_signature(3, "weight"), "ab,abc->c")
+
+        # Test raises for invalid return_type
+        with self.assertRaises(ValueError):
+            _get_einsum_signature(3, "invalid_type")
+
+        # Test raises for exceeding character limit
+        with self.assertRaises(RuntimeError):
+            _get_einsum_signature(30, "input")
+
+        # Test with a convolutional layer based on Sampler QNN and 4-D input
+        # Refer to issue https://github.com/qiskit-community/qiskit-machine-learning/issues/716
+        model = self._create_convolutional_layer(3, 1, 3, 3)
+        input_tensor = torch.rand((2, 3, 6, 6))
+        input_tensor.requires_grad = True
+        output_tensor = model.forward(input_tensor)
+        output_tensor = torch.sum(output_tensor)
+
+        # Run `backward`, which calls `_get_einsum_signature`
+        output_tensor.backward()
