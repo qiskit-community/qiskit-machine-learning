@@ -344,15 +344,16 @@ class TestTorchConnector(TestTorch):
                     output_shape=self.output_channel,
                 )
 
-            def interpret(self, output: Union[List[int], int]) -> Union[int, List[int]]:
+            def interpret(self, output: int) -> int:
                 """
                 Interprets the output from the quantum circuit.
 
                 Args:
-                    output (Union[List[int], int]): Output from the quantum circuit.
+                    output (int): Output from the quantum circuit.
 
                 Returns:
-                    Union[int, List[int]]: Interpreted output.
+                    int: Remainder of the output divided by the
+                    number of output channels.
                 """
                 return output % self.output_channel
 
