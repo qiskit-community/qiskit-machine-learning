@@ -12,7 +12,7 @@
 
 """Test Torch Connector."""
 import itertools
-from typing import cast, Union, List, Tuple
+from typing import cast, Union, List, Tuple, Any
 
 from test.connectors.test_torch import TestTorch
 
@@ -344,7 +344,7 @@ class TestTorchConnector(TestTorch):
                     output_shape=self.output_channel,
                 )
 
-            def interpret(self, output: int) -> int:
+            def interpret(self, output: Union[List[int], int]) -> Any:
                 """
                 Interprets the output from the quantum circuit.
 
