@@ -335,7 +335,7 @@ class TestTorchConnector(TestTorch):
                 return SamplerQNN(
                     circuit=qc,
                     weight_params=weight_params,
-                    interpret=self.interpret,
+                    interpret=self.interpret,  # type: ignore
                     input_params=input_params,
                     output_shape=self.output_channel,
                 )
