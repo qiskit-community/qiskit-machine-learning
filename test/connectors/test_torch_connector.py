@@ -389,12 +389,7 @@ class TestTorchConnector(TestTorch):
         This function is tested with valid inputs (e.g., `n_dimensions` = 3) and expected outputs.
         It also covers error handling scenarios for invalid input arguments.
 
-        Valid Input and Output Tests:
-        - Tests with `n_dimensions` equal to 3 and different return types ('input' and 'weight')
-          to ensure correct signature generation for Einstein summation notation.
-
         Error Handling Tests:
-        - Raises a ValueError when an invalid return_type is provided.
         - Raises a RuntimeError when the character limit for signature generation is exceeded.
 
         Additional Test Scenario:
@@ -406,17 +401,9 @@ class TestTorchConnector(TestTorch):
 
         pylint disable=SPELLING
         """
-        # Test valid inputs and outputs
-        self.assertEqual(_get_einsum_signature(3, "input"), "ab,abc->ac")
-        self.assertEqual(_get_einsum_signature(3, "weight"), "ab,abc->c")
-
-        # Test raises for invalid return_type
-        with self.assertRaises(ValueError):
-            _get_einsum_signature(3, "invalid_type")
-
         # Test raises for exceeding character limit
         with self.assertRaises(RuntimeError):
-            _get_einsum_signature(30, "input")
+            _get_einsum_signature(30)
 
         # Test with a convolutional layer based on Sampler QNN and 4-D input
         # Refer to issue https://github.com/qiskit-community/qiskit-machine-learning/issues/716

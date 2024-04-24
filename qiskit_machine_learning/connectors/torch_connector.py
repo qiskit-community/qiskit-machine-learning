@@ -13,8 +13,9 @@
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 from __future__ import annotations
 
-from typing import Tuple, Any, cast, Literal
+from typing import Tuple, Any, cast
 
+from string import ascii_lowercase
 import numpy as np
 
 import qiskit_machine_learning.optionals as _optionals
@@ -52,49 +53,46 @@ else:
         pass
 
 
-def _get_einsum_signature(n_dimensions: int, return_type: Literal["input", "weight"]) -> str:
+CHAR_LIMIT = 26
+
+
+def _get_einsum_signature(n_dimensions: int, for_weights: bool = False) -> str:
     """
     Generate an Einstein summation signature for a given number of dimensions and return type.
 
     Args:
         n_dimensions (int): The number of dimensions for the summation.
-        return_type (Literal["input", "weight"]): The type of the return signature.
-            - "input": Return signature includes all input indices except the last one.
-            - "weight": Return signature includes only the last index as the output.
+        for_weights (bool): If True, the return signature includes only the
+            last index as the output. If False, the return signature includes
+            all input indices except the last one. Defaults to False.
+
 
     Returns:
         str: The Einstein summation signature.
 
     Raises:
         RuntimeError: If the number of dimensions exceeds the character limit.
-        ValueError: If an invalid return type is provided.
     """
-    trace = ""
-    char_limit = 26
-    for i in range(n_dimensions):
-        # pylint: disable=wrong-spelling-in-comment
-        # chr(97) == 'a'
-        trace += chr(97 + i)
-        if i >= char_limit:
-            raise RuntimeError(
-                f"Cannot define an Einstein summation with more tha {char_limit:d} dimensions."
-            )
-
-    if return_type == "input":
-        signature = f"{trace[:-1]},{trace:s}->{trace[0] + trace[2:]}"
-    elif return_type == "weight":
-        signature = f"{trace[:-1]},{trace:s}->{trace[-1]}"
-    else:
-        raise ValueError(
-            f'The only allowed return types are ["input", "weight"], got {return_type:s} instead.'
+    if n_dimensions >= CHAR_LIMIT:
+        raise RuntimeError(
+            f"Cannot define an Einstein summation with more tha {CHAR_LIMIT:d} dimensions."
         )
 
-    return signature
+    trace = ascii_lowercase[:n_dimensions]
+
+    if for_weights:
+        return f"{trace[:-1]},{trace:s}->{trace[-1]}"
+
+    return f"{trace[:-1]},{trace:s}->{trace[0] + trace[2:]}"
 
 
 @_optionals.HAS_TORCH.require_in_instance
 class TorchConnector(Module):
-    """Connects a Qiskit (Quantum) Neural Network to PyTorch."""
+    """Connects a Qiskit (Quantum) Neural Network to PyTorch.
+    The dataset dimensionality is limited to 25. Datasets of 26 dimensions or higher
+    raise a `RuntimeError`.
+
+    """
 
     # pylint: disable=abstract-method
     class _TorchNNFunction(Function):
@@ -229,7 +227,7 @@ class TorchConnector(Module):
                         # Pytorch does not support sparse einsum, so we rely on Sparse.
                         # pylint: disable=no-member
                         n_dimension = max(grad_coo.ndim, input_grad.ndim)
-                        signature = _get_einsum_signature(n_dimension, return_type="input")
+                        signature = _get_einsum_signature(n_dimension)
                         input_grad = sparse.einsum(signature, grad_coo, input_grad)
 
                         # return sparse gradients
@@ -249,7 +247,7 @@ class TorchConnector(Module):
 
                     # same as above
                     n_dimension = max(grad_output.detach().cpu().ndim, input_grad.ndim)
-                    signature = _get_einsum_signature(n_dimension, return_type="input")
+                    signature = _get_einsum_signature(n_dimension)
                     input_grad = torch.einsum(signature, grad_output.detach().cpu(), input_grad)
 
                 # place the resulting tensor to the device where they were stored
@@ -272,7 +270,7 @@ class TorchConnector(Module):
                         # batch size.
                         # pylint: disable=no-member
                         n_dimension = max(grad_coo.ndim, weights_grad.ndim)
-                        signature = _get_einsum_signature(n_dimension, return_type="weight")
+                        signature = _get_einsum_signature(n_dimension, for_weights=True)
                         weights_grad = sparse.einsum(signature, grad_coo, weights_grad)
 
                         # return sparse gradients
@@ -292,7 +290,7 @@ class TorchConnector(Module):
                     weights_grad = torch.as_tensor(weights_grad, dtype=torch.float)
                     # same as above
                     n_dimension = max(grad_output.detach().cpu().ndim, weights_grad.ndim)
-                    signature = _get_einsum_signature(n_dimension, return_type="weight")
+                    signature = _get_einsum_signature(n_dimension, for_weights=True)
                     weights_grad = torch.einsum(signature, grad_output.detach().cpu(), weights_grad)
 
                 # place the resulting tensor to the device where they were stored
