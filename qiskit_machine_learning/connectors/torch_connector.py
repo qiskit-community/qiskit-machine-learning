@@ -73,9 +73,9 @@ def _get_einsum_signature(n_dimensions: int, for_weights: bool = False) -> str:
     Raises:
         RuntimeError: If the number of dimensions exceeds the character limit.
     """
-    if n_dimensions >= CHAR_LIMIT:
+    if n_dimensions > CHAR_LIMIT - 1:
         raise RuntimeError(
-            f"Cannot define an Einstein summation with more tha {CHAR_LIMIT:d} dimensions."
+            f"Cannot define an Einstein summation with more than {CHAR_LIMIT - 1:d} dimensions, got {n_dimensions:d}."
         )
 
     trace = ascii_lowercase[:n_dimensions]
