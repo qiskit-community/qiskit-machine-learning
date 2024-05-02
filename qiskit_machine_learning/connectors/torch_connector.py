@@ -25,7 +25,7 @@ from ..neural_networks import NeuralNetwork
 if _optionals.HAS_TORCH:
     import torch
 
-    # imports for inheritance and type hints
+    # Imports for inheritance and type hints
     from torch import Tensor
     from torch.autograd import Function
     from torch.nn import Module
