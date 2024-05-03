@@ -66,11 +66,13 @@ discretize
 discretized
 discriminative
 distro
+docstring
 dok
 dt
 eigenstate
 eigenstates
 einsum
+einstein
 endian
 entangler
 estimatorqnn
@@ -197,6 +199,7 @@ qiskit's
 qnn
 qsvc
 qsvr
+quantumcircuit
 qubit
 qubits
 rangle
