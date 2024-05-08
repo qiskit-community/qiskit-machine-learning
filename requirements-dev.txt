@@ -1,7 +1,7 @@
 coverage>=4.4.0
 matplotlib>=2.1
 seaborn
-black[jupyter]~=22.0
+black[jupyter]~=24.1
 pylint>=2.15.0
 pylatexenc>=1.4
 stestr>=2.0.0
