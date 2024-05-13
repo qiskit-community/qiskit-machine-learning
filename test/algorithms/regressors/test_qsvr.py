@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -51,7 +51,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def test_qsvr(self):
         """Test QSVR"""
-        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map, enforce_psd=False)
 
         qsvr = QSVR(quantum_kernel=qkernel)
         qsvr.fit(self.sample_train, self.label_train)
@@ -61,7 +61,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def test_change_kernel(self):
         """Test QSVR with QuantumKernel later"""
-        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map, enforce_psd=False)
 
         qsvr = QSVR()
         qsvr.quantum_kernel = qkernel
