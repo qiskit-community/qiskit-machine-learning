@@ -13,6 +13,7 @@
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
 from __future__ import annotations
 
+import types
 from typing import Tuple, Any, cast
 
 from string import ascii_lowercase
@@ -30,6 +31,9 @@ if _optionals.HAS_TORCH:
     from torch.autograd import Function
     from torch.nn import Module
 else:
+    # Dummy definition for torch module to prevent lint error about
+    # possible use of torch before assignment
+    torch = types.ModuleType("torch")
 
     class Function:  # type: ignore
         """Empty Function class
@@ -97,8 +101,10 @@ class TorchConnector(Module):
 
     # pylint: disable=abstract-method
     class _TorchNNFunction(Function):
+        # The possibly-used-before-assignment
 
         # pylint: disable=arguments-differ
+        # pylkint: disable=possibly-used-before-assignment
         @staticmethod
         def forward(  # type: ignore
             ctx: Any,
