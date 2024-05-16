@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2023.
+# (C) Copyright IBM 2018, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -120,7 +120,7 @@ def ad_hoc_data(
     if n == 2:
         bitstring_parity = [bstr.count("1") % 2 for bstr in bitstrings]
         d_m = np.diag((-1) ** np.array(bitstring_parity))
-    elif n == 3:
+    else:  # n must be 3 here, as n checked above which allows only 2 and 3
         bitstring_majority = [0 if bstr.count("0") > 1 else 1 for bstr in bitstrings]
         d_m = np.diag((-1) ** np.array(bitstring_majority))
 

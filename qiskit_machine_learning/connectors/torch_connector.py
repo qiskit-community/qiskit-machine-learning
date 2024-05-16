@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -29,6 +29,11 @@ if _optionals.HAS_TORCH:
     from torch.autograd import Function
     from torch.nn import Module
 else:
+    import types
+
+    # Dummy definition for torch module to prevent lint error about
+    # possible use of torch before assignment
+    torch = types.ModuleType("torch")
 
     class Function:  # type: ignore
         """Empty Function class
