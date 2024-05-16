@@ -33,9 +33,10 @@ def ad_hoc_data(
     plot_data: bool = False,
     one_hot: bool = True,
     include_sample_total: bool = False,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] | Tuple[
-    np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray
-]:
+) -> (
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+    | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+):
     r"""Generates a toy dataset that can be fully separated with
     :class:`~qiskit.circuit.library.ZZFeatureMap` according to the procedure
     outlined in [1]. To construct the dataset, we first sample uniformly
