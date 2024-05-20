@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixes the dimension mismatch error in the `torch_connector` raised when using other-than 3D datasets.
+    The updated implementation defines the Einstein summation signature dynamically based on the number of
+    dimensions `ndim` of the input data (up to 26 dimensions).
