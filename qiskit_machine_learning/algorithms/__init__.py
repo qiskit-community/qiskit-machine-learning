@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -56,6 +56,16 @@ Algorithms for data classification.
    NeuralNetworkClassifier
    VQC
 
+Inference
++++++++++++
+Algorithms for inference.
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QBayesian
+
 Regressors
 ++++++++++
 Algorithms for data regression.
@@ -78,6 +88,7 @@ from .objective_functions import (
     OneHotObjectiveFunction,
 )
 from .classifiers import QSVC, PegasosQSVC, VQC, NeuralNetworkClassifier
+from .inference import QBayesian
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
 
 __all__ = [
@@ -94,4 +105,5 @@ __all__ = [
     "QSVR",
     "NeuralNetworkRegressor",
     "VQR",
+    "QBayesian",
 ]

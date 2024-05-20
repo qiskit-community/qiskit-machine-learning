@@ -1,0 +1,39 @@
+---
+features:
+  - |
+    Added a new class :class:`~qiskit_machine_learning.algorithms.QBayesian`  that does quantum Bayesian inference on a
+    a quantum circuit representing a Bayesian network with binary random variables.
+
+    The computational complexity is reduced from :math:`O(nmP(e)^{-1})` to :math:`O(n2^{m}P(e)^{-\frac{1}{2}})` per
+    sample, where n is the number of nodes in the Bayesian network with at most m parents per node and e the evidence.
+
+    At least a quantum circuit that represents the Bayesian network has to be provided. A quantum circuit can be passed
+    in various forms as long as it represents the joint probability distribution of the Bayesian network. Note that
+    :class:`~qiskit_machine_learning.algorithms.QBayesian` defines an order for the qubits in the circuit. The last
+    qubit in the circuit will correspond to the most significant bit in the joint probability distribution. For example,
+    if the random variables A, B, and C are entered into the circuit in this order with (A=1, B=0 and C=0), the
+    probability is represented by the probability amplitude of quantum state 001.
+
+    An example for using this class is as follows:
+
+    .. code-block:: python
+
+        from qiskit import QuantumCircuit
+        from qiskit_machine_learning.algorithms import QBayesian
+
+        # Define a quantum circuit
+        qc = QuantumCircuit(...)
+
+        # Initialize the framework
+        qb = QBayesian(qc)
+
+        # Perform inference
+        result = qb.inference(query={...}, evidence={...})
+
+        print("Probability of query given evidence:", result)
+
+  - |
+    For the new :class:`~qiskit_machine_learning.algorithms.QBayesian` class, a tutorial was added. Please refer to:
+
+      - New `QBI tutorial <../tutorials/13_quantum_bayesian_inference.html>`__
+        that introduces a step-by-step approach for how to do quantum Bayesian inference on a Bayesian network.
