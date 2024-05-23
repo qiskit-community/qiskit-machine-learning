@@ -5,7 +5,8 @@
 - Qiskit Machine Learning supports the most recent major release with new features, and minor releases of the same series.
 - The most recent minor release in the current major release series is also supported with bug fixes.
 
-For example, if the most recent release is `0.7.2`, then the current major release series is `0.7.x` and the current minor release is `0.7.2`.
+> [!TIP]
+> For example, if the most recent release is `0.7.2`, then the current major release series is `0.7.x` and the current minor release is `0.7.2`.
 The `0.7.x` series will be supported with bug fixes, until the release of `0.8.0`, which will include new features.
 
 As an additional resource, you can find more details on the release and support schedule of Qiskit in the [documentation](https://docs.quantum.ibm.com/start/install#release-schedule).
@@ -17,7 +18,8 @@ via the GitHub security vulnerabilities feature, which can be accessed here:
 
 https://github.com/qiskit-community/qiskit-machine-learning/security/advisories
 
-We kindly ask that you do not open a public GitHub issue about the vulnerability until we have had a chance to 
+> [!IMPORTANT]
+> We kindly ask that you do not open a public GitHub issue about the vulnerability until we have had a chance to 
 investigate and, if confirmed, address it. We are committed to working with you to coordinate a public disclosure 
 timeline that allows us to release a fix and inform the users.
 
@@ -30,9 +32,6 @@ nature and scope of the vulnerability. This might include:
 
 2. **Response Time**: We will acknowledge your report within 3 business days and provide you with an estimated time frame for resolving the issue.
 
-We kindly ask that you do not open a public GitHub issue about the vulnerability until we have had a chance to 
-investigate and, if confirmed, address it. We are committed to working with you to coordinate a public disclosure 
-timeline that allows us to release a fix and inform our users.
 
 ### Untrusted models
 Be careful when running untrusted models. Models are programs running them is equivalent to exposing your system to potentially untrusted code[^data-poisoning-sources].
