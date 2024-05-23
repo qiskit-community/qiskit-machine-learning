@@ -39,4 +39,4 @@ documentation here:
 
 https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability
 
-Thank you for helping to keep our project secure!
+Thank you for helping to keep our project secure! 
