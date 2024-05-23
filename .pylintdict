@@ -1,3 +1,4 @@
+acyclic
 adam
 adjoint
 aer
@@ -18,13 +19,17 @@ autosummary
 backend
 backends
 backpropagation
+bayes
+bayesian
 benchmarking
 bergholm
 bitstring
 bitstrings
 bivariate
+bloch
 bool
 boolean
+borujeni
 cargs
 carlo
 cbit
@@ -83,6 +88,7 @@ farrokh
 fidelities
 fidelityquantumkernel
 formatter
+frac
 frontend
 func
 gambetta
@@ -90,8 +96,11 @@ gaussian
 gellmann
 getter
 gpu
+grover
+guang
 guzik
 hamiltonian
+hao
 hashable
 havlíček
 hilbert
@@ -106,6 +115,8 @@ inlier
 inplace
 instantiation
 instantiations
+interdependencies
+isaac
 isometry
 iten
 iterable
@@ -124,6 +135,7 @@ langle
 lukin
 macos
 makefile
+mary
 matmul
 matplotlib
 maxiter
@@ -141,6 +153,7 @@ multioutput
 mxd
 mypy
 nat
+nbsphinx
 ndarray
 nielsen
 nn
@@ -191,6 +204,9 @@ qae
 qarg
 qargs
 qasm
+qb
+qbayesian
+qbi
 qc
 qgan
 qgans
@@ -205,6 +221,7 @@ qubits
 rangle
 rbf
 readme
+recalibration
 regressor
 regressors
 regs
@@ -226,6 +243,7 @@ shalev
 shende
 shwartz
 sigmoid
+sima
 sklearn
 softmax
 sparsearray
@@ -235,6 +253,7 @@ stdlib
 stdlib
 stdout
 str
+subclasses
 subcircuits
 submodules
 subobjects
@@ -248,6 +267,7 @@ temme
 tensored
 terra
 th
+theodore
 toctree
 todo
 traceback
@@ -280,6 +300,7 @@ vz
 wikipedia
 williams
 wrt
+yoder
 zoufal
 zsh
 θ
