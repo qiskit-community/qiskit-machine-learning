@@ -34,6 +34,9 @@ We kindly ask that you do not open a public GitHub issue about the vulnerability
 investigate and, if confirmed, address it. We are committed to working with you to coordinate a public disclosure 
 timeline that allows us to release a fix and inform our users.
 
+### Untrusted models
+Be careful when running untrusted models. Models are programs running them is equivalent to exposing your system to potentially untrusted code[^data-poisoning-sources].
+
 You can find more details on the security vulnerability feature in the GitHub
 documentation here:
 
