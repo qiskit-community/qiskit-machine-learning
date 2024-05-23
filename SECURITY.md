@@ -40,3 +40,7 @@ documentation here:
 https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability
 
 Thank you for helping keep our project secure! 
+
+[^data-poisoning-sources]: To understand risks of utilization of data from unknown sources, read the following Cornell papers on Data poisoning:
+    https://arxiv.org/abs/2312.04748
+    https://arxiv.org/abs/2401.05566
