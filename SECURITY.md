@@ -2,12 +2,11 @@
 
 ## Supported Versions
 
-- Qiskit Machine Learning supports the most recent major release with new features, and minor releases of the same series.
-- The most recent minor release in the current major release series is also supported with bug fixes.
+Qiskit Machine Learning supports one minor version release at a time, both for bug and security fixes.
 
 > [!TIP]
-> For example, if the most recent release is `0.7.2`, then the current major release series is `0.7.x` and the current minor release is `0.7.2`.
-The `0.7.x` series will be supported with bug fixes, until the release of `0.8.0`, which will include new features.
+> For example, if the most recent release is `0.7.2`, then the current major release series is `0.x` the current minor 
+> release is `0.7.x`, with `0.7.2` being the current patch release.
 
 As an additional resource, you can find more details on the release and support schedule of Qiskit in the [documentation](https://docs.quantum.ibm.com/start/install#release-schedule).
 
