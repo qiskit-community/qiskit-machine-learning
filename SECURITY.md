@@ -33,15 +33,17 @@ nature and scope of the vulnerability. This might include:
 
 
 ### Untrusted models
-Be careful when running untrusted models. Models are programs running them is equivalent to exposing your system to potentially untrusted code[^data-poisoning-sources].
+Models can be manipulated to produce undesired outputs and can be susceptible to 
+backdoor triggers to expose confidential information[^data-poisoning-sources]. Be careful about using untrusted models 
+and sharing models.
 
-You can find more details on the security vulnerability feature in the GitHub
-documentation here:
+You can find more details on the security vulnerability feature in the GitHub documentation here:
 
 https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability
 
 Thank you for helping keep our project secure! 
 
-[^data-poisoning-sources]: To understand risks of utilization of data from unknown sources, read the following Cornell papers on Data poisoning:
+[^data-poisoning-sources]: To understand risks of utilization of data from unknown sources, read the following Cornell 
+papers on data poisoning and model safety:
     https://arxiv.org/abs/2312.04748
     https://arxiv.org/abs/2401.05566
