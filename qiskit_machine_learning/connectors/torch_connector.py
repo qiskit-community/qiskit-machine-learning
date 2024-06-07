@@ -30,6 +30,11 @@ if _optionals.HAS_TORCH:
     from torch.autograd import Function
     from torch.nn import Module
 else:
+    import types
+
+    # Dummy definition for torch module to prevent lint error about
+    # possible use of torch before assignment
+    torch = types.ModuleType("torch")
 
     class Function:  # type: ignore
         """Empty Function class
