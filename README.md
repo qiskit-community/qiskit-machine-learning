@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/github/license/qiskit-community/qiskit-machine-learning.svg?)](https://opensource.org/licenses/Apache-2.0) <!--- long-description-skip-begin -->
 [![Current Release](https://img.shields.io/github/release/qiskit-community/qiskit-machine-learning.svg?logo=Qiskit)](https://github.com/qiskit-community/qiskit-machine-learning/releases)
-[![Extended Support Release](https://img.shields.io/github/v/release/qiskit-community/qiskit-machine-learning?sort=semver&filter=0.*&logo=Qiskit&label=extended%20support)](https://github.com/qiskit-community/qiskit-machine-learning/releases?q=tag%3A0)
 [![Build Status](https://github.com/qiskit-community/qiskit-machine-learning/actions/workflows/main.yml/badge.svg)](https://github.com/qiskit-community/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)
 [![Monthly downloads](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg)](https://pypi.org/project/qiskit-machine-learning/)
 [![Coverage Status](https://coveralls.io/repos/github/qiskit-community/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/qiskit-community/qiskit-machine-learning?branch=main)
@@ -95,9 +94,12 @@ To do this follow the instructions in the
 
 ## Migration to Qiskit 1.x
 > [!NOTE]
-> If you are migrating from an earlier version of Qiskit (`0.x`), please refer to the 
+> Qiskit Machine Learning learning depends on Qiskit, which will be automatically installed as a 
+> dependency when you install Qiskit Machine Learning. If you have a pre-`1.0` version of Qiskit 
+> installed in your environment (however it was installed), and wish to upgrade to `1.0`, you 
+> should take note of the 
 > official [Qiskit 1.0 Migration Guide](https://docs.quantum.ibm.com/api/migration-guides/qiskit-1.0) 
-> for detailed instructions and examples.
+> for detailed instructions and examples on how to upgrade.
 
 ----------------------------------------------------------------------------------------------------
 
@@ -166,7 +168,7 @@ of quantum machine learning.
 If you'd like to contribute to Qiskit, please take a look at our
 [contribution guidelines](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CONTRIBUTING.md).
 This project adheres to the Qiskit [code of conduct](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md).
-By participating, you must uphold this code.
+By participating, you are expected to uphold this code.
 
 We use [GitHub issues](https://github.com/qiskit-community/qiskit-machine-learning/issues) for tracking requests and bugs. Please
 [join the Qiskit Slack community](https://qisk.it/join-slack)
