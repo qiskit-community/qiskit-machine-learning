@@ -1,12 +1,24 @@
 # Qiskit Machine Learning
 
-[![License](https://img.shields.io/github/license/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)<!--- long-description-skip-begin -->[![Build Status](https://github.com/qiskit-community/qiskit-machine-learning/actions/workflows/main.yml/badge.svg)](https://github.com/qiskit-community/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)[![](https://img.shields.io/github/release/Qiskit/qiskit-machine-learning.svg?style=popout-square)](https://github.com/qiskit-community/qiskit-machine-learning/releases)[![](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg?style=popout-square)](https://pypi.org/project/qiskit-machine-learning/)[![Coverage Status](https://coveralls.io/repos/github/Qiskit/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/Qiskit/qiskit-machine-learning?branch=main)<!--- long-description-skip-end -->
+[![License](https://img.shields.io/github/license/qiskit-community/qiskit-machine-learning.svg?)](https://opensource.org/licenses/Apache-2.0) <!--- long-description-skip-begin -->
+[![Current Release](https://img.shields.io/github/release/qiskit-community/qiskit-machine-learning.svg?logo=Qiskit)](https://github.com/qiskit-community/qiskit-machine-learning/releases)
+[![Build Status](https://github.com/qiskit-community/qiskit-machine-learning/actions/workflows/main.yml/badge.svg)](https://github.com/qiskit-community/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)
+[![Monthly downloads](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg)](https://pypi.org/project/qiskit-machine-learning/)
+[![Coverage Status](https://coveralls.io/repos/github/qiskit-community/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/qiskit-community/qiskit-machine-learning?branch=main)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/qiskit-machine-learning)
+[![Total downloads](https://static.pepy.tech/badge/qiskit-machine-learning)](https://pepy.tech/project/qiskit-machine-learning)
+[![Slack Organisation](https://img.shields.io/badge/slack-chat-blueviolet.svg?label=Qiskit%20Slack&logo=slack)](https://slack.qiskit.org)
+<!--- long-description-skip-end -->
 
-Qiskit Machine Learning introduces fundamental computational building blocks - such as Quantum Kernels
-and Quantum Neural Networks - used in different applications, including classification and regression.
+## What is Qiskit Machine Learning?
+
+Qiskit Machine Learning introduces fundamental computational building blocks, such as Quantum Kernels
+and Quantum Neural Networks, used in different applications, including classification and regression.
 On the one hand, this design is very easy to use and allows users to rapidly prototype a first model
 without deep quantum computing knowledge. On the other hand, Qiskit Machine Learning is very flexible,
 and users can easily extend it to support cutting-edge quantum machine learning research.
+
+## What are the main features of Qiskit Machine Learning?
 
 Qiskit Machine Learning provides the
 [FidelityQuantumKernel](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel)
@@ -71,9 +83,6 @@ their official release or if you want to contribute to Machine Learning, then yo
 To do this follow the instructions in the
  [documentation](https://qiskit-community.github.io/qiskit-machine-learning/getting_started.html#installation).
 
-
-----------------------------------------------------------------------------------------------------
-
 ### Optional Installs
 
 * **PyTorch**, may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
@@ -82,6 +91,17 @@ To do this follow the instructions in the
 
 * **Sparse**, may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
   package. Sparse being installed will enable the usage of sparse arrays/tensors.
+
+## Migration to Qiskit 1.x
+> [!NOTE]
+> Qiskit Machine Learning learning depends on Qiskit, which will be automatically installed as a 
+> dependency when you install Qiskit Machine Learning. If you have a pre-`1.0` version of Qiskit 
+> installed in your environment (however it was installed), and wish to upgrade to `1.0`, you 
+> should take note of the 
+> official [Qiskit 1.0 Migration Guide](https://docs.quantum.ibm.com/api/migration-guides/qiskit-1.0) 
+> for detailed instructions and examples on how to upgrade.
+
+----------------------------------------------------------------------------------------------------
 
 ### Creating Your First Machine Learning Programming Experiment in Qiskit
 
@@ -125,7 +145,7 @@ score = vqc.score(test_features, test_labels)
 print(f"Testing accuracy: {score:0.2f}")
 ```
 
-### Further examples
+### More examples
 
 Learning path notebooks may be found in the
 [Machine Learning tutorials](https://qiskit-community.github.io/qiskit-machine-learning/tutorials/index.html) section
@@ -143,11 +163,11 @@ of quantum machine learning.
 
 ----------------------------------------------------------------------------------------------------
 
-## Contribution Guidelines
+## How can I contribute?
 
 If you'd like to contribute to Qiskit, please take a look at our
 [contribution guidelines](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CONTRIBUTING.md).
-This project adheres to Qiskit's [code of conduct](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md).
+This project adheres to the Qiskit [code of conduct](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
 
 We use [GitHub issues](https://github.com/qiskit-community/qiskit-machine-learning/issues) for tracking requests and bugs. Please
@@ -155,12 +175,13 @@ We use [GitHub issues](https://github.com/qiskit-community/qiskit-machine-learni
 and for discussion and simple questions.
 For questions that are more suited for a forum, we use the **Qiskit** tag in [Stack Overflow](https://stackoverflow.com/questions/tagged/qiskit).
 
-## Authors and Citation
+## Humans behind Qiskit Machine Learning
 
-Machine Learning was inspired, authored and brought about by the collective work of a team of researchers.
-Machine Learning continues to grow with the help and work of
-[many people](https://github.com/qiskit-community/qiskit-machine-learning/graphs/contributors), who contribute
-to the project at different levels.
+Qiskit Machine Learning was inspired, authored and brought about by the collective work of a team of researchers 
+and software engineers. This library continues to grow with the help and work of
+[many people](https://github.com/qiskit-community/qiskit-machine-learning/graphs/contributors), who contribute to the project at different levels.
+
+## How can I cite Qiskit Machine Learning?
 If you use Qiskit, please cite as per the provided
 [BibTeX file](https://github.com/Qiskit/qiskit/blob/main/CITATION.bib).
 
