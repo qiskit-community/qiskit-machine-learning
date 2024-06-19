@@ -62,22 +62,22 @@ else:
 
     torch = Torch()
 
-    class Function:
+    class Function:  # type: ignore[no-redef]
         """Replacement for `torch.autograd.Function`."""
 
         pass
 
-    class Tensor:
+    class Tensor:  # type: ignore[no-redef]
         """Replacement for `torch.Tensor`."""
 
         pass
 
-    class Module:
+    class Module:  # type: ignore[no-redef]
         """Replacement for `torch.nn.Module`."""
 
         pass
 
-    class Parameter:
+    class Parameter:  # type: ignore[no-redef]
         """Replacement for `torch.nn.Parameter`."""
 
         pass
@@ -195,7 +195,7 @@ class ConnectorFunction(Function):
         return result_tensor
 
     @staticmethod
-    def backward(ctx: Any, grad_output: Tensor) -> tuple:
+    def backward(ctx: Any, grad_output: Tensor) -> tuple:  # type: ignore[override]
         """
         Perform the backward pass.
 
