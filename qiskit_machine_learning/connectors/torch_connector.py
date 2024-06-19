@@ -117,7 +117,6 @@ def _get_einsum_signature(n_dimensions: int, for_weights: bool = False) -> str:
     return f"{trace[:-1]},{trace:s}->{trace[0] + trace[2:]}"
 
 
-# noinspection PyMethodOverriding
 @_optionals.HAS_TORCH.require_in_instance
 class ConnectorFunction(Function):
     """Custom autograd function for connecting a neural network."""
