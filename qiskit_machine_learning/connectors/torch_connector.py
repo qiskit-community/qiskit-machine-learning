@@ -328,8 +328,6 @@ class TorchConnector(Module):
         sparse: bool | None = None,
     ):
         """
-        Initialize the TorchConnector.
-
         Args:
             neural_network (NeuralNetwork): The neural network to be connected to PyTorch.
                 Note: `input_gradients` must be set to `True` in the neural network
