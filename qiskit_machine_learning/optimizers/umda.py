@@ -172,7 +172,7 @@ class UMDA(Optimizer):
         Updates the generation pandas dataframe
         """
 
-        gen = algorithm_globals.random().normal(
+        gen = algorithm_globals.random.normal(
             self._vector[0, :], self._vector[1, :], [self._size_gen, self._n_variables]
         )
 
@@ -227,7 +227,7 @@ class UMDA(Optimizer):
         self._vector = self._initialization()
 
         # initialization of generation
-        self._generation = algorithm_globals.random().normal(
+        self._generation = algorithm_globals.random.normal(
             self._vector[0, :], self._vector[1, :], [self._size_gen, self._n_variables]
         )
 

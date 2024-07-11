@@ -96,7 +96,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
     def test_defaults(self):
         """Test quantum kernel with all default values."""
-        features = algorithm_globals.random().random((10, 2)) - 0.5
+        features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
         kernel = FidelityQuantumKernel()
@@ -289,20 +289,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                 values = np.asarray(values_1)
                 fidelities = np.full(values.shape[0], -0.5)
 
-                # Qiskit algorithms changed the internals of the base state fidelity
-                # class and what this method returns to avoid a threading issue. See
-                # https://github.com/qiskit-community/qiskit-algorithms/pull/92 for
-                # more information. That pull request will land in 0.3.0. I made
-                # this test work with the current released version 0.2.2, so tests
-                # pass at present, but in the future this logic can be reduced to
-                # just that needed for 0.3.0 and above if desired when testing against
-                # earlier algorithm versions is no longer needed or wanted.
-                from qiskit_algorithms import __version__ as algs_version
-
-                if algs_version < "0.3.0":
-                    return StateFidelityResult(fidelities, [], {}, options)
-                else:
-                    return AlgorithmJob(MockFidelity._call, fidelities, options)
+                return AlgorithmJob(MockFidelity._call, fidelities, options)
 
             @staticmethod
             def _call(fidelities, options) -> StateFidelityResult:

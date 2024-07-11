@@ -89,7 +89,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_defaults(self):
         """Test statevector kernel with all default values."""
-        features = algorithm_globals.random().random((10, 2)) - 0.5
+        features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
         kernel = FidelityStatevectorKernel()
@@ -101,7 +101,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_with_shot_noise(self):
         """Test statevector kernel with shot noise emulation."""
-        features = algorithm_globals.random().random((3, 2)) - 0.5
+        features = algorithm_globals.random.random((3, 2)) - 0.5
         kernel = FidelityStatevectorKernel(
             feature_map=self.feature_map, shots=10, enforce_psd=False
         )
@@ -136,7 +136,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         """Test statevector kernel when using AerStatevector type statevectors."""
         from qiskit_aer.quantum_info import AerStatevector
 
-        features = algorithm_globals.random().random((10, 2)) - 0.5
+        features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
         kernel = FidelityStatevectorKernel(statevector_type=AerStatevector)

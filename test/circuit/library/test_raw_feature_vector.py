@@ -99,7 +99,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         # construct data
         num_samples = 10
         num_inputs = 4
-        X = algorithm_globals.random().random(  # pylint: disable=invalid-name
+        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
             (num_samples, num_inputs)
         )
         y = 1.0 * (np.sum(X, axis=1) <= 2)

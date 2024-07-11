@@ -188,7 +188,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         # training loop
         for step in range(1, self._num_steps + 1):
             # for every step, a random index (determining a random datum) is fixed
-            i = algorithm_globals.random().integers(0, len(y))
+            i = algorithm_globals.random.integers(0, len(y))
 
             value = self._compute_weighted_kernel_sum(i, X, training=True)
 

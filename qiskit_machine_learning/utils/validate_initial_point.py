@@ -54,7 +54,7 @@ def validate_initial_point(point: np.ndarray | None | None, circuit: QuantumCirc
             upper_bounds.append(upper if upper is not None else 2 * np.pi)
 
         # sample from within bounds
-        point = algorithm_globals.random().uniform(lower_bounds, upper_bounds)
+        point = algorithm_globals.random.uniform(lower_bounds, upper_bounds)
 
     elif len(point) != expected_size:
         raise ValueError(

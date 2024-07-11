@@ -199,7 +199,7 @@ class QuantumKernelTrainer:
 
         # Randomly initialize the initial point if one was not passed
         if self._initial_point is None:
-            self._initial_point = algorithm_globals.random().random(num_params)
+            self._initial_point = algorithm_globals.random.random(num_params)
 
         # Perform kernel optimization
         loss_function = partial(

@@ -28,6 +28,9 @@ Utilities
 
 """
 from .adjust_num_qubits import derive_num_qubits_feature_map_ansatz
+from .algorithm_globals import algorithm_globals
+from .validate_initial_point import validate_initial_point
+from .validate_bounds import validate_bounds
 
 __all__ = [
     "derive_num_qubits_feature_map_ansatz",

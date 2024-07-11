@@ -154,7 +154,7 @@ class FidelityStatevectorKernel(BaseKernel):
         return np.abs(np.conj(x) @ y) ** 2
 
     def _add_shot_noise(self, fidelity: float) -> float:
-        return algorithm_globals.random().binomial(n=self._shots, p=fidelity) / self._shots
+        return algorithm_globals.random.binomial(n=self._shots, p=fidelity) / self._shots
 
     def clear_cache(self):
         """Clear the statevector cache."""

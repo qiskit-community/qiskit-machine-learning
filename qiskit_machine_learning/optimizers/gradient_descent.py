@@ -73,7 +73,7 @@ class GradientDescent(SteppableOptimizer):
 
         .. code-block:: python
 
-            from qiskit_algorithms.optimizers import GradientDescent
+            from qiskit_machine_learning.optimizers import GradientDescent
 
             def f(x):
                 return (np.linalg.norm(x) - 1) ** 2
@@ -93,7 +93,7 @@ class GradientDescent(SteppableOptimizer):
 
         .. code-block:: python
 
-            from qiskit_algorithms.optimizers import GradientDescent
+            from qiskit_machine_learning.optimizers import GradientDescent
 
             def learning_rate():
                 power = 0.6
@@ -129,7 +129,7 @@ class GradientDescent(SteppableOptimizer):
 
             import random
             import numpy as np
-            from qiskit_algorithms.optimizers import GradientDescent
+            from qiskit_machine_learning.optimizers import GradientDescent
 
             def objective(x):
                 if random.choice([True, False]):

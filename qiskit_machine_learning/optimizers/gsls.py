@@ -263,7 +263,7 @@ class GSLS(Optimizer):
         Returns:
             A tuple containing the sampling points and the directions.
         """
-        normal_samples = algorithm_globals.random().normal(size=(num_points, n))
+        normal_samples = algorithm_globals.random.normal(size=(num_points, n))
         row_norms = np.linalg.norm(normal_samples, axis=1, keepdims=True)
         directions = normal_samples / row_norms
         points = x + self._options["sampling_radius"] * directions
