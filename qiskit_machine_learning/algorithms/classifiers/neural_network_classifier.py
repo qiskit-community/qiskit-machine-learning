@@ -17,7 +17,6 @@ from typing import Callable, cast
 
 import numpy as np
 import scipy.sparse
-from qiskit_algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 from scipy.sparse import spmatrix
 from sklearn.base import ClassifierMixin
 from sklearn.exceptions import NotFittedError
@@ -31,6 +30,7 @@ from ..objective_functions import (
     ObjectiveFunction,
 )
 from ..trainable_model import TrainableModel
+from ...optimizers import Optimizer, OptimizerResult, Minimizer
 from ...exceptions import QiskitMachineLearningError
 from ...neural_networks import NeuralNetwork
 from ...utils.loss_functions import Loss

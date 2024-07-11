@@ -16,12 +16,12 @@ from abc import abstractmethod
 from typing import Callable
 
 import numpy as np
-from qiskit_algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
-from qiskit_algorithms.utils import algorithm_globals
+from ..optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
+from ..utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
-from qiskit_machine_learning.neural_networks import NeuralNetwork
-from qiskit_machine_learning.utils.loss_functions import (
+from ..neural_networks import NeuralNetwork
+from ..utils.loss_functions import (
     Loss,
     L1Loss,
     L2Loss,
@@ -247,7 +247,7 @@ class TrainableModel(SerializableModelMixin):
         if self._warm_start and self._fit_result is not None:
             self._initial_point = self._fit_result.x
         elif self._initial_point is None:
-            self._initial_point = algorithm_globals.random.random(self._neural_network.num_weights)
+            self._initial_point = algorithm_globals.random().random(self._neural_network.num_weights)
         return self._initial_point
 
     def _get_objective(

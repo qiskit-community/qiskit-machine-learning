@@ -16,7 +16,7 @@ from typing import List
 from qiskit.circuit import QuantumRegister, QuantumCircuit
 from qiskit.circuit.parametertable import ParameterView
 from qiskit.circuit.library import BlueprintCircuit
-from qiskit_machine_learning.utils import derive_num_qubits_feature_map_ansatz
+from ...utils import derive_num_qubits_feature_map_ansatz
 from qiskit_machine_learning import QiskitMachineLearningError
 
 

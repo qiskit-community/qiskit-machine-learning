@@ -17,7 +17,7 @@ from typing import Tuple
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
 
-from qiskit_machine_learning import QiskitMachineLearningError
+from ..exceptions import QiskitMachineLearningError
 
 
 # pylint: disable=invalid-name

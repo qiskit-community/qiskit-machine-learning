@@ -23,14 +23,14 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
-from qiskit_algorithms.gradients import (
+from ..gradients import (
     BaseEstimatorGradient,
     EstimatorGradientResult,
     ParamShiftEstimatorGradient,
 )
 
-from qiskit_machine_learning.circuit.library import QNNCircuit
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from ..circuit.library import QNNCircuit
+from ..exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
 

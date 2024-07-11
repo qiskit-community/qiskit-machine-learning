@@ -18,9 +18,9 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseSampler
-from qiskit_algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 
 from ...neural_networks import SamplerQNN
+from ...optimizers import Optimizer, OptimizerResult, Minimizer
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 

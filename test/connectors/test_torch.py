@@ -15,7 +15,7 @@
 import unittest
 import builtins
 from abc import ABC, abstractmethod
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.utils import algorithm_globals
 import qiskit_machine_learning.optionals as _optionals
 
 

@@ -29,9 +29,8 @@ from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
-from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit_algorithms.utils import algorithm_globals
-
+from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 
@@ -175,7 +174,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         """Test VQC when targets are one-hot and some batches don't have all possible labels."""
 
         # Generate data with batches that have incomplete labels.
-        x = algorithm_globals.random.random((6, 2))
+        x = algorithm_globals.random().random((6, 2))
         y = np.asarray([0, 0, 1, 1, 2, 2])
         y_one_hot = OneHotEncoder().fit_transform(y.reshape(-1, 1))
 
@@ -204,7 +203,7 @@ class TestVQC(QiskitMachineLearningTestCase):
     def test_multilabel_targets_raise_an_error(self):
         """Tests VQC multi-label input raises an error."""
         # Generate multi-label data.
-        x = algorithm_globals.random.random((3, 2))
+        x = algorithm_globals.random().random((3, 2))
         y = np.asarray([[1, 1, 0], [1, 0, 1], [0, 1, 1]])
 
         classifier = VQC(num_qubits=2)
@@ -216,8 +215,8 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         targets1 = np.asarray([[0, 0, 1], [0, 1, 0]])
         targets2 = np.asarray([[0, 1], [1, 0]])
-        features1 = algorithm_globals.random.random((len(targets1), 2))
-        features2 = algorithm_globals.random.random((len(targets2), 2))
+        features1 = algorithm_globals.random().random((len(targets1), 2))
+        features2 = algorithm_globals.random().random((len(targets2), 2))
 
         classifier = VQC(num_qubits=2, warm_start=True)
         classifier.fit(features1, targets1)

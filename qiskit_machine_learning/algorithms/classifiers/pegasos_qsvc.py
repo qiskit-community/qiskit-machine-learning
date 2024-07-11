@@ -18,12 +18,12 @@ from datetime import datetime
 from typing import Dict
 
 import numpy as np
-from qiskit_algorithms.utils import algorithm_globals
 from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
 from ...kernels import BaseKernel, FidelityQuantumKernel
+from ...utils import algorithm_globals
 
 
 logger = logging.getLogger(__name__)
@@ -188,7 +188,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         # training loop
         for step in range(1, self._num_steps + 1):
             # for every step, a random index (determining a random datum) is fixed
-            i = algorithm_globals.random.integers(0, len(y))
+            i = algorithm_globals.random().integers(0, len(y))
 
             value = self._compute_weighted_kernel_sum(i, X, training=True)
 

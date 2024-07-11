@@ -26,9 +26,9 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
-from qiskit_algorithms import AlgorithmJob
-from qiskit_algorithms.utils import algorithm_globals
-from qiskit_algorithms.state_fidelities import (
+from qiskit_machine_learning.algorithm_job import AlgorithmJob
+from qiskit_machine_learning.utils import algorithm_globals
+from qiskit_machine_learning.state_fidelities import (
     ComputeUncompute,
     BaseStateFidelity,
     StateFidelityResult,
@@ -96,7 +96,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
     def test_defaults(self):
         """Test quantum kernel with all default values."""
-        features = algorithm_globals.random.random((10, 2)) - 0.5
+        features = algorithm_globals.random().random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
         kernel = FidelityQuantumKernel()

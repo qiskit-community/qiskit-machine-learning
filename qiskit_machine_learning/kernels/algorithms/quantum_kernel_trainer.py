@@ -18,12 +18,11 @@ from typing import Sequence
 
 import numpy as np
 
-from qiskit_algorithms.optimizers import Optimizer, SPSA, Minimizer
-from qiskit_algorithms.utils import algorithm_globals
-from qiskit_algorithms.variational_algorithm import VariationalResult
-from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
-
-from qiskit_machine_learning.kernels import TrainableKernel
+from ...optimizers import Optimizer, SPSA, Minimizer
+from ...utils import algorithm_globals
+from ...variational_algorithm import VariationalResult
+from ...utils.loss_functions import KernelLoss, SVCLoss
+from ...kernels import TrainableKernel
 
 
 class QuantumKernelTrainerResult(VariationalResult):
@@ -200,7 +199,7 @@ class QuantumKernelTrainer:
 
         # Randomly initialize the initial point if one was not passed
         if self._initial_point is None:
-            self._initial_point = algorithm_globals.random.random(num_params)
+            self._initial_point = algorithm_globals.random().random(num_params)
 
         # Perform kernel optimization
         loss_function = partial(

@@ -22,8 +22,8 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit_algorithms.optimizers import COBYLA
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.optimizers import COBYLA
+from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector
@@ -99,7 +99,7 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         # construct data
         num_samples = 10
         num_inputs = 4
-        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
+        X = algorithm_globals.random().random(  # pylint: disable=invalid-name
             (num_samples, num_inputs)
         )
         y = 1.0 * (np.sum(X, axis=1) <= 2)

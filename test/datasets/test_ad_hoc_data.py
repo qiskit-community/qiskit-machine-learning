@@ -20,7 +20,7 @@ import json
 import numpy as np
 from ddt import ddt, unpack, idata
 
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.datasets import ad_hoc_data
 
 

@@ -19,7 +19,7 @@ from typing import Sequence
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit_algorithms.state_fidelities import BaseStateFidelity
+from ..state_fidelities import BaseStateFidelity
 
 from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
 from .trainable_kernel import TrainableKernel

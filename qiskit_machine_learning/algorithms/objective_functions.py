@@ -17,9 +17,9 @@ from typing import Optional, Union
 
 import numpy as np
 
-import qiskit_machine_learning.optionals as _optionals
-from qiskit_machine_learning.neural_networks import NeuralNetwork
-from qiskit_machine_learning.utils.loss_functions import Loss
+from .. import optionals as _optionals
+from ..neural_networks import NeuralNetwork
+from ..utils.loss_functions import Loss
 
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error

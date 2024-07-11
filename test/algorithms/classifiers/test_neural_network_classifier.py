@@ -26,10 +26,10 @@ import scipy
 from ddt import ddt, data, idata, unpack
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
-from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
-from qiskit_algorithms.utils import algorithm_globals
 from scipy.optimize import minimize
 
+from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -106,7 +106,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct data
         num_samples = 6
-        X = algorithm_globals.random.random(  # pylint: disable=invalid-name
+        X = algorithm_globals.random().random(  # pylint: disable=invalid-name
             (num_samples, num_inputs)
         )
         y = 2.0 * (np.sum(X, axis=1) <= 1) - 1.0
@@ -160,7 +160,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
     def _generate_data(self, num_inputs: int) -> tuple[np.ndarray, np.ndarray]:
         # construct data
         num_samples = 6
-        features = algorithm_globals.random.random((num_samples, num_inputs))
+        features = algorithm_globals.random().random((num_samples, num_inputs))
         labels = 1.0 * (np.sum(features, axis=1) <= 1)
 
         return features, labels
@@ -382,7 +382,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct data
         num_samples = 3
-        x = algorithm_globals.random.random((num_samples, num_inputs))
+        x = algorithm_globals.random().random((num_samples, num_inputs))
         y = np.asarray([0, 1, 2])
 
         with self.assertRaises(QiskitMachineLearningError):
@@ -402,7 +402,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct data
         num_samples = 2
-        x = algorithm_globals.random.random((num_samples, num_inputs))
+        x = algorithm_globals.random().random((num_samples, num_inputs))
         y = np.array([[0, 1], [1, 0]])
 
         with self.assertRaises(QiskitMachineLearningError):
@@ -419,7 +419,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct data
         num_samples = 2
-        x = algorithm_globals.random.random((num_samples, num_inputs))
+        x = algorithm_globals.random().random((num_samples, num_inputs))
         y = np.array([[0, 1], [2, 0]])
 
         with self.assertRaises(QiskitMachineLearningError):

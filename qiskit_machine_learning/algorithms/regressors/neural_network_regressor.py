@@ -14,7 +14,6 @@
 from typing import Optional
 
 import numpy as np
-from qiskit_algorithms.optimizers import OptimizerResult
 from sklearn.base import RegressorMixin
 
 from ..objective_functions import (
@@ -23,6 +22,7 @@ from ..objective_functions import (
     ObjectiveFunction,
 )
 from ..trainable_model import TrainableModel
+from ...optimizers import OptimizerResult
 
 
 class NeuralNetworkRegressor(TrainableModel, RegressorMixin):

@@ -21,7 +21,7 @@ from typing import Tuple, Dict, List
 
 import numpy as np
 from qiskit.utils import optionals
-from qiskit_algorithms.utils import algorithm_globals
+from ..utils import algorithm_globals
 from sklearn import preprocessing
 
 
@@ -127,9 +127,9 @@ def ad_hoc_data(
 
     # Generate a random unitary operator by collecting eigenvectors of a
     # random hermitian operator
-    basis = algorithm_globals.random.random(
+    basis = algorithm_globals.random().random(
         (2**n, 2**n)
-    ) + 1j * algorithm_globals.random.random((2**n, 2**n))
+    ) + 1j * algorithm_globals.random().random((2**n, 2**n))
     basis = np.array(basis).conj().T @ np.array(basis)
     eigvals, eigvecs = np.linalg.eig(basis)
     idx = eigvals.argsort()[::-1]
@@ -204,7 +204,7 @@ def _sample_ad_hoc_data(sample_total, xvals, num_samples, n):
     for i, sample_list in enumerate([sample_a, sample_b]):
         label = 1 if i == 0 else -1
         while len(sample_list) < num_samples:
-            draws = tuple(algorithm_globals.random.choice(count) for i in range(n))
+            draws = tuple(algorithm_globals.random().choice(count) for i in range(n))
             if sample_total[draws] == label:
                 sample_list.append([xvals[d] for d in draws])
 

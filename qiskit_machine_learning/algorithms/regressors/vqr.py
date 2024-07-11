@@ -18,10 +18,10 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
-from qiskit_algorithms.optimizers import Optimizer, Minimizer
 
 from .neural_network_regressor import NeuralNetworkRegressor
 from ...neural_networks import EstimatorQNN
+from ...optimizers import Optimizer, Minimizer
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 

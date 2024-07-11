@@ -19,7 +19,7 @@ from typing import List, Tuple
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.primitives import Sampler
-from qiskit_algorithms.state_fidelities import BaseStateFidelity, ComputeUncompute
+from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 
 from .base_kernel import BaseKernel
 

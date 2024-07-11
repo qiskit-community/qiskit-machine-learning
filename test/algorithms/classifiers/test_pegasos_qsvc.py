@@ -19,7 +19,7 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit.library import ZFeatureMap
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.utils import algorithm_globals
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler
 

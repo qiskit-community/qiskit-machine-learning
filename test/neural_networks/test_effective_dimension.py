@@ -20,7 +20,7 @@ from ddt import ddt, data, unpack
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.neural_networks import (
     EffectiveDimension,
@@ -149,8 +149,8 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         qnn = self.qnns["sampler_qnn_1"]
 
         num_input_samples, num_weight_samples = 10, 10
-        inputs = algorithm_globals.random.uniform(0, 1, size=(num_input_samples, qnn.num_inputs))
-        weights = algorithm_globals.random.uniform(0, 1, size=(num_weight_samples, qnn.num_weights))
+        inputs = algorithm_globals.random().uniform(0, 1, size=(num_input_samples, qnn.num_inputs))
+        weights = algorithm_globals.random().uniform(0, 1, size=(num_weight_samples, qnn.num_weights))
 
         global_ed1 = EffectiveDimension(
             qnn=qnn,
@@ -175,11 +175,11 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         qnn = self.qnns["sampler_qnn_1"]
 
         num_inputs, num_params = 10, 10
-        inputs_ok = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
-        weights_ok = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
+        inputs_ok = algorithm_globals.random().uniform(0, 1, size=(num_inputs, qnn.num_inputs))
+        weights_ok = algorithm_globals.random().uniform(0, 1, size=(num_params, qnn.num_weights))
 
-        inputs_wrong = algorithm_globals.random.uniform(0, 1, size=(num_inputs, 1))
-        weights_wrong = algorithm_globals.random.uniform(0, 1, size=(num_params, 1))
+        inputs_wrong = algorithm_globals.random().uniform(0, 1, size=(num_inputs, 1))
+        weights_wrong = algorithm_globals.random().uniform(0, 1, size=(num_params, 1))
 
         with self.assertRaises(QiskitMachineLearningError):
             EffectiveDimension(
@@ -201,10 +201,10 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         qnn = self.qnns["sampler_qnn_1"]
 
         num_inputs, num_params = 10, 10
-        inputs_ok = algorithm_globals.random.uniform(0, 1, size=(num_inputs, qnn.num_inputs))
-        weights_ok = algorithm_globals.random.uniform(0, 1, size=(1, qnn.num_weights))
-        weights_ok2 = algorithm_globals.random.uniform(0, 1, size=qnn.num_weights)
-        weights_wrong = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
+        inputs_ok = algorithm_globals.random().uniform(0, 1, size=(num_inputs, qnn.num_inputs))
+        weights_ok = algorithm_globals.random().uniform(0, 1, size=(1, qnn.num_weights))
+        weights_ok2 = algorithm_globals.random().uniform(0, 1, size=qnn.num_weights)
+        weights_wrong = algorithm_globals.random().uniform(0, 1, size=(num_params, qnn.num_weights))
 
         LocalEffectiveDimension(
             qnn=qnn,

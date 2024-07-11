@@ -17,9 +17,9 @@ from typing import Optional
 
 from sklearn.svm import SVR
 
-from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
-from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
-from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
+from ...algorithms.serializable_model import SerializableModelMixin
+from ...exceptions import QiskitMachineLearningWarning
+from ...kernels import BaseKernel, FidelityQuantumKernel
 
 
 class QSVR(SVR, SerializableModelMixin):

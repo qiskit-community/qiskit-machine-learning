@@ -18,8 +18,8 @@ from typing import Union, List, Tuple
 import numpy as np
 from scipy.special import logsumexp
 
-from qiskit_algorithms.utils import algorithm_globals
-from qiskit_machine_learning import QiskitMachineLearningError
+from ..utils import algorithm_globals
+from ..exceptions import QiskitMachineLearningError
 from .estimator_qnn import EstimatorQNN
 from .neural_network import NeuralNetwork
 
@@ -83,7 +83,7 @@ class EffectiveDimension:
         """Sets network weight samples."""
         if isinstance(weight_samples, int):
             # random sampling from uniform distribution
-            self._weight_samples = algorithm_globals.random.uniform(
+            self._weight_samples = algorithm_globals.random().uniform(
                 0, 1, size=(weight_samples, self._model.num_weights)
             )
         else:
@@ -109,7 +109,7 @@ class EffectiveDimension:
         """Sets network input samples."""
         if isinstance(input_samples, int):
             # random sampling from normal distribution
-            self._input_samples = algorithm_globals.random.normal(
+            self._input_samples = algorithm_globals.random().normal(
                 0, 1, size=(input_samples, self._model.num_inputs)
             )
         else:
@@ -332,7 +332,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         """Sets network parameters."""
         if isinstance(weight_samples, int):
             # random sampling from uniform distribution
-            self._weight_samples = algorithm_globals.random.uniform(
+            self._weight_samples = algorithm_globals.random().uniform(
                 0, 1, size=(1, self._model.num_weights)
             )
         else:
