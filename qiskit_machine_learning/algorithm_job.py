@@ -42,4 +42,4 @@ class AlgorithmJob(PrimitiveJob):
         try:
             super()._submit()
         except AttributeError:
-            super().submit()
+            super().submit()  # pylint: disable=no-member

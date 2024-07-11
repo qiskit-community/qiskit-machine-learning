@@ -14,12 +14,14 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from typing import Callable
-
 import numpy as np
-from ..optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
-from ..utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
+
+from .objective_functions import ObjectiveFunction
+from .serializable_model import SerializableModelMixin
+from ..optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
+from ..utils import algorithm_globals
 from ..neural_networks import NeuralNetwork
 from ..utils.loss_functions import (
     Loss,
@@ -27,9 +29,6 @@ from ..utils.loss_functions import (
     L2Loss,
     CrossEntropyLoss,
 )
-
-from .objective_functions import ObjectiveFunction
-from .serializable_model import SerializableModelMixin
 
 
 class TrainableModel(SerializableModelMixin):

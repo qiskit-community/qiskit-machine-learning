@@ -59,6 +59,7 @@ else:
 
 
 CHAR_LIMIT = 26
+# pylint: disable=no-member
 
 
 def _get_einsum_signature(n_dimensions: int, for_weights: bool = False) -> str:

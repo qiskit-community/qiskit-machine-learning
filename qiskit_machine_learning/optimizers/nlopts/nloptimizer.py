@@ -51,7 +51,7 @@ class NLoptOptimizer(Optimizer):
         Raises:
             MissingOptionalLibraryError: NLopt library not installed.
         """
-        import nlopt
+        import nlopt  # pylint: disable=import-error
 
         super().__init__()
         for k, v in list(locals().items()):
@@ -90,7 +90,7 @@ class NLoptOptimizer(Optimizer):
         jac: Callable[[POINT], POINT] | None = None,
         bounds: list[tuple[float, float]] | None = None,
     ) -> OptimizerResult:
-        import nlopt
+        import nlopt  # pylint: disable=import-error
 
         x0 = np.asarray(x0)
 

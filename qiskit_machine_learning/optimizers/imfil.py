@@ -69,7 +69,7 @@ class IMFIL(Optimizer):
         jac: Callable[[POINT], POINT] | None = None,
         bounds: list[tuple[float, float]] | None = None,
     ) -> OptimizerResult:
-        from skquant import opt as skq
+        from skquant import opt as skq  # pylint: disable=import-error
 
         res, history = skq.minimize(
             func=fun,

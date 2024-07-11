@@ -93,8 +93,8 @@ class SNOBFIT(Optimizer):
         jac: Callable[[POINT], POINT] | None = None,
         bounds: list[tuple[float, float]] | None = None,
     ) -> OptimizerResult:
-        import skquant.opt as skq
-        from SQSnobFit import optset
+        import skquant.opt as skq  # pylint: disable=import-error
+        from SQSnobFit import optset  # pylint: disable=import-error
 
         if bounds is None or any(None in bound_tuple for bound_tuple in bounds):
             raise ValueError("Optimizer SNOBFIT requires bounds for all parameters.")

@@ -19,19 +19,20 @@ from numbers import Integral
 from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
+
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+
+import qiskit_machine_learning.optionals as _optionals
+from .neural_network import NeuralNetwork
 from ..gradients import (
     BaseSamplerGradient,
     ParamShiftSamplerGradient,
     SamplerGradientResult,
 )
-
 from ..circuit.library import QNNCircuit
 from ..exceptions import QiskitMachineLearningError
-import qiskit_machine_learning.optionals as _optionals
 
-from .neural_network import NeuralNetwork
 
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error

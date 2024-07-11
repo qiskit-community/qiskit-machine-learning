@@ -22,10 +22,13 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, idata, unpack
+from sklearn.svm import SVC
+
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.primitives import Sampler
+
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.state_fidelities import (
@@ -33,8 +36,6 @@ from qiskit_machine_learning.state_fidelities import (
     BaseStateFidelity,
     StateFidelityResult,
 )
-from sklearn.svm import SVC
-
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 

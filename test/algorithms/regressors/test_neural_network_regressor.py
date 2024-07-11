@@ -22,12 +22,13 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, unpack, idata
-from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B, SPSA
-from qiskit_machine_learning.utils import algorithm_globals
 from scipy.optimize import minimize
 
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+
+from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B, SPSA
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor

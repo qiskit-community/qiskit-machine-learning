@@ -20,12 +20,13 @@ from test import QiskitMachineLearningTestCase
 
 from ddt import ddt, data
 import numpy as np
+from scipy.optimize import minimize
+
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit_machine_learning.utils import algorithm_globals
-from scipy.optimize import minimize
 
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms.classifiers import QSVC
 from qiskit_machine_learning.kernels import (
     TrainableFidelityQuantumKernel,

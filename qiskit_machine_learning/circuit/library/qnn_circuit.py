@@ -13,11 +13,14 @@
 """The QNN circuit."""
 from __future__ import annotations
 from typing import List
+
 from qiskit.circuit import QuantumRegister, QuantumCircuit
 from qiskit.circuit.parametertable import ParameterView
 from qiskit.circuit.library import BlueprintCircuit
-from ...utils import derive_num_qubits_feature_map_ansatz
+
 from qiskit_machine_learning import QiskitMachineLearningError
+
+from ...utils import derive_num_qubits_feature_map_ansatz
 
 
 class QNNCircuit(BlueprintCircuit):

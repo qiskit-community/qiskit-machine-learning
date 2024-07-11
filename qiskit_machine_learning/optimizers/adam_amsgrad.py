@@ -147,14 +147,13 @@ class ADAM(Optimizer):
         Args:
             snapshot_dir: The directory to store the file in.
         """
+        # pylint: disable=unspecified-encoding
         if self._amsgrad:
-            # pylint: disable=unspecified-encoding
             with open(os.path.join(snapshot_dir, "adam_params.csv"), mode="a") as csv_file:
                 fieldnames = ["v", "v_eff", "m", "t"]
                 writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                 writer.writerow({"v": self._v, "v_eff": self._v_eff, "m": self._m, "t": self._t})
         else:
-            # pylint: disable=unspecified-encoding
             with open(os.path.join(snapshot_dir, "adam_params.csv"), mode="a") as csv_file:
                 fieldnames = ["v", "m", "t"]
                 writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
