@@ -244,7 +244,7 @@ class TrainableModel(SerializableModelMixin):
             An array as an initial point
         """
         if self._warm_start and self._fit_result is not None:
-            self._initial_point = self._fit_result.x
+            self._initial_point = self._fit_result.x  # type: ignore[assignment]
         elif self._initial_point is None:
             self._initial_point = algorithm_globals.random.random(self._neural_network.num_weights)
         return self._initial_point
@@ -287,13 +287,13 @@ class TrainableModel(SerializableModelMixin):
 
         initial_point = self._choose_initial_point()
         if callable(self._optimizer):
-            optimizer_result = self._optimizer(
+            optimizer_result = self._optimizer(  # type: ignore[call-arg]
                 fun=objective, x0=initial_point, jac=function.gradient
             )
         else:
             optimizer_result = self._optimizer.minimize(
                 fun=objective,
                 x0=initial_point,
-                jac=function.gradient,
+                jac=function.gradient,  # type: ignore[arg-type]
             )
         return optimizer_result

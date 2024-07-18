@@ -199,27 +199,27 @@ class QuantumKernelTrainer:
 
         # Randomly initialize the initial point if one was not passed
         if self._initial_point is None:
-            self._initial_point = algorithm_globals.random.random(num_params)
+            self._initial_point = algorithm_globals.random.random(num_params)  # type: ignore[assignment]
 
         # Perform kernel optimization
         loss_function = partial(
             self._loss.evaluate, quantum_kernel=self.quantum_kernel, data=data, labels=labels
         )
         if callable(self._optimizer):
-            opt_results = self._optimizer(fun=loss_function, x0=self._initial_point)
+            opt_results = self._optimizer(fun=loss_function, x0=self._initial_point)  # type: ignore[call-arg, arg-type]
         else:
             opt_results = self._optimizer.minimize(
                 fun=loss_function,
-                x0=self._initial_point,
+                x0=self._initial_point,  # type: ignore[arg-type]
             )
 
         # Return kernel training results
         result = QuantumKernelTrainerResult()
         result.optimizer_evals = opt_results.nfev
         result.optimal_value = opt_results.fun
-        result.optimal_point = opt_results.x
+        result.optimal_point = opt_results.x  # type: ignore[assignment]
         result.optimal_parameters = dict(
-            zip(self.quantum_kernel.training_parameters, opt_results.x)
+            zip(self.quantum_kernel.training_parameters, opt_results.x)  # type: ignore[arg-type]
         )
 
         # Return the QuantumKernel in optimized state

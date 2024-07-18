@@ -61,9 +61,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         elif opt == "cobyla":
-            optimizer = COBYLA(maxiter=25)
+            optimizer = COBYLA(maxiter=25)  # type: ignore[assignment]
         elif opt == "callable":
-            optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
+            optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})  # type: ignore[assignment]
         else:
             optimizer = None
 

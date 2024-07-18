@@ -279,7 +279,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             ) -> QuantumCircuit:
                 raise NotImplementedError()
 
-            def _run(
+            def _run(  # type: ignore[override]
                 self,
                 circuits_1: QuantumCircuit | Sequence[QuantumCircuit],
                 circuits_2: QuantumCircuit | Sequence[QuantumCircuit],
@@ -294,7 +294,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
             @staticmethod
             def _call(fidelities, options) -> StateFidelityResult:
-                return StateFidelityResult(fidelities, [], {}, options)
+                return StateFidelityResult(fidelities, [], {}, options)  # type: ignore[arg-type]
 
         with self.subTest("No PSD enforcement"):
             kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=False)

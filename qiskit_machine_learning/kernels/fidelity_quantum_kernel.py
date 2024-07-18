@@ -229,8 +229,8 @@ class FidelityQuantumKernel(BaseKernel):
                 job = self._fidelity.run(
                     [self._feature_map] * num_circuits,
                     [self._feature_map] * num_circuits,
-                    left_parameters,
-                    right_parameters,
+                    left_parameters,  # type: ignore[arg-type]
+                    right_parameters,  # type: ignore[arg-type]
                 )
                 kernel_entries = job.result().fidelities
             else:
@@ -249,8 +249,8 @@ class FidelityQuantumKernel(BaseKernel):
                     job = self._fidelity.run(
                         [self._feature_map] * (end_idx - start_idx),
                         [self._feature_map] * (end_idx - start_idx),
-                        chunk_left_parameters,
-                        chunk_right_parameters,
+                        chunk_left_parameters,  # type: ignore[arg-type]
+                        chunk_right_parameters,  # type: ignore[arg-type]
                     )
                     # Extend the kernel_entries list with the results from this chunk
                     kernel_entries.extend(job.result().fidelities)

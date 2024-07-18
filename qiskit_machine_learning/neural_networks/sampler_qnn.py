@@ -414,10 +414,10 @@ class SamplerQNN(NeuralNetwork):
 
             job = None
             if self._input_gradients:
-                job = self.gradient.run(circuits, parameter_values)
+                job = self.gradient.run(circuits, parameter_values)  # type: ignore[arg-type]
             elif len(parameter_values[0]) > self._num_inputs:
                 params = [self._circuit.parameters[self._num_inputs :]] * num_samples
-                job = self.gradient.run(circuits, parameter_values, parameters=params)
+                job = self.gradient.run(circuits, parameter_values, parameters=params)  # type: ignore[arg-type]
 
             if job is not None:
                 try:
