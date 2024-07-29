@@ -17,7 +17,6 @@ runs:
   using: "composite"
   steps:
     - run : |
-        pip install torch==2.2.2
         pip install -e .[torch,sparse]
         pip install -U -c constraints.txt -r requirements-dev.txt
       shell: bash
