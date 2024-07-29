@@ -119,7 +119,6 @@ def nakanishi_fujii_todo(
     funcalls = 0
 
     while True:
-
         idx = niter % x0.size
 
         if reset_interval > 0:

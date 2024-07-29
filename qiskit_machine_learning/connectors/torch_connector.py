@@ -103,7 +103,6 @@ class TorchConnector(Module):
 
     # pylint: disable=abstract-method
     class _TorchNNFunction(Function):
-
         # pylint: disable=arguments-differ
         @staticmethod
         def forward(  # type: ignore

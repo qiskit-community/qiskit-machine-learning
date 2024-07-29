@@ -325,7 +325,7 @@ class AQGD(Optimizer):
         logger.info("Initial Params: %s", params)
         epoch = 0
         converged = False
-        for (eta, mom_coeff) in zip(self._eta, self._momenta_coeff):
+        for eta, mom_coeff in zip(self._eta, self._momenta_coeff):
             logger.info("Epoch: %4d | Stepsize: %6.4f | Momentum: %6.4f", epoch, eta, mom_coeff)
 
             sum_max_iters = sum(self._maxiter[0 : epoch + 1])

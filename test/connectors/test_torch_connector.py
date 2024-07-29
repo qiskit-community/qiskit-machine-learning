@@ -271,7 +271,6 @@ class TestTorchConnector(TestTorch):
                 kernel_size: int = 3,
                 stride: int = 1,
             ):
-
                 super().__init__()
                 self.kernel_size = kernel_size
                 self.stride = stride

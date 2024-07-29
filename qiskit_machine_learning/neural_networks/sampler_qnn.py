@@ -329,7 +329,6 @@ class SamplerQNN(NeuralNetwork):
             )
             weights_grad = DOK((num_samples, *self._output_shape, self._num_weights))
         else:
-
             input_grad = (
                 np.zeros((num_samples, *self._output_shape, self._num_inputs))
                 if self._input_gradients
