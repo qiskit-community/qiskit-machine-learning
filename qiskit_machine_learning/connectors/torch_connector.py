@@ -118,12 +118,12 @@ def _get_einsum_signature(n_dimensions: int, for_weights: bool = False) -> str:
 
 
 @_optionals.HAS_TORCH.require_in_instance
-class ConnectorFunction(Function):
+class _TorchNNFunction(Function):
     """Custom autograd function for connecting a neural network."""
 
     # pylint: disable=abstract-method
     # Disable methods that are abstract in class '_SingleLevelFunction.Function' but are not
-    # overridden in child class 'ConnectorFunction'.
+    # overridden in child class '_TorchNNFunction'.
 
     # pylint: disable=arguments-differ
     # Disable Lint warnings caused by different number of parameters between these methods and
@@ -420,4 +420,4 @@ class TorchConnector(Module):
         else:
             input_ = input_data
 
-        return ConnectorFunction.apply(input_, self._weights, self._neural_network, self._sparse)
+        return _TorchNNFunction.apply(input_, self._weights, self._neural_network, self._sparse)
