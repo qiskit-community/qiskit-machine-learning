@@ -304,7 +304,7 @@ class GradientDescent(SteppableOptimizer):
         """
         if np.shape(self.state.x) != np.shape(tell_data.eval_jac):  # type: ignore[arg-type]
             raise ValueError("The gradient does not have the correct dimension")
-        self.state.x -= next(self.state.learning_rate) * tell_data.eval_jac  # type: ignore
+        self.state.x = self.state.x - next(self.state.learning_rate) * tell_data.eval_jac  # type: ignore
         self.state.stepsize = np.linalg.norm(tell_data.eval_jac)  # type: ignore
         self.state.nit += 1
 
