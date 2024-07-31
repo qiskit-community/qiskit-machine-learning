@@ -594,3 +594,5 @@ zz
 θ
 ψ
 ω
+assertRaises
+RuntimeError
