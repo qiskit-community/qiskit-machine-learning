@@ -206,7 +206,9 @@ class QuantumKernelTrainer:
             self._loss.evaluate, quantum_kernel=self.quantum_kernel, data=data, labels=labels
         )
         if callable(self._optimizer):
-            opt_results = self._optimizer(fun=loss_function, x0=self._initial_point)  # type: ignore[call-arg, arg-type]
+            opt_results = self._optimizer(
+                fun=loss_function, x0=self._initial_point  # type: ignore[call-arg, arg-type]
+            )
         else:
             opt_results = self._optimizer.minimize(
                 fun=loss_function,

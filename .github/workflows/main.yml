@@ -146,7 +146,7 @@ jobs:
       - run: make lint
         shell: bash
       - run: make mypy
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && matrix.os != 'windows-latest' }}
         shell: bash
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
