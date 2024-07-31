@@ -24,6 +24,7 @@ from qiskit.quantum_info import SparsePauliOp
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.connectors import TorchConnector
+from qiskit_machine_learning.connectors.torch_connector import _TorchNNFunction
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
 from qiskit_machine_learning.connectors.torch_connector import _get_einsum_signature
 
@@ -54,7 +55,7 @@ class TestTorchConnector(TestTorch):
         import torch
 
         # test autograd
-        func = TorchConnector._TorchNNFunction.apply  # (input, weights, qnn)
+        func = _TorchNNFunction.apply  # (input, weights, qnn)
         input_data = (
             torch.randn(
                 model.neural_network.num_inputs,
