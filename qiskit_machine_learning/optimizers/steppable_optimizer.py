@@ -300,4 +300,4 @@ class SteppableOptimizer(Optimizer):
         Returns:
             ``True`` if the optimization process should continue, ``False`` otherwise.
         """
-        return self.state.nit < self.maxiter  # type: ignore[no-member]
+        return self.state.nit < self.maxiter  # pylint: disable=no-member
