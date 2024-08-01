@@ -11,11 +11,11 @@
 # that they have been altered from the originals.
 
 """
-Gradients (:mod:`qiskit_algorithms.gradients`)
+Gradients (:mod:`qiskit_machine_learning.gradients`)
 ==============================================
 Algorithms to calculate the gradient of a quantum circuit.
 
-.. currentmodule:: qiskit_algorithms.gradients
+.. currentmodule:: qiskit_machine_learning.gradients
 
 Base Classes
 ------------

@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """Utils for optimizers
 
-Optimizer Utils (:mod:`qiskit_algorithms.optimizers.optimizer_utils`)
+Optimizer Utils (:mod:`qiskit_machine_learning.optimizers.optimizer_utils`)
 =====================================================================
 
 .. autosummary::

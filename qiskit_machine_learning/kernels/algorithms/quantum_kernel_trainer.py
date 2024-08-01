@@ -101,12 +101,12 @@ class QuantumKernelTrainer:
                 passed as the loss function, then the underlying
                 :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss` object will exhibit
                 default behavior.
-            optimizer: An instance of :class:`~qiskit_algorithms.optimizers.Optimizer` or a
+            optimizer: An instance of :class:`~qiskit_machine_learning.optimizers.Optimizer` or a
                 callable to be used in training. Refer to
-                :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on the
+                :class:`~qiskit_machine_learning.optimizers.Minimizer` for more information on the
                 callable protocol. Since no analytical gradient is defined for kernel loss
                 functions, gradient-based optimizers are not recommended for training kernels. When
-                `None` defaults to :class:`~qiskit_algorithms.optimizers.SPSA`.
+                `None` defaults to :class:`~qiskit_machine_learning.optimizers.SPSA`.
             initial_point: Initial point from which the optimizer will begin.
 
         Raises:

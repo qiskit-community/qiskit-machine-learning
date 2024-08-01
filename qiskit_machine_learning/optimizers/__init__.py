@@ -11,12 +11,12 @@
 # that they have been altered from the originals.
 
 """
-Optimizers (:mod:`qiskit_algorithms.optimizers`)
+Optimizers (:mod:`qiskit_machine_learning.optimizers`)
 ================================================
 Classical Optimizers.
 
 This package contains a variety of classical optimizers and were designed for use by
-qiskit_algorithm's quantum variational algorithms, such as :class:`~qiskit_algorithms.VQE`.
+qiskit_algorithm's quantum variational algorithms, such as :class:`~qiskit_machine_learning.VQE`.
 Logically, these optimizers can be divided into two categories:
 
 `Local Optimizers`_
@@ -27,7 +27,7 @@ Logically, these optimizers can be divided into two categories:
   Given an optimization problem, a **global optimizer** is a function
   that attempts to find an optimal value among all possible solutions.
 
-.. currentmodule:: qiskit_algorithms.optimizers
+.. currentmodule:: qiskit_machine_learning.optimizers
 
 Optimizer Base Classes
 ----------------------

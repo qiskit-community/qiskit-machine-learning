@@ -29,7 +29,7 @@ KernelIndices = List[Tuple[int, int]]
 class FidelityQuantumKernel(BaseKernel):
     r"""
     An implementation of the quantum kernel interface based on the
-    :class:`~qiskit_algorithms.state_fidelities.BaseStateFidelity` algorithm.
+    :class:`~qiskit_machine_learning.state_fidelities.BaseStateFidelity` algorithm.
 
     Here, the kernel function is defined as the overlap of two quantum states defined by a
     parametrized quantum circuit (called feature map):
@@ -56,9 +56,9 @@ class FidelityQuantumKernel(BaseKernel):
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
             fidelity: An instance of the
-                :class:`~qiskit_algorithms.state_fidelities.BaseStateFidelity` primitive to be used
+                :class:`~qiskit_machine_learning.state_fidelities.BaseStateFidelity` primitive to be used
                 to compute fidelity between states. Default is
-                :class:`~qiskit_algorithms.state_fidelities.ComputeUncompute` which is created on
+                :class:`~qiskit_machine_learning.state_fidelities.ComputeUncompute` which is created on
                 top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
             enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.

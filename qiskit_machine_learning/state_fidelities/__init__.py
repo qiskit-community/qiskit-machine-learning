@@ -10,11 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """
-State Fidelities (:mod:`qiskit_algorithms.state_fidelities`)
+State Fidelities (:mod:`qiskit_machine_learning.state_fidelities`)
 ============================================================
 Algorithms that compute the fidelity of pairs of quantum states.
 
-.. currentmodule:: qiskit_algorithms.state_fidelities
+.. currentmodule:: qiskit_machine_learning.state_fidelities
 
 State Fidelities
 ----------------

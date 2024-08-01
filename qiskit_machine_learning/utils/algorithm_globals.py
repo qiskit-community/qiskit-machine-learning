@@ -13,9 +13,9 @@
 """
 utils.algorithm_globals
 =======================
-Common (global) properties used across qiskit_algorithms.
+Common (global) properties used across qiskit_machine_learning.
 
-.. currentmodule:: qiskit_algorithms.utils.algorithm_globals
+.. currentmodule:: qiskit_machine_learning.utils.algorithm_globals
 
 Includes:
 
@@ -50,7 +50,7 @@ class QiskitAlgorithmGlobals:
     # calls off to it). In the future when that does not exist this has similar code
     # in the except blocks here, as noted above, that will take over. By delegating
     # to the Qiskit instance it means that any existing code that uses that continues
-    # to work. Logic here in qiskit_algorithms though uses this instance and the
+    # to work. Logic here in qiskit_machine_learning though uses this instance and the
     # random check here has logic to warn if the seed here is not the same as the Qiskit
     # version so we can detect direct usage of the Qiskit version and alert the user to
     # change their code to use this. So simply changing from:
@@ -114,7 +114,7 @@ class QiskitAlgorithmGlobals:
                     warnings.warn(
                         "Using random that is seeded via qiskit.utils algorithm_globals is deprecated "
                         "since version 0.2.0. Instead set random_seed directly to "
-                        "qiskit_algorithms.utils algorithm_globals.",
+                        "qiskit_machine_learning.utils algorithm_globals.",
                         category=DeprecationWarning,
                         stacklevel=2,
                     )
