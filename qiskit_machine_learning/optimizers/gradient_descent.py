@@ -177,10 +177,9 @@ class GradientDescent(SteppableOptimizer):
     def __init__(
         self,
         maxiter: int = 100,
-        learning_rate: float
-        | list[float]
-        | np.ndarray
-        | Callable[[], Generator[float, None, None]] = 0.01,
+        learning_rate: (
+            float | list[float] | np.ndarray | Callable[[], Generator[float, None, None]]
+        ) = 0.01,
         tol: float = 1e-7,
         callback: CALLBACK | None = None,
         perturbation: float | None = None,
