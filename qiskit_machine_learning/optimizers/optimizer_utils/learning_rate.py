@@ -29,10 +29,9 @@ class LearningRate(Generator):
 
     def __init__(
         self,
-        learning_rate: float
-        | list[float]
-        | np.ndarray
-        | Callable[[], Generator[float, None, None]],
+        learning_rate: (
+            float | list[float] | np.ndarray | Callable[[], Generator[float, None, None]]
+        ),
     ):
         """
         Args:
