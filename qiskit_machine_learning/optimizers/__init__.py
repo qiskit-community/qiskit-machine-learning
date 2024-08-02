@@ -84,19 +84,13 @@ Local Optimizers
    SciPyOptimizer
    UMDA
 
-Qiskit also provides the following optimizers, which are built-out using the optimizers from
-`scikit-quant <https://scikit-quant.readthedocs.io/en/latest/>`_. The ``scikit-quant`` package
-is not installed by default but must be explicitly installed, if desired, by the user. The
-optimizers therein are provided under various licenses, hence it has been made an optional install.
-To install the ``scikit-quant`` dependent package you can use ``pip install scikit-quant``.
+The optimizers from
+`scikit-quant <https://scikit-quant.readthedocs.io/en/latest/>`_ are not included in the
+Qiskit Machine Learning library.
+To continue using them, please import them from Qiskit Algorithms. Be aware that and a
+deprecation of the methods `snobfit`, `imfil` and `bobyqa` the was considered:
+https://github.com/qiskit-community/qiskit-algorithms/issues/84.
 
-.. autosummary::
-   :toctree: ../stubs/
-   :nosignatures:
-
-   BOBYQA
-   IMFIL
-   SNOBFIT
 
 Global Optimizers
 -----------------
@@ -118,12 +112,10 @@ To install the ``NLOpt`` dependent package you can use ``pip install nlopt``.
 
 from .adam_amsgrad import ADAM
 from .aqgd import AQGD
-from .bobyqa import BOBYQA
 from .cg import CG
 from .cobyla import COBYLA
 from .gsls import GSLS
 from .gradient_descent import GradientDescent, GradientDescentState
-from .imfil import IMFIL
 from .l_bfgs_b import L_BFGS_B
 from .nelder_mead import NELDER_MEAD
 from .nft import NFT
@@ -139,7 +131,6 @@ from .powell import POWELL
 from .qnspsa import QNSPSA
 from .scipy_optimizer import SciPyOptimizer
 from .slsqp import SLSQP
-from .snobfit import SNOBFIT
 from .spsa import SPSA
 from .tnc import TNC
 from .umda import UMDA
@@ -175,8 +166,5 @@ __all__ = [
     "DIRECT_L_RAND",
     "ESCH",
     "ISRES",
-    "SNOBFIT",
-    "BOBYQA",
-    "IMFIL",
     "UMDA",
 ]
