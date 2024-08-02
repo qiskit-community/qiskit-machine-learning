@@ -104,15 +104,14 @@ class ADAM(Optimizer):
         if self._amsgrad:
             self._v_eff = np.zeros(1)
 
-        if self._snapshot_dir:
-            # pylint: disable=unspecified-encoding
-            with open(os.path.join(self._snapshot_dir, "adam_params.csv"), mode="w") as csv_file:
-                if self._amsgrad:
-                    fieldnames = ["v", "v_eff", "m", "t"]
-                else:
-                    fieldnames = ["v", "m", "t"]
-                writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-                writer.writeheader()
+        if self._snapshot_dir is not None:
+            file_path = os.path.join(self._snapshot_dir, "adam_params.csv")
+            if not os.path.isfile(file_path):
+                # pylint: disable=unspecified-encoding
+                with open(file_path, mode="w") as csv_file:
+                    fieldnames = ["v", "v_eff", "m", "t"] if self._amsgrad else ["v", "m", "t"]
+                    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+                    writer.writeheader()
 
     @property
     def settings(self) -> dict[str, Any]:
@@ -148,16 +147,19 @@ class ADAM(Optimizer):
             snapshot_dir: The directory to store the file in.
         """
         # pylint: disable=unspecified-encoding
-        if self._amsgrad:
-            with open(os.path.join(snapshot_dir, "adam_params.csv"), mode="a") as csv_file:
-                fieldnames = ["v", "v_eff", "m", "t"]
-                writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-                writer.writerow({"v": self._v, "v_eff": self._v_eff, "m": self._m, "t": self._t})
-        else:
-            with open(os.path.join(snapshot_dir, "adam_params.csv"), mode="a") as csv_file:
-                fieldnames = ["v", "m", "t"]
-                writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-                writer.writerow({"v": self._v, "m": self._m, "t": self._t})
+        file_path = os.path.join(snapshot_dir, "adam_params.csv")
+
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"The file {file_path} does not exist.")
+
+        fieldnames = ["v", "v_eff", "m", "t"] if self._amsgrad else ["v", "m", "t"]
+
+        with open(file_path, mode="a", newline="") as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            row = {"v": self._v, "m": self._m, "t": self._t}
+            if self._amsgrad:
+                row["v_eff"] = self._v_eff
+            writer.writerow(row)
 
     def load_params(self, load_dir: str) -> None:
         """Load iteration parameters for a file called ``adam_params.csv``.
@@ -166,28 +168,20 @@ class ADAM(Optimizer):
             load_dir: The directory containing ``adam_params.csv``.
         """
         # pylint: disable=unspecified-encoding
-        with open(os.path.join(load_dir, "adam_params.csv")) as csv_file:
-            if self._amsgrad:
-                fieldnames = ["v", "v_eff", "m", "t"]
-            else:
-                fieldnames = ["v", "m", "t"]
-            reader = csv.DictReader(csv_file, fieldnames=fieldnames)
-            for line in reader:
-                v = line["v"]
-                if self._amsgrad:
-                    v_eff = line["v_eff"]
-                m = line["m"]
-                t = line["t"]
+        file_path = os.path.join(load_dir, "adam_params.csv")
 
-        v = v[1:-1]
-        self._v = np.fromstring(v, dtype=float, sep=" ")
-        if self._amsgrad:
-            v_eff = v_eff[1:-1]
-            self._v_eff = np.fromstring(v_eff, dtype=float, sep=" ")
-        m = m[1:-1]
-        self._m = np.fromstring(m, dtype=float, sep=" ")
-        t = t[1:-1]
-        self._t = int(np.fromstring(t, dtype=int, sep=" "))
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"The file {file_path} does not exist.")
+
+        with open(file_path, mode="r", newline="") as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            for line in reader:
+                self._v = np.fromstring(line["v"].strip("[]"), dtype=float, sep=" ")
+                if self._amsgrad:
+                    self._v_eff = np.fromstring(line["v_eff"].strip("[]"), dtype=float, sep=" ")
+                self._m = np.fromstring(line["m"].strip("[]"), dtype=float, sep=" ")
+                self._t = int(line["t"].strip("[]"))
 
     def minimize(
         self,
@@ -235,7 +229,7 @@ class ADAM(Optimizer):
                     np.sqrt(self._v_eff.flatten()) + self._noise_factor
                 )
 
-            if self._snapshot_dir:
+            if self._snapshot_dir is not None:
                 self.save_params(self._snapshot_dir)
 
             # check termination
