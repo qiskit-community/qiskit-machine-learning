@@ -22,14 +22,11 @@ from scipy.optimize import rosen, rosen_der
 
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import MissingOptionalLibraryError
-from qiskit.utils import optionals
 from qiskit.primitives import Sampler
 
 from qiskit_machine_learning.optimizers import (
     ADAM,
     AQGD,
-    BOBYQA,
-    IMFIL,
     CG,
     CRS,
     COBYLA,
@@ -312,24 +309,6 @@ class TestOptimizerSerialization(QiskitAlgorithmsTestCase):
         self.assertListEqual(settings["maxiter"], [200, 100])
         self.assertListEqual(settings["eta"], [0.2, 0.1])
         self.assertListEqual(settings["momentum"], [0.25, 0.1])
-
-    @unittest.skipIf(not optionals.HAS_SKQUANT, "Install scikit-quant to run this test.")
-    def test_bobyqa(self):
-        """Test BOBYQA is serializable."""
-
-        opt = BOBYQA(maxiter=200)
-        settings = opt.settings
-
-        self.assertEqual(settings["maxiter"], 200)
-
-    @unittest.skipIf(not optionals.HAS_SKQUANT, "Install scikit-quant to run this test.")
-    def test_imfil(self):
-        """Test IMFIL is serializable."""
-
-        opt = IMFIL(maxiter=200)
-        settings = opt.settings
-
-        self.assertEqual(settings["maxiter"], 200)
 
     def test_gradient_descent(self):
         """Test GradientDescent is serializable."""
