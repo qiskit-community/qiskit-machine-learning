@@ -18,6 +18,7 @@ import numpy as np
 from ddt import ddt
 from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit_machine_learning.optimizers import BOBYQA
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 @ddt
@@ -26,6 +27,7 @@ class TestOptimizerBOBYQA(QiskitAlgorithmsTestCase):
 
     def setUp(self):
         super().setUp()
+        algorithm_globals.random_seed = 50
         self.quadratic_objective = lambda x: x[0] ** 2 + x[1] ** 2
         self.initial_point = np.array([1.0, 1.0])
         self.bounds = [(-2.0, 2.0), (-2.0, 2.0)]

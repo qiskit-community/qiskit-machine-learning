@@ -14,14 +14,19 @@
 
 import unittest
 import numpy as np
+from test import QiskitAlgorithmsTestCase
+
 from qiskit_machine_learning.optimizers.gsls import GSLS
 from qiskit_machine_learning.optimizers.optimizer import OptimizerResult
+from qiskit_machine_learning.utils import algorithm_globals
 
 
-class TestGSLS(unittest.TestCase):
+class TestGSLS(QiskitAlgorithmsTestCase):
     """TestGSLS"""
 
     def setUp(self):
+        super().setUp()
+        algorithm_globals.random_seed = 50
         self.optimizer = GSLS(maxiter=200, sampling_radius=0.1, initial_step_size=0.01)
 
     def test_minimize_rosenbrock(self):

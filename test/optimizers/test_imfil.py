@@ -14,15 +14,19 @@
 
 import unittest
 import numpy as np
+from test import QiskitAlgorithmsTestCase
+
 from qiskit_machine_learning.optimizers.imfil import IMFIL
 from qiskit_machine_learning.optimizers.optimizer import OptimizerResult
-from qiskit_machine_learning.utils import optionals
+from qiskit_machine_learning.utils import optionals, algorithm_globals
 
 
-class TestIMFIL(unittest.TestCase):
+class TestIMFIL(QiskitAlgorithmsTestCase):
     """TestIMFIL"""
 
     def setUp(self):
+        super().setUp()
+        algorithm_globals.random_seed = 50
         if not optionals.HAS_SKQUANT:
             self.skipTest("skquant is required for IMFIL optimizer")
         self.optimizer = IMFIL(maxiter=500)

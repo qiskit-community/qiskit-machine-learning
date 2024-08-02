@@ -19,6 +19,7 @@ import numpy as np
 from ddt import ddt
 
 from qiskit_machine_learning.optimizers import ADAM
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 @ddt
@@ -27,6 +28,7 @@ class TestOptimizerADAM(QiskitAlgorithmsTestCase):
 
     def setUp(self):
         super().setUp()
+        algorithm_globals.random_seed = 50
         self.quadratic_objective = lambda x: x[0] ** 2 + x[1] ** 2
         self.initial_point = np.array([1.0, 1.0])
 

@@ -19,6 +19,7 @@ from qiskit.quantum_info import SparsePauliOp, Statevector
 
 from qiskit_machine_learning.optimizers import GradientDescent, GradientDescentState
 from qiskit_machine_learning.optimizers.steppable_optimizer import TellData, AskData
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 class TestGradientDescent(QiskitAlgorithmsTestCase):
@@ -26,7 +27,7 @@ class TestGradientDescent(QiskitAlgorithmsTestCase):
 
     def setUp(self):
         super().setUp()
-        np.random.seed(12)
+        algorithm_globals.random_seed = 50
         self.initial_point = np.array([1, 1, 1, 1, 0])
 
     def objective(self, x):

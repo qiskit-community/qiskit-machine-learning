@@ -24,6 +24,11 @@ from qiskit_machine_learning.utils import algorithm_globals
 class TestUMDA(QiskitAlgorithmsTestCase):
     """Tests for the UMDA optimizer."""
 
+    def setUp(self):
+        """Set the problem."""
+        super().setUp()
+        algorithm_globals.random_seed = 50
+
     def test_get_set(self):
         """Test if getters and setters work as expected"""
         umda = UMDA(maxiter=1, size_gen=20)
