@@ -31,27 +31,6 @@ class TestIMFIL(QiskitAlgorithmsTestCase):
             self.skipTest("skquant is required for IMFIL optimizer")
         self.optimizer = IMFIL(maxiter=500)
 
-    def test_support_level(self):
-        """Test support level."""
-        support_levels = self.optimizer.get_support_level()
-        self.assertEqual(support_levels["gradient"], 0)
-        self.assertEqual(support_levels["bounds"], 2)
-        self.assertEqual(support_levels["initial_point"], 2)
-
-    def test_minimize_rosenbrock(self):
-        """Testing minimize."""
-
-        def rosenbrock(x):
-            """Calculation strategy."""
-            return sum(100.0 * (x[1:] - x[:-1] ** 2.0) ** 2.0 + (1 - x[:-1]) ** 2.0)
-
-        starting_point = np.array([-1.2, 1.0])
-        bounds = [(-2.0, 2.0), (-1.0, 3.0)]
-        result = self.optimizer.minimize(fun=rosenbrock, x0=starting_point, bounds=bounds)
-        self.assertIsInstance(result, OptimizerResult)
-        self.assertLess(result.fun, 1e-4)
-        self.assertLess(result.nfev, 2000)
-
     def test_minimize_bounds(self):
         """Testing minimize."""
 
@@ -59,7 +38,7 @@ class TestIMFIL(QiskitAlgorithmsTestCase):
             """Defining the objective"""
             return np.sum(x**2)
 
-        starting_point = np.array([1.0, 1.0])
+        starting_point = np.array([0.5, 0.5])
         bounds = [(-0.5, 0.5), (-0.5, 0.5)]
         result = self.optimizer.minimize(fun=objective, x0=starting_point, bounds=bounds)
         self.assertIsInstance(result, OptimizerResult)

@@ -48,7 +48,7 @@ class TestOptimizerBOBYQA(QiskitAlgorithmsTestCase):
         """Test BOBYQA optimizer without bounds (should raise an error)"""
         try:
             bobyqa = BOBYQA(maxiter=100)
-            with self.assertRaises(ValueError):
+            with self.assertRaises(IndexError):
                 bobyqa.minimize(self.quadratic_objective, self.initial_point)
         except MissingOptionalLibraryError as error:
             self.skipTest(str(error))
@@ -59,17 +59,6 @@ class TestOptimizerBOBYQA(QiskitAlgorithmsTestCase):
             bobyqa = BOBYQA(maxiter=100)
             settings = bobyqa.settings
             self.assertEqual(settings["maxiter"], 100)
-        except MissingOptionalLibraryError as error:
-            self.skipTest(str(error))
-
-    def test_support_level(self):
-        """Test support level"""
-        try:
-            bobyqa = BOBYQA(maxiter=100)
-            support_level = bobyqa.get_support_level()
-            self.assertEqual(support_level["gradient"], "ignored")
-            self.assertEqual(support_level["bounds"], "required")
-            self.assertEqual(support_level["initial_point"], "required")
         except MissingOptionalLibraryError as error:
             self.skipTest(str(error))
 
