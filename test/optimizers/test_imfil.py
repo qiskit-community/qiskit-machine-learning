@@ -13,8 +13,8 @@
 """TestIMFIL"""
 
 import unittest
-import numpy as np
 from test import QiskitAlgorithmsTestCase
+import numpy as np
 
 from qiskit_machine_learning.optimizers.imfil import IMFIL
 from qiskit_machine_learning.optimizers.optimizer import OptimizerResult

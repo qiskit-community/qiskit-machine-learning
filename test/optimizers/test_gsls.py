@@ -13,8 +13,8 @@
 """TestGSLS"""
 
 import unittest
-import numpy as np
 from test import QiskitAlgorithmsTestCase
+import numpy as np
 
 from qiskit_machine_learning.optimizers.gsls import GSLS
 from qiskit_machine_learning.optimizers.optimizer import OptimizerResult
