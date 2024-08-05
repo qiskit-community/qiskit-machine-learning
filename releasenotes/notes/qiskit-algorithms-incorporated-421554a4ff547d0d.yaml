@@ -36,40 +36,44 @@ upgrade:
     please open a feature-request issue at https://github.com/qiskit-community/qiskit-machine-learning, explaining why
     this change would be useful for you and other users.
     Four examples of upgrading the code can be found below.
+
     - Gradients
-    ```python
-    # Before:
-    from qiskit_algorithms.gradients import SPSA, ParameterShift
-    # After:
-    from qiskit_machine_learning.gradients import SPSA, ParameterShift
-    # Usage
-    spsa = SPSA()
-    param_shift = ParameterShift()
-    ```
+      .. code:: python
+
+        # Before:
+        from qiskit_algorithms.gradients import SPSA, ParameterShift
+        # After:
+        from qiskit_machine_learning.gradients import SPSA, ParameterShift
+        # Usage
+        spsa = SPSA()
+        param_shift = ParameterShift()
+
     - Optimizers
-    ```python
-    # Before:
-    from qiskit_algorithms.optimizers import COBYLA, ADAM
-    # After:
-    from qiskit_machine_learning.optimizers import COBYLA, ADAM
-    # Usage
-    cobyla = COBYLA()
-    adam = ADAM()
-    ```
+      .. code:: python
+
+        # Before:
+        from qiskit_algorithms.optimizers import COBYLA, ADAM
+        # After:
+        from qiskit_machine_learning.optimizers import COBYLA, ADAM
+        # Usage
+        cobyla = COBYLA()
+        adam = ADAM()
+
     - Quantum state fidelities
-    ```python
-    # Before:
-    from qiskit_algorithms.state_fidelities import ComputeFidelity
-    # After:
-    from qiskit_machine_learning.state_fidelities import ComputeFidelity
-    # Usage
-    fidelity = ComputeFidelity()
-    ```
+      .. code:: python
+
+        # Before:
+        from qiskit_algorithms.state_fidelities import ComputeFidelity
+        # After:
+        from qiskit_machine_learning.state_fidelities import ComputeFidelity
+        # Usage
+        fidelity = ComputeFidelity()
+
     - Algorithm globals (used to fix the random seed)
-    ```python
-    # Before:
-    from qiskit_algorithms.utils import algorithm_globals
-    # After:
-    from qiskit_machine_learning.utils import algorithm_globals
-    algorithm_globals.random_seed = 1234
-    ```
+      .. code:: python
+
+        # Before:
+        from qiskit_algorithms.utils import algorithm_globals
+        # After:
+        from qiskit_machine_learning.utils import algorithm_globals
+        algorithm_globals.random_seed = 1234
