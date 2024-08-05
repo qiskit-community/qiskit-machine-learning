@@ -9,8 +9,11 @@ prelude: >
 features:
   - |
     Migrated essential Qiskit Algorithms features to Qiskit Machine Learning:
-    - `qiskit_algorithms/gradients` -> `qiskit_machine_learning/gradients`. Note: only the SPSA, parameter-shift and linear-combination-of-unitaries gradients are retained. Other gradient strategies, such as reverse and finite-diff are not incorporated.
-    - `qiskit_algorithms/optimizers` -> `qiskit_machine_learning/optimizers`. Note: optimizers from `scikit-quant <https://scikit-quant.readthedocs.io/en/latest/>`_ are not incorporated.
+    - `qiskit_algorithms/gradients` -> `qiskit_machine_learning/gradients`. Note: only the SPSA,
+      parameter-shift and linear-combination-of-unitaries gradients are retained. Other gradient
+      strategies, such as reverse and finite-diff are not incorporated.
+    - `qiskit_algorithms/optimizers` -> `qiskit_machine_learning/optimizers`. Note: optimizers
+      from `scikit-quant <https://scikit-quant.readthedocs.io/en/latest/>`_ are not incorporated.
     - `qiskit_algorithms/state_fidelities` -> `qiskit_machine_learning/state_fidelities`
     - Partial merge of `qiskit_algorithms/utils` with `qiskit_machine_learning/utils`
 
