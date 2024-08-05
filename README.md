@@ -34,24 +34,36 @@ The Qiskit Machine Learning framework aims to be:
 
 ### Kernel-based methods
 
-The [FidelityQuantumKernel](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel) class uses the [Fidelity](https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.state_fidelities.BaseStateFidelity.html) algorithm from Qiskit Algorithms. It computes kernel matrices for datasets and can be used with a [Quantum Support Vector Classifier (QSVC)](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC) or [Quantum Support Vector Regressor (QSVR)](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR) to solve classification or regression problems. It is also compatible with classical kernel-based machine learning algorithms.
+The [`FidelityQuantumKernel`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel) 
+class uses the [`Fidelity`](https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.state_fidelities.BaseStateFidelity.html) 
+algorithm. It computes kernel matrices for datasets and can be combined with a Quantum Support Vector Classifier ([`QSVC`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC)) 
+or a Quantum Support Vector Regressor ([`QSVR`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR)) 
+to solve classification or regression problems respectively. It is also compatible with classical kernel-based machine learning algorithms.
 
 
 ### Quantum Neural Networks (QNNs)
 
 Qiskit Machine Learning defines a generic interface for neural networks, implemented by two core (derived) primitives:
 
-- **[EstimatorQNN](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html):** Leverages the [Estimator](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator) primitive, combining parametrized quantum circuits with quantum mechanical observables. The output is the expected value of the observable.
+- **[`EstimatorQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html):** Leverages the [`Estimator`](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator) primitive, combining parametrized quantum circuits with quantum mechanical observables. The output is the expected value of the observable.
   
-- **[SamplerQNN](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html):** Leverages the [Sampler](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler) primitive, translating quasi-probabilities of bitstrings into desired outputs.
+- **[`SamplerQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html):** Leverages the [`Sampler`](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler) primitive, translating bit-string counts into the desired outputs.
 
-To train and use neural networks, Qiskit Machine Learning provides learning algorithms such as the [NeuralNetworkClassifier](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier) and [NeuralNetworkRegressor](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor). Convenience implementations, the [Variational Quantum Classifier (VQC)](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC) and [Variational Quantum Regressor (VQR)](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR), take a feature map and an ansatz to construct the underlying QNN automatically.
+To train and use neural networks, Qiskit Machine Learning provides learning algorithms such as the [`NeuralNetworkClassifier`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier) 
+and [`NeuralNetworkRegressor`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor). 
+Finally, built on these, the Variational Quantum Classifier ([`VQC`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC))
+and the Variational Quantum Regressor ([`VQR`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR))
+take a _feature map_ and an _ansatz_ to construct the underlying QNN automatically using high-level syntax.
 
 ### Integration with PyTorch
 
-The [TorchConnector](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector) integrates QNNs with [PyTorch](https://pytorch.org). Thanks to the gradient algorithms in Qiskit Machine Learning, this includes automatic differentiation. The overall gradients computed by PyTorch during the backpropagation take into account quantum neural networks, too. The flexible design also allows the building of connectors to other packages in the future.
+The [`TorchConnector`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector) 
+integrates QNNs with [PyTorch](https://pytorch.org). 
+Thanks to the gradient algorithms in Qiskit Machine Learning, this includes automatic differentiation. 
+The overall gradients computed by PyTorch during the backpropagation take into account quantum neural 
+networks, too. The flexible design also allows the building of connectors to other packages in the future.
 
-## Installation
+## Installation and documentation
 
 We encourage installing Qiskit Machine Learning via the `pip` tool, a `Python` package manager.
 
@@ -65,17 +77,20 @@ stable version.
 If you want to work instead on the very latest _work-in-progress_ versions of Qiskit Machine Learning, 
 either to try features ahead of
 their official release or if you want to contribute to the library, then you can install from source.
-For more details on how to do so, follow the instructions in the
+For more details on how to do so and much more, follow the instructions in the
  [documentation](https://qiskit-community.github.io/qiskit-machine-learning/getting_started.html#installation).
 
 ### Optional Installs
 
-* **PyTorch**, may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
+* **PyTorch** may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
   package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). When PyTorch
   is installed, the `TorchConnector` facilitates its use of quantum computed networks.
 
-* **Sparse**, may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
-  package. Sparse being installed will enable the usage of sparse arrays/tensors.
+* **Sparse** may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
+  package. Sparse being installed will enable the usage of sparse arrays and tensors.
+
+* **NLOpt** is required by the global optimizers. [`NLOpt`](https://nlopt.readthedocs.io/en/latest/) 
+  can be installed with `pip install 'qiskit-machine-learning[nlopt]'`.
 
 ## Migration to Qiskit 1.x
 > [!NOTE]
@@ -84,7 +99,7 @@ For more details on how to do so, follow the instructions in the
 > installed in your environment (however it was installed), and wish to upgrade to `1.0`, you 
 > should take note of the 
 > official [Qiskit 1.0 Migration Guide](https://docs.quantum.ibm.com/api/migration-guides/qiskit-1.0) 
-> for detailed instructions and examples on how to upgrade. From version `0.8.0`, Qiskit 1.0 or above
+> for detailed instructions and examples on how to upgrade. From version `0.8.0`, Qiskit `1.0` or above
 > will be required.
 
 ----------------------------------------------------------------------------------------------------
