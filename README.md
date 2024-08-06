@@ -24,7 +24,7 @@ The Qiskit Machine Learning framework aims to be:
 
 * **User-friendly**, allowing users to quickly and easily prototype quantum machine learning models without 
     the need of extensive quantum computing knowledge.
-* **Flexiblile**, providing tools and functionalities to conduct proof-of-concepts and innovative research 
+* **Flexible**, providing tools and functionalities to conduct proof-of-concepts and innovative research 
     in quantum machine learning for both beginners and experts.
 * **Extensible**, facilitating the integration of new cutting-edge features leveraging Qiskit's 
     architectures, patterns and related services.
