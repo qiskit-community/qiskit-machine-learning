@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,9 +18,9 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseSampler
-from qiskit_algorithms.optimizers import Optimizer, OptimizerResult, Minimizer
 
 from ...neural_networks import SamplerQNN
+from ...optimizers import Optimizer, OptimizerResult, Minimizer
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
 
@@ -74,9 +74,9 @@ class VQC(NeuralNetworkClassifier):
                 circuit is used.
             loss: A target loss function to be used in training. Default value is ``cross_entropy``.
             optimizer: An instance of an optimizer or a callable to be used in training.
-                Refer to :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on
+                Refer to :class:`~qiskit_machine_learning.optimizers.Minimizer` for more information on
                 the callable protocol. When `None` defaults to
-                :class:`~qiskit_algorithms.optimizers.SLSQP`.
+                :class:`~qiskit_machine_learning.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: a reference to a user's callback function that has two parameters and

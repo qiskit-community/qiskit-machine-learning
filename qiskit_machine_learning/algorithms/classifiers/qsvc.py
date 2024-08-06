@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,12 +15,13 @@
 import warnings
 from typing import Optional
 
-from qiskit_algorithms.utils import algorithm_globals
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.algorithms.serializable_model import SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import BaseKernel, FidelityQuantumKernel
+
+from ...utils import algorithm_globals
 
 
 class QSVC(SVC, SerializableModelMixin):

@@ -1,0 +1,105 @@
+---
+prelude: >
+    This release includes the migration of a subset of Qiskit Algorithms features to Qiskit Machine
+    Learning. This ensures continued enhancement of essential features for Qiskit Machine
+    Learning following the end of official support for Qiskit Algorithms. Therefore, Qiskit
+    Machine Learning will no longer depend on Qiskit Algorithms, possibly introducing breaking
+    changes in import structures. Some quick-fixes are described below.
+
+features:
+  - |
+    Migrated essential Qiskit Algorithms features to Qiskit Machine Learning:
+
+    - `qiskit_algorithms/gradients` -> `qiskit_machine_learning/gradients`.
+      Note:
+      only the SPSA, parameter-shift and linear-combination-of-unitaries gradients are retained.
+      Other gradient strategies, such as reverse and finite-diff are not incorporated.
+
+    - `qiskit_algorithms/optimizers` -> `qiskit_machine_learning/optimizers`.
+      Note:
+      optimizers from `scikit-quant <https://scikit-quant.readthedocs.io/en/latest/>`_ are not
+      incorporated.
+
+    - `qiskit_algorithms/state_fidelities` -> `qiskit_machine_learning/state_fidelities`
+
+    - Partial merge of `qiskit_algorithms/utils` with `qiskit_machine_learning/utils`
+
+    - From the next release, Qiskit Machine Learning will require Qiskit 1.0 or higher.
+      You may be required to upgrade Qiskit Aer accordingly, depending on your set-up.
+
+upgrade:
+  - |
+    The merge of some of the features of Qiskit Algorithms into Qiskit Machine Learning might lead
+    to breaking changes. For this reason, caution is advised when updating to version 0.8 during
+    critical production stages in a project.
+
+  - |
+    Users must update their imports and code references in code that uses Qiskit Machine Leaning
+    and Algorithms:
+
+    - Change `qiskit_algorithms.gradients` to `qiskit_machine_learning.gradients`
+
+    - Change `qiskit_algorithms.optimizers` to `qiskit_machine_learning.optimizers`
+
+    - Change `qiskit_algorithms.state_fidelities` to `qiskit_machine_learning.state_fidelities`
+
+    - Update utilities as needed due to partial merge.
+
+  - |
+    To continue using sub-modules and functionalities of Qiskit Algorithms that **have not been
+    transferred**, you may continue using them as before by importing from Qiskit Algorithms.
+    However, be aware that Qiskit Algorithms is no longer officially supported and some of its
+    functionalities may not work in your use case. For any problems directly related to Qiskit
+    Algorithms, please open a GitHub issue at https://github
+    .com/qiskit-community/qiskit-algorithms. Should you want to include a Qiskit Algorithms
+    functionality that has not been incorporated in Qiskit Machine Learning, please open a
+    feature-request issue at https://github.com/qiskit-community/qiskit-machine-learning,
+    explaining why this change would be useful for you and other users.
+
+  - |
+    Four examples of upgrading the code can be found below.
+
+    Gradients:
+
+    .. code:: python
+
+      # Before:
+      from qiskit_algorithms.gradients import SPSA, ParameterShift
+      # After:
+      from qiskit_machine_learning.gradients import SPSA, ParameterShift
+      # Usage
+      spsa = SPSA()
+      param_shift = ParameterShift()
+
+    Optimizers
+
+    .. code:: python
+
+      # Before:
+      from qiskit_algorithms.optimizers import COBYLA, ADAM
+      # After:
+      from qiskit_machine_learning.optimizers import COBYLA, ADAM
+      # Usage
+      cobyla = COBYLA()
+      adam = ADAM()
+
+    Quantum state fidelities
+
+    .. code:: python
+
+      # Before:
+      from qiskit_algorithms.state_fidelities import ComputeFidelity
+      # After:
+      from qiskit_machine_learning.state_fidelities import ComputeFidelity
+      # Usage
+      fidelity = ComputeFidelity()
+
+    Algorithm globals (used to fix the random seed)
+
+    .. code:: python
+
+      # Before:
+      from qiskit_algorithms.utils import algorithm_globals
+      # After:
+      from qiskit_machine_learning.utils import algorithm_globals
+      algorithm_globals.random_seed = 1234

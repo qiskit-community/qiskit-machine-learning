@@ -18,12 +18,11 @@ from typing import Sequence
 
 import numpy as np
 
-from qiskit_algorithms.optimizers import Optimizer, SPSA, Minimizer
-from qiskit_algorithms.utils import algorithm_globals
-from qiskit_algorithms.variational_algorithm import VariationalResult
-from qiskit_machine_learning.utils.loss_functions import KernelLoss, SVCLoss
-
-from qiskit_machine_learning.kernels import TrainableKernel
+from ...optimizers import Optimizer, SPSA, Minimizer
+from ...utils import algorithm_globals
+from ...variational_algorithm import VariationalResult
+from ...utils.loss_functions import KernelLoss, SVCLoss
+from ...kernels import TrainableKernel
 
 
 class QuantumKernelTrainerResult(VariationalResult):
@@ -102,12 +101,12 @@ class QuantumKernelTrainer:
                 passed as the loss function, then the underlying
                 :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss` object will exhibit
                 default behavior.
-            optimizer: An instance of :class:`~qiskit_algorithms.optimizers.Optimizer` or a
+            optimizer: An instance of :class:`~qiskit_machine_learning.optimizers.Optimizer` or a
                 callable to be used in training. Refer to
-                :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on the
+                :class:`~qiskit_machine_learning.optimizers.Minimizer` for more information on the
                 callable protocol. Since no analytical gradient is defined for kernel loss
                 functions, gradient-based optimizers are not recommended for training kernels. When
-                `None` defaults to :class:`~qiskit_algorithms.optimizers.SPSA`.
+                `None` defaults to :class:`~qiskit_machine_learning.optimizers.SPSA`.
             initial_point: Initial point from which the optimizer will begin.
 
         Raises:
@@ -200,27 +199,29 @@ class QuantumKernelTrainer:
 
         # Randomly initialize the initial point if one was not passed
         if self._initial_point is None:
-            self._initial_point = algorithm_globals.random.random(num_params)
+            self._initial_point = algorithm_globals.random.random(num_params)  # type: ignore[assignment]
 
         # Perform kernel optimization
         loss_function = partial(
             self._loss.evaluate, quantum_kernel=self.quantum_kernel, data=data, labels=labels
         )
         if callable(self._optimizer):
-            opt_results = self._optimizer(fun=loss_function, x0=self._initial_point)
+            opt_results = self._optimizer(
+                fun=loss_function, x0=self._initial_point  # type: ignore[call-arg, arg-type]
+            )
         else:
             opt_results = self._optimizer.minimize(
                 fun=loss_function,
-                x0=self._initial_point,
+                x0=self._initial_point,  # type: ignore[arg-type]
             )
 
         # Return kernel training results
         result = QuantumKernelTrainerResult()
         result.optimizer_evals = opt_results.nfev
         result.optimal_value = opt_results.fun
-        result.optimal_point = opt_results.x
+        result.optimal_point = opt_results.x  # type: ignore[assignment]
         result.optimal_parameters = dict(
-            zip(self.quantum_kernel.training_parameters, opt_results.x)
+            zip(self.quantum_kernel.training_parameters, opt_results.x)  # type: ignore[arg-type]
         )
 
         # Return the QuantumKernel in optimized state

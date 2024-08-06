@@ -29,7 +29,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import ZFeatureMap
 from qiskit.utils import optionals
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.kernels import FidelityStatevectorKernel
 

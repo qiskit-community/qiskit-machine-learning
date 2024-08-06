@@ -19,19 +19,20 @@ from numbers import Integral
 from typing import Callable, cast, Iterable, Sequence
 
 import numpy as np
+
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseSampler, SamplerResult, Sampler
-from qiskit_algorithms.gradients import (
+
+import qiskit_machine_learning.optionals as _optionals
+from .neural_network import NeuralNetwork
+from ..gradients import (
     BaseSamplerGradient,
     ParamShiftSamplerGradient,
     SamplerGradientResult,
 )
+from ..circuit.library import QNNCircuit
+from ..exceptions import QiskitMachineLearningError
 
-from qiskit_machine_learning.circuit.library import QNNCircuit
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
-import qiskit_machine_learning.optionals as _optionals
-
-from .neural_network import NeuralNetwork
 
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error
@@ -164,7 +165,7 @@ class SamplerQNN(NeuralNetwork):
                 ``2^circuit.num_qubits``.
             gradient: An optional sampler gradient to be used for the backward pass.
                 If ``None`` is given, a default instance of
-                :class:`~qiskit_algorithms.gradients.ParamShiftSamplerGradient` will be used.
+                :class:`~qiskit_machine_learning.gradients.ParamShiftSamplerGradient` will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                  Note that this parameter is ``False`` by default, and must be explicitly set to
                  ``True`` for a proper gradient computation when using
@@ -328,7 +329,6 @@ class SamplerQNN(NeuralNetwork):
             )
             weights_grad = DOK((num_samples, *self._output_shape, self._num_weights))
         else:
-
             input_grad = (
                 np.zeros((num_samples, *self._output_shape, self._num_inputs))
                 if self._input_gradients
@@ -413,10 +413,12 @@ class SamplerQNN(NeuralNetwork):
 
             job = None
             if self._input_gradients:
-                job = self.gradient.run(circuits, parameter_values)
+                job = self.gradient.run(circuits, parameter_values)  # type: ignore[arg-type]
             elif len(parameter_values[0]) > self._num_inputs:
                 params = [self._circuit.parameters[self._num_inputs :]] * num_samples
-                job = self.gradient.run(circuits, parameter_values, parameters=params)
+                job = self.gradient.run(
+                    circuits, parameter_values, parameters=params  # type: ignore[arg-type]
+                )
 
             if job is not None:
                 try:

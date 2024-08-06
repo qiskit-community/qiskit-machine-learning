@@ -20,7 +20,7 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector
-from qiskit_algorithms.utils import algorithm_globals
+from ..utils import algorithm_globals
 
 
 from .base_kernel import BaseKernel

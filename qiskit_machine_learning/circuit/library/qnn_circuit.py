@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023.
+# (C) Copyright IBM 2023, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,11 +13,14 @@
 """The QNN circuit."""
 from __future__ import annotations
 from typing import List
+
 from qiskit.circuit import QuantumRegister, QuantumCircuit
 from qiskit.circuit.parametertable import ParameterView
 from qiskit.circuit.library import BlueprintCircuit
-from qiskit_machine_learning.utils import derive_num_qubits_feature_map_ansatz
+
 from qiskit_machine_learning import QiskitMachineLearningError
+
+from ...utils import derive_num_qubits_feature_map_ansatz
 
 
 class QNNCircuit(BlueprintCircuit):

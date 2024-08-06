@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -20,7 +20,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 
 from qiskit.circuit.library import ZZFeatureMap
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC, SerializableModelMixin
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.exceptions import (

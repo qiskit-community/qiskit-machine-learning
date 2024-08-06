@@ -16,10 +16,12 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from qiskit_algorithms.utils import algorithm_globals
+
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
 from qiskit.primitives import Sampler
+
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QBayesian
 
 

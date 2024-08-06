@@ -14,22 +14,21 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from typing import Callable
-
 import numpy as np
-from qiskit_algorithms.optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
-from qiskit_algorithms.utils import algorithm_globals
 
 from qiskit_machine_learning import QiskitMachineLearningError
-from qiskit_machine_learning.neural_networks import NeuralNetwork
-from qiskit_machine_learning.utils.loss_functions import (
+
+from .objective_functions import ObjectiveFunction
+from .serializable_model import SerializableModelMixin
+from ..optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
+from ..utils import algorithm_globals
+from ..neural_networks import NeuralNetwork
+from ..utils.loss_functions import (
     Loss,
     L1Loss,
     L2Loss,
     CrossEntropyLoss,
 )
-
-from .objective_functions import ObjectiveFunction
-from .serializable_model import SerializableModelMixin
 
 
 class TrainableModel(SerializableModelMixin):
@@ -61,9 +60,9 @@ class TrainableModel(SerializableModelMixin):
                 'squared_error', 'cross_entropy', or as a loss function
                 implementing the Loss interface.
             optimizer: An instance of an optimizer or a callable to be used in training.
-                Refer to :class:`~qiskit_algorithms.optimizers.Minimizer` for more information on
+                Refer to :class:`~qiskit_machine_learning.optimizers.Minimizer` for more information on
                 the callable protocol. When `None` defaults to
-                :class:`~qiskit_algorithms.optimizers.SLSQP`.
+                :class:`~qiskit_machine_learning.optimizers.SLSQP`.
             warm_start: Use weights from previous fit to start next fit.
             initial_point: Initial point for the optimizer to start from.
             callback: A reference to a user's callback function that has two parameters and
@@ -155,7 +154,7 @@ class TrainableModel(SerializableModelMixin):
     def fit_result(self) -> OptimizerResult:
         """Returns a resulting object from the optimization procedure. Please refer to the
         documentation of the `OptimizerResult
-        <https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.optimizers.OptimizerResult.html>`_
+        <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.optimizers.OptimizerResult.html>`_
         class for more details.
 
         Raises:
@@ -245,7 +244,7 @@ class TrainableModel(SerializableModelMixin):
             An array as an initial point
         """
         if self._warm_start and self._fit_result is not None:
-            self._initial_point = self._fit_result.x
+            self._initial_point = self._fit_result.x  # type: ignore[assignment]
         elif self._initial_point is None:
             self._initial_point = algorithm_globals.random.random(self._neural_network.num_weights)
         return self._initial_point
@@ -288,13 +287,13 @@ class TrainableModel(SerializableModelMixin):
 
         initial_point = self._choose_initial_point()
         if callable(self._optimizer):
-            optimizer_result = self._optimizer(
+            optimizer_result = self._optimizer(  # type: ignore[call-arg]
                 fun=objective, x0=initial_point, jac=function.gradient
             )
         else:
             optimizer_result = self._optimizer.minimize(
                 fun=objective,
                 x0=initial_point,
-                jac=function.gradient,
+                jac=function.gradient,  # type: ignore[arg-type]
             )
         return optimizer_result
