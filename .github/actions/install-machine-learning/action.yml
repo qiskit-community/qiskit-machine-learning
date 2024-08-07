@@ -17,6 +17,6 @@ runs:
   using: "composite"
   steps:
     - run : |
-        pip install -e .[torch,sparse]
+        pip install -e .[torch,sparse,nlopt]
         pip install -U -c constraints.txt -r requirements-dev.txt
       shell: bash

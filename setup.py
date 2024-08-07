@@ -72,6 +72,7 @@ setuptools.setup(
     extras_require={
         'torch': ["torch"],
         'sparse': ["sparse"],
+        'nlopt': ["nlopt"]
     },
     project_urls={
         "Bug Tracker": "https://github.com/qiskit-community/qiskit-machine-learning/issues",
