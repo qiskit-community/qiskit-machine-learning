@@ -14,7 +14,7 @@ that first. Then the information here can be followed which focuses on the addit
 specific to Qiskit Machine Learning.
 
 Qiskit Machine Learning has some functions that have been made optional where the dependent code and/or
-support program(s) are not (or cannot be) installed by default. Those are PyTorch and Sparse.
+support program(s) are not (or cannot be) installed by default. Those are PyTorch, Sparse and NLopt.
 See :ref:`optional_installs` for more information.
 
 .. tab-set::
@@ -96,6 +96,27 @@ Optional installs
 
 * **Sparse**, may be installed using command ``pip install 'qiskit-machine-learning[sparse]'`` to install the
   package. Sparse being installed will enable the usage of sparse arrays/tensors.
+
+* **NLopt** is required for the global optimizers. `NLOpt <https://nlopt.readthedocs.io/en/latest/>`__
+  can be installed manually with ``pip install nlopt`` on Windows and Linux platforms, or with
+  ``brew install nlopt`` on MacOS using the Homebrew package manager. For more information, refer
+  to the `installation guide <https://nlopt.readthedocs.io/en/latest/NLopt_Installation/>`__.
+
+.. _migration-to-qiskit-1x:
+
+Migration to Qiskit 1.x
+========================
+
+.. note::
+
+   Qiskit Machine Learning depends on Qiskit, which will be automatically installed as a
+   dependency when you install Qiskit Machine Learning. From version ``0.8.0`` of Qiskit Machine
+   Learning, Qiskit ``1.0`` or above will be required. If you have a pre-``1.0`` version of Qiskit
+   installed in your environment (however it was installed), you should upgrade to ``1.x`` to
+   continue using the latest features. You may refer to the
+   official `Qiskit 1.0 Migration Guide <https://docs.quantum.ibm.com/api/migration-guides/qiskit-1.0>`_
+   for detailed instructions and examples on how to upgrade Qiskit.
+
 
 ----
 
