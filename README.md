@@ -89,8 +89,10 @@ For more details on how to do so and much more, follow the instructions in the
 * **Sparse** may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
   package. Sparse being installed will enable the usage of sparse arrays and tensors.
 
-* **NLOpt** is required by the global optimizers. [`NLOpt`](https://nlopt.readthedocs.io/en/latest/) 
-  can be installed with `pip install 'qiskit-machine-learning[nlopt]'`.
+* **NLopt** is required for the global optimizers. [`NLopt`](https://nlopt.readthedocs.io/en/latest/) 
+  can be installed manually with `pip install nlopt` on Windows and Linux platforms, or with `brew 
+  install nlopt` on MacOS using the Homebrew package manager. For more information, 
+  refer to the [installation guide](https://nlopt.readthedocs.io/en/latest/NLopt_Installation/).
 
 ## Migration to Qiskit 1.x
 > [!NOTE]
@@ -106,10 +108,9 @@ For more details on how to do so and much more, follow the instructions in the
 
 ### Creating Your First Machine Learning Programming Experiment in Qiskit
 
-Now that Qiskit Machine Learning is installed, it's time to begin working with the Machine Learning module.
-Let's try an experiment using VQC (Variational Quantum Classifier) algorithm to
-train and test samples from a data set to see how accurately the test set can
-be classified.
+Now that Qiskit Machine Learning is installed, it's time to begin working with the Machine 
+Learning module. Let's try an experiment using VQC (Variational Quantum Classifier) algorithm to
+train and test samples from a data set to see how accurately the test set can be classified.
 
 ```python
 from qiskit.circuit.library import TwoLocal, ZZFeatureMap
@@ -178,9 +179,11 @@ For questions that are more suited for a forum, we use the **Qiskit** tag in [St
 
 ## Humans behind Qiskit Machine Learning
 
-Qiskit Machine Learning was inspired, authored and brought about by the collective work of a team of researchers 
-and software engineers. This library continues to grow with the help and work of
-[many people](https://github.com/qiskit-community/qiskit-machine-learning/graphs/contributors), who contribute to the project at different levels.
+Qiskit Machine Learning was inspired, authored and brought about by the collective work of a 
+team of researchers  and software engineers. This library continues to grow with the help and 
+work of 
+[many people](https://github.com/qiskit-community/qiskit-machine-learning/graphs/contributors), 
+who contribute to the project at different levels.
 
 ## How can I cite Qiskit Machine Learning?
 If you use Qiskit, please cite as per the provided
