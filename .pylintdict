@@ -101,10 +101,12 @@ guang
 guzik
 hamiltonian
 hao
+hartree
 hashable
 havlíček
 hilbert
 hoc
+homebrew
 html
 hubbard
 hyperparameter
@@ -132,6 +134,7 @@ kwargs
 labelled
 lagrange
 langle
+linux
 lukin
 macos
 makefile
@@ -156,6 +159,7 @@ nat
 nbsphinx
 ndarray
 nielsen
+nlopt
 nn
 noancilla
 nonlocal
@@ -250,8 +254,8 @@ sparsearray
 statevector
 statevectors
 stdlib
-stdlib
 stdout
+stfc
 str
 subclasses
 subcircuits
@@ -304,8 +308,3 @@ yoder
 zoufal
 zsh
 θ
-nlopt
-linux
-homebrew
-hartree
-stfc
