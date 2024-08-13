@@ -11,6 +11,7 @@ ansatzes
 args
 asmatrix
 aspuru
+assertRaises
 async
 autoencoder
 autoencoders
@@ -86,6 +87,7 @@ eval
 expressibility
 farrokh
 fidelities
+fidelity
 fidelityquantumkernel
 formatter
 frac
@@ -233,8 +235,10 @@ reproducibility
 rescale
 rhs
 romero
+Rosenbrock
 runtime
 runtimes
+RuntimeError
 rx
 ry
 rz
