@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -28,5 +28,13 @@ Utilities
 
 """
 from .adjust_num_qubits import derive_num_qubits_feature_map_ansatz
+from .algorithm_globals import algorithm_globals
+from .validate_initial_point import validate_initial_point
+from .validate_bounds import validate_bounds
 
-__all__ = ["derive_num_qubits_feature_map_ansatz"]
+__all__ = [
+    "derive_num_qubits_feature_map_ansatz",
+    "algorithm_globals",
+    "validate_initial_point",
+    "validate_bounds",
+]

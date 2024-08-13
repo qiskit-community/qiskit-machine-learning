@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ from typing import Sequence
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit_algorithms.state_fidelities import BaseStateFidelity
+from ..state_fidelities import BaseStateFidelity
 
 from .fidelity_quantum_kernel import FidelityQuantumKernel, KernelIndices
 from .trainable_kernel import TrainableKernel
@@ -28,8 +28,8 @@ from .trainable_kernel import TrainableKernel
 class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
     r"""
     An implementation of the quantum kernel that is based on the
-    :class:`~qiskit_algorithms.state_fidelities.BaseStateFidelity` algorithm and provides ability to
-    train it.
+    :class:`~qiskit_machine_learning.state_fidelities.BaseStateFidelity` algorithm
+    and provides ability to train it.
 
     Finding good quantum kernels for a specific machine learning task is a big challenge in quantum
     machine learning. One way to choose the kernel is to add trainable parameters to the feature
@@ -60,9 +60,9 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
             fidelity: An instance of the
-                :class:`~qiskit_algorithms.state_fidelities.BaseStateFidelity` primitive to be used
+                :class:`~qiskit_machine_learning.state_fidelities.BaseStateFidelity` primitive to be used
                 to compute fidelity between states. Default is
-                :class:`~qiskit_algorithms.state_fidelities.ComputeUncompute` which is created on
+                :class:`~qiskit_machine_learning.state_fidelities.ComputeUncompute` which is created on
                 top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
             training_parameters: Iterable containing :class:`~qiskit.circuit.Parameter` objects
                 which correspond to quantum gates on the feature map circuit which may be tuned.
