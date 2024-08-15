@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,12 +18,12 @@ from datetime import datetime
 from typing import Dict
 
 import numpy as np
-from qiskit_algorithms.utils import algorithm_globals
 from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
 from ...kernels import BaseKernel, FidelityQuantumKernel
+from ...utils import algorithm_globals
 
 
 logger = logging.getLogger(__name__)
