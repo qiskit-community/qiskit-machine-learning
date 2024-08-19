@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8]
+        python-version: [3.9]
     steps:
       - name: Print Concurrency Group
         env:
@@ -112,14 +112,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8, 3.9, '3.10', 3.11, 3.12]
+        python-version: [3.9, '3.10', 3.11, 3.12]
         include:
           - os: macos-latest
-            python-version: 3.8
+            python-version: 3.9
           - os: macos-latest
             python-version: 3.12
           - os: windows-latest
-            python-version: 3.8
+            python-version: 3.9
           - os: windows-latest
             python-version: 3.12
           # macos-14 is an Arm64 image
@@ -165,7 +165,7 @@ jobs:
         run: |
           coverage3 combine
           mv .coverage ./ci-artifact-data/ml.dat
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == 3.8 }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == 3.9 }}
         shell: bash
       - uses: actions/upload-artifact@v4
         with:
@@ -188,7 +188,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8, 3.12]
+        python-version: [3.9, 3.12]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -251,29 +251,25 @@ jobs:
 #          cd docs/_build/html
 #          mkdir artifacts
 #          tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
-#        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+#        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
 #        shell: bash
 #      - name: Run upload stable tutorials
 #        uses: actions/upload-artifact@v4
 #        with:
 #          name: tutorials-stable${{ matrix.python-version }}
 #          path: docs/_build/html/artifacts/tutorials.tar.gz
-#        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+#        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
   Deprecation_Messages_and_Coverage:
     needs: [Checks, MachineLearning, Tutorials]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.9]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: ubuntu-latest-3.8
-          path: /tmp/u38
       - uses: actions/download-artifact@v4
         with:
           name: ubuntu-latest-3.9
@@ -292,7 +288,7 @@ jobs:
           path: /tmp/u312
       - uses: actions/download-artifact@v4
         with:
-          name: macos-latest-3.8
+          name: macos-latest-3.9
           path: /tmp/m38
       - uses: actions/download-artifact@v4
         with:
@@ -300,7 +296,7 @@ jobs:
           path: /tmp/m312
       - uses: actions/download-artifact@v4
         with:
-          name: windows-latest-3.8
+          name: windows-latest-3.9
           path: /tmp/w38
       - uses: actions/download-artifact@v4
         with:
