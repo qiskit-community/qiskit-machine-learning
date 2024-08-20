@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2023.
+# (C) Copyright IBM 2020, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -22,8 +22,8 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit_algorithms.optimizers import COBYLA
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.optimizers import COBYLA
+from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector

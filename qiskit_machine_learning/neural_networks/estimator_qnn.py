@@ -23,14 +23,14 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseEstimator, Estimator, EstimatorResult
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
-from qiskit_algorithms.gradients import (
+from ..gradients import (
     BaseEstimatorGradient,
     EstimatorGradientResult,
     ParamShiftEstimatorGradient,
 )
 
-from qiskit_machine_learning.circuit.library import QNNCircuit
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from ..circuit.library import QNNCircuit
+from ..exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
 
@@ -136,7 +136,7 @@ class EstimatorQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
             gradient: The estimator gradient to be used for the backward pass.
                 If None, a default instance of the estimator gradient,
-                :class:`~qiskit_algorithms.gradients.ParamShiftEstimatorGradient`, will be used.
+                :class:`~qiskit_machine_learning.gradients.ParamShiftEstimatorGradient`, will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using
@@ -270,10 +270,12 @@ class EstimatorQNN(NeuralNetwork):
 
             job = None
             if self._input_gradients:
-                job = self.gradient.run(circuits, observables, param_values)
+                job = self.gradient.run(circuits, observables, param_values)  # type: ignore[arg-type]
             elif len(parameter_values[0]) > self._num_inputs:
                 params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
-                job = self.gradient.run(circuits, observables, param_values, parameters=params)
+                job = self.gradient.run(
+                    circuits, observables, param_values, parameters=params  # type: ignore[arg-type]
+                )
 
             if job is not None:
                 try:
