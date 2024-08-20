@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    Removed support for using Qiskit Machine Learning with Python 3.8, reflecting
+    the upcoming EOL of Python 3.8 in October 2024.
