@@ -315,9 +315,7 @@ jobs:
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/u39/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep
-          /tmp/u312/ml.dep /tmp/m39/ml.dep /tmp/m312/ml.dep /tmp/w39/ml.dep /tmp/w312/ml.dep
-          /tmp/a310/ml.dep /tmp/a312/ml.dep || true
+          sort -f -u /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m39/ml.dep /tmp/m312/ml.dep /tmp/w39/ml.dep /tmp/w312/ml.dep /tmp/a310/ml.dep /tmp/a312/ml.dep || true
         shell: bash
       - name: Coverage combine
         run: coverage3 combine /tmp/u39/ml.dat
