@@ -23,6 +23,7 @@ armijo
 arxiv
 asmatrix
 aspuru
+assertraises
 async
 autoencoder
 autoencoders
@@ -158,6 +159,7 @@ farhi
 farrokh
 fi
 fidelities
+fidelity
 fidelityquantumkernel
 filippo
 fletcher
@@ -201,6 +203,7 @@ hadfield
 hamiltonian
 hamiltonians
 hao
+hartree
 hashable
 hatano
 havlíček
@@ -208,6 +211,7 @@ heidelberg
 hessians
 hilbert
 hoc
+homebrew
 hopkins
 hoyer
 html
@@ -259,6 +263,7 @@ kwargs
 labelled
 lagrange
 langle
+linux
 larrañaga
 lcu
 len
@@ -452,10 +457,12 @@ rhs
 rightarrow
 robert
 romero
+rosenbrock
 rosen
 runarsson
 runtime
 runtimes
+RuntimeError
 rx
 ry
 rz
@@ -495,6 +502,9 @@ sqrt
 statefn
 statevector
 statevectors
+stdlib
+stdout
+stfc
 stddev
 stdlib
 stdout
@@ -594,7 +604,3 @@ zz
 θ
 ψ
 ω
-assertRaises
-RuntimeError
-Rosenbrock
-fidelities
