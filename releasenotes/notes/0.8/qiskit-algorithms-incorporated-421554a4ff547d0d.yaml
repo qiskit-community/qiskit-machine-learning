@@ -22,6 +22,9 @@ features:
 
 upgrade:
   - |
+    From version `0.8.0`, Qiskit Machine Learning requires Qiskit `1.0` or higher.
+
+  - |
     The merge of some of the features of Qiskit Algorithms into Qiskit Machine Learning might lead
     to breaking changes. For this reason, caution is advised when updating to version `0.8` during
     critical production stages in a project. This change ensures continued
