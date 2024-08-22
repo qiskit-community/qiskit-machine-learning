@@ -175,7 +175,8 @@ By participating, you are expected to uphold this code.
 
 We use [GitHub issues](https://github.com/qiskit-community/qiskit-machine-learning/issues) for tracking requests and bugs. Please
 [join the Qiskit Slack community](https://qisk.it/join-slack)
-and use the `#applications` channel for discussions and short questions.
+and use the [`#qiskit-machine-learning`](https://qiskit.enterprise.slack.com/archives/C07JE3V55C1) 
+channel for discussions and short questions.
 For questions that are more suited for a forum, you can use the **Qiskit** tag in [Stack Overflow]
 (https://stackoverflow.com/questions/tagged/qiskit).
 
