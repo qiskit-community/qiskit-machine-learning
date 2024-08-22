@@ -98,7 +98,7 @@ For more details on how to do so and much more, follow the instructions in the
 ## Migration to Qiskit 1.x
 > [!NOTE]
 > Qiskit Machine Learning depends on Qiskit, which will be automatically installed as a 
-> dependency when you install Qiskit Machine Learning. From version `0.7.3` of Qiskit Machine 
+> dependency when you install Qiskit Machine Learning. From version `0.8` of Qiskit Machine 
 > Learning, Qiskit `1.0` or above will be required. If you have a pre-`1.0` version of Qiskit 
 > installed in your environment (however it was installed), you should upgrade to `1.x` to 
 > continue using the latest features. You may refer to the 
