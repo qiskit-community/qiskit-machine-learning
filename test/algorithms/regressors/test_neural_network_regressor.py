@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -22,12 +22,13 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import ddt, unpack, idata
-from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, SPSA
-from qiskit_algorithms.utils import algorithm_globals
 from scipy.optimize import minimize
 
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+
+from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B, SPSA
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.algorithms import SerializableModelMixin
 from qiskit_machine_learning.algorithms.regressors import NeuralNetworkRegressor
@@ -79,9 +80,11 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         if opt == "bfgs":
             optimizer = L_BFGS_B(maxiter=5)
         elif opt == "cobyla":
-            optimizer = COBYLA(maxiter=25)
+            optimizer = COBYLA(maxiter=25)  # type: ignore[assignment]
         elif opt == "callable":
-            optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
+            optimizer = partial(
+                minimize, method="COBYLA", options={"maxiter": 25}  # type: ignore[assignment]
+            )
         else:
             optimizer = None
 

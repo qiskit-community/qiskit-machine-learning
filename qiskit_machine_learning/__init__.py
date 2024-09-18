@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2023.
+# (C) Copyright IBM 2019, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -44,6 +44,6 @@ Submodules
 """
 
 from .version import __version__
-from .exceptions import QiskitMachineLearningError
+from .exceptions import QiskitMachineLearningError, AlgorithmError
 
-__all__ = ["__version__", "QiskitMachineLearningError"]
+__all__ = ["__version__", "QiskitMachineLearningError", "AlgorithmError"]

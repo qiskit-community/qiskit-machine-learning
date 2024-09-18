@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,8 +19,8 @@ from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.primitives import Estimator
-from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B
-from qiskit_algorithms.utils import algorithm_globals
+from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
+from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.algorithms import VQR
 

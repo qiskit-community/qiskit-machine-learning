@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,6 @@
 from typing import Optional
 
 import numpy as np
-from qiskit_algorithms.optimizers import OptimizerResult
 from sklearn.base import RegressorMixin
 
 from ..objective_functions import (
@@ -23,6 +22,7 @@ from ..objective_functions import (
     ObjectiveFunction,
 )
 from ..trainable_model import TrainableModel
+from ...optimizers import OptimizerResult
 
 
 class NeuralNetworkRegressor(TrainableModel, RegressorMixin):

@@ -18,8 +18,8 @@ from typing import Union, List, Tuple
 import numpy as np
 from scipy.special import logsumexp
 
-from qiskit_algorithms.utils import algorithm_globals
-from qiskit_machine_learning import QiskitMachineLearningError
+from ..utils import algorithm_globals
+from ..exceptions import QiskitMachineLearningError
 from .estimator_qnn import EstimatorQNN
 from .neural_network import NeuralNetwork
 
@@ -252,7 +252,6 @@ class EffectiveDimension:
         normalized_fisher: np.ndarray,
         dataset_size: Union[List[int], np.ndarray, int],
     ) -> Union[np.ndarray, int]:
-
         if not isinstance(dataset_size, int) and len(dataset_size) > 1:
             # expand dims for broadcasting
             normalized_fisher = np.expand_dims(normalized_fisher, axis=0)
