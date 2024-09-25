@@ -44,6 +44,7 @@ class VQC(NeuralNetworkClassifier):
     Multi-label classification is not supported. E.g., :math:`[[1, 1, 0], [0, 1, 1], [1, 0, 1]]`.
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         num_qubits: int | None = None,

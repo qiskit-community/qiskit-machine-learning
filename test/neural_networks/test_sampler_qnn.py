@@ -96,6 +96,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         self.array_type = {True: SparseArray, False: np.ndarray}
 
+    # pylint: disable=too-many-positional-arguments
     def _get_qnn(
         self, sparse, sampler_type, interpret_id, input_params, weight_params, input_grads
     ):

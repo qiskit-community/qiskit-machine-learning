@@ -46,6 +46,7 @@ class L_BFGS_B(SciPyOptimizer):  # pylint: disable=invalid-name
 
     _OPTIONS = ["maxfun", "maxiter", "ftol", "iprint", "eps"]
 
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=unused-argument
     def __init__(
         self,

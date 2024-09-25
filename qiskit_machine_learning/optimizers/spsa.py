@@ -161,6 +161,7 @@ class SPSA(Optimizer):
 
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         maxiter: int = 100,
@@ -280,6 +281,7 @@ class SPSA(Optimizer):
         self._nfev: int | None = None  # the number of function evaluations
         self._smoothed_hessian: np.ndarray | None = None  # smoothed average of the Hessians
 
+    # pylint: disable=too-many-positional-arguments
     @staticmethod
     def calibrate(
         loss: Callable[[np.ndarray], float],
@@ -413,6 +415,7 @@ class SPSA(Optimizer):
             "termination_checker": self.termination_checker,
         }
 
+    # pylint: disable=too-many-positional-arguments
     def _point_sample(self, loss, x, eps, delta1, delta2):
         """A single sample of the gradient at position ``x`` in direction ``delta``."""
         # points to evaluate
@@ -478,6 +481,7 @@ class SPSA(Optimizer):
             hessian_estimate / num_samples,
         )
 
+    # pylint: disable=too-many-positional-arguments
     def _compute_update(self, loss, x, k, eps, lse_solver):
         # compute the perturbations
         if isinstance(self.resamplings, dict):

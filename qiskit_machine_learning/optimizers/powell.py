@@ -33,6 +33,7 @@ class POWELL(SciPyOptimizer):
 
     _OPTIONS = ["maxiter", "maxfev", "disp", "xtol"]
 
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=unused-argument
     def __init__(
         self,
