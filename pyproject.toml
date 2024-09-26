@@ -48,6 +48,7 @@ disable = [
     "modified-iterating-list",
     "nested-min-max",
     "no-member",
+    "no-name-in-module",
     "no-value-for-parameter",
     "non-ascii-name",
     "not-context-manager",
