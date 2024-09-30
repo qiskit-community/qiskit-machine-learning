@@ -42,6 +42,7 @@ class TestTorch(ABC):
         """Sub test."""
         raise builtins.Exception("Abstract method")
 
+    # pylint: disable=too-many-positional-arguments
     @abstractmethod
     def assertAlmostEqual(self, first, second, places=None, msg=None, delta=None):
         """Assert almost equal."""

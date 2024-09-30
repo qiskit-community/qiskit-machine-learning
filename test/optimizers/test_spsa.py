@@ -146,6 +146,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
             def __init__(self):
                 self.values = []
 
+            # pylint: disable=too-many-positional-arguments
             def __call__(self, nfev, point, fvalue, stepsize, accepted) -> bool:
                 self.values.append(fvalue)
 

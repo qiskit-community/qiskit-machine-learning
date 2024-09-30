@@ -56,6 +56,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     FITTED = 0
     UNFITTED = 1
 
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=invalid-name
     def __init__(
         self,
