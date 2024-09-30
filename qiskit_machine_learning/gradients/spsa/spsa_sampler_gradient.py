@@ -40,6 +40,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
     `doi: 10.1109/TAC.2000.880982 <https://ieeexplore.ieee.org/document/880982>`_.
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         sampler: BaseSampler,

@@ -129,6 +129,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         with self.assertRaises(ValueError, msg="Unsupported value of 'max_circuits_per_job'."):
             _ = FidelityQuantumKernel(max_circuits_per_job=-1)
 
+    # pylint: disable=too-many-positional-arguments
     @idata(
         # params, fidelity, feature map, enforce_psd, duplicate
         itertools.product(
@@ -152,6 +153,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
         np.testing.assert_allclose(kernel_matrix, solution, rtol=1e-4, atol=1e-10)
 
+    # pylint: disable=too-many-positional-arguments
     @idata(
         itertools.product(
             ["samples_1", "samples_4"],

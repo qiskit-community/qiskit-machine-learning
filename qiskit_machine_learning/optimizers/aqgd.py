@@ -49,6 +49,7 @@ class AQGD(Optimizer):
 
     _OPTIONS = ["maxiter", "eta", "tol", "disp", "momentum", "param_tol", "averaging"]
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         maxiter: int | list[int] = 1000,
@@ -179,6 +180,7 @@ class AQGD(Optimizer):
         gradient = 0.5 * (values[1 : num_params + 1] - values[1 + num_params :])
         return obj_value, gradient
 
+    # pylint: disable=too-many-positional-arguments
     def _update(
         self,
         params: np.ndarray,
