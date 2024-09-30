@@ -174,6 +174,7 @@ class GradientDescent(SteppableOptimizer):
 
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         maxiter: int = 100,

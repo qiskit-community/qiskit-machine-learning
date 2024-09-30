@@ -29,6 +29,7 @@ class NFT(SciPyOptimizer):
 
     _OPTIONS = ["maxiter", "maxfev", "disp", "reset_interval"]
 
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=unused-argument
     def __init__(
         self,
@@ -69,6 +70,7 @@ class NFT(SciPyOptimizer):
         super().__init__(method=nakanishi_fujii_todo, options=options, **kwargs)
 
 
+# pylint: disable=too-many-positional-arguments
 # pylint: disable=invalid-name
 def nakanishi_fujii_todo(
     fun, x0, args=(), maxiter=None, maxfev=1024, reset_interval=32, eps=1e-32, callback=None, **_
