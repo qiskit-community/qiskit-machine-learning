@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Removed support for using Qiskit Machine Learning with Python 3.8 to reflect
+    the EOL of Python 3.8 in October 2024 (PEP 569). To continue using Qiskit Machine Learning, you
+    must upgrade to a Python: 3.9 or above if you are using older versions of Python.
