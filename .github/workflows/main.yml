@@ -229,6 +229,7 @@ jobs:
         with:
           name: tutorials${{ matrix.python-version }}
           path: docs/_build/html/artifacts/tutorials.tar.gz
+# UNCOMMENT AFTER THE 0.8 RELEASE ON PIPY
 #      - name: Run stable tutorials
 #        env:
 #          QISKIT_PARALLEL: False
