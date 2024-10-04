@@ -178,7 +178,7 @@ class ParameterizedInitialize(Instruction):
         # normalize
         norm = np.linalg.norm(cleaned_params)
         normalized = cleaned_params if np.isclose(norm, 1) else cleaned_params / norm
-Fix RawFeatire
+
         circuit = QuantumCircuit(self.num_qubits)
         circuit.initialize(normalized, range(self.num_qubits))
         self.definition = circuit
