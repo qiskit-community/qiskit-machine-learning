@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2023.
+# (C) Copyright IBM 2020, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -176,7 +176,8 @@ class ParameterizedInitialize(Instruction):
                 raise QiskitError("Cannot define a ParameterizedInitialize with unbound parameters")
 
         # normalize
-        normalized = np.array(cleaned_params) / np.linalg.norm(cleaned_params)
+        norm = np.linalg.norm(cleaned_params)
+        normalized = cleaned_params if np.isclose(norm, 1) else cleaned_params / norm
 
         circuit = QuantumCircuit(self.num_qubits)
         circuit.initialize(normalized, range(self.num_qubits))
