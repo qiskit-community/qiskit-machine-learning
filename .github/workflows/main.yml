@@ -114,6 +114,7 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.9, '3.10', 3.11, 3.12]
         include:
+          # macos-latest is an Arm64 image
           - os: macos-latest
             python-version: 3.9
           - os: macos-latest
