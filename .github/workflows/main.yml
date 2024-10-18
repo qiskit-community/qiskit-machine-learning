@@ -114,7 +114,6 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.9, '3.10', 3.11, 3.12]
         include:
-          # macos-latest is an Arm64 image
           - os: macos-latest
             python-version: 3.9
           - os: macos-latest
@@ -122,11 +121,6 @@ jobs:
           - os: windows-latest
             python-version: 3.9
           - os: windows-latest
-            python-version: 3.12
-          # macos-latest-large is an X86 image
-          - os: macos-latest-large
-            python-version: 3.9
-          - os: macos-latest-large
             python-version: 3.12
     steps:
       - uses: actions/checkout@v4
@@ -303,20 +297,12 @@ jobs:
         with:
           name: windows-latest-3.12
           path: /tmp/w312
-      - uses: actions/download-artifact@v4
-        with:
-          name: macos-latest-large-3.9
-          path: /tmp/x39
-      - uses: actions/download-artifact@v4
-        with:
-          name: macos-latest-large-3.12
-          path: /tmp/x312
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m39/ml.dep /tmp/m312/ml.dep /tmp/w39/ml.dep /tmp/w312/ml.dep /tmp/x39/ml.dep /tmp/x312/ml.dep || true
+          sort -f -u /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m39/ml.dep /tmp/m312/ml.dep /tmp/w39/ml.dep /tmp/w312/ml.dep || true
         shell: bash
       - name: Coverage combine
         run: coverage3 combine /tmp/u39/ml.dat
