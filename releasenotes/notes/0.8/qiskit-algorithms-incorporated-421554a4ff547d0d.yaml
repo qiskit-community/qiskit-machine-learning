@@ -1,11 +1,4 @@
 ---
-prelude: >
-    This release includes the migration of a subset of Qiskit Algorithms features to Qiskit Machine
-    Learning. This ensures continued enhancement of essential features for Qiskit Machine
-    Learning following the end of official support for Qiskit Algorithms. Therefore, Qiskit
-    Machine Learning will no longer depend on Qiskit Algorithms, possibly introducing breaking
-    changes in import structures. Some quick-fixes are described below.
-
 features:
   - |
     Migrated essential Qiskit Algorithms features to Qiskit Machine Learning:
@@ -29,9 +22,15 @@ features:
 
 upgrade:
   - |
+    From version `0.8.0`, Qiskit Machine Learning requires Qiskit `1.0` or higher.
+
+  - |
     The merge of some of the features of Qiskit Algorithms into Qiskit Machine Learning might lead
-    to breaking changes. For this reason, caution is advised when updating to version 0.8 during
-    critical production stages in a project.
+    to breaking changes. For this reason, caution is advised when updating to version `0.8` during
+    critical production stages in a project. This change ensures continued
+    enhancement and maintenance of essential features for Qiskit Machine
+    Learning following the end of official support for Qiskit Algorithms. Therefore, Qiskit
+    Machine Learning will no longer depend on Qiskit Algorithms.
 
   - |
     Users must update their imports and code references in code that uses Qiskit Machine Leaning

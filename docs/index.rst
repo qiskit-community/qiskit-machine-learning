@@ -10,8 +10,9 @@ Kernels and Quantum Neural Networks, used in various applications including clas
 and regression.
 
 This library is part of the Qiskit Community ecosystem, a collection of high-level codes that are based
-on the Qiskit software development kit. As of version ``0.7.0``, Qiskit Machine Learning is co-maintained
-by IBM and the Hartree Center, part of the UK Science and Technologies Facilities Council (STFC).
+on the Qiskit software development kit. As of version ``0.7``, Qiskit Machine Learning is co-maintained
+by IBM and the `Hartree Center <https://www.hartree.stfc.ac.uk/>`__, part of the UK Science and
+Technologies Facilities Council (STFC).
 
 The Qiskit Machine Learning framework aims to be:
 
