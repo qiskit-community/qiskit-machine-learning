@@ -17,14 +17,19 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+import numpy as np
+
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit.primitives.base import BaseEstimatorV2
+from qiskit.primitives import BaseEstimatorV1
+from qiskit.providers.options import Options
 
 from ..base.base_estimator_gradient import BaseEstimatorGradient
 from ..base.estimator_gradient_result import EstimatorGradientResult
 from ..utils import _make_param_shift_parameter_values
 
-from ...exceptions import AlgorithmError
+from ...exceptions import QiskitMachineLearningError
 
 
 class ParamShiftEstimatorGradient(BaseEstimatorGradient):
@@ -97,26 +102,57 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
             job_param_values.extend(param_shift_parameter_values)
             all_n.append(n)
 
-        # Run the single job with all circuits.
-        job = self._estimator.run(
-            job_circuits,
-            job_observables,
-            job_param_values,
-            **options,
-        )
-        try:
+        # Determine how to run the estimator based on its version
+        if isinstance(self._estimator, BaseEstimatorV1):
+            # Run the single job with all circuits.
+            job = self._estimator.run(
+                job_circuits,
+                job_observables,
+                job_param_values,
+                **options,
+            )
             results = job.result()
-        except Exception as exc:
-            raise AlgorithmError("Estimator job failed.") from exc
 
-        # Compute the gradients.
-        gradients = []
-        partial_sum_n = 0
-        for n in all_n:
-            result = results.values[partial_sum_n : partial_sum_n + n]
-            gradient_ = (result[: n // 2] - result[n // 2 :]) / 2
-            gradients.append(gradient_)
-            partial_sum_n += n
+            # Compute the gradients.
+            gradients = []
+            partial_sum_n = 0
+            for n in all_n:
+                result = results.values[partial_sum_n : partial_sum_n + n]
+                gradient_ = (result[: n // 2] - result[n // 2 :]) / 2
+                gradients.append(gradient_)
+                partial_sum_n += n
 
-        opt = self._get_local_options(options)
+            opt = self._get_local_options(options)
+
+        elif isinstance(self._estimator, BaseEstimatorV2):
+            isa_g_circs = self._pass_manager.run(job_circuits)
+            isa_g_observables = [op.apply_layout(isa_g_circs[i].layout) for i, op in enumerate(job_observables)]
+            # Prepare circuit-observable-parameter tuples (PUBs)
+            circuit_observable_params = []
+            for pub in zip(isa_g_circs, isa_g_observables, job_param_values):
+                circuit_observable_params.append(pub)
+
+            # For BaseEstimatorV2, run the estimator using PUBs and specified precision
+            job = self._estimator.run(circuit_observable_params)
+            results = job.result()
+            results = np.array([float(r.data.evs) for r in results])
+
+            # Compute the gradients.
+            gradients = []
+            partial_sum_n = 0
+            for n in all_n:
+                result = results[partial_sum_n : partial_sum_n + n]
+                gradient_ = (result[: n // 2] - result[n // 2 :]) / 2
+                gradients.append(gradient_)
+                partial_sum_n += n
+
+            opt = Options(**options)
+
+        else:
+            raise QiskitMachineLearningError(
+                "The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got "
+                + f"{type(self._estimator)} instead. Note that BaseEstimatorV1 is deprecated in"
+                + "Qiskit and removed in Qiskit IBM Runtime."
+            )
+
         return EstimatorGradientResult(gradients=gradients, metadata=metadata, options=opt)
