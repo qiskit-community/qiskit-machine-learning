@@ -26,6 +26,7 @@ from qiskit.utils import optionals
 from ..utils import algorithm_globals
 
 
+# pylint: disable=too-many-positional-arguments
 def ad_hoc_data(
     training_size: int,
     test_size: int,

@@ -1,4 +1,1 @@
-numpy>=1.20,<2.0
-ipython<8.13;python_version<'3.9'
-nbconvert<7.14  # workaround https://github.com/jupyter/nbconvert/issues/2092
-
+numpy>=1.20

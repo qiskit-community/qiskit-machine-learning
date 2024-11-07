@@ -29,6 +29,7 @@ from ...utils.loss_functions import Loss
 class VQR(NeuralNetworkRegressor):
     """A convenient Variational Quantum Regressor implementation."""
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         num_qubits: int | None = None,

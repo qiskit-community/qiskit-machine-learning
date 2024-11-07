@@ -42,6 +42,7 @@ class NeuralNetwork(ABC):
     batched inputs. This is to be implemented by other (quantum) neural networks.
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         num_inputs: int,

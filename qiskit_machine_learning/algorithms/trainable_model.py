@@ -34,6 +34,7 @@ from ..utils.loss_functions import (
 class TrainableModel(SerializableModelMixin):
     """Base class for ML model that defines a scikit-learn like interface for Estimators."""
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         neural_network: NeuralNetwork,

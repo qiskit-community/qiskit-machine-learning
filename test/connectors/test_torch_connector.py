@@ -263,6 +263,7 @@ class TestTorchConnector(TestTorch):
                 stride (int, optional): Stride of the convolution. Defaults to 1.
             """
 
+            # pylint: disable=too-many-positional-arguments
             def __init__(
                 self,
                 input_channel: int,
