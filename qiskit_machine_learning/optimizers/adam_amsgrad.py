@@ -57,6 +57,7 @@ class ADAM(Optimizer):
         "snapshot_dir",
     ]
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         maxiter: int = 10000,

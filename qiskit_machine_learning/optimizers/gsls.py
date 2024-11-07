@@ -51,6 +51,7 @@ class GSLS(Optimizer):
         "max_failed_rejection_sampling",
     ]
 
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=unused-argument
     def __init__(
         self,
@@ -131,6 +132,7 @@ class GSLS(Optimizer):
 
         return result
 
+    # pylint: disable=too-many-positional-arguments
     def ls_optimize(
         self,
         n: int,
@@ -269,6 +271,7 @@ class GSLS(Optimizer):
 
         return points, directions
 
+    # pylint: disable=too-many-positional-arguments
     def sample_set(
         self, n: int, x: np.ndarray, var_lb: np.ndarray, var_ub: np.ndarray, num_points: int
     ) -> tuple[np.ndarray, np.ndarray]:

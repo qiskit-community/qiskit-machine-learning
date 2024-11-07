@@ -26,6 +26,7 @@ from qiskit.primitives import BaseSampler
 from qiskit.primitives.utils import _circuit_key
 from qiskit.providers import Options
 from qiskit.transpiler.passes import TranslateParameterizedGates
+from qiskit.transpiler.passmanager import BasePassManager
 
 from .sampler_gradient_result import SamplerGradientResult
 from ..utils import (
@@ -41,7 +42,13 @@ from ...algorithm_job import AlgorithmJob
 class BaseSamplerGradient(ABC):
     """Base class for a ``SamplerGradient`` to compute the gradients of the sampling probability."""
 
-    def __init__(self, sampler: BaseSampler, options: Options | None = None):
+    def __init__(
+        self,
+        sampler: BaseSampler,
+        len_quasi_dist: int | None = None,
+        options: Options | None = None,
+        pass_manager: BasePassManager | None = None,
+    ):
         """
         Args:
             sampler: The sampler used to compute the gradients.
@@ -52,6 +59,8 @@ class BaseSamplerGradient(ABC):
         """
         self._sampler: BaseSampler = sampler
         self._default_options = Options()
+        self._pass_manager = pass_manager
+        self._len_quasi_dist = len_quasi_dist
         if options is not None:
             self._default_options.update_options(**options)
         self._gradient_circuit_cache: dict[tuple, GradientCircuit] = {}

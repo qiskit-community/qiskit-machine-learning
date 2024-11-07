@@ -18,11 +18,17 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseSampler
+
+from qiskit.primitives import BaseSampler, BaseSamplerV1, SamplerResult, StatevectorSampler
+from qiskit.primitives.base import BaseSamplerV2
+
+from qiskit.transpiler.passmanager import PassManager
+from qiskit.result import QuasiDistribution
+
 from qiskit.primitives.primitive_job import PrimitiveJob
 from qiskit.providers import Options
 
-from ..exceptions import AlgorithmError
+from ..exceptions import AlgorithmError, QiskitMachineLearningError
 from .base_state_fidelity import BaseStateFidelity
 from .state_fidelity_result import StateFidelityResult
 from ..algorithm_job import AlgorithmJob
@@ -53,7 +59,10 @@ class ComputeUncompute(BaseStateFidelity):
 
     def __init__(
         self,
-        sampler: BaseSampler,
+        sampler: BaseSampler | BaseSamplerV2,
+        *,
+        num_virtual_qubits: int | None = None,
+        pass_manager: PassManager | None = None,
         options: Options | None = None,
         local: bool = False,
     ) -> None:
@@ -79,11 +88,24 @@ class ComputeUncompute(BaseStateFidelity):
         Raises:
             ValueError: If the sampler is not an instance of ``BaseSampler``.
         """
-        if not isinstance(sampler, BaseSampler):
+        if (not isinstance(sampler, BaseSampler)) and (not isinstance(sampler, BaseSamplerV2)):
             raise ValueError(
-                f"The sampler should be an instance of BaseSampler, " f"but got {type(sampler)}"
+                f"The sampler should be an instance of BaseSampler or BaseSamplerV2, "
+                f"but got {type(sampler)}"
+            )
+        if (
+            isinstance(sampler, BaseSamplerV2)
+            and (pass_manager is None)
+            and not isinstance(sampler, StatevectorSampler)
+        ):
+            raise ValueError(f"A pass_manager should be provided for {type(sampler)}.")
+        if (pass_manager is not None) and (num_virtual_qubits is None):
+            raise ValueError(
+                f"Number of virtual qubits should be provided for {type(pass_manager)}."
             )
         self._sampler: BaseSampler = sampler
+        self.num_virtual_qubits = num_virtual_qubits
+        self.pass_manager = pass_manager
         self._local = local
         self._default_options = Options()
         if options is not None:
@@ -111,6 +133,8 @@ class ComputeUncompute(BaseStateFidelity):
 
         circuit = circuit_1.compose(circuit_2.inverse())
         circuit.measure_all()
+        if self.pass_manager is not None:
+            circuit = self.pass_manager.run(circuit)
         return circuit
 
     def _run(
@@ -156,29 +180,60 @@ class ComputeUncompute(BaseStateFidelity):
         # primitive's default options.
         opts = copy(self._default_options)
         opts.update_options(**options)
-
-        sampler_job = self._sampler.run(circuits=circuits, parameter_values=values, **opts.__dict__)
-
-        local_opts = self._get_local_options(opts.__dict__)
-        return AlgorithmJob(ComputeUncompute._call, sampler_job, circuits, self._local, local_opts)
+        if isinstance(self._sampler, BaseSamplerV1):
+            sampler_job = self._sampler.run(
+                circuits=circuits, parameter_values=values, **opts.__dict__
+            )
+            local_opts = self._get_local_options(opts.__dict__)
+        elif isinstance(self._sampler, BaseSamplerV2):
+            sampler_job = self._sampler.run(
+                [(circuits[i], values[i]) for i in range(len(circuits))], **opts.__dict__
+            )
+            local_opts = opts.__dict__
+        else:
+            raise QiskitMachineLearningError(
+                "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got"
+                + f" {type(self.sampler)} instead."
+            )
+        return AlgorithmJob(
+            ComputeUncompute._call,
+            sampler_job,
+            circuits,
+            self._local,
+            local_opts,
+            self._sampler,
+            self._post_process_v2,
+            self.num_virtual_qubits,
+        )
 
     @staticmethod
     def _call(
-        job: PrimitiveJob, circuits: Sequence[QuantumCircuit], local: bool, local_opts: Options
+        job: PrimitiveJob,
+        circuits: Sequence[QuantumCircuit],
+        local: bool,
+        local_opts: Options = None,
+        _sampler=None,
+        _post_process_v2=None,
+        num_virtual_qubits=None,
     ) -> StateFidelityResult:
         try:
             result = job.result()
         except Exception as exc:
             raise AlgorithmError("Sampler job failed!") from exc
 
+        if isinstance(_sampler, BaseSamplerV1):
+            quasi_dists = result.quasi_dists
+        elif isinstance(_sampler, BaseSamplerV2):
+            quasi_dists = _post_process_v2(result)
+
         if local:
             raw_fidelities = [
-                ComputeUncompute._get_local_fidelity(prob_dist, circuit.num_qubits)
-                for prob_dist, circuit in zip(result.quasi_dists, circuits)
+                ComputeUncompute._get_local_fidelity(prob_dist, num_virtual_qubits)
+                for prob_dist, circuit in zip(quasi_dists, circuits)
             ]
         else:
             raw_fidelities = [
-                ComputeUncompute._get_global_fidelity(prob_dist) for prob_dist in result.quasi_dists
+                ComputeUncompute._get_global_fidelity(prob_dist) for prob_dist in quasi_dists
             ]
         fidelities = ComputeUncompute._truncate_fidelities(raw_fidelities)
 
@@ -224,6 +279,21 @@ class ComputeUncompute(BaseStateFidelity):
         opts = copy(self._sampler.options)
         opts.update_options(**options)
         return opts
+
+    def _post_process_v2(self, result: SamplerResult):
+        quasis = []
+        for i in range(len(result)):
+            bitstring_counts = result[i].data.meas.get_counts()
+
+            # Normalize the counts to probabilities
+            total_shots = sum(bitstring_counts.values())
+            probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
+
+            # Convert to quasi-probabilities
+            counts = QuasiDistribution(probabilities)
+            quasi_probs = {k: v for k, v in counts.items() if int(k) < 2**self.num_virtual_qubits}
+            quasis.append(quasi_probs)
+        return quasis
 
     @staticmethod
     def _get_global_fidelity(probability_distribution: dict[int, float]) -> float:

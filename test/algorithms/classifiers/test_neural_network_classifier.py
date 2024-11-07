@@ -167,6 +167,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         return features, labels
 
+    # pylint: disable=too-many-positional-arguments
     def _create_classifier(
         self,
         qnn: NeuralNetwork,
