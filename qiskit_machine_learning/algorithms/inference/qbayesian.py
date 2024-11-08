@@ -20,11 +20,12 @@ from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit import Qubit
 from qiskit.circuit.library import GroverOperator
-from qiskit.primitives import BaseSampler, Sampler, BaseSamplerV2
+from qiskit.primitives import BaseSampler, Sampler, BaseSamplerV2, BaseSamplerV1
 from qiskit.transpiler.passmanager import BasePassManager
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit.providers.fake_provider import GenericBackendV2
 
+from ...utils.deprecation import issue_deprecation_msg
 
 class QBayesian:
     r"""
@@ -95,7 +96,16 @@ class QBayesian:
         self._limit = limit
         self._threshold = threshold
         if sampler is None:
-            sampler = BaseSamplerV2()
+            sampler = Sampler()
+
+        if isinstance(sampler, BaseSamplerV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
+
         self._sampler = sampler
 
         if pass_manager is None:
