@@ -228,7 +228,7 @@ class ComputeUncompute(BaseStateFidelity):
 
         if local:
             raw_fidelities = [
-                ComputeUncompute._get_local_fidelity(prob_dist, num_virtual_qubits)
+                ComputeUncompute._get_local_fidelity(prob_dist, num_virtual_qubits if isinstance(_sampler, BaseSamplerV2) else circuit.num_qubits)
                 for prob_dist, circuit in zip(quasi_dists, circuits)
             ]
         else:
