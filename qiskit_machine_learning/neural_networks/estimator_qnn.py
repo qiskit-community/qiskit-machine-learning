@@ -31,6 +31,7 @@ from ..gradients import (
     EstimatorGradientResult,
     ParamShiftEstimatorGradient,
 )
+
 from ..circuit.library import QNNCircuit
 from ..exceptions import QiskitMachineLearningError
 
@@ -66,7 +67,7 @@ class EstimatorQNN(NeuralNetwork):
         num_qubits = 2
 
         # Using the QNNCircuit:
-        # Create a parametrrized 2 qubit circuit composed of the default ZZFeatureMap feature map
+        # Create a parametrized 2 qubit circuit composed of the default ZZFeatureMap feature map
         # and RealAmplitudes ansatz.
         qnn_qc = QNNCircuit(num_qubits)
 
@@ -323,9 +324,11 @@ class EstimatorQNN(NeuralNetwork):
             job = None
 
             if self._input_gradients:
+
                 job = self.gradient.run(
                     circuits, observables, param_values
                 )  # type: ignore[arg-type]
+
             elif len(parameter_values[0]) > self._num_inputs:
                 params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
                 job = self.gradient.run(

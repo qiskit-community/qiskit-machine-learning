@@ -37,6 +37,7 @@ from ..exceptions import QiskitMachineLearningError
 
 from .neural_network import NeuralNetwork
 
+
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error
     from sparse import SparseArray
@@ -349,7 +350,6 @@ class SamplerQNN(NeuralNetwork):
             )
             weights_grad = DOK((num_samples, *self._output_shape, self._num_weights))
         else:
-
             input_grad = (
                 np.zeros((num_samples, *self._output_shape, self._num_inputs))
                 if self._input_gradients
@@ -441,10 +441,12 @@ class SamplerQNN(NeuralNetwork):
             circuits = [self._circuit] * num_samples
             job = None
             if self._input_gradients:
-                job = self.gradient.run(circuits, parameter_values)
+                job = self.gradient.run(circuits, parameter_values)  # type: ignore[arg-type]
             elif len(parameter_values[0]) > self._num_inputs:
                 params = [self._circuit.parameters[self._num_inputs :]] * num_samples
-                job = self.gradient.run(circuits, parameter_values, parameters=params)
+                job = self.gradient.run(
+                    circuits, parameter_values, parameters=params  # type: ignore[arg-type]
+                )
 
             if job is not None:
                 try:
