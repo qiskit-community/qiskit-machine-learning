@@ -45,8 +45,8 @@ class BaseSamplerGradient(ABC):
     def __init__(
         self,
         sampler: BaseSampler,
-        len_quasi_dist: int | None = None,
         options: Options | None = None,
+        len_quasi_dist: int | None = None,
         pass_manager: BasePassManager | None = None,
     ):
         """
@@ -58,9 +58,9 @@ class BaseSamplerGradient(ABC):
                 Higher priority setting overrides lower priority setting
         """
         self._sampler: BaseSampler = sampler
-        self._default_options = Options()
         self._pass_manager = pass_manager
         self._len_quasi_dist = len_quasi_dist
+        self._default_options = Options()
         if options is not None:
             self._default_options.update_options(**options)
         self._gradient_circuit_cache: dict[tuple, GradientCircuit] = {}
