@@ -27,6 +27,7 @@ from qiskit.providers.fake_provider import GenericBackendV2
 
 from ...utils.deprecation import issue_deprecation_msg
 
+
 class QBayesian:
     r"""
     Implements a quantum Bayesian inference (QBI) algorithm that has been developed in [1]. The
