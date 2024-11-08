@@ -20,10 +20,8 @@ from copy import copy
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseSampler, BaseSamplerV1, SamplerResult, StatevectorSampler
 from qiskit.primitives.base import BaseSamplerV2
-
 from qiskit.transpiler.passmanager import PassManager
 from qiskit.result import QuasiDistribution
-
 from qiskit.primitives.primitive_job import PrimitiveJob
 from qiskit.providers import Options
 

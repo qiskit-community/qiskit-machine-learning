@@ -72,7 +72,7 @@ class BaseEstimatorGradient(ABC):
                 gradient and this type is the only supported type for function-level schemes like
                 finite difference.
         """
-        self._estimator = estimator
+        self._estimator: BaseEstimator = estimator
         self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:
