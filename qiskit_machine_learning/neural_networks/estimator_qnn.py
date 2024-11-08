@@ -325,9 +325,7 @@ class EstimatorQNN(NeuralNetwork):
 
             if self._input_gradients:
 
-                job = self.gradient.run(
-                    circuits, observables, param_values
-                )  # type: ignore[arg-type]
+                job = self.gradient.run(circuits, observables, param_values)
 
             elif len(parameter_values[0]) > self._num_inputs:
                 params = [self._circuit.parameters[self._num_inputs :]] * num_circuits

@@ -106,7 +106,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.backend = GenericBackendV2(num_qubits=8)
         self.session = Session(backend=self.backend)
         self.sampler_v2 = SamplerV2(mode=self.session)
-
+        self.pm = None
         self.array_type = {True: SparseArray, False: np.ndarray}
 
     # pylint: disable=too-many-positional-arguments

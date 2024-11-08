@@ -15,7 +15,6 @@
 import unittest
 from test import QiskitMachineLearningTestCase
 
-import copy
 import numpy as np
 
 from qiskit import QuantumCircuit
@@ -207,6 +206,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
                 )
             )
         )
+
 
 if __name__ == "__main__":
     unittest.main()
