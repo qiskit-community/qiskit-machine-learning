@@ -95,7 +95,7 @@ class QBayesian:
         self._limit = limit
         self._threshold = threshold
         if sampler is None:
-            sampler = Sampler()
+            sampler = BaseSamplerV2()
         self._sampler = sampler
 
         if pass_manager is None:

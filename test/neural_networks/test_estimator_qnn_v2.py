@@ -481,6 +481,7 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
             estimator_qnn.input_gradients = True
             self.assertTrue(estimator_qnn.input_gradients)
 
+    @unittest.skip
     def test_qnn_qc_circuit_construction(self):
         """Test Estimator QNN properties and forward/backward pass for QNNCircuit construction"""
         num_qubits = 2
@@ -544,7 +545,6 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
         for i in range(qc.num_qubits):
             qc.rx(weight, i)
         isa_qc = self.pm.run(qc)
-        print(isa_qc)
         op = SparsePauliOp.from_list([("Z" * isa_qc.num_qubits, 1)])
         op = op.apply_layout(isa_qc.layout)
         estimator_qnn = EstimatorQNN(

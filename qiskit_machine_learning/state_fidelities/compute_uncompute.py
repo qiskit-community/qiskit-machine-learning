@@ -26,7 +26,7 @@ from qiskit.primitives.primitive_job import PrimitiveJob
 from qiskit.providers import Options
 
 from ..exceptions import AlgorithmError, QiskitMachineLearningError
-
+from ..utils.deprecation import issue_deprecation_msg
 from .base_state_fidelity import BaseStateFidelity
 from .state_fidelity_result import StateFidelityResult
 from ..algorithm_job import AlgorithmJob
@@ -100,6 +100,13 @@ class ComputeUncompute(BaseStateFidelity):
         if (pass_manager is not None) and (num_virtual_qubits is None):
             raise ValueError(
                 f"Number of virtual qubits should be provided for {type(pass_manager)}."
+            )
+        if isinstance(sampler, BaseSamplerV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
             )
         self._sampler: BaseSampler = sampler
         self.num_virtual_qubits = num_virtual_qubits

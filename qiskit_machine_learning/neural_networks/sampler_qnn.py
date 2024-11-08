@@ -34,7 +34,7 @@ from ..gradients import (
 )
 from ..circuit.library import QNNCircuit
 from ..exceptions import QiskitMachineLearningError
-
+from ..utils.deprecation import issue_deprecation_msg
 from .neural_network import NeuralNetwork
 
 
@@ -176,6 +176,14 @@ class SamplerQNN(NeuralNetwork):
         # set primitive, provide default
         if sampler is None:
             sampler = Sampler()
+
+        if isinstance(sampler, BaseSamplerV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
         self.sampler = sampler
 
         if num_virtual_qubits is None:

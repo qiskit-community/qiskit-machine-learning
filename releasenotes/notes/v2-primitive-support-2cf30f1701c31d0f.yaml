@@ -15,7 +15,7 @@ upgrade:
     Users working with real backends are advised to migrate to `V2` primitives
     (`EstimatorV2` and `SamplerV2`) to ensure compatibility with Qiskit IBM Runtime
     hardware requirements. These `V2` primitives will become the standard in
-    the `0.8` release onwards, while `V1` primitives are deprecated.
+    the `0.8` release going forward, while `V1` primitives are deprecated.
 
 deprecations:
   - |

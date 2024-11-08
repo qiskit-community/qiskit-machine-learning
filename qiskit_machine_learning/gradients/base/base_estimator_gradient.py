@@ -23,7 +23,7 @@ from copy import copy
 import numpy as np
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseEstimator
+from qiskit.primitives import BaseEstimator, BaseEstimatorV1
 from qiskit.primitives.base import BaseEstimatorV2
 from qiskit.primitives.utils import _circuit_key
 from qiskit.providers import Options
@@ -39,7 +39,7 @@ from ..utils import (
     _make_gradient_parameters,
     _make_gradient_parameter_values,
 )
-
+from ...utils.deprecation import issue_deprecation_msg
 from ...algorithm_job import AlgorithmJob
 
 
@@ -72,6 +72,13 @@ class BaseEstimatorGradient(ABC):
                 gradient and this type is the only supported type for function-level schemes like
                 finite difference.
         """
+        if isinstance(estimator, BaseEstimatorV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
         self._estimator: BaseEstimator = estimator
         self._pass_manager = pass_manager
         self._default_options = Options()

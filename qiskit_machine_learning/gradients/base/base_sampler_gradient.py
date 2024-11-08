@@ -22,7 +22,7 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseSampler
+from qiskit.primitives import BaseSampler, BaseSamplerV1
 from qiskit.primitives.utils import _circuit_key
 from qiskit.providers import Options
 from qiskit.transpiler.passes import TranslateParameterizedGates
@@ -35,7 +35,7 @@ from ..utils import (
     _make_gradient_parameters,
     _make_gradient_parameter_values,
 )
-
+from ...utils.deprecation import issue_deprecation_msg
 from ...algorithm_job import AlgorithmJob
 
 
@@ -57,6 +57,13 @@ class BaseSamplerGradient(ABC):
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting
         """
+        if isinstance(sampler, BaseSamplerV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
         self._sampler: BaseSampler = sampler
         self._pass_manager = pass_manager
         self._len_quasi_dist = len_quasi_dist

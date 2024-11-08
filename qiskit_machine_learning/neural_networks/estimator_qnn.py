@@ -26,6 +26,7 @@ from qiskit.primitives import BaseEstimator, BaseEstimatorV1, Estimator, Estimat
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 
+
 from ..gradients import (
     BaseEstimatorGradient,
     EstimatorGradientResult,
@@ -34,7 +35,7 @@ from ..gradients import (
 
 from ..circuit.library import QNNCircuit
 from ..exceptions import QiskitMachineLearningError
-
+from ..utils.deprecation import issue_deprecation_msg
 from .neural_network import NeuralNetwork
 
 logger = logging.getLogger(__name__)
@@ -154,6 +155,14 @@ class EstimatorQNN(NeuralNetwork):
         """
         if estimator is None:
             estimator = Estimator()
+
+        if isinstance(estimator, BaseEstimatorV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
         self.estimator = estimator
         self._org_circuit = circuit
 

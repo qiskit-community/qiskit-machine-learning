@@ -28,7 +28,6 @@ from qiskit.providers.options import Options
 from ..base.base_estimator_gradient import BaseEstimatorGradient
 from ..base.estimator_gradient_result import EstimatorGradientResult
 from ..utils import _make_param_shift_parameter_values
-
 from ...exceptions import QiskitMachineLearningError
 
 
