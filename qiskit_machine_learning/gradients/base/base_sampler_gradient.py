@@ -61,6 +61,7 @@ class BaseSamplerGradient(ABC):
         self._default_options = Options()
         self._pass_manager = pass_manager
         self._len_quasi_dist = len_quasi_dist
+
         if options is not None:
             self._default_options.update_options(**options)
         self._gradient_circuit_cache: dict[tuple, GradientCircuit] = {}

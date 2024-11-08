@@ -18,7 +18,6 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit import QuantumCircuit
-
 from qiskit.primitives import BaseSampler, BaseSamplerV1, SamplerResult, StatevectorSampler
 from qiskit.primitives.base import BaseSamplerV2
 
@@ -29,6 +28,7 @@ from qiskit.primitives.primitive_job import PrimitiveJob
 from qiskit.providers import Options
 
 from ..exceptions import AlgorithmError, QiskitMachineLearningError
+
 from .base_state_fidelity import BaseStateFidelity
 from .state_fidelity_result import StateFidelityResult
 from ..algorithm_job import AlgorithmJob
@@ -180,6 +180,7 @@ class ComputeUncompute(BaseStateFidelity):
         # primitive's default options.
         opts = copy(self._default_options)
         opts.update_options(**options)
+
         if isinstance(self._sampler, BaseSamplerV1):
             sampler_job = self._sampler.run(
                 circuits=circuits, parameter_values=values, **opts.__dict__
