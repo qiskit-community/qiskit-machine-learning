@@ -30,6 +30,7 @@ def deprecate_function(deprecated: str, version: str, remedy: str, stacklevel: i
 
     def decorator(func: Callable) -> Callable:
         """Emit a deprecation warning."""
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Callable:
             """Emit a deprecation warning."""
