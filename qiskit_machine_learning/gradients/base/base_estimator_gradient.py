@@ -49,9 +49,9 @@ class BaseEstimatorGradient(ABC):
     def __init__(
         self,
         estimator: BaseEstimator | BaseEstimatorV2,
-        pass_manager: BasePassManager | None = None,
         options: Options | None = None,
         derivative_type: DerivativeType = DerivativeType.REAL,
+        pass_manager: BasePassManager | None = None,
     ):
         r"""
         Args:
