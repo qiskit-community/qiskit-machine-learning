@@ -97,7 +97,7 @@ class BaseEstimatorGradient(ABC):
         self,
         circuits: Sequence[QuantumCircuit],
         observables: Sequence[BaseOperator],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter] | None] | None = None,
         **options,
     ) -> AlgorithmJob:
@@ -162,7 +162,7 @@ class BaseEstimatorGradient(ABC):
         self,
         circuits: Sequence[QuantumCircuit],
         observables: Sequence[BaseOperator],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
         **options,
     ) -> EstimatorGradientResult:
@@ -172,7 +172,7 @@ class BaseEstimatorGradient(ABC):
     def _preprocess(
         self,
         circuits: Sequence[QuantumCircuit],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
         supported_gates: Sequence[str],
     ) -> tuple[Sequence[QuantumCircuit], Sequence[Sequence[float]], Sequence[Sequence[Parameter]]]:
@@ -214,7 +214,7 @@ class BaseEstimatorGradient(ABC):
         self,
         results: EstimatorGradientResult,
         circuits: Sequence[QuantumCircuit],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
     ) -> EstimatorGradientResult:
         """Postprocess the gradients. This method computes the gradient of the original circuits
@@ -274,7 +274,7 @@ class BaseEstimatorGradient(ABC):
     def _validate_arguments(
         circuits: Sequence[QuantumCircuit],
         observables: Sequence[BaseOperator],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
     ) -> None:
         """Validate the arguments of the ``run`` method.

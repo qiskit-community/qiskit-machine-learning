@@ -129,16 +129,21 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
             if isinstance(self._sampler, BaseSamplerV1):
                 result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
                 opt = self._get_local_options(options)
+
             elif isinstance(self._sampler, BaseSamplerV2):
                 result = []
                 for i in range(partial_sum_n, partial_sum_n + n):
                     bitstring_counts = results[i].data.meas.get_counts()
+
                     # Normalize the counts to probabilities
                     total_shots = sum(bitstring_counts.values())
                     probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
+
                     # Convert to quasi-probabilities
                     counts = QuasiDistribution(probabilities)
-                    result.append({k: v for k, v in counts.items() if int(k) < self.len_quasi_dist})
+                    result.append(
+                        {k: v for k, v in counts.items() if int(k) < self._len_quasi_dist}
+                    )
                     opt = options
 
             for dist_plus, dist_minus in zip(result[: n // 2], result[n // 2 :]):

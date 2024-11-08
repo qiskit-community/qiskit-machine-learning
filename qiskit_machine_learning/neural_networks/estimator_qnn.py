@@ -265,10 +265,12 @@ class EstimatorQNN(NeuralNetwork):
             results = job.result().values
 
         elif isinstance(self.estimator, BaseEstimatorV2):
+
             # Prepare circuit-observable-parameter tuples (PUBs)
             circuit_observable_params = []
             for observable in self._observables:
                 circuit_observable_params.append((self._circuit, observable, parameter_values_))
+
             # For BaseEstimatorV2, run the estimator using PUBs and specified precision
             job = self.estimator.run(circuit_observable_params, precision=self._default_precision)
             results = [result.data.evs for result in job.result()]
@@ -329,9 +331,7 @@ class EstimatorQNN(NeuralNetwork):
 
             elif len(parameter_values[0]) > self._num_inputs:
                 params = [self._circuit.parameters[self._num_inputs :]] * num_circuits
-                job = self.gradient.run(
-                    circuits, observables, param_values, parameters=params  # type: ignore[arg-type]
-                )
+                job = self.gradient.run(circuits, observables, param_values, parameters=params)
 
             if job is not None:
                 try:

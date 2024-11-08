@@ -192,7 +192,7 @@ class ComputeUncompute(BaseStateFidelity):
         else:
             raise QiskitMachineLearningError(
                 "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got"
-                + f" {type(self.sampler)} instead."
+                + f" {type(self._sampler)} instead."
             )
         return AlgorithmJob(
             ComputeUncompute._call,

@@ -98,7 +98,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
         self,
         circuits: Sequence[QuantumCircuit],
         observables: Sequence[BaseOperator],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
         **options,
     ) -> EstimatorGradientResult:
