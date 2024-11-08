@@ -22,7 +22,7 @@ def deprecate_function(deprecated: str, version: str, remedy: str, stacklevel: i
         deprecated: Function being deprecated.
         version: First release the function is deprecated.
         remedy: User action to take.
-        stacklevel: The warning stackevel to use.
+        stacklevel: The warning stack-level to use.
 
     Returns:
         The decorated, deprecated callable.
@@ -54,7 +54,7 @@ def deprecate_arguments(deprecated: str, version: str, remedy: str, stacklevel: 
         deprecated: Keyword arguments being deprecated.
         version: First release the function is deprecated.
         remedy: User action to take.
-        stacklevel: The warning stackevel to use.
+        stacklevel: The warning stack-level to use.
     """
     issue_deprecation_msg(
         f"The '{deprecated}' keyword arguments are deprecated",
@@ -73,7 +73,7 @@ def issue_deprecation_msg(
         msg: Deprecation message.
         version: First release the function is deprecated.
         remedy: User action to take.
-        stacklevel: The warning stackevel to use.
+        stacklevel: The warning stack-level to use.
         period: Deprecation period.
     """
     warnings.warn(
