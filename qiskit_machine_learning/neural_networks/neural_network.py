@@ -293,9 +293,9 @@ class NeuralNetwork(ABC):
 
         if len(parameters) != (self.num_inputs + self.num_weights):
             raise ValueError(
-                f"Number of circuit parameters {len(parameters)}"
-                f" mismatch with sum of num inputs and weights"
-                f" {self.num_inputs + self.num_weights}"
+                f"Number of circuit parameters ({len(parameters)})"
+                f" does not match the sum of number of inputs  and weights"
+                f" ({self.num_inputs + self.num_weights})."
             )
 
         new_input_params = ParameterVector("inputs", self.num_inputs)
