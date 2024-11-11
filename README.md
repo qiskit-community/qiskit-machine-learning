@@ -17,8 +17,9 @@ Kernels and Quantum Neural Networks, used in various applications including clas
 and regression.
 
 This library is part of the Qiskit Community ecosystem, a collection of high-level codes that are based
-on the Qiskit software development kit. As of version `0.7.0`, Qiskit Machine Learning is co-maintained
-by IBM and the Hartree Center, part of the UK Science and Technologies Facilities Council (STFC).
+on the Qiskit software development kit. As of version `0.7`, Qiskit Machine Learning is co-maintained
+by IBM and the [Hartree Center](https://www.hartree.stfc.ac.uk/), part of the UK Science and 
+Technologies Facilities Council (STFC).
 
 The Qiskit Machine Learning framework aims to be:
 
@@ -97,7 +98,7 @@ For more details on how to do so and much more, follow the instructions in the
 ## Migration to Qiskit 1.x
 > [!NOTE]
 > Qiskit Machine Learning depends on Qiskit, which will be automatically installed as a 
-> dependency when you install Qiskit Machine Learning. From version `0.8.0` of Qiskit Machine 
+> dependency when you install Qiskit Machine Learning. From version `0.8` of Qiskit Machine 
 > Learning, Qiskit `1.0` or above will be required. If you have a pre-`1.0` version of Qiskit 
 > installed in your environment (however it was installed), you should upgrade to `1.x` to 
 > continue using the latest features. You may refer to the 
@@ -174,8 +175,10 @@ By participating, you are expected to uphold this code.
 
 We use [GitHub issues](https://github.com/qiskit-community/qiskit-machine-learning/issues) for tracking requests and bugs. Please
 [join the Qiskit Slack community](https://qisk.it/join-slack)
-and for discussion and simple questions.
-For questions that are more suited for a forum, we use the **Qiskit** tag in [Stack Overflow](https://stackoverflow.com/questions/tagged/qiskit).
+and use the [`#qiskit-machine-learning`](https://qiskit.enterprise.slack.com/archives/C07JE3V55C1) 
+channel for discussions and short questions.
+For questions that are more suited for a forum, you can use the **Qiskit** tag in [Stack Overflow]
+(https://stackoverflow.com/questions/tagged/qiskit).
 
 ## Humans behind Qiskit Machine Learning
 

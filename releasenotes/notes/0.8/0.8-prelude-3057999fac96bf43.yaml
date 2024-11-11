@@ -1,0 +1,8 @@
+---
+prelude: >
+    From this release, Qiskit Machine Learning requires Qiskit `1.0` or above, with important
+    changes and upgrades, such as the introduction of Quantum Bayesian inference and the migration
+    of a subset of Qiskit Algorithms features to Qiskit Machine Learning. These changes are
+    part of the process to build full compatibility with the version-2 (V2) Qiskit primitives
+    available from version `0.8` of Qiskit Machine Learning. V1 primitives are deprecated and
+    will be removed from version `0.9` (please find more information below).
