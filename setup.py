@@ -16,12 +16,16 @@ import sys
 import os
 import re
 
-with open('requirements.txt') as f:
+with open("requirements.txt") as f:
     REQUIREMENTS = f.read().splitlines()
 
-if not hasattr(setuptools, 'find_namespace_packages') or not inspect.ismethod(setuptools.find_namespace_packages):
-    print("Your setuptools version:'{}' does not support PEP 420 (find_namespace_packages). "
-          "Upgrade it to version >='40.1.0' and repeat install.".format(setuptools.__version__))
+if not hasattr(setuptools, "find_namespace_packages") or not inspect.ismethod(
+    setuptools.find_namespace_packages
+):
+    print(
+        "Your setuptools version:'{}' does not support PEP 420 (find_namespace_packages). "
+        "Upgrade it to version >='40.1.0' and repeat install.".format(setuptools.__version__)
+    )
     sys.exit(1)
 
 VERSION_PATH = os.path.join(os.path.dirname(__file__), "qiskit_machine_learning", "VERSION.txt")
@@ -39,15 +43,15 @@ with open(README_PATH) as readme_file:
     )
 
 setuptools.setup(
-    name='qiskit-machine-learning',
+    name="qiskit-machine-learning",
     version=VERSION,
-    description='Qiskit Machine Learning: A library of quantum computing machine learning experiments',
+    description="Qiskit Machine Learning: A library of quantum computing machine learning experiments",
     long_description=README,
     long_description_content_type="text/markdown",
-    url='https://github.com/qiskit-community/qiskit-machine-learning',
-    author='Qiskit Machine Learning Development Team',
-    author_email='qiskit@us.ibm.com',
-    license='Apache-2.0',
+    url="https://github.com/qiskit-community/qiskit-machine-learning",
+    author="Qiskit Machine Learning Development Team",
+    author_email="qiskit@us.ibm.com",
+    license="Apache-2.0",
     classifiers=[
         "Environment :: Console",
         "License :: OSI Approved :: Apache Software License",
@@ -61,21 +65,23 @@ setuptools.setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
-        "Topic :: Scientific/Engineering"
+        "Topic :: Scientific/Engineering",
     ],
-    keywords='qiskit sdk quantum machine learning ml',
-    packages=setuptools.find_packages(include=['qiskit_machine_learning','qiskit_machine_learning.*']),
+    keywords="qiskit sdk quantum machine learning ml",
+    packages=setuptools.find_packages(
+        include=["qiskit_machine_learning", "qiskit_machine_learning.*"]
+    ),
     install_requires=REQUIREMENTS,
     include_package_data=True,
     python_requires=">=3.9",
     extras_require={
-        'torch': ["torch"],
-        'sparse': ["sparse"],
+        "torch": ["torch"],
+        "sparse": ["sparse"],
     },
     project_urls={
         "Bug Tracker": "https://github.com/qiskit-community/qiskit-machine-learning/issues",
         "Documentation": "https://qiskit-community.github.io/qiskit-machine-learning/",
         "Source Code": "https://github.com/qiskit-community/qiskit-machine-learning",
     },
-    zip_safe=False
+    zip_safe=False,
 )

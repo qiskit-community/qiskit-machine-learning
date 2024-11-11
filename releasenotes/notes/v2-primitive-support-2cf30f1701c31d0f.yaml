@@ -1,0 +1,35 @@
+---
+features:
+  - |
+    **Support for V2 Primitives**:
+    The `EstimatorQNN` and `SamplerQNN` classes now support `V2` primitives
+    (`EstimatorV2` and `SamplerV2`), allowing direct execution on IBM Quantum backends.
+    This enhancement ensures compatibility with Qiskit IBM Runtime’s Primitive Unified
+    Block (PUB) requirements and instruction set architecture (ISA) constraints for
+    circuits and observables. Users can switch between `V1` primitives
+    and `V2` primitives from version `0.8`. From version `0.9`, V1 primitives will be
+    removed.
+
+upgrade:
+  - |
+    Users working with real backends are advised to migrate to `V2` primitives
+    (`EstimatorV2` and `SamplerV2`) to ensure compatibility with Qiskit IBM Runtime
+    hardware requirements. These `V2` primitives will become the standard in
+    the `0.8` release going forward, while `V1` primitives are deprecated.
+
+deprecations:
+  - |
+    **Deprecated V1 Primitives**:
+    The `V1` primitives (e.g., `EstimatorV1` and `SamplerV1`) are no longer compatible
+    with real quantum backends via Qiskit IBM Runtime. This update provides initial
+    transitional support, but `V1` primitives may be fully deprecated and removed in
+    version `0.9`. Users should adopt `V2` primitives for both local and hardware
+    executions to ensure long-term compatibility.
+
+known_issues:
+  - |
+    **Optimizer compatibility may be unstable**:
+    Current implementations of `EstimatorQNN` and `SamplerQNN` using `V2` primitives
+    may require further testing with optimizers, especially those depending on gradient
+    calculations. Users are advised to use optimizers with caution and report any
+    issues related to optimizer compatibility in Qiskit Machine Learning’s issue tracker.
