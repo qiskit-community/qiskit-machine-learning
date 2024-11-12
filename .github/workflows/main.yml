@@ -225,36 +225,36 @@ jobs:
         with:
           name: tutorials${{ matrix.python-version }}
           path: docs/_build/html/artifacts/tutorials.tar.gz
-#      - name: Run stable tutorials
-#        env:
-#          QISKIT_PARALLEL: False
-#          QISKIT_DOCS_BUILD_TUTORIALS: 'always'
-#        run: |
-#          # clean last sphinx output
-#          make clean_sphinx
-#          # get current version
-#          version=$(pip show qiskit-machine-learning | awk -F. '/^Version:/ { print substr($1,10), $2-1 }' OFS=.)
-#          # download stable version
-#          wget https://codeload.github.com/qiskit-community/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
-#          unzip /tmp/repo.zip -d /tmp/
-#          # copy stable tutorials to main tutorials
-#          cp -R /tmp/qiskit-machine-learning-stable-$version/docs/tutorials/* docs/tutorials
-#          # run tutorials and zip results
-#          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
-#          # ignore unreleased/untagged notes
-#          tools/ignore_untagged_notes.sh
-#          make html
-#          cd docs/_build/html
-#          mkdir artifacts
-#          tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
-#        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
-#        shell: bash
-#      - name: Run upload stable tutorials
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: tutorials-stable${{ matrix.python-version }}
-#          path: docs/_build/html/artifacts/tutorials.tar.gz
-#        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+      - name: Run stable tutorials
+        env:
+          QISKIT_PARALLEL: False
+          QISKIT_DOCS_BUILD_TUTORIALS: 'always'
+        run: |
+          # clean last sphinx output
+          make clean_sphinx
+          # get current version
+          version=$(pip show qiskit-machine-learning | awk -F. '/^Version:/ { print substr($1,10), $2-1 }' OFS=.)
+          # download stable version
+          wget https://codeload.github.com/qiskit-community/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
+          unzip /tmp/repo.zip -d /tmp/
+          # copy stable tutorials to main tutorials
+          cp -R /tmp/qiskit-machine-learning-stable-$version/docs/tutorials/* docs/tutorials
+          # run tutorials and zip results
+          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
+          # ignore unreleased/untagged notes
+          tools/ignore_untagged_notes.sh
+          make html
+          cd docs/_build/html
+          mkdir artifacts
+          tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+        shell: bash
+      - name: Run upload stable tutorials
+        uses: actions/upload-artifact@v4
+        with:
+          name: tutorials-stable${{ matrix.python-version }}
+          path: docs/_build/html/artifacts/tutorials.tar.gz
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
   Deprecation_Messages_and_Coverage:
     needs: [Checks, MachineLearning, Tutorials]
     runs-on: ubuntu-latest
