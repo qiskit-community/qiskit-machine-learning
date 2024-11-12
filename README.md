@@ -152,8 +152,14 @@ By participating, you are expected to uphold this code.
 
 We use [GitHub issues](https://github.com/qiskit-community/qiskit-machine-learning/issues) for tracking requests and bugs. Please
 [join the Qiskit Slack community](https://qisk.it/join-slack)
+<<<<<<< HEAD
 and for discussion and simple questions.
 For questions that are more suited for a forum, we use the **Qiskit** tag in [Stack Overflow](https://stackoverflow.com/questions/tagged/qiskit).
+=======
+and use the [`#qiskit-machine-learning`](https://qiskit.enterprise.slack.com/archives/C07JE3V55C1) 
+channel for discussions and short questions.
+For questions that are more suited for a forum, you can use the **Qiskit** tag in [Stack Overflow](https://stackoverflow.com/questions/tagged/qiskit).
+>>>>>>> 6a30bdf (Fix StackOverflow formatting typo in `README.md` (#847))
 
 ## Authors and Citation
 
