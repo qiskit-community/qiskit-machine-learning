@@ -38,6 +38,7 @@ jobs:
         run: |
           pip install jupyter qiskit[visualization] 'torchvision<0.10.0'
           sudo apt-get install -y pandoc graphviz
+          pip install -I numpy==1.26.4
         shell: bash
       - name: Build docs
         env:
