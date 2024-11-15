@@ -4,15 +4,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>qiskit_machine_learning.algorithms.objective_functions - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>qiskit_machine_learning.algorithms.objective_functions - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -392,7 +394,7 @@
           <h1>Source code for qiskit_machine_learning.algorithms.objective_functions</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2023.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2024.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -409,9 +411,9 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">qiskit_machine_learning.optionals</span> <span class="k">as</span> <span class="nn">_optionals</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">NeuralNetwork</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils.loss_functions</span> <span class="kn">import</span> <span class="n">Loss</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">optionals</span> <span class="k">as</span> <span class="n">_optionals</span>
+<span class="kn">from</span> <span class="nn">..neural_networks</span> <span class="kn">import</span> <span class="n">NeuralNetwork</span>
+<span class="kn">from</span> <span class="nn">..utils.loss_functions</span> <span class="kn">import</span> <span class="n">Loss</span>
 
 <span class="k">if</span> <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="p">:</span>
     <span class="c1"># pylint: disable=import-error</span>
@@ -426,7 +428,9 @@
         <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="ObjectiveFunction"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html#qiskit_machine_learning.algorithms.ObjectiveFunction">[docs]</a><span class="k">class</span> <span class="nc">ObjectiveFunction</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectiveFunction">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html#qiskit_machine_learning.algorithms.ObjectiveFunction">[docs]</a>
+<span class="k">class</span> <span class="nc">ObjectiveFunction</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An abstract objective function. Provides methods for computing objective value and</span>
 <span class="sd">    gradients for forward and backward passes.&quot;&quot;&quot;</span>
 
@@ -451,7 +455,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_forward_weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_forward</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">SparseArray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="ObjectiveFunction.objective"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html#qiskit_machine_learning.algorithms.ObjectiveFunction.objective">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="ObjectiveFunction.objective">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html#qiskit_machine_learning.algorithms.ObjectiveFunction.objective">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the value of this objective function given weights.</span>
 
@@ -463,7 +469,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="ObjectiveFunction.gradient"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html#qiskit_machine_learning.algorithms.ObjectiveFunction.gradient">[docs]</a>    <span class="nd">@abstractmethod</span>
+
+<div class="viewcode-block" id="ObjectiveFunction.gradient">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html#qiskit_machine_learning.algorithms.ObjectiveFunction.gradient">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes gradients of this objective function given weights.</span>
 
@@ -474,6 +483,7 @@
 <span class="sd">            Gradients of the function.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
 
     <span class="k">def</span> <span class="nf">_neural_network_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">SparseArray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -498,18 +508,26 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_forward</span></div>
 
 
-<div class="viewcode-block" id="BinaryObjectiveFunction"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html#qiskit_machine_learning.algorithms.BinaryObjectiveFunction">[docs]</a><span class="k">class</span> <span class="nc">BinaryObjectiveFunction</span><span class="p">(</span><span class="n">ObjectiveFunction</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BinaryObjectiveFunction">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html#qiskit_machine_learning.algorithms.BinaryObjectiveFunction">[docs]</a>
+<span class="k">class</span> <span class="nc">BinaryObjectiveFunction</span><span class="p">(</span><span class="n">ObjectiveFunction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An objective function for binary representation of the output. For instance, classes of</span>
 <span class="sd">    ``-1`` and ``+1``.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BinaryObjectiveFunction.objective"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html#qiskit_machine_learning.algorithms.BinaryObjectiveFunction.objective">[docs]</a>    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="BinaryObjectiveFunction.objective">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html#qiskit_machine_learning.algorithms.BinaryObjectiveFunction.objective">[docs]</a>
+    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="c1"># predict is of shape (N, 1), where N is a number of samples</span>
         <span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network_forward</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">predict</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="c1"># float(...) is for mypy compliance</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_samples</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BinaryObjectiveFunction.gradient"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html#qiskit_machine_learning.algorithms.BinaryObjectiveFunction.gradient">[docs]</a>    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="BinaryObjectiveFunction.gradient">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html#qiskit_machine_learning.algorithms.BinaryObjectiveFunction.gradient">[docs]</a>
+    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="c1"># check that we have supported output shape</span>
         <span class="n">num_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">num_outputs</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
@@ -530,16 +548,22 @@
         <span class="c1"># we keep the shape of (1, num_weights)</span>
         <span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_samples</span>
 
-        <span class="k">return</span> <span class="n">grad</span></div></div>
+        <span class="k">return</span> <span class="n">grad</span></div>
+</div>
 
 
-<div class="viewcode-block" id="MultiClassObjectiveFunction"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html#qiskit_machine_learning.algorithms.MultiClassObjectiveFunction">[docs]</a><span class="k">class</span> <span class="nc">MultiClassObjectiveFunction</span><span class="p">(</span><span class="n">ObjectiveFunction</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MultiClassObjectiveFunction">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html#qiskit_machine_learning.algorithms.MultiClassObjectiveFunction">[docs]</a>
+<span class="k">class</span> <span class="nc">MultiClassObjectiveFunction</span><span class="p">(</span><span class="n">ObjectiveFunction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An objective function for multiclass representation of the output. For instance, classes of</span>
 <span class="sd">    ``0``, ``1``, ``2``, etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MultiClassObjectiveFunction.objective"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html#qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.objective">[docs]</a>    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="MultiClassObjectiveFunction.objective">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html#qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.objective">[docs]</a>
+    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="c1"># probabilities is of shape (N, num_outputs)</span>
         <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network_forward</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
@@ -556,7 +580,10 @@
 
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="MultiClassObjectiveFunction.gradient"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html#qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.gradient">[docs]</a>    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MultiClassObjectiveFunction.gradient">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html#qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.gradient">[docs]</a>
+    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="c1"># weight probability gradient is of shape (N, num_outputs, num_weights)</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">weight_prob_grad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
@@ -569,23 +596,32 @@
             <span class="n">grad</span> <span class="o">+=</span> <span class="n">weight_prob_grad</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">)</span>
 
         <span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_samples</span>
-        <span class="k">return</span> <span class="n">grad</span></div></div>
+        <span class="k">return</span> <span class="n">grad</span></div>
+</div>
 
 
-<div class="viewcode-block" id="OneHotObjectiveFunction"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html#qiskit_machine_learning.algorithms.OneHotObjectiveFunction">[docs]</a><span class="k">class</span> <span class="nc">OneHotObjectiveFunction</span><span class="p">(</span><span class="n">ObjectiveFunction</span><span class="p">):</span>
+
+<div class="viewcode-block" id="OneHotObjectiveFunction">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html#qiskit_machine_learning.algorithms.OneHotObjectiveFunction">[docs]</a>
+<span class="k">class</span> <span class="nc">OneHotObjectiveFunction</span><span class="p">(</span><span class="n">ObjectiveFunction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An objective function for one hot encoding representation of the output. For instance, classes</span>
 <span class="sd">    like ``[1, 0, 0]``, ``[0, 1, 0]``, ``[0, 0, 1]``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="OneHotObjectiveFunction.objective"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html#qiskit_machine_learning.algorithms.OneHotObjectiveFunction.objective">[docs]</a>    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="OneHotObjectiveFunction.objective">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html#qiskit_machine_learning.algorithms.OneHotObjectiveFunction.objective">[docs]</a>
+    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="c1"># probabilities is of shape (N, num_outputs)</span>
         <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network_forward</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="c1"># float(...) is for mypy compliance</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_samples</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="OneHotObjectiveFunction.gradient"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html#qiskit_machine_learning.algorithms.OneHotObjectiveFunction.gradient">[docs]</a>    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="OneHotObjectiveFunction.gradient">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html#qiskit_machine_learning.algorithms.OneHotObjectiveFunction.gradient">[docs]</a>
+    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="c1"># predict is of shape (N, num_outputs)</span>
         <span class="n">y_predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network_forward</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="c1"># weight probability gradient is of shape (N, num_outputs, num_weights)</span>
@@ -601,7 +637,9 @@
             <span class="n">grad</span> <span class="o">+=</span> <span class="n">loss_gradient</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">weight_prob_grad</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
 
         <span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_samples</span>
-        <span class="k">return</span> <span class="n">grad</span></div></div>
+        <span class="k">return</span> <span class="n">grad</span></div>
+</div>
+
 </pre></div>
         </article>
       </div>
@@ -648,12 +686,12 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>
     <script src="../../../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

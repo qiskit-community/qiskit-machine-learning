@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Machine Learning Tutorials" href="../tutorials/index.html" /><link rel="prev" title="Qiskit Machine Learning Migration Guide" href="index.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Qiskit Machine Learning v0.5 Migration Guide - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Qiskit Machine Learning v0.5 Migration Guide - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,11 +393,11 @@
         </div>
         <article role="main">
           <br><br><br><section id="qiskit-machine-learning-v0-5-migration-guide">
-<h1>Qiskit Machine Learning v0.5 Migration Guide<a class="headerlink" href="#qiskit-machine-learning-v0-5-migration-guide" title="Permalink to this heading">#</a></h1>
+<h1>Qiskit Machine Learning v0.5 Migration Guide<a class="headerlink" href="#qiskit-machine-learning-v0-5-migration-guide" title="Link to this heading">¶</a></h1>
 <p>This tutorial will guide you through the process of migrating your code
 from Qiskit Machine Learning v0.4 to v0.5.</p>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>The main focus of the 0.5 release of Qiskit Machine Learning is the
 migration of the base computational blocks like quantum kernels and
 quantum neural networks to the primitives introduced in Qiskit as well
@@ -409,7 +411,7 @@ as extended support of the primitives in the algorithms.</p>
 </ul>
 </section>
 <section id="overview-of-the-primitives">
-<h2>Overview of the primitives<a class="headerlink" href="#overview-of-the-primitives" title="Permalink to this heading">#</a></h2>
+<h2>Overview of the primitives<a class="headerlink" href="#overview-of-the-primitives" title="Link to this heading">¶</a></h2>
 <p>The core capability of quantum computers that sets them apart from from
 classical computers is their ability to generate non-classical
 probability distributions at their outputs. The native operations that
@@ -471,7 +473,7 @@ share the same method signatures, so they may be called as high level
 primitives despite they are not in the primitives package.</p>
 </section>
 <section id="new-quantum-kernel">
-<h2>New quantum kernel<a class="headerlink" href="#new-quantum-kernel" title="Permalink to this heading">#</a></h2>
+<h2>New quantum kernel<a class="headerlink" href="#new-quantum-kernel" title="Link to this heading">¶</a></h2>
 <p>The previous implementation consisted of a single class
 <code class="docutils literal notranslate"><span class="pre">QuantumKernel</span></code> that did everything:</p>
 <ul class="simple">
@@ -537,7 +539,7 @@ implementations.</p>
 <p>For example a QSVM classifier can be trained as follows.</p>
 </section>
 <section id="create-a-dataset">
-<h2>Create a dataset<a class="headerlink" href="#create-a-dataset" title="Permalink to this heading">#</a></h2>
+<h2>Create a dataset<a class="headerlink" href="#create-a-dataset" title="Link to this heading">¶</a></h2>
 <p>Fixing randomization.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
 
@@ -557,7 +559,7 @@ implementations.</p>
 </pre></div>
 </div>
 <section id="previous-implementation-of-quantum-kernel">
-<h3>Previous implementation of quantum kernel<a class="headerlink" href="#previous-implementation-of-quantum-kernel" title="Permalink to this heading">#</a></h3>
+<h3>Previous implementation of quantum kernel<a class="headerlink" href="#previous-implementation-of-quantum-kernel" title="Link to this heading">¶</a></h3>
 <p>In the previous implementation we start from creating an instance of
 <code class="docutils literal notranslate"><span class="pre">QuantumInstance</span></code>. This class defines where our quantum circuits are
 executed. In this case we wrap a statevector simulator in the quantum
@@ -593,7 +595,7 @@ instance.</p>
 </div>
 </section>
 <section id="new-implementation-of-quantum-kernel">
-<h3>New implementation of quantum kernel<a class="headerlink" href="#new-implementation-of-quantum-kernel" title="Permalink to this heading">#</a></h3>
+<h3>New implementation of quantum kernel<a class="headerlink" href="#new-implementation-of-quantum-kernel" title="Link to this heading">¶</a></h3>
 <p>In the new implementation we start from creating a Fidelity instance.
 Fidelity is optional and quantum kernel will create it automatically if
 none is passed. But here, we create it manually for illustrative
@@ -629,7 +631,7 @@ to leverage Qiskit runtime services.</p>
 </section>
 </section>
 <section id="new-quantum-neural-networks">
-<h2>New quantum neural networks<a class="headerlink" href="#new-quantum-neural-networks" title="Permalink to this heading">#</a></h2>
+<h2>New quantum neural networks<a class="headerlink" href="#new-quantum-neural-networks" title="Link to this heading">¶</a></h2>
 <p>Changes in the quantum neural networks are not as dramatic as in quantum
 kernels. In addition, and as a replacement to the existing neural
 networks, two new networks are introduced. The new networks introduced
@@ -644,7 +646,7 @@ and
 <code class="docutils literal notranslate"><span class="pre">TwoLayerQNN</span></code>
 which are now pending deprecated.</p>
 <section id="samplerqnn">
-<h3>SamplerQNN<a class="headerlink" href="#samplerqnn" title="Permalink to this heading">#</a></h3>
+<h3>SamplerQNN<a class="headerlink" href="#samplerqnn" title="Link to this heading">¶</a></h3>
 <p>A new <a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">Sampler Quantum Neural
 Network</a>
 leverages the sampler primitive, sampler gradients and is a <strong>direct
@@ -704,7 +706,7 @@ function that maps bitstrings either to <span class="math notranslate nohighligh
 </div>
 </section>
 <section id="building-a-classifier-using-circuitqnn">
-<h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code><a class="headerlink" href="#building-a-classifier-using-circuitqnn" title="Permalink to this heading">#</a></h3>
+<h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code><a class="headerlink" href="#building-a-classifier-using-circuitqnn" title="Link to this heading">¶</a></h3>
 <p>We create a <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code> instance and re-use the quantum instance
 created for the quantum kernel.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">CircuitQNN</span>
@@ -741,7 +743,7 @@ small number to reduce overall execution time.</p>
 </div>
 </section>
 <section id="building-a-classifier-using-samplerqnn">
-<h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#building-a-classifier-using-samplerqnn" title="Permalink to this heading">#</a></h3>
+<h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#building-a-classifier-using-samplerqnn" title="Link to this heading">¶</a></h3>
 <p>Instead of <code class="docutils literal notranslate"><span class="pre">QuantumInstance</span></code> create an instance of the reference
 <code class="docutils literal notranslate"><span class="pre">Sampler</span></code>.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
@@ -785,7 +787,7 @@ what is passed it automatically constructs either <code class="docutils literal 
 <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> respectively.</p>
 </section>
 <section id="estimatorqnn">
-<h3>EstimatorQNN<a class="headerlink" href="#estimatorqnn" title="Permalink to this heading">#</a></h3>
+<h3>EstimatorQNN<a class="headerlink" href="#estimatorqnn" title="Link to this heading">¶</a></h3>
 <p>A new <a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">Estimator quantum neural
 network</a>
 leverages the estimator primitive, estimator gradients and is a <strong>direct
@@ -847,7 +849,7 @@ into a single quantum circuit for both quantum neural networks.</p>
 </div>
 </section>
 <section id="building-a-regressor-using-opflowqnn">
-<h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code><a class="headerlink" href="#building-a-regressor-using-opflowqnn" title="Permalink to this heading">#</a></h3>
+<h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code><a class="headerlink" href="#building-a-regressor-using-opflowqnn" title="Link to this heading">¶</a></h3>
 <p>We create an <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code> instance and re-use the quantum instance
 created for the quantum kernel.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.opflow</span> <span class="kn">import</span> <span class="n">PauliSumOp</span><span class="p">,</span> <span class="n">StateFn</span>
@@ -885,7 +887,7 @@ quickly.</p>
 </div>
 </section>
 <section id="building-a-regressor-using-estimatorqnn">
-<h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#building-a-regressor-using-estimatorqnn" title="Permalink to this heading">#</a></h3>
+<h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#building-a-regressor-using-estimatorqnn" title="Link to this heading">¶</a></h3>
 <p>Create an instance of the reference Estimator. You may create an
 estimator instance from
 <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService">QiskitRuntimeService</a>
@@ -935,7 +937,7 @@ on what is passed it automatically constructs either <code class="docutils liter
 </section>
 </section>
 <section id="other-notable-deprecation">
-<h2>Other notable deprecation<a class="headerlink" href="#other-notable-deprecation" title="Permalink to this heading">#</a></h2>
+<h2>Other notable deprecation<a class="headerlink" href="#other-notable-deprecation" title="Link to this heading">¶</a></h2>
 <p>A few other components, not mentioned explicitly above, are also
 deprecated or pending deprecation:</p>
 <ul class="simple">
@@ -1070,11 +1072,11 @@ to leverage primitives and runtimes.</p></li>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

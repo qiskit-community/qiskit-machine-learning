@@ -4,15 +4,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>qiskit_machine_learning.neural_networks.estimator_qnn - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>qiskit_machine_learning.neural_networks.estimator_qnn - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -407,29 +409,35 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
-
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
 <span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">QuantumCircuit</span>
-<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">Estimator</span><span class="p">,</span> <span class="n">EstimatorResult</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives.base</span> <span class="kn">import</span> <span class="n">BaseEstimatorV2</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">BaseEstimatorV1</span><span class="p">,</span> <span class="n">Estimator</span><span class="p">,</span> <span class="n">EstimatorResult</span>
 <span class="kn">from</span> <span class="nn">qiskit.quantum_info</span> <span class="kn">import</span> <span class="n">SparsePauliOp</span>
 <span class="kn">from</span> <span class="nn">qiskit.quantum_info.operators.base_operator</span> <span class="kn">import</span> <span class="n">BaseOperator</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.gradients</span> <span class="kn">import</span> <span class="p">(</span>
+
+
+<span class="kn">from</span> <span class="nn">..gradients</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseEstimatorGradient</span><span class="p">,</span>
     <span class="n">EstimatorGradientResult</span><span class="p">,</span>
     <span class="n">ParamShiftEstimatorGradient</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.circuit.library</span> <span class="kn">import</span> <span class="n">QNNCircuit</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.exceptions</span> <span class="kn">import</span> <span class="n">QiskitMachineLearningError</span>
-
+<span class="kn">from</span> <span class="nn">..circuit.library</span> <span class="kn">import</span> <span class="n">QNNCircuit</span>
+<span class="kn">from</span> <span class="nn">..exceptions</span> <span class="kn">import</span> <span class="n">QiskitMachineLearningError</span>
+<span class="kn">from</span> <span class="nn">..utils.deprecation</span> <span class="kn">import</span> <span class="n">issue_deprecation_msg</span>
 <span class="kn">from</span> <span class="nn">.neural_network</span> <span class="kn">import</span> <span class="n">NeuralNetwork</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EstimatorQNN"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#qiskit_machine_learning.neural_networks.EstimatorQNN">[docs]</a><span class="k">class</span> <span class="nc">EstimatorQNN</span><span class="p">(</span><span class="n">NeuralNetwork</span><span class="p">):</span>
+<div class="viewcode-block" id="EstimatorQNN">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#qiskit_machine_learning.neural_networks.EstimatorQNN">[docs]</a>
+<span class="k">class</span> <span class="nc">EstimatorQNN</span><span class="p">(</span><span class="n">NeuralNetwork</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A neural network implementation based on the Estimator primitive.</span>
 
 <span class="sd">    The ``EstimatorQNN`` is a neural network that takes in a parametrized quantum circuit</span>
@@ -456,7 +464,7 @@
 <span class="sd">        num_qubits = 2</span>
 
 <span class="sd">        # Using the QNNCircuit:</span>
-<span class="sd">        # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map</span>
+<span class="sd">        # Create a parametrized 2 qubit circuit composed of the default ZZFeatureMap feature map</span>
 <span class="sd">        # and RealAmplitudes ansatz.</span>
 <span class="sd">        qnn_qc = QNNCircuit(num_qubits)</span>
 
@@ -497,12 +505,14 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">circuit</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span>
-        <span class="n">estimator</span><span class="p">:</span> <span class="n">BaseEstimator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">estimator</span><span class="p">:</span> <span class="n">BaseEstimator</span> <span class="o">|</span> <span class="n">BaseEstimatorV2</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">observables</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">BaseOperator</span><span class="p">]</span> <span class="o">|</span> <span class="n">BaseOperator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">input_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weight_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">gradient</span><span class="p">:</span> <span class="n">BaseEstimatorGradient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">input_gradients</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">num_virtual_qubits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_precision</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.015625</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -519,41 +529,78 @@
 <span class="sd">            input_params: The parameters that correspond to the input data of the network.</span>
 <span class="sd">                If ``None``, the input data is not bound to any parameters.</span>
 <span class="sd">                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the</span>
-<span class="sd">                `input_params` value here is ignored. Instead the value is taken from the</span>
+<span class="sd">                `input_params` value here is ignored. Instead, the value is taken from the</span>
 <span class="sd">                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` input_parameters.</span>
 <span class="sd">            weight_params: The parameters that correspond to the trainable weights.</span>
 <span class="sd">                If ``None``, the weights are not bound to any parameters.</span>
 <span class="sd">                If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the</span>
-<span class="sd">                `weight_params` value here is ignored. Instead the value is taken from the</span>
+<span class="sd">                `weight_params` value here is ignored. Instead, the value is taken from the</span>
 <span class="sd">                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.</span>
 <span class="sd">            gradient: The estimator gradient to be used for the backward pass.</span>
 <span class="sd">                If None, a default instance of the estimator gradient,</span>
-<span class="sd">                :class:`~qiskit_algorithms.gradients.ParamShiftEstimatorGradient`, will be used.</span>
+<span class="sd">                :class:`~qiskit_machine_learning.gradients.ParamShiftEstimatorGradient`, will be used.</span>
 <span class="sd">            input_gradients: Determines whether to compute gradients with respect to input data.</span>
 <span class="sd">                Note that this parameter is ``False`` by default, and must be explicitly set to</span>
 <span class="sd">                ``True`` for a proper gradient computation when using</span>
 <span class="sd">                :class:`~qiskit_machine_learning.connectors.TorchConnector`.</span>
+<span class="sd">            num_virtual_qubits: Number of virtual qubits.</span>
+<span class="sd">            default_precision: The default precision for the estimator if not specified during run.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: Invalid parameter values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">estimator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">BaseEstimatorV1</span><span class="p">):</span>
+            <span class="n">issue_deprecation_msg</span><span class="p">(</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;V1 Primitives are deprecated&quot;</span><span class="p">,</span>
+                <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.8.0&quot;</span><span class="p">,</span>
+                <span class="n">remedy</span><span class="o">=</span><span class="s2">&quot;Use V2 primitives for continued compatibility and support.&quot;</span><span class="p">,</span>
+                <span class="n">period</span><span class="o">=</span><span class="s2">&quot;4 months&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span> <span class="o">=</span> <span class="n">circuit</span>
+
+        <span class="k">if</span> <span class="n">num_virtual_qubits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No number of qubits was not specified (</span><span class="si">{</span><span class="n">num_virtual_qubits</span><span class="si">}</span><span class="s2">) and was retrieved from &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;`circuit` (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">). If `circuit` is transpiled, this may cause &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;unstable behaviour.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">num_virtual_qubits</span>
+
         <span class="k">if</span> <span class="n">observables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">observables</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([(</span><span class="s2">&quot;Z&quot;</span> <span class="o">*</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+            <span class="n">observables</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_sparse_list</span><span class="p">(</span>
+                <span class="p">[(</span><span class="s2">&quot;Z&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">),</span> <span class="mi">1</span><span class="p">)],</span>
+                <span class="n">num_qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">observables</span><span class="p">,</span> <span class="n">BaseOperator</span><span class="p">):</span>
             <span class="n">observables</span> <span class="o">=</span> <span class="p">(</span><span class="n">observables</span><span class="p">,)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_observables</span> <span class="o">=</span> <span class="n">observables</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">QNNCircuit</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">input_parameters</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_weight_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">weight_parameters</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_params</span><span class="p">)</span> <span class="k">if</span> <span class="n">input_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_weight_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">weight_params</span><span class="p">)</span> <span class="k">if</span> <span class="n">weight_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">BaseEstimatorV2</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
+                    <span class="s2">&quot;Please provide a gradient with pass manager initialised.&quot;</span>
+                <span class="p">)</span>
+
             <span class="n">gradient</span> <span class="o">=</span> <span class="n">ParamShiftEstimatorGradient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_precision</span> <span class="o">=</span> <span class="n">default_precision</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="n">gradient</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span> <span class="o">=</span> <span class="n">input_gradients</span>
 
@@ -590,7 +637,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns whether gradients with respect to input data are computed by this neural network</span>
-<span class="sd">        in the ``backward`` method or not. By default such gradients are not computed.&quot;&quot;&quot;</span>
+<span class="sd">        in the ``backward`` method or not. By default, such gradients are not computed.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span>
 
     <span class="nd">@input_gradients</span><span class="o">.</span><span class="n">setter</span>
@@ -598,25 +645,46 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn on/off computation of gradients with respect to input data.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span> <span class="o">=</span> <span class="n">input_gradients</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default precision&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_precision</span>
+
     <span class="k">def</span> <span class="nf">_forward_postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">EstimatorResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Post-processing during forward pass of the network.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 
     <span class="k">def</span> <span class="nf">_forward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the neural network.&quot;&quot;&quot;</span>
         <span class="n">parameter_values_</span><span class="p">,</span> <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_forward</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
-        <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_samples</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="p">[</span><span class="n">op</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observables</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)],</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">parameter_values_</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span>
-        <span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="s2">&quot;Estimator job failed.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
+        <span class="c1"># Determine how to run the estimator based on its version</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">BaseEstimatorV1</span><span class="p">):</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_samples</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">op</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observables</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)],</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">parameter_values_</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">BaseEstimatorV2</span><span class="p">):</span>
+
+            <span class="c1"># Prepare circuit-observable-parameter tuples (PUBs)</span>
+            <span class="n">circuit_observable_params</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">observable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observables</span><span class="p">:</span>
+                <span class="n">circuit_observable_params</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit</span><span class="p">,</span> <span class="n">observable</span><span class="p">,</span> <span class="n">parameter_values_</span><span class="p">))</span>
+
+            <span class="c1"># For BaseEstimatorV2, run the estimator using PUBs and specified precision</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_observable_params</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_precision</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">evs</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
+                <span class="s2">&quot;The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead. Note that BaseEstimatorV1 is deprecated in&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;Qiskit and removed in Qiskit IBM Runtime.&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_postprocess</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_backward_postprocess</span><span class="p">(</span>
@@ -661,8 +729,11 @@
             <span class="n">param_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">,</span> <span class="p">(</span><span class="n">num_observables</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
             <span class="n">job</span> <span class="o">=</span> <span class="kc">None</span>
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span><span class="p">:</span>
+
                 <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">observables</span><span class="p">,</span> <span class="n">param_values</span><span class="p">)</span>
+
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_inputs</span><span class="p">:</span>
                 <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_inputs</span> <span class="p">:]]</span> <span class="o">*</span> <span class="n">num_circuits</span>
                 <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">observables</span><span class="p">,</span> <span class="n">param_values</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
@@ -671,11 +742,12 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">results</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="s2">&quot;Estimator job failed.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+                    <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimator job failed. </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
                 <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backward_postprocess</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span></div>
+
 </pre></div>
         </article>
       </div>
@@ -722,12 +794,12 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>
     <script src="../../../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

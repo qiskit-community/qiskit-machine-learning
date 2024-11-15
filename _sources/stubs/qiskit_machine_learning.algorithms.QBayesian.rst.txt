@@ -1,0 +1,38 @@
+﻿
+
+QBayesian
+============================================
+
+.. currentmodule:: qiskit_machine_learning.algorithms
+
+.. autoclass:: QBayesian
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: QBayesian.converged
+   .. autoattribute:: QBayesian.limit
+   .. autoattribute:: QBayesian.sampler
+   .. autoattribute:: QBayesian.samples
+   .. autoattribute:: QBayesian.threshold
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: QBayesian.inference
+   .. automethod:: QBayesian.rejection_sampling
+
+   
+   

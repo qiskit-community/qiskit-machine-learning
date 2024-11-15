@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="NeuralNetwork" href="../stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html" /><link rel="prev" title="QuantumKernelTrainerResult" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Quantum neural networks (qiskit_machine_learning.neural_networks) - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Quantum neural networks (qiskit_machine_learning.neural_networks) - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -390,8 +392,8 @@
           </label>
         </div>
         <article role="main">
-          <br><br><br><span class="target" id="module-qiskit_machine_learning.neural_networks"><span id="qiskit-machine-learning-neural-networks"></span></span><section id="quantum-neural-networks-qiskit-machine-learning-neural-networks">
-<h1>Quantum neural networks (<a class="reference internal" href="#module-qiskit_machine_learning.neural_networks" title="qiskit_machine_learning.neural_networks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code></a>)<a class="headerlink" href="#quantum-neural-networks-qiskit-machine-learning-neural-networks" title="Permalink to this heading">#</a></h1>
+          <br><br><br><section id="quantum-neural-networks-qiskit-machine-learning-neural-networks">
+<span id="module-qiskit_machine_learning.neural_networks"></span><span id="qiskit-machine-learning-neural-networks"></span><h1>Quantum neural networks (<a class="reference internal" href="#module-qiskit_machine_learning.neural_networks" title="qiskit_machine_learning.neural_networks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code></a>)<a class="headerlink" href="#quantum-neural-networks-qiskit-machine-learning-neural-networks" title="Link to this heading">¶</a></h1>
 <p>A neural network is a parametrized network which may be defined as a artificial
 neural network - classical neural network - or as parametrized quantum circuits
 - quantum neural network. Furthermore, neural networks can be defined with respect
@@ -401,7 +403,7 @@ to a discriminative or generative task.</p>
 <p>See also the <a class="reference internal" href="../stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector" title="qiskit_machine_learning.connectors.TorchConnector"><code class="xref py py-class docutils literal notranslate"><span class="pre">TorchConnector</span></code></a> that allows the
 use of these neural networks in code written to <a class="reference external" href="https://pytorch.org/">PyTorch</a>.</p>
 <section id="neural-network-base-classes">
-<h2>Neural Network Base Classes<a class="headerlink" href="#neural-network-base-classes" title="Permalink to this heading">#</a></h2>
+<h2>Neural Network Base Classes<a class="headerlink" href="#neural-network-base-classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -413,7 +415,7 @@ use of these neural networks in code written to <a class="reference external" hr
 </div>
 </section>
 <section id="neural-networks">
-<h2>Neural Networks<a class="headerlink" href="#neural-networks" title="Permalink to this heading">#</a></h2>
+<h2>Neural Networks<a class="headerlink" href="#neural-networks" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -428,7 +430,7 @@ use of these neural networks in code written to <a class="reference external" hr
 </div>
 </section>
 <section id="neural-network-metrics">
-<h2>Neural Network Metrics<a class="headerlink" href="#neural-network-metrics" title="Permalink to this heading">#</a></h2>
+<h2>Neural Network Metrics<a class="headerlink" href="#neural-network-metrics" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -528,13 +530,15 @@ use of these neural networks in code written to <a class="reference external" hr
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

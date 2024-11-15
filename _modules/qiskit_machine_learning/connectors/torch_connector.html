@@ -4,15 +4,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>qiskit_machine_learning.connectors.torch_connector - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>qiskit_machine_learning.connectors.torch_connector - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -392,7 +394,7 @@
           <h1>Source code for qiskit_machine_learning.connectors.torch_connector</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2023.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2024.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -404,9 +406,8 @@
 
 <span class="sd">&quot;&quot;&quot;A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
-
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">ascii_lowercase</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">qiskit_machine_learning.optionals</span> <span class="k">as</span> <span class="nn">_optionals</span>
@@ -416,235 +417,304 @@
 <span class="k">if</span> <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_TORCH</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">torch</span>
 
-    <span class="c1"># imports for inheritance and type hints</span>
+    <span class="c1"># Imports for inheritance and type hints</span>
     <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
     <span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="kn">import</span> <span class="n">Function</span>
-    <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Module</span>
+    <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Module</span><span class="p">,</span> <span class="n">Parameter</span>
 <span class="k">else</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">types</span>
 
-    <span class="k">class</span> <span class="nc">Function</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Empty Function class</span>
-<span class="sd">        Replacement if torch.autograd.Function is not present.</span>
+    <span class="k">class</span> <span class="nc">Torch</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dummy PyTorch module, which serves as a placeholder for the PyTorch module</span>
+<span class="sd">        when the actual PyTorch library is not available.</span>
+<span class="sd">        It provides basic method stubs to prevent linting errors and give basic substitutions</span>
+<span class="sd">        from Numpy.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="vm">__file__</span> <span class="o">=</span> <span class="s2">&quot;torch.py&quot;</span>
+
+        <span class="c1"># pylint: disable=missing-function-docstring</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;torch.py&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Dummy PyTorch module.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">float</span> <span class="o">=</span> <span class="nb">float</span>
+
+        <span class="k">def</span> <span class="nf">sparse_coo_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">as_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">torch</span> <span class="o">=</span> <span class="n">Torch</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Function</span><span class="p">:</span>  <span class="c1"># type: ignore[no-redef]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replacement for `torch.autograd.Function`.&quot;&quot;&quot;</span>
 
         <span class="k">pass</span>
 
-    <span class="k">class</span> <span class="nc">Tensor</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Empty Tensor class</span>
-<span class="sd">        Replacement if torch.Tensor is not present.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">Tensor</span><span class="p">:</span>  <span class="c1"># type: ignore[no-redef]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replacement for `torch.Tensor`.&quot;&quot;&quot;</span>
 
         <span class="k">pass</span>
 
-    <span class="k">class</span> <span class="nc">Module</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Empty Module class</span>
-<span class="sd">        Replacement if torch.nn.Module is not present.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">Module</span><span class="p">:</span>  <span class="c1"># type: ignore[no-redef]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replacement for `torch.nn.Module`.&quot;&quot;&quot;</span>
+
+        <span class="k">pass</span>
+
+    <span class="k">class</span> <span class="nc">Parameter</span><span class="p">:</span>  <span class="c1"># type: ignore[no-redef]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replacement for `torch.nn.Parameter`.&quot;&quot;&quot;</span>
 
         <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="TorchConnector"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector">[docs]</a><span class="nd">@_optionals</span><span class="o">.</span><span class="n">HAS_TORCH</span><span class="o">.</span><span class="n">require_in_instance</span>
-<span class="k">class</span> <span class="nc">TorchConnector</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connects a Qiskit (Quantum) Neural Network to PyTorch.&quot;&quot;&quot;</span>
+<span class="n">CHAR_LIMIT</span> <span class="o">=</span> <span class="mi">26</span>
+
+
+<span class="k">def</span> <span class="nf">_get_einsum_signature</span><span class="p">(</span><span class="n">n_dimensions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">for_weights</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an Einstein summation signature for a given number of dimensions and return type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_dimensions (int): The number of dimensions for the summation.</span>
+<span class="sd">        for_weights (bool): If True, the return signature includes only the</span>
+<span class="sd">            last index as the output. If False, the return signature includes</span>
+<span class="sd">            all input indices except the last one. Defaults to False.</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The Einstein summation signature.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If the number of dimensions exceeds the character limit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n_dimensions</span> <span class="o">&gt;</span> <span class="n">CHAR_LIMIT</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot define an Einstein summation with more than </span><span class="si">{</span><span class="n">CHAR_LIMIT</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> dimensions, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">n_dimensions</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">ascii_lowercase</span><span class="p">[:</span><span class="n">n_dimensions</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">for_weights</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">trace</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">trace</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">trace</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">trace</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">trace</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">trace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">trace</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="nd">@_optionals</span><span class="o">.</span><span class="n">HAS_TORCH</span><span class="o">.</span><span class="n">require_in_instance</span>
+<span class="k">class</span> <span class="nc">_TorchNNFunction</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom autograd function for connecting a neural network.&quot;&quot;&quot;</span>
 
     <span class="c1"># pylint: disable=abstract-method</span>
-    <span class="k">class</span> <span class="nc">_TorchNNFunction</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
-        <span class="c1"># pylint: disable=arguments-differ</span>
-        <span class="nd">@staticmethod</span>
-        <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-            <span class="n">ctx</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-            <span class="n">input_data</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-            <span class="n">weights</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-            <span class="n">neural_network</span><span class="p">:</span> <span class="n">NeuralNetwork</span><span class="p">,</span>
-            <span class="n">sparse</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Forward pass computation.</span>
-<span class="sd">            Args:</span>
-<span class="sd">                ctx: The context to be passed to the backward pass.</span>
-<span class="sd">                input_data: The input data.</span>
-<span class="sd">                weights: The weights.</span>
-<span class="sd">                neural_network: The neural network to be connected.</span>
-<span class="sd">                sparse: Indicates whether to use sparse output or not.</span>
+    <span class="c1"># Disable methods that are abstract in class &#39;_SingleLevelFunction.Function&#39; but are not</span>
+    <span class="c1"># overridden in child class &#39;_TorchNNFunction&#39;.</span>
 
-<span class="sd">            Returns:</span>
-<span class="sd">                The resulting value of the forward pass.</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
+    <span class="c1"># Disable Lint warnings caused by different number of parameters between these methods and</span>
+    <span class="c1"># the abstract ones in the parent class.</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+        <span class="n">ctx</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">neural_network</span><span class="p">:</span> <span class="n">NeuralNetwork</span><span class="p">,</span> <span class="n">sparse</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the forward pass.</span>
 
-<span class="sd">            Raises:</span>
-<span class="sd">                QiskitMachineLearningError: Invalid input data.</span>
-<span class="sd">                RuntimeError: if connector is configured as sparse and the network is not sparse.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ctx: Context object to store information for backward computation.</span>
+<span class="sd">            input_data (Tensor): Input tensor to the neural network.</span>
+<span class="sd">            weights (Tensor): Weights tensor for the neural network.</span>
+<span class="sd">            neural_network (NeuralNetwork): Neural network instance to perform forward computation.</span>
+<span class="sd">            sparse (bool): Flag indicating whether the computation should be sparse.</span>
 
-            <span class="c1"># validate input shape</span>
-            <span class="k">if</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Invalid input dimension! Received </span><span class="si">{</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and &quot;</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;expected input compatible to </span><span class="si">{</span><span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Tensor: The output tensor from the neural network.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitMachineLearningError: If input_data shape does not match neural_network input</span>
+<span class="sd">                dimension.</span>
+<span class="sd">            RuntimeError: If TorchConnector is configured as sparse but the neural network is not</span>
+<span class="sd">                sparse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid input dimension! Received </span><span class="si">{</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;expected input compatible to </span><span class="si">{</span><span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">ctx</span><span class="o">.</span><span class="n">neural_network</span> <span class="o">=</span> <span class="n">neural_network</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">sparse</span> <span class="o">=</span> <span class="n">sparse</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span>
+            <span class="n">input_data</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">weights</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;TorchConnector configured as sparse, the network must be sparse as well&quot;</span>
                 <span class="p">)</span>
 
-            <span class="n">ctx</span><span class="o">.</span><span class="n">neural_network</span> <span class="o">=</span> <span class="n">neural_network</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">sparse</span> <span class="o">=</span> <span class="n">sparse</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+            <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">&quot;SparseArray&quot;</span><span class="p">)</span>
+            <span class="c1"># pylint: disable=import-error</span>
+            <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">SparseArray</span><span class="p">,</span> <span class="n">COO</span>
 
-            <span class="c1"># Detach the tensors and move it to CPU as we need numpy array to compute gradients</span>
-            <span class="c1"># of the quantum neural network. If the tensors are on CPU already this does nothing.</span>
-            <span class="c1"># Some other tensors down below are also moved to CPU for computations.</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">weights</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="c1"># todo: replace output type from DOK to COO?</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">COO</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">SparseArray</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">asformat</span><span class="p">(</span><span class="s2">&quot;coo&quot;</span><span class="p">))</span>
+            <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">&quot;SparseArray&quot;</span><span class="p">)</span>
+                <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">SparseArray</span>
+
+                <span class="c1"># cast is required by mypy</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">SparseArray</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+            <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">result_tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">result_tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result_tensor</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the backward pass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ctx: Context object that contains information from the forward pass.</span>
+<span class="sd">            grad_output (Tensor): Gradient of the loss with respect to the output of the forward pass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: Gradients of the loss with respect to the input_data and weights,</span>
+<span class="sd">                and `None` for other arguments.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitMachineLearningError: If input_data shape does not match</span>
+<span class="sd">                neural_network input dimension.</span>
+<span class="sd">            RuntimeError: If TorchConnector is configured as sparse but the neural</span>
+<span class="sd">                network is not sparse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
+        <span class="n">neural_network</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">neural_network</span>
+
+        <span class="k">if</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid input dimension! Received </span><span class="si">{</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; expected input compatible to </span><span class="si">{</span><span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
+
+        <span class="c1"># ensure same shape for single observations and batch mode</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">grad_output</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># evaluate QNN gradient</span>
+        <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span>
+            <span class="n">input_data</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">weights</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">input_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
-                    <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">&quot;SparseArray&quot;</span><span class="p">)</span>
-                    <span class="c1"># pylint: disable=import-error</span>
-                    <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">SparseArray</span><span class="p">,</span> <span class="n">COO</span>
+                    <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">&quot;Sparse&quot;</span><span class="p">)</span>
+                    <span class="kn">import</span> <span class="nn">sparse</span>
+                    <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">COO</span>
 
-                    <span class="c1"># todo: replace output type from DOK to COO?</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">COO</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">SparseArray</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">asformat</span><span class="p">(</span><span class="s2">&quot;coo&quot;</span><span class="p">))</span>
-                    <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">grad_output</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+                    <span class="n">grad_coo</span> <span class="o">=</span> <span class="n">COO</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">indices</span><span class="p">(),</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+                    <span class="c1"># Takes gradients from previous layer in backward pass (i.e. later layer in</span>
+                    <span class="c1"># forward pass) j for each observation i in the batch. Multiplies this with</span>
+                    <span class="c1"># the gradient from this point on backwards with respect to each input k.</span>
+                    <span class="c1"># Sums over all j to get total gradient of output w.r.t. each input k and</span>
+                    <span class="c1"># batch index i. This operation should preserve the batch dimension to be</span>
+                    <span class="c1"># able to do back-prop in a batched manner.</span>
+                    <span class="c1"># Pytorch does not support sparse einsum, so we rely on Sparse.</span>
+                    <span class="c1"># pylint: disable=no-member</span>
+                    <span class="n">n_dimension</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">grad_coo</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+                    <span class="n">signature</span> <span class="o">=</span> <span class="n">_get_einsum_signature</span><span class="p">(</span><span class="n">n_dimension</span><span class="p">)</span>
+                    <span class="n">input_grad</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">grad_coo</span><span class="p">,</span> <span class="n">input_grad</span><span class="p">)</span>
+
+                    <span class="c1"># return sparse gradients</span>
+                    <span class="n">input_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">input_grad</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># this exception should never happen</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                        <span class="s2">&quot;TorchConnector configured as sparse, the network must be sparse as well&quot;</span>
+                        <span class="s2">&quot;TorchConnector configured as sparse, so the network must be sparse as well&quot;</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># connector is dense</span>
                 <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
                     <span class="c1"># convert to dense</span>
-                    <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">&quot;SparseArray&quot;</span><span class="p">)</span>
-                    <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">SparseArray</span>
+                    <span class="n">input_grad</span> <span class="o">=</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+                <span class="n">input_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">input_grad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 
-                    <span class="c1"># cast is required by mypy</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">SparseArray</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-                <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+                <span class="c1"># same as above</span>
+                <span class="n">n_dimension</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+                <span class="n">signature</span> <span class="o">=</span> <span class="n">_get_einsum_signature</span><span class="p">(</span><span class="n">n_dimension</span><span class="p">)</span>
+                <span class="n">input_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">input_grad</span><span class="p">)</span>
 
-            <span class="c1"># if the input was not a batch, then remove the batch-dimension from the result,</span>
-            <span class="c1"># since the neural network will always treat input as a batch and cast to a</span>
-            <span class="c1"># single-element batch if no batch is given and PyTorch does not follow this</span>
-            <span class="c1"># convention.</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">result_tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># place the resulting tensor to the device where they were stored</span>
+            <span class="n">input_grad</span> <span class="o">=</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
-            <span class="c1"># place the resulting tensor back to the device where input data is stored</span>
-            <span class="n">result_tensor</span> <span class="o">=</span> <span class="n">result_tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weights_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                    <span class="kn">import</span> <span class="nn">sparse</span>
+                    <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">COO</span>
 
-            <span class="k">return</span> <span class="n">result_tensor</span>
+                    <span class="n">grad_output</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+                    <span class="n">grad_coo</span> <span class="o">=</span> <span class="n">COO</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">indices</span><span class="p">(),</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-        <span class="nd">@staticmethod</span>
-        <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Backward pass computation.</span>
-<span class="sd">            Args:</span>
-<span class="sd">                ctx: context</span>
-<span class="sd">                grad_output: previous gradient</span>
-<span class="sd">            Raises:</span>
-<span class="sd">                QiskitMachineLearningError: Invalid input data.</span>
-<span class="sd">                RuntimeError: if connector is configured as sparse and the network is not sparse.</span>
+                    <span class="c1"># Takes gradients from previous layer in backward pass (i.e. later layer in</span>
+                    <span class="c1"># forward pass) j for each observation i in the batch. Multiplies this with</span>
+                    <span class="c1"># the gradient from this point on backwards with respect to each</span>
+                    <span class="c1"># parameter k. Sums over all i and j to get total gradient of output</span>
+                    <span class="c1"># w.r.t. each parameter k. The weights&#39; dimension is independent of the</span>
+                    <span class="c1"># batch size.</span>
+                    <span class="c1"># pylint: disable=no-member</span>
+                    <span class="n">n_dimension</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">grad_coo</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+                    <span class="n">signature</span> <span class="o">=</span> <span class="n">_get_einsum_signature</span><span class="p">(</span><span class="n">n_dimension</span><span class="p">,</span> <span class="n">for_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">grad_coo</span><span class="p">,</span> <span class="n">weights_grad</span><span class="p">)</span>
 
-<span class="sd">            Returns:</span>
-<span class="sd">                gradients for the first two arguments and None for the others</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-
-            <span class="c1"># get context data</span>
-            <span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
-            <span class="n">neural_network</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">neural_network</span>
-
-            <span class="c1"># validate input shape</span>
-            <span class="k">if</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Invalid input dimension! Received </span><span class="si">{</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and &quot;</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; expected input compatible to </span><span class="si">{</span><span class="n">neural_network</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-
-            <span class="c1"># ensure same shape for single observations and batch mode</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">grad_output</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-            <span class="c1"># evaluate QNN gradient</span>
-            <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">weights</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">input_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
-                        <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">&quot;Sparse&quot;</span><span class="p">)</span>
-                        <span class="kn">import</span> <span class="nn">sparse</span>
-                        <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">COO</span>
-
-                        <span class="n">grad_output</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
-                        <span class="n">grad_coo</span> <span class="o">=</span> <span class="n">COO</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">indices</span><span class="p">(),</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-
-                        <span class="c1"># Takes gradients from previous layer in backward pass (i.e. later layer in</span>
-                        <span class="c1"># forward pass) j for each observation i in the batch. Multiplies this with</span>
-                        <span class="c1"># the gradient from this point on backwards with respect to each input k.</span>
-                        <span class="c1"># Sums over all j to get total gradient of output w.r.t. each input k and</span>
-                        <span class="c1"># batch index i. This operation should preserve the batch dimension to be</span>
-                        <span class="c1"># able to do back-prop in a batched manner.</span>
-                        <span class="c1"># Pytorch does not support sparse einsum, so we rely on Sparse.</span>
-                        <span class="c1"># pylint: disable=no-member</span>
-                        <span class="n">input_grad</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ijk-&gt;ik&quot;</span><span class="p">,</span> <span class="n">grad_coo</span><span class="p">,</span> <span class="n">input_grad</span><span class="p">)</span>
-
-                        <span class="c1"># return sparse gradients</span>
-                        <span class="n">input_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">input_grad</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># this exception should never happen</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                            <span class="s2">&quot;TorchConnector configured as sparse, &quot;</span>
-                            <span class="s2">&quot;the network must be sparse as well&quot;</span>
-                        <span class="p">)</span>
+                    <span class="c1"># return sparse gradients</span>
+                    <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">weights_grad</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># connector is dense</span>
-                    <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
-                        <span class="c1"># convert to dense</span>
-                        <span class="n">input_grad</span> <span class="o">=</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-                    <span class="n">input_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">input_grad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-
-                    <span class="c1"># same as above</span>
-                    <span class="n">input_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ijk-&gt;ik&quot;</span><span class="p">,</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">input_grad</span><span class="p">)</span>
-
-                <span class="c1"># place the resulting tensor to the device where they were stored</span>
-                <span class="n">input_grad</span> <span class="o">=</span> <span class="n">input_grad</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">weights_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">sparse</span>
-                        <span class="kn">from</span> <span class="nn">sparse</span> <span class="kn">import</span> <span class="n">COO</span>
-
-                        <span class="n">grad_output</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
-                        <span class="n">grad_coo</span> <span class="o">=</span> <span class="n">COO</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">indices</span><span class="p">(),</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-
-                        <span class="c1"># Takes gradients from previous layer in backward pass (i.e. later layer in</span>
-                        <span class="c1"># forward pass) j for each observation i in the batch. Multiplies this with</span>
-                        <span class="c1"># the gradient from this point on backwards with respect to each</span>
-                        <span class="c1"># parameter k. Sums over all i and j to get total gradient of output</span>
-                        <span class="c1"># w.r.t. each parameter k. The weights&#39; dimension is independent of the</span>
-                        <span class="c1"># batch size.</span>
-                        <span class="c1"># pylint: disable=no-member</span>
-                        <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ijk-&gt;k&quot;</span><span class="p">,</span> <span class="n">grad_coo</span><span class="p">,</span> <span class="n">weights_grad</span><span class="p">)</span>
-
-                        <span class="c1"># return sparse gradients</span>
-                        <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span>
-                            <span class="n">weights_grad</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">data</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># this exception should never happen</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                            <span class="s2">&quot;TorchConnector configured as sparse, &quot;</span>
-                            <span class="s2">&quot;the network must be sparse as well&quot;</span>
-                        <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
-                        <span class="c1"># convert to dense</span>
-                        <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-                    <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">weights_grad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-                    <span class="c1"># same as above</span>
-                    <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
-                        <span class="s2">&quot;ij,ijk-&gt;k&quot;</span><span class="p">,</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">weights_grad</span>
+                    <span class="c1"># this exception should never happen</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="s2">&quot;TorchConnector configured as sparse, the network must be sparse as well.&quot;</span>
                     <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">neural_network</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                    <span class="c1"># convert to dense</span>
+                    <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+                <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">weights_grad</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+                <span class="c1"># same as above</span>
+                <span class="n">n_dimension</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+                <span class="n">signature</span> <span class="o">=</span> <span class="n">_get_einsum_signature</span><span class="p">(</span><span class="n">n_dimension</span><span class="p">,</span> <span class="n">for_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">weights_grad</span><span class="p">)</span>
 
-                <span class="c1"># place the resulting tensor to the device where they were stored</span>
-                <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># place the resulting tensor to the device where they were stored</span>
+            <span class="n">weights_grad</span> <span class="o">=</span> <span class="n">weights_grad</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
-            <span class="c1"># return gradients for the first two arguments and None for the others (i.e. qnn/sparse)</span>
-            <span class="k">return</span> <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="TorchConnector">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector">[docs]</a>
+<span class="nd">@_optionals</span><span class="o">.</span><span class="n">HAS_TORCH</span><span class="o">.</span><span class="n">require_in_instance</span>
+<span class="k">class</span> <span class="nc">TorchConnector</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connector class to integrate a neural network with PyTorch.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -654,22 +724,24 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            neural_network: The neural network to be connected to PyTorch. Remember</span>
-<span class="sd">                    that ``input_gradients``  must be set to ``True`` in the neural network</span>
-<span class="sd">                    initialization before passing it to the ``TorchConnector`` for the gradient</span>
-<span class="sd">                    computations to work properly during training.</span>
-<span class="sd">            initial_weights: The initial weights to start training the network. If this is None,</span>
-<span class="sd">                the initial weights are chosen uniformly at random from [-1, 1].</span>
-<span class="sd">            sparse: Whether this connector should return sparse output or not. If sparse is set</span>
-<span class="sd">                to None, then the setting from the given neural network is used. Note that sparse</span>
-<span class="sd">                output is only returned if the underlying neural network also returns sparse output,</span>
-<span class="sd">                otherwise an error will be raised.</span>
+<span class="sd">            neural_network (NeuralNetwork): The neural network to be connected to PyTorch.</span>
+<span class="sd">                Note: `input_gradients` must be set to `True` in the neural network</span>
+<span class="sd">                initialization before passing it to the `TorchConnector` for gradient</span>
+<span class="sd">                computations to work properly during training.</span>
+<span class="sd">            initial_weights (np.ndarray | Tensor | None): The initial weights to start</span>
+<span class="sd">                training the network. If this is None, the initial weights are chosen</span>
+<span class="sd">                uniformly at random from :math:`[-1, 1]`.</span>
+<span class="sd">            sparse (bool | None): Whether this connector should return sparse output or not.</span>
+<span class="sd">                If sparse is set to None, then the setting from the given neural network is used.</span>
+<span class="sd">                Note that sparse output is only returned if the underlying neural network also</span>
+<span class="sd">                returns sparse output, otherwise an error will be raised.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: If the connector is configured as sparse and the underlying</span>
 <span class="sd">                network is not sparse.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span> <span class="o">=</span> <span class="n">neural_network</span>
         <span class="k">if</span> <span class="n">sparse</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sparse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span><span class="o">.</span><span class="n">sparse</span>
@@ -682,7 +754,7 @@
                 <span class="s2">&quot;TorchConnector configured as sparse, the network must be sparse as well&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">weight_param</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">neural_network</span><span class="o">.</span><span class="n">num_weights</span><span class="p">))</span>
+        <span class="n">weight_param</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">neural_network</span><span class="o">.</span><span class="n">num_weights</span><span class="p">))</span>
         <span class="c1"># Register param. in graph following PyTorch naming convention</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">weight_param</span><span class="p">)</span>
         <span class="c1"># If `weight_param` is assigned to `self._weights` after registration,</span>
@@ -699,32 +771,56 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">neural_network</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NeuralNetwork</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the underlying neural network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the underlying neural network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            NeuralNetwork: The neural network connected to this TorchConnector.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the weights of the underlying network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the weights of the underlying network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tensor: The `weights` tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sparse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns whether this connector returns sparse output or not.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparse</span>
-
-<div class="viewcode-block" id="TorchConnector.forward"><a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            input_data: data to be evaluated.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns whether this connector returns sparse output or not.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Result of forward pass of this model.</span>
+<span class="sd">            bool | None: `True` if the connector returns sparse output, `False` otherwise,</span>
+<span class="sd">            or `None` if it uses the setting from the neural network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">input_</span> <span class="o">=</span> <span class="n">input_data</span> <span class="k">if</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">TorchConnector</span><span class="o">.</span><span class="n">_TorchNNFunction</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="n">input_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparse</span>
-        <span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparse</span>
+
+<div class="viewcode-block" id="TorchConnector.forward">
+<a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector.forward">[docs]</a>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forward pass. Defaults to an empty tensor if `input_data` is `None`.</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_data (Tensor | None): Data to be evaluated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tensor: Result of the forward pass of this model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">input_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_</span> <span class="o">=</span> <span class="n">input_data</span>
+
+        <span class="k">return</span> <span class="n">_TorchNNFunction</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparse</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
         </article>
       </div>
@@ -771,12 +867,12 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>
     <script src="../../../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

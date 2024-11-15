@@ -19,6 +19,10 @@ RawFeatureVector
    
    .. autoattribute:: RawFeatureVector.feature_dimension
    .. autoattribute:: RawFeatureVector.num_qubits
+   .. autoattribute:: RawFeatureVector.name
+   .. autoattribute:: RawFeatureVector.cregs
+   .. autoattribute:: RawFeatureVector.duration
+   .. autoattribute:: RawFeatureVector.unit
    
    
 

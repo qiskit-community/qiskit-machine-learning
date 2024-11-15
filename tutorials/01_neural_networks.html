@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Neural Network Classifier &amp; Regressor" href="02_neural_network_classifier_and_regressor.html" /><link rel="prev" title="Machine Learning Tutorials" href="index.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Quantum Neural Networks - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Quantum Neural Networks - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -256,6 +256,7 @@
 <li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -271,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -393,12 +395,12 @@
         <article role="main">
           <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/01_neural_networks.ipynb">docs/tutorials/01_neural_networks.ipynb</a>.</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/01_neural_networks.ipynb">docs/tutorials/01_neural_networks.ipynb</a>.</p>
 </div>
 <section id="Quantum-Neural-Networks">
-<h1>Quantum Neural Networks<a class="headerlink" href="#Quantum-Neural-Networks" title="Permalink to this heading">#</a></h1>
+<h1>Quantum Neural Networks<a class="headerlink" href="#Quantum-Neural-Networks" title="Link to this heading">¶</a></h1>
 <section id="Overview">
-<h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this heading">#</a></h2>
+<h2>Overview<a class="headerlink" href="#Overview" title="Link to this heading">¶</a></h2>
 <p>This notebook demonstrates different quantum neural network (QNN) implementations provided in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code>, and how they can be integrated into basic quantum machine learning (QML) workflows.</p>
 <p>The tutorial is structured as follows:</p>
 <ol class="arabic simple">
@@ -411,9 +413,9 @@
 </ol>
 </section>
 <section id="1.-Introduction">
-<h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Permalink to this heading">#</a></h2>
+<h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Link to this heading">¶</a></h2>
 <section id="1.1.-Quantum-vs.-Classical-Neural-Networks">
-<h3>1.1. Quantum vs. Classical Neural Networks<a class="headerlink" href="#1.1.-Quantum-vs.-Classical-Neural-Networks" title="Permalink to this heading">#</a></h3>
+<h3>1.1. Quantum vs. Classical Neural Networks<a class="headerlink" href="#1.1.-Quantum-vs.-Classical-Neural-Networks" title="Link to this heading">¶</a></h3>
 <p>Classical neural networks are algorithmic models inspired by the human brain that can be trained to recognize patterns in data and learn to solve complex problems. They are based on a series of interconnected nodes, or <em>neurons</em>, organized in a layered structure, with parameters that can be learned by applying machine or deep learning training strategies.</p>
 <p>The motivation behind quantum machine learning (QML) is to integrate notions from quantum computing and classical machine learning to open the way for new and improved learning schemes. QNNs apply this generic principle by combining classical neural networks and parametrized quantum circuits. Because they lie at an intersection between two fields, QNNs can be viewed from two perspectives:</p>
 <ul class="simple">
@@ -426,7 +428,7 @@ loss function to train the weights through backpropagation.</p></li>
 <p>As you can see, these two perspectives are complementary, and do not necessarily rely on strict definitions of concepts such as “quantum neuron” or what constitutes a QNN’s “layer”.</p>
 </section>
 <section id="1.2.-Implementation-in-qiskit-machine-learning">
-<h3>1.2. Implementation in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code><a class="headerlink" href="#1.2.-Implementation-in-qiskit-machine-learning" title="Permalink to this heading">#</a></h3>
+<h3>1.2. Implementation in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code><a class="headerlink" href="#1.2.-Implementation-in-qiskit-machine-learning" title="Link to this heading">¶</a></h3>
 <p>The QNNs in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> are meant as application-agnostic computational units that can be used for different use cases, and their setup will depend on the application they are needed for. The module contains an interface for the QNNs and two specific implementations:</p>
 <ol class="arabic simple">
 <li><p><a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a>: The interface for neural networks. This is an abstract class all QNNs inherit from.</p></li>
@@ -444,7 +446,7 @@ weights.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
 
 <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">42</span>
 </pre></div>
@@ -453,9 +455,9 @@ weights.</p>
 </section>
 </section>
 <section id="2.-How-to-Instantiate-QNNs">
-<h2>2. How to Instantiate QNNs<a class="headerlink" href="#2.-How-to-Instantiate-QNNs" title="Permalink to this heading">#</a></h2>
+<h2>2. How to Instantiate QNNs<a class="headerlink" href="#2.-How-to-Instantiate-QNNs" title="Link to this heading">¶</a></h2>
 <section id="2.1.-EstimatorQNN">
-<h3>2.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#2.1.-EstimatorQNN" title="Permalink to this heading">#</a></h3>
+<h3>2.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#2.1.-EstimatorQNN" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> takes in a parametrized quantum circuit as input, as well as an optional quantum mechanical observable, and outputs expectation value computations for the forward pass. The <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> also accepts lists of observables to construct more complex QNNs.</p>
 <p>Let’s see an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> in action with a simple example. We start by constructing the parametrized circuit. This quantum circuit has two parameters, one represents a QNN input and the other represents a trainable weight:</p>
 <div class="nbinput docutils container">
@@ -514,19 +516,30 @@ weights.</p>
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_2155/381094295.py:3: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  estimator_qnn = EstimatorQNN(
+/tmp/ipykernel_2155/381094295.py:3: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (1). If `circuit` is transpiled, this may cause unstable behaviour.
+  estimator_qnn = EstimatorQNN(
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7fc3d809fdc0&gt;
+&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7febcbbc4bb0&gt;
 </pre></div></div>
 </div>
 <p>We’ll see how to use the QNN in the following sections, but before that, let’s check out the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> class.</p>
 </section>
 <section id="2.2.-SamplerQNN">
-<h3>2.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#2.2.-SamplerQNN" title="Permalink to this heading">#</a></h3>
+<h3>2.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#2.2.-SamplerQNN" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is instantiated in a similar way to the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, but because it directly consumes samples from measuring the quantum circuit, it does not require a custom observable.</p>
 <p>These output samples are interpreted by default as the probabilities of measuring the integer index corresponding to a bitstring. However, the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> also allows us to specify an <code class="docutils literal notranslate"><span class="pre">interpret</span></code> function to post-process the samples. This function should be defined so that it takes a measured integer (from a bitstring) and maps it to a new value, i.e. non-negative integer.</p>
 <p><strong>(!)</strong> It’s important to note that if a custom <code class="docutils literal notranslate"><span class="pre">interpret</span></code> function is defined, the <code class="docutils literal notranslate"><span class="pre">output_shape</span></code> cannot be inferred by the network, and <strong>needs to be provided explicitly</strong>.</p>
@@ -587,25 +600,34 @@ weight parameters: [&#39;weight[0]&#39;, &#39;weight[1]&#39;, &#39;weight[2]&#39
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_2155/1714778621.py:3: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  sampler_qnn = SamplerQNN(circuit=qc2, input_params=inputs2, weight_params=weights2)
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7fc3c75aa5b0&gt;
+&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7febb6097310&gt;
 </pre></div></div>
 </div>
 <p>In addition to the basic arguments shown above, the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> accepts three more settings: <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code>, <code class="docutils literal notranslate"><span class="pre">interpret</span></code>, and <code class="docutils literal notranslate"><span class="pre">output_shape</span></code>. These will be introduced in sections 4 and 5.</p>
 </section>
 </section>
 <section id="3.-How-to-Run-a-Forward-Pass">
-<h2>3. How to Run a Forward Pass<a class="headerlink" href="#3.-How-to-Run-a-Forward-Pass" title="Permalink to this heading">#</a></h2>
+<h2>3. How to Run a Forward Pass<a class="headerlink" href="#3.-How-to-Run-a-Forward-Pass" title="Link to this heading">¶</a></h2>
 <section id="3.1.-Set-Up">
-<h3>3.1. Set-Up<a class="headerlink" href="#3.1.-Set-Up" title="Permalink to this heading">#</a></h3>
+<h3>3.1. Set-Up<a class="headerlink" href="#3.1.-Set-Up" title="Link to this heading">¶</a></h3>
 <p>In a real setting, the inputs would be defined by the dataset, and the weights would be defined by the training algorithm or as part of a pre-trained model. However, for the sake of this tutorial, we will specify random sets of input and weights of the right dimension:</p>
 <section id="3.1.1.-EstimatorQNN-Example">
-<h4>3.1.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.1.1.-EstimatorQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>3.1.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.1.1.-EstimatorQNN-Example" title="Link to this heading">¶</a></h4>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -641,7 +663,7 @@ Weights: [0.43887844]
 </div>
 </section>
 <section id="3.1.2.-SamplerQNN-Example">
-<h4>3.1.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#3.1.2.-SamplerQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>3.1.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#3.1.2.-SamplerQNN-Example" title="Link to this heading">¶</a></h4>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -679,9 +701,9 @@ Weights: [0.09417735 0.97562235 0.7611397  0.78606431]
 </section>
 </section>
 <section id="3.2.-Non-batched-Forward-Pass">
-<h3>3.2. Non-batched Forward Pass<a class="headerlink" href="#3.2.-Non-batched-Forward-Pass" title="Permalink to this heading">#</a></h3>
+<h3>3.2. Non-batched Forward Pass<a class="headerlink" href="#3.2.-Non-batched-Forward-Pass" title="Link to this heading">¶</a></h3>
 <section id="3.2.1.-EstimatorQNN-Example">
-<h4>3.2.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.2.1.-EstimatorQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>3.2.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.2.1.-EstimatorQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the expected output shape for the forward pass is <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">num_qubits</span> <span class="pre">*</span> <span class="pre">num_observables)</span></code> where <code class="docutils literal notranslate"><span class="pre">1</span></code> in our case is the number of samples:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -706,7 +728,7 @@ Shape: (1, 1)
 </div>
 </section>
 <section id="3.2.2.-SamplerQNN-Example">
-<h4>3.2.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#3.2.2.-SamplerQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>3.2.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#3.2.2.-SamplerQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> (without a custom interpret function), the expected output shape for the forward pass is <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2**num_qubits)</span></code>. With a custom interpret function, the output shape will be <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">output_shape)</span></code>, where <code class="docutils literal notranslate"><span class="pre">1</span></code> in our case is the number of samples:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -732,9 +754,9 @@ Shape: (1, 4)
 </section>
 </section>
 <section id="3.3.-Batched-Forward-Pass">
-<h3>3.3. Batched Forward Pass<a class="headerlink" href="#3.3.-Batched-Forward-Pass" title="Permalink to this heading">#</a></h3>
+<h3>3.3. Batched Forward Pass<a class="headerlink" href="#3.3.-Batched-Forward-Pass" title="Link to this heading">¶</a></h3>
 <section id="3.3.1.-EstimatorQNN-Example">
-<h4>3.3.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.3.1.-EstimatorQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>3.3.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.3.1.-EstimatorQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the expected output shape for the forward pass is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">num_qubits</span> <span class="pre">*</span> <span class="pre">num_observables)</span></code>:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
@@ -762,7 +784,7 @@ Shape: (2, 1)
 </div>
 </section>
 <section id="3.3.2.-SamplerQNN-Example">
-<h4>3.3.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#3.3.2.-SamplerQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>3.3.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#3.3.2.-SamplerQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> (without custom interpret function), the expected output shape for the forward pass is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">2**num_qubits)</span></code>. With a custom interpret function, the output shape will be <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">output_shape)</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -792,7 +814,7 @@ Shape: (2, 4)
 </section>
 </section>
 <section id="4.-How-to-Run-a-Backward-Pass">
-<h2>4. How to Run a Backward Pass<a class="headerlink" href="#4.-How-to-Run-a-Backward-Pass" title="Permalink to this heading">#</a></h2>
+<h2>4. How to Run a Backward Pass<a class="headerlink" href="#4.-How-to-Run-a-Backward-Pass" title="Link to this heading">¶</a></h2>
 <p>Let’s take advantage of the inputs and weights defined above to show how the backward pass works. This pass returns a tuple <code class="docutils literal notranslate"><span class="pre">(input_gradients,</span> <span class="pre">weight_gradients)</span></code>. By default, the backward pass will only calculate gradients with respect to the weight parameters.</p>
 <p>If you want to enable gradients with respect to the input parameters, you should set the following flag during the QNN instantiation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">qnn</span> <span class="o">=</span> <span class="o">...</span><span class="n">QNN</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">input_gradients</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -800,9 +822,9 @@ Shape: (2, 4)
 </div>
 <p>Please remember that input gradients are <strong>required</strong> for the use of <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code> for PyTorch integration.</p>
 <section id="4.1.-Backward-Pass-without-Input-Gradients">
-<h3>4.1. Backward Pass without Input Gradients<a class="headerlink" href="#4.1.-Backward-Pass-without-Input-Gradients" title="Permalink to this heading">#</a></h3>
+<h3>4.1. Backward Pass without Input Gradients<a class="headerlink" href="#4.1.-Backward-Pass-without-Input-Gradients" title="Link to this heading">¶</a></h3>
 <section id="4.1.1.-EstimatorQNN-Example">
-<h4>4.1.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#4.1.1.-EstimatorQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>4.1.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#4.1.1.-EstimatorQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the expected output shape for the weight gradients is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">num_qubits</span> <span class="pre">*</span> <span class="pre">num_observables,</span> <span class="pre">num_weights)</span></code>:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
@@ -834,7 +856,7 @@ Shape: (1, 1, 1)
 </div>
 </section>
 <section id="4.1.2.-SamplerQNN-Example">
-<h4>4.1.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#4.1.2.-SamplerQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>4.1.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#4.1.2.-SamplerQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> (without custom interpret function), the expected output shape for the forward pass is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">2**num_qubits,</span> <span class="pre">num_weights)</span></code>. With a custom interpret function, the output shape will be <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">output_shape,</span> <span class="pre">num_weights)</span></code>.:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -870,7 +892,7 @@ Shape: (1, 4, 4)
 </section>
 </section>
 <section id="4.2.-Backward-Pass-with-Input-Gradients">
-<h3>4.2. Backward Pass with Input Gradients<a class="headerlink" href="#4.2.-Backward-Pass-with-Input-Gradients" title="Permalink to this heading">#</a></h3>
+<h3>4.2. Backward Pass with Input Gradients<a class="headerlink" href="#4.2.-Backward-Pass-with-Input-Gradients" title="Link to this heading">¶</a></h3>
 <p>Let’s enable the <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code> to show what the expected output sizes are for this option.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
@@ -882,7 +904,7 @@ Shape: (1, 4, 4)
 </div>
 </div>
 <section id="4.2.1.-EstimatorQNN-Example">
-<h4>4.2.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#4.2.1.-EstimatorQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>4.2.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#4.2.1.-EstimatorQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the expected output shape for the input gradients is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">num_qubits</span> <span class="pre">*</span> <span class="pre">num_observables,</span> <span class="pre">num_inputs)</span></code>:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -914,7 +936,7 @@ Shape: (1, 1, 1)
 </div>
 </section>
 <section id="4.2.2.-SamplerQNN-Example">
-<h4>4.2.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#4.2.2.-SamplerQNN-Example" title="Permalink to this heading">#</a></h4>
+<h4>4.2.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> Example<a class="headerlink" href="#4.2.2.-SamplerQNN-Example" title="Link to this heading">¶</a></h4>
 <p>For the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> (without custom interpret function), the expected output shape for the input gradients is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">2**num_qubits,</span> <span class="pre">num_inputs)</span></code>. With a custom interpret function, the output shape will be <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">output_shape,</span> <span class="pre">num_inputs)</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
@@ -954,11 +976,11 @@ Shape: (1, 4, 4)
 </section>
 </section>
 <section id="5.-Advanced-Functionality">
-<h2>5. Advanced Functionality<a class="headerlink" href="#5.-Advanced-Functionality" title="Permalink to this heading">#</a></h2>
+<h2>5. Advanced Functionality<a class="headerlink" href="#5.-Advanced-Functionality" title="Link to this heading">¶</a></h2>
 <section id="5.1.-EstimatorQNN-with-Multiple-Observables">
-<h3>5.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> with Multiple Observables<a class="headerlink" href="#5.1.-EstimatorQNN-with-Multiple-Observables" title="Permalink to this heading">#</a></h3>
+<h3>5.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> with Multiple Observables<a class="headerlink" href="#5.1.-EstimatorQNN-with-Multiple-Observables" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> allows to pass lists of observables for more complex QNN architectures. For example (note the change in output shape):</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
@@ -972,6 +994,17 @@ Shape: (1, 4, 4)
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_2155/1817078375.py:3: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  estimator_qnn2 = EstimatorQNN(
+/tmp/ipykernel_2155/1817078375.py:3: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (1). If `circuit` is transpiled, this may cause unstable behaviour.
+  estimator_qnn2 = EstimatorQNN(
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
@@ -1002,9 +1035,9 @@ Backward output for EstimatorQNN2: (1, 2, 1)
 </div>
 </section>
 <section id="5.2.-SamplerQNN-with-custom-interpret">
-<h3>5.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> with custom <code class="docutils literal notranslate"><span class="pre">interpret</span></code><a class="headerlink" href="#5.2.-SamplerQNN-with-custom-interpret" title="Permalink to this heading">#</a></h3>
+<h3>5.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> with custom <code class="docutils literal notranslate"><span class="pre">interpret</span></code><a class="headerlink" href="#5.2.-SamplerQNN-with-custom-interpret" title="Link to this heading">¶</a></h3>
 <p>One common <code class="docutils literal notranslate"><span class="pre">interpret</span></code> method for <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is the <code class="docutils literal notranslate"><span class="pre">parity</span></code> function, which allows it to perform binary classification. As explained in the instantiation section, using interpret functions will modify the output shape of the forward and backward passes. In the case of the parity interpret function, <code class="docutils literal notranslate"><span class="pre">output_shape</span></code> is fixed to <code class="docutils literal notranslate"><span class="pre">2</span></code>. Therefore, the expected forward and weight gradient shapes are <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">2)</span></code> and <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">2,</span> <span class="pre">num_weights)</span></code>, respectively:</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
@@ -1020,6 +1053,15 @@ Backward output for EstimatorQNN2: (1, 2, 1)
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_2155/276109081.py:4: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  sampler_qnn2 = SamplerQNN(
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
@@ -1051,7 +1093,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
 </section>
 </section>
 <section id="6.-Conclusion">
-<h2>6. Conclusion<a class="headerlink" href="#6.-Conclusion" title="Permalink to this heading">#</a></h2>
+<h2>6. Conclusion<a class="headerlink" href="#6.-Conclusion" title="Link to this heading">¶</a></h2>
 <p>In this tutorial, we introduced the two neural networks classes provided by <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code>, namely the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> and <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>, which extend the base <code class="docutils literal notranslate"><span class="pre">NeuralNetwork</span></code> class. We provided some theoretical background, the key steps for QNN initialization, basic use in forward and backward passes, and advanced functionality.</p>
 <p>We now encourage you to play around with the problem setup and see how different circuit sizes, input, and weight parameter lengths influence the output shapes.</p>
 <div class="nbinput docutils container">
@@ -1069,7 +1111,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.0.1</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.3.0</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.2</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Thu Feb 29 16:51:53 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Nov 15 18:48:14 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1209,11 +1251,11 @@ Backward output for SamplerQNN2: (1, 2, 4)
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

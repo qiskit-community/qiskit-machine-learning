@@ -18,6 +18,7 @@ EstimatorQNN
 
    
    .. autoattribute:: EstimatorQNN.circuit
+   .. autoattribute:: EstimatorQNN.default_precision
    .. autoattribute:: EstimatorQNN.input_gradients
    .. autoattribute:: EstimatorQNN.input_params
    .. autoattribute:: EstimatorQNN.num_inputs

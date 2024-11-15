@@ -47,7 +47,7 @@
     "from qiskit import QuantumCircuit\n",
     "from qiskit.circuit import Parameter\n",
     "from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap\n",
-    "from qiskit_algorithms.utils import algorithm_globals\n",
+    "from qiskit_machine_learning.utils import algorithm_globals\n",
     "from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN\n",
     "from qiskit_machine_learning.connectors import TorchConnector\n",
     "\n",
@@ -454,6 +454,7 @@
     "# Start training\n",
     "model2.train()\n",
     "\n",
+    "\n",
     "# Define LBFGS closure method (explained in previous section)\n",
     "def closure():\n",
     "    optimizer.zero_grad(set_to_none=True)  # Initialize gradient\n",
@@ -658,6 +659,7 @@
     "# Start training\n",
     "model3.train()  # set model to training mode\n",
     "\n",
+    "\n",
     "# Define objective function\n",
     "def closure():\n",
     "    optimizer.zero_grad(set_to_none=True)  # Initialize gradient\n",
@@ -834,8 +836,7 @@
       "\n",
       "Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz\n",
       "Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz\n",
-      "Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw\n",
-      "\n"
+      "Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw\n"
      ]
     }
    ],

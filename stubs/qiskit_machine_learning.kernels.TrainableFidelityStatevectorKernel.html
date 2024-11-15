@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quantum Kernel Algorithms" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html" /><link rel="prev" title="TrainableFidelityQuantumKernel" href="qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>TrainableFidelityStatevectorKernel - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>TrainableFidelityStatevectorKernel - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,10 +393,10 @@
         </div>
         <article role="main">
           <br><br><br><section id="trainablefidelitystatevectorkernel">
-<h1>TrainableFidelityStatevectorKernel<a class="headerlink" href="#trainablefidelitystatevectorkernel" title="Permalink to this heading">#</a></h1>
+<h1>TrainableFidelityStatevectorKernel<a class="headerlink" href="#trainablefidelitystatevectorkernel" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrainableFidelityStatevectorKernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_map=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statevector_type=&lt;class</span> <span class="pre">'qiskit.quantum_info.states.statevector.Statevector'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_clear_cache=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_psd=True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/kernels/trainable_fidelity_statevector_kernel.html#TrainableFidelityStatevectorKernel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrainableFidelityStatevectorKernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_map=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statevector_type=&lt;class</span> <span class="pre">'qiskit.quantum_info.states.statevector.Statevector'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_clear_cache=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_psd=True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/kernels/trainable_fidelity_statevector_kernel.html#TrainableFidelityStatevectorKernel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_machine_learning.kernels.TrainableKernel.html#qiskit_machine_learning.kernels.TrainableKernel" title="qiskit_machine_learning.kernels.trainable_kernel.TrainableKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainableKernel</span></code></a>, <a class="reference internal" href="qiskit_machine_learning.kernels.FidelityStatevectorKernel.html#qiskit_machine_learning.kernels.FidelityStatevectorKernel" title="qiskit_machine_learning.kernels.fidelity_statevector_kernel.FidelityStatevectorKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FidelityStatevectorKernel</span></code></a></p>
 <p>A trainable version of the
 <a class="reference internal" href="qiskit_machine_learning.kernels.FidelityStatevectorKernel.html#qiskit_machine_learning.kernels.FidelityStatevectorKernel" title="qiskit_machine_learning.kernels.FidelityStatevectorKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FidelityStatevectorKernel</span></code></a>.</p>
@@ -411,24 +413,24 @@ The kernel entries are given as</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>feature_map</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – Parameterized circuit to be used as the feature map. If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given,
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> is used with two qubits. If there’s
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> is used with two qubits. If there’s
 a mismatch in the number of qubits of the feature map and the number of features
 in the dataset, then the kernel will try to adjust the feature map to reflect the
 number of features.</p></li>
 <li><p><strong>statevector_type</strong> (<em>Type</em><em>[</em><em>SV</em><em>]</em>) – The type of Statevector that will be instantiated using the
 <code class="docutils literal notranslate"><span class="pre">feature_map</span></code> quantum circuit and used to compute the fidelity kernel. This type
-should inherit from (and defaults to) <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.quantum_info.Statevector" title="(in Qiskit v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statevector</span></code></a>.</p></li>
-<li><p><strong>training_parameters</strong> (<em>ParameterVector</em><em> | </em><em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – Iterable containing <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.Parameter" title="(in Qiskit v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> objects
+should inherit from (and defaults to) <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.quantum_info.Statevector" title="(in Qiskit v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statevector</span></code></a>.</p></li>
+<li><p><strong>training_parameters</strong> (<em>ParameterVector</em><em> | </em><em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – Iterable containing <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.Parameter" title="(in Qiskit v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> objects
 which correspond to quantum gates on the feature map circuit which may be tuned.
 If users intend to tune feature map parameters to find optimal values, this field
 should be set.</p></li>
-<li><p><strong>cache_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – Maximum size of the statevector cache. When <code class="docutils literal notranslate"><span class="pre">None</span></code> this is unbounded.</p></li>
-<li><p><strong>auto_clear_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Determines whether the statevector cache is retained when
+<li><p><strong>cache_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – Maximum size of the statevector cache. When <code class="docutils literal notranslate"><span class="pre">None</span></code> this is unbounded.</p></li>
+<li><p><strong>auto_clear_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Determines whether the statevector cache is retained when
 <a class="reference internal" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.evaluate" title="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a> is called. The cache is automatically cleared by default.</p></li>
-<li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – The number of shots. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the exact fidelity is used. Otherwise, the
+<li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The number of shots. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the exact fidelity is used. Otherwise, the
 mean is taken of samples drawn from a binomial distribution with probability equal
 to the exact fidelity.</p></li>
-<li><p><strong>enforce_psd</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Project to the closest positive semidefinite matrix if <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">y</span></code>.
+<li><p><strong>enforce_psd</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Project to the closest positive semidefinite matrix if <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">y</span></code>.
 Default <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 </ul>
 </dd>
@@ -436,45 +438,45 @@ Default <code class="docutils literal notranslate"><span class="pre">True</span>
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.enforce_psd">
-<span class="sig-name descname"><span class="pre">enforce_psd</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.enforce_psd" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">enforce_psd</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.enforce_psd" title="Link to this definition">¶</a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the kernel matrix is required to project to the closest positive
 semidefinite matrix.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.feature_map">
-<span class="sig-name descname"><span class="pre">feature_map</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.feature_map" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">feature_map</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.feature_map" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the feature map of this kernel.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.num_features">
-<span class="sig-name descname"><span class="pre">num_features</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.num_features" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">num_features</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.num_features" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the number of features in this kernel.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.num_training_parameters">
-<span class="sig-name descname"><span class="pre">num_training_parameters</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.num_training_parameters" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">num_training_parameters</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.num_training_parameters" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the number of training parameters.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.parameter_values">
-<span class="sig-name descname"><span class="pre">parameter_values</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.parameter_values" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">parameter_values</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.parameter_values" title="Link to this definition">¶</a></dt>
 <dd><p>Returns numerical values assigned to the training parameters as a numpy array.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.training_parameters">
-<span class="sig-name descname"><span class="pre">training_parameters</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.training_parameters" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">training_parameters</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.training_parameters" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the vector of training parameters.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.assign_training_parameters">
-<span class="sig-name descname"><span class="pre">assign_training_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.assign_training_parameters" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">assign_training_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.assign_training_parameters" title="Link to this definition">¶</a></dt>
 <dd><p>Fix the training parameters to numerical values.</p>
 <dl class="field-list simple">
 </dl>
@@ -482,21 +484,21 @@ semidefinite matrix.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.clear_cache">
-<span class="sig-name descname"><span class="pre">clear_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.clear_cache" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">clear_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.clear_cache" title="Link to this definition">¶</a></dt>
 <dd><p>Clear the statevector cache.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_vec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.evaluate" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_vec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.evaluate" title="Link to this definition">¶</a></dt>
 <dd><p>Construct kernel matrix for given data.</p>
 <p>If y_vec is None, self inner product is calculated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_vec</strong> (<em>np.ndarray</em>) – 1D or 2D array of datapoints, NxD, where N is the number of datapoints,
+<li><p><strong>x_vec</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – 1D or 2D array of datapoints, NxD, where N is the number of datapoints,
 D is the feature dimension</p></li>
-<li><p><strong>y_vec</strong> (<em>np.ndarray</em><em> | </em><em>None</em>) – 1D or 2D array of datapoints, MxD, where M is the number of datapoints,
+<li><p><strong>y_vec</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>) – 1D or 2D array of datapoints, MxD, where M is the number of datapoints,
 D is the feature dimension</p></li>
 </ul>
 </dd>
@@ -504,7 +506,7 @@ D is the feature dimension</p></li>
 <dd class="field-even"><p>2D matrix, NxM</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -606,11 +608,11 @@ D is the feature dimension</p></li>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SamplerQNN" href="qiskit_machine_learning.neural_networks.SamplerQNN.html" /><link rel="prev" title="NeuralNetwork" href="qiskit_machine_learning.neural_networks.NeuralNetwork.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>EstimatorQNN - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>EstimatorQNN - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,10 +393,10 @@
         </div>
         <article role="main">
           <br><br><br><section id="estimatorqnn">
-<h1>EstimatorQNN<a class="headerlink" href="#estimatorqnn" title="Permalink to this heading">#</a></h1>
+<h1>EstimatorQNN<a class="headerlink" href="#estimatorqnn" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EstimatorQNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_gradients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/neural_networks/estimator_qnn.html#EstimatorQNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EstimatorQNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_gradients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_virtual_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.015625</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/neural_networks/estimator_qnn.html#EstimatorQNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_machine_learning.neural_networks.NeuralNetwork.html#qiskit_machine_learning.neural_networks.NeuralNetwork" title="qiskit_machine_learning.neural_networks.neural_network.NeuralNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetwork</span></code></a></p>
 <p>A neural network implementation based on the Estimator primitive.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> is a neural network that takes in a parametrized quantum circuit
@@ -417,7 +419,7 @@ from the <a class="reference internal" href="qiskit_machine_learning.circuit.lib
 <span class="n">num_qubits</span> <span class="o">=</span> <span class="mi">2</span>
 
 <span class="c1"># Using the QNNCircuit:</span>
-<span class="c1"># Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map</span>
+<span class="c1"># Create a parametrized 2 qubit circuit composed of the default ZZFeatureMap feature map</span>
 <span class="c1"># and RealAmplitudes ansatz.</span>
 <span class="n">qnn_qc</span> <span class="o">=</span> <span class="n">QNNCircuit</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">)</span>
 
@@ -448,7 +450,7 @@ from the <a class="reference internal" href="qiskit_machine_learning.circuit.lib
 updated once the EstimatorQNN object has been constructed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.estimator">
-<span class="sig-name descname"><span class="pre">estimator</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.estimator" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">estimator</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.estimator" title="Link to this definition">¶</a></dt>
 <dd><p>The estimator primitive used to compute the neural network’s results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -459,7 +461,7 @@ updated once the EstimatorQNN object has been constructed.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.gradient">
-<span class="sig-name descname"><span class="pre">gradient</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.gradient" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">gradient</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.gradient" title="Link to this definition">¶</a></dt>
 <dd><p>The estimator gradient to be used for the backward
 pass.</p>
 <dl class="field-list simple">
@@ -472,9 +474,9 @@ pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>estimator</strong> (<em>BaseEstimator</em><em> | </em><em>None</em>) – The estimator used to compute neural network’s results.
+<li><p><strong>estimator</strong> (<em>BaseEstimator</em><em> | </em><em>BaseEstimatorV2</em><em> | </em><em>None</em>) – The estimator used to compute neural network’s results.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a default instance of the reference estimator,
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.Estimator" title="(in Qiskit v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Estimator</span></code></a>, will be used.</p></li>
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.Estimator" title="(in Qiskit v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Estimator</span></code></a>, will be used.</p></li>
 <li><p><strong>circuit</strong> (<em>QuantumCircuit</em>) – The quantum circuit to represent the neural network. If a
 <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is passed, the
 <cite>input_params</cite> and <cite>weight_params</cite> do not have to be provided, because these two
@@ -485,20 +487,22 @@ use the default <span class="math notranslate nohighlight">\(Z^{\otimes num\_qub
 <li><p><strong>input_params</strong> (<em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – The parameters that correspond to the input data of the network.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the input data is not bound to any parameters.
 If a <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is provided the
-<cite>input_params</cite> value here is ignored. Instead the value is taken from the
+<cite>input_params</cite> value here is ignored. Instead, the value is taken from the
 <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> input_parameters.</p></li>
 <li><p><strong>weight_params</strong> (<em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – The parameters that correspond to the trainable weights.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the weights are not bound to any parameters.
 If a <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is provided the
-<cite>weight_params</cite> value here is ignored. Instead the value is taken from the
+<cite>weight_params</cite> value here is ignored. Instead, the value is taken from the
 <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> weight_parameters.</p></li>
 <li><p><strong>gradient</strong> (<em>BaseEstimatorGradient</em><em> | </em><em>None</em>) – The estimator gradient to be used for the backward pass.
 If None, a default instance of the estimator gradient,
-<a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.gradients.ParamShiftEstimatorGradient.html#qiskit_algorithms.gradients.ParamShiftEstimatorGradient" title="(in Qiskit Algorithms v0.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamShiftEstimatorGradient</span></code></a>, will be used.</p></li>
-<li><p><strong>input_gradients</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Determines whether to compute gradients with respect to input data.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ParamShiftEstimatorGradient</span></code>, will be used.</p></li>
+<li><p><strong>input_gradients</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Determines whether to compute gradients with respect to input data.
 Note that this parameter is <code class="docutils literal notranslate"><span class="pre">False</span></code> by default, and must be explicitly set to
 <code class="docutils literal notranslate"><span class="pre">True</span></code> for a proper gradient computation when using
 <a class="reference internal" href="qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector" title="qiskit_machine_learning.connectors.TorchConnector"><code class="xref py py-class docutils literal notranslate"><span class="pre">TorchConnector</span></code></a>.</p></li>
+<li><p><strong>num_virtual_qubits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – Number of virtual qubits.</p></li>
+<li><p><strong>default_precision</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The default precision for the estimator if not specified during run.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -508,71 +512,77 @@ Note that this parameter is <code class="docutils literal notranslate"><span cla
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.circuit">
-<span class="sig-name descname"><span class="pre">circuit</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.circuit" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">circuit</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.circuit" title="Link to this definition">¶</a></dt>
 <dd><p>The quantum circuit representing the neural network.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.default_precision">
+<span class="sig-name descname"><span class="pre">default_precision</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.default_precision" title="Link to this definition">¶</a></dt>
+<dd><p>Return the default precision</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.input_gradients">
-<span class="sig-name descname"><span class="pre">input_gradients</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.input_gradients" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">input_gradients</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.input_gradients" title="Link to this definition">¶</a></dt>
 <dd><p>Returns whether gradients with respect to input data are computed by this neural network
-in the <code class="docutils literal notranslate"><span class="pre">backward</span></code> method or not. By default such gradients are not computed.</p>
+in the <code class="docutils literal notranslate"><span class="pre">backward</span></code> method or not. By default, such gradients are not computed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.input_params">
-<span class="sig-name descname"><span class="pre">input_params</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.input_params" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">input_params</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.input_params" title="Link to this definition">¶</a></dt>
 <dd><p>The parameters that correspond to the input data of the network.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.num_inputs">
-<span class="sig-name descname"><span class="pre">num_inputs</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.num_inputs" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">num_inputs</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.num_inputs" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the number of input features.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.num_weights">
-<span class="sig-name descname"><span class="pre">num_weights</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.num_weights" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">num_weights</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.num_weights" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the number of trainable weights.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.observables">
-<span class="sig-name descname"><span class="pre">observables</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.observables" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">observables</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.observables" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the underlying observables of this QNN.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.output_shape">
-<span class="sig-name descname"><span class="pre">output_shape</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.output_shape" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">output_shape</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.output_shape" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the output shape.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.sparse">
-<span class="sig-name descname"><span class="pre">sparse</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.sparse" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sparse</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.sparse" title="Link to this definition">¶</a></dt>
 <dd><p>Returns whether the output is sparse or not.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.weight_params">
-<span class="sig-name descname"><span class="pre">weight_params</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.weight_params" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">weight_params</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.weight_params" title="Link to this definition">¶</a></dt>
 <dd><p>The parameters that correspond to the trainable weights.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.backward">
-<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.backward" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.backward" title="Link to this definition">¶</a></dt>
 <dd><p>Backward pass of the network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>] </em><em>| </em><em>np.ndarray</em><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a
+<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a
 single scalar input it is directly cast to and interpreted like a one-element array.</p></li>
-<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>] </em><em>| </em><em>np.ndarray</em><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight</p></li>
-<li><p><strong>array.</strong> (<em>it is directly cast to and interpreted like a one-element</em>) – </p></li>
+<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight</p></li>
+<li><p><strong>array.</strong> (<em>it is directly cast to and interpreted like a one-element</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -581,21 +591,21 @@ for input and weights of shape (output_shape, num_input) and
 (output_shape, num_weights), respectively.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[np.ndarray | SparseArray | None, np.ndarray | SparseArray | None]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a> | <em>SparseArray</em> | None, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a> | <em>SparseArray</em> | None]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.EstimatorQNN.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.forward" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.forward" title="Link to this definition">¶</a></dt>
 <dd><p>Forward pass of the network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>] </em><em>| </em><em>np.ndarray</em><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a single scalar input it is
+<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a single scalar input it is
 directly cast to and interpreted like a one-element array.</p></li>
-<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>] </em><em>| </em><em>np.ndarray</em><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight
+<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight
 it is directly cast to and interpreted like a one-element array.</p></li>
 </ul>
 </dd>
@@ -603,7 +613,7 @@ it is directly cast to and interpreted like a one-element array.</p></li>
 <dd class="field-even"><p>The result of the neural network of the shape (output_shape).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray | SparseArray</p>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a> | <em>SparseArray</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -684,6 +694,7 @@ it is directly cast to and interpreted like a one-element array.</p></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.estimator"><code class="docutils literal notranslate"><span class="pre">EstimatorQNN.estimator</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.gradient"><code class="docutils literal notranslate"><span class="pre">EstimatorQNN.gradient</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.circuit"><code class="docutils literal notranslate"><span class="pre">EstimatorQNN.circuit</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.default_precision"><code class="docutils literal notranslate"><span class="pre">EstimatorQNN.default_precision</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.input_gradients"><code class="docutils literal notranslate"><span class="pre">EstimatorQNN.input_gradients</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.input_params"><code class="docutils literal notranslate"><span class="pre">EstimatorQNN.input_params</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.neural_networks.EstimatorQNN.num_inputs"><code class="docutils literal notranslate"><span class="pre">EstimatorQNN.num_inputs</span></code></a></li>
@@ -709,11 +720,11 @@ it is directly cast to and interpreted like a one-element array.</p></li>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

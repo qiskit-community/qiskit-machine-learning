@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Getting started" href="getting_started.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="#"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,60 +393,64 @@
         </div>
         <article role="main">
           <br><br><br><section id="qiskit-machine-learning-overview">
-<h1>Qiskit Machine Learning overview<a class="headerlink" href="#qiskit-machine-learning-overview" title="Permalink to this heading">#</a></h1>
+<h1>Qiskit Machine Learning overview<a class="headerlink" href="#qiskit-machine-learning-overview" title="Link to this heading">¶</a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
-<p>Qiskit Machine Learning introduces fundamental computational building blocks - such as Quantum Kernels
-and Quantum Neural Networks - used in different applications, including classification and regression.
-On the one hand, this design is very easy to use and allows users to rapidly prototype a first model
-without deep quantum computing knowledge. On the other hand, Qiskit Machine Learning is very flexible,
-and users can easily extend it to support cutting-edge quantum machine learning research.</p>
-<p>Qiskit Machine Learning provides the <a class="reference internal" href="stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel" title="qiskit_machine_learning.kernels.FidelityQuantumKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code></a>
-class class that makes use of the <a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.state_fidelities.BaseStateFidelity.html#qiskit_algorithms.state_fidelities.BaseStateFidelity" title="(in Qiskit Algorithms v0.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStateFidelity</span></code></a> algorithm
-introduced in Qiskit and can be easily used to directly compute kernel matrices for given datasets
-or can be passed to a Quantum Support Vector Classifier
-(<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC" title="qiskit_machine_learning.algorithms.QSVC"><code class="xref py py-class docutils literal notranslate"><span class="pre">QSVC</span></code></a>) or
-Quantum Support Vector Regressor (<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR" title="qiskit_machine_learning.algorithms.QSVR"><code class="xref py py-class docutils literal notranslate"><span class="pre">QSVR</span></code></a>)
-to quickly start solving classification or regression problems.
-It also can be used with many other existing kernel-based machine learning algorithms from established
-classical frameworks.</p>
-<p>Qiskit Machine Learning defines a generic interface for neural networks that is implemented by different
-quantum neural networks. Two core implementations are readily provided, such as the
-<a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#qiskit_machine_learning.neural_networks.EstimatorQNN" title="qiskit_machine_learning.neural_networks.EstimatorQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></a>
-and the <a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html#qiskit_machine_learning.neural_networks.SamplerQNN" title="qiskit_machine_learning.neural_networks.SamplerQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a>.
-The <a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#qiskit_machine_learning.neural_networks.EstimatorQNN" title="qiskit_machine_learning.neural_networks.EstimatorQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></a> leverages
-the <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code> primitive from Qiskit and allows users to combine
-parametrized quantum circuits with quantum mechanical observables. The circuits can be constructed
-using, for example, building blocks from Qiskit’s circuit library, and the QNN’s output is given
-by the expected value of the observable.
-The <a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html#qiskit_machine_learning.neural_networks.SamplerQNN" title="qiskit_machine_learning.neural_networks.SamplerQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a> leverages another primitive
-introduced in Qiskit, the <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSampler</span></code> primitive. This neural network
-translates quasi-probabilities of bitstrings estimated by the primitive into a desired output. This
-translation step can be used to interpret a given bitstring in a particular context, e.g.
-translating it into a set of classes.</p>
-<p>The neural networks include the functionality to evaluate them for a given input as well as to compute the
-corresponding gradients, which is important for efficient training. To train and use neural networks,
-Qiskit Machine Learning provides a variety of learning algorithms such as the
-<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier" title="qiskit_machine_learning.algorithms.NeuralNetworkClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code></a> and
-<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor" title="qiskit_machine_learning.algorithms.NeuralNetworkRegressor"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetworkRegressor</span></code></a>.
-Both take a QNN as input and then use it in a classification or regression context.
-To allow an easy start, two convenience implementations are provided - the Variational Quantum Classifier
-(<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC" title="qiskit_machine_learning.algorithms.VQC"><code class="xref py py-class docutils literal notranslate"><span class="pre">VQC</span></code></a>)
-as well as the Variational Quantum Regressor (<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR" title="qiskit_machine_learning.algorithms.VQR"><code class="xref py py-class docutils literal notranslate"><span class="pre">VQR</span></code></a>).
-Both take just a feature map and an ansatz and construct the underlying QNN automatically.</p>
-<p>In addition to the models provided directly in Qiskit Machine Learning, it has the
-<a class="reference internal" href="stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector" title="qiskit_machine_learning.connectors.TorchConnector"><code class="xref py py-class docutils literal notranslate"><span class="pre">TorchConnector</span></code></a>,
-which allows users to integrate all of our quantum neural networks directly into the
-<a class="reference external" href="https://pytorch.org">PyTorch</a>
-open source machine learning library. Thanks to Qiskit Algorithm’s gradient algorithms,
-this includes automatic
-differentiation - the overall gradients computed by <a class="reference external" href="https://pytorch.org">PyTorch</a>
-during the backpropagation take into
-account quantum neural networks, too. The flexible design also allows the building of connectors
-to other packages in the future.</p>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>Qiskit Machine Learning introduces fundamental computational building blocks, such as Quantum
+Kernels and Quantum Neural Networks, used in various applications including classification
+and regression.</p>
+<p>This library is part of the Qiskit Community ecosystem, a collection of high-level codes that are based
+on the Qiskit software development kit. As of version <code class="docutils literal notranslate"><span class="pre">0.7</span></code>, Qiskit Machine Learning is co-maintained
+by IBM and the <a class="reference external" href="https://www.hartree.stfc.ac.uk/">Hartree Center</a>, part of the UK Science and
+Technologies Facilities Council (STFC).</p>
+<p>The Qiskit Machine Learning framework aims to be:</p>
+<ul class="simple">
+<li><p><strong>User-friendly</strong>, allowing users to quickly and easily prototype quantum machine learning models without
+the need of extensive quantum computing knowledge.</p></li>
+<li><p><strong>Flexible</strong>, providing tools and functionalities to conduct proof-of-concepts and innovative research
+in quantum machine learning for both beginners and experts.</p></li>
+<li><p><strong>Extensible</strong>, facilitating the integration of new cutting-edge features leveraging Qiskit’s
+architectures, patterns and related services.</p></li>
+</ul>
+</section>
+<section id="what-are-the-main-features-of-qiskit-machine-learning">
+<h2>What are the main features of Qiskit Machine Learning?<a class="headerlink" href="#what-are-the-main-features-of-qiskit-machine-learning" title="Link to this heading">¶</a></h2>
+<section id="kernel-based-methods">
+<h3>Kernel-based methods<a class="headerlink" href="#kernel-based-methods" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel" title="qiskit_machine_learning.kernels.FidelityQuantumKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code></a>
+class uses the <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStateFidelity</span></code>
+algorithm. It computes kernel matrices for datasets and can be combined with a Quantum Support Vector Classifier (<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC" title="qiskit_machine_learning.algorithms.QSVC"><code class="xref py py-class docutils literal notranslate"><span class="pre">QSVC</span></code></a>)
+or a Quantum Support Vector Regressor (<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR" title="qiskit_machine_learning.algorithms.QSVR"><code class="xref py py-class docutils literal notranslate"><span class="pre">QSVR</span></code></a>)
+to solve classification or regression problems respectively. It is also compatible with classical kernel-based machine learning algorithms.</p>
+</section>
+<section id="quantum-neural-networks-qnns">
+<h3>Quantum Neural Networks (QNNs)<a class="headerlink" href="#quantum-neural-networks-qnns" title="Link to this heading">¶</a></h3>
+<p>Qiskit Machine Learning defines a generic interface for neural networks, implemented by two core (derived) primitives:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#qiskit_machine_learning.neural_networks.EstimatorQNN" title="qiskit_machine_learning.neural_networks.EstimatorQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">EstimatorQNN</span></code></a> leverages the Qiskit
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator">Estimator</a> primitive, combining parametrized quantum circuits
+with quantum mechanical observables. The output is the expected value of the observable.</p></li>
+<li><p><a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html#qiskit_machine_learning.neural_networks.SamplerQNN" title="qiskit_machine_learning.neural_networks.SamplerQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a> leverages the Qiskit
+<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler">Sampler</a> primitive,
+translating bit-string counts into the desired outputs.</p></li>
+</ul>
+<p>To train and use neural networks, Qiskit Machine Learning provides learning algorithms such as the <a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier" title="qiskit_machine_learning.algorithms.NeuralNetworkClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code></a>
+and <a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor" title="qiskit_machine_learning.algorithms.NeuralNetworkRegressor"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetworkRegressor</span></code></a>.
+Finally, built on these, the Variational Quantum Classifier (<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC" title="qiskit_machine_learning.algorithms.VQC"><code class="xref py py-class docutils literal notranslate"><span class="pre">VQC</span></code></a>)
+and the Variational Quantum Regressor (<a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR" title="qiskit_machine_learning.algorithms.VQR"><code class="xref py py-class docutils literal notranslate"><span class="pre">VQR</span></code></a>)
+take a <em>feature map</em> and an <em>ansatz</em> to construct the underlying QNN automatically using high-level syntax.</p>
+</section>
+<section id="integration-with-pytorch">
+<h3>Integration with PyTorch<a class="headerlink" href="#integration-with-pytorch" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector" title="qiskit_machine_learning.connectors.TorchConnector"><code class="xref py py-class docutils literal notranslate"><span class="pre">TorchConnector</span></code></a>
+integrates QNNs with <a class="reference external" href="https://pytorch.org">PyTorch</a>.
+Thanks to the gradient algorithms in Qiskit Machine Learning, this includes automatic differentiation.
+The overall gradients computed by PyTorch during the backpropagation take into account quantum neural
+networks, too. The flexible design also allows the building of connectors to other packages in the future.</p>
+</section>
 </section>
 <section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="getting_started.html">Getting started</a></p>
 <p><a class="reference external" href="migration/index.html">Migration Guide</a></p>
 <p><a class="reference external" href="tutorials/index.html">Tutorials</a></p>
@@ -512,6 +518,12 @@ to other packages in the future.</p>
             <ul>
 <li><a class="reference internal" href="#">Qiskit Machine Learning overview</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#what-are-the-main-features-of-qiskit-machine-learning">What are the main features of Qiskit Machine Learning?</a><ul>
+<li><a class="reference internal" href="#kernel-based-methods">Kernel-based methods</a></li>
+<li><a class="reference internal" href="#quantum-neural-networks-qnns">Quantum Neural Networks (QNNs)</a></li>
+<li><a class="reference internal" href="#integration-with-pytorch">Integration with PyTorch</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#next-steps">Next Steps</a></li>
 </ul>
 </li>
@@ -526,13 +538,15 @@ to other packages in the future.</p>
   </div>
 </div><script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=4f87218b"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/documentation_options.js?v=486e5634"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="_static/design-tabs.js?v=36754332"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

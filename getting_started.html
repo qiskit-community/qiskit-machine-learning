@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Qiskit Machine Learning Migration Guide" href="migration/index.html" /><link rel="prev" title="Qiskit Machine Learning overview" href="index.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Getting started - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Getting started - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,20 +393,20 @@
         </div>
         <article role="main">
           <br><br><br><section id="getting-started">
-<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h1>
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <p>Qiskit Machine Learning depends on Qiskit, which has its own
 <a class="reference external" href="https://docs.quantum.ibm.com/start/install">installation instructions</a> detailing
 installation options and its supported environments/platforms. You should refer to
 that first. Then the information here can be followed which focuses on the additional installation
 specific to Qiskit Machine Learning.</p>
 <p>Qiskit Machine Learning has some functions that have been made optional where the dependent code and/or
-support program(s) are not (or cannot be) installed by default. Those are PyTorch and Sparse.
+support program(s) are not (or cannot be) installed by default. Those are PyTorch, Sparse and NLopt.
 See <a class="reference internal" href="#optional-installs"><span class="std std-ref">Optional installs</span></a> for more information.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-0">
+<label class="sd-tab-label" for="sd-tab-item-0">
 Start locally</label><div class="sd-tab-content docutils">
 <p>The simplest way to get started is to follow the installation guide for Qiskit <a class="reference external" href="https://docs.quantum.ibm.com/start/install">here</a></p>
 <p>In your virtual environment, where you installed Qiskit, install <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> as follows:</p>
@@ -419,7 +421,7 @@ if one is not already installed.</p>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
+<label class="sd-tab-label" for="sd-tab-item-1">
 Install from source</label><div class="sd-tab-content docutils">
 <p>Installing Qiskit Machine Learning from source allows you to access the most recently
 updated version under development instead of using the version in the Python Package
@@ -461,18 +463,35 @@ project don’t require a reinstall to be applied, you can do this with:</p>
 </div>
 </section>
 <section id="optional-installs">
-<span id="id1"></span><h2>Optional installs<a class="headerlink" href="#optional-installs" title="Permalink to this heading">#</a></h2>
+<span id="id1"></span><h2>Optional installs<a class="headerlink" href="#optional-installs" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><strong>PyTorch</strong>, may be installed either using command <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'qiskit-machine-learning[torch]'</span></code> to install the
 package or refer to PyTorch <a class="reference external" href="https://pytorch.org/get-started/locally/">getting started</a>. When PyTorch
 is installed, the <cite>TorchConnector</cite> facilitates its use of quantum computed networks.</p></li>
 <li><p><strong>Sparse</strong>, may be installed using command <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'qiskit-machine-learning[sparse]'</span></code> to install the
 package. Sparse being installed will enable the usage of sparse arrays/tensors.</p></li>
+<li><p><strong>NLopt</strong> is required for the global optimizers. <a class="reference external" href="https://nlopt.readthedocs.io/en/latest/">NLOpt</a>
+can be installed manually with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nlopt</span></code> on Windows and Linux platforms, or with
+<code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">nlopt</span></code> on MacOS using the Homebrew package manager. For more information, refer
+to the <a class="reference external" href="https://nlopt.readthedocs.io/en/latest/NLopt_Installation/">installation guide</a>.</p></li>
 </ul>
+</section>
+<section id="migration-to-qiskit-1-x">
+<span id="migration-to-qiskit-1x"></span><h2>Migration to Qiskit 1.x<a class="headerlink" href="#migration-to-qiskit-1-x" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Qiskit Machine Learning depends on Qiskit, which will be automatically installed as a
+dependency when you install Qiskit Machine Learning. From version <code class="docutils literal notranslate"><span class="pre">0.8</span></code> of Qiskit Machine
+Learning, Qiskit <code class="docutils literal notranslate"><span class="pre">1.0</span></code> or above will be required. If you have a pre-<code class="docutils literal notranslate"><span class="pre">1.0</span></code> version of Qiskit
+installed in your environment (however it was installed), you should upgrade to <code class="docutils literal notranslate"><span class="pre">1.x</span></code> to
+continue using the latest features. You may refer to the
+official <a class="reference external" href="https://docs.quantum.ibm.com/api/migration-guides/qiskit-1.0">Qiskit 1.0 Migration Guide</a>
+for detailed instructions and examples on how to upgrade Qiskit.</p>
+</div>
 </section>
 <hr class="docutils" />
 <section id="ready-to-get-going">
-<h2>Ready to get going?…<a class="headerlink" href="#ready-to-get-going" title="Permalink to this heading">#</a></h2>
+<h2>Ready to get going?…<a class="headerlink" href="#ready-to-get-going" title="Link to this heading">¶</a></h2>
 <div class="tutorials-callout-container">
    <div class="row">
     <div class="qiskit-call-to-action-item">
@@ -554,6 +573,7 @@ package. Sparse being installed will enable the usage of sparse arrays/tensors.<
 <li><a class="reference internal" href="#">Getting started</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#optional-installs">Optional installs</a></li>
+<li><a class="reference internal" href="#migration-to-qiskit-1-x">Migration to Qiskit 1.x</a></li>
 <li><a class="reference internal" href="#ready-to-get-going">Ready to get going?…</a></li>
 </ul>
 </li>
@@ -568,11 +588,11 @@ package. Sparse being installed will enable the usage of sparse arrays/tensors.<
   </div>
 </div><script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=4f87218b"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/documentation_options.js?v=486e5634"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="_static/design-tabs.js?v=36754332"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="PyTorch qGAN Implementation" href="04_torch_qgan.html" /><link rel="prev" title="Training a Quantum Model on a Real Dataset" href="02a_training_a_quantum_model_on_a_real_dataset.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Quantum Kernel Machine Learning - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Quantum Kernel Machine Learning - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -256,6 +256,7 @@
 <li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -271,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -393,12 +395,12 @@
         <article role="main">
           <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/03_quantum_kernel.ipynb">docs/tutorials/03_quantum_kernel.ipynb</a>.</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/03_quantum_kernel.ipynb">docs/tutorials/03_quantum_kernel.ipynb</a>.</p>
 </div>
 <section id="Quantum-Kernel-Machine-Learning">
-<h1>Quantum Kernel Machine Learning<a class="headerlink" href="#Quantum-Kernel-Machine-Learning" title="Permalink to this heading">#</a></h1>
+<h1>Quantum Kernel Machine Learning<a class="headerlink" href="#Quantum-Kernel-Machine-Learning" title="Link to this heading">¶</a></h1>
 <section id="Overview">
-<h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this heading">#</a></h2>
+<h2>Overview<a class="headerlink" href="#Overview" title="Link to this heading">¶</a></h2>
 <p>The general task of machine learning is to find and study patterns in data. For many datasets, the datapoints are better understood in a higher dimensional feature space. This is the fundamental principle behind a series of machine learning algorithms known as <em>kernel methods</em>.</p>
 <p>In this notebook, you will learn how to define quantum kernels using <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> and how these can be plugged into different algorithms to solve classification and clustering problems.</p>
 <p>All examples used in this tutorial are based on this reference paper: <a class="reference external" href="https://arxiv.org/pdf/1804.11326.pdf">Supervised learning with quantum enhanced feature spaces</a>.</p>
@@ -412,16 +414,16 @@
 </ol>
 </section>
 <section id="1.-Introduction">
-<h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Permalink to this heading">#</a></h2>
+<h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Link to this heading">¶</a></h2>
 <section id="1.1.-Kernel-Methods-for-Machine-Learning">
-<h3>1.1. Kernel Methods for Machine Learning<a class="headerlink" href="#1.1.-Kernel-Methods-for-Machine-Learning" title="Permalink to this heading">#</a></h3>
+<h3>1.1. Kernel Methods for Machine Learning<a class="headerlink" href="#1.1.-Kernel-Methods-for-Machine-Learning" title="Link to this heading">¶</a></h3>
 <p>Kernel methods are a collection of pattern analysis algorithms that use kernel functions to operate in a high-dimensional feature space. The best-known application of kernel methods is in <strong>Support Vector Machines (SVMs)</strong>, supervised learning algorithms commonly used for classification tasks. The main goal of SVMs is to find decision boundaries to separate a given set of data points into classes. When these data spaces are not linearly separable, SVMs can benefit from the use of kernels to find
 these boundaries.</p>
 <p>Formally, decision boundaries are hyperplanes in a high dimensional space. The kernel function implicitly maps input data into this higher dimensional space, where it can be easier to solve the initial problem. In other words, kernels may allow data distributions that were originally non-linearly separable to become a linearly separable problem. This is an effect known as the “kernel trick”.</p>
 <p>There are use-cases for kernel-based unsupervised algorithms too, for example, in the context of clustering. <strong>Spectral Clustering</strong> is a technique where data points are treated as nodes of a graph, and the clustering task is viewed as a graph partitioning problem where nodes are mapped to a space where they can be easily segregated to form clusters.</p>
 </section>
 <section id="1.2.-Kernel-Functions">
-<h3>1.2. Kernel Functions<a class="headerlink" href="#1.2.-Kernel-Functions" title="Permalink to this heading">#</a></h3>
+<h3>1.2. Kernel Functions<a class="headerlink" href="#1.2.-Kernel-Functions" title="Link to this heading">¶</a></h3>
 <p>Mathematically, kernel functions follow:</p>
 <p><span class="math notranslate nohighlight">\(k(\vec{x}_i, \vec{x}_j) = \langle f(\vec{x}_i), f(\vec{x}_j) \rangle\)</span></p>
 <p>where * <span class="math notranslate nohighlight">\(k\)</span> is the kernel function * <span class="math notranslate nohighlight">\(\vec{x}_i, \vec{x}_j\)</span> are <span class="math notranslate nohighlight">\(n\)</span> dimensional inputs * <span class="math notranslate nohighlight">\(f\)</span> is a map from <span class="math notranslate nohighlight">\(n\)</span>-dimension to <span class="math notranslate nohighlight">\(m\)</span>-dimension space and * <span class="math notranslate nohighlight">\(\langle a,b \rangle\)</span> denotes the inner product</p>
@@ -429,7 +431,7 @@ these boundaries.</p>
 <p><span class="math notranslate nohighlight">\(K_{ij} = k(\vec{x}_i,\vec{x}_j)\)</span>.</p>
 </section>
 <section id="1.3.-Quantum-Kernels">
-<h3>1.3. Quantum Kernels<a class="headerlink" href="#1.3.-Quantum-Kernels" title="Permalink to this heading">#</a></h3>
+<h3>1.3. Quantum Kernels<a class="headerlink" href="#1.3.-Quantum-Kernels" title="Link to this heading">¶</a></h3>
 <p>The main idea behind quantum kernel machine learning is to leverage quantum feature maps to perform the kernel trick. In this case, the quantum kernel is created by mapping a classical feature vector <span class="math notranslate nohighlight">\(\vec{x}\)</span> to a Hilbert space using a quantum feature map <span class="math notranslate nohighlight">\(\phi(\vec{x})\)</span>. Mathematically:</p>
 <p><span class="math notranslate nohighlight">\(K_{ij} = \left| \langle \phi(\vec{x}_i)| \phi(\vec{x}_j) \rangle \right|^{2}\)</span></p>
 <p>where * <span class="math notranslate nohighlight">\(K_{ij}\)</span> is the kernel matrix * <span class="math notranslate nohighlight">\(\vec{x}_i, \vec{x}_j\)</span> are <span class="math notranslate nohighlight">\(n\)</span> dimensional inputs * <span class="math notranslate nohighlight">\(\phi(\vec{x})\)</span> is the quantum feature map * <span class="math notranslate nohighlight">\(\left| \langle a|b \rangle \right|^{2}\)</span> denotes the overlap of two quantum states <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span></p>
@@ -441,7 +443,7 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
 
 <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">12345</span>
 </pre></div>
@@ -450,10 +452,10 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
 </section>
 </section>
 <section id="2.-Classification">
-<h2>2. Classification<a class="headerlink" href="#2.-Classification" title="Permalink to this heading">#</a></h2>
+<h2>2. Classification<a class="headerlink" href="#2.-Classification" title="Link to this heading">¶</a></h2>
 <p>This section illustrates a quantum kernel classification workflow using <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code>.</p>
 <section id="2.1.-Defining-the-dataset">
-<h3>2.1. Defining the dataset<a class="headerlink" href="#2.1.-Defining-the-dataset" title="Permalink to this heading">#</a></h3>
+<h3>2.1. Defining the dataset<a class="headerlink" href="#2.1.-Defining-the-dataset" title="Link to this heading">¶</a></h3>
 <p>For this example, we will use the <em>ad hoc dataset</em> as described in the reference <a class="reference external" href="https://arxiv.org/pdf/1804.11326.pdf">paper</a>.</p>
 <p>We can define the dataset dimension and get our train and test subsets:</p>
 <div class="nbinput nblast docutils container">
@@ -548,7 +550,7 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
 </div>
 </section>
 <section id="2.2.-Defining-the-quantum-kernel">
-<h3>2.2. Defining the quantum kernel<a class="headerlink" href="#2.2.-Defining-the-quantum-kernel" title="Permalink to this heading">#</a></h3>
+<h3>2.2. Defining the quantum kernel<a class="headerlink" href="#2.2.-Defining-the-quantum-kernel" title="Link to this heading">¶</a></h3>
 <p>The next step is to create a quantum kernel instance that will help classify this data.</p>
 <p>We use the <a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a> class, and pass two input arguments to its constructor:</p>
 <ol class="arabic simple">
@@ -556,13 +558,13 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
 <li><p><code class="docutils literal notranslate"><span class="pre">fidelity</span></code>: in this case, the <a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.state_fidelities.ComputeUncompute.html">ComputeUncompute</a> fidelity subroutine that leverages the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.Sampler">Sampler</a> primitive.</p></li>
 </ol>
 <p><strong>NOTE:</strong> If you don’t pass a <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> or <code class="docutils literal notranslate"><span class="pre">Fidelity</span></code> instance, then the instances of the reference <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> and <code class="docutils literal notranslate"><span class="pre">ComputeUncompute</span></code> classes (found in <code class="docutils literal notranslate"><span class="pre">qiskit.primitives</span></code>) will be created by default.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">ZZFeatureMap</span>
 <span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
 <span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
 
 <span class="n">adhoc_feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
@@ -575,16 +577,27 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_3546/3912191764.py:8: DeprecationWarning: The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2. It will be removed no earlier than 3 months after the release date. All implementations of the `BaseSamplerV1` interface have been deprecated in favor of their V2 counterparts. The V2 alternative for the `Sampler` class is `StatevectorSampler`.
+  sampler = Sampler()
+/tmp/ipykernel_3546/3912191764.py:10: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  fidelity = ComputeUncompute(sampler=sampler)
+</pre></div></div>
+</div>
 </section>
 <section id="2.3.-Classification-with-SVC">
-<h3>2.3. Classification with SVC<a class="headerlink" href="#2.3.-Classification-with-SVC" title="Permalink to this heading">#</a></h3>
+<h3>2.3. Classification with SVC<a class="headerlink" href="#2.3.-Classification-with-SVC" title="Link to this heading">¶</a></h3>
 <p>The quantum kernel can now be plugged into classical kernel methods, such as the <a class="reference external" href="https://scikit-learn.org/stable/modules/svm.html">SVC</a> algorithm from <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>. This algorithm allows us to define a <a class="reference external" href="https://scikit-learn.org/stable/modules/svm.html#custom-kernels">custom kernel</a> in two ways:</p>
 <ol class="arabic simple">
 <li><p>by providing the kernel as a <strong>callable function</strong></p></li>
 <li><p>by precomputing the <strong>kernel matrix</strong></p></li>
 </ol>
 <section id="Kernel-as-a-callable-function">
-<h4>Kernel as a callable function<a class="headerlink" href="#Kernel-as-a-callable-function" title="Permalink to this heading">#</a></h4>
+<h4>Kernel as a callable function<a class="headerlink" href="#Kernel-as-a-callable-function" title="Link to this heading">¶</a></h4>
 <p>We define a SVC model and directly pass the <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> function of the quantum kernel as a callable. Once the model is created, we train it by calling the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method on the training dataset and evaluate the model for accuracy with <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -612,7 +625,7 @@ Callable kernel classification test score: 1.0
 </div>
 </section>
 <section id="Precomputed-kernel-matrix">
-<h4>Precomputed kernel matrix<a class="headerlink" href="#Precomputed-kernel-matrix" title="Permalink to this heading">#</a></h4>
+<h4>Precomputed kernel matrix<a class="headerlink" href="#Precomputed-kernel-matrix" title="Link to this heading">¶</a></h4>
 <p>Instead of passing a function of the quantum kernel as a callable, we can also precompute training and testing kernel matrices before passing them to the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> <code class="docutils literal notranslate"><span class="pre">SVC</span></code> algorithm.</p>
 <p>To extract the train and test matrices, we can call <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> on the previously defined kernel and visualize them graphically as follows:</p>
 <div class="nbinput docutils container">
@@ -669,7 +682,7 @@ Precomputed kernel classification test score: 1.0
 </section>
 </section>
 <section id="2.4.-Classification-with-QSVC">
-<h3>2.4. Classification with QSVC<a class="headerlink" href="#2.4.-Classification-with-QSVC" title="Permalink to this heading">#</a></h3>
+<h3>2.4. Classification with QSVC<a class="headerlink" href="#2.4.-Classification-with-QSVC" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">QSVC</span></code> is an alternative training algorithm provided by <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> for convenience. It is an extension of <code class="docutils literal notranslate"><span class="pre">SVC</span></code> that takes in a quantum kernel instead of the <code class="docutils literal notranslate"><span class="pre">kernel.evaluate</span></code> method shown before.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -697,7 +710,7 @@ QSVC classification test score: 1.0
 </div>
 </section>
 <section id="2.5.-Evaluation-of-models-used-for-classification">
-<h3>2.5. Evaluation of models used for classification<a class="headerlink" href="#2.5.-Evaluation-of-models-used-for-classification" title="Permalink to this heading">#</a></h3>
+<h3>2.5. Evaluation of models used for classification<a class="headerlink" href="#2.5.-Evaluation-of-models-used-for-classification" title="Link to this heading">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -726,10 +739,10 @@ QSVC                                    |       1.00
 </section>
 </section>
 <section id="3.-Clustering">
-<h2>3. Clustering<a class="headerlink" href="#3.-Clustering" title="Permalink to this heading">#</a></h2>
+<h2>3. Clustering<a class="headerlink" href="#3.-Clustering" title="Link to this heading">¶</a></h2>
 <p>The second workflow in this tutorial focuses on a clustering task using <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> and the spectral clustering algorithm from <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>.</p>
 <section id="3.1.-Defining-the-dataset">
-<h3>3.1. Defining the dataset<a class="headerlink" href="#3.1.-Defining-the-dataset" title="Permalink to this heading">#</a></h3>
+<h3>3.1. Defining the dataset<a class="headerlink" href="#3.1.-Defining-the-dataset" title="Link to this heading">¶</a></h3>
 <p>We will once again use the <em>ad hoc dataset</em>, but now generated with a higher gap of <code class="docutils literal notranslate"><span class="pre">0.6</span></code> (previous example: <code class="docutils literal notranslate"><span class="pre">0.3</span></code>) between the two classes.</p>
 <p>Note that clustering falls under the category of unsupervised machine learning, so a test dataset is not required.</p>
 <div class="nbinput nblast docutils container">
@@ -787,7 +800,7 @@ QSVC                                    |       1.00
 </div>
 </section>
 <section id="3.2.-Defining-the-Quantum-Kernel">
-<h3>3.2. Defining the Quantum Kernel<a class="headerlink" href="#3.2.-Defining-the-Quantum-Kernel" title="Permalink to this heading">#</a></h3>
+<h3>3.2. Defining the Quantum Kernel<a class="headerlink" href="#3.2.-Defining-the-Quantum-Kernel" title="Link to this heading">¶</a></h3>
 <p>We use an identical setup as in the classification example. We create another instance of the <code class="docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code> class with a <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code>, but you might notice that in this case we do not provide a <code class="docutils literal notranslate"><span class="pre">fidelity</span></code> instance. This is because the <code class="docutils literal notranslate"><span class="pre">ComputeUncompute</span></code> method provided in the previous case is instantiated by default when the fidelity instance is not provided explicitly.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
@@ -801,7 +814,7 @@ QSVC                                    |       1.00
 </div>
 </section>
 <section id="3.3.-Clustering-with-the-Spectral-Clustering-Model">
-<h3>3.3. Clustering with the Spectral Clustering Model<a class="headerlink" href="#3.3.-Clustering-with-the-Spectral-Clustering-Model" title="Permalink to this heading">#</a></h3>
+<h3>3.3. Clustering with the Spectral Clustering Model<a class="headerlink" href="#3.3.-Clustering-with-the-Spectral-Clustering-Model" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> spectral clustering algorithm allows us to define a custom kernel in two ways (just like <code class="docutils literal notranslate"><span class="pre">SVC</span></code>):</p>
 <ol class="arabic simple">
 <li><p>by providing the kernel as a <strong>callable function</strong></p></li>
@@ -857,10 +870,10 @@ Clustering score: 0.7287008798015754
 </section>
 </section>
 <section id="4.-Kernel-Principal-Component-Analysis">
-<h2>4. Kernel Principal Component Analysis<a class="headerlink" href="#4.-Kernel-Principal-Component-Analysis" title="Permalink to this heading">#</a></h2>
+<h2>4. Kernel Principal Component Analysis<a class="headerlink" href="#4.-Kernel-Principal-Component-Analysis" title="Link to this heading">¶</a></h2>
 <p>This section focuses on a Principal Component Analysis task using a kernel PCA algorithm. We calculate a kernel matrix using a <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code> and show that this approach translates the original features into a new space, where axes are chosen along principal components. In this space the classification task can be performed with a simpler model rather than an SVM.</p>
 <section id="4.1.-Defining-the-dataset">
-<h3>4.1. Defining the dataset<a class="headerlink" href="#4.1.-Defining-the-dataset" title="Permalink to this heading">#</a></h3>
+<h3>4.1. Defining the dataset<a class="headerlink" href="#4.1.-Defining-the-dataset" title="Link to this heading">¶</a></h3>
 <p>We again use the <em>ad hoc dataset</em> with a gap of <code class="docutils literal notranslate"><span class="pre">0.6</span></code> between the two classes. This dataset resembles the dataset we had in the clustering section, the difference is that in this case <code class="docutils literal notranslate"><span class="pre">test_size</span></code> is not zero.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -897,7 +910,7 @@ Clustering score: 0.7287008798015754
 </div>
 </section>
 <section id="4.2.-Defining-the-Quantum-Kernel">
-<h3>4.2. Defining the Quantum Kernel<a class="headerlink" href="#4.2.-Defining-the-Quantum-Kernel" title="Permalink to this heading">#</a></h3>
+<h3>4.2. Defining the Quantum Kernel<a class="headerlink" href="#4.2.-Defining-the-Quantum-Kernel" title="Link to this heading">¶</a></h3>
 <p>We proceed with the same kernel setup as it was in the classification task, namely a <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code> circuit as a feature map and an instance of <code class="docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -920,7 +933,7 @@ Clustering score: 0.7287008798015754
 </div>
 </section>
 <section id="4.3.-Comparison-of-Kernel-PCA-on-gaussian-and-quantum-kernel">
-<h3>4.3. Comparison of Kernel PCA on gaussian and quantum kernel<a class="headerlink" href="#4.3.-Comparison-of-Kernel-PCA-on-gaussian-and-quantum-kernel" title="Permalink to this heading">#</a></h3>
+<h3>4.3. Comparison of Kernel PCA on gaussian and quantum kernel<a class="headerlink" href="#4.3.-Comparison-of-Kernel-PCA-on-gaussian-and-quantum-kernel" title="Link to this heading">¶</a></h3>
 <p>In this section we use the <code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code> implementation from <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>, with the <code class="docutils literal notranslate"><span class="pre">kernel</span></code> parameter set to “rbf” for a gaussian kernel and “precomputed” for a quantum kernel. The former is very popular in classical machine learning models, whereas the latter allows using a quantum kernel defined as <code class="docutils literal notranslate"><span class="pre">qpca_kernel</span></code>.</p>
 <p>One can observe that the gaussian kernel based Kernel PCA model fails to make the dataset linearly separable, while the quantum kernel succeeds.</p>
 <p>While usually PCA is used to reduce the number of features in a dataset, or in other words to reduce dimensionality of a dataset, we don’t do that here. Rather we keep the number of dimensions and employ the kernel PCA, mostly for visualization purposes, to show that classification on the transformed dataset becomes easily tractable by linear methods, like logistic regression. We use this method to separate two classes in the principal component space with a <code class="docutils literal notranslate"><span class="pre">LogisticRegression</span></code> model from
@@ -1020,7 +1033,7 @@ Logistic regression score: 0.95
 </section>
 </section>
 <section id="5.-Conclusion">
-<h2>5. Conclusion<a class="headerlink" href="#5.-Conclusion" title="Permalink to this heading">#</a></h2>
+<h2>5. Conclusion<a class="headerlink" href="#5.-Conclusion" title="Link to this heading">¶</a></h2>
 <p>In this tutorial:</p>
 <ul class="simple">
 <li><p>We reviewed the fundamentals of quantum kernel learning</p></li>
@@ -1052,7 +1065,7 @@ Logistic regression score: 0.95
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.0.1</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.2</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.3.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Thu Feb 29 16:54:54 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Nov 15 18:50:33 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1176,11 +1189,11 @@ Logistic regression score: 0.95
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

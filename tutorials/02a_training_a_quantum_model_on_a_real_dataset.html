@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quantum Kernel Machine Learning" href="03_quantum_kernel.html" /><link rel="prev" title="Neural Network Classifier &amp; Regressor" href="02_neural_network_classifier_and_regressor.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Training a Quantum Model on a Real Dataset - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Training a Quantum Model on a Real Dataset - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -256,6 +256,7 @@
 <li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -271,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -393,10 +395,10 @@
         <article role="main">
           <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/02a_training_a_quantum_model_on_a_real_dataset.ipynb">docs/tutorials/02a_training_a_quantum_model_on_a_real_dataset.ipynb</a>.</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/02a_training_a_quantum_model_on_a_real_dataset.ipynb">docs/tutorials/02a_training_a_quantum_model_on_a_real_dataset.ipynb</a>.</p>
 </div>
 <section id="Training-a-Quantum-Model-on-a-Real-Dataset">
-<h1>Training a Quantum Model on a Real Dataset<a class="headerlink" href="#Training-a-Quantum-Model-on-a-Real-Dataset" title="Permalink to this heading">#</a></h1>
+<h1>Training a Quantum Model on a Real Dataset<a class="headerlink" href="#Training-a-Quantum-Model-on-a-Real-Dataset" title="Link to this heading">¶</a></h1>
 <p>This tutorial will demonstrate how to train a quantum machine learning model to tackle a classification problem. Previous tutorials have featured small, artificial datasets. Here we will increase the problem complexity by considering a real-life classical dataset. We decided to pick a very well-known – albeit still relatively small – problem: the Iris flower dataset. This dataset even has its own Wikipedia <a class="reference external" href="https://en.wikipedia.org/wiki/Iris_flower_data_set">page</a>. Although the Iris dataset
 is well known to data scientists, we will briefly introduce it to refresh our memories. For comparison, we’ll first train a classical counterpart to the quantum model.</p>
 <p>So, let’s get started:</p>
@@ -407,7 +409,7 @@ is well known to data scientists, we will briefly introduce it to refresh our me
 <li><p>To conclude, we’ll compare the results obtained from both models.</p></li>
 </ul>
 <section id="1.-Exploratory-Data-Analysis">
-<h2>1. Exploratory Data Analysis<a class="headerlink" href="#1.-Exploratory-Data-Analysis" title="Permalink to this heading">#</a></h2>
+<h2>1. Exploratory Data Analysis<a class="headerlink" href="#1.-Exploratory-Data-Analysis" title="Link to this heading">¶</a></h2>
 <p>First, let us explore the Iris dataset this tutorial will use and see what it contains. For our convenience, this <a class="reference external" href="https://scikit-learn.org/stable/datasets/toy_dataset.html#iris-dataset">dataset</a> is available in scikit-learn and can be loaded easily.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -440,34 +442,34 @@ Iris plants dataset
 
 **Data Set Characteristics:**
 
-    :Number of Instances: 150 (50 in each of three classes)
-    :Number of Attributes: 4 numeric, predictive attributes and the class
-    :Attribute Information:
-        - sepal length in cm
-        - sepal width in cm
-        - petal length in cm
-        - petal width in cm
-        - class:
-                - Iris-Setosa
-                - Iris-Versicolour
-                - Iris-Virginica
+:Number of Instances: 150 (50 in each of three classes)
+:Number of Attributes: 4 numeric, predictive attributes and the class
+:Attribute Information:
+    - sepal length in cm
+    - sepal width in cm
+    - petal length in cm
+    - petal width in cm
+    - class:
+            - Iris-Setosa
+            - Iris-Versicolour
+            - Iris-Virginica
 
-    :Summary Statistics:
+:Summary Statistics:
 
-    ============== ==== ==== ======= ===== ====================
-                    Min  Max   Mean    SD   Class Correlation
-    ============== ==== ==== ======= ===== ====================
-    sepal length:   4.3  7.9   5.84   0.83    0.7826
-    sepal width:    2.0  4.4   3.05   0.43   -0.4194
-    petal length:   1.0  6.9   3.76   1.76    0.9490  (high!)
-    petal width:    0.1  2.5   1.20   0.76    0.9565  (high!)
-    ============== ==== ==== ======= ===== ====================
+============== ==== ==== ======= ===== ====================
+                Min  Max   Mean    SD   Class Correlation
+============== ==== ==== ======= ===== ====================
+sepal length:   4.3  7.9   5.84   0.83    0.7826
+sepal width:    2.0  4.4   3.05   0.43   -0.4194
+petal length:   1.0  6.9   3.76   1.76    0.9490  (high!)
+petal width:    0.1  2.5   1.20   0.76    0.9565  (high!)
+============== ==== ==== ======= ===== ====================
 
-    :Missing Attribute Values: None
-    :Class Distribution: 33.3% for each of 3 classes.
-    :Creator: R.A. Fisher
-    :Donor: Michael Marshall (MARSHALL%PLU@io.arc.nasa.gov)
-    :Date: July, 1988
+:Missing Attribute Values: None
+:Class Distribution: 33.3% for each of 3 classes.
+:Creator: R.A. Fisher
+:Donor: Michael Marshall (MARSHALL%PLU@io.arc.nasa.gov)
+:Date: July, 1988
 
 The famous Iris database, first used by Sir R.A. Fisher. The dataset is taken
 from Fisher&#39;s paper. Note that it&#39;s the same as in R, but not as in the UCI
@@ -480,26 +482,23 @@ data set contains 3 classes of 50 instances each, where each class refers to a
 type of iris plant.  One class is linearly separable from the other 2; the
 latter are NOT linearly separable from each other.
 
-|details-start|
-**References**
-|details-split|
+.. dropdown:: References
 
-- Fisher, R.A. &#34;The use of multiple measurements in taxonomic problems&#34;
-  Annual Eugenics, 7, Part II, 179-188 (1936); also in &#34;Contributions to
-  Mathematical Statistics&#34; (John Wiley, NY, 1950).
-- Duda, R.O., &amp; Hart, P.E. (1973) Pattern Classification and Scene Analysis.
-  (Q327.D83) John Wiley &amp; Sons.  ISBN 0-471-22361-1.  See page 218.
-- Dasarathy, B.V. (1980) &#34;Nosing Around the Neighborhood: A New System
-  Structure and Classification Rule for Recognition in Partially Exposed
-  Environments&#34;.  IEEE Transactions on Pattern Analysis and Machine
-  Intelligence, Vol. PAMI-2, No. 1, 67-71.
-- Gates, G.W. (1972) &#34;The Reduced Nearest Neighbor Rule&#34;.  IEEE Transactions
-  on Information Theory, May 1972, 431-433.
-- See also: 1988 MLC Proceedings, 54-64.  Cheeseman et al&#34;s AUTOCLASS II
-  conceptual clustering system finds 3 classes in the data.
-- Many, many more ...
+  - Fisher, R.A. &#34;The use of multiple measurements in taxonomic problems&#34;
+    Annual Eugenics, 7, Part II, 179-188 (1936); also in &#34;Contributions to
+    Mathematical Statistics&#34; (John Wiley, NY, 1950).
+  - Duda, R.O., &amp; Hart, P.E. (1973) Pattern Classification and Scene Analysis.
+    (Q327.D83) John Wiley &amp; Sons.  ISBN 0-471-22361-1.  See page 218.
+  - Dasarathy, B.V. (1980) &#34;Nosing Around the Neighborhood: A New System
+    Structure and Classification Rule for Recognition in Partially Exposed
+    Environments&#34;.  IEEE Transactions on Pattern Analysis and Machine
+    Intelligence, Vol. PAMI-2, No. 1, 67-71.
+  - Gates, G.W. (1972) &#34;The Reduced Nearest Neighbor Rule&#34;.  IEEE Transactions
+    on Information Theory, May 1972, 431-433.
+  - See also: 1988 MLC Proceedings, 54-64.  Cheeseman et al&#34;s AUTOCLASS II
+    conceptual clustering system finds 3 classes in the data.
+  - Many, many more ...
 
-|details-end|
 </pre></div></div>
 </div>
 <p>There are a few interesting observations we can find from this dataset description:</p>
@@ -554,7 +553,7 @@ latter are NOT linearly separable from each other.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;seaborn.axisgrid.PairGrid at 0x7f09c9d606d0&gt;
+&lt;seaborn.axisgrid.PairGrid at 0x7fb35df77970&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -568,7 +567,7 @@ latter are NOT linearly separable from each other.
 <p>Next, let’s see how classical machine learning handles this dataset.</p>
 </section>
 <section id="2.-Training-a-Classical-Machine-Learning-Model">
-<h2>2. Training a Classical Machine Learning Model<a class="headerlink" href="#2.-Training-a-Classical-Machine-Learning-Model" title="Permalink to this heading">#</a></h2>
+<h2>2. Training a Classical Machine Learning Model<a class="headerlink" href="#2.-Training-a-Classical-Machine-Learning-Model" title="Link to this heading">¶</a></h2>
 <p>Before we train a model, we should split the dataset into two parts: a training dataset and a test dataset. We’ll use the former to train the model and the latter to verify how well our models perform on unseen data.</p>
 <p>As usual, we’ll ask scikit-learn to do the boring job for us. We’ll also fix the seed to ensure the results are reproducible.</p>
 <div class="nbinput nblast docutils container">
@@ -576,7 +575,7 @@ latter are NOT linearly separable from each other.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
 
 <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">123</span>
 <span class="n">train_features</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">test_labels</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
@@ -622,7 +621,7 @@ Classical SVC on the test dataset:     0.97
 <p>As can be seen from the scores, the classical SVC algorithm performs very well. Next up, it’s time to look at quantum machine learning models.</p>
 </section>
 <section id="3.-Training-a-Quantum-Machine-Learning-Model">
-<h2>3. Training a Quantum Machine Learning Model<a class="headerlink" href="#3.-Training-a-Quantum-Machine-Learning-Model" title="Permalink to this heading">#</a></h2>
+<h2>3. Training a Quantum Machine Learning Model<a class="headerlink" href="#3.-Training-a-Quantum-Machine-Learning-Model" title="Link to this heading">¶</a></h2>
 <p>As an example of a quantum model, we’ll train a variational quantum classifier (VQC). The VQC is the simplest classifier available in Qiskit Machine Learning and is a good starting point for newcomers to quantum machine learning who have a background in classical machine learning.</p>
 <p>But before we train a model, let’s examine what comprises the <code class="docutils literal notranslate"><span class="pre">VQC</span></code> class. Two of its central elements are the feature map and ansatz. What these are will now be explained.</p>
 <p>Our data is classical, meaning it consists of a set of bits, not qubits. We need a way to encode the data as qubits. This process is crucial if we want to obtain an effective quantum model. We usually refer to this mapping as data encoding, data embedding, or data loading and this is the role of the feature map. While feature mapping is a common ML mechanism, this process of loading data into quantum states does not appear in classical machine learning as that only operates in the classical
@@ -680,14 +679,14 @@ latter is the most widely used term.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
 
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>In the next step, we define where to train our classifier. We can train on a simulator or a real quantum computer. Here, we will use a simulator. We create an instance of the <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> primitive. This is the reference implementation that is statevector based. Using qiskit runtime services you can create a sampler that is backed by a quantum computer.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
@@ -696,6 +695,15 @@ latter is the most widely used term.</p>
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_3072/2087805081.py:3: DeprecationWarning: The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2. It will be removed no earlier than 3 months after the release date. All implementations of the `BaseSamplerV1` interface have been deprecated in favor of their V2 counterparts. The V2 alternative for the `Sampler` class is `StatevectorSampler`.
+  sampler = Sampler()
+</pre></div></div>
 </div>
 <p>We will add a callback function called <code class="docutils literal notranslate"><span class="pre">callback_graph</span></code>. <code class="docutils literal notranslate"><span class="pre">VQC</span></code> will call this function for each evaluation of the objective function with two parameters: the current weights and the value of the objective function at those weights. Our callback will append the value of the objective function to an array so we can plot the iteration versus the objective function value. The callback will update the plot at each iteration. Note that you can do whatever you want inside a callback function, so
 long as it has the two-parameter signature we mentioned above.</p>
@@ -762,7 +770,7 @@ long as it has the two-parameter signature we mentioned above.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Training time: 67 seconds
+Training time: 52 seconds
 </pre></div></div>
 </div>
 <p>Let’s see how the quantum model performs on the real-life dataset.</p>
@@ -798,7 +806,7 @@ feature maps and ansatzes available in the <a class="reference external" href="h
 <p>But what if a dataset contains more features than a modern quantum computer can handle? Recall, in this example, we had the same number of qubits as the number of features in the dataset, but this may not always be the case.</p>
 </section>
 <section id="4.-Reducing-the-Number-of-Features">
-<h2>4. Reducing the Number of Features<a class="headerlink" href="#4.-Reducing-the-Number-of-Features" title="Permalink to this heading">#</a></h2>
+<h2>4. Reducing the Number of Features<a class="headerlink" href="#4.-Reducing-the-Number-of-Features" title="Link to this heading">¶</a></h2>
 <p>In this section, we reduce the number of features in our dataset and train our models again. We’ll move through faster this time as the steps are the same except for the first, where we apply a PCA transformation.</p>
 <p>We transform our four features into two features only. This dimensionality reduction is for educational purposes only. As you saw in the previous section, we can train a quantum model using all four features from the dataset.</p>
 <p>Now, we can easily plot these two features on a single figure.</p>
@@ -920,7 +928,7 @@ Classical SVC on the test dataset:     0.90
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Training time: 16 seconds
+Training time: 12 seconds
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -985,7 +993,7 @@ Quantum VQC on the test dataset using RealAmplitudes:     0.63
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Training time: 19 seconds
+Training time: 14 seconds
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1012,7 +1020,7 @@ Quantum VQC on the test dataset using EfficientSU2:     0.67
 <p>The scores are better than in the previous setup. Perhaps if we had used more iterations, we could do even better.</p>
 </section>
 <section id="5.-Conclusion">
-<h2>5. Conclusion<a class="headerlink" href="#5.-Conclusion" title="Permalink to this heading">#</a></h2>
+<h2>5. Conclusion<a class="headerlink" href="#5.-Conclusion" title="Link to this heading">¶</a></h2>
 <p>In this tutorial, we have built two classical and three quantum machine learning models. Let’s print an overall table with our results.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
@@ -1061,7 +1069,7 @@ without any reduction, you should train such a model. If not, you may expect to 
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.0.1</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.2</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.3.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Thu Feb 29 16:54:30 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Nov 15 18:50:12 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1158,11 +1166,11 @@ without any reduction, you should train such a model. If not, you may expect to 
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

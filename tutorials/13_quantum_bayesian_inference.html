@@ -1,0 +1,946 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Qiskit Machine Learning API Reference" href="../apidocs/qiskit_machine_learning.html" /><link rel="prev" title="The Quantum Autoencoder" href="12_quantum_autoencoder.html" />
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Quantum Bayesian Inference - Qiskit Machine Learning 0.8.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="../_static/js/web-components/top-nav-bar.js"></script>
+<script>
+  (function () {
+    window._analytics = {
+      segment_key: 'ffdYLviQze3kzomaINXNk6NwpY9LlXcw',
+      coremetrics: false,
+      optimizely: false,
+      googleAddServices: false,
+      fullStory: false,
+      autoPageEventSpa: false,
+      autoFormEvents: false,
+      autoPageView: false
+    }
+
+    window.digitalData = {
+      page: {
+        pageInfo: {
+          productTitle: 'IBM Q Experience',
+          analytics: {
+            category: 'Qiskit.org'
+          }
+        }
+      }
+    }
+  }());
+</script>
+<script src="https://cloud.ibm.com/analytics/build/bluemix-analytics.min.js"></script>
+<script>
+  (function () {
+    'use strict'
+
+    if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+    const category = window.digitalData.page.pageInfo.analytics.category
+    const productTitle = window.digitalData.page.pageInfo.productTitle
+    const routeName = 'documentation'
+
+    window.bluemixAnalytics.pageEvent(category, routeName, {
+      navigationType: 'pushState',
+      productTitle: productTitle,
+      title: document.title
+    })
+
+    window.trackCta = (action) => {
+      if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+      const category = window.digitalData.page.pageInfo.analytics.category
+      const productTitle = window.digitalData.page.pageInfo.productTitle
+
+      window.bluemixAnalytics.trackEvent('CTA Clicked', {
+        productTitle,
+        category,
+        CTA: action
+      })
+    }
+
+  }());
+</script></head>
+  <body>
+    
+    <script>document.body.dataset.theme = "light";</script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM4,6H20V26H4ZM28,26H22V6h6Z"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <rect x="4" y="6" width="24" height="2"/>
+      <rect x="4" y="24" width="24" height="2"/>
+      <rect x="4" y="12" width="24" height="2"/>
+      <rect x="4" y="18" width="24" height="2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+         viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve"><polygon points="22,16 12,26 10.6,24.6 19.2,16 10.6,7.4 12,6 " stroke="currentColor"/>
+      <rect id="_x3C_Transparent_Rectangle_x3E_" fill="none" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-new-tab" viewBox="0 0 32 32">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs>
+        <style>
+          .cls-1 {
+            fill: none;
+          }
+        </style>
+      </defs>
+      <path fill="#6929C4" d="M26,28H6a2.0027,2.0027,0,0,1-2-2V6A2.0027,2.0027,0,0,1,6,4H16V6H6V26H26V16h2V26A2.0027,2.0027,0,0,1,26,28Z"/>
+      <polygon fill="#6929C4" points="20 2 20 4 26.586 4 18 12.586 19.414 14 28 5.414 28 12 30 12 30 2 20 2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-brand">
+  <a href="https://www.qiskit.org/ecosystem">
+    <div class="sidebar-logo-container">
+      <img class="sidebar-logo" src="../_static/images/ecosystem-logo.svg" alt="Qiskit Ecosystem logo"/>
+    </div>
+  </a>
+  
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migration Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Migration Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/01_migration_guide_0.5.html">Qiskit Machine Learning v0.5 Migration Guide</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_neural_networks.html">Quantum Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_neural_network_classifier_and_regressor.html">Neural Network Classifier &amp; Regressor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02a_training_a_quantum_model_on_a_real_dataset.html">Training a Quantum Model on a Real Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_quantum_kernel.html">Quantum Kernel Machine Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_torch_qgan.html">PyTorch qGAN Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_torch_connector.html">Torch Connector and Hybrid QNNs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_pegasos_qsvc.html">Pegasos Quantum Support Vector Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_quantum_kernel_trainer.html">Quantum Kernel Training for Machine Learning Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_saving_and_loading_models.html">Saving, Loading Qiskit Machine Learning Models and Continuous Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Quantum Bayesian Inference</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../stubs/qiskit_machine_learning.QiskitMachineLearningError.html">QiskitMachineLearningError</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.algorithms.html">Quantum machine learning algorithms (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.algorithms</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Quantum machine learning algorithms (qiskit_machine_learning.algorithms)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.TrainableModel.html">TrainableModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.ObjectiveFunction.html">ObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.SerializableModelMixin.html">SerializableModelMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html">BinaryObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html">MultiClassObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html">OneHotObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html">PegasosQSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.connectors.TorchConnector.html">TorchConnector</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityStatevectorKernel.html">FidelityStatevectorKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.html">TrainableFidelityStatevectorKernel</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html">QuantumKernelTrainerResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html">EffectiveDimension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html">LocalEffectiveDimension</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning">GitHub</a></li>
+</ul>
+
+</div></div><div class="qiskit-translations-container" aria-label="languages">
+  <input id="translations-checkbox" name="translations-checkbox" role="switch" type="checkbox">
+  <div class="qiskit-translations-header-container"><label for="translations-checkbox">
+      <p role="note">English</p>
+      <div class="qiskit-translations-toggle-container">
+        <div class="visually-hidden">Toggle translations list</div>
+        <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+      </div>
+    </label>
+  </div>
+  <div class="qiskit-translations-list-container">
+    <ul>
+      
+        <li><a href="/qiskit-machine-learning/tutorials/13_quantum_bayesian_inference.html">English</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ja_JP/tutorials/13_quantum_bayesian_inference.html">Japanese</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/es_UN/tutorials/13_quantum_bayesian_inference.html">Spanish</a></li>
+      
+    </ul>
+  </div>
+  <script>
+    document.querySelectorAll('.version').forEach((element) => {
+      element.addEventListener('click', (evt) => {
+        const hash = window.location.hash;
+        const complete_url = evt.target.href + hash;
+        window.location = complete_url;
+        evt.preventDefault();
+      });
+    });
+  </script>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/13_quantum_bayesian_inference.ipynb">docs/tutorials/13_quantum_bayesian_inference.ipynb</a>.</p>
+</div>
+<section id="Quantum-Bayesian-Inference">
+<h1>Quantum Bayesian Inference<a class="headerlink" href="#Quantum-Bayesian-Inference" title="Link to this heading">¶</a></h1>
+<section id="Overview">
+<h2>Overview<a class="headerlink" href="#Overview" title="Link to this heading">¶</a></h2>
+<p>This notebook demonstrates a quantum Bayesian inference (QBI) implementations provided in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code>, and how it can be integrated into basic quantum machine learning (QML) workflows.</p>
+<p>The tutorial is structured as follows:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#1.-Introduction"><span class="std std-ref">Introduction</span></a></p></li>
+<li><p><a class="reference internal" href="#2.-How-to-Instantiate-QBI"><span class="std std-ref">How to Instantiate QBI</span></a></p></li>
+<li><p><a class="reference internal" href="#3.-How-to-Run-Rejection-Sampling"><span class="std std-ref">How to Run Rejection Sampling</span></a></p></li>
+<li><p><a class="reference internal" href="#4.-How-to-Run-an-Inference"><span class="std std-ref">How to Run an Inference</span></a></p></li>
+</ol>
+</section>
+<section id="1.-Introduction">
+<h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Link to this heading">¶</a></h2>
+<section id="1.1.-Quantum-vs.-Classical-Bayesian-Inference">
+<h3>1.1. Quantum vs. Classical Bayesian Inference<a class="headerlink" href="#1.1.-Quantum-vs.-Classical-Bayesian-Inference" title="Link to this heading">¶</a></h3>
+<p>Bayesian networks, or belief networks, are graphical models that illustrate probabilistic relationships between variables using nodes (representing variables) and edges (indicating conditional dependencies) in a directed acyclic graph. Each node is associated with conditional probability tables (CPTs) that detail the influence of parent nodes on their children.</p>
+<p>In these networks, Bayesian inference is key for updating probabilities. It employs Bayes’ theorem to revise the likelihood of hypotheses based on new data, considering the network’s variable interdependencies. For instance, in a network assessing diseases based on symptoms, observing new symptoms allows for recalculating disease probabilities. This recalibration combines the disease’s prior probability with the observed symptom likelihood, leading to an updated, more precise disease
+probability. Thus, Bayesian inference is a dynamic process of adjusting our understanding of one variable in light of new information about others, facilitating informed, evidence-based decisions.</p>
+<p>Exact inference on Bayesian networks is #P-hard. That is why usually approximate inference is used to sample from the distribution on query variables given evidence variables. QBI efficiently utilizes the structure of Bayesian networks represented by a quantum circuit that represent the probability distributions. By employing a quantum version of rejection sampling and leveraging amplitude amplification, quantum computation achieves a significant speedup, making it possible to obtain samples
+much faster.</p>
+<p>This tutorial will guide you through the process of using the QBayesian class to perform such inference tasks. This inference algorithm implements the algorithm from the paper “Quantum inference on Bayesian networks” by Low, Guang Hao et al. This leads to a speedup per sample from <span class="math notranslate nohighlight">\(O(nmP(e)^{-1})\)</span> to <span class="math notranslate nohighlight">\(O(n2^{m}P(e)^{-\frac{1}{2}})\)</span>, where n is the number of nodes in the Bayesian network with at most m parents per node and e the evidence.</p>
+</section>
+<section id="1.2.-Implementation-in-qiskit-machine-learning">
+<h3>1.2. Implementation in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code><a class="headerlink" href="#1.2.-Implementation-in-qiskit-machine-learning" title="Link to this heading">¶</a></h3>
+<p>The QBI in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code> can be used for different quantum circuits representing Bayesian networks with. The implementation is based on the <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> primitive from <a class="reference external" href="https://qiskit.org/documentation/apidoc/primitives.html">qiskit primitives</a>. The primitive is the entry point to run QBI on either a simulator or real quantum hardware. QBI takes in an optional instance of its corresponding primitive, which can be any subclass of <code class="docutils literal notranslate"><span class="pre">BaseSampler</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">qiskit.primitives</span></code> module provides a reference implementation for the <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> class to run statevector simulations. By default, if no instance is passed to a QBI class, an instance of the corresponding reference primitive of <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> is created automatically by QBI. For more information about primitives please refer to the <a class="reference external" href="https://qiskit.org/documentation/apidoc/primitives.html">primitives documentation</a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">QBayesian</span></code> class is used for QBI in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code>. It is initialized with a quantum circuit that represents a Bayesian network. This enables the execution of quantum rejection sampling and inference.</p>
+</section>
+</section>
+<section id="2.-How-to-Instantiate-QBI">
+<h2>2. How to Instantiate QBI<a class="headerlink" href="#2.-How-to-Instantiate-QBI" title="Link to this heading">¶</a></h2>
+<section id="2.1.-Create-Rotations-for-the-Bayesian-Networks">
+<h3>2.1. Create Rotations for the Bayesian Networks<a class="headerlink" href="#2.1.-Create-Rotations-for-the-Bayesian-Networks" title="Link to this heading">¶</a></h3>
+<p>In quantum computing, the rotation matrix around the y-axis, denoted as <span class="math notranslate nohighlight">\(R_y(\theta)\)</span>, is used to rotate the state of a qubit around the y-axis of the Bloch sphere by an angle <span class="math notranslate nohighlight">\(\theta\)</span>. This approach allows for precise control over the quantum state of a qubit, enabling the encoding of specific probabilities in quantum algorithms. When this rotation is applied to a qubit initially in the <span class="math notranslate nohighlight">\(|0\rangle\)</span> state, the resulting state <span class="math notranslate nohighlight">\(|\psi\rangle\)</span> is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}|\psi\rangle = R_y(\theta)|0\rangle = \begin{pmatrix} \cos\left(\frac{\theta}{2}\right) \\ \sin\left(\frac{\theta}{2}\right) \end{pmatrix}\end{split}\]</div>
+</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(R_y(\theta) = \begin{pmatrix} \cos\left(\frac{\theta}{2}\right) &amp; -\sin\left(\frac{\theta}{2}\right) \\ \sin\left(\frac{\theta}{2}\right) &amp; \cos\left(\frac{\theta}{2}\right) \end{pmatrix}\)</span></p></li>
+</ul>
+<p>This state is a superposition of <span class="math notranslate nohighlight">\(|0\rangle\)</span> and <span class="math notranslate nohighlight">\(|1\rangle\)</span> with respective amplitudes $:nbsphinx-math:<cite>cos</cite><span class="math">\left`(:nbsphinx-math:</span>frac{theta}{2}`:nbsphinx-math:<cite>right</cite>) $ and $:nbsphinx-math:<cite>sin</cite><span class="math">\left`(:nbsphinx-math:</span>frac{theta}{2}`:nbsphinx-math:<cite>right</cite>) $. To set a specific probability <span class="math notranslate nohighlight">\(p\)</span> for measuring the qubit in the <span class="math notranslate nohighlight">\(|1\rangle\)</span> state, you can determine <span class="math notranslate nohighlight">\(\theta\)</span> using <span class="math notranslate nohighlight">\(\arcsin\)</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[(\sin^2\left(\frac{\theta}{2}\right) = p) \Leftrightarrow (\theta = 2\arcsin\left(\sqrt{p}\right))\]</div>
+</div>
+<p>The counter probability <span class="math notranslate nohighlight">\(q = 1 - p\)</span>, which is the probability of measuring the qubit in the <span class="math notranslate nohighlight">\(|0\rangle\)</span> state, is given by:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[q = \cos^2\left(\frac{\theta}{2}\right)\]</div>
+</div>
+<p>This approach can be extended for conditional probabilities. For example, with the Bayesian network shown above, you can use the following formula to calculate the joint probability distribution:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[(X\otimes{I})(I\otimes{I}+P_1\otimes{(R_y-I)})(X\otimes{I})(I\otimes{I}+P_1\otimes{(R_y-I)})(R_y\otimes{I})|00\rangle\]</div>
+</div>
+<section id="2.1.1.-Two-Node-Bayesian-Network-Example">
+<h4>2.1.1. Two Node Bayesian Network Example<a class="headerlink" href="#2.1.1.-Two-Node-Bayesian-Network-Example" title="Link to this heading">¶</a></h4>
+<p>In the first example we consider a simple Bayesian network that is only based on two nodes.</p>
+<p><img alt="Two Node Bayesian Network Example" src="../_images/Two_Node_Bayesian_Network.png" /></p>
+<p>For the quantum circuit we need rotation angles that represent the conditional probability tables. The corresponding rotation angles are:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Include libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Define rotation angles</span>
+<span class="n">theta_X</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
+<span class="n">theta_Y_X</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.9</span><span class="p">))</span>
+<span class="n">theta_Y_nX</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.1.2.-Burglary-Alarm-Example">
+<h4>2.1.2. Burglary Alarm Example<a class="headerlink" href="#2.1.2.-Burglary-Alarm-Example" title="Link to this heading">¶</a></h4>
+<p>Now consider a more complex network. Imagine you have an alarm system in your house that is triggered by either a burglary or an earthquake. You also have two neighbors, John and Mary, who will call you if they hear the alarm. The network has directed edges from the Burglary and Earthquake nodes to the Alarm node, indicating that both burglary and earthquake can cause the alarm to ring. There are also edges from the Alarm node to the John Calls and Mary Calls nodes, indicating that the alarm
+influences whether John and Mary call you.</p>
+<p><img alt="Burglary Alarm" src="../_images/Burglary_Alarm.png" /></p>
+<p>The Bayesian Network for this scenario involves the following variables:</p>
+<p>Burglary (B): Whether a burglary has occurred. Earthquake (E): Whether an earthquake has occurred. Alarm (A): Whether the alarm goes off. John Calls (J): Whether John calls you. Mary Calls (M): Whether Mary calls you.</p>
+<p>Use the conditional probability tables:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">theta_B</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.001</span><span class="p">))</span>
+<span class="n">theta_E</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.002</span><span class="p">))</span>
+<span class="n">theta_A_nBnE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.001</span><span class="p">))</span>
+<span class="n">theta_A_nBE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.29</span><span class="p">))</span>
+<span class="n">theta_A_BnE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.94</span><span class="p">))</span>
+<span class="n">theta_A_BE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.95</span><span class="p">))</span>
+<span class="n">theta_J_nA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.05</span><span class="p">))</span>
+<span class="n">theta_J_A</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.9</span><span class="p">))</span>
+<span class="n">theta_M_nA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.9</span><span class="p">))</span>
+<span class="n">theta_M_A</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="2.2.-Create-a-Quantum-Circuit-for-the-Bayesian-Networks">
+<h3>2.2. Create a Quantum Circuit for the Bayesian Networks<a class="headerlink" href="#2.2.-Create-a-Quantum-Circuit-for-the-Bayesian-Networks" title="Link to this heading">¶</a></h3>
+<p>A Bayesian network can be represented as a quantum circuit where each node is a qubit, and the edges are quantum gates that represent the conditional dependencies.</p>
+<section id="2.2.1-Two-Node-Bayesian-Network-Example">
+<h4>2.2.1 Two Node Bayesian Network Example<a class="headerlink" href="#2.2.1-Two-Node-Bayesian-Network-Example" title="Link to this heading">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumRegister</span>
+<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+
+<span class="c1"># Define quantum registers</span>
+<span class="n">qrX</span> <span class="o">=</span> <span class="n">QuantumRegister</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+<span class="n">qrY</span> <span class="o">=</span> <span class="n">QuantumRegister</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+<span class="c1"># Define a 2-qubit quantum circuit</span>
+<span class="n">qc_2n</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">qrX</span><span class="p">,</span> <span class="n">qrY</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bayes net small&quot;</span><span class="p">)</span>
+<span class="c1"># Apply the R_Y_theta rotation gate on the first qubit</span>
+<span class="n">qc_2n</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">theta_X</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="c1"># Apply the controlled-R_Y_theta rotation gate</span>
+<span class="n">qc_2n</span><span class="o">.</span><span class="n">cry</span><span class="p">(</span><span class="n">theta_Y_X</span><span class="p">,</span> <span class="n">control_qubit</span><span class="o">=</span><span class="n">qrX</span><span class="p">,</span> <span class="n">target_qubit</span><span class="o">=</span><span class="n">qrY</span><span class="p">)</span>
+<span class="c1"># Apply the X gate on the first qubit</span>
+<span class="n">qc_2n</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># Apply the controlled-R_Y_theta rotation gate</span>
+<span class="n">qc_2n</span><span class="o">.</span><span class="n">cry</span><span class="p">(</span><span class="n">theta_Y_nX</span><span class="p">,</span> <span class="n">control_qubit</span><span class="o">=</span><span class="n">qrX</span><span class="p">,</span> <span class="n">target_qubit</span><span class="o">=</span><span class="n">qrY</span><span class="p">)</span>
+<span class="c1"># Apply another X gate on the first qubit</span>
+<span class="n">qc_2n</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">qc_2n</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;bw&quot;</span><span class="p">,</span> <span class="n">plot_barriers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">fold</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_13_quantum_bayesian_inference_15_0.png" src="../_images/tutorials_13_quantum_bayesian_inference_15_0.png" />
+</div>
+</div>
+</section>
+<section id="2.2.2.-Burglary-Alarm-Example">
+<h4>2.2.2. Burglary Alarm Example<a class="headerlink" href="#2.2.2.-Burglary-Alarm-Example" title="Link to this heading">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize register</span>
+<span class="n">var</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]</span>
+<span class="n">qr</span> <span class="o">=</span> <span class="p">[</span><span class="n">QuantumRegister</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">var</span><span class="p">]</span>
+<span class="n">qc_ba</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="o">*</span><span class="n">qr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;State preparation&quot;</span><span class="p">)</span>
+<span class="c1"># Specify control qubits</span>
+<span class="c1"># P(B)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">theta_B</span><span class="p">,</span> <span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># P(E)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">theta_E</span><span class="p">,</span> <span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="c1"># P(A|B,E)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">mcry</span><span class="p">(</span><span class="n">theta_E</span><span class="p">,</span> <span class="p">[</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="c1"># P(A|-B,E)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">mcry</span><span class="p">(</span><span class="n">theta_A_BnE</span><span class="p">,</span> <span class="p">[</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># P(A|B,-E)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">mcry</span><span class="p">(</span><span class="n">theta_A_nBE</span><span class="p">,</span> <span class="p">[</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="c1"># P(A|-B,-E)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">mcry</span><span class="p">(</span><span class="n">theta_A_nBnE</span><span class="p">,</span> <span class="p">[</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="c1"># P(J|A)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">cry</span><span class="p">(</span><span class="n">theta_J_A</span><span class="p">,</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="c1"># P(M|A)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">cry</span><span class="p">(</span><span class="n">theta_M_A</span><span class="p">,</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+<span class="c1"># P(J|-A) + P(M|-A)</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">cry</span><span class="p">(</span><span class="n">theta_J_nA</span><span class="p">,</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">cry</span><span class="p">(</span><span class="n">theta_M_nA</span><span class="p">,</span> <span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">qr</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qr</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="c1"># Draw circuit</span>
+<span class="n">qc_ba</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;bw&quot;</span><span class="p">,</span> <span class="n">plot_barriers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">fold</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_13_quantum_bayesian_inference_17_0.png" src="../_images/tutorials_13_quantum_bayesian_inference_17_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="3.-How-to-Run-Rejection-Sampling">
+<h2>3. How to Run Rejection Sampling<a class="headerlink" href="#3.-How-to-Run-Rejection-Sampling" title="Link to this heading">¶</a></h2>
+<section id="3.1.-Set-up">
+<h3>3.1. Set up<a class="headerlink" href="#3.1.-Set-up" title="Link to this heading">¶</a></h3>
+<p>Rejection sampling is a basic technique used in probabilistic computing for generating observations from a distribution. It’s particularly useful when direct sampling from the desired distribution is difficult. The core idea is to use a simpler distribution (referred to as the proposal distribution) from which we can easily sample, and then to “reject” or “accept” these samples based on a certain criterion (evidence) so that the accepted samples follow the desired target distribution.</p>
+<p>Quantum rejection sampling adapts the classical rejection sampling method to the quantum computing context, utilizing quantum algorithms and states to perform efficient sampling. Once the state is prepared by the given quantum circuit representing the Bayesian network, it is measured, resulting in the collapse to one of its possible outcomes. This step is analogous to drawing a sample in classical rejection sampling. However, quantum rejection sampling primarily focuses on post-selection, where
+only specific measurement outcomes that meet desired criteria, here evidence, are retained, and others are disregarded.</p>
+<p>In this implementation, Grover’s algorithm is employed for amplitude amplification. This step is designed to increase the probability amplitudes of the desired outcomes, thereby reducing the number of samples needed. The efficiency of quantum rejection sampling lies in its utilization of quantum parallelism, which allows for the simultaneous evaluation of multiple probabilities, and quantum interference, which can be used to increase the likelihood of obtaining desired outcomes.</p>
+<p>Quantum rejection sampling is particularly beneficial in complex or high-dimensional probability distribution scenarios, where classical computers face challenges. Its applications extend to quantum machine learning, probabilistic modeling, and other areas of quantum computing.</p>
+<p>To use the <code class="docutils literal notranslate"><span class="pre">QBayesian</span></code> class, instantiate it with a quantum circuit that represents the Bayesian network. You can then use the rejection sampling method to estimate probabilities given evidence.</p>
+<section id="3.1.1-Two-Node-Bayesian-Network-Example">
+<h4>3.1.1 Two Node Bayesian Network Example<a class="headerlink" href="#3.1.1-Two-Node-Bayesian-Network-Example" title="Link to this heading">¶</a></h4>
+<p>If we want to carry out a rejection sampling with X=1 as evidence, we can do this in the following way:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">QBayesian</span>
+<span class="kn">from</span> <span class="nn">qiskit.visualization</span> <span class="kn">import</span> <span class="n">plot_histogram</span>
+
+<span class="n">evidence</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="c1"># Initialize QBayesian</span>
+<span class="n">qb_2n</span> <span class="o">=</span> <span class="n">QBayesian</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc_2n</span><span class="p">)</span>
+<span class="c1"># Sampling</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">qb_2n</span><span class="o">.</span><span class="n">rejection_sampling</span><span class="p">(</span><span class="n">evidence</span><span class="o">=</span><span class="n">evidence</span><span class="p">)</span>
+<span class="n">plot_histogram</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_14402/2947965752.py:6: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  qb_2n = QBayesian(circuit=qc_2n)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_13_quantum_bayesian_inference_21_1.png" src="../_images/tutorials_13_quantum_bayesian_inference_21_1.png" />
+</div>
+</div>
+<p>We can also set the threshold to accept the evidence. For example, if set to 0.9, this means that each evidence qubit must be equal to the value of the evidence variable at least 90% of the time in order to be accepted. Sometimes we can also improve our result by setting the threshold for acceptance of the evidence higher:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sampling</span>
+<span class="n">qb_2n</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.97</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">qb_2n</span><span class="o">.</span><span class="n">rejection_sampling</span><span class="p">(</span><span class="n">evidence</span><span class="o">=</span><span class="n">evidence</span><span class="p">)</span>
+<span class="n">plot_histogram</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_13_quantum_bayesian_inference_23_0.png" src="../_images/tutorials_13_quantum_bayesian_inference_23_0.png" />
+</div>
+</div>
+<p>We can also print the result in a better format to understand which values belong to which variables:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qb_2n</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.97</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">qb_2n</span><span class="o">.</span><span class="n">rejection_sampling</span><span class="p">(</span><span class="n">evidence</span><span class="o">=</span><span class="n">evidence</span><span class="p">,</span> <span class="n">format_res</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;P(Y=0|X=1)&#39;: np.float64(0.1004712084149367), &#39;P(Y=1|X=1)&#39;: np.float64(0.899528791585059)}
+</pre></div></div>
+</div>
+</section>
+<section id="3.1.2.-Burglary-Alarm-Example">
+<h4>3.1.2. Burglary Alarm Example<a class="headerlink" href="#3.1.2.-Burglary-Alarm-Example" title="Link to this heading">¶</a></h4>
+<p>For the advanced example, we can follow the steps from above in the same way. However, we look at the trivial case of how to obtain the joint probability of the network. This can be calculated by providing no evidence for the rejection sampling method. (For optical reasons, we only plot probabilities that are greater than 0.01%.)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize quantum bayesian inference framework</span>
+<span class="n">qb_ba</span> <span class="o">=</span> <span class="n">QBayesian</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc_ba</span><span class="p">)</span>
+<span class="c1"># Inference</span>
+<span class="n">counts</span> <span class="o">=</span> <span class="n">qb_ba</span><span class="o">.</span><span class="n">rejection_sampling</span><span class="p">(</span><span class="n">evidence</span><span class="o">=</span><span class="p">{})</span>
+<span class="n">plot_histogram</span><span class="p">({</span><span class="n">c_key</span><span class="p">:</span> <span class="n">c_val</span> <span class="k">for</span> <span class="n">c_key</span><span class="p">,</span> <span class="n">c_val</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">c_val</span> <span class="o">&gt;</span> <span class="mf">0.0001</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_14402/2141156116.py:2: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  qb_ba = QBayesian(circuit=qc_ba)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_13_quantum_bayesian_inference_27_1.png" src="../_images/tutorials_13_quantum_bayesian_inference_27_1.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="4.-How-to-Run-an-Inference">
+<h2>4. How to Run an Inference<a class="headerlink" href="#4.-How-to-Run-an-Inference" title="Link to this heading">¶</a></h2>
+<section id="4.1-Set-Up">
+<h3>4.1 Set Up<a class="headerlink" href="#4.1-Set-Up" title="Link to this heading">¶</a></h3>
+<p>Quantum Bayesian inference is here based on quantum rejection sampling. Quantum rejection sampling plays a pivotal role in the inference process that follows. After the quantum state is manipulated to include evidence, measurement is performed. However, in quantum rejection sampling, only those measurement outcomes that align with the evidence are considered, effectively ‘rejecting’ irrelevant outcomes, similar to the traditional rejection sampling method.</p>
+<p>The synergy of quantum state manipulation with quantum rejection sampling leads to a more efficient inference process compared to classical approaches, harnessing the inherent parallelism of quantum computing to simultaneously process multiple probabilities. This advanced method has significant implications in areas like quantum machine learning and data analysis, where it could outperform classical algorithms in tasks such as pattern recognition and decision-making.</p>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">inference</span></code> method from <code class="docutils literal notranslate"><span class="pre">QBayesian</span></code> to estimate probabilities given evidence.</p>
+<section id="4.1.-Two-Node-Bayesian-Network-Example">
+<h4>4.1. Two Node Bayesian Network Example<a class="headerlink" href="#4.1.-Two-Node-Bayesian-Network-Example" title="Link to this heading">¶</a></h4>
+<p>Using <code class="docutils literal notranslate"><span class="pre">QBayesian</span></code>, you can draw various probabilistic conclusions. For the Bayesian network with two nodes, this is limited due to the number of variables. However, if we want to know what the probability of P(Y=0|X=1) is, we can do the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="n">evidence</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="c1"># Inference</span>
+<span class="n">qb_2n</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">evidence</span><span class="o">=</span><span class="n">evidence</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+np.float64(0.1004712084149367)
+</pre></div></div>
+</div>
+</section>
+<section id="4.2.-Burglary-Alarm-Example">
+<h4>4.2. Burglary Alarm Example<a class="headerlink" href="#4.2.-Burglary-Alarm-Example" title="Link to this heading">¶</a></h4>
+<p>Here we have more options to choose from. For example, if John calls, you can calculate the probability of a burglary having occurred. Bayesian networks are particularly useful in such scenarios where you have uncertain information (like John calling) and you want to infer the state of a more fundamental variable (like a burglary).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">evidence</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;J&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="c1"># Inference</span>
+<span class="n">qb_ba</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">evidence</span><span class="o">=</span><span class="n">evidence</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+np.float64(0.0054042995153299)
+</pre></div></div>
+</div>
+<p>We can also set the threshold to accept the evidence higher for the inference, and sometimes we can also improve our result by setting the evidence acceptance threshold higher:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inference</span>
+<span class="n">qb_ba</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.97</span>
+<span class="n">qb_ba</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">evidence</span><span class="o">=</span><span class="n">evidence</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+np.float64(0.0056128979765628)
+</pre></div></div>
+</div>
+<p>And we can also check whether the algorithm converges:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Converged: &quot;</span><span class="p">,</span> <span class="n">qb_ba</span><span class="o">.</span><span class="n">converged</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Converged:  True
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+  <script>
+    function userFeedbackClicked(ctaType) {
+      document.getElementById('qiskit-analytics-thank-you').style.visibility = 'visible';
+      window.trackCta(`Helpful - ${ctaType}`);
+    }
+  </script>
+    <div class="qiskit-analytics-container">
+      <div>Was this page helpful?</div>
+      <a onclick="userFeedbackClicked('yes')">Yes</a>
+      <a onclick="userFeedbackClicked('no')">No</a>
+      <div id="qiskit-analytics-thank-you">Thank you!</div>
+    </div>
+<div class="related-pages">
+          <a class="next-page" href="../apidocs/qiskit_machine_learning.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Qiskit Machine Learning API Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="12_quantum_autoencoder.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">The Quantum Autoencoder</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Quantum Bayesian Inference</a><ul>
+<li><a class="reference internal" href="#Overview">Overview</a></li>
+<li><a class="reference internal" href="#1.-Introduction">1. Introduction</a><ul>
+<li><a class="reference internal" href="#1.1.-Quantum-vs.-Classical-Bayesian-Inference">1.1. Quantum vs. Classical Bayesian Inference</a></li>
+<li><a class="reference internal" href="#1.2.-Implementation-in-qiskit-machine-learning">1.2. Implementation in <code class="docutils literal notranslate"><span class="pre">qiskit-machine-learning</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#2.-How-to-Instantiate-QBI">2. How to Instantiate QBI</a><ul>
+<li><a class="reference internal" href="#2.1.-Create-Rotations-for-the-Bayesian-Networks">2.1. Create Rotations for the Bayesian Networks</a><ul>
+<li><a class="reference internal" href="#2.1.1.-Two-Node-Bayesian-Network-Example">2.1.1. Two Node Bayesian Network Example</a></li>
+<li><a class="reference internal" href="#2.1.2.-Burglary-Alarm-Example">2.1.2. Burglary Alarm Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#2.2.-Create-a-Quantum-Circuit-for-the-Bayesian-Networks">2.2. Create a Quantum Circuit for the Bayesian Networks</a><ul>
+<li><a class="reference internal" href="#2.2.1-Two-Node-Bayesian-Network-Example">2.2.1 Two Node Bayesian Network Example</a></li>
+<li><a class="reference internal" href="#2.2.2.-Burglary-Alarm-Example">2.2.2. Burglary Alarm Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#3.-How-to-Run-Rejection-Sampling">3. How to Run Rejection Sampling</a><ul>
+<li><a class="reference internal" href="#3.1.-Set-up">3.1. Set up</a><ul>
+<li><a class="reference internal" href="#3.1.1-Two-Node-Bayesian-Network-Example">3.1.1 Two Node Bayesian Network Example</a></li>
+<li><a class="reference internal" href="#3.1.2.-Burglary-Alarm-Example">3.1.2. Burglary Alarm Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#4.-How-to-Run-an-Inference">4. How to Run an Inference</a><ul>
+<li><a class="reference internal" href="#4.1-Set-Up">4.1 Set Up</a><ul>
+<li><a class="reference internal" href="#4.1.-Two-Node-Bayesian-Network-Example">4.1. Two Node Bayesian Network Example</a></li>
+<li><a class="reference internal" href="#4.2.-Burglary-Alarm-Example">4.2. Burglary Alarm Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

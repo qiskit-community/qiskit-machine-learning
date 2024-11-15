@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Effective Dimension of Qiskit Neural Networks" href="10_effective_dimension.html" /><link rel="prev" title="Quantum Kernel Training for Machine Learning Applications" href="08_quantum_kernel_trainer.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Saving, Loading Qiskit Machine Learning Models and Continuous Training - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Saving, Loading Qiskit Machine Learning Models and Continuous Training - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -256,6 +256,7 @@
 <li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -271,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -393,10 +395,10 @@
         <article role="main">
           <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/09_saving_and_loading_models.ipynb">docs/tutorials/09_saving_and_loading_models.ipynb</a>.</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/09_saving_and_loading_models.ipynb">docs/tutorials/09_saving_and_loading_models.ipynb</a>.</p>
 </div>
 <section id="Saving,-Loading-Qiskit-Machine-Learning-Models-and-Continuous-Training">
-<h1>Saving, Loading Qiskit Machine Learning Models and Continuous Training<a class="headerlink" href="#Saving,-Loading-Qiskit-Machine-Learning-Models-and-Continuous-Training" title="Permalink to this heading">#</a></h1>
+<h1>Saving, Loading Qiskit Machine Learning Models and Continuous Training<a class="headerlink" href="#Saving,-Loading-Qiskit-Machine-Learning-Models-and-Continuous-Training" title="Link to this heading">¶</a></h1>
 <p>In this tutorial we will show how to save and load Qiskit machine learning models. Ability to save a model is very important, especially when a significant amount of time is invested in training a model on a real hardware. Also, we will show how to resume training of the previously saved model.</p>
 <p>In this tutorial we will cover how to:</p>
 <ul class="simple">
@@ -415,8 +417,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">RealAmplitudes</span>
 <span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">MinMaxScaler</span>
 
@@ -429,7 +431,7 @@
 </div>
 </div>
 <p>We will be using two quantum simulators, in particular, two instances of the <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> primitive. We’ll start training on the first one, then will resume training on the second one. The approach shown in this tutorial can be used to train a model on a real hardware available on the cloud and then re-use the model for inference on a local simulator.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -439,8 +441,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_12069/2924877470.py:1: DeprecationWarning: The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2. It will be removed no earlier than 3 months after the release date. All implementations of the `BaseSamplerV1` interface have been deprecated in favor of their V2 counterparts. The V2 alternative for the `Sampler` class is `StatevectorSampler`.
+  sampler1 = Sampler()
+/tmp/ipykernel_12069/2924877470.py:3: DeprecationWarning: The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2. It will be removed no earlier than 3 months after the release date. All implementations of the `BaseSamplerV1` interface have been deprecated in favor of their V2 counterparts. The V2 alternative for the `Sampler` class is `StatevectorSampler`.
+  sampler2 = Sampler()
+</pre></div></div>
+</div>
 <section id="1.-Prepare-a-dataset">
-<h2>1. Prepare a dataset<a class="headerlink" href="#1.-Prepare-a-dataset" title="Permalink to this heading">#</a></h2>
+<h2>1. Prepare a dataset<a class="headerlink" href="#1.-Prepare-a-dataset" title="Link to this heading">¶</a></h2>
 <p>Next step is to prepare a dataset. Here, we generate some data in the same way as in other tutorials. The difference is that we apply some transformations to the generated data. We generates <code class="docutils literal notranslate"><span class="pre">40</span></code> samples, each sample has <code class="docutils literal notranslate"><span class="pre">2</span></code> features, so our features is an array of shape <code class="docutils literal notranslate"><span class="pre">(40,</span> <span class="pre">2)</span></code>. Labels are obtained by summing up features by columns and if the sum is more than <code class="docutils literal notranslate"><span class="pre">1</span></code> then this sample is labeled as <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">0</span></code> otherwise.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -621,7 +634,7 @@ array([[0., 1.],
 <p>We’ll train our model using solid dots and verify it using empty dots.</p>
 </section>
 <section id="2.-Train-a-model-and-save-it">
-<h2>2. Train a model and save it<a class="headerlink" href="#2.-Train-a-model-and-save-it" title="Permalink to this heading">#</a></h2>
+<h2>2. Train a model and save it<a class="headerlink" href="#2.-Train-a-model-and-save-it" title="Link to this heading">¶</a></h2>
 <p>We’ll train our model in two steps. On the first step we train our model in <code class="docutils literal notranslate"><span class="pre">20</span></code> iterations.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
@@ -717,7 +730,7 @@ array([[0., 1.],
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.algorithms.classifiers.vqc.VQC at 0x7f6a5d0bc070&gt;
+&lt;qiskit_machine_learning.algorithms.classifiers.vqc.VQC at 0x7f9e32826a70&gt;
 </pre></div></div>
 </div>
 <p>Let’s see how well our model performs after the first step of training.</p>
@@ -735,8 +748,8 @@ array([[0., 1.],
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Train score 0.8
-Test score  0.9
+Train score 0.8333333333333334
+Test score  0.8
 </pre></div></div>
 </div>
 <p>Next, we save the model. You may choose any file name you want. Please note that the <code class="docutils literal notranslate"><span class="pre">save</span></code> method does not append an extension if it is not specified in the file name.</p>
@@ -750,7 +763,7 @@ Test score  0.9
 </div>
 </section>
 <section id="3.-Load-a-model-and-continue-training">
-<h2>3. Load a model and continue training<a class="headerlink" href="#3.-Load-a-model-and-continue-training" title="Permalink to this heading">#</a></h2>
+<h2>3. Load a model and continue training<a class="headerlink" href="#3.-Load-a-model-and-continue-training" title="Link to this heading">¶</a></h2>
 <p>To load a model a user have to call a class method <code class="docutils literal notranslate"><span class="pre">load</span></code> of the corresponding model class. In our case it is <code class="docutils literal notranslate"><span class="pre">VQC</span></code>. We pass the same file name we used in the previous section where we saved our model.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -794,7 +807,7 @@ the total number of iterations is <code class="docutils literal notranslate"><sp
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.algorithms.classifiers.vqc.VQC at 0x7f6a5bcf8940&gt;
+&lt;qiskit_machine_learning.algorithms.classifiers.vqc.VQC at 0x7f9e329ca4a0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -861,7 +874,7 @@ Test score 0.8
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.collections.PathCollection at 0x7f6a5b8b6580&gt;
+&lt;matplotlib.collections.PathCollection at 0x7f9e316b4940&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -874,7 +887,7 @@ Test score 0.8
 <p>So, if you have a large dataset or a large model you can train it in multiple steps as shown in this tutorial.</p>
 </section>
 <section id="4.-PyTorch-hybrid-models">
-<h2>4. PyTorch hybrid models<a class="headerlink" href="#4.-PyTorch-hybrid-models" title="Permalink to this heading">#</a></h2>
+<h2>4. PyTorch hybrid models<a class="headerlink" href="#4.-PyTorch-hybrid-models" title="Link to this heading">¶</a></h2>
 <p>To save and load hybrid models, when using the TorchConnector, follow the PyTorch recommendations of saving and loading the models. For more details please refer to the <a class="reference internal" href="05_torch_connector.html"><span class="doc">PyTorch Connector tutorial</span></a> where a short snippet shows how to do it.</p>
 <p>Take a look at this pseudo-like code to get the idea:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a QNN and a hybrid model</span>
@@ -906,7 +919,7 @@ Test score 0.8
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.0.1</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.2</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.3.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Thu Feb 29 17:00:08 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Nov 15 18:55:15 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1002,11 +1015,11 @@ Test score 0.8
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

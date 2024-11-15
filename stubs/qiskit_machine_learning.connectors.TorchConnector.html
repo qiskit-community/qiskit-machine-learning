@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Datasets (qiskit_machine_learning.datasets)" href="../apidocs/qiskit_machine_learning.datasets.html" /><link rel="prev" title="Connectors (qiskit_machine_learning.connectors)" href="../apidocs/qiskit_machine_learning.connectors.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>TorchConnector - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>TorchConnector - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,65 +393,88 @@
         </div>
         <article role="main">
           <br><br><br><section id="torchconnector">
-<h1>TorchConnector<a class="headerlink" href="#torchconnector" title="Permalink to this heading">#</a></h1>
+<h1>TorchConnector<a class="headerlink" href="#torchconnector" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.connectors.TorchConnector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TorchConnector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/connectors/torch_connector.html#TorchConnector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TorchConnector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/connectors/torch_connector.html#TorchConnector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
-<p>Connects a Qiskit (Quantum) Neural Network to PyTorch.</p>
+<p>Connector class to integrate a neural network with PyTorch.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>neural_network</strong> – The neural network to be connected to PyTorch. Remember
-that <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code>  must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> in the neural network
-initialization before passing it to the <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code> for the gradient
+<li><p><strong>neural_network</strong> (<a class="reference internal" href="qiskit_machine_learning.neural_networks.NeuralNetwork.html#qiskit_machine_learning.neural_networks.NeuralNetwork" title="qiskit_machine_learning.neural_networks.NeuralNetwork"><em>NeuralNetwork</em></a>) – The neural network to be connected to PyTorch.
+Note: <cite>input_gradients</cite> must be set to <cite>True</cite> in the neural network
+initialization before passing it to the <cite>TorchConnector</cite> for gradient
 computations to work properly during training.</p></li>
-<li><p><strong>initial_weights</strong> – The initial weights to start training the network. If this is None,
-the initial weights are chosen uniformly at random from [-1, 1].</p></li>
-<li><p><strong>sparse</strong> – Whether this connector should return sparse output or not. If sparse is set
-to None, then the setting from the given neural network is used. Note that sparse
-output is only returned if the underlying neural network also returns sparse output,
-otherwise an error will be raised.</p></li>
+<li><p><strong>initial_weights</strong> (<em>np.ndarray</em><em> | </em><em>Tensor</em><em> | </em><em>None</em>) – The initial weights to start
+training the network. If this is None, the initial weights are chosen
+uniformly at random from <span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p></li>
+<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em> | </em><em>None</em>) – Whether this connector should return sparse output or not.
+If sparse is set to None, then the setting from the given neural network is used.
+Note that sparse output is only returned if the underlying neural network also
+returns sparse output, otherwise an error will be raised.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="qiskit_machine_learning.QiskitMachineLearningError.html#qiskit_machine_learning.QiskitMachineLearningError" title="qiskit_machine_learning.QiskitMachineLearningError"><strong>QiskitMachineLearningError</strong></a> – If the connector is configured as sparse and the underlying
     network is not sparse.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Any</p>
-</dd>
 </dl>
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.connectors.TorchConnector.neural_network">
-<span class="sig-name descname"><span class="pre">neural_network</span></span><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.neural_network" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">neural_network</span></span><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.neural_network" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the underlying neural network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The neural network connected to this TorchConnector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="qiskit_machine_learning.neural_networks.NeuralNetwork.html#qiskit_machine_learning.neural_networks.NeuralNetwork" title="qiskit_machine_learning.neural_networks.NeuralNetwork">NeuralNetwork</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.connectors.TorchConnector.sparse">
-<span class="sig-name descname"><span class="pre">sparse</span></span><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.sparse" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sparse</span></span><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.sparse" title="Link to this definition">¶</a></dt>
 <dd><p>Returns whether this connector returns sparse output or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>True</cite> if the connector returns sparse output, <cite>False</cite> otherwise,
+or <cite>None</cite> if it uses the setting from the neural network.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.connectors.TorchConnector.weight">
-<span class="sig-name descname"><span class="pre">weight</span></span><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.weight" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">weight</span></span><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.weight" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the weights of the underlying network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The <cite>weights</cite> tensor.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tensor</p>
+</dd>
+</dl>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.connectors.TorchConnector.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/connectors/torch_connector.html#TorchConnector.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.forward" title="Permalink to this definition">#</a></dt>
-<dd><p>Forward pass.</p>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/connectors/torch_connector.html#TorchConnector.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.connectors.TorchConnector.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Forward pass. Defaults to an empty tensor if <cite>input_data</cite> is <cite>None</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_data</strong> (<em>Tensor</em><em> | </em><em>None</em>) – data to be evaluated.</p>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>Tensor</em><em> | </em><em>None</em>) – Data to be evaluated.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Result of forward pass of this model.</p>
+<dd class="field-even"><p>Result of the forward pass of this model.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -549,13 +574,15 @@ otherwise an error will be raised.</p></li>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

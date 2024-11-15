@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Training a Quantum Model on a Real Dataset" href="02a_training_a_quantum_model_on_a_real_dataset.html" /><link rel="prev" title="Quantum Neural Networks" href="01_neural_networks.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Neural Network Classifier &amp; Regressor - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Neural Network Classifier &amp; Regressor - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -256,6 +256,7 @@
 <li class="toctree-l2"><a class="reference internal" href="10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -271,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -393,10 +395,10 @@
         <article role="main">
           <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/02_neural_network_classifier_and_regressor.ipynb">docs/tutorials/02_neural_network_classifier_and_regressor.ipynb</a>.</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/02_neural_network_classifier_and_regressor.ipynb">docs/tutorials/02_neural_network_classifier_and_regressor.ipynb</a>.</p>
 </div>
 <section id="Neural-Network-Classifier-&amp;-Regressor">
-<h1>Neural Network Classifier &amp; Regressor<a class="headerlink" href="#Neural-Network-Classifier-&-Regressor" title="Permalink to this heading">#</a></h1>
+<h1>Neural Network Classifier &amp; Regressor<a class="headerlink" href="#Neural-Network-Classifier-&-Regressor" title="Link to this heading">¶</a></h1>
 <p>In this tutorial we show how the <code class="docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code> and <code class="docutils literal notranslate"><span class="pre">NeuralNetworkRegressor</span></code> are used. Both take as an input a (Quantum) <code class="docutils literal notranslate"><span class="pre">NeuralNetwork</span></code> and leverage it in a specific context. In both cases we also provide a pre-configured variant for convenience, the Variational Quantum Classifier (<code class="docutils literal notranslate"><span class="pre">VQC</span></code>) and Variational Quantum Regressor (<code class="docutils literal notranslate"><span class="pre">VQR</span></code>). The tutorial is structured as follows:</p>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="#Classification"><span class="std std-ref">Classification</span></a></p>
@@ -423,8 +425,8 @@
 <span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
 <span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">Parameter</span>
 <span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">RealAmplitudes</span><span class="p">,</span> <span class="n">ZZFeatureMap</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span><span class="p">,</span> <span class="n">L_BFGS_B</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span><span class="p">,</span> <span class="n">L_BFGS_B</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
 
 <span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms.classifiers</span> <span class="kn">import</span> <span class="n">NeuralNetworkClassifier</span><span class="p">,</span> <span class="n">VQC</span>
 <span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms.regressors</span> <span class="kn">import</span> <span class="n">NeuralNetworkRegressor</span><span class="p">,</span> <span class="n">VQR</span>
@@ -436,7 +438,7 @@
 </div>
 </div>
 <section id="Classification">
-<h2>Classification<a class="headerlink" href="#Classification" title="Permalink to this heading">#</a></h2>
+<h2>Classification<a class="headerlink" href="#Classification" title="Link to this heading">¶</a></h2>
 <p>We prepare a simple classification dataset to illustrate the following algorithms.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -469,7 +471,7 @@
 </div>
 </div>
 <section id="Classification-with-an-EstimatorQNN">
-<h3>Classification with an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#Classification-with-an-EstimatorQNN" title="Permalink to this heading">#</a></h3>
+<h3>Classification with an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#Classification-with-an-EstimatorQNN" title="Link to this heading">¶</a></h3>
 <p>First we show how an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> can be used for classification within a <code class="docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code>. In this context, the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> is expected to return one-dimensional output in <span class="math notranslate nohighlight">\([-1, +1]\)</span>. This only works for binary classification and we assign the two classes to <span class="math notranslate nohighlight">\(\{-1, +1\}\)</span>. To simplify the composition of parameterized quantum circuit from a feature map and an ansatz we can use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit</span></code> class.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -490,13 +492,24 @@
 </div>
 </div>
 <p>Create a quantum neural network</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_2647/1658004975.py:1: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  estimator_qnn = EstimatorQNN(circuit=qc)
+/tmp/ipykernel_2647/1658004975.py:1: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (2). If `circuit` is transpiled, this may cause unstable behaviour.
+  estimator_qnn = EstimatorQNN(circuit=qc)
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -629,7 +642,7 @@ array([ 0.86209107, -1.06526254, -0.10663602, -0.39086371,  1.0894299 ,
 </div>
 </section>
 <section id="Classification-with-a-SamplerQNN">
-<h3>Classification with a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#Classification-with-a-SamplerQNN" title="Permalink to this heading">#</a></h3>
+<h3>Classification with a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#Classification-with-a-SamplerQNN" title="Link to this heading">¶</a></h3>
 <p>Next we show how a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> can be used for classification within a <code class="docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code>. In this context, the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is expected to return <span class="math notranslate nohighlight">\(d\)</span>-dimensional probability vector as output, where <span class="math notranslate nohighlight">\(d\)</span> denotes the number of classes. The underlying <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> primitive returns quasi-distributions of bit strings and we just need to define a mapping from the measured bitstrings to the different classes. For binary classification we use the parity mapping. Again we can
 use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit</span></code> class to set up a parameterized quantum circuit from a feature map and ansatz of our choice.</p>
 <div class="nbinput docutils container">
@@ -663,7 +676,7 @@ use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit<
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
@@ -675,6 +688,15 @@ use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit<
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_2647/3691530435.py:2: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  sampler_qnn = SamplerQNN(
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -770,7 +792,7 @@ array([ 1.67198565,  0.46045402, -0.93462862, -0.95266092])
 </div>
 </section>
 <section id="Variational-Quantum-Classifier-(VQC)">
-<h3>Variational Quantum Classifier (<code class="docutils literal notranslate"><span class="pre">VQC</span></code>)<a class="headerlink" href="#Variational-Quantum-Classifier-(VQC)" title="Permalink to this heading">#</a></h3>
+<h3>Variational Quantum Classifier (<code class="docutils literal notranslate"><span class="pre">VQC</span></code>)<a class="headerlink" href="#Variational-Quantum-Classifier-(VQC)" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">VQC</span></code> is a special variant of the <code class="docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code> with a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>. It applies a parity mapping (or extensions to multiple classes) to map from the bitstring to the classification, which results in a probability vector, which is interpreted as a one-hot encoded result. By default, it applies this the <code class="docutils literal notranslate"><span class="pre">CrossEntropyLoss</span></code> function that expects labels given in one-hot encoded format and will return predictions in that format too.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -823,7 +845,7 @@ array([ 1.67198565,  0.46045402, -0.93462862, -0.95266092])
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.75
+0.8
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -856,7 +878,7 @@ array([ 1.67198565,  0.46045402, -0.93462862, -0.95266092])
 </div>
 </section>
 <section id="Multiple-classes-with-VQC">
-<h3>Multiple classes with VQC<a class="headerlink" href="#Multiple-classes-with-VQC" title="Permalink to this heading">#</a></h3>
+<h3>Multiple classes with VQC<a class="headerlink" href="#Multiple-classes-with-VQC" title="Link to this heading">¶</a></h3>
 <p>In this section we generate an artificial dataset that contains samples of three classes and show how to train a model to classify this dataset. This example shows how to tackle more interesting problems in machine learning. Of course, for a sake of short training time we prepare a tiny dataset. We employ <code class="docutils literal notranslate"><span class="pre">make_classification</span></code> from SciKit-Learn to generate a dataset. There 10 samples in the dataset, 2 features, that means we can still have a nice plot of the dataset, as well as no redundant
 features, these are features are generated as a combinations of the other features. Also, we have 3 different classes in the dataset, each classes one kind of centroid and we set class separation to <code class="docutils literal notranslate"><span class="pre">2.0</span></code>, a slight increase from the default value of <code class="docutils literal notranslate"><span class="pre">1.0</span></code> to ease the classification problem.</p>
 <p>Once the dataset is generated we scale the features into the range <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
@@ -895,7 +917,7 @@ features, these are features are generated as a combinations of the other featur
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.collections.PathCollection at 0x7f9317305190&gt;
+&lt;matplotlib.collections.PathCollection at 0x7ff1d493b610&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -998,7 +1020,7 @@ Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &
 </section>
 </section>
 <section id="Regression">
-<h2>Regression<a class="headerlink" href="#Regression" title="Permalink to this heading">#</a></h2>
+<h2>Regression<a class="headerlink" href="#Regression" title="Link to this heading">¶</a></h2>
 <p>We prepare a simple regression dataset to illustrate the following algorithms.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
@@ -1027,9 +1049,9 @@ Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &
 </div>
 </div>
 <section id="Regression-with-an-EstimatorQNN">
-<h3>Regression with an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#Regression-with-an-EstimatorQNN" title="Permalink to this heading">#</a></h3>
+<h3>Regression with an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#Regression-with-an-EstimatorQNN" title="Link to this heading">¶</a></h3>
 <p>Here we restrict to regression with an <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> that returns values in <span class="math notranslate nohighlight">\([-1, +1]\)</span>. More complex and also multi-dimensional models could be constructed, also based on <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> but that exceeds the scope of this tutorial.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
@@ -1050,6 +1072,17 @@ Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &
 <span class="n">regression_estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_2647/3237334137.py:15: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  regression_estimator_qnn = EstimatorQNN(circuit=qc)
+/tmp/ipykernel_2647/3237334137.py:15: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (1). If `circuit` is transpiled, this may cause unstable behaviour.
+  regression_estimator_qnn = EstimatorQNN(circuit=qc)
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
@@ -1144,9 +1177,9 @@ array([-1.58870599])
 </div>
 </section>
 <section id="Regression-with-the-Variational-Quantum-Regressor-(VQR)">
-<h3>Regression with the Variational Quantum Regressor (<code class="docutils literal notranslate"><span class="pre">VQR</span></code>)<a class="headerlink" href="#Regression-with-the-Variational-Quantum-Regressor-(VQR)" title="Permalink to this heading">#</a></h3>
+<h3>Regression with the Variational Quantum Regressor (<code class="docutils literal notranslate"><span class="pre">VQR</span></code>)<a class="headerlink" href="#Regression-with-the-Variational-Quantum-Regressor-(VQR)" title="Link to this heading">¶</a></h3>
 <p>Similar to the <code class="docutils literal notranslate"><span class="pre">VQC</span></code> for classification, the <code class="docutils literal notranslate"><span class="pre">VQR</span></code> is a special variant of the <code class="docutils literal notranslate"><span class="pre">NeuralNetworkRegressor</span></code> with a <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>. By default it considers the <code class="docutils literal notranslate"><span class="pre">L2Loss</span></code> function to minimize the mean squared error between predictions and targets.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
@@ -1158,6 +1191,15 @@ array([-1.58870599])
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/qiskit-machine-learning/qiskit-machine-learning/qiskit_machine_learning/algorithms/regressors/vqr.py:106: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (1). If `circuit` is transpiled, this may cause unstable behaviour.
+  neural_network = EstimatorQNN(
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
@@ -1233,7 +1275,7 @@ array([-1.58870599])
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.0.1</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.3.0</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.2</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Thu Feb 29 16:52:36 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Nov 15 18:48:45 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1338,11 +1380,11 @@ array([-1.58870599])
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

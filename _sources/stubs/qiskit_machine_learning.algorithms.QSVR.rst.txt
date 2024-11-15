@@ -17,7 +17,6 @@ QSVR
    .. rubric:: Attributes
 
    
-   .. autoattribute:: QSVR.class_weight_
    .. autoattribute:: QSVR.coef_
    .. autoattribute:: QSVR.n_support_
    .. autoattribute:: QSVR.quantum_kernel

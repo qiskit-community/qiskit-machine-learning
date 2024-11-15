@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The Quantum Convolution Neural Network" href="11_quantum_convolutional_neural_networks.html" /><link rel="prev" title="Saving, Loading Qiskit Machine Learning Models and Continuous Training" href="09_saving_and_loading_models.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -256,6 +256,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -271,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -393,14 +395,14 @@
         <article role="main">
           <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.7/docs/tutorials/10_effective_dimension.ipynb">docs/tutorials/10_effective_dimension.ipynb</a>.</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/10_effective_dimension.ipynb">docs/tutorials/10_effective_dimension.ipynb</a>.</p>
 </div>
 <section id="Effective-Dimension-of-Qiskit-Neural-Networks">
-<h1>Effective Dimension of Qiskit Neural Networks<a class="headerlink" href="#Effective-Dimension-of-Qiskit-Neural-Networks" title="Permalink to this heading">#</a></h1>
+<h1>Effective Dimension of Qiskit Neural Networks<a class="headerlink" href="#Effective-Dimension-of-Qiskit-Neural-Networks" title="Link to this heading">¶</a></h1>
 <p>In this tutorial, we will take advantage of the <code class="docutils literal notranslate"><span class="pre">EffectiveDimension</span></code> and <code class="docutils literal notranslate"><span class="pre">LocalEffectiveDimension</span></code> classes to evaluate the power of Quantum Neural Network models. These are metrics based on information geometry that connect to notions such as trainability, expressibility or ability to generalize.</p>
 <p>Before diving into the code example, we will briefly explain what is the difference between these two metrics, and why are they relevant to the study of Quantum Neural Networks. More information about global effective dimension can be found in <a class="reference external" href="https://arxiv.org/pdf/2011.00027.pdf">this paper</a>, while the local effective dimension was introduced in a <a class="reference external" href="https://arxiv.org/abs/2112.04807">later work</a>.</p>
 <section id="1.-Global-vs.-Local-Effective-Dimension">
-<h2>1. Global vs. Local Effective Dimension<a class="headerlink" href="#1.-Global-vs.-Local-Effective-Dimension" title="Permalink to this heading">#</a></h2>
+<h2>1. Global vs. Local Effective Dimension<a class="headerlink" href="#1.-Global-vs.-Local-Effective-Dimension" title="Link to this heading">¶</a></h2>
 <p>Both classical and quantum machine learning models share a common goal: being good at <strong>generalizing</strong>, i.e. learning insights from data and applying them on unseen data.</p>
 <p>Finding a good metric to assess this ability is a non-trivial matter. In <a class="reference external" href="https://arxiv.org/pdf/2011.00027.pdf">The Power of Quantum Neural Networks</a>, the authors introduce the <strong>global</strong> effective dimension as a useful indicator of how well a particular model will be able to perform on new data. In <a class="reference external" href="https://arxiv.org/pdf/2112.04807.pdf">Effective Dimension of Machine Learning Models</a>, the <strong>local</strong> effective dimension is proposed as a new capacity measure that bounds the generalization
 error of machine learning models.</p>
@@ -408,7 +410,7 @@ error of machine learning models.</p>
 generalize to new data, and how <strong>expressive</strong> it can be. Therefore, the local effective dimension is calculated from <strong>a single</strong> set of weight samples (training result). This difference is small in terms of practical implementation, but quite relevant at a conceptual level.</p>
 </section>
 <section id="2.-The-Effective-Dimension-Algorithm">
-<h2>2. The Effective Dimension Algorithm<a class="headerlink" href="#2.-The-Effective-Dimension-Algorithm" title="Permalink to this heading">#</a></h2>
+<h2>2. The Effective Dimension Algorithm<a class="headerlink" href="#2.-The-Effective-Dimension-Algorithm" title="Link to this heading">¶</a></h2>
 <p>Both the global and local effective dimension algorithms use the Fisher Information matrix to provide a measure of complexity. The details on how this matrix is calculated are provided in the <a class="reference external" href="https://arxiv.org/pdf/2011.00027.pdf">reference paper</a>, but in general terms, this matrix captures how sensitive a neural network’s output is to changes in the network’s parameter space.</p>
 <p>In particular, this algorithm follows 4 main steps:</p>
 <ol class="arabic simple">
@@ -419,7 +421,7 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 </ol>
 </section>
 <section id="3.-Basic-Example-(SamplerQNN)">
-<h2>3. Basic Example (SamplerQNN)<a class="headerlink" href="#3.-Basic-Example-(SamplerQNN)" title="Permalink to this heading">#</a></h2>
+<h2>3. Basic Example (SamplerQNN)<a class="headerlink" href="#3.-Basic-Example-(SamplerQNN)" title="Link to this heading">¶</a></h2>
 <p>This example shows how to set up a QNN model problem and run the global effective dimension algorithm. Both Qiskit <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> (shown in this example) and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> (shown in a later example) can be used with the <code class="docutils literal notranslate"><span class="pre">EffectiveDimension</span></code> class.</p>
 <p>We start off from the required imports and a fixed seed for the random number generator for reproducibility purposes.</p>
 <div class="nbinput nblast docutils container">
@@ -432,8 +434,8 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">clear_output</span>
 <span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
 <span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">ZFeatureMap</span><span class="p">,</span> <span class="n">RealAmplitudes</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+<span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
 
@@ -448,7 +450,7 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 </div>
 </div>
 <section id="3.1-Define-QNN">
-<h3>3.1 Define QNN<a class="headerlink" href="#3.1-Define-QNN" title="Permalink to this heading">#</a></h3>
+<h3>3.1 Define QNN<a class="headerlink" href="#3.1-Define-QNN" title="Link to this heading">¶</a></h3>
 <p>The first step to create a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is to define a parametrized feature map and ansatz. In this toy example, we will use 3 qubits and the <code class="docutils literal notranslate"><span class="pre">QNNCircuit</span></code> class to simplify the composition of a feature map and an ansatz circuit. The resulting circuit is then used in the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> class.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -486,7 +488,7 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -500,9 +502,18 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_12466/3558882843.py:2: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  qnn = SamplerQNN(
+</pre></div></div>
+</div>
 </section>
 <section id="3.2-Set-up-Effective-Dimension-calculation">
-<h3>3.2 Set up Effective Dimension calculation<a class="headerlink" href="#3.2-Set-up-Effective-Dimension-calculation" title="Permalink to this heading">#</a></h3>
+<h3>3.2 Set up Effective Dimension calculation<a class="headerlink" href="#3.2-Set-up-Effective-Dimension-calculation" title="Link to this heading">¶</a></h3>
 <p>In order to compute the effective dimension of our QNN using the <code class="docutils literal notranslate"><span class="pre">EffectiveDimension</span></code> class, we need a series of sets of input samples and weights, as well as the total number of data samples available in a dataset. The <code class="docutils literal notranslate"><span class="pre">input_samples</span></code> and <code class="docutils literal notranslate"><span class="pre">weight_samples</span></code> are set in the class constructor, while the number of data samples is given during the call to the effective dimension computation, to be able to test and compare how this measure changes with different dataset sizes.</p>
 <p>We can define the number of input samples and weight samples and the class will randomly sample a corresponding array from a normal (for <code class="docutils literal notranslate"><span class="pre">input_samples</span></code>) or a uniform (for <code class="docutils literal notranslate"><span class="pre">weight_samples</span></code>) distribution. Instead of passing a number of samples we can pass an array, sampled manually.</p>
 <div class="nbinput nblast docutils container">
@@ -544,7 +555,7 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 </div>
 </section>
 <section id="3.3-Compute-Global-Effective-Dimension">
-<h3>3.3 Compute Global Effective Dimension<a class="headerlink" href="#3.3-Compute-Global-Effective-Dimension" title="Permalink to this heading">#</a></h3>
+<h3>3.3 Compute Global Effective Dimension<a class="headerlink" href="#3.3-Compute-Global-Effective-Dimension" title="Link to this heading">¶</a></h3>
 <p>Let’s now calculate the effective dimension of our network for the previously defined set of input samples, weights, and a dataset size of 5000.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
@@ -627,11 +638,11 @@ Number of weights: 6
 </section>
 </section>
 <section id="4.-Local-Effective-Dimension-Example">
-<h2>4. Local Effective Dimension Example<a class="headerlink" href="#4.-Local-Effective-Dimension-Example" title="Permalink to this heading">#</a></h2>
+<h2>4. Local Effective Dimension Example<a class="headerlink" href="#4.-Local-Effective-Dimension-Example" title="Link to this heading">¶</a></h2>
 <p>As explained in the introduction, the local effective dimension algorithm only uses <strong>one</strong> set of weights, and it can be used to monitor how training affects the expressiveness of a neural network. The <code class="docutils literal notranslate"><span class="pre">LocalEffectiveDimension</span></code> class enforces this constraint to ensure that these calculations are conceptually separate, but the rest of the implementation is shared with <code class="docutils literal notranslate"><span class="pre">EffectiveDimension</span></code>.</p>
 <p>This example shows how to leverage the <code class="docutils literal notranslate"><span class="pre">LocalEffectiveDimension</span></code> class to analyze the effect of training on QNN expressiveness.</p>
 <section id="4.1-Define-Dataset-and-QNN">
-<h3>4.1 Define Dataset and QNN<a class="headerlink" href="#4.1-Define-Dataset-and-QNN" title="Permalink to this heading">#</a></h3>
+<h3>4.1 Define Dataset and QNN<a class="headerlink" href="#4.1-Define-Dataset-and-QNN" title="Link to this heading">¶</a></h3>
 <p>We start by creating a 3D binary classification dataset using <code class="docutils literal notranslate"><span class="pre">make_classification</span></code> function from scikit-learn.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
@@ -654,7 +665,7 @@ Number of weights: 6
 </div>
 </div>
 <p>The next step is to create a QNN, an instance of <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> in our case in the same fashion we created an instance of <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
@@ -662,9 +673,20 @@ Number of weights: 6
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_12466/1658004975.py:1: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+  estimator_qnn = EstimatorQNN(circuit=qc)
+/tmp/ipykernel_12466/1658004975.py:1: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (3). If `circuit` is transpiled, this may cause unstable behaviour.
+  estimator_qnn = EstimatorQNN(circuit=qc)
+</pre></div></div>
+</div>
 </section>
 <section id="4.2-Train-QNN">
-<h3>4.2 Train QNN<a class="headerlink" href="#4.2-Train-QNN" title="Permalink to this heading">#</a></h3>
+<h3>4.2 Train QNN<a class="headerlink" href="#4.2-Train-QNN" title="Link to this heading">¶</a></h3>
 <p>We can now proceed to train the QNN. The training step may take some time, be patient. You can pass a callback to the classifier to observe how the training process is going on. We fix <code class="docutils literal notranslate"><span class="pre">initial_point</span></code> for reproducibility purposes as usual.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
@@ -737,12 +759,12 @@ Number of weights: 6
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.98
+1.0
 </pre></div></div>
 </div>
 </section>
 <section id="4.3-Compute-Local-Effective-Dimension-of-trained-QNN">
-<h3>4.3 Compute Local Effective Dimension of trained QNN<a class="headerlink" href="#4.3-Compute-Local-Effective-Dimension-of-trained-QNN" title="Permalink to this heading">#</a></h3>
+<h3>4.3 Compute Local Effective Dimension of trained QNN<a class="headerlink" href="#4.3-Compute-Local-Effective-Dimension-of-trained-QNN" title="Link to this heading">¶</a></h3>
 <p>Now that we have trained our network, let’s evaluate the local effective dimension based on the trained weights. To do that we access the trained weights directly from the classifier.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
@@ -769,13 +791,13 @@ Number of weights: 6
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for trained QNN:  [0.42429679 0.43023702 0.4332774  0.45465724 0.46161446 0.47069962
- 0.47806491 0.48332339 0.49999469 0.51244857]
+normalized local effective dimensions for trained QNN:  [0.28205569 0.28769742 0.29113848 0.32033712 0.33066994 0.34456456
+ 0.35628096 0.36497362 0.39479354 0.41931942]
 </pre></div></div>
 </div>
 </section>
 <section id="4.4-Compute-Local-Effective-Dimension-of-untrained-QNN">
-<h3>4.4 Compute Local Effective Dimension of untrained QNN<a class="headerlink" href="#4.4-Compute-Local-Effective-Dimension-of-untrained-QNN" title="Permalink to this heading">#</a></h3>
+<h3>4.4 Compute Local Effective Dimension of untrained QNN<a class="headerlink" href="#4.4-Compute-Local-Effective-Dimension-of-untrained-QNN" title="Link to this heading">¶</a></h3>
 <p>We can compare this result with the effective dimension of the untrained network, using the <code class="docutils literal notranslate"><span class="pre">initial_point</span></code> as our weight sample:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
@@ -800,13 +822,13 @@ normalized local effective dimensions for trained QNN:  [0.42429679 0.43023702 0
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for untrained QNN:  [0.71044165 0.72660415 0.73421841 0.777691   0.78872826 0.80148932
- 0.81075167 0.81688741 0.83426574 0.84551605]
+normalized local effective dimensions for untrained QNN:  [0.65798382 0.66798395 0.67326579 0.71092265 0.72253992 0.73691291
+ 0.74790328 0.75540639 0.77742264 0.79211656]
 </pre></div></div>
 </div>
 </section>
 <section id="4.5-Plot-and-analyze-results">
-<h3>4.5 Plot and analyze results<a class="headerlink" href="#4.5-Plot-and-analyze-results" title="Permalink to this heading">#</a></h3>
+<h3>4.5 Plot and analyze results<a class="headerlink" href="#4.5-Plot-and-analyze-results" title="Link to this heading">¶</a></h3>
 <p>If we plot the effective dimension values before and after training, we can see the following result:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
@@ -851,7 +873,7 @@ implicit regularization), a trained model will not need to use so many parameter
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.0.1</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.7.2</td></tr><tr><td><code>qiskit_algorithms</code></td><td>0.3.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.8.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Thu Feb 29 17:00:39 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Nov 15 18:55:38 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -960,11 +982,11 @@ implicit regularization), a trained model will not need to use so many parameter
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

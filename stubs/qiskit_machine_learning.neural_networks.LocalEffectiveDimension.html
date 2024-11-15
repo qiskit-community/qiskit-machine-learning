@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Utility functions and classes (qiskit_machine_learning.utils)" href="../apidocs/qiskit_machine_learning.utils.html" /><link rel="prev" title="EffectiveDimension" href="qiskit_machine_learning.neural_networks.EffectiveDimension.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>LocalEffectiveDimension - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>LocalEffectiveDimension - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,10 +393,10 @@
         </div>
         <article role="main">
           <br><br><br><section id="localeffectivedimension">
-<h1>LocalEffectiveDimension<a class="headerlink" href="#localeffectivedimension" title="Permalink to this heading">#</a></h1>
+<h1>LocalEffectiveDimension<a class="headerlink" href="#localeffectivedimension" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.LocalEffectiveDimension">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalEffectiveDimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qnn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/neural_networks/effective_dimension.html#LocalEffectiveDimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalEffectiveDimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qnn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/neural_networks/effective_dimension.html#LocalEffectiveDimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension" title="qiskit_machine_learning.neural_networks.effective_dimension.EffectiveDimension"><code class="xref py py-class docutils literal notranslate"><span class="pre">EffectiveDimension</span></code></a></p>
 <p>This class computes the local effective dimension for a Qiskit
 <a class="reference internal" href="qiskit_machine_learning.neural_networks.NeuralNetwork.html#qiskit_machine_learning.neural_networks.NeuralNetwork" title="qiskit_machine_learning.neural_networks.NeuralNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetwork</span></code></a>
@@ -415,11 +417,11 @@ Fisher Information Matrix <code class="docutils literal notranslate"><span class
 <span class="pre">num_weights)</span></code> used to compute the global effective dimension for a set of
 <code class="docutils literal notranslate"><span class="pre">input_samples</span></code>, of shape <code class="docutils literal notranslate"><span class="pre">(num_input_samples,</span> <span class="pre">qnn_input_size)</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">weight_samples</span></code>, of shape <code class="docutils literal notranslate"><span class="pre">(num_weight_samples,</span> <span class="pre">num_weights)</span></code>.</p></li>
-<li><p><strong>weight_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – An array of neural network parameters (weights), of shape
+<li><p><strong>weight_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – An array of neural network parameters (weights), of shape
 <code class="docutils literal notranslate"><span class="pre">(num_weight_samples,</span> <span class="pre">num_weights)</span></code>, or an <code class="docutils literal notranslate"><span class="pre">int</span></code> to indicate the number of
 parameter sets to sample randomly from a uniform distribution. By default,
 <code class="docutils literal notranslate"><span class="pre">weight_samples</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p></li>
-<li><p><strong>input_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – An array of samples to the neural network, of shape
+<li><p><strong>input_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – An array of samples to the neural network, of shape
 <code class="docutils literal notranslate"><span class="pre">(num_input_samples,</span> <span class="pre">qnn_input_size)</span></code>, or an <code class="docutils literal notranslate"><span class="pre">int</span></code> to indicate the number of
 input sets to sample randomly from a normal distribution. By default,
 <code class="docutils literal notranslate"><span class="pre">input_samples</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p></li>
@@ -429,25 +431,25 @@ input sets to sample randomly from a normal distribution. By default,
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.LocalEffectiveDimension.input_samples">
-<span class="sig-name descname"><span class="pre">input_samples</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.input_samples" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">input_samples</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.input_samples" title="Link to this definition">¶</a></dt>
 <dd><p>Returns network input samples.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.LocalEffectiveDimension.weight_samples">
-<span class="sig-name descname"><span class="pre">weight_samples</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.weight_samples" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">weight_samples</span></span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.weight_samples" title="Link to this definition">¶</a></dt>
 <dd><p>Returns network parameters.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_effective_dimension">
-<span class="sig-name descname"><span class="pre">get_effective_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_effective_dimension" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_effective_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_effective_dimension" title="Link to this definition">¶</a></dt>
 <dd><p>This method computes the effective dimension for a dataset of size <code class="docutils literal notranslate"><span class="pre">dataset_size</span></code>. If an
 array is passed, then effective dimension computed for each value in the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – array of data sizes or a single integer value.</p>
+<dd class="field-odd"><p><strong>dataset_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – array of data sizes or a single integer value.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>array of effective dimensions for each dataset size in <code class="docutils literal notranslate"><span class="pre">num_data</span></code>.</p>
@@ -460,15 +462,15 @@ array is passed, then effective dimension computed for each value in the array.<
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_fisher_information">
-<span class="sig-name descname"><span class="pre">get_fisher_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_outputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_fisher_information" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_fisher_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_outputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_fisher_information" title="Link to this definition">¶</a></dt>
 <dd><p>This method computes the average Jacobian for every set of gradients and model output as
 shown in Abbas et al.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gradients</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – A numpy array, result of the neural network’s backward pass, of
+<li><p><strong>gradients</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – A numpy array, result of the neural network’s backward pass, of
 shape <code class="docutils literal notranslate"><span class="pre">(num_input_samples</span> <span class="pre">*</span> <span class="pre">num_weight_samples,</span> <span class="pre">output_size,</span> <span class="pre">num_weights)</span></code>.</p></li>
-<li><p><strong>model_outputs</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – A numpy array, result of the neural networks’ forward pass,
+<li><p><strong>model_outputs</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – A numpy array, result of the neural networks’ forward pass,
 of shape <code class="docutils literal notranslate"><span class="pre">(num_input_samples</span> <span class="pre">*</span> <span class="pre">num_weight_samples,</span> <span class="pre">output_size)</span></code>.</p></li>
 </ul>
 </dd>
@@ -488,11 +490,11 @@ with the average Jacobian  for every set of gradients and model output given.</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_normalized_fisher">
-<span class="sig-name descname"><span class="pre">get_normalized_fisher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalized_fisher</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_normalized_fisher" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_normalized_fisher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalized_fisher</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.get_normalized_fisher" title="Link to this definition">¶</a></dt>
 <dd><p>This method computes the normalized Fisher Information Matrix and extracts its trace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>normalized_fisher</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – The Fisher Information Matrix to be normalized.</p>
+<dd class="field-odd"><p><strong>normalized_fisher</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – The Fisher Information Matrix to be normalized.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -511,7 +513,7 @@ with the average Jacobian  for every set of gradients and model output given.</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.neural_networks.LocalEffectiveDimension.run_monte_carlo">
-<span class="sig-name descname"><span class="pre">run_monte_carlo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.run_monte_carlo" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">run_monte_carlo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.neural_networks.LocalEffectiveDimension.run_monte_carlo" title="Link to this definition">¶</a></dt>
 <dd><p>This method computes the model’s Monte Carlo sampling for a set of input samples and
 weight samples.</p>
 <dl class="field-list simple">
@@ -624,11 +626,11 @@ weight samples.</p>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

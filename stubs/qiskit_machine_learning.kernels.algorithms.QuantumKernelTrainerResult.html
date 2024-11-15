@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quantum neural networks (qiskit_machine_learning.neural_networks)" href="../apidocs/qiskit_machine_learning.neural_networks.html" /><link rel="prev" title="QuantumKernelTrainer" href="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>QuantumKernelTrainerResult - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>QuantumKernelTrainerResult - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
@@ -391,10 +393,10 @@
         </div>
         <article role="main">
           <br><br><br><section id="quantumkerneltrainerresult">
-<h1>QuantumKernelTrainerResult<a class="headerlink" href="#quantumkerneltrainerresult" title="Permalink to this heading">#</a></h1>
+<h1>QuantumKernelTrainerResult<a class="headerlink" href="#quantumkerneltrainerresult" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">QuantumKernelTrainerResult</span></span><a class="reference internal" href="../_modules/qiskit_machine_learning/kernels/algorithms/quantum_kernel_trainer.html#QuantumKernelTrainerResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">QuantumKernelTrainerResult</span></span><a class="reference internal" href="../_modules/qiskit_machine_learning/kernels/algorithms/quantum_kernel_trainer.html#QuantumKernelTrainerResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">VariationalResult</span></code></p>
 <p>Quantum Kernel Trainer Result.</p>
 <p class="rubric">Attributes</p>
@@ -402,63 +404,63 @@
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_circuit">
-<span class="sig-name descname"><span class="pre">optimal_circuit</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_circuit" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimal_circuit</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_circuit" title="Link to this definition">¶</a></dt>
 <dd><p>The optimal circuits. Along with the optimal parameters,
 these can be used to retrieve the minimum eigenstate.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_parameters">
-<span class="sig-name descname"><span class="pre">optimal_parameters</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_parameters" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimal_parameters</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_parameters" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the optimal parameters in a dictionary</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_point">
-<span class="sig-name descname"><span class="pre">optimal_point</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_point" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimal_point</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_point" title="Link to this definition">¶</a></dt>
 <dd><p>Returns optimal point</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_value">
-<span class="sig-name descname"><span class="pre">optimal_value</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_value" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimal_value</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimal_value" title="Link to this definition">¶</a></dt>
 <dd><p>Returns optimal value</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_evals">
-<span class="sig-name descname"><span class="pre">optimizer_evals</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_evals" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimizer_evals</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_evals" title="Link to this definition">¶</a></dt>
 <dd><p>Returns number of optimizer evaluations</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_result">
-<span class="sig-name descname"><span class="pre">optimizer_result</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_result" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimizer_result</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_result" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the optimizer result</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_time">
-<span class="sig-name descname"><span class="pre">optimizer_time</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_time" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimizer_time</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.optimizer_time" title="Link to this definition">¶</a></dt>
 <dd><p>Returns time taken for optimization</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.quantum_kernel">
-<span class="sig-name descname"><span class="pre">quantum_kernel</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.quantum_kernel" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">quantum_kernel</span></span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.quantum_kernel" title="Link to this definition">¶</a></dt>
 <dd><p>Return the optimized quantum kernel object.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.combine">
-<span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.combine" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.combine" title="Link to this definition">¶</a></dt>
 <dd><p>Any property from the argument that exists in the receiver is
 updated.
 :param result: Argument result with properties to be set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – Argument is None</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – Argument is None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -560,11 +562,11 @@ updated.
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

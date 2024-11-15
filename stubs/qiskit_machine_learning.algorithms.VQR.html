@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)" href="../apidocs/qiskit_machine_learning.circuit.library.html" /><link rel="prev" title="NeuralNetworkRegressor" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>VQR - Qiskit Machine Learning 0.7.2</title>
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>VQR - Qiskit Machine Learning 0.8.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.7.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.7.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -255,6 +255,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,6 +271,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">VQR</a></li>
@@ -391,37 +393,37 @@
         </div>
         <article role="main">
           <br><br><br><section id="vqr">
-<h1>VQR<a class="headerlink" href="#vqr" title="Permalink to this heading">#</a></h1>
+<h1>VQR<a class="headerlink" href="#vqr" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VQR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ansatz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'squared_error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/regressors/vqr.html#VQR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VQR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ansatz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'squared_error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/regressors/vqr.html#VQR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor" title="qiskit_machine_learning.algorithms.regressors.neural_network_regressor.NeuralNetworkRegressor"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetworkRegressor</span></code></a></p>
 <p>A convenient Variational Quantum Regressor implementation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_qubits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – The number of qubits for the underlying QNN.
+<li><p><strong>num_qubits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The number of qubits for the underlying QNN.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> then the number of qubits is derived from the
 feature map or ansatz, but if neither of these are given an error is raised.
 The number of qubits in the feature map and ansatz are adjusted to this
 number if required.</p></li>
 <li><p><strong>feature_map</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – The (parametrized) circuit to be used as a feature map for the underlying
-QNN. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a>
+QNN. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a>
 is used if the number of qubits is larger than 1. For a single qubit regression
-problem the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> is used by default.</p></li>
+problem the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> is used by default.</p></li>
 <li><p><strong>ansatz</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – The (parametrized) circuit to be used as an ansatz for the underlying
-QNN. If <code class="docutils literal notranslate"><span class="pre">None</span></code> then the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>
+QNN. If <code class="docutils literal notranslate"><span class="pre">None</span></code> then the <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>
 circuit is used.</p></li>
 <li><p><strong>observable</strong> (<em>BaseOperator</em><em> | </em><em>None</em>) – The observable to be measured in the underlying QNN. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 use the default <span class="math notranslate nohighlight">\(Z^{\otimes num\_qubits}\)</span> observable.</p></li>
-<li><p><strong>loss</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html#qiskit_machine_learning.utils.loss_functions.Loss" title="qiskit_machine_learning.utils.loss_functions.Loss"><em>Loss</em></a>) – A target loss function to be used in training. Default is squared error.</p></li>
+<li><p><strong>loss</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html#qiskit_machine_learning.utils.loss_functions.Loss" title="qiskit_machine_learning.utils.loss_functions.Loss"><em>Loss</em></a>) – A target loss function to be used in training. Default is squared error.</p></li>
 <li><p><strong>optimizer</strong> (<em>Optimizer</em><em> | </em><em>Minimizer</em><em> | </em><em>None</em>) – An instance of an optimizer or a callable to be used in training.
-Refer to <a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.optimizers.Minimizer.html#qiskit_algorithms.optimizers.Minimizer" title="(in Qiskit Algorithms v0.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Minimizer</span></code></a> for more information on
+Refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">Minimizer</span></code> for more information on
 the callable protocol. When <cite>None</cite> defaults to
-<a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.optimizers.SLSQP.html#qiskit_algorithms.optimizers.SLSQP" title="(in Qiskit Algorithms v0.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SLSQP</span></code></a>.</p></li>
-<li><p><strong>warm_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Use weights from previous fit to start next fit.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SLSQP</span></code>.</p></li>
+<li><p><strong>warm_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Use weights from previous fit to start next fit.</p></li>
 <li><p><strong>initial_point</strong> (<em>np.ndarray</em><em> | </em><em>None</em>) – Initial point for the optimizer to start from.</p></li>
-<li><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>]</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>) – A reference to a user’s callback function that has two parameters and
+<li><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>]</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>) – A reference to a user’s callback function that has two parameters and
 returns <code class="docutils literal notranslate"><span class="pre">None</span></code>. The callback can access intermediate data during training.
 On each iteration an optimizer invokes the callback and passes current weights
 as an array and a computed value as a float of the objective function being
@@ -436,34 +438,34 @@ optimized. This allows to track how well optimization / training process is goin
 <li><p><a class="reference internal" href="qiskit_machine_learning.QiskitMachineLearningError.html#qiskit_machine_learning.QiskitMachineLearningError" title="qiskit_machine_learning.QiskitMachineLearningError"><strong>QiskitMachineLearningError</strong></a> – Needs at least one out of <code class="docutils literal notranslate"><span class="pre">num_qubits</span></code>, <code class="docutils literal notranslate"><span class="pre">feature_map</span></code> or
     <code class="docutils literal notranslate"><span class="pre">ansatz</span></code> to be given. Or the number of qubits in the feature map and/or ansatz
     can’t be adjusted to <code class="docutils literal notranslate"><span class="pre">num_qubits</span></code>.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – if the type of the observable is not compatible with <code class="docutils literal notranslate"><span class="pre">estimator</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – if the type of the observable is not compatible with <code class="docutils literal notranslate"><span class="pre">estimator</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.ansatz">
-<span class="sig-name descname"><span class="pre">ansatz</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.ansatz" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ansatz</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.ansatz" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the used ansatz.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.callback">
-<span class="sig-name descname"><span class="pre">callback</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.callback" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">callback</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.callback" title="Link to this definition">¶</a></dt>
 <dd><p>Return the callback.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.feature_map">
-<span class="sig-name descname"><span class="pre">feature_map</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.feature_map" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">feature_map</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.feature_map" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the used feature map.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.fit_result">
-<span class="sig-name descname"><span class="pre">fit_result</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.fit_result" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit_result</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.fit_result" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a resulting object from the optimization procedure. Please refer to the
-documentation of the <a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.optimizers.OptimizerResult.html">OptimizerResult</a>
+documentation of the <a class="reference external" href="https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.optimizers.OptimizerResult.html">OptimizerResult</a>
 class for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
@@ -474,43 +476,43 @@ class for more details.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.initial_point">
-<span class="sig-name descname"><span class="pre">initial_point</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.initial_point" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">initial_point</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.initial_point" title="Link to this definition">¶</a></dt>
 <dd><p>Returns current initial point</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.loss">
-<span class="sig-name descname"><span class="pre">loss</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.loss" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">loss</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.loss" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the underlying neural network.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.neural_network">
-<span class="sig-name descname"><span class="pre">neural_network</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.neural_network" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">neural_network</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.neural_network" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the underlying neural network.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.num_qubits">
-<span class="sig-name descname"><span class="pre">num_qubits</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.num_qubits" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">num_qubits</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.num_qubits" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the number of qubits used by ansatz and feature map.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.optimizer">
-<span class="sig-name descname"><span class="pre">optimizer</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.optimizer" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">optimizer</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.optimizer" title="Link to this definition">¶</a></dt>
 <dd><p>Returns an optimizer to be used in training.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.warm_start">
-<span class="sig-name descname"><span class="pre">warm_start</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.warm_start" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">warm_start</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.warm_start" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the warm start flag.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.weights">
-<span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.weights" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.weights" title="Link to this definition">¶</a></dt>
 <dd><p>Returns trained weights as a numpy array. The weights can be also queried by calling
 <cite>model.fit_result.x</cite>, but in this case their representation depends on the optimizer used.</p>
 <dl class="field-list simple">
@@ -523,13 +525,13 @@ class for more details.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.fit" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Fit the model to data matrix X and target(s) y.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – The input data.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – The target values.</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – The input data.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – The target values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -546,33 +548,33 @@ class for more details.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.load" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.load" title="Link to this definition">¶</a></dt>
 <dd><p>Loads a model from the file. If the loaded model is not an instance of the class whose
 method was called, then a warning is raised. Nevertheless, the loaded model may be a valid
 model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – a file name or path to load a model from.</p>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path to load a model from.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A loaded model.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.predict" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.predict" title="Link to this definition">¶</a></dt>
 <dd><p>Predict using the network specified to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – The input data.</p>
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – The input data.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="qiskit_machine_learning.QiskitMachineLearningError.html#qiskit_machine_learning.QiskitMachineLearningError" title="qiskit_machine_learning.QiskitMachineLearningError"><strong>QiskitMachineLearningError</strong></a> – Model needs to be fit to some training data first</p>
@@ -581,44 +583,44 @@ model.</p>
 <dd class="field-odd"><p>The predicted classes.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.save" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.save" title="Link to this definition">¶</a></dt>
 <dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
 All parameters are saved, including a primitive instance that is referenced by internal
 objects. That means if a model is loaded from a file and is used, for instance, for
 inference, the same primitive will be used even if a cloud primitive was used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – a file name or path where to save the model.</p>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path where to save the model.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQR.score">
-<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.score" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQR.score" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a score of this model given samples and true values for the samples. In case of
 classification this should be mean accuracy, in case of regression the coefficient of
 determination <span class="math notranslate nohighlight">\(R^2\)</span> of the prediction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – Test samples.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – True values for <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
-<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><em>None</em>) – Sample weights. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – Test samples.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – True values for <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>) – Sample weights. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a float score of the model.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -727,11 +729,11 @@ determination <span class="math notranslate nohighlight">\(R^2\)</span> of the p
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=4f87218b"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
