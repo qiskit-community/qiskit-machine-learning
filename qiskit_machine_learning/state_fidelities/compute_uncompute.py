@@ -18,7 +18,7 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseSampler, BaseSamplerV1, SamplerResult, StatevectorSampler
+from qiskit.primitives import BaseSampler, BaseSamplerV1, SamplerResult
 from qiskit.primitives.base import BaseSamplerV2
 from qiskit.transpiler.passmanager import PassManager
 from qiskit.result import QuasiDistribution
@@ -161,6 +161,8 @@ class ComputeUncompute(BaseStateFidelity):
         Raises:
             ValueError: At least one pair of circuits must be defined.
             AlgorithmError: If the sampler job is not completed successfully.
+            QiskitMachineLearningError: If the sampler is not an instance
+                of ``BaseSamplerV1`` or ``BaseSamplerV2``.
         """
         circuits = self._construct_circuits(circuits_1, circuits_2)
         if len(circuits) == 0:

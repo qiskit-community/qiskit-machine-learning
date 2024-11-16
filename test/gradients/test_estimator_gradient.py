@@ -25,9 +25,11 @@ from qiskit.circuit.library import EfficientSU2, RealAmplitudes
 from qiskit.circuit.library.standard_gates import RXXGate, RYYGate, RZXGate, RZZGate
 from qiskit.primitives import Estimator
 from qiskit.quantum_info import SparsePauliOp
-from qiskit_ibm_runtime import Session, EstimatorV2
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+
+from qiskit_ibm_runtime import Session, EstimatorV2
+
 from qiskit_machine_learning.gradients import (
     LinCombEstimatorGradient,
     ParamShiftEstimatorGradient,
@@ -438,9 +440,9 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
         estimator = LoggingEstimator(operations_callback=operations_callback)
 
         if gradient_cls in [SPSAEstimatorGradient]:
-            gradient = gradient_cls(self.estimator, epsilon=0.01)
+            gradient = gradient_cls(estimator, epsilon=0.01)
         else:
-            gradient = gradient_cls(self.estimator)
+            gradient = gradient_cls(estimator)
 
         job = gradient.run([circuit], [observable], [values])
         result = job.result()
@@ -460,7 +462,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         backend = GenericBackendV2(num_qubits=3, seed=123)
         session = Session(backend=backend)
         self.estimator = EstimatorV2(mode=session)
-        self.pm = generate_preset_pass_manager(optimization_level=1, backend=backend)
+        self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
         super().__init__(TestCase)
 
     @data(*gradient_factories)
@@ -472,7 +474,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc.h(0)
         qc.p(a, 0)
         qc.h(0)
-        gradient = grad(self.estimator, self.pm)
+        gradient = grad(self.estimator, self.pass_manager)
         op = SparsePauliOp.from_list([("Z", 1)])
         correct_result = -1 / np.sqrt(2)
         param = [np.pi / 4]
@@ -491,7 +493,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc.h(0)
         qc.p(a, 0)
         qc.h(0)
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         op = SparsePauliOp.from_list([("Z", 1)])
         correct_result = -1 / np.sqrt(2)
         param = [np.pi / 4]
@@ -507,7 +509,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc.h(0)
         qc.p(a, 0)
         qc.h(0)
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         op = SparsePauliOp.from_list([("Z", 1)])
         param_list = [[np.pi / 4], [0], [np.pi / 2]]
         correct_results = [[-1 / np.sqrt(2)], [0], [-1]]
@@ -527,7 +529,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc.h(0)
         qc.u(a, b, c, 0)
         qc.h(0)
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         op = SparsePauliOp.from_list([("Z", 1)])
 
         param_list = [[np.pi / 4, 0, 0], [np.pi / 4, np.pi / 4, np.pi / 4]]
@@ -543,7 +545,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
 
         qc = EfficientSU2(2, reps=1)
         op = SparsePauliOp.from_list([("ZI", 1)])
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         param_list = [
             [np.pi / 4 for param in qc.parameters],
             [np.pi / 2 for param in qc.parameters],
@@ -579,7 +581,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
             for i, param in enumerate(param_list):
                 a = Parameter("a")
                 qc = QuantumCircuit(2)
-                gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+                gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
 
                 if gate is RZZGate:
                     qc.h([0, 1])
@@ -600,7 +602,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc.u(qc.parameters[0], qc.parameters[1], qc.parameters[3], 1)
         qc.p(2 * qc.parameters[0] + 1, 0)
         qc.rxx(qc.parameters[0] + 2, 0, 1)
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         param_list = [[np.pi / 4 for _ in qc.parameters], [np.pi / 2 for _ in qc.parameters]]
         correct_results = [
             [-0.7266653, -0.4905135, -0.0068606, -0.9228880],
@@ -620,7 +622,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
         qc.rx(b, 0)
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         param_list = [[np.pi / 4, np.pi / 2]]
         correct_results = [
             [-0.70710678],
@@ -648,7 +650,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
             param = [[a, b, c], [c, b, a], [a, c], [c, a]]
             op = SparsePauliOp.from_list([("Z", 1)])
             for i, p in enumerate(param):  # pylint: disable=invalid-name
-                gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+                gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
                 gradients = (
                     gradient.run([qc], [op], param_list, parameters=[p]).result().gradients[0]
                 )
@@ -664,7 +666,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc.rx(a, 0)
         qc2 = QuantumCircuit(1)
         qc2.rx(b, 0)
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         param_list = [[np.pi / 4], [np.pi / 2]]
         correct_results = [
             [-0.70710678],
@@ -700,7 +702,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
-        gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+        gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         param_list = [[np.pi / 4], [np.pi / 2]]
         op = SparsePauliOp.from_list([("Z", 1)])
         with self.assertRaises(ValueError):
@@ -717,7 +719,9 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         """Test the SPSA estimator gradient"""
 
         with self.assertRaises(ValueError):
-            _ = SPSAEstimatorGradient(estimator=self.estimator, pass_manager=self.pm, epsilon=-0.1)
+            _ = SPSAEstimatorGradient(
+                estimator=self.estimator, pass_manager=self.pass_manager, epsilon=-0.1
+            )
         a = Parameter("a")
         b = Parameter("b")
         qc = QuantumCircuit(2)
@@ -727,7 +731,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         correct_results = [[-0.84147098, 0.84147098]]
         op = SparsePauliOp.from_list([("ZI", 1)])
         gradient = SPSAEstimatorGradient(
-            estimator=self.estimator, pass_manager=self.pm, epsilon=1e-6, seed=123
+            estimator=self.estimator, pass_manager=self.pass_manager, epsilon=1e-6, seed=123
         )
         gradients = gradient.run([qc], [op], param_list).result().gradients
         np.testing.assert_allclose(gradients, correct_results, atol=1e-1, rtol=1e-1)
@@ -735,7 +739,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         # multi parameters
         with self.subTest(msg="Multiple parameters"):
             gradient = SPSAEstimatorGradient(
-                estimator=self.estimator, pass_manager=self.pm, epsilon=1e-6, seed=123
+                estimator=self.estimator, pass_manager=self.pass_manager, epsilon=1e-6, seed=123
             )
             param_list2 = [[1, 1], [1, 1], [3, 3]]
             gradients2 = (
@@ -751,7 +755,11 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         with self.subTest(msg="Batch size"):
             correct_results = [[-0.84147098, 0.1682942]]
             gradient = SPSAEstimatorGradient(
-                estimator=self.estimator, pass_manager=self.pm, epsilon=1e-6, batch_size=5, seed=123
+                estimator=self.estimator,
+                pass_manager=self.pass_manager,
+                epsilon=1e-6,
+                batch_size=5,
+                seed=123,
             )
             gradients = gradient.run([qc], [op], param_list).result().gradients
             np.testing.assert_allclose(gradients, correct_results, atol=1e-1, rtol=1e-1)
@@ -759,7 +767,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         # parameter order
         with self.subTest(msg="The order of gradients"):
             gradient = SPSAEstimatorGradient(
-                estimator=self.estimator, pass_manager=self.pm, epsilon=1e-6, seed=123
+                estimator=self.estimator, pass_manager=self.pass_manager, epsilon=1e-6, seed=123
             )
             c = Parameter("c")
             qc = QuantumCircuit(1)
@@ -774,9 +782,10 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
                 [-0.3535525, 0.3535525],
                 [0.3535525, -0.3535525],
             ]
+            param = [[a, b, c], [c, b, a], [a, c], [c, a]]
             for i, p in enumerate(param):  # pylint: disable=invalid-name
                 gradient = SPSAEstimatorGradient(
-                    estimator=self.estimator, pass_manager=self.pm, epsilon=1e-6, seed=123
+                    estimator=self.estimator, pass_manager=self.pass_manager, epsilon=1e-6, seed=123
                 )
                 gradients = (
                     gradient.run([qc], [op], param_list3, parameters=[p]).result().gradients[0]
@@ -795,12 +804,14 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
         op = SparsePauliOp.from_list([("Z", 1)])
-        estimator = Estimator(options={"shots": 100})
+        estimator = EstimatorV2(options={"shots": 100})
         with self.subTest("estimator"):
             if grad is SPSAEstimatorGradient:
-                gradient = grad(estimator=self.estimator, pass_manager=self.pm, epsilon=1e-6)
+                gradient = grad(
+                    estimator=estimator, pass_manager=self.pass_manager, epsilon=1e-6
+                )
             else:
-                gradient = grad(estimator=self.estimator, pass_manager=self.pm)
+                gradient = grad(estimator=estimator, pass_manager=self.pass_manager)
             options = gradient.options
             result = gradient.run([qc], [op], [[1]]).result()
             self.assertEqual(result.options.get("shots"), 100)
@@ -810,13 +821,13 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
             if grad is SPSAEstimatorGradient:
                 gradient = grad(
                     estimator=self.estimator,
-                    pass_manager=self.pm,
+                    pass_manager=self.pass_manager,
                     epsilon=1e-6,
                     options={"shots": 200},
                 )
             else:
                 gradient = grad(
-                    estimator=self.estimator, pass_manager=self.pm, options={"shots": 200}
+                    estimator=self.estimator, pass_manager=self.pass_manager, options={"shots": 200}
                 )
             options = gradient.options
             result = gradient.run([qc], [op], [[1]]).result()
@@ -827,13 +838,13 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
             if grad is SPSAEstimatorGradient:
                 gradient = grad(
                     estimator=self.estimator,
-                    pass_manager=self.pm,
+                    pass_manager=self.pass_manager,
                     epsilon=1e-6,
                     options={"shots": 200},
                 )
             else:
                 gradient = grad(
-                    estimator=self.estimator, pass_manager=self.pm, options={"shots": 200}
+                    estimator=self.estimator, pass_manager=self.pass_manager, options={"shots": 200}
                 )
             gradient.update_default_options(shots=100)
             options = gradient.options
@@ -845,13 +856,13 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
             if grad is SPSAEstimatorGradient:
                 gradient = grad(
                     estimator=self.estimator,
-                    pass_manager=self.pm,
+                    pass_manager=self.pass_manager,
                     epsilon=1e-6,
                     options={"shots": 200},
                 )
             else:
                 gradient = grad(
-                    estimator=self.estimator, pass_manager=self.pm, options={"shots": 200}
+                    estimator=self.estimator, pass_manager=self.pass_manager, options={"shots": 200}
                 )
             options = gradient.options
             result = gradient.run([qc], [op], [[1]], shots=300).result()

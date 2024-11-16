@@ -128,7 +128,8 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
                 partial_sum_n += n
                 n = len(result) // 2
                 diffs = (result[:n] - result[n:]) / (2 * self._epsilon)
-                # Calculate the gradient for each batch. Note that (``diff`` / ``offset``) is the gradient
+                # Calculate the gradient for each batch.
+                # Note that (``diff`` / ``offset``) is the gradient
                 # since ``offset`` is a perturbation vector of 1s and -1s.
                 batch_gradients = np.array(
                     [diff / offset for diff, offset in zip(diffs, offsets[i])]
@@ -169,7 +170,8 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
                 partial_sum_n += n
                 n = len(result) // 2
                 diffs = (result[:n] - result[n:]) / (2 * self._epsilon)
-                # Calculate the gradient for each batch. Note that (``diff`` / ``offset``) is the gradient
+                # Calculate the gradient for each batch.
+                # Note that (``diff`` / ``offset``) is the gradient
                 # since ``offset`` is a perturbation vector of 1s and -1s.
                 batch_gradients = np.array(
                     [diff / offset for diff, offset in zip(diffs, offsets[i])]

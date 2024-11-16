@@ -27,7 +27,7 @@ from qiskit.result import QuasiDistribution
 from ..base.base_sampler_gradient import BaseSamplerGradient
 from ..base.sampler_gradient_result import SamplerGradientResult
 from ..utils import _make_param_shift_parameter_values
-from ...exceptions import AlgorithmError, QiskitMachineLearningError
+from ...exceptions import AlgorithmError
 
 
 class ParamShiftSamplerGradient(BaseSamplerGradient):

@@ -106,7 +106,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.backend = GenericBackendV2(num_qubits=8)
         self.session = Session(backend=self.backend)
         self.sampler_v2 = SamplerV2(mode=self.session)
-        self.pm = None
+        self.pass_manager = None
         self.array_type = {True: SparseArray, False: np.ndarray}
 
     # pylint: disable=too-many-positional-arguments
@@ -134,11 +134,13 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             sampler = self.sampler_v2
 
             if self.qc.layout is None:
-                self.pm = generate_preset_pass_manager(optimization_level=1, backend=self.backend)
-                self.qc = self.pm.run(self.qc)
+                self.pass_manager = generate_preset_pass_manager(
+                    optimization_level=1, backend=self.backend
+                )
+                self.qc = self.pass_manager.run(self.qc)
             gradient = ParamShiftSamplerGradient(
                 sampler=self.sampler,
-                pass_manager=self.pm,
+                pass_manager=self.pass_manager,
             )
         else:
             sampler = None

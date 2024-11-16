@@ -25,9 +25,10 @@ from qiskit.circuit.library import EfficientSU2, RealAmplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
 from qiskit.primitives import Sampler
 from qiskit.result import QuasiDistribution
-from qiskit_ibm_runtime import Session, SamplerV2
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+
+from qiskit_ibm_runtime import Session, SamplerV2
 
 from qiskit_machine_learning.gradients import (
     LinCombSamplerGradient,
@@ -569,9 +570,9 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
         sampler = LoggingSampler(operations_callback=operations_callback)
 
         if gradient_cls in [SPSASamplerGradient]:
-            gradient = gradient_cls(self.sampler, epsilon=0.01)
+            gradient = gradient_cls(sampler, epsilon=0.01)
         else:
-            gradient = gradient_cls(self.sampler)
+            gradient = gradient_cls(sampler)
 
         job = gradient.run([circuit], [values])
         result = job.result()
@@ -593,7 +594,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         backend = GenericBackendV2(num_qubits=3, seed=123)
         session = Session(backend=backend)
         self.sampler = SamplerV2(mode=session)
-        self.pm = generate_preset_pass_manager(optimization_level=1, backend=backend)
+        self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
         super().__init__(TestCase)
 
     @data(*gradient_factories)
@@ -607,7 +608,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         qc.h(0)
         qc.measure_all()
 
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm)
+        gradient = grad(sampler=self.sampler, pass_manager=self.pass_manager)
         param_list = [[np.pi / 4], [0], [np.pi / 2]]
         expected = [
             [{0: -0.5 / np.sqrt(2), 1: 0.5 / np.sqrt(2)}],
@@ -634,7 +635,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
 
         gradient = grad(
             sampler=self.sampler,
-            pass_manager=self.pm,
+            pass_manager=self.pass_manager,
         )
         param_list = [[np.pi / 4], [0], [np.pi / 2]]
         expected = [
@@ -663,7 +664,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         qc.measure_all()
         gradient = grad(
             sampler=self.sampler,
-            pass_manager=self.pm,
+            pass_manager=self.pass_manager,
         )
         param_list = [[np.pi / 4, 0, 0], [np.pi / 4, np.pi / 4, np.pi / 4]]
         expected = [
@@ -685,7 +686,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         qc.measure_all()
         gradient = grad(
             sampler=self.sampler,
-            pass_manager=self.pm,
+            pass_manager=self.pass_manager,
         )
         param_list = [
             [np.pi / 4 for param in qc.parameters],
@@ -790,7 +791,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
                 qc = QuantumCircuit(2)
                 qc.append(gate(a), [qc.qubits[0], qc.qubits[1]], [])
                 qc.measure_all()
-                gradient = grad(sampler=self.sampler, pass_manager=self.pm)
+                gradient = grad(sampler=self.sampler, pass_manager=self.pass_manager)
                 gradients = gradient.run([qc], [param]).result().gradients[0]
                 array1 = _quasi2array(gradients, num_qubits=2)
                 array2 = _quasi2array(correct_results[i], num_qubits=2)
@@ -811,7 +812,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
 
         gradient = grad(
             sampler=self.sampler,
-            pass_manager=self.pm,
+            pass_manager=self.pass_manager,
         )
         param_list = [[np.pi / 4 for _ in qc.parameters], [np.pi / 2 for _ in qc.parameters]]
         correct_results = [
@@ -889,7 +890,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
 
         gradient = grad(
             sampler=self.sampler,
-            pass_manager=self.pm,
+            pass_manager=self.pass_manager,
         )
         param_list = [[np.pi / 4, np.pi / 2]]
         expected = [
@@ -954,7 +955,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         qc2.measure_all()
         gradient = grad(
             sampler=self.sampler,
-            pass_manager=self.pm,
+            pass_manager=self.pass_manager,
         )
         param_list = [[np.pi / 4], [np.pi / 2]]
         correct_results = [
@@ -1001,7 +1002,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
 
         gradient = grad(
             sampler=self.sampler,
-            pass_manager=self.pm,
+            pass_manager=self.pass_manager,
         )
         param_list = [[np.pi / 4], [np.pi / 2]]
         with self.assertRaises(ValueError):
@@ -1033,7 +1034,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
             ],
         ]
         gradient = SPSASamplerGradient(
-            sampler=self.sampler, pass_manager=self.pm, epsilon=1e-6, seed=123
+            sampler=self.sampler, pass_manager=self.pass_manager, epsilon=1e-6, seed=123
         )
         for i, param in enumerate(param_list):
             gradients = gradient.run([qc], [param]).result().gradients[0]
