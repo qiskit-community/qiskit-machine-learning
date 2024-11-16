@@ -584,6 +584,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
             array2 = _quasi2array(expect, num_qubits=2)
             np.testing.assert_allclose(array1, array2, atol=1e-5)
 
+
 @ddt
 class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     """Test Sampler Gradient"""

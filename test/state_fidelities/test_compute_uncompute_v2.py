@@ -99,13 +99,11 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
             self._sampler,
             local=False,
             pass_manager=self.pm,
-            num_virtual_qubits=self._circuit[2].num_qubits,
         )
         fidelity_local = ComputeUncompute(
             self._sampler,
             local=True,
             pass_manager=self.pm,
-            num_virtual_qubits=self._circuit[2].num_qubits,
         )
         fidelities = []
         for fidelity in [fidelity_global, fidelity_local]:
@@ -144,7 +142,8 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
     def test_no_params(self):
         """test for fidelity without parameters"""
         fidelity = ComputeUncompute(
-            self._sampler, pass_manager=self.pm, num_virtual_qubits=self._circuit[2].num_qubits
+            self._sampler,
+            pass_manager=self.pm,
         )
         job = fidelity.run([self._circuit[2]], [self._circuit[3]])
         results = job.result()
@@ -157,7 +156,8 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
     def test_left_param(self):
         """test for fidelity with only left parameters"""
         fidelity = ComputeUncompute(
-            self._sampler, pass_manager=self.pm, num_virtual_qubits=self._circuit[1].num_qubits
+            self._sampler,
+            pass_manager=self.pm,
         )
         n = len(self._left_params)
         job = fidelity.run(
@@ -171,7 +171,8 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
     def test_right_param(self):
         """test for fidelity with only right parameters"""
         fidelity = ComputeUncompute(
-            self._sampler, pass_manager=self.pm, num_virtual_qubits=self._circuit[1].num_qubits
+            self._sampler,
+            pass_manager=self.pm,
         )
         n = len(self._left_params)
         job = fidelity.run(
@@ -284,7 +285,6 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
                 sampler_shots,
                 options={"shots": 2048, "dummy": 100},
                 pass_manager=self.pm,
-                num_virtual_qubits=self._circuit[2].num_qubits,
             )
             options = fidelity.options
             job = fidelity.run(self._circuit[2], self._circuit[3])
@@ -298,7 +298,6 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
                 sampler_shots,
                 options={"shots": 2048, "dummy": 100},
                 pass_manager=self.pm,
-                num_virtual_qubits=self._circuit[2].num_qubits,
             )
             fidelity.update_default_options(shots=100)
             options = fidelity.options
@@ -313,7 +312,6 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
                 sampler_shots,
                 options={"shots": 2048, "dummy": 100},
                 pass_manager=self.pm,
-                num_virtual_qubits=self._circuit[2].num_qubits,
             )
             job = fidelity.run(self._circuit[2], self._circuit[3], shots=50, dummy=None)
             options = fidelity.options

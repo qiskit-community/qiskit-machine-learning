@@ -221,7 +221,7 @@ class ComputeUncompute(BaseStateFidelity):
         if isinstance(_sampler, BaseSamplerV1):
             quasi_dists = result.quasi_dists
         elif isinstance(_sampler, BaseSamplerV2):
-            quasi_dists = _post_process_v2(result)
+            quasi_dists = _post_process_v2(result, num_virtual_qubits)
 
         if local:
             raw_fidelities = [
