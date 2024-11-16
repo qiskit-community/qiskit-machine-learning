@@ -49,14 +49,15 @@ class BaseEstimatorGradient(ABC):
     def __init__(
         self,
         estimator: BaseEstimator | BaseEstimatorV2,
+        pass_manager: BasePassManager | None = None,
         options: Options | None = None,
         derivative_type: DerivativeType = DerivativeType.REAL,
-        pass_manager: BasePassManager | None = None,
     ):
         r"""
         Args:
             estimator: The estimator used to compute the gradients.
-            pass_manager: pass manager for isa_circuit transpilation.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+            Defaults to ``None``, as some primitives do not need transpiled circuits.
             options: Primitive backend runtime options used for circuit execution.
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.

@@ -19,15 +19,16 @@ from collections.abc import Sequence
 import numpy as np
 
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import BaseEstimator
 from qiskit.providers import Options
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit.primitives.base import BaseEstimatorV2
+from qiskit.primitives import BaseEstimator, BaseEstimatorV1
+from qiskit.transpiler.passmanager import BasePassManager
 
 from ..base.base_estimator_gradient import BaseEstimatorGradient
 from ..base.estimator_gradient_result import EstimatorGradientResult
 
 from ...exceptions import AlgorithmError
-
 
 class SPSAEstimatorGradient(BaseEstimatorGradient):
     """
@@ -41,10 +42,12 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
     """
 
     # pylint: disable=too-many-positional-arguments
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         estimator: BaseEstimator,
-        epsilon: float,
+        pass_manager: BasePassManager | None = None,
+        epsilon: float = 1e-6,
         batch_size: int = 1,
         seed: int | None = None,
         options: Options | None = None,
@@ -52,6 +55,8 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
         """
         Args:
             estimator: The estimator used to compute the gradients.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+            Defaults to ``None``, as some primitives do not need transpiled circuits.
             epsilon: The offset size for the SPSA gradients.
             batch_size: The number of gradients to average.
             seed: The seed for a random perturbation vector.
@@ -69,7 +74,7 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
         self._batch_size = batch_size
         self._seed = np.random.default_rng(seed)
 
-        super().__init__(estimator, options)
+        super().__init__(estimator, pass_manager, options)
 
     def _run(
         self,
@@ -102,34 +107,78 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
             job_observables.extend([observable] * 2 * self._batch_size)
             job_param_values.extend(plus + minus)
             all_n.append(2 * self._batch_size)
+        if isinstance(self._estimator, BaseEstimatorV1):
+            # Run the single job with all circuits.
+            job = self._estimator.run(
+                job_circuits,
+                job_observables,
+                job_param_values,
+                **options,
+            )
+            try:
+                results = job.result()
+            except Exception as exc:
+                raise AlgorithmError("Estimator job failed.") from exc
+            # Compute the gradients.
+            gradients = []
+            partial_sum_n = 0
+            for i, n in enumerate(all_n):
+                result = results.values[partial_sum_n : partial_sum_n + n]
+                partial_sum_n += n
+                n = len(result) // 2
+                diffs = (result[:n] - result[n:]) / (2 * self._epsilon)
+                # Calculate the gradient for each batch. Note that (``diff`` / ``offset``) is the gradient
+                # since ``offset`` is a perturbation vector of 1s and -1s.
+                batch_gradients = np.array([diff / offset for diff, offset in zip(diffs, offsets[i])])
+                # Take the average of the batch gradients.
+                gradient = np.mean(batch_gradients, axis=0)
+                indices = [circuits[i].parameters.data.index(p) for p in metadata[i]["parameters"]]
+                gradients.append(gradient[indices])
+            opt = self._get_local_options(options)    
+        elif isinstance(self._estimator, BaseEstimatorV2):
+            if self._pass_manager is None:
+                circs = job_circuits
+                observables = job_observables
+            else:
+                circs = self._pass_manager.run(job_circuits)
+                observables = [
+                    op.apply_layout(circs[x].layout) for x, op in enumerate(job_observables)
+                ]
+            # Prepare circuit-observable-parameter tuples (PUBs)
+            circuit_observable_params = []
+            for pub in zip(circs, observables, job_param_values):
+                circuit_observable_params.append(pub)
 
-        # Run the single job with all circuits.
-        job = self._estimator.run(
-            job_circuits,
-            job_observables,
-            job_param_values,
-            **options,
-        )
-        try:
-            results = job.result()
-        except Exception as exc:
-            raise AlgorithmError("Estimator job failed.") from exc
+            # For BaseEstimatorV2, run the estimator using PUBs and specified precision
+            job = self._estimator.run(circuit_observable_params)
+            try:
+                results = job.result()
+            except Exception as exc:
+                raise AlgorithmError("Estimator job failed.") from exc
+            results = np.array([float(r.data.evs) for r in results])
+            opt = Options(**options)
 
-        # Compute the gradients.
-        gradients = []
-        partial_sum_n = 0
-        for i, n in enumerate(all_n):
-            result = results.values[partial_sum_n : partial_sum_n + n]
-            partial_sum_n += n
-            n = len(result) // 2
-            diffs = (result[:n] - result[n:]) / (2 * self._epsilon)
-            # Calculate the gradient for each batch. Note that (``diff`` / ``offset``) is the gradient
-            # since ``offset`` is a perturbation vector of 1s and -1s.
-            batch_gradients = np.array([diff / offset for diff, offset in zip(diffs, offsets[i])])
-            # Take the average of the batch gradients.
-            gradient = np.mean(batch_gradients, axis=0)
-            indices = [circuits[i].parameters.data.index(p) for p in metadata[i]["parameters"]]
-            gradients.append(gradient[indices])
-
-        opt = self._get_local_options(options)
+            # Compute the gradients.
+            gradients = []
+            partial_sum_n = 0
+            for i, n in enumerate(all_n):
+                result = results[partial_sum_n : partial_sum_n + n]
+                partial_sum_n += n
+                n = len(result) // 2
+                diffs = (result[:n] - result[n:]) / (2 * self._epsilon)
+                # Calculate the gradient for each batch. Note that (``diff`` / ``offset``) is the gradient
+                # since ``offset`` is a perturbation vector of 1s and -1s.
+                batch_gradients = np.array([diff / offset for diff, offset in zip(diffs, offsets[i])])
+                # Take the average of the batch gradients.
+                gradient = np.mean(batch_gradients, axis=0)
+                indices = [circuits[i].parameters.data.index(p) for p in metadata[i]["parameters"]]
+                gradients.append(gradient[indices])
+                     
+        else:
+            raise AlgorithmError(
+                "The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got "
+                + f"{type(self._estimator)} instead. Note that BaseEstimatorV1 is deprecated in"
+                + "Qiskit and removed in Qiskit IBM Runtime."
+            )
+         
         return EstimatorGradientResult(gradients=gradients, metadata=metadata, options=opt)

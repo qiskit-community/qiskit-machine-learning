@@ -59,7 +59,6 @@ class ComputeUncompute(BaseStateFidelity):
         self,
         sampler: BaseSampler | BaseSamplerV2,
         *,
-        num_virtual_qubits: int | None = None,
         pass_manager: PassManager | None = None,
         options: Options | None = None,
         local: bool = False,
@@ -71,6 +70,7 @@ class ComputeUncompute(BaseStateFidelity):
                 The order of priority is: options in ``run`` method > fidelity's
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting.
+            pass_manager: The pass manager to transpile the circuits if necessary.
             local: If set to ``True``, the fidelity is averaged over
                 single-qubit projectors
 
@@ -91,16 +91,7 @@ class ComputeUncompute(BaseStateFidelity):
                 f"The sampler should be an instance of BaseSampler or BaseSamplerV2, "
                 f"but got {type(sampler)}"
             )
-        if (
-            isinstance(sampler, BaseSamplerV2)
-            and (pass_manager is None)
-            and not isinstance(sampler, StatevectorSampler)
-        ):
-            raise ValueError(f"A pass_manager should be provided for {type(sampler)}.")
-        if (pass_manager is not None) and (num_virtual_qubits is None):
-            raise ValueError(
-                f"Number of virtual qubits should be provided for {type(pass_manager)}."
-            )
+
         if isinstance(sampler, BaseSamplerV1):
             issue_deprecation_msg(
                 msg="V1 Primitives are deprecated",
@@ -109,8 +100,7 @@ class ComputeUncompute(BaseStateFidelity):
                 period="4 months",
             )
         self._sampler: BaseSampler = sampler
-        self.num_virtual_qubits = num_virtual_qubits
-        self.pass_manager = pass_manager
+        self._pass_manager = pass_manager
         self._local = local
         self._default_options = Options()
         if options is not None:
@@ -138,8 +128,8 @@ class ComputeUncompute(BaseStateFidelity):
 
         circuit = circuit_1.compose(circuit_2.inverse())
         circuit.measure_all()
-        if self.pass_manager is not None:
-            circuit = self.pass_manager.run(circuit)
+        if self._pass_manager is not None:
+            circuit = self._pass_manager.run(circuit)
         return circuit
 
     def _run(
@@ -172,7 +162,6 @@ class ComputeUncompute(BaseStateFidelity):
             ValueError: At least one pair of circuits must be defined.
             AlgorithmError: If the sampler job is not completed successfully.
         """
-
         circuits = self._construct_circuits(circuits_1, circuits_2)
         if len(circuits) == 0:
             raise ValueError(
@@ -190,11 +179,13 @@ class ComputeUncompute(BaseStateFidelity):
             sampler_job = self._sampler.run(
                 circuits=circuits, parameter_values=values, **opts.__dict__
             )
+            _len_quasi_dist = circuits[0].num_qubits
             local_opts = self._get_local_options(opts.__dict__)
         elif isinstance(self._sampler, BaseSamplerV2):
             sampler_job = self._sampler.run(
                 [(circuits[i], values[i]) for i in range(len(circuits))], **opts.__dict__
             )
+            _len_quasi_dist = circuits[0].layout._input_qubit_count
             local_opts = opts.__dict__
         else:
             raise QiskitMachineLearningError(
@@ -209,7 +200,7 @@ class ComputeUncompute(BaseStateFidelity):
             local_opts,
             self._sampler,
             self._post_process_v2,
-            self.num_virtual_qubits,
+            _len_quasi_dist,
         )
 
     @staticmethod
@@ -293,7 +284,7 @@ class ComputeUncompute(BaseStateFidelity):
         opts.update_options(**options)
         return opts
 
-    def _post_process_v2(self, result: SamplerResult):
+    def _post_process_v2(self, result: SamplerResult, num_virtual_qubits:int):
         quasis = []
         for i in range(len(result)):
             bitstring_counts = result[i].data.meas.get_counts()
@@ -304,7 +295,7 @@ class ComputeUncompute(BaseStateFidelity):
 
             # Convert to quasi-probabilities
             counts = QuasiDistribution(probabilities)
-            quasi_probs = {k: v for k, v in counts.items() if int(k) < 2**self.num_virtual_qubits}
+            quasi_probs = {k: v for k, v in counts.items() if int(k) < 2**num_virtual_qubits}
             quasis.append(quasi_probs)
         return quasis
 

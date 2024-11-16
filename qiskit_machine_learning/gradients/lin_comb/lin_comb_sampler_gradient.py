@@ -19,9 +19,13 @@ from collections import defaultdict
 from collections.abc import Sequence
 
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import BaseSampler
 from qiskit.primitives.utils import _circuit_key
+
+from qiskit.primitives import BaseSampler, BaseSamplerV1
+from qiskit.primitives.base import BaseSamplerV2
+from qiskit.result import QuasiDistribution
 from qiskit.providers import Options
+from qiskit.transpiler.passmanager import BasePassManager
 
 from ..base.base_sampler_gradient import BaseSamplerGradient
 from ..base.sampler_gradient_result import SamplerGradientResult
@@ -62,17 +66,24 @@ class LinCombSamplerGradient(BaseSamplerGradient):
         "z",
     ]
 
-    def __init__(self, sampler: BaseSampler, options: Options | None = None):
+    def __init__(
+            self, 
+            sampler: BaseSampler, 
+            pass_manager: BasePassManager | None = None, 
+            options: Options | None = None,
+            ):
         """
         Args:
             sampler: The sampler used to compute the gradients.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+            Defaults to ``None``, as some primitives do not need transpiled circuits.
             options: Primitive backend runtime options used for circuit execution.
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting
         """
         self._lin_comb_cache: dict[tuple, dict[Parameter, QuantumCircuit]] = {}
-        super().__init__(sampler, options)
+        super().__init__(sampler, options, pass_manager=pass_manager)
 
     def _run(
         self,
@@ -120,7 +131,24 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             all_n.append(n)
 
         # Run the single job with all circuits.
-        job = self._sampler.run(job_circuits, job_param_values, **options)
+        if isinstance(self._sampler, BaseSamplerV1):
+            job = self._sampler.run(job_circuits, job_param_values, **options)
+        elif isinstance(self._sampler, BaseSamplerV2):
+            if self._pass_manager is None:
+                circs = job_circuits
+                _len_quasi_dist = 2**job_circuits[0].num_qubits
+            else:
+                circs = self._pass_manager.run(job_circuits)
+                _len_quasi_dist = 2**circs[0].layout._input_qubit_count
+            circ_params = [
+                (circs[i], job_param_values[i]) for i in range(len(job_param_values))
+            ]
+            job = self._sampler.run(circ_params)
+        else:
+            raise AlgorithmError(
+                "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got "
+                + f"{type(self._sampler)} instead."
+            )
         try:
             results = job.result()
         except Exception as exc:
@@ -131,7 +159,25 @@ class LinCombSamplerGradient(BaseSamplerGradient):
         partial_sum_n = 0
         for i, n in enumerate(all_n):
             gradient = []
-            result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
+            if isinstance(self._sampler, BaseSamplerV1):
+                result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
+                opt = self._get_local_options(options)
+
+            elif isinstance(self._sampler, BaseSamplerV2):
+                result = []
+                for x in range(partial_sum_n, partial_sum_n + n):
+                    bitstring_counts = results[x].data.meas.get_counts()
+
+                    # Normalize the counts to probabilities
+                    total_shots = sum(bitstring_counts.values())
+                    probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
+
+                    # Convert to quasi-probabilities
+                    counts = QuasiDistribution(probabilities)
+                    result.append(
+                        {k: v for k, v in counts.items() if int(k) < _len_quasi_dist}
+                    )
+                    opt = options
             m = 2 ** circuits[i].num_qubits
             for dist in result:
                 grad_dist: dict[int, float] = defaultdict(float)
@@ -144,5 +190,4 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             gradients.append(gradient)
             partial_sum_n += n
 
-        opt = self._get_local_options(options)
         return SamplerGradientResult(gradients=gradients, metadata=metadata, options=opt)
