@@ -807,9 +807,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         estimator = EstimatorV2(options={"shots": 100})
         with self.subTest("estimator"):
             if grad is SPSAEstimatorGradient:
-                gradient = grad(
-                    estimator=estimator, pass_manager=self.pass_manager, epsilon=1e-6
-                )
+                gradient = grad(estimator=estimator, pass_manager=self.pass_manager, epsilon=1e-6)
             else:
                 gradient = grad(estimator=estimator, pass_manager=self.pass_manager)
             options = gradient.options

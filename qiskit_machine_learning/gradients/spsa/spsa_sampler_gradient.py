@@ -108,9 +108,11 @@ class SPSASamplerGradient(BaseSamplerGradient):
             job_param_values.extend(plus + minus)
             all_n.append(n)
 
+        opt = options
         # Run the single job with all circuits.
         if isinstance(self._sampler, BaseSamplerV1):
             job = self._sampler.run(job_circuits, job_param_values, **options)
+            opt = self._get_local_options(options)
         elif isinstance(self._sampler, BaseSamplerV2):
             if self._pass_manager is None:
                 circs = job_circuits
@@ -137,8 +139,6 @@ class SPSASamplerGradient(BaseSamplerGradient):
             dist_diffs = {}
             if isinstance(self._sampler, BaseSamplerV1):
                 result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
-                opt = self._get_local_options(options)
-
             elif isinstance(self._sampler, BaseSamplerV2):
                 result = []
                 for m in range(partial_sum_n, partial_sum_n + n):
@@ -152,7 +152,6 @@ class SPSASamplerGradient(BaseSamplerGradient):
                     counts = QuasiDistribution(probabilities)
                     result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
                     result = [{key: d[key] for key in sorted(d)} for d in result]
-                opt = options
             for j, (dist_plus, dist_minus) in enumerate(zip(result[: n // 2], result[n // 2 :])):
                 dist_diff: dict[int, float] = defaultdict(float)
                 for key, value in dist_plus.items():

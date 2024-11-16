@@ -130,9 +130,11 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             job_param_values.extend([parameter_values_] * n)
             all_n.append(n)
 
+        opt = options
         # Run the single job with all circuits.
         if isinstance(self._sampler, BaseSamplerV1):
             job = self._sampler.run(job_circuits, job_param_values, **options)
+            opt = self._get_local_options(options)
         elif isinstance(self._sampler, BaseSamplerV2):
             if self._pass_manager is None:
                 circs = job_circuits
@@ -159,7 +161,6 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             gradient = []
             if isinstance(self._sampler, BaseSamplerV1):
                 result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
-                opt = self._get_local_options(options)
 
             elif isinstance(self._sampler, BaseSamplerV2):
                 result = []
@@ -173,7 +174,6 @@ class LinCombSamplerGradient(BaseSamplerGradient):
                     # Convert to quasi-probabilities
                     counts = QuasiDistribution(probabilities)
                     result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
-                    opt = options
             m = 2 ** circuits[i].num_qubits
             for dist in result:
                 grad_dist: dict[int, float] = defaultdict(float)
