@@ -138,7 +138,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                 self.qc = self.pm.run(self.qc)
             gradient = ParamShiftSamplerGradient(
                 sampler=self.sampler,
-                len_quasi_dist=2**self.num_virtual_qubits,
                 pass_manager=self.pm,
             )
         else:

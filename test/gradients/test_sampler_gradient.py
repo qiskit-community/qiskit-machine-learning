@@ -46,13 +46,15 @@ gradient_factories = [
 @ddt
 class TestSamplerGradient(QiskitAlgorithmsTestCase):
     """Test Sampler Gradient"""
+
     def __init__(self, TestCase):
         self.sampler = Sampler()
         super().__init__(TestCase)
+
     @data(*gradient_factories)
     def test_single_circuit(self, grad):
         """Test the sampler gradient for a single circuit"""
-        
+
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.h(0)
@@ -75,7 +77,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_p(self, grad):
         """Test the sampler gradient for p"""
-        
+
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.h(0)
@@ -98,7 +100,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_u(self, grad):
         """Test the sampler gradient for u"""
-        
+
         a = Parameter("a")
         b = Parameter("b")
         c = Parameter("c")
@@ -122,7 +124,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_efficient_su2(self, grad):
         """Test the sampler gradient for EfficientSU2"""
-        
+
         qc = EfficientSU2(2, reps=1)
         qc.measure_all()
         gradient = grad(self.sampler)
@@ -216,7 +218,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_2qubit_gate(self, grad):
         """Test the sampler gradient for 2 qubit gates"""
-        
+
         for gate in [RXXGate]:
             param_list = [[np.pi / 4], [np.pi / 2]]
             correct_results = [
@@ -237,7 +239,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_parameter_coefficient(self, grad):
         """Test the sampler gradient for parameter variables with coefficients"""
-        
+
         qc = RealAmplitudes(num_qubits=2, reps=1)
         qc.rz(qc.parameters[0].exp() + 2 * qc.parameters[1], 0)
         qc.rx(3.0 * qc.parameters[0] + qc.parameters[1].sin(), 1)
@@ -311,7 +313,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_parameters(self, grad):
         """Test the sampler gradient for parameters"""
-        
+
         a = Parameter("a")
         b = Parameter("b")
         qc = QuantumCircuit(1)
@@ -368,7 +370,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_multi_arguments(self, grad):
         """Test the sampler gradient for multiple arguments"""
-        
+
         a = Parameter("a")
         b = Parameter("b")
         qc = QuantumCircuit(1)
@@ -415,7 +417,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_validation(self, grad):
         """Test sampler gradient's validation"""
-        
+
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
@@ -431,7 +433,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
 
     def test_spsa_gradient(self):
         """Test the SPSA sampler gradient"""
-        
+
         with self.assertRaises(ValueError):
             _ = SPSASamplerGradient(self.sampler, epsilon=-0.1)
 
@@ -582,23 +584,17 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
             array2 = _quasi2array(expect, num_qubits=2)
             np.testing.assert_allclose(array1, array2, atol=1e-5)
 
-
-def _quasi2array(quasis: List[QuasiDistribution], num_qubits: int) -> np.ndarray:
-    ret = np.zeros((len(quasis), 2**num_qubits))
-    for i, quasi in enumerate(quasis):
-        ret[i, list(quasi.keys())] = list(quasi.values())
-    return ret
-
-
 @ddt
 class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     """Test Sampler Gradient"""
+
     def __init__(self, TestCase):
         backend = GenericBackendV2(num_qubits=3, seed=123)
         session = Session(backend=backend)
         self.sampler = SamplerV2(mode=session)
         self.pm = generate_preset_pass_manager(optimization_level=1, backend=backend)
         super().__init__(TestCase)
+
     @data(*gradient_factories)
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_single_circuit(self, grad):
@@ -609,7 +605,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         qc.p(a, 0)
         qc.h(0)
         qc.measure_all()
-        
+
         gradient = grad(sampler=self.sampler, pass_manager=self.pm)
         param_list = [[np.pi / 4], [0], [np.pi / 2]]
         expected = [
@@ -627,15 +623,18 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_gradient_p(self, grad):
         """Test the sampler gradient for p"""
-        
+
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.h(0)
         qc.p(a, 0)
         qc.h(0)
         qc.measure_all()
-        
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm,)
+
+        gradient = grad(
+            sampler=self.sampler,
+            pass_manager=self.pm,
+        )
         param_list = [[np.pi / 4], [0], [np.pi / 2]]
         expected = [
             [{0: -0.5 / np.sqrt(2), 1: 0.5 / np.sqrt(2)}],
@@ -652,7 +651,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_gradient_u(self, grad):
         """Test the sampler gradient for u"""
-        
+
         a = Parameter("a")
         b = Parameter("b")
         c = Parameter("c")
@@ -661,7 +660,10 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         qc.u(a, b, c, 0)
         qc.h(0)
         qc.measure_all()
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm,)
+        gradient = grad(
+            sampler=self.sampler,
+            pass_manager=self.pm,
+        )
         param_list = [[np.pi / 4, 0, 0], [np.pi / 4, np.pi / 4, np.pi / 4]]
         expected = [
             [{0: -0.5 / np.sqrt(2), 1: 0.5 / np.sqrt(2)}, {0: 0, 1: 0}, {0: 0, 1: 0}],
@@ -677,10 +679,13 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_gradient_efficient_su2(self, grad):
         """Test the sampler gradient for EfficientSU2"""
-        
+
         qc = EfficientSU2(2, reps=1)
         qc.measure_all()
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm,)
+        gradient = grad(
+            sampler=self.sampler,
+            pass_manager=self.pm,
+        )
         param_list = [
             [np.pi / 4 for param in qc.parameters],
             [np.pi / 2 for param in qc.parameters],
@@ -772,7 +777,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_gradient_2qubit_gate(self, grad):
         """Test the sampler gradient for 2 qubit gates"""
-        
+
         for gate in [RXXGate]:
             param_list = [[np.pi / 4], [np.pi / 2]]
             correct_results = [
@@ -794,7 +799,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_gradient_parameter_coefficient(self, grad):
         """Test the sampler gradient for parameter variables with coefficients"""
-        
+
         qc = RealAmplitudes(num_qubits=2, reps=1)
         qc.rz(qc.parameters[0].exp() + 2 * qc.parameters[1], 0)
         qc.rx(3.0 * qc.parameters[0] + qc.parameters[1].sin(), 1)
@@ -802,8 +807,11 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
         qc.p(2 * qc.parameters[0] + 1, 0)
         qc.rxx(qc.parameters[0] + 2, 0, 1)
         qc.measure_all()
-        
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm,)
+
+        gradient = grad(
+            sampler=self.sampler,
+            pass_manager=self.pm,
+        )
         param_list = [[np.pi / 4 for _ in qc.parameters], [np.pi / 2 for _ in qc.parameters]]
         correct_results = [
             [
@@ -870,15 +878,18 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_gradient_parameters(self, grad):
         """Test the sampler gradient for parameters"""
-        
+
         a = Parameter("a")
         b = Parameter("b")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
         qc.rz(b, 0)
         qc.measure_all()
-        
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm,)
+
+        gradient = grad(
+            sampler=self.sampler,
+            pass_manager=self.pm,
+        )
         param_list = [[np.pi / 4, np.pi / 2]]
         expected = [
             [{0: -0.5 / np.sqrt(2), 1: 0.5 / np.sqrt(2)}],
@@ -897,7 +908,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
             qc.rz(b, 0)
             qc.rx(c, 0)
             qc.measure_all()
-            
+
             param_values = [[np.pi / 4, np.pi / 2, np.pi / 3]]
             params = [[a, b, c], [c, b, a], [a, c], [c, a]]
             expected = [
@@ -930,17 +941,20 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_gradient_multi_arguments(self, grad):
         """Test the sampler gradient for multiple arguments"""
-        
+
         a = Parameter("a")
         b = Parameter("b")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
         qc.measure_all()
-        
+
         qc2 = QuantumCircuit(1)
         qc2.rx(b, 0)
         qc2.measure_all()
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm,)
+        gradient = grad(
+            sampler=self.sampler,
+            pass_manager=self.pm,
+        )
         param_list = [[np.pi / 4], [np.pi / 2]]
         correct_results = [
             [{0: -0.5 / np.sqrt(2), 1: 0.5 / np.sqrt(2)}],
@@ -978,13 +992,16 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     @data(*gradient_factories)
     def test_gradient_validation(self, grad):
         """Test sampler gradient's validation"""
-        
+
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
         qc.measure_all()
-        
-        gradient = grad(sampler=self.sampler, pass_manager=self.pm,)
+
+        gradient = grad(
+            sampler=self.sampler,
+            pass_manager=self.pm,
+        )
         param_list = [[np.pi / 4], [np.pi / 2]]
         with self.assertRaises(ValueError):
             gradient.run([qc], param_list)
@@ -992,10 +1009,11 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
             gradient.run([qc, qc], param_list, parameters=[[a]])
         with self.assertRaises(ValueError):
             gradient.run([qc], [[np.pi / 4, np.pi / 4]])
+
     @unittest.skip("Skipping due to noise sensitivity.")
     def test_spsa_gradient(self):
         """Test the SPSA sampler gradient"""
-        
+
         with self.assertRaises(ValueError):
             _ = SPSASamplerGradient(self.sampler, epsilon=-0.01)
 
@@ -1013,7 +1031,9 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
                 {0: -0.2273244, 1: 0.6480598, 2: -0.2273244, 3: -0.1934111},
             ],
         ]
-        gradient = SPSASamplerGradient(sampler=self.sampler, pass_manager=self.pm, epsilon=1e-6, seed=123)
+        gradient = SPSASamplerGradient(
+            sampler=self.sampler, pass_manager=self.pm, epsilon=1e-6, seed=123
+        )
         for i, param in enumerate(param_list):
             gradients = gradient.run([qc], [param]).result().gradients[0]
             array1 = _quasi2array(gradients, num_qubits=2)
@@ -1152,6 +1172,7 @@ def _quasi2array(quasis: List[QuasiDistribution], num_qubits: int) -> np.ndarray
     for i, quasi in enumerate(quasis):
         ret[i, list(quasi.keys())] = list(quasi.values())
     return ret
+
 
 if __name__ == "__main__":
     unittest.main()

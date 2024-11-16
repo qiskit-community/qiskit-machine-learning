@@ -284,7 +284,7 @@ class ComputeUncompute(BaseStateFidelity):
         opts.update_options(**options)
         return opts
 
-    def _post_process_v2(self, result: SamplerResult, num_virtual_qubits:int):
+    def _post_process_v2(self, result: SamplerResult, num_virtual_qubits: int):
         quasis = []
         for i in range(len(result)):
             bitstring_counts = result[i].data.meas.get_counts()

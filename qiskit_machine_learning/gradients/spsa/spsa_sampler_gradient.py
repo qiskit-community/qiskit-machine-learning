@@ -77,6 +77,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
         self._seed = np.random.default_rng(seed)
 
         super().__init__(sampler, options, pass_manager=pass_manager)
+
     def _run(
         self,
         circuits: Sequence[QuantumCircuit],
@@ -113,13 +114,11 @@ class SPSASamplerGradient(BaseSamplerGradient):
         elif isinstance(self._sampler, BaseSamplerV2):
             if self._pass_manager is None:
                 circs = job_circuits
-                _len_quasi_dist = 2**job_circuits[0].num_qubits
+                _len_quasi_dist = 2 ** job_circuits[0].num_qubits
             else:
                 circs = self._pass_manager.run(job_circuits)
-                _len_quasi_dist = 2**circs[0].layout._input_qubit_count
-            circ_params = [
-                (circs[i], job_param_values[i]) for i in range(len(job_param_values))
-            ]
+                _len_quasi_dist = 2 ** circs[0].layout._input_qubit_count
+            circ_params = [(circs[i], job_param_values[i]) for i in range(len(job_param_values))]
             job = self._sampler.run(circ_params)
         else:
             raise AlgorithmError(
@@ -151,9 +150,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
 
                     # Convert to quasi-probabilities
                     counts = QuasiDistribution(probabilities)
-                    result.append(
-                        {k: v for k, v in counts.items() if int(k) < _len_quasi_dist}
-                    )
+                    result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
                     result = [{key: d[key] for key in sorted(d)} for d in result]
                 opt = options
             for j, (dist_plus, dist_minus) in enumerate(zip(result[: n // 2], result[n // 2 :])):

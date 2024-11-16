@@ -30,6 +30,7 @@ from ..base.estimator_gradient_result import EstimatorGradientResult
 
 from ...exceptions import AlgorithmError
 
+
 class SPSAEstimatorGradient(BaseEstimatorGradient):
     """
     Compute the gradients of the expectation value by the Simultaneous Perturbation Stochastic
@@ -129,12 +130,14 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
                 diffs = (result[:n] - result[n:]) / (2 * self._epsilon)
                 # Calculate the gradient for each batch. Note that (``diff`` / ``offset``) is the gradient
                 # since ``offset`` is a perturbation vector of 1s and -1s.
-                batch_gradients = np.array([diff / offset for diff, offset in zip(diffs, offsets[i])])
+                batch_gradients = np.array(
+                    [diff / offset for diff, offset in zip(diffs, offsets[i])]
+                )
                 # Take the average of the batch gradients.
                 gradient = np.mean(batch_gradients, axis=0)
                 indices = [circuits[i].parameters.data.index(p) for p in metadata[i]["parameters"]]
                 gradients.append(gradient[indices])
-            opt = self._get_local_options(options)    
+            opt = self._get_local_options(options)
         elif isinstance(self._estimator, BaseEstimatorV2):
             if self._pass_manager is None:
                 circs = job_circuits
@@ -168,17 +171,19 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
                 diffs = (result[:n] - result[n:]) / (2 * self._epsilon)
                 # Calculate the gradient for each batch. Note that (``diff`` / ``offset``) is the gradient
                 # since ``offset`` is a perturbation vector of 1s and -1s.
-                batch_gradients = np.array([diff / offset for diff, offset in zip(diffs, offsets[i])])
+                batch_gradients = np.array(
+                    [diff / offset for diff, offset in zip(diffs, offsets[i])]
+                )
                 # Take the average of the batch gradients.
                 gradient = np.mean(batch_gradients, axis=0)
                 indices = [circuits[i].parameters.data.index(p) for p in metadata[i]["parameters"]]
                 gradients.append(gradient[indices])
-                     
+
         else:
             raise AlgorithmError(
                 "The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got "
                 + f"{type(self._estimator)} instead. Note that BaseEstimatorV1 is deprecated in"
                 + "Qiskit and removed in Qiskit IBM Runtime."
             )
-         
+
         return EstimatorGradientResult(gradients=gradients, metadata=metadata, options=opt)

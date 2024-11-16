@@ -67,11 +67,11 @@ class LinCombSamplerGradient(BaseSamplerGradient):
     ]
 
     def __init__(
-            self, 
-            sampler: BaseSampler, 
-            pass_manager: BasePassManager | None = None, 
-            options: Options | None = None,
-            ):
+        self,
+        sampler: BaseSampler,
+        pass_manager: BasePassManager | None = None,
+        options: Options | None = None,
+    ):
         """
         Args:
             sampler: The sampler used to compute the gradients.
@@ -136,13 +136,11 @@ class LinCombSamplerGradient(BaseSamplerGradient):
         elif isinstance(self._sampler, BaseSamplerV2):
             if self._pass_manager is None:
                 circs = job_circuits
-                _len_quasi_dist = 2**job_circuits[0].num_qubits
+                _len_quasi_dist = 2 ** job_circuits[0].num_qubits
             else:
                 circs = self._pass_manager.run(job_circuits)
-                _len_quasi_dist = 2**circs[0].layout._input_qubit_count
-            circ_params = [
-                (circs[i], job_param_values[i]) for i in range(len(job_param_values))
-            ]
+                _len_quasi_dist = 2 ** circs[0].layout._input_qubit_count
+            circ_params = [(circs[i], job_param_values[i]) for i in range(len(job_param_values))]
             job = self._sampler.run(circ_params)
         else:
             raise AlgorithmError(
@@ -174,9 +172,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
 
                     # Convert to quasi-probabilities
                     counts = QuasiDistribution(probabilities)
-                    result.append(
-                        {k: v for k, v in counts.items() if int(k) < _len_quasi_dist}
-                    )
+                    result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
                     opt = options
             m = 2 ** circuits[i].num_qubits
             for dist in result:
