@@ -409,7 +409,6 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -419,6 +418,7 @@
 <span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">BaseEstimatorV1</span><span class="p">,</span> <span class="n">Estimator</span><span class="p">,</span> <span class="n">EstimatorResult</span>
 <span class="kn">from</span> <span class="nn">qiskit.quantum_info</span> <span class="kn">import</span> <span class="n">SparsePauliOp</span>
 <span class="kn">from</span> <span class="nn">qiskit.quantum_info.operators.base_operator</span> <span class="kn">import</span> <span class="n">BaseOperator</span>
+<span class="kn">from</span> <span class="nn">qiskit.transpiler.passmanager</span> <span class="kn">import</span> <span class="n">BasePassManager</span>
 
 
 <span class="kn">from</span> <span class="nn">..gradients</span> <span class="kn">import</span> <span class="p">(</span>
@@ -511,8 +511,8 @@
         <span class="n">weight_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">gradient</span><span class="p">:</span> <span class="n">BaseEstimatorGradient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">input_gradients</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">num_virtual_qubits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">default_precision</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.015625</span><span class="p">,</span>
+        <span class="n">pass_manager</span><span class="p">:</span> <span class="n">BasePassManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -543,11 +543,12 @@
 <span class="sd">                Note that this parameter is ``False`` by default, and must be explicitly set to</span>
 <span class="sd">                ``True`` for a proper gradient computation when using</span>
 <span class="sd">                :class:`~qiskit_machine_learning.connectors.TorchConnector`.</span>
-<span class="sd">            num_virtual_qubits: Number of virtual qubits.</span>
 <span class="sd">            default_precision: The default precision for the estimator if not specified during run.</span>
-
+<span class="sd">            pass_manager: The pass manager to transpile the circuits, if necessary.</span>
+<span class="sd">                Defaults to ``None``, as some primitives do not need transpiled circuits.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: Invalid parameter values.</span>
+<span class="sd">            QiskitMachineLearningError: Gradient is required if</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">estimator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
@@ -560,19 +561,17 @@
                 <span class="n">period</span><span class="o">=</span><span class="s2">&quot;4 months&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span> <span class="o">=</span> <span class="n">circuit</span>
 
-        <span class="k">if</span> <span class="n">num_virtual_qubits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;No number of qubits was not specified (</span><span class="si">{</span><span class="n">num_virtual_qubits</span><span class="si">}</span><span class="s2">) and was retrieved from &quot;</span>
-                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;`circuit` (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">). If `circuit` is transpiled, this may cause &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;unstable behaviour.&quot;</span><span class="p">,</span>
-                <span class="ne">UserWarning</span><span class="p">,</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">&quot;_input_qubit_count&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">_input_qubit_count</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">num_virtual_qubits</span>
+            <span class="k">if</span> <span class="n">pass_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">circuit</span> <span class="o">=</span> <span class="n">pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">_input_qubit_count</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span> <span class="o">=</span> <span class="n">circuit</span>
 
         <span class="k">if</span> <span class="n">observables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">observables</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_sparse_list</span><span class="p">(</span>
@@ -592,14 +591,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_params</span><span class="p">)</span> <span class="k">if</span> <span class="n">input_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_weight_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">weight_params</span><span class="p">)</span> <span class="k">if</span> <span class="n">weight_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
+        <span class="c1"># set gradient</span>
         <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">BaseEstimatorV2</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="s2">&quot;Please provide a gradient with pass manager initialised.&quot;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">BaseEstimatorV1</span><span class="p">):</span>
+                <span class="n">gradient</span> <span class="o">=</span> <span class="n">ParamShiftEstimatorGradient</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;No gradient function provided, creating a gradient function.&quot;</span>
+                    <span class="s2">&quot; If your Estimator requires transpilation, please provide a pass manager.&quot;</span>
                 <span class="p">)</span>
-
-            <span class="n">gradient</span> <span class="o">=</span> <span class="n">ParamShiftEstimatorGradient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span>
-
+                <span class="n">gradient</span> <span class="o">=</span> <span class="n">ParamShiftEstimatorGradient</span><span class="p">(</span>
+                    <span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">pass_manager</span><span class="o">=</span><span class="n">pass_manager</span>
+                <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_precision</span> <span class="o">=</span> <span class="n">default_precision</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="n">gradient</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span> <span class="o">=</span> <span class="n">input_gradients</span>

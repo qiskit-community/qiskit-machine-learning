@@ -547,9 +547,7 @@ Initial weights:  [-0.01256962  0.06653564  0.04005302 -0.03752667  0.06645196  
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_4291/3557703904.py:2: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
-  qnn1 = EstimatorQNN(
-/tmp/ipykernel_4291/3557703904.py:2: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (2). If `circuit` is transpiled, this may cause unstable behaviour.
+/tmp/ipykernel_4307/3557703904.py:2: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
   qnn1 = EstimatorQNN(
 </pre></div></div>
 </div>
@@ -744,7 +742,7 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_4291/998709632.py:14: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+/tmp/ipykernel_4307/998709632.py:14: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
   qnn2 = SamplerQNN(
 </pre></div></div>
 </div>
@@ -914,9 +912,7 @@ Accuracy: 0.8
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_4291/3970866756.py:16: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
-  qnn3 = EstimatorQNN(circuit=qc, input_params=[param_x], weight_params=[param_y])
-/tmp/ipykernel_4291/3970866756.py:16: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (1). If `circuit` is transpiled, this may cause unstable behaviour.
+/tmp/ipykernel_4307/3970866756.py:16: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
   qnn3 = EstimatorQNN(circuit=qc, input_params=[param_x], weight_params=[param_y])
 </pre></div></div>
 </div>
@@ -1093,11 +1089,6 @@ Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyt
 Extracting ./data/MNIST/raw/train-images-idx3-ubyte.gz to ./data/MNIST/raw
 
 Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-Failed to download (trying next):
-HTTP Error 403: Forbidden
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1113,9 +1104,29 @@ Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyt
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+Failed to download (trying next):
+HTTP Error 403: Forbidden
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
 Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz to ./data/MNIST/raw
 
 Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
 Failed to download (trying next):
 HTTP Error 403: Forbidden
 
@@ -1139,11 +1150,6 @@ Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte
 Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw
 
 Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-Failed to download (trying next):
-HTTP Error 403: Forbidden
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1159,6 +1165,11 @@ Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+Failed to download (trying next):
+HTTP Error 403: Forbidden
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
 Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
 
 </pre></div></div>
@@ -1265,9 +1276,7 @@ Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_4291/2402256359.py:10: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
-  qnn = EstimatorQNN(
-/tmp/ipykernel_4291/2402256359.py:10: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (2). If `circuit` is transpiled, this may cause unstable behaviour.
+/tmp/ipykernel_4307/2402256359.py:10: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
   qnn = EstimatorQNN(
 </pre></div></div>
 </div>
@@ -1403,11 +1412,9 @@ Training [100%] Loss: -3.3061
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_4291/2402256359.py:10: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
+/tmp/ipykernel_4307/2402256359.py:10: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
   qnn = EstimatorQNN(
-/tmp/ipykernel_4291/2402256359.py:10: UserWarning: No number of qubits was not specified (None) and was retrieved from `circuit` (2). If `circuit` is transpiled, this may cause unstable behaviour.
-  qnn = EstimatorQNN(
-/tmp/ipykernel_4291/2057927024.py:3: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+/tmp/ipykernel_4307/2057927024.py:3: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
   model5.load_state_dict(torch.load(&#34;model4.pt&#34;))
 </pre></div></div>
 </div>
@@ -1511,7 +1518,7 @@ Performance on test data:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Nov 15 18:53:43 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Nov 18 17:04:57 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
