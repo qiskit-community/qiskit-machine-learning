@@ -78,7 +78,10 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
         parameters: Sequence[Sequence[Parameter]],
         **options,
     ) -> SamplerGradientResult:
-        """Compute the sampler gradients on the given circuits."""
+        """Compute the sampler gradients on the given circuits.
+        Raises:
+            AlgorithmError: If an invalid ``sampler``provided or if sampler job failed.
+        """
         job_circuits, job_param_values, metadata = [], [], []
         all_n = []
         for circuit, parameter_values_, parameters_ in zip(circuits, parameter_values, parameters):
@@ -98,19 +101,18 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
             job = self._sampler.run(job_circuits, job_param_values, **options)
         elif isinstance(self._sampler, BaseSamplerV2):
             if self._pass_manager is None:
-                circs = job_circuits
+                _circs = job_circuits
                 _len_quasi_dist = 2 ** job_circuits[0].num_qubits
             else:
-                circs = self._pass_manager.run(job_circuits)
-                _len_quasi_dist = 2 ** circs[0].layout._input_qubit_count
-            circ_params = [(circs[i], job_param_values[i]) for i in range(len(job_param_values))]
+                _circs = self._pass_manager.run(job_circuits)
+                _len_quasi_dist = 2 ** _circs[0].layout._input_qubit_count
+            circ_params = [(_circs[i], job_param_values[i]) for i in range(len(job_param_values))]
             job = self._sampler.run(circ_params)
         else:
             raise AlgorithmError(
                 "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got "
                 + f"{type(self._sampler)} instead."
             )
-
         try:
             results = job.result()
         except Exception as exc:

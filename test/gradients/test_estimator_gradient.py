@@ -474,7 +474,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
         qc.h(0)
         qc.p(a, 0)
         qc.h(0)
-        gradient = grad(self.estimator, self.pass_manager)
+        gradient = grad(self.estimator, pass_manager=self.pass_manager)
         op = SparsePauliOp.from_list([("Z", 1)])
         correct_result = -1 / np.sqrt(2)
         param = [np.pi / 4]

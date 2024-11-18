@@ -43,28 +43,27 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
     """
 
     # pylint: disable=too-many-positional-arguments
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         estimator: BaseEstimator,
-        pass_manager: BasePassManager | None = None,
         epsilon: float = 1e-6,
         batch_size: int = 1,
         seed: int | None = None,
         options: Options | None = None,
+        pass_manager: BasePassManager | None = None,
     ):
         """
         Args:
             estimator: The estimator used to compute the gradients.
-            pass_manager: The pass manager to transpile the circuits if necessary.
-            Defaults to ``None``, as some primitives do not need transpiled circuits.
             epsilon: The offset size for the SPSA gradients.
             batch_size: The number of gradients to average.
             seed: The seed for a random perturbation vector.
             options: Primitive backend runtime options used for circuit execution.
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
-                Higher priority setting overrides lower priority setting
+                Higher priority setting overrides lower priority setting.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
 
         Raises:
             ValueError: If ``epsilon`` is not positive.
@@ -75,7 +74,7 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
         self._batch_size = batch_size
         self._seed = np.random.default_rng(seed)
 
-        super().__init__(estimator, pass_manager, options)
+        super().__init__(estimator, options=options, pass_manager=pass_manager)
 
     def _run(
         self,
@@ -84,7 +83,7 @@ class SPSAEstimatorGradient(BaseEstimatorGradient):
         parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
         **options,
-    ) -> EstimatorGradientResult:
+    ) -> EstimatorGradientResult:  # pragma: no cover
         """Compute the estimator gradients on the given circuits."""
         job_circuits, job_observables, job_param_values, metadata, offsets = [], [], [], [], []
         all_n = []

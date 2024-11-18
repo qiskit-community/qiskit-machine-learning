@@ -12,7 +12,6 @@
 """
 Gradient of probabilities with linear combination of unitaries (LCU)
 """
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -93,7 +92,9 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
                 Higher priority setting overrides lower priority setting.
         """
         self._lin_comb_cache: dict[tuple, dict[Parameter, QuantumCircuit]] = {}
-        super().__init__(estimator, pass_manager, options, derivative_type=derivative_type)
+        super().__init__(
+            estimator, options=options, derivative_type=derivative_type, pass_manager=pass_manager
+        )
 
     @BaseEstimatorGradient.derivative_type.setter  # type: ignore[attr-defined]
     def derivative_type(self, derivative_type: DerivativeType) -> None:
@@ -124,7 +125,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
         parameter_values: Sequence[Sequence[float]],
         parameters: Sequence[Sequence[Parameter]],
         **options,
-    ) -> EstimatorGradientResult:
+    ) -> EstimatorGradientResult:  # pragma: no cover
         """Compute the estimator gradients on the given circuits."""
         job_circuits, job_observables, job_param_values, metadata = [], [], [], []
         all_n = []

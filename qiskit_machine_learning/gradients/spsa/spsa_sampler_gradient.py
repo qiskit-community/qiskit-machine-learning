@@ -84,7 +84,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
         parameter_values: Sequence[Sequence[float]],
         parameters: Sequence[Sequence[Parameter]],
         **options,
-    ) -> SamplerGradientResult:
+    ) -> SamplerGradientResult:  # pragma: no cover
         """Compute the sampler gradients on the given circuits."""
         job_circuits, job_param_values, metadata, offsets = [], [], [], []
         all_n = []
@@ -115,13 +115,13 @@ class SPSASamplerGradient(BaseSamplerGradient):
             opt = self._get_local_options(options)
         elif isinstance(self._sampler, BaseSamplerV2):
             if self._pass_manager is None:
-                circs = job_circuits
+                _circs = job_circuits
                 _len_quasi_dist = 2 ** job_circuits[0].num_qubits
             else:
-                circs = self._pass_manager.run(job_circuits)
-                _len_quasi_dist = 2 ** circs[0].layout._input_qubit_count
-            circ_params = [(circs[i], job_param_values[i]) for i in range(len(job_param_values))]
-            job = self._sampler.run(circ_params)
+                _circs = self._pass_manager.run(job_circuits)
+                _len_quasi_dist = 2 ** _circs[0].layout._input_qubit_count
+            _circ_params = [(_circs[i], job_param_values[i]) for i in range(len(job_param_values))]
+            job = self._sampler.run(_circ_params)
         else:
             raise AlgorithmError(
                 "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got "
@@ -140,18 +140,17 @@ class SPSASamplerGradient(BaseSamplerGradient):
             if isinstance(self._sampler, BaseSamplerV1):
                 result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
             elif isinstance(self._sampler, BaseSamplerV2):
-                result = []
+                _result = []
                 for m in range(partial_sum_n, partial_sum_n + n):
-                    bitstring_counts = results[m].data.meas.get_counts()
-
+                    _bitstring_counts = results[m].data.meas.get_counts()
                     # Normalize the counts to probabilities
-                    total_shots = sum(bitstring_counts.values())
-                    probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
-
+                    _total_shots = sum(_bitstring_counts.values())
+                    _probabilities = {k: v / _total_shots for k, v in _bitstring_counts.items()}
                     # Convert to quasi-probabilities
-                    counts = QuasiDistribution(probabilities)
-                    result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
-                    result = [{key: d[key] for key in sorted(d)} for d in result]
+                    _counts = QuasiDistribution(_probabilities)
+                    _result.append({k: v for k, v in _counts.items() if int(k) < _len_quasi_dist})
+                    result = [{key: d[key] for key in sorted(d)} for d in _result]
+
             for j, (dist_plus, dist_minus) in enumerate(zip(result[: n // 2], result[n // 2 :])):
                 dist_diff: dict[int, float] = defaultdict(float)
                 for key, value in dist_plus.items():
@@ -159,6 +158,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
                 for key, value in dist_minus.items():
                     dist_diff[key] -= value / (2 * self._epsilon)
                 dist_diffs[j] = dist_diff
+
             gradient = []
             indices = [circuits[i].parameters.data.index(p) for p in metadata[i]["parameters"]]
             for j in indices:

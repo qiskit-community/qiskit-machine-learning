@@ -28,7 +28,6 @@ from qiskit.providers.options import Options
 from ..base.base_estimator_gradient import BaseEstimatorGradient
 from ..base.estimator_gradient_result import EstimatorGradientResult
 from ..utils import _make_param_shift_parameter_values
-from ...exceptions import QiskitMachineLearningError
 
 
 class ParamShiftEstimatorGradient(BaseEstimatorGradient):
@@ -125,16 +124,16 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
 
         elif isinstance(self._estimator, BaseEstimatorV2):
             if self._pass_manager is None:
-                circs = job_circuits
-                observables = job_observables
+                circs_ = job_circuits
+                observables_ = job_observables
             else:
-                circs = self._pass_manager.run(job_circuits)
-                observables = [
-                    op.apply_layout(circs[i].layout) for i, op in enumerate(job_observables)
+                circs_ = self._pass_manager.run(job_circuits)
+                observables_ = [
+                    op.apply_layout(circs_[i].layout) for i, op in enumerate(job_observables)
                 ]
             # Prepare circuit-observable-parameter tuples (PUBs)
             circuit_observable_params = []
-            for pub in zip(circs, observables, job_param_values):
+            for pub in zip(circs_, observables_, job_param_values):
                 circuit_observable_params.append(pub)
 
             # For BaseEstimatorV2, run the estimator using PUBs and specified precision
@@ -152,12 +151,5 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
                 partial_sum_n += n
 
             opt = Options(**options)
-
-        else:
-            raise QiskitMachineLearningError(
-                "The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got "
-                + f"{type(self._estimator)} instead. Note that BaseEstimatorV1 is deprecated in"
-                + "Qiskit and removed in Qiskit IBM Runtime."
-            )
 
         return EstimatorGradientResult(gradients=gradients, metadata=metadata, options=opt)

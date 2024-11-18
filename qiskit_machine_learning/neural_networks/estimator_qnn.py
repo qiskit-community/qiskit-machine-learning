@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import logging
-import warnings
 from copy import copy
 from typing import Sequence
 import numpy as np
@@ -25,6 +24,7 @@ from qiskit.primitives.base import BaseEstimatorV2
 from qiskit.primitives import BaseEstimator, BaseEstimatorV1, Estimator, EstimatorResult
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit.transpiler.passmanager import BasePassManager
 
 
 from ..gradients import (
@@ -115,8 +115,8 @@ class EstimatorQNN(NeuralNetwork):
         weight_params: Sequence[Parameter] | None = None,
         gradient: BaseEstimatorGradient | None = None,
         input_gradients: bool = False,
-        num_virtual_qubits: int | None = None,
         default_precision: float = 0.015625,
+        pass_manager: BasePassManager | None = None,
     ):
         r"""
         Args:
@@ -147,11 +147,12 @@ class EstimatorQNN(NeuralNetwork):
                 Note that this parameter is ``False`` by default, and must be explicitly set to
                 ``True`` for a proper gradient computation when using
                 :class:`~qiskit_machine_learning.connectors.TorchConnector`.
-            num_virtual_qubits: Number of virtual qubits.
             default_precision: The default precision for the estimator if not specified during run.
-
+            pass_manager: The pass manager to transpile the circuits, if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
+            QiskitMachineLearningError: Gradient is required if
         """
         if estimator is None:
             estimator = Estimator()
@@ -164,19 +165,17 @@ class EstimatorQNN(NeuralNetwork):
                 period="4 months",
             )
         self.estimator = estimator
-        self._org_circuit = circuit
 
-        if num_virtual_qubits is None:
-            self.num_virtual_qubits = circuit.num_qubits
-            warnings.warn(
-                f"No number of qubits was not specified ({num_virtual_qubits}) and was retrieved from "
-                + f"`circuit` ({self.num_virtual_qubits:d}). If `circuit` is transpiled, this may cause "
-                + "unstable behaviour.",
-                UserWarning,
-                stacklevel=2,
-            )
+        if hasattr(circuit.layout, "_input_qubit_count"):
+            self.num_virtual_qubits = circuit.layout._input_qubit_count
         else:
-            self.num_virtual_qubits = num_virtual_qubits
+            if pass_manager is None:
+                self.num_virtual_qubits = circuit.num_qubits
+            else:
+                circuit = pass_manager.run(circuit)
+                self.num_virtual_qubits = circuit.layout._input_qubit_count
+
+        self._org_circuit = circuit
 
         if observables is None:
             observables = SparsePauliOp.from_sparse_list(
@@ -196,14 +195,18 @@ class EstimatorQNN(NeuralNetwork):
             self._input_params = list(input_params) if input_params is not None else []
             self._weight_params = list(weight_params) if weight_params is not None else []
 
+        # set gradient
         if gradient is None:
-            if isinstance(self.estimator, BaseEstimatorV2):
-                raise QiskitMachineLearningError(
-                    "Please provide a gradient with pass manager initialised."
+            if isinstance(estimator, BaseEstimatorV1):
+                gradient = ParamShiftEstimatorGradient(sampler=self.estimator)
+            else:
+                logger.warning(
+                    "No gradient function provided, creating a gradient function."
+                    " If your Sampler requires transpilation, please provide a pass manager."
                 )
-
-            gradient = ParamShiftEstimatorGradient(self.estimator)
-
+                gradient = ParamShiftEstimatorGradient(
+                    sampler=self.estimator, pass_manager=pass_manager
+                )
         self._default_precision = default_precision
         self.gradient = gradient
         self._input_gradients = input_gradients

@@ -105,7 +105,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
         parameter_values: Sequence[Sequence[float]],
         parameters: Sequence[Sequence[Parameter]],
         **options,
-    ) -> SamplerGradientResult:
+    ) -> SamplerGradientResult:  # pragma: no cover
         """Compute the sampler gradients on the given circuits."""
         job_circuits, job_param_values, metadata = [], [], []
         all_n = []

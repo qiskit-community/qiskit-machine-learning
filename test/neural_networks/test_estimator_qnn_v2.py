@@ -439,7 +439,6 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
             weight_params=[params[1]],
             estimator=self.estimator,
             gradient=self.gradient,
-            num_virtual_qubits=isa_qc.num_qubits,
         )
         self._test_network_passes(estimator_qnn, CASE_DATA["single_observable"])
 

@@ -78,7 +78,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.qc.append(feature_map, range(2))
         self.qc.append(var_form, range(2))
         self.qc.measure_all()
-        self.num_virtual_qubits = num_qubits
 
         # store params
         self.input_params = list(feature_map.parameters)
@@ -159,7 +158,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         qnn = SamplerQNN(
             sampler=sampler,
             circuit=self.qc,
-            num_virtual_qubits=self.num_virtual_qubits,
             input_params=input_params,
             weight_params=weight_params,
             sparse=sparse,
