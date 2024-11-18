@@ -134,6 +134,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
 
         # Compute the gradients.
         gradients = []
+        result = []
         partial_sum_n = 0
         for i, n in enumerate(all_n):
             dist_diffs = {}

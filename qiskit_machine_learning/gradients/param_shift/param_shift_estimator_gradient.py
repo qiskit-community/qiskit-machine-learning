@@ -100,6 +100,7 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
             job_param_values.extend(param_shift_parameter_values)
             all_n.append(n)
 
+        opt = Options(**options)
         # Determine how to run the estimator based on its version
         if isinstance(self._estimator, BaseEstimatorV1):
             # Run the single job with all circuits.
@@ -149,7 +150,5 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
                 gradient_ = (result[: n // 2] - result[n // 2 :]) / 2
                 gradients.append(gradient_)
                 partial_sum_n += n
-
-            opt = Options(**options)
 
         return EstimatorGradientResult(gradients=gradients, metadata=metadata, options=opt)
