@@ -43,7 +43,6 @@ from qiskit.circuit.library.standard_gates import (
     RZGate,
     RZXGate,
     RZZGate,
-    XGate,
 )
 from qiskit.quantum_info import SparsePauliOp
 
