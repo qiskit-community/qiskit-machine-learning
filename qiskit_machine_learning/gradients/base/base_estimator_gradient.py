@@ -56,7 +56,6 @@ class BaseEstimatorGradient(ABC):
         r"""
         Args:
             estimator: The estimator used to compute the gradients.
-            pass_manager: pass manager for isa_circuit transpilation.
             options: Primitive backend runtime options used for circuit execution.
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
@@ -71,6 +70,8 @@ class BaseEstimatorGradient(ABC):
                 Defaults to ``DerivativeType.REAL``, as this yields e.g. the commonly-used energy
                 gradient and this type is the only supported type for function-level schemes like
                 finite difference.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+            Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
         if isinstance(estimator, BaseEstimatorV1):
             issue_deprecation_msg(
