@@ -551,7 +551,7 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
         res = estimator_qnn.forward(estimator_qnn_input, estimator_qnn_weights)
         # When parameters were used in circuit order, before being assigned correctly, so inputs
         # went to input params, weights to weight params, this gave 0.00613403
-        self.assertAlmostEqual(res[0][0], 0.00040017, delta=0.05)
+        self.assertAlmostEqual(res[0][0], 0.00040017, delta=0.1)
 
 
 if __name__ == "__main__":

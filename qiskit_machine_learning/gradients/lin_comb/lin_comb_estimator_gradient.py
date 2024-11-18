@@ -69,15 +69,13 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
     def __init__(
         self,
         estimator: BaseEstimator,
-        pass_manager: BasePassManager | None = None,
         derivative_type: DerivativeType = DerivativeType.REAL,
         options: Options | None = None,
+        pass_manager: BasePassManager | None = None,
     ):
         r"""
         Args:
             estimator: The estimator used to compute the gradients.
-            pass_manager: The pass manager to transpile the circuits if necessary.
-            Defaults to ``None``, as some primitives do not need transpiled circuits.
             derivative_type: The type of derivative. Can be either ``DerivativeType.REAL``
                 ``DerivativeType.IMAG``, or ``DerivativeType.COMPLEX``. Defaults to
                 ``DerivativeType.REAL``.
@@ -90,6 +88,8 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
         self._lin_comb_cache: dict[tuple, dict[Parameter, QuantumCircuit]] = {}
         super().__init__(

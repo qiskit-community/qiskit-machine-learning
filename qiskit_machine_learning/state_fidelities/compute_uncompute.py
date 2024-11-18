@@ -59,9 +59,9 @@ class ComputeUncompute(BaseStateFidelity):
         self,
         sampler: BaseSampler | BaseSamplerV2,
         *,
-        pass_manager: PassManager | None = None,
         options: Options | None = None,
         local: bool = False,
+        pass_manager: PassManager | None = None,
     ) -> None:
         r"""
         Args:
@@ -70,7 +70,6 @@ class ComputeUncompute(BaseStateFidelity):
                 The order of priority is: options in ``run`` method > fidelity's
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting.
-            pass_manager: The pass manager to transpile the circuits if necessary.
             local: If set to ``True``, the fidelity is averaged over
                 single-qubit projectors
 
@@ -82,7 +81,8 @@ class ComputeUncompute(BaseStateFidelity):
                 This coincides with the standard (global) fidelity in the limit of
                 the fidelity approaching 1. Might be used to increase the variance
                 to improve trainability in algorithms such as :class:`~.time_evolvers.PVQD`.
-
+            pass_manager: The pass manager to transpile the circuits, if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
         Raises:
             ValueError: If the sampler is not an instance of ``BaseSampler``.
         """

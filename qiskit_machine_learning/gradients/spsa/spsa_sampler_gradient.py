@@ -48,17 +48,15 @@ class SPSASamplerGradient(BaseSamplerGradient):
     def __init__(
         self,
         sampler: BaseSampler,
-        pass_manager: BasePassManager | None = None,
         epsilon: float = 1e-6,
         batch_size: int = 1,
         seed: int | None = None,
         options: Options | None = None,
+        pass_manager: BasePassManager | None = None,
     ):
         """
         Args:
             sampler: The sampler used to compute the gradients.
-            pass_manager: The pass manager to transpile the circuits if necessary.
-            Defaults to ``None``, as some primitives do not need transpiled circuits.
             epsilon: The offset size for the SPSA gradients.
             batch_size: number of gradients to average.
             seed: The seed for a random perturbation vector.
@@ -66,6 +64,8 @@ class SPSASamplerGradient(BaseSamplerGradient):
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting
+            pass_manager: The pass manager to transpile the circuits if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
 
         Raises:
             ValueError: If ``epsilon`` is not positive.

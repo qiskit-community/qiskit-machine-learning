@@ -69,18 +69,18 @@ class LinCombSamplerGradient(BaseSamplerGradient):
     def __init__(
         self,
         sampler: BaseSampler,
-        pass_manager: BasePassManager | None = None,
         options: Options | None = None,
+        pass_manager: BasePassManager | None = None,
     ):
         """
         Args:
             sampler: The sampler used to compute the gradients.
-            pass_manager: The pass manager to transpile the circuits if necessary.
-            Defaults to ``None``, as some primitives do not need transpiled circuits.
             options: Primitive backend runtime options used for circuit execution.
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
-                Higher priority setting overrides lower priority setting
+                Higher priority setting overrides lower priority setting.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
         self._lin_comb_cache: dict[tuple, dict[Parameter, QuantumCircuit]] = {}
         super().__init__(sampler, options, pass_manager=pass_manager)
