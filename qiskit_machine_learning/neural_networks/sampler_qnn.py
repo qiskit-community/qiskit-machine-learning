@@ -24,6 +24,7 @@ from qiskit.primitives.base import BaseSamplerV2
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseSampler, SamplerResult, Sampler
 from qiskit.result import QuasiDistribution
+from qiskit.transpiler.passmanager import BasePassManager
 
 import qiskit_machine_learning.optionals as _optionals
 
@@ -132,7 +133,6 @@ class SamplerQNN(NeuralNetwork):
         self,
         *,
         circuit: QuantumCircuit,
-        num_virtual_qubits: int | None = None,
         sampler: BaseSampler | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
@@ -141,6 +141,7 @@ class SamplerQNN(NeuralNetwork):
         output_shape: int | tuple[int, ...] | None = None,
         gradient: BaseSamplerGradient | None = None,
         input_gradients: bool = False,
+        pass_manager: BasePassManager | None = None,
     ):
         """
         Args: sampler: The sampler primitive used to compute the neural network's results. If
@@ -170,7 +171,10 @@ class SamplerQNN(NeuralNetwork):
         input_gradients: Determines whether to compute gradients with respect to input data. Note
         that this parameter is ``False`` by default, and must be explicitly set to ``True`` for a
         proper gradient computation when using
-        :class:`~qiskit_machine_learning.connectors.TorchConnector`. Raises:
+        :class:`~qiskit_machine_learning.connectors.TorchConnector`.
+        pass_manager: The pass manager to transpile the circuits, if necessary.
+        Defaults to ``None``, as some primitives do not need transpiled circuits.
+        Raises:
         QiskitMachineLearningError: Invalid parameter values.
         """
         # set primitive, provide default
@@ -185,11 +189,14 @@ class SamplerQNN(NeuralNetwork):
                 period="4 months",
             )
         self.sampler = sampler
-
-        if num_virtual_qubits is None:
-            # print statement
-            num_virtual_qubits = circuit.num_qubits
-        self.num_virtual_qubits = num_virtual_qubits
+        if hasattr(circuit.layout, "_input_qubit_count"):
+            self.num_virtual_qubits = circuit.layout._input_qubit_count
+        else:
+            if pass_manager is None:
+                self.num_virtual_qubits = circuit.num_qubits
+            else:
+                circuit = pass_manager.run(circuit)
+                self.num_virtual_qubits = circuit.layout._input_qubit_count
 
         self._org_circuit = circuit
 
@@ -204,10 +211,18 @@ class SamplerQNN(NeuralNetwork):
             _optionals.HAS_SPARSE.require_now("DOK")
 
         self.set_interpret(interpret, output_shape)
-
         # set gradient
         if gradient is None:
-            gradient = ParamShiftSamplerGradient(sampler=self.sampler)
+            if isinstance(sampler, BaseSamplerV1):
+                gradient = ParamShiftSamplerGradient(sampler=self.sampler)
+            else:
+                logger.warning(
+                    "No gradient function provided, creating a gradient function."
+                    " If your Sampler requires transpilation, please provide a pass manager."
+                )
+                gradient = ParamShiftSamplerGradient(
+                    sampler=self.sampler, pass_manager=pass_manager
+                )
         self.gradient = gradient
 
         self._input_gradients = input_gradients
@@ -270,7 +285,11 @@ class SamplerQNN(NeuralNetwork):
         interpret: Callable[[int], int | tuple[int, ...]] | None = None,
         output_shape: int | tuple[int, ...] | None = None,
     ) -> tuple[int, ...]:
-        """Validate and compute the output shape."""
+        """Validate and compute the output shape.
+        Raises:
+            QiskitMachineLearningError: If no output shape is given.
+            QiskitMachineLearningError: If an invalid ``sampler``provided.
+        """
 
         # this definition is required by mypy
         output_shape_: tuple[int, ...] = (-1,)
