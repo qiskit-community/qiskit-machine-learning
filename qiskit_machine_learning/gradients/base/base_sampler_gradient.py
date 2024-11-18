@@ -46,7 +46,6 @@ class BaseSamplerGradient(ABC):
         self,
         sampler: BaseSampler,
         options: Options | None = None,
-        len_quasi_dist: int | None = None,
         pass_manager: BasePassManager | None = None,
     ):
         """
@@ -56,6 +55,8 @@ class BaseSamplerGradient(ABC):
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting
+            pass_manager: The pass manager to transpile the circuits if necessary.
+            Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
         if isinstance(sampler, BaseSamplerV1):
             issue_deprecation_msg(
@@ -66,7 +67,6 @@ class BaseSamplerGradient(ABC):
             )
         self._sampler: BaseSampler = sampler
         self._pass_manager = pass_manager
-        self._len_quasi_dist = len_quasi_dist
         self._default_options = Options()
         if options is not None:
             self._default_options.update_options(**options)

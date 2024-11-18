@@ -28,7 +28,6 @@ from qiskit.providers.options import Options
 from ..base.base_estimator_gradient import BaseEstimatorGradient
 from ..base.estimator_gradient_result import EstimatorGradientResult
 from ..utils import _make_param_shift_parameter_values
-from ...exceptions import QiskitMachineLearningError
 
 
 class ParamShiftEstimatorGradient(BaseEstimatorGradient):
@@ -101,6 +100,7 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
             job_param_values.extend(param_shift_parameter_values)
             all_n.append(n)
 
+        opt = Options(**options)
         # Determine how to run the estimator based on its version
         if isinstance(self._estimator, BaseEstimatorV1):
             # Run the single job with all circuits.
@@ -124,13 +124,17 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
             opt = self._get_local_options(options)
 
         elif isinstance(self._estimator, BaseEstimatorV2):
-            isa_g_circs = self._pass_manager.run(job_circuits)
-            isa_g_observables = [
-                op.apply_layout(isa_g_circs[i].layout) for i, op in enumerate(job_observables)
-            ]
+            if self._pass_manager is None:
+                circs_ = job_circuits
+                observables_ = job_observables
+            else:
+                circs_ = self._pass_manager.run(job_circuits)
+                observables_ = [
+                    op.apply_layout(circs_[i].layout) for i, op in enumerate(job_observables)
+                ]
             # Prepare circuit-observable-parameter tuples (PUBs)
             circuit_observable_params = []
-            for pub in zip(isa_g_circs, isa_g_observables, job_param_values):
+            for pub in zip(circs_, observables_, job_param_values):
                 circuit_observable_params.append(pub)
 
             # For BaseEstimatorV2, run the estimator using PUBs and specified precision
@@ -146,14 +150,5 @@ class ParamShiftEstimatorGradient(BaseEstimatorGradient):
                 gradient_ = (result[: n // 2] - result[n // 2 :]) / 2
                 gradients.append(gradient_)
                 partial_sum_n += n
-
-            opt = Options(**options)
-
-        else:
-            raise QiskitMachineLearningError(
-                "The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got "
-                + f"{type(self._estimator)} instead. Note that BaseEstimatorV1 is deprecated in"
-                + "Qiskit and removed in Qiskit IBM Runtime."
-            )
 
         return EstimatorGradientResult(gradients=gradients, metadata=metadata, options=opt)
