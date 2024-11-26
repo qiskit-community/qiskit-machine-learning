@@ -9,10 +9,13 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Utils for optimizers
+"""
+Optimizer utils (:mod:`qiskit_machine_learning.optimizers.optimizer_utils`)
+===========================================================================
 
-Optimizer Utils (:mod:`qiskit_machine_learning.optimizers.optimizer_utils`)
-=====================================================================
+Supplementary tools for optimizers.
+
+.. currentmodule:: qiskit_machine_learning.optimizers.optimizer_utils
 
 .. autosummary::
    :toctree: ../stubs/

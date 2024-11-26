@@ -36,7 +36,7 @@ Neural Network Base Classes
 
    NeuralNetwork
 
-Neural Networks
+Neural networks
 ---------------
 
 .. autosummary::
@@ -46,8 +46,8 @@ Neural Networks
    EstimatorQNN
    SamplerQNN
 
-Neural Network Metrics
-----------------------
+Metrics for neural networks
+---------------------------
 
 .. autosummary::
    :toctree: ../stubs/

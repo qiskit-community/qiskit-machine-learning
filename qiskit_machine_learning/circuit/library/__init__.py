@@ -19,7 +19,7 @@ building blocks for machine learning algorithms.
 
 .. currentmodule:: qiskit_machine_learning.circuit.library
 
-Feature Maps
+Feature maps
 ------------
 
 .. autosummary::
@@ -29,7 +29,7 @@ Feature Maps
 
    RawFeatureVector
 
-Helper Circuits
+Helper circuits
 ---------------
 
 .. autosummary::

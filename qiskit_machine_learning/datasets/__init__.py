@@ -14,7 +14,7 @@
 Datasets (:mod:`qiskit_machine_learning.datasets`)
 ==================================================
 
-A set of sample datasets suitable for machine learning problems
+A set of sample datasets to test machine learning algorithms.
 
 .. currentmodule:: qiskit_machine_learning.datasets
 

@@ -10,13 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
+r"""
 Optimizers (:mod:`qiskit_machine_learning.optimizers`)
-================================================
-Classical Optimizers.
+======================================================
 
-This package contains a variety of classical optimizers and were designed for use by
-qiskit_algorithm's quantum variational algorithms, such as :class:`~qiskit_machine_learning.VQE`.
+Contains a variety of classical optimizers designed for
+Qiskit Algorithm's quantum variational algorithms.
 Logically, these optimizers can be divided into two categories:
 
 `Local Optimizers`_
@@ -29,7 +28,7 @@ Logically, these optimizers can be divided into two categories:
 
 .. currentmodule:: qiskit_machine_learning.optimizers
 
-Optimizer Base Classes
+Optimizer base classes
 ----------------------
 
 .. autosummary::
@@ -40,7 +39,7 @@ Optimizer Base Classes
    Optimizer
    Minimizer
 
-Steppable Optimization
+Steppable optimization
 ----------------------
 
 .. autosummary::
@@ -58,7 +57,7 @@ Steppable Optimization
    OptimizerState
 
 
-Local Optimizers
+Local optimizers
 ----------------
 
 .. autosummary::
@@ -92,7 +91,7 @@ deprecation of the methods `snobfit`, `imfil` and `bobyqa` the was considered:
 https://github.com/qiskit-community/qiskit-algorithms/issues/84.
 
 
-Global Optimizers
+Global optimizers
 -----------------
 The global optimizers here all use `NLOpt <https://nlopt.readthedocs.io/en/latest/>`_ for their
 core function and can only be used if the optional dependent ``NLOpt`` package is installed.
@@ -107,6 +106,14 @@ To install the ``NLOpt`` dependent package you can use ``pip install nlopt``.
    DIRECT_L_RAND
    ESCH
    ISRES
+
+Submodules
+----------
+
+.. autosummary::
+   :toctree:
+
+   optimizer_utils
 
 """
 

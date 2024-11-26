@@ -14,7 +14,7 @@
 Connectors (:mod:`qiskit_machine_learning.connectors`)
 ======================================================
 
-Connectors from Qiskit Machine Learning to other frameworks.
+"Connector" tools to couple Qiskit Machine Learning to other frameworks.
 
 .. currentmodule:: qiskit_machine_learning.connectors
 
