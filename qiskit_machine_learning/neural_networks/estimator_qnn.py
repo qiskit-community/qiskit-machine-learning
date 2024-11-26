@@ -132,7 +132,7 @@ class EstimatorQNN(NeuralNetwork):
                 .. warning::
 
                     The assignment ``estimator=None`` defaults to using
-                    :class:`~qiskit.primitives.Estimator`, which points to a deprecated stimator V1
+                    :class:`~qiskit.primitives.Estimator`, which points to a deprecated estimator V1
                     (as of Qiskit 1.2). ``EstimatorQNN`` will adopt Estimator V2 as default no later than
                     Qiskit Machine Learning 0.9.
 
