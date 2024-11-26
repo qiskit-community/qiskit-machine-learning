@@ -107,14 +107,6 @@ To install the ``NLOpt`` dependent package you can use ``pip install nlopt``.
    ESCH
    ISRES
 
-Submodules
-----------
-
-.. autosummary::
-   :toctree:
-
-   optimizer_utils
-
 """
 
 from .adam_amsgrad import ADAM
