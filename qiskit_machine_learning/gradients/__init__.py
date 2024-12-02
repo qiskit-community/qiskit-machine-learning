@@ -10,10 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
+r"""
 Gradients (:mod:`qiskit_machine_learning.gradients`)
-==============================================
-Algorithms to calculate the gradient of a quantum circuit.
+====================================================
+
+Algorithms to calculate the gradient of a cost landscape to optimize a given objective function.
 
 .. currentmodule:: qiskit_machine_learning.gradients
 
@@ -29,7 +30,7 @@ Base Classes
    EstimatorGradientResult
    SamplerGradientResult
 
-Linear Combination of Unitaries
+Linear combination of unitaries
 -------------------------------
 
 .. autosummary::
@@ -39,7 +40,7 @@ Linear Combination of Unitaries
    LinCombEstimatorGradient
    LinCombSamplerGradient
 
-Parameter Shift Rules
+Parameter-shift rules
 ---------------------
 
 .. autosummary::
@@ -49,7 +50,7 @@ Parameter Shift Rules
    ParamShiftEstimatorGradient
    ParamShiftSamplerGradient
 
-Simultaneous Perturbation Stochastic Approximation
+Simultaneous perturbation stochastic approximation
 --------------------------------------------------
 
 .. autosummary::

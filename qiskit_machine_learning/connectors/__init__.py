@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@
 Connectors (:mod:`qiskit_machine_learning.connectors`)
 ======================================================
 
-Connectors from Qiskit Machine Learning to other frameworks.
+"Connector" tools to couple Qiskit Machine Learning to other frameworks.
 
 .. currentmodule:: qiskit_machine_learning.connectors
 
