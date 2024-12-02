@@ -78,7 +78,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.qc.append(feature_map, range(2))
         self.qc.append(var_form, range(2))
         self.qc.measure_all()
-        self.num_virtual_qubits = num_qubits
 
         # store params
         self.input_params = list(feature_map.parameters)
@@ -106,7 +105,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.backend = GenericBackendV2(num_qubits=8)
         self.session = Session(backend=self.backend)
         self.sampler_v2 = SamplerV2(mode=self.session)
-        self.pm = None
+        self.pass_manager = None
         self.array_type = {True: SparseArray, False: np.ndarray}
 
     # pylint: disable=too-many-positional-arguments
@@ -134,12 +133,13 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             sampler = self.sampler_v2
 
             if self.qc.layout is None:
-                self.pm = generate_preset_pass_manager(optimization_level=1, backend=self.backend)
-                self.qc = self.pm.run(self.qc)
+                self.pass_manager = generate_preset_pass_manager(
+                    optimization_level=1, backend=self.backend
+                )
+                self.qc = self.pass_manager.run(self.qc)
             gradient = ParamShiftSamplerGradient(
                 sampler=self.sampler,
-                len_quasi_dist=2**self.num_virtual_qubits,
-                pass_manager=self.pm,
+                pass_manager=self.pass_manager,
             )
         else:
             sampler = None
@@ -158,7 +158,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         qnn = SamplerQNN(
             sampler=sampler,
             circuit=self.qc,
-            num_virtual_qubits=self.num_virtual_qubits,
             input_params=input_params,
             weight_params=weight_params,
             sparse=sparse,

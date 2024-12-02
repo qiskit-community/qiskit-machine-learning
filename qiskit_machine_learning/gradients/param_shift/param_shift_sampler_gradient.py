@@ -27,7 +27,7 @@ from qiskit.result import QuasiDistribution
 from ..base.base_sampler_gradient import BaseSamplerGradient
 from ..base.sampler_gradient_result import SamplerGradientResult
 from ..utils import _make_param_shift_parameter_values
-from ...exceptions import AlgorithmError, QiskitMachineLearningError
+from ...exceptions import AlgorithmError
 
 
 class ParamShiftSamplerGradient(BaseSamplerGradient):
@@ -78,7 +78,10 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
         parameters: Sequence[Sequence[Parameter]],
         **options,
     ) -> SamplerGradientResult:
-        """Compute the sampler gradients on the given circuits."""
+        """Compute the sampler gradients on the given circuits.
+        Raises:
+            AlgorithmError: If an invalid ``sampler``provided or if sampler job failed.
+        """
         job_circuits, job_param_values, metadata = [], [], []
         all_n = []
         for circuit, parameter_values_, parameters_ in zip(circuits, parameter_values, parameters):
@@ -98,21 +101,18 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
             job = self._sampler.run(job_circuits, job_param_values, **options)
         elif isinstance(self._sampler, BaseSamplerV2):
             if self._pass_manager is None:
-                raise QiskitMachineLearningError(
-                    "To use ParameterShifSamplerGradient with SamplerV2 you "
-                    + "must pass a gradient with a pass manager"
-                )
-            isa_g_circs = self._pass_manager.run(job_circuits)
-            circ_params = [
-                (isa_g_circs[i], job_param_values[i]) for i in range(len(job_param_values))
-            ]
+                _circs = job_circuits
+                _len_quasi_dist = 2 ** job_circuits[0].num_qubits
+            else:
+                _circs = self._pass_manager.run(job_circuits)
+                _len_quasi_dist = 2 ** _circs[0].layout._input_qubit_count
+            circ_params = [(_circs[i], job_param_values[i]) for i in range(len(job_param_values))]
             job = self._sampler.run(circ_params)
         else:
             raise AlgorithmError(
                 "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got "
                 + f"{type(self._sampler)} instead."
             )
-
         try:
             results = job.result()
         except Exception as exc:
@@ -140,9 +140,7 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
 
                     # Convert to quasi-probabilities
                     counts = QuasiDistribution(probabilities)
-                    result.append(
-                        {k: v for k, v in counts.items() if int(k) < self._len_quasi_dist}
-                    )
+                    result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
                     opt = options
 
             for dist_plus, dist_minus in zip(result[: n // 2], result[n // 2 :]):
