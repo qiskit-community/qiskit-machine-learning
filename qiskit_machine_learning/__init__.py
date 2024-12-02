@@ -37,8 +37,11 @@ Submodules
    circuit.library
    connectors
    datasets
+   gradients
    kernels
    neural_networks
+   optimizers
+   state_fidelities
    utils
 
 """
