@@ -1,1 +1,2 @@
 numpy>=2
+qiskit<1.3
