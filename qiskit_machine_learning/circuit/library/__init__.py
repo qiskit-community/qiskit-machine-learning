@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2023.
+# (C) Copyright IBM 2020, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ building blocks for machine learning algorithms.
 
 .. currentmodule:: qiskit_machine_learning.circuit.library
 
-Feature Maps
+Feature maps
 ------------
 
 .. autosummary::
@@ -29,7 +29,7 @@ Feature Maps
 
    RawFeatureVector
 
-Helper Circuits
+Helper circuits
 ---------------
 
 .. autosummary::

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2023.
+# (C) Copyright IBM 2019, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -36,7 +36,7 @@ Neural Network Base Classes
 
    NeuralNetwork
 
-Neural Networks
+Neural networks
 ---------------
 
 .. autosummary::
@@ -46,8 +46,8 @@ Neural Networks
    EstimatorQNN
    SamplerQNN
 
-Neural Network Metrics
-----------------------
+Metrics for neural networks
+---------------------------
 
 .. autosummary::
    :toctree: ../stubs/

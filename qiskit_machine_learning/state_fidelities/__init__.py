@@ -9,14 +9,16 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""
+
+r"""
 State Fidelities (:mod:`qiskit_machine_learning.state_fidelities`)
-============================================================
-Algorithms that compute the fidelity of pairs of quantum states.
+==================================================================
+
+Algorithms that compute the fidelity of two given quantum states.
 
 .. currentmodule:: qiskit_machine_learning.state_fidelities
 
-State Fidelities
+State fidelities
 ----------------
 
 .. autosummary::

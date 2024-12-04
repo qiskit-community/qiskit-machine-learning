@@ -120,16 +120,25 @@ class EstimatorQNN(NeuralNetwork):
     ):
         r"""
         Args:
+            circuit: The quantum circuit to represent the neural network. If a
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
+                ``input_params`` and ``weight_params`` do not have to be provided, because these two
+                properties are taken from the
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             estimator: The estimator used to compute neural network's results.
                 If ``None``, a default instance of the reference estimator,
                 :class:`~qiskit.primitives.Estimator`, will be used.
-            circuit: The quantum circuit to represent the neural network. If a
-                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
-                `input_params` and `weight_params` do not have to be provided, because these two
-                properties are taken from the
-                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+
+                .. warning::
+
+                    The assignment ``estimator=None`` defaults to using
+                    :class:`~qiskit.primitives.Estimator`, which points to a deprecated estimator V1
+                    (as of Qiskit 1.2). ``EstimatorQNN`` will adopt Estimator V2 as default no later than
+                    Qiskit Machine Learning 0.9.
+
             observables: The observables for outputs of the neural network. If ``None``,
-                use the default :math:`Z^{\otimes num\_qubits}` observable.
+                use the default :math:`Z^{\otimes n}` observable, where :math:`n`
+                is the number of qubits.
             input_params: The parameters that correspond to the input data of the network.
                 If ``None``, the input data is not bound to any parameters.
                 If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
@@ -139,9 +148,10 @@ class EstimatorQNN(NeuralNetwork):
                 If ``None``, the weights are not bound to any parameters.
                 If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is provided the
                 `weight_params` value here is ignored. Instead, the value is taken from the
-                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` weight_parameters.
+                `weight_parameters` associated with
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
             gradient: The estimator gradient to be used for the backward pass.
-                If None, a default instance of the estimator gradient,
+                If ``None``, a default instance of the estimator gradient,
                 :class:`~qiskit_machine_learning.gradients.ParamShiftEstimatorGradient`, will be used.
             input_gradients: Determines whether to compute gradients with respect to input data.
                 Note that this parameter is ``False`` by default, and must be explicitly set to
@@ -152,7 +162,6 @@ class EstimatorQNN(NeuralNetwork):
                 Defaults to ``None``, as some primitives do not need transpiled circuits.
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
-            QiskitMachineLearningError: Gradient is required if
         """
         if estimator is None:
             estimator = Estimator()
