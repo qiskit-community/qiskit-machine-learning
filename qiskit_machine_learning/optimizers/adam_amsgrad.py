@@ -21,6 +21,8 @@ import csv
 import numpy as np
 from .optimizer import Optimizer, OptimizerSupportLevel, OptimizerResult, POINT
 
+CALLBACK = Callable[[int, POINT, float], None]
+
 # pylint: disable=invalid-name
 
 
@@ -69,6 +71,7 @@ class ADAM(Optimizer):
         eps: float = 1e-10,
         amsgrad: bool = False,
         snapshot_dir: str | None = None,
+        callback: CALLBACK | None = None,
     ) -> None:
         """
         Args:
@@ -83,8 +86,11 @@ class ADAM(Optimizer):
             amsgrad: True to use AMSGRAD, False if not
             snapshot_dir: If not None save the optimizer's parameter
                 after every step to the given directory
+            callback: A callback function passed information in each iteration step.
+                The information is, in this order: current time step, the parameters, the function value.
         """
         super().__init__()
+        self.callback = callback
         for k, v in list(locals().items()):
             if k in self._OPTIONS:
                 self._options[k] = v
@@ -232,6 +238,9 @@ class ADAM(Optimizer):
 
             if self._snapshot_dir is not None:
                 self.save_params(self._snapshot_dir)
+
+            if self.callback is not None:
+                self.callback(self._t, params_new, fun(params_new))
 
             # check termination
             if np.linalg.norm(params - params_new) < self._tol:
