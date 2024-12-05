@@ -18,6 +18,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseEstimator
 from qiskit.quantum_info.operators.base_operator import BaseOperator
+from qiskit.transpiler.passmanager import BasePassManager
 
 from .neural_network_regressor import NeuralNetworkRegressor
 from ...neural_networks import EstimatorQNN
@@ -43,6 +44,7 @@ class VQR(NeuralNetworkRegressor):
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
         estimator: BaseEstimator | None = None,
+        pass_manager: BasePassManager | None = None,
     ) -> None:
         r"""
         Args:
@@ -75,6 +77,8 @@ class VQR(NeuralNetworkRegressor):
             estimator: an optional Estimator primitive instance to be used by the underlying
                 :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` neural network. If
                 ``None`` is passed then an instance of the reference Estimator will be used.
+            pass_manager: The pass manager to transpile the circuits, if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
         Raises:
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
@@ -103,12 +107,18 @@ class VQR(NeuralNetworkRegressor):
 
         observables = [observable] if observable is not None else None
 
+        if pass_manager:
+            circuit.measure_all()
+            circuit = pass_manager.run(circuit)
+            observables = [observables[0].apply_layout(circuit.layout)]
+
         neural_network = EstimatorQNN(
             estimator=estimator,
             circuit=circuit,
             observables=observables,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
+            pass_manager=pass_manager,
         )
 
         super().__init__(

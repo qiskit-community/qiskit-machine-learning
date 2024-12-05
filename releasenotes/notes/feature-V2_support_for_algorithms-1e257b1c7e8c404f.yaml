@@ -1,0 +1,11 @@
+
+features:
+  - |
+      Extended support for V2 primitives across various quantum machine learning algorithms
+      including :class:`~qiskit_machine_learning.algorithms.VQC`, 
+      :class:`~qiskit_machine_learning.algorithms.VQR`,
+      :class:`~qiskit_machine_learning.algorithms.QSVC`, 
+      :class:`~qiskit_machine_learning.algorithms.QSVR`,
+      and :class:`~qiskit_machine_learning.algorithms.QBayesian`. If no version specification is provided,
+      these algorithms will default to using V1 primitives as a fallback for this release.
+      A warning is now issued to inform users of this default behavior.

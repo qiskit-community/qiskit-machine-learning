@@ -18,6 +18,7 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseSampler
+from qiskit.transpiler.passmanager import BasePassManager
 
 from ...neural_networks import SamplerQNN
 from ...optimizers import Optimizer, OptimizerResult, Minimizer
@@ -41,7 +42,8 @@ class VQC(NeuralNetworkClassifier):
     string labels. One hot encoded labels are also supported. Internally, labels are transformed
     to one hot encoding and the classifier is always trained on one hot labels.
 
-    Multi-label classification is not supported. E.g., :math:`[[1, 1, 0], [0, 1, 1], [1, 0, 1]]`.
+    Multi-label classification is partially supported. Please refer to `output_shape` and
+    `interpret` arguments. E.g., :math:`[[1, 1, 0], [0, 1, 1], [1, 0, 1]]`.
     """
 
     # pylint: disable=too-many-positional-arguments
@@ -57,6 +59,9 @@ class VQC(NeuralNetworkClassifier):
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
         sampler: BaseSampler | None = None,
+        interpret: Callable[[int], int | tuple[int, ...]] | None = None,
+        output_shape: int | tuple[int, ...] | None = None,
+        pass_manager: BasePassManager | None = None,
     ) -> None:
         """
         Args:
@@ -88,6 +93,14 @@ class VQC(NeuralNetworkClassifier):
             sampler: an optional Sampler primitive instance to be used by the underlying
                 :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` neural network. If
                 ``None`` is passed then an instance of the reference Sampler will be used.
+            pass_manager: The pass manager to transpile the circuits, if necessary.
+                Defaults to ``None``, as some primitives do not need transpiled circuits.
+            interpret: A callable that maps the measured integer to another unsigned integer or tuple
+                of unsigned integers. These are used as new indices for the (potentially sparse)
+                output array. If no interpret function is passed, then a basic parity function will be
+                used by underlying neural network.
+            output_shape: The output shape for the underlying neural network, generally equals to
+                number of classes. Defaults to binary classification, 2.
         Raises:
             QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
                 ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
@@ -98,6 +111,13 @@ class VQC(NeuralNetworkClassifier):
             num_qubits, feature_map, ansatz
         )
 
+        if output_shape is None:
+            output_shape = 2
+
+        if interpret is None:
+            self.interpret = self._get_interpret(output_shape)
+        else:
+            self.interpret = interpret
         # construct circuit
         self._feature_map = feature_map
         self._ansatz = ansatz
@@ -106,14 +126,19 @@ class VQC(NeuralNetworkClassifier):
         self._circuit.compose(self.feature_map, inplace=True)
         self._circuit.compose(self.ansatz, inplace=True)
 
+        if pass_manager:
+            self._circuit.measure_all()
+            self._circuit = pass_manager.run(self._circuit)
+
         neural_network = SamplerQNN(
             sampler=sampler,
             circuit=self._circuit,
             input_params=self.feature_map.parameters,
             weight_params=self.ansatz.parameters,
-            interpret=self._get_interpret(2),
-            output_shape=2,
+            interpret=self.interpret,
+            output_shape=output_shape,
             input_gradients=False,
+            pass_manager=pass_manager,
         )
 
         super().__init__(
@@ -162,7 +187,7 @@ class VQC(NeuralNetworkClassifier):
 
         # instance check required by mypy (alternative to cast)
         if isinstance(self._neural_network, SamplerQNN):
-            self._neural_network.set_interpret(self._get_interpret(num_classes), num_classes)
+            self._neural_network.set_interpret(self.interpret, num_classes)
 
         function = self._create_objective(X, y)
         return self._minimize(function)

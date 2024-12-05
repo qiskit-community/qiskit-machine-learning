@@ -1,0 +1,6 @@
+
+features:
+  - |
+      Added partial multi-class support for :class:`~qiskit_machine_learning.algorithms.VQC`.
+      This feature is now enabled when the `output_shape` parameter is set to `num_classes`
+      and an `interpret` function is defined, allowing for multi-label classification tasks.
