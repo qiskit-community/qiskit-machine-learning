@@ -132,11 +132,11 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
             elif isinstance(self._sampler, BaseSamplerV2):
                 result = []
                 for i in range(partial_sum_n, partial_sum_n + n):
-                    if hasattr(result[i].data, "meas"):
-                        bitstring_counts = result[i].data.meas.get_counts()
+                    if hasattr(results[i].data, "meas"):
+                        bitstring_counts = results[i].data.meas.get_counts()
                     else:
                         # Fallback to 'c' if 'meas' is not available.
-                        bitstring_counts = result[i].data.c.get_counts()
+                        bitstring_counts = results[i].data.c.get_counts()
                     # Normalize the counts to probabilities
                     total_shots = sum(bitstring_counts.values())
                     probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}

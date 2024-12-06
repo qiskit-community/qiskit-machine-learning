@@ -165,11 +165,11 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             elif isinstance(self._sampler, BaseSamplerV2):
                 result = []
                 for x in range(partial_sum_n, partial_sum_n + n):
-                    if hasattr(result[x].data, "meas"):
-                        bitstring_counts = result[x].data.meas.get_counts()
+                    if hasattr(results[x].data, "meas"):
+                        bitstring_counts = results[x].data.meas.get_counts()
                     else:
                         # Fallback to 'c' if 'meas' is not available.
-                        bitstring_counts = result[x].data.c.get_counts()
+                        bitstring_counts = results[x].data.c.get_counts()
 
                     # Normalize the counts to probabilities
                     total_shots = sum(bitstring_counts.values())
