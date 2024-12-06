@@ -328,6 +328,22 @@ Always add measurements before transpilation:
     qc.measure_all()
     pass_manager.run(qc)
 
+- 🔪 Dynamic Attribute Naming in Qiskit v1.x:
+
+In the latest version of Qiskit (v1.x), the dynamic naming of attributes based on the
+classical register's name introduces potential bugs.
+Please use `meas` or `c` for your register names to avoid any issues for SamplerV2.
+
+.. code:: ipython3
+
+    # for measue_all():
+    dist = result[0].data.meas.get_counts()
+
+.. code:: ipython3
+
+    # for cbit:
+    dist = result[0].data.c.get_counts()
+
 - 🔪 Adapting observables for transpiled circuits:
 
 .. code:: ipython3

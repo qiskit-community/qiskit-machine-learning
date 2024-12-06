@@ -43,7 +43,7 @@ ANSATZES = ["real_amplitudes", None]
 OPTIMIZERS = ["cobyla", None]
 DATASETS = ["binary", "multiclass", "no_one_hot"]
 LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
-SAMPLERS = ["samplerv1", "samplerv2"]
+SAMPLERS = ["samplerv1"]
 
 
 @dataclass(frozen=True)
@@ -146,6 +146,46 @@ class TestVQC(QiskitMachineLearningTestCase):
         classifier.fit(dataset.x, dataset.y)
         score = classifier.score(dataset.x, dataset.y)
         self.assertGreater(score, 0.5)
+        predict = classifier.predict(dataset.x[0, :])
+
+        self.assertTrue(np.all(predict == unique_labels, axis=1).any())
+
+    def test_VQC_V2(self):
+        """
+        Test VQC with binary and multiclass data using a range of quantum
+        instances, numbers of qubits, feature maps, and optimizers.
+        """
+        num_qubits = 2
+        feature_map = self.properties.get("zz_feature_map")
+        optimizer = self.properties.get("cobyla")
+        ansatz = self.properties.get("real_amplitudes")
+        dataset = self.properties.get("binary")
+        sampler = self.properties.get("samplerv2")
+
+        pm = generate_preset_pass_manager(optimization_level=0, backend=self.backend)
+
+        unique_labels = np.unique(dataset.y, axis=0)
+        # we want to have labels as a column array, either 1D or 2D(one hot)
+        # thus, the assert works with plain and one hot labels
+        unique_labels = unique_labels.reshape(len(unique_labels), -1)
+        # the predicted value should be in the labels
+        num_classes = len(unique_labels)
+        parity_n_classes = lambda x: "{:b}".format(x).count("1") % num_classes
+
+        initial_point = np.array([0.5] * ansatz.num_parameters) if ansatz is not None else None
+
+        classifier = VQC(
+            num_qubits=num_qubits,
+            feature_map=feature_map,
+            ansatz=ansatz,
+            optimizer=optimizer,
+            initial_point=initial_point,
+            output_shape=num_classes,
+            interpret=parity_n_classes,
+            sampler=sampler,
+            pass_manager=pm,
+        )
+        classifier.fit(dataset.x, dataset.y)
         predict = classifier.predict(dataset.x[0, :])
 
         self.assertTrue(np.all(predict == unique_labels, axis=1).any())

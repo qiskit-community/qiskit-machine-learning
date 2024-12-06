@@ -346,8 +346,11 @@ class SamplerQNN(NeuralNetwork):
                 counts = result.quasi_dists[i]
 
             elif isinstance(self.sampler, BaseSamplerV2):
-                bitstring_counts = result[i].data.meas.get_counts()
-
+                if hasattr(result[i].data, "meas"):
+                    bitstring_counts = result[i].data.meas.get_counts()
+                else:
+                    # Fallback to 'c' if 'meas' is not available.
+                    bitstring_counts = result[i].data.c.get_counts()
                 # Normalize the counts to probabilities
                 total_shots = sum(bitstring_counts.values())
                 probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
