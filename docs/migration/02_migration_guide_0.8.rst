@@ -114,7 +114,7 @@ use `pass_manager` with `qiskit-machine-learning` functions to optimize performa
     ...
     backend = GenericBackendV2(num_qubits=num_qubits)
     session = Session(backend=backend)
-    pass_manager = generate_preset_pass_manager(backend=backend, optimization_level=0)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
 
     sampler = SamplerV2(mode=session)
     fidelity = ComputeUncompute(sampler=sampler, pass_manager=pass_manager)
@@ -139,7 +139,7 @@ use `pass_manager` with `qiskit-machine-learning` functions to optimize performa
     session = Session(backend=backend)
 
     estimator = Estimator(mode=session)
-    pass_manager = generate_preset_pass_manager(backend=backend)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
     estimator_qnn = EstimatorQNN(
         circuit=qc,
         observables=[observables],
@@ -157,7 +157,7 @@ or with more details:
     session = Session(backend=backend)
 
     estimator = Estimator(mode=session)
-    pass_manager = generate_preset_pass_manager(backend=backend, optimization_level=0)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
     estimator_gradient = ParamShiftEstimatorGradient(
         estimator=estimator, pass_manager=pass_manager
     )
@@ -188,7 +188,7 @@ or with more details:
     ...
     backend = GenericBackendV2(num_qubits=num_qubits)
     session = Session(backend=backend)
-    pass_manager = generate_preset_pass_manager(backend=backend)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
     sampler = SamplerV2(mode=session)
 
     sampler_qnn = SamplerQNN(
@@ -207,7 +207,7 @@ or with more details:
 
     backend = GenericBackendV2(num_qubits=num_qubits)
     session = Session(backend=backend)
-    pass_manager = generate_preset_pass_manager(backend=backend)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
 
     sampler = SamplerV2(mode=session)
     sampler_gradient = ParamShiftSamplerGradient(sampler=sampler, pass_manager=self.pass_manager)
@@ -334,7 +334,7 @@ Always add measurements before transpilation:
 
     # Wrong:
     ...
-    pass_manager = generate_preset_pass_manager(backend=backend)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
     isa_qc = pass_manager.run(qc)
     observables = SparsePauliOp.from_list(...)
     estimator_qnn = EstimatorQNN(
@@ -345,7 +345,7 @@ Always add measurements before transpilation:
 
     # Correct:
         ...
-        pass_manager = generate_preset_pass_manager(backend=backend)
+        pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
         isa_qc = pass_manager.run(qc)
         observables = SparsePauliOp.from_list(...)
         isa_observables = observables.apply_layout(isa_qc.layout)
@@ -364,13 +364,13 @@ Some gradient algorithms may require creation of new circuits, and primitives fr
     
     # Wrong:
     ...
-    pass_manager = generate_preset_pass_manager(backend=backend)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
     gradient = ParamShiftEstimatorGradient(estimator=estimator)
     ...
 
     # Correct:
     ...
-    pass_manager = generate_preset_pass_manager(backend=backend)
+    pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
     gradient = ParamShiftEstimatorGradient(
         estimator=estimator, pass_manager=pass_manager
     )
