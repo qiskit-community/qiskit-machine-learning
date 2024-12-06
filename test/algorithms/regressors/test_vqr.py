@@ -176,7 +176,7 @@ class TestVQR(QiskitMachineLearningTestCase):
             optimizer=optimizer,
             initial_point=initial_point,
             estimator=_estimator,
-            pass_manager= pass_manager,
+            pass_manager=pass_manager,
         )
 
         # fit to data

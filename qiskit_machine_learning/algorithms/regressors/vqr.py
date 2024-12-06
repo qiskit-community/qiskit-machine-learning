@@ -110,7 +110,9 @@ class VQR(NeuralNetworkRegressor):
         if pass_manager:
             circuit.measure_all()
             circuit = pass_manager.run(circuit)
-            observables = [observable.apply_layout(circuit.layout)] if observable is not None else None
+            observables = (
+                [observable.apply_layout(circuit.layout)] if observable is not None else None
+            )
 
         neural_network = EstimatorQNN(
             estimator=estimator,

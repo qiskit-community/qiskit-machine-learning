@@ -45,6 +45,7 @@ DATASETS = ["binary", "multiclass", "no_one_hot"]
 LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
 SAMPLERS = ["samplerv1", "samplerv2"]
 
+
 @dataclass(frozen=True)
 class _Dataset:
     x: np.ndarray | None = None
@@ -92,11 +93,13 @@ class TestVQC(QiskitMachineLearningTestCase):
             "multiclass": _create_dataset(10, 3),
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
             "samplerv1": None,
-            "samplerv2": SamplerV2(mode=self.session)
+            "samplerv2": SamplerV2(mode=self.session),
         }
 
     # pylint: disable=too-many-positional-arguments
-    @idata(itertools.product(NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS, SAMPLERS))
+    @idata(
+        itertools.product(NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS, SAMPLERS)
+    )
     @unpack
     def test_VQC(self, num_qubits, f_m, ans, opt, d_s, smplr):
         """
@@ -136,9 +139,9 @@ class TestVQC(QiskitMachineLearningTestCase):
             optimizer=optimizer,
             initial_point=initial_point,
             output_shape=num_classes,
-            interpret = parity_n_classes,
+            interpret=parity_n_classes,
             sampler=sampler,
-            pass_manager = pm,
+            pass_manager=pm,
         )
         classifier.fit(dataset.x, dataset.y)
         score = classifier.score(dataset.x, dataset.y)

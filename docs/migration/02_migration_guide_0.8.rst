@@ -357,8 +357,8 @@ Always add measurements before transpilation:
 
 - 🔪 Passing gradients without a pass manager:
 
-Some gradient algorithms migth requirethe creation of new circuits, and primitives from  
-`qiskit-ibm-runtime` equire transpilation. Please ensure a pass manager is also provided to gradients.
+Some gradient algorithms may require creation of new circuits, and primitives from  
+`qiskit-ibm-runtime` require transpilation. Please ensure a pass manager is also provided to gradients.
 
 .. code:: ipython3
     
@@ -377,4 +377,4 @@ Some gradient algorithms migth requirethe creation of new circuits, and primitiv
     ...
 
 - 🔪 Don't forget to migrate if you are using functions from `qiskit_algorithms` instead of `qiskit-machine-learning` for V2 primitives.
-- 🔪 Some gradients such as SPSA and LCU from `qiskit_machine_learning.gradients` can be very prune to noise, be cautous of gradient values.
+- 🔪 Some gradients such as SPSA and LCU from `qiskit_machine_learning.gradients` can be very prune to noise, be cautious of gradient values.
