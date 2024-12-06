@@ -377,4 +377,4 @@ Some gradient algorithms may require creation of new circuits, and primitives fr
     ...
 
 - 🔪 Don't forget to migrate if you are using functions from `qiskit_algorithms` instead of `qiskit-machine-learning` for V2 primitives.
-- 🔪 Some gradients such as SPSA and LCU from `qiskit_machine_learning.gradients` can be very prune to noise, be cautious of gradient values.
+- 🔪 Some gradients such as SPSA and LCU from `qiskit_machine_learning.gradients` can be very prone to noise, be cautious of gradient values.
