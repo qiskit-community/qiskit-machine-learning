@@ -60,7 +60,7 @@ class VQC(NeuralNetworkClassifier):
         *,
         sampler: BaseSampler | None = None,
         interpret: Callable[[int], int | tuple[int, ...]] | None = None,
-        output_shape: int | tuple[int, ...] | None = None,
+        output_shape: int | None = None,
         pass_manager: BasePassManager | None = None,
     ) -> None:
         """
@@ -112,12 +112,14 @@ class VQC(NeuralNetworkClassifier):
         )
 
         if output_shape is None:
-            output_shape = 2
-
-        if interpret is None:
-            self.interpret = self._get_interpret(output_shape)
+            self.output_shape = 2
+            self.interpret = self._get_interpret(self.output_shape)
         else:
-            self.interpret = interpret
+            self.output_shape = output_shape
+            if interpret is None:
+                self.interpret = self._get_interpret(output_shape)
+            else:
+                self.interpret = interpret
         # construct circuit
         self._feature_map = feature_map
         self._ansatz = ansatz
@@ -136,7 +138,7 @@ class VQC(NeuralNetworkClassifier):
             input_params=self.feature_map.parameters,
             weight_params=self.ansatz.parameters,
             interpret=self.interpret,
-            output_shape=output_shape,
+            output_shape=self.output_shape,
             input_gradients=False,
             pass_manager=pass_manager,
         )
