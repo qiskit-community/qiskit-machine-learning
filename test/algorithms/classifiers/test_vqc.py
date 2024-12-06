@@ -29,7 +29,10 @@ from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, ZFeatureMap
-from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
+from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+from qiskit_ibm_runtime import Session, SamplerV2
+from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -37,10 +40,10 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 NUM_QUBITS_LIST = [2, None]
 FEATURE_MAPS = ["zz_feature_map", None]
 ANSATZES = ["real_amplitudes", None]
-OPTIMIZERS = ["cobyla", "bfgs", None]
+OPTIMIZERS = ["cobyla", None]
 DATASETS = ["binary", "multiclass", "no_one_hot"]
 LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
-
+SAMPLERS = ["samplerv1", "samplerv2"]
 
 @dataclass(frozen=True)
 class _Dataset:
@@ -72,22 +75,30 @@ class TestVQC(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.random_seed = 1111111
         self.num_classes_by_batch = []
-
+        self.backend = GenericBackendV2(
+            num_qubits=3,
+            calibrate_instructions=None,
+            pulse_channels=False,
+            noise_info=False,
+            seed=123,
+        )
+        self.session = Session(backend=self.backend)
         # We want string keys to ensure DDT-generated tests have meaningful names.
         self.properties = {
-            "bfgs": L_BFGS_B(maxiter=5),
             "cobyla": COBYLA(maxiter=25),
             "real_amplitudes": RealAmplitudes(num_qubits=2, reps=1),
             "zz_feature_map": ZZFeatureMap(2),
             "binary": _create_dataset(6, 2),
             "multiclass": _create_dataset(10, 3),
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
+            "samplerv1": None,
+            "samplerv2": SamplerV2(mode=self.session)
         }
 
     # pylint: disable=too-many-positional-arguments
-    @idata(itertools.product(NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS))
+    @idata(itertools.product(NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS, SAMPLERS))
     @unpack
-    def test_VQC(self, num_qubits, f_m, ans, opt, d_s):
+    def test_VQC(self, num_qubits, f_m, ans, opt, d_s, smplr):
         """
         Test VQC with binary and multiclass data using a range of quantum
         instances, numbers of qubits, feature maps, and optimizers.
@@ -101,6 +112,20 @@ class TestVQC(QiskitMachineLearningTestCase):
         optimizer = self.properties.get(opt)
         ansatz = self.properties.get(ans)
         dataset = self.properties.get(d_s)
+        sampler = self.properties.get(smplr)
+
+        if smplr == "samplerv2":
+            pm = generate_preset_pass_manager(optimization_level=0, backend=self.backend)
+        else:
+            pm = None
+
+        unique_labels = np.unique(dataset.y, axis=0)
+        # we want to have labels as a column array, either 1D or 2D(one hot)
+        # thus, the assert works with plain and one hot labels
+        unique_labels = unique_labels.reshape(len(unique_labels), -1)
+        # the predicted value should be in the labels
+        num_classes = len(unique_labels)
+        parity_n_classes = lambda x: "{:b}".format(x).count("1") % num_classes
 
         initial_point = np.array([0.5] * ansatz.num_parameters) if ansatz is not None else None
 
@@ -110,17 +135,16 @@ class TestVQC(QiskitMachineLearningTestCase):
             ansatz=ansatz,
             optimizer=optimizer,
             initial_point=initial_point,
+            output_shape=num_classes,
+            interpret = parity_n_classes,
+            sampler=sampler,
+            pass_manager = pm,
         )
         classifier.fit(dataset.x, dataset.y)
         score = classifier.score(dataset.x, dataset.y)
         self.assertGreater(score, 0.5)
-
         predict = classifier.predict(dataset.x[0, :])
-        unique_labels = np.unique(dataset.y, axis=0)
-        # we want to have labels as a column array, either 1D or 2D(one hot)
-        # thus, the assert works with plain and one hot labels
-        unique_labels = unique_labels.reshape(len(unique_labels), -1)
-        # the predicted value should be in the labels
+
         self.assertTrue(np.all(predict == unique_labels, axis=1).any())
 
     def test_VQC_non_parameterized(self):

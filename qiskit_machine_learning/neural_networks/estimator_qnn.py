@@ -209,10 +209,11 @@ class EstimatorQNN(NeuralNetwork):
             if isinstance(estimator, BaseEstimatorV1):
                 gradient = ParamShiftEstimatorGradient(estimator=self.estimator)
             else:
-                logger.warning(
-                    "No gradient function provided, creating a gradient function."
-                    " If your Estimator requires transpilation, please provide a pass manager."
-                )
+                if pass_manager is None:
+                    logger.warning(
+                        "No gradient function provided, creating a gradient function."
+                        " If your Estimator requires transpilation, please provide a pass manager."
+                    )
                 gradient = ParamShiftEstimatorGradient(
                     estimator=self.estimator, pass_manager=pass_manager
                 )

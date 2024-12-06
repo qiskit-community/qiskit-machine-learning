@@ -158,7 +158,7 @@ or with more details:
 
     estimator = Estimator(mode=session)
     pass_manager = generate_preset_pass_manager(backend=backend, optimization_level=0)
-    gradient = ParamShiftEstimatorGradient(
+    estimator_gradient = ParamShiftEstimatorGradient(
         estimator=estimator, pass_manager=pass_manager
     )
 
@@ -377,3 +377,4 @@ Some gradient algorithms migth requirethe creation of new circuits, and primitiv
     ...
 
 - 🔪 Don't forget to migrate if you are using functions from `qiskit_algorithms` instead of `qiskit-machine-learning` for V2 primitives.
+- 🔪 Some gradients such as SPSA and LCU from `qiskit_machine_learning.gradients` can be very prune to noise, be cautous of gradient values.
