@@ -1,4 +1,4 @@
----
+
 features:
   - |
     The :class:`~qiskit_machine_learning.optimizers.ADAM` class now supports a callback function. 

@@ -229,10 +229,11 @@ class SamplerQNN(NeuralNetwork):
             if isinstance(sampler, BaseSamplerV1):
                 gradient = ParamShiftSamplerGradient(sampler=self.sampler)
             else:
-                logger.warning(
-                    "No gradient function provided, creating a gradient function."
-                    " If your Sampler requires transpilation, please provide a pass manager."
-                )
+                if pass_manager is None:
+                    logger.warning(
+                        "No gradient function provided, creating a gradient function."
+                        " If your Sampler requires transpilation, please provide a pass manager."
+                    )
                 gradient = ParamShiftSamplerGradient(
                     sampler=self.sampler, pass_manager=pass_manager
                 )
@@ -345,8 +346,11 @@ class SamplerQNN(NeuralNetwork):
                 counts = result.quasi_dists[i]
 
             elif isinstance(self.sampler, BaseSamplerV2):
-                bitstring_counts = result[i].data.meas.get_counts()
-
+                if hasattr(result[i].data, "meas"):
+                    bitstring_counts = result[i].data.meas.get_counts()
+                else:
+                    # Fallback to 'c' if 'meas' is not available.
+                    bitstring_counts = result[i].data.c.get_counts()
                 # Normalize the counts to probabilities
                 total_shots = sum(bitstring_counts.values())
                 probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
