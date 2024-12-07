@@ -1,0 +1,5 @@
+features:
+  - |
+    The :class:`~qiskit_machine_learning.algorithms.PegasosQSVC` and algorithms derived
+    from :class:`~qiskit_machine_learning.algorithms.NeuralNetworkClassifier` module now support `predict_proba` function.
+    This method can be utilized similarly to other `sklearn`-based algorithms. 
