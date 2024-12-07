@@ -70,15 +70,34 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         self.label_test_4d = label_4d[15:]
 
     def test_qsvc(self):
-        """Test PegasosQSVC"""
-        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
+        """
+        Test the Pegasos QSVC algorithm.
+        """
+        quantum_kernel = FidelityQuantumKernel(feature_map=self.feature_map)
+        classifier = PegasosQSVC(quantum_kernel=quantum_kernel, C=1000, num_steps=self.tau)
+        classifier.fit(self.sample_train, self.label_train)
 
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=qkernel, C=1000, num_steps=self.tau)
+        # Evaluate the model on the test data
+        test_score = classifier.score(self.sample_test, self.label_test)
+        self.assertEqual(test_score, 1.0)
 
-        pegasos_qsvc.fit(self.sample_train, self.label_train)
-        score = pegasos_qsvc.score(self.sample_test, self.label_test)
+        # Expected predictions for the given test data
+        predicted_labels = classifier.predict(self.sample_test)
+        self.assertTrue(np.array_equal(predicted_labels, self.label_test))
 
-        self.assertEqual(score, 1.0)
+        # Test predict_proba method (normalization is imposed by definition)
+        probas = classifier.predict_proba(self.sample_test)
+        expected_probas = np.array(
+            [
+                [0.67722117, 0.32277883],
+                [0.35775209, 0.64224791],
+                [0.36540916, 0.63459084],
+                [0.64419096, 0.35580904],
+                [0.35864466, 0.64135534],
+            ]
+        )
+        self.assertEqual(probas.shape, (self.label_test.shape[0], 2))
+        np.testing.assert_array_almost_equal(probas, expected_probas, decimal=5)
 
     def test_decision_function(self):
         """Test PegasosQSVC."""
