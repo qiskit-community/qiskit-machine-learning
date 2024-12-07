@@ -242,9 +242,9 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         """
         Extract class prediction probabilities. The decision function values are
-        not bounded in the range :math:``[0, 1]``. Therefore, these values are
+        not bounded in the range :math:`[0, 1]`. Therefore, these values are
         converted into probabilities using the sigmoid activation
-        function, which maps the real-valued outputs to the :math:``[0, 1]`` range.
+        function, which maps the real-valued outputs to the :math:`[0, 1]` range.
 
         Args:
             X (np.ndarray): Input features. For a callable kernel (an instance of

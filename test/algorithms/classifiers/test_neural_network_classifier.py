@@ -184,7 +184,6 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         return features, labels
 
-<<<<<<< HEAD
     def _generate_data_multiclass(self, num_inputs: int) -> tuple[np.ndarray, np.ndarray]:
         """
         Generates synthetic data consisting of randomly generated features and 3 categorical labels.
@@ -215,8 +214,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         labels[(sums > 0.5) & (sums <= 1.0)] = 1.0
 
         return features, labels
-=======
->>>>>>> main
+
     # pylint: disable=too-many-positional-arguments
     def _create_classifier(
         self,
