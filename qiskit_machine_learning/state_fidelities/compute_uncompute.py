@@ -187,7 +187,10 @@ class ComputeUncompute(BaseStateFidelity):
             sampler_job = self._sampler.run(
                 [(circuits[i], values[i]) for i in range(len(circuits))], **opts.__dict__
             )
-            _len_quasi_dist = circuits[0].layout._input_qubit_count
+            if hasattr(circuits[0].layout, "_input_qubit_count"):
+                _len_quasi_dist = circuits[0].layout._input_qubit_count
+            else:
+                _len_quasi_dist = circuits[0].num_qubits
             local_opts = opts.__dict__
         else:
             raise QiskitMachineLearningError(

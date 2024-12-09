@@ -1,0 +1,20 @@
+
+features:
+  - |
+    The :class:`~qiskit_machine_learning.optimizers.ADAM` class now supports a callback function. 
+    This feature allows users to pass a custom callback function that will be called with
+    information at each iteration step during the optimization process. 
+    The information passed to the callback includes the current time step, the parameters, 
+    and the function value. The callback function should be of the type 
+    `Callable[[int, Union[float, np.ndarray], float], None]`. 
+
+    Example of a callback function:
+
+    .. code-block:: python
+    
+        def callback(iteration:int, weights:np.ndarray, loss:float):
+          ...
+          acc = calculate_accuracy(weights)
+          print(acc)
+          print(loss)
+          ...

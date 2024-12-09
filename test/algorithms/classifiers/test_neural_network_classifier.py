@@ -160,10 +160,58 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         return qnn, num_inputs, ansatz.num_parameters
 
     def _generate_data(self, num_inputs: int) -> tuple[np.ndarray, np.ndarray]:
-        # construct data
+        """
+        Generates synthetic data consisting of randomly generated features and binary labels.
+        Each label is determined based on the sum of the corresponding feature values. If the sum of
+        the feature values for a sample is less than or equal to 1, the label is 1. Otherwise, the
+        label is 0.
+
+        Args:
+            num_inputs (int): The number of features for each sample.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: A tuple containing two numpy arrays:
+                - features: An array of shape ``(6, num_inputs)`` with randomly generated feature values.
+                - labels: An array of shape ``(6,)`` with binary labels for each sample.
+        """
+        # Fixed number of samples for consistency
         num_samples = 6
+
         features = algorithm_globals.random.random((num_samples, num_inputs))
-        labels = 1.0 * (np.sum(features, axis=1) <= 1)
+
+        # Assign binary labels based on feature sums
+        labels = (np.sum(features, axis=1) <= 1).astype(float)
+
+        return features, labels
+
+    def _generate_data_multiclass(self, num_inputs: int) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Generates synthetic data consisting of randomly generated features and 3 categorical labels.
+        Each label is determined based on the sum of the corresponding feature values, assigned
+        as follows:
+            - Label 0.0 if the sum of features <= 0.5.
+            - Label 1.0 if 0.5 < sum of features <= 1.0.
+            - Label 2.0 if sum of features > 1.0.
+
+        Args:
+            num_inputs (int): The number of features for each sample.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: A tuple containing two numpy arrays:
+                - features: An array of shape ``(6, num_inputs)`` with randomly generated feature values.
+                - labels: An array of shape ``(6,)`` with categorical labels (0, 1, or 2) for each
+                    sample.
+        """
+        # Fixed number of samples for consistency
+        num_samples = 6
+
+        features = algorithm_globals.random.random((num_samples, num_inputs))
+
+        # Assign categorical labels based on feature sums
+        sums = np.sum(features, axis=1)
+        labels = np.full_like(sums, 2.0)
+        labels[sums <= 0.5] = 0.0
+        labels[(sums > 0.5) & (sums <= 1.0)] = 1.0
 
         return features, labels
 
@@ -247,8 +295,13 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         (False, "squared_error"),
     )
     def test_categorical_data(self, config):
-        """Test categorical labels using QNN"""
+        """
+        Tests categorical labels using the QNN classifier with categorical labels.
 
+        Args:
+            config (tuple): Configuration tuple containing whether to use one-hot
+                encoding and the loss function.
+        """
         one_hot, loss = config
 
         optimizer = L_BFGS_B(maxiter=5)
@@ -259,19 +312,28 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         features, labels = self._generate_data(num_inputs)
         labels = labels.astype(str)
-        # convert to categorical
+
+        # Convert to categorical labels
         labels[labels == "0.0"] = "A"
         labels[labels == "1.0"] = "B"
 
-        # fit to data
+        # Fit classifier to the data
         classifier.fit(features, labels)
 
-        # score
+        # Evaluate the classifier
         score = classifier.score(features, labels)
         self.assertGreater(score, 0.5)
 
+        # Predict a single sample
         predict = classifier.predict(features[0, :])
         self.assertIn(predict, ["A", "B"])
+
+        # Test predict_proba method
+        probas = classifier.predict_proba(features)
+        self.assertEqual(probas.shape, (6, 2))
+
+        for proba in probas:
+            self.assertAlmostEqual(np.sum(proba), 1.0, places=5)
 
     @idata(L1L2_ERRORS + ["cross_entropy"])
     def test_sparse_arrays(self, loss):
@@ -375,7 +437,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         """Test that trying to train a binary classifier with multiclass data raises an error."""
 
         optimizer = L_BFGS_B(maxiter=5)
-        qnn, num_inputs, num_parameters = self._create_sampler_qnn(output_shape=1)
+        qnn, _, num_parameters = self._create_sampler_qnn(output_shape=1)
         classifier = self._create_classifier(
             qnn,
             num_parameters,
@@ -385,11 +447,10 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         # construct data
         num_samples = 3
-        x = algorithm_globals.random.random((num_samples, num_inputs))
-        y = np.asarray([0, 1, 2])
+        features, labels = self._generate_data_multiclass(num_samples)
 
         with self.assertRaises(QiskitMachineLearningError):
-            classifier.fit(x, y)
+            classifier.fit(features, labels)
 
     def test_bad_binary_shape(self):
         """Test that trying to train a binary classifier with misshaped data raises an error."""
@@ -434,6 +495,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         classifier = NeuralNetworkClassifier(qnn)
         with self.assertRaises(QiskitMachineLearningError, msg="classifier.predict()"):
             classifier.predict(np.asarray([]))
+
+        with self.assertRaises(QiskitMachineLearningError, msg="classifier.predict_proba()"):
+            classifier.predict_proba(np.asarray([]))
 
         with self.assertRaises(QiskitMachineLearningError, msg="classifier.fit_result"):
             _ = classifier.fit_result

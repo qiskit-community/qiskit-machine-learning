@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2023.
+# (C) Copyright IBM 2019, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@
 Datasets (:mod:`qiskit_machine_learning.datasets`)
 ==================================================
 
-A set of sample datasets suitable for machine learning problems
+A set of sample datasets to test machine learning algorithms.
 
 .. currentmodule:: qiskit_machine_learning.datasets
 

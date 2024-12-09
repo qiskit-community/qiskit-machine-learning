@@ -143,7 +143,11 @@ class SPSASamplerGradient(BaseSamplerGradient):
             elif isinstance(self._sampler, BaseSamplerV2):
                 _result = []
                 for m in range(partial_sum_n, partial_sum_n + n):
-                    _bitstring_counts = results[m].data.meas.get_counts()
+                    if hasattr(results[i].data, "meas"):
+                        _bitstring_counts = results[m].data.meas.get_counts()
+                    else:
+                        # Fallback to 'c' if 'meas' is not available.
+                        _bitstring_counts = results[m].data.c.get_counts()
                     # Normalize the counts to probabilities
                     _total_shots = sum(_bitstring_counts.values())
                     _probabilities = {k: v / _total_shots for k, v in _bitstring_counts.items()}

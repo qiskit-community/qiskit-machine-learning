@@ -79,6 +79,24 @@ class TestOptimizerADAM(QiskitAlgorithmsTestCase):
         self.assertEqual(settings["amsgrad"], False)
         self.assertEqual(settings["snapshot_dir"], None)
 
+    def test_callback(self):
+        """Test using the callback."""
+
+        history = {"ite": [], "weights": [], "fvals": []}
+
+        def callback(n_t, weight, fval):
+            history["ite"].append(n_t)
+            history["weights"].append(weight)
+            history["fvals"].append(fval)
+
+        adam = ADAM(maxiter=100, tol=1e-6, lr=1e-1, callback=callback)
+        adam.minimize(self.quadratic_objective, self.initial_point)
+
+        expected_types = [int, np.ndarray, float]
+        for i, (key, values) in enumerate(history.items()):
+            self.assertTrue(all(isinstance(value, expected_types[i]) for value in values))
+            self.assertEqual(len(history[key]), 100)
+
 
 if __name__ == "__main__":
     unittest.main()
