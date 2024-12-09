@@ -20,6 +20,10 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
 from qiskit.primitives import Sampler
+from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+
+from qiskit_ibm_runtime import Session, SamplerV2
 
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QBayesian
@@ -202,6 +206,47 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
                 np.isclose(
                     0.1,
                     QBayesian(circuit=qc).inference(query={"B": 0}, evidence={"A": 1}),
+                    atol=0.04,
+                )
+            )
+        )
+
+    def test_trivial_circuit_V2(self):
+        """Tests trivial quantum circuit for V2 primitives"""
+
+        backend = GenericBackendV2(
+            num_qubits=2,
+            calibrate_instructions=None,
+            pulse_channels=False,
+            noise_info=False,
+            seed=123,
+        )
+        session = Session(backend=backend)
+        _sampler = SamplerV2(mode=session)
+        pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
+
+        # Define rotation angles
+        theta_a = 2 * np.arcsin(np.sqrt(0.2))
+        theta_b_a = 2 * np.arcsin(np.sqrt(0.9))
+        theta_b_na = 2 * np.arcsin(np.sqrt(0.3))
+        # Define quantum registers
+        qr_a = QuantumRegister(1, name="A")
+        qr_b = QuantumRegister(1, name="B")
+        # Define a 2-qubit quantum circuit
+        qc = QuantumCircuit(qr_a, qr_b, name="Bayes net small")
+        qc.ry(theta_a, 0)
+        qc.cry(theta_b_a, control_qubit=qr_a, target_qubit=qr_b)
+        qc.x(0)
+        qc.cry(theta_b_na, control_qubit=qr_a, target_qubit=qr_b)
+        qc.x(0)
+        # Inference
+        self.assertTrue(
+            np.all(
+                np.isclose(
+                    0.1,
+                    QBayesian(circuit=qc, sampler=_sampler, pass_manager=pass_manager).inference(
+                        query={"B": 0}, evidence={"A": 1}
+                    ),
                     atol=0.04,
                 )
             )

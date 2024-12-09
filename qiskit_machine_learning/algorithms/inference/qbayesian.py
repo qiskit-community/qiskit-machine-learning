@@ -22,8 +22,7 @@ from qiskit.circuit import Qubit
 from qiskit.circuit.library import GroverOperator
 from qiskit.primitives import BaseSampler, Sampler, BaseSamplerV2, BaseSamplerV1
 from qiskit.transpiler.passmanager import BasePassManager
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.result import QuasiDistribution
 
 from ...utils.deprecation import issue_deprecation_msg
 
@@ -109,9 +108,14 @@ class QBayesian:
 
         self._sampler = sampler
 
-        if pass_manager is None:
-            _backend = GenericBackendV2(num_qubits=max(circuit.num_qubits, 2))
-            pass_manager = generate_preset_pass_manager(optimization_level=1, backend=_backend)
+        if hasattr(circuit.layout, "_input_qubit_count"):
+            self.num_virtual_qubits = circuit.layout._input_qubit_count
+        else:
+            if pass_manager is None:
+                self.num_virtual_qubits = circuit.num_qubits
+            else:
+                circuit = pass_manager.run(circuit)
+                self.num_virtual_qubits = circuit.layout._input_qubit_count
         self._pass_manager = pass_manager
 
         # Label of register mapped to its qubit
@@ -172,20 +176,23 @@ class QBayesian:
             counts = result.quasi_dists[0].nearest_probability_distribution().binary_probabilities()
 
         elif isinstance(self._sampler, BaseSamplerV2):
-
             # Sample from circuit
-            circuit_isa = self._pass_manager.run(circuit)
-            job = self._sampler.run([circuit_isa])
+            if self._pass_manager is not None:
+                circuit = self._pass_manager.run(circuit)
+            job = self._sampler.run([circuit])
             result = job.result()
 
             bit_array = list(result[0].data.values())[0]
             bitstring_counts = bit_array.get_counts()
 
             # Normalize the counts to probabilities
-            total_shots = result[0].metadata["shots"]
-            counts = {k: v / total_shots for k, v in bitstring_counts.items()}
-
+            total_shots = sum(bitstring_counts.values())
+            probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
             # Convert to quasi-probabilities
+            quasi_dist = QuasiDistribution(probabilities)
+            binary_prob = quasi_dist.nearest_probability_distribution().binary_probabilities()
+            counts = {k: v for k, v in binary_prob.items() if int(k) < 2**self.num_virtual_qubits}
+
             # counts = QuasiDistribution(probabilities)
             # counts = {k: v for k, v in counts.items()}
 

@@ -53,18 +53,8 @@ Algorithms for data classification.
 
    PegasosQSVC
    QSVC
-   NeuralNetworkClassifier
    VQC
-
-Inference
-+++++++++++
-Algorithms for inference.
-
-.. autosummary::
-   :toctree: ../stubs/
-   :nosignatures:
-
-   QBayesian
+   NeuralNetworkClassifier
 
 Regressors
 ++++++++++
@@ -75,9 +65,18 @@ Algorithms for data regression.
    :nosignatures:
 
    QSVR
-   NeuralNetworkRegressor
    VQR
+   NeuralNetworkRegressor
 
+Inference
++++++++++++
+Algorithms for inference.
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   QBayesian
 """
 from .trainable_model import TrainableModel
 from .serializable_model import SerializableModelMixin
