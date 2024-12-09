@@ -1,0 +1,36 @@
+﻿
+
+LinCombEstimatorGradient
+==========================================================
+
+.. currentmodule:: qiskit_machine_learning.gradients
+
+.. autoclass:: LinCombEstimatorGradient
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: LinCombEstimatorGradient.SUPPORTED_GATES
+   .. autoattribute:: LinCombEstimatorGradient.derivative_type
+   .. autoattribute:: LinCombEstimatorGradient.options
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: LinCombEstimatorGradient.run
+   .. automethod:: LinCombEstimatorGradient.update_default_options
+
+   
+   

@@ -1,0 +1,52 @@
+﻿
+
+AQGD
+=======================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: AQGD
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: AQGD.bounds_support_level
+   .. autoattribute:: AQGD.gradient_support_level
+   .. autoattribute:: AQGD.initial_point_support_level
+   .. autoattribute:: AQGD.is_bounds_ignored
+   .. autoattribute:: AQGD.is_bounds_required
+   .. autoattribute:: AQGD.is_bounds_supported
+   .. autoattribute:: AQGD.is_gradient_ignored
+   .. autoattribute:: AQGD.is_gradient_required
+   .. autoattribute:: AQGD.is_gradient_supported
+   .. autoattribute:: AQGD.is_initial_point_ignored
+   .. autoattribute:: AQGD.is_initial_point_required
+   .. autoattribute:: AQGD.is_initial_point_supported
+   .. autoattribute:: AQGD.setting
+   .. autoattribute:: AQGD.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: AQGD.get_support_level
+   .. automethod:: AQGD.gradient_num_diff
+   .. automethod:: AQGD.minimize
+   .. automethod:: AQGD.print_options
+   .. automethod:: AQGD.set_max_evals_grouped
+   .. automethod:: AQGD.set_options
+   .. automethod:: AQGD.wrap_function
+
+   
+   

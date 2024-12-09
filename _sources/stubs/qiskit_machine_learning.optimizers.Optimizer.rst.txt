@@ -1,0 +1,52 @@
+﻿
+
+Optimizer
+============================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: Optimizer
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: Optimizer.bounds_support_level
+   .. autoattribute:: Optimizer.gradient_support_level
+   .. autoattribute:: Optimizer.initial_point_support_level
+   .. autoattribute:: Optimizer.is_bounds_ignored
+   .. autoattribute:: Optimizer.is_bounds_required
+   .. autoattribute:: Optimizer.is_bounds_supported
+   .. autoattribute:: Optimizer.is_gradient_ignored
+   .. autoattribute:: Optimizer.is_gradient_required
+   .. autoattribute:: Optimizer.is_gradient_supported
+   .. autoattribute:: Optimizer.is_initial_point_ignored
+   .. autoattribute:: Optimizer.is_initial_point_required
+   .. autoattribute:: Optimizer.is_initial_point_supported
+   .. autoattribute:: Optimizer.setting
+   .. autoattribute:: Optimizer.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: Optimizer.get_support_level
+   .. automethod:: Optimizer.gradient_num_diff
+   .. automethod:: Optimizer.minimize
+   .. automethod:: Optimizer.print_options
+   .. automethod:: Optimizer.set_max_evals_grouped
+   .. automethod:: Optimizer.set_options
+   .. automethod:: Optimizer.wrap_function
+
+   
+   

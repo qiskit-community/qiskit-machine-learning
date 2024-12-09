@@ -1,0 +1,35 @@
+﻿
+
+BaseEstimatorGradient
+=======================================================
+
+.. currentmodule:: qiskit_machine_learning.gradients
+
+.. autoclass:: BaseEstimatorGradient
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: BaseEstimatorGradient.derivative_type
+   .. autoattribute:: BaseEstimatorGradient.options
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: BaseEstimatorGradient.run
+   .. automethod:: BaseEstimatorGradient.update_default_options
+
+   
+   

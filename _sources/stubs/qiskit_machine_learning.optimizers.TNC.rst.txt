@@ -1,0 +1,52 @@
+﻿
+
+TNC
+======================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: TNC
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: TNC.bounds_support_level
+   .. autoattribute:: TNC.gradient_support_level
+   .. autoattribute:: TNC.initial_point_support_level
+   .. autoattribute:: TNC.is_bounds_ignored
+   .. autoattribute:: TNC.is_bounds_required
+   .. autoattribute:: TNC.is_bounds_supported
+   .. autoattribute:: TNC.is_gradient_ignored
+   .. autoattribute:: TNC.is_gradient_required
+   .. autoattribute:: TNC.is_gradient_supported
+   .. autoattribute:: TNC.is_initial_point_ignored
+   .. autoattribute:: TNC.is_initial_point_required
+   .. autoattribute:: TNC.is_initial_point_supported
+   .. autoattribute:: TNC.setting
+   .. autoattribute:: TNC.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: TNC.get_support_level
+   .. automethod:: TNC.gradient_num_diff
+   .. automethod:: TNC.minimize
+   .. automethod:: TNC.print_options
+   .. automethod:: TNC.set_max_evals_grouped
+   .. automethod:: TNC.set_options
+   .. automethod:: TNC.wrap_function
+
+   
+   

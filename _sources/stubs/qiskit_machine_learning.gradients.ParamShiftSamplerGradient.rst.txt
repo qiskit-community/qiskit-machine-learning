@@ -1,0 +1,35 @@
+﻿
+
+ParamShiftSamplerGradient
+===========================================================
+
+.. currentmodule:: qiskit_machine_learning.gradients
+
+.. autoclass:: ParamShiftSamplerGradient
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: ParamShiftSamplerGradient.SUPPORTED_GATES
+   .. autoattribute:: ParamShiftSamplerGradient.options
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: ParamShiftSamplerGradient.run
+   .. automethod:: ParamShiftSamplerGradient.update_default_options
+
+   
+   

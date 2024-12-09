@@ -1,0 +1,57 @@
+﻿
+
+UMDA
+=======================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: UMDA
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: UMDA.ELITE_FACTOR
+   .. autoattribute:: UMDA.STD_BOUND
+   .. autoattribute:: UMDA.alpha
+   .. autoattribute:: UMDA.bounds_support_level
+   .. autoattribute:: UMDA.gradient_support_level
+   .. autoattribute:: UMDA.initial_point_support_level
+   .. autoattribute:: UMDA.is_bounds_ignored
+   .. autoattribute:: UMDA.is_bounds_required
+   .. autoattribute:: UMDA.is_bounds_supported
+   .. autoattribute:: UMDA.is_gradient_ignored
+   .. autoattribute:: UMDA.is_gradient_required
+   .. autoattribute:: UMDA.is_gradient_supported
+   .. autoattribute:: UMDA.is_initial_point_ignored
+   .. autoattribute:: UMDA.is_initial_point_required
+   .. autoattribute:: UMDA.is_initial_point_supported
+   .. autoattribute:: UMDA.maxiter
+   .. autoattribute:: UMDA.setting
+   .. autoattribute:: UMDA.settings
+   .. autoattribute:: UMDA.size_gen
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: UMDA.get_support_level
+   .. automethod:: UMDA.gradient_num_diff
+   .. automethod:: UMDA.minimize
+   .. automethod:: UMDA.print_options
+   .. automethod:: UMDA.set_max_evals_grouped
+   .. automethod:: UMDA.set_options
+   .. automethod:: UMDA.wrap_function
+
+   
+   

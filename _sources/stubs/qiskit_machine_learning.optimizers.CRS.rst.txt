@@ -1,0 +1,53 @@
+﻿
+
+CRS
+======================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: CRS
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: CRS.bounds_support_level
+   .. autoattribute:: CRS.gradient_support_level
+   .. autoattribute:: CRS.initial_point_support_level
+   .. autoattribute:: CRS.is_bounds_ignored
+   .. autoattribute:: CRS.is_bounds_required
+   .. autoattribute:: CRS.is_bounds_supported
+   .. autoattribute:: CRS.is_gradient_ignored
+   .. autoattribute:: CRS.is_gradient_required
+   .. autoattribute:: CRS.is_gradient_supported
+   .. autoattribute:: CRS.is_initial_point_ignored
+   .. autoattribute:: CRS.is_initial_point_required
+   .. autoattribute:: CRS.is_initial_point_supported
+   .. autoattribute:: CRS.setting
+   .. autoattribute:: CRS.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: CRS.get_nlopt_optimizer
+   .. automethod:: CRS.get_support_level
+   .. automethod:: CRS.gradient_num_diff
+   .. automethod:: CRS.minimize
+   .. automethod:: CRS.print_options
+   .. automethod:: CRS.set_max_evals_grouped
+   .. automethod:: CRS.set_options
+   .. automethod:: CRS.wrap_function
+
+   
+   

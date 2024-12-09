@@ -38,6 +38,7 @@ NeuralNetworkClassifier
    .. automethod:: NeuralNetworkClassifier.fit
    .. automethod:: NeuralNetworkClassifier.load
    .. automethod:: NeuralNetworkClassifier.predict
+   .. automethod:: NeuralNetworkClassifier.predict_proba
    .. automethod:: NeuralNetworkClassifier.save
    .. automethod:: NeuralNetworkClassifier.score
 

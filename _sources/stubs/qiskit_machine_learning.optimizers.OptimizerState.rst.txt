@@ -1,0 +1,37 @@
+﻿
+
+OptimizerState
+=================================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: OptimizerState
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: OptimizerState.x
+   .. autoattribute:: OptimizerState.fun
+   .. autoattribute:: OptimizerState.jac
+   .. autoattribute:: OptimizerState.nfev
+   .. autoattribute:: OptimizerState.njev
+   .. autoattribute:: OptimizerState.nit
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+
+   
+   

@@ -1,0 +1,52 @@
+﻿
+
+NELDER_MEAD
+==============================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: NELDER_MEAD
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: NELDER_MEAD.bounds_support_level
+   .. autoattribute:: NELDER_MEAD.gradient_support_level
+   .. autoattribute:: NELDER_MEAD.initial_point_support_level
+   .. autoattribute:: NELDER_MEAD.is_bounds_ignored
+   .. autoattribute:: NELDER_MEAD.is_bounds_required
+   .. autoattribute:: NELDER_MEAD.is_bounds_supported
+   .. autoattribute:: NELDER_MEAD.is_gradient_ignored
+   .. autoattribute:: NELDER_MEAD.is_gradient_required
+   .. autoattribute:: NELDER_MEAD.is_gradient_supported
+   .. autoattribute:: NELDER_MEAD.is_initial_point_ignored
+   .. autoattribute:: NELDER_MEAD.is_initial_point_required
+   .. autoattribute:: NELDER_MEAD.is_initial_point_supported
+   .. autoattribute:: NELDER_MEAD.setting
+   .. autoattribute:: NELDER_MEAD.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: NELDER_MEAD.get_support_level
+   .. automethod:: NELDER_MEAD.gradient_num_diff
+   .. automethod:: NELDER_MEAD.minimize
+   .. automethod:: NELDER_MEAD.print_options
+   .. automethod:: NELDER_MEAD.set_max_evals_grouped
+   .. automethod:: NELDER_MEAD.set_options
+   .. automethod:: NELDER_MEAD.wrap_function
+
+   
+   

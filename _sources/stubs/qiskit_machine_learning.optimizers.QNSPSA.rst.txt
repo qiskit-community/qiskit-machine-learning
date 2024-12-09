@@ -1,0 +1,55 @@
+﻿
+
+QNSPSA
+=========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: QNSPSA
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: QNSPSA.bounds_support_level
+   .. autoattribute:: QNSPSA.gradient_support_level
+   .. autoattribute:: QNSPSA.initial_point_support_level
+   .. autoattribute:: QNSPSA.is_bounds_ignored
+   .. autoattribute:: QNSPSA.is_bounds_required
+   .. autoattribute:: QNSPSA.is_bounds_supported
+   .. autoattribute:: QNSPSA.is_gradient_ignored
+   .. autoattribute:: QNSPSA.is_gradient_required
+   .. autoattribute:: QNSPSA.is_gradient_supported
+   .. autoattribute:: QNSPSA.is_initial_point_ignored
+   .. autoattribute:: QNSPSA.is_initial_point_required
+   .. autoattribute:: QNSPSA.is_initial_point_supported
+   .. autoattribute:: QNSPSA.setting
+   .. autoattribute:: QNSPSA.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: QNSPSA.calibrate
+   .. automethod:: QNSPSA.estimate_stddev
+   .. automethod:: QNSPSA.get_fidelity
+   .. automethod:: QNSPSA.get_support_level
+   .. automethod:: QNSPSA.gradient_num_diff
+   .. automethod:: QNSPSA.minimize
+   .. automethod:: QNSPSA.print_options
+   .. automethod:: QNSPSA.set_max_evals_grouped
+   .. automethod:: QNSPSA.set_options
+   .. automethod:: QNSPSA.wrap_function
+
+   
+   

@@ -1,1 +1,6 @@
 .. release-notes:: Release Notes
+   :ignore-notes:
+     releasenotes/notes/add-adam_amsgrad_callback-e8e1374d72688da4.yaml,
+     releasenotes/notes/feature-V2_support_for_algorithms-1e257b1c7e8c404f.yaml,
+     releasenotes/notes/feature-partial_multiclass_support_for_vqc-60baa98528a17a45.yaml,
+     releasenotes/notes/feature-predict-proba-function-for-classifiers-a752c5154a7c988f.yaml,

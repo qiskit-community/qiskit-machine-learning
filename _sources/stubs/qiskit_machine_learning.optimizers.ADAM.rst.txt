@@ -1,0 +1,54 @@
+﻿
+
+ADAM
+=======================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: ADAM
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: ADAM.bounds_support_level
+   .. autoattribute:: ADAM.gradient_support_level
+   .. autoattribute:: ADAM.initial_point_support_level
+   .. autoattribute:: ADAM.is_bounds_ignored
+   .. autoattribute:: ADAM.is_bounds_required
+   .. autoattribute:: ADAM.is_bounds_supported
+   .. autoattribute:: ADAM.is_gradient_ignored
+   .. autoattribute:: ADAM.is_gradient_required
+   .. autoattribute:: ADAM.is_gradient_supported
+   .. autoattribute:: ADAM.is_initial_point_ignored
+   .. autoattribute:: ADAM.is_initial_point_required
+   .. autoattribute:: ADAM.is_initial_point_supported
+   .. autoattribute:: ADAM.setting
+   .. autoattribute:: ADAM.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: ADAM.get_support_level
+   .. automethod:: ADAM.gradient_num_diff
+   .. automethod:: ADAM.load_params
+   .. automethod:: ADAM.minimize
+   .. automethod:: ADAM.print_options
+   .. automethod:: ADAM.save_params
+   .. automethod:: ADAM.set_max_evals_grouped
+   .. automethod:: ADAM.set_options
+   .. automethod:: ADAM.wrap_function
+
+   
+   

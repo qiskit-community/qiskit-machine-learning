@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Training a Quantum Model on a Real Dataset" href="02a_training_a_quantum_model_on_a_real_dataset.html" /><link rel="prev" title="Quantum Neural Networks" href="01_neural_networks.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Neural Network Classifier &amp; Regressor - Qiskit Machine Learning 0.8.0</title>
+        <title>Neural Network Classifier &amp; Regressor - Qiskit Machine Learning 0.8.1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.0</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.1</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -241,6 +241,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migration Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Migration Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/01_migration_guide_0.5.html">Qiskit Machine Learning v0.5 Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../migration/02_migration_guide_0.8.html">Qiskit Machine Learning v0.8 Migration Guide</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -270,12 +271,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html">OneHotObjectiveFunction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html">PegasosQSVC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -291,21 +292,34 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.BaseEstimatorGradient.html">BaseEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.BaseSamplerGradient.html">BaseSamplerGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.EstimatorGradientResult.html">EstimatorGradientResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.SamplerGradientResult.html">SamplerGradientResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.LinCombEstimatorGradient.html">LinCombEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.LinCombSamplerGradient.html">LinCombSamplerGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.ParamShiftEstimatorGradient.html">ParamShiftEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.ParamShiftSamplerGradient.html">ParamShiftSamplerGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.SPSAEstimatorGradient.html">SPSAEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.gradients.SPSASamplerGradient.html">SPSASamplerGradient</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.FidelityStatevectorKernel.html">FidelityStatevectorKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.html">TrainableFidelityStatevectorKernel</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html">QuantumKernelTrainerResult</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a></li>
@@ -313,8 +327,48 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html">LocalEffectiveDimension</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.optimizers.html">Optimizers (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.optimizers</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Optimizers (qiskit_machine_learning.optimizers)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.OptimizerResult.html">OptimizerResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.Optimizer.html">Optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.Minimizer.html">Minimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.optimizer_utils.html">optimizer_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html">SteppableOptimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.AskData.html">AskData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.TellData.html">TellData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.OptimizerState.html">OptimizerState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.ADAM.html">ADAM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.AQGD.html">AQGD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.CG.html">CG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.COBYLA.html">COBYLA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.L_BFGS_B.html">L_BFGS_B</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.GSLS.html">GSLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.GradientDescent.html">GradientDescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.GradientDescentState.html">GradientDescentState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.NELDER_MEAD.html">NELDER_MEAD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.NFT.html">NFT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.P_BFGS.html">P_BFGS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.POWELL.html">POWELL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.SLSQP.html">SLSQP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.SPSA.html">SPSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.QNSPSA.html">QNSPSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.ESCH.html">ESCH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
@@ -491,12 +545,15 @@
 <img alt="../_images/tutorials_02_neural_network_classifier_and_regressor_5_0.png" src="../_images/tutorials_02_neural_network_classifier_and_regressor_5_0.png" />
 </div>
 </div>
-<p>Create a quantum neural network</p>
+<p>Create a quantum neural network. As we are performing a local statevector simulation, we will set the <code class="docutils literal notranslate"><span class="pre">estimator</span></code> parameter from <code class="docutils literal notranslate"><span class="pre">qiskit.primitives.StatevectorEstimator</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">StatevectorEstimator</span> <span class="k">as</span> <span class="n">Estimator</span>
+
+<span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
+<span class="n">estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -505,8 +562,7 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_2667/1658004975.py:1: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
-  estimator_qnn = EstimatorQNN(circuit=qc)
+No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -524,7 +580,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([[0.23521988]])
+array([[0.21200948]])
 </pre></div></div>
 </div>
 <p>We will add a callback function called <code class="docutils literal notranslate"><span class="pre">callback_graph</span></code>. This will be called for each iteration of the optimizer and will be passed two parameters: the current weights and the value of the objective function at those weights. For our function, we append the value of the objective function to an array so we can plot iteration versus objective function value and update the graph with each iteration. However, you can do whatever you want with a callback function as long as it gets the two
@@ -588,7 +644,7 @@ parameters mentioned passed.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.8
+0.65
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -634,15 +690,15 @@ parameters mentioned passed.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([ 0.86209107, -1.06526254, -0.10663602, -0.39086371,  1.0894299 ,
-        0.59368219,  2.22731471, -1.04769663])
+array([ 0.03762826, -0.48624482, -0.87490396,  0.13037297,  0.20492026,
+        1.14656347,  2.75473384, -0.64723186])
 </pre></div></div>
 </div>
 </section>
 <section id="Classification-with-a-SamplerQNN">
 <h3>Classification with a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#Classification-with-a-SamplerQNN" title="Link to this heading">¶</a></h3>
 <p>Next we show how a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> can be used for classification within a <code class="docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code>. In this context, the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is expected to return <span class="math notranslate nohighlight">\(d\)</span>-dimensional probability vector as output, where <span class="math notranslate nohighlight">\(d\)</span> denotes the number of classes. The underlying <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> primitive returns quasi-distributions of bit strings and we just need to define a mapping from the measured bitstrings to the different classes. For binary classification we use the parity mapping. Again we can
-use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit</span></code> class to set up a parameterized quantum circuit from a feature map and ansatz of our choice.</p>
+use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit</span></code> class to set up a parameterized quantum circuit from a feature map and ansatz of our choice. Please note that, once again, we are setting the <code class="docutils literal notranslate"><span class="pre">StatevectorSampler</span></code> instance from <code class="docutils literal notranslate"><span class="pre">qiskit.primitives</span></code> to the QNN and relying on <code class="docutils literal notranslate"><span class="pre">statevector</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -678,11 +734,15 @@ use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit<
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># construct QNN</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
+<span class="c1"># construct QNN</span>
 <span class="n">sampler_qnn</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span>
     <span class="n">interpret</span><span class="o">=</span><span class="n">parity</span><span class="p">,</span>
     <span class="n">output_shape</span><span class="o">=</span><span class="n">output_shape</span><span class="p">,</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -692,8 +752,7 @@ use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit<
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_2667/3691530435.py:2: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
-  sampler_qnn = SamplerQNN(
+No gradient function provided, creating a gradient function. If your Sampler requires transpilation, please provide a pass manager.
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -739,7 +798,7 @@ use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit<
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.7
+0.55
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -785,14 +844,14 @@ use the <code class="docutils literal notranslate"><span class="pre">QNNCircuit<
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([ 1.67198565,  0.46045402, -0.93462862, -0.95266092])
+array([-0.1675165 ,  0.89860127, -0.32622747, -0.06572354])
 </pre></div></div>
 </div>
 </section>
 <section id="Variational-Quantum-Classifier-(VQC)">
 <h3>Variational Quantum Classifier (<code class="docutils literal notranslate"><span class="pre">VQC</span></code>)<a class="headerlink" href="#Variational-Quantum-Classifier-(VQC)" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">VQC</span></code> is a special variant of the <code class="docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code> with a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>. It applies a parity mapping (or extensions to multiple classes) to map from the bitstring to the classification, which results in a probability vector, which is interpreted as a one-hot encoded result. By default, it applies this the <code class="docutils literal notranslate"><span class="pre">CrossEntropyLoss</span></code> function that expects labels given in one-hot encoded format and will return predictions in that format too.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
@@ -807,9 +866,18 @@ array([ 1.67198565,  0.46045402, -0.93462862, -0.95266092])
     <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;cross_entropy&quot;</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
     <span class="n">callback</span><span class="o">=</span><span class="n">callback_graph</span><span class="p">,</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+No gradient function provided, creating a gradient function. If your Sampler requires transpilation, please provide a pass manager.
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
@@ -915,7 +983,7 @@ features, these are features are generated as a combinations of the other featur
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.collections.PathCollection at 0x7f026a60afb0&gt;
+&lt;matplotlib.collections.PathCollection at 0x7faafaad1570&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -947,7 +1015,7 @@ features, these are features are generated as a combinations of the other featur
 </pre></div></div>
 </div>
 <p>We create an instance of <code class="docutils literal notranslate"><span class="pre">VQC</span></code> similar to the previous example, but in this case we pass a minimal set of parameters. Instead of feature map and ansatz we pass just the number of qubits that is equal to the number of features in the dataset, an optimizer with a low number of iteration to reduce training time, a quantum instance, and a callback to observe progress.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
@@ -955,9 +1023,18 @@ features, these are features are generated as a combinations of the other featur
     <span class="n">num_qubits</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
     <span class="n">callback</span><span class="o">=</span><span class="n">callback_graph</span><span class="p">,</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+No gradient function provided, creating a gradient function. If your Sampler requires transpilation, please provide a pass manager.
+</pre></div></div>
 </div>
 <p>Start the training process in the same way as in previous examples.</p>
 <div class="nbinput docutils container">
@@ -992,7 +1069,7 @@ features, these are features are generated as a combinations of the other featur
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.9
+0.4
 </pre></div></div>
 </div>
 <p>Despite we had the low number of iterations, we achieved quite a good score. Let see the output of the <code class="docutils literal notranslate"><span class="pre">predict</span></code> method and compare the output with the ground truth.</p>
@@ -1011,7 +1088,7 @@ features, these are features are generated as a combinations of the other featur
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Predicted labels: [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &#39;A&#39; &#39;B&#39; &#39;B&#39; &#39;A&#39; &#39;B&#39;]
+Predicted labels: [&#39;B&#39; &#39;A&#39; &#39;B&#39; &#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;B&#39; &#39;B&#39; &#39;B&#39; &#39;B&#39;]
 Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &#39;A&#39; &#39;B&#39; &#39;B&#39; &#39;A&#39; &#39;C&#39;]
 </pre></div></div>
 </div>
@@ -1067,7 +1144,7 @@ Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &
 <span class="n">qc</span> <span class="o">=</span> <span class="n">QNNCircuit</span><span class="p">(</span><span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz</span><span class="p">)</span>
 
 <span class="c1"># construct QNN</span>
-<span class="n">regression_estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">)</span>
+<span class="n">regression_estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1076,8 +1153,7 @@ Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/tmp/ipykernel_2667/3237334137.py:15: DeprecationWarning: V1 Primitives are deprecated as of qiskit-machine-learning 0.8.0 and will be removed no sooner than 4 months after the release date. Use V2 primitives for continued compatibility and support.
-  regression_estimator_qnn = EstimatorQNN(circuit=qc)
+No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1126,7 +1202,7 @@ Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.9769994291935522
+0.9778124792705576
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1168,14 +1244,14 @@ Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([-1.58870599])
+array([-1.58605795])
 </pre></div></div>
 </div>
 </section>
 <section id="Regression-with-the-Variational-Quantum-Regressor-(VQR)">
 <h3>Regression with the Variational Quantum Regressor (<code class="docutils literal notranslate"><span class="pre">VQR</span></code>)<a class="headerlink" href="#Regression-with-the-Variational-Quantum-Regressor-(VQR)" title="Link to this heading">¶</a></h3>
 <p>Similar to the <code class="docutils literal notranslate"><span class="pre">VQC</span></code> for classification, the <code class="docutils literal notranslate"><span class="pre">VQR</span></code> is a special variant of the <code class="docutils literal notranslate"><span class="pre">NeuralNetworkRegressor</span></code> with a <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>. By default it considers the <code class="docutils literal notranslate"><span class="pre">L2Loss</span></code> function to minimize the mean squared error between predictions and targets.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
@@ -1184,9 +1260,18 @@ array([-1.58870599])
     <span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">L_BFGS_B</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
     <span class="n">callback</span><span class="o">=</span><span class="n">callback_graph</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
@@ -1220,7 +1305,7 @@ array([-1.58870599])
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.9769955693935384
+0.9749888616255414
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1262,7 +1347,7 @@ array([-1.58870599])
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Nov 18 17:00:01 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.1</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Dec 09 12:07:18 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1367,7 +1452,7 @@ array([-1.58870599])
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=486e5634"></script>
+    <script src="../_static/documentation_options.js?v=ec16d22d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

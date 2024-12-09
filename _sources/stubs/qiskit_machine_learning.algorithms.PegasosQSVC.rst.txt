@@ -35,6 +35,7 @@ PegasosQSVC
    .. automethod:: PegasosQSVC.fit
    .. automethod:: PegasosQSVC.load
    .. automethod:: PegasosQSVC.predict
+   .. automethod:: PegasosQSVC.predict_proba
    .. automethod:: PegasosQSVC.save
    .. automethod:: PegasosQSVC.score
 

@@ -1,0 +1,52 @@
+﻿
+
+L_BFGS_B
+===========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: L_BFGS_B
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: L_BFGS_B.bounds_support_level
+   .. autoattribute:: L_BFGS_B.gradient_support_level
+   .. autoattribute:: L_BFGS_B.initial_point_support_level
+   .. autoattribute:: L_BFGS_B.is_bounds_ignored
+   .. autoattribute:: L_BFGS_B.is_bounds_required
+   .. autoattribute:: L_BFGS_B.is_bounds_supported
+   .. autoattribute:: L_BFGS_B.is_gradient_ignored
+   .. autoattribute:: L_BFGS_B.is_gradient_required
+   .. autoattribute:: L_BFGS_B.is_gradient_supported
+   .. autoattribute:: L_BFGS_B.is_initial_point_ignored
+   .. autoattribute:: L_BFGS_B.is_initial_point_required
+   .. autoattribute:: L_BFGS_B.is_initial_point_supported
+   .. autoattribute:: L_BFGS_B.setting
+   .. autoattribute:: L_BFGS_B.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: L_BFGS_B.get_support_level
+   .. automethod:: L_BFGS_B.gradient_num_diff
+   .. automethod:: L_BFGS_B.minimize
+   .. automethod:: L_BFGS_B.print_options
+   .. automethod:: L_BFGS_B.set_max_evals_grouped
+   .. automethod:: L_BFGS_B.set_options
+   .. automethod:: L_BFGS_B.wrap_function
+
+   
+   

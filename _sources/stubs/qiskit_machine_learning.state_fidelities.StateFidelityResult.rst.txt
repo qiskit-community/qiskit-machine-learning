@@ -1,0 +1,35 @@
+﻿
+
+StateFidelityResult
+============================================================
+
+.. currentmodule:: qiskit_machine_learning.state_fidelities
+
+.. autoclass:: StateFidelityResult
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: StateFidelityResult.fidelities
+   .. autoattribute:: StateFidelityResult.raw_fidelities
+   .. autoattribute:: StateFidelityResult.metadata
+   .. autoattribute:: StateFidelityResult.options
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+
+   
+   

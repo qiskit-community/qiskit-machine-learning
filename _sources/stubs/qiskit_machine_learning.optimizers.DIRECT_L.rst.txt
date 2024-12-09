@@ -1,0 +1,53 @@
+﻿
+
+DIRECT_L
+===========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: DIRECT_L
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: DIRECT_L.bounds_support_level
+   .. autoattribute:: DIRECT_L.gradient_support_level
+   .. autoattribute:: DIRECT_L.initial_point_support_level
+   .. autoattribute:: DIRECT_L.is_bounds_ignored
+   .. autoattribute:: DIRECT_L.is_bounds_required
+   .. autoattribute:: DIRECT_L.is_bounds_supported
+   .. autoattribute:: DIRECT_L.is_gradient_ignored
+   .. autoattribute:: DIRECT_L.is_gradient_required
+   .. autoattribute:: DIRECT_L.is_gradient_supported
+   .. autoattribute:: DIRECT_L.is_initial_point_ignored
+   .. autoattribute:: DIRECT_L.is_initial_point_required
+   .. autoattribute:: DIRECT_L.is_initial_point_supported
+   .. autoattribute:: DIRECT_L.setting
+   .. autoattribute:: DIRECT_L.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: DIRECT_L.get_nlopt_optimizer
+   .. automethod:: DIRECT_L.get_support_level
+   .. automethod:: DIRECT_L.gradient_num_diff
+   .. automethod:: DIRECT_L.minimize
+   .. automethod:: DIRECT_L.print_options
+   .. automethod:: DIRECT_L.set_max_evals_grouped
+   .. automethod:: DIRECT_L.set_options
+   .. automethod:: DIRECT_L.wrap_function
+
+   
+   

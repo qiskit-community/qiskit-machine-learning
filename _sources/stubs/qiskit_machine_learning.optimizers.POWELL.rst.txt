@@ -1,0 +1,52 @@
+﻿
+
+POWELL
+=========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: POWELL
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: POWELL.bounds_support_level
+   .. autoattribute:: POWELL.gradient_support_level
+   .. autoattribute:: POWELL.initial_point_support_level
+   .. autoattribute:: POWELL.is_bounds_ignored
+   .. autoattribute:: POWELL.is_bounds_required
+   .. autoattribute:: POWELL.is_bounds_supported
+   .. autoattribute:: POWELL.is_gradient_ignored
+   .. autoattribute:: POWELL.is_gradient_required
+   .. autoattribute:: POWELL.is_gradient_supported
+   .. autoattribute:: POWELL.is_initial_point_ignored
+   .. autoattribute:: POWELL.is_initial_point_required
+   .. autoattribute:: POWELL.is_initial_point_supported
+   .. autoattribute:: POWELL.setting
+   .. autoattribute:: POWELL.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: POWELL.get_support_level
+   .. automethod:: POWELL.gradient_num_diff
+   .. automethod:: POWELL.minimize
+   .. automethod:: POWELL.print_options
+   .. automethod:: POWELL.set_max_evals_grouped
+   .. automethod:: POWELL.set_options
+   .. automethod:: POWELL.wrap_function
+
+   
+   

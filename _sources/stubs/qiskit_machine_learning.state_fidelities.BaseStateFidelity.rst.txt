@@ -1,0 +1,28 @@
+﻿
+
+BaseStateFidelity
+==========================================================
+
+.. currentmodule:: qiskit_machine_learning.state_fidelities
+
+.. autoclass:: BaseStateFidelity
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: BaseStateFidelity.create_fidelity_circuit
+   .. automethod:: BaseStateFidelity.run
+
+   
+   

@@ -1,0 +1,34 @@
+﻿
+
+BaseSamplerGradient
+=====================================================
+
+.. currentmodule:: qiskit_machine_learning.gradients
+
+.. autoclass:: BaseSamplerGradient
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: BaseSamplerGradient.options
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: BaseSamplerGradient.run
+   .. automethod:: BaseSamplerGradient.update_default_options
+
+   
+   

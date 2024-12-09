@@ -1,0 +1,54 @@
+﻿
+
+SPSA
+=======================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: SPSA
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: SPSA.bounds_support_level
+   .. autoattribute:: SPSA.gradient_support_level
+   .. autoattribute:: SPSA.initial_point_support_level
+   .. autoattribute:: SPSA.is_bounds_ignored
+   .. autoattribute:: SPSA.is_bounds_required
+   .. autoattribute:: SPSA.is_bounds_supported
+   .. autoattribute:: SPSA.is_gradient_ignored
+   .. autoattribute:: SPSA.is_gradient_required
+   .. autoattribute:: SPSA.is_gradient_supported
+   .. autoattribute:: SPSA.is_initial_point_ignored
+   .. autoattribute:: SPSA.is_initial_point_required
+   .. autoattribute:: SPSA.is_initial_point_supported
+   .. autoattribute:: SPSA.setting
+   .. autoattribute:: SPSA.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: SPSA.calibrate
+   .. automethod:: SPSA.estimate_stddev
+   .. automethod:: SPSA.get_support_level
+   .. automethod:: SPSA.gradient_num_diff
+   .. automethod:: SPSA.minimize
+   .. automethod:: SPSA.print_options
+   .. automethod:: SPSA.set_max_evals_grouped
+   .. automethod:: SPSA.set_options
+   .. automethod:: SPSA.wrap_function
+
+   
+   

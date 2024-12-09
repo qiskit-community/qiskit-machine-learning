@@ -1,0 +1,38 @@
+﻿
+
+OptimizerResult
+==================================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: OptimizerResult
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: OptimizerResult.fun
+   .. autoattribute:: OptimizerResult.jac
+   .. autoattribute:: OptimizerResult.nfev
+   .. autoattribute:: OptimizerResult.nit
+   .. autoattribute:: OptimizerResult.njev
+   .. autoattribute:: OptimizerResult.x
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: OptimizerResult.combine
+
+   
+   

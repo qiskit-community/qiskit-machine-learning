@@ -42,6 +42,7 @@ VQC
    .. automethod:: VQC.fit
    .. automethod:: VQC.load
    .. automethod:: VQC.predict
+   .. automethod:: VQC.predict_proba
    .. automethod:: VQC.save
    .. automethod:: VQC.score
 

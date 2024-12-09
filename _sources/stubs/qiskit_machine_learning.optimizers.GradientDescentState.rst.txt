@@ -1,0 +1,39 @@
+﻿
+
+GradientDescentState
+=======================================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: GradientDescentState
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: GradientDescentState.stepsize
+   .. autoattribute:: GradientDescentState.learning_rate
+   .. autoattribute:: GradientDescentState.x
+   .. autoattribute:: GradientDescentState.fun
+   .. autoattribute:: GradientDescentState.jac
+   .. autoattribute:: GradientDescentState.nfev
+   .. autoattribute:: GradientDescentState.njev
+   .. autoattribute:: GradientDescentState.nit
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+
+   
+   

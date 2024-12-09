@@ -1,0 +1,62 @@
+﻿
+
+GradientDescent
+==================================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: GradientDescent
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: GradientDescent.bounds_support_level
+   .. autoattribute:: GradientDescent.gradient_support_level
+   .. autoattribute:: GradientDescent.initial_point_support_level
+   .. autoattribute:: GradientDescent.is_bounds_ignored
+   .. autoattribute:: GradientDescent.is_bounds_required
+   .. autoattribute:: GradientDescent.is_bounds_supported
+   .. autoattribute:: GradientDescent.is_gradient_ignored
+   .. autoattribute:: GradientDescent.is_gradient_required
+   .. autoattribute:: GradientDescent.is_gradient_supported
+   .. autoattribute:: GradientDescent.is_initial_point_ignored
+   .. autoattribute:: GradientDescent.is_initial_point_required
+   .. autoattribute:: GradientDescent.is_initial_point_supported
+   .. autoattribute:: GradientDescent.perturbation
+   .. autoattribute:: GradientDescent.setting
+   .. autoattribute:: GradientDescent.settings
+   .. autoattribute:: GradientDescent.state
+   .. autoattribute:: GradientDescent.tol
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: GradientDescent.ask
+   .. automethod:: GradientDescent.continue_condition
+   .. automethod:: GradientDescent.create_result
+   .. automethod:: GradientDescent.evaluate
+   .. automethod:: GradientDescent.get_support_level
+   .. automethod:: GradientDescent.gradient_num_diff
+   .. automethod:: GradientDescent.minimize
+   .. automethod:: GradientDescent.print_options
+   .. automethod:: GradientDescent.set_max_evals_grouped
+   .. automethod:: GradientDescent.set_options
+   .. automethod:: GradientDescent.start
+   .. automethod:: GradientDescent.step
+   .. automethod:: GradientDescent.tell
+   .. automethod:: GradientDescent.wrap_function
+
+   
+   

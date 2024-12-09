@@ -1,0 +1,52 @@
+﻿
+
+NFT
+======================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: NFT
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: NFT.bounds_support_level
+   .. autoattribute:: NFT.gradient_support_level
+   .. autoattribute:: NFT.initial_point_support_level
+   .. autoattribute:: NFT.is_bounds_ignored
+   .. autoattribute:: NFT.is_bounds_required
+   .. autoattribute:: NFT.is_bounds_supported
+   .. autoattribute:: NFT.is_gradient_ignored
+   .. autoattribute:: NFT.is_gradient_required
+   .. autoattribute:: NFT.is_gradient_supported
+   .. autoattribute:: NFT.is_initial_point_ignored
+   .. autoattribute:: NFT.is_initial_point_required
+   .. autoattribute:: NFT.is_initial_point_supported
+   .. autoattribute:: NFT.setting
+   .. autoattribute:: NFT.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: NFT.get_support_level
+   .. automethod:: NFT.gradient_num_diff
+   .. automethod:: NFT.minimize
+   .. automethod:: NFT.print_options
+   .. automethod:: NFT.set_max_evals_grouped
+   .. automethod:: NFT.set_options
+   .. automethod:: NFT.wrap_function
+
+   
+   

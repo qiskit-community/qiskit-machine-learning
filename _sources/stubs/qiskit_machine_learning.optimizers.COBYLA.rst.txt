@@ -1,0 +1,52 @@
+﻿
+
+COBYLA
+=========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: COBYLA
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: COBYLA.bounds_support_level
+   .. autoattribute:: COBYLA.gradient_support_level
+   .. autoattribute:: COBYLA.initial_point_support_level
+   .. autoattribute:: COBYLA.is_bounds_ignored
+   .. autoattribute:: COBYLA.is_bounds_required
+   .. autoattribute:: COBYLA.is_bounds_supported
+   .. autoattribute:: COBYLA.is_gradient_ignored
+   .. autoattribute:: COBYLA.is_gradient_required
+   .. autoattribute:: COBYLA.is_gradient_supported
+   .. autoattribute:: COBYLA.is_initial_point_ignored
+   .. autoattribute:: COBYLA.is_initial_point_required
+   .. autoattribute:: COBYLA.is_initial_point_supported
+   .. autoattribute:: COBYLA.setting
+   .. autoattribute:: COBYLA.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: COBYLA.get_support_level
+   .. automethod:: COBYLA.gradient_num_diff
+   .. automethod:: COBYLA.minimize
+   .. automethod:: COBYLA.print_options
+   .. automethod:: COBYLA.set_max_evals_grouped
+   .. automethod:: COBYLA.set_options
+   .. automethod:: COBYLA.wrap_function
+
+   
+   

@@ -1,0 +1,35 @@
+﻿
+
+SPSAEstimatorGradient
+=======================================================
+
+.. currentmodule:: qiskit_machine_learning.gradients
+
+.. autoclass:: SPSAEstimatorGradient
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: SPSAEstimatorGradient.derivative_type
+   .. autoattribute:: SPSAEstimatorGradient.options
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: SPSAEstimatorGradient.run
+   .. automethod:: SPSAEstimatorGradient.update_default_options
+
+   
+   

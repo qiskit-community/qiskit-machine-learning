@@ -1,0 +1,52 @@
+﻿
+
+SciPyOptimizer
+=================================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: SciPyOptimizer
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: SciPyOptimizer.bounds_support_level
+   .. autoattribute:: SciPyOptimizer.gradient_support_level
+   .. autoattribute:: SciPyOptimizer.initial_point_support_level
+   .. autoattribute:: SciPyOptimizer.is_bounds_ignored
+   .. autoattribute:: SciPyOptimizer.is_bounds_required
+   .. autoattribute:: SciPyOptimizer.is_bounds_supported
+   .. autoattribute:: SciPyOptimizer.is_gradient_ignored
+   .. autoattribute:: SciPyOptimizer.is_gradient_required
+   .. autoattribute:: SciPyOptimizer.is_gradient_supported
+   .. autoattribute:: SciPyOptimizer.is_initial_point_ignored
+   .. autoattribute:: SciPyOptimizer.is_initial_point_required
+   .. autoattribute:: SciPyOptimizer.is_initial_point_supported
+   .. autoattribute:: SciPyOptimizer.setting
+   .. autoattribute:: SciPyOptimizer.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: SciPyOptimizer.get_support_level
+   .. automethod:: SciPyOptimizer.gradient_num_diff
+   .. automethod:: SciPyOptimizer.minimize
+   .. automethod:: SciPyOptimizer.print_options
+   .. automethod:: SciPyOptimizer.set_max_evals_grouped
+   .. automethod:: SciPyOptimizer.set_options
+   .. automethod:: SciPyOptimizer.wrap_function
+
+   
+   

@@ -1,0 +1,36 @@
+﻿
+
+ParamShiftEstimatorGradient
+=============================================================
+
+.. currentmodule:: qiskit_machine_learning.gradients
+
+.. autoclass:: ParamShiftEstimatorGradient
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: ParamShiftEstimatorGradient.SUPPORTED_GATES
+   .. autoattribute:: ParamShiftEstimatorGradient.derivative_type
+   .. autoattribute:: ParamShiftEstimatorGradient.options
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: ParamShiftEstimatorGradient.run
+   .. automethod:: ParamShiftEstimatorGradient.update_default_options
+
+   
+   

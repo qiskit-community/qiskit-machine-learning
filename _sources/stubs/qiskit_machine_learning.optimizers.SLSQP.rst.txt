@@ -1,0 +1,52 @@
+﻿
+
+SLSQP
+========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: SLSQP
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: SLSQP.bounds_support_level
+   .. autoattribute:: SLSQP.gradient_support_level
+   .. autoattribute:: SLSQP.initial_point_support_level
+   .. autoattribute:: SLSQP.is_bounds_ignored
+   .. autoattribute:: SLSQP.is_bounds_required
+   .. autoattribute:: SLSQP.is_bounds_supported
+   .. autoattribute:: SLSQP.is_gradient_ignored
+   .. autoattribute:: SLSQP.is_gradient_required
+   .. autoattribute:: SLSQP.is_gradient_supported
+   .. autoattribute:: SLSQP.is_initial_point_ignored
+   .. autoattribute:: SLSQP.is_initial_point_required
+   .. autoattribute:: SLSQP.is_initial_point_supported
+   .. autoattribute:: SLSQP.setting
+   .. autoattribute:: SLSQP.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: SLSQP.get_support_level
+   .. automethod:: SLSQP.gradient_num_diff
+   .. automethod:: SLSQP.minimize
+   .. automethod:: SLSQP.print_options
+   .. automethod:: SLSQP.set_max_evals_grouped
+   .. automethod:: SLSQP.set_options
+   .. automethod:: SLSQP.wrap_function
+
+   
+   

@@ -1,0 +1,53 @@
+﻿
+
+ISRES
+========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: ISRES
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: ISRES.bounds_support_level
+   .. autoattribute:: ISRES.gradient_support_level
+   .. autoattribute:: ISRES.initial_point_support_level
+   .. autoattribute:: ISRES.is_bounds_ignored
+   .. autoattribute:: ISRES.is_bounds_required
+   .. autoattribute:: ISRES.is_bounds_supported
+   .. autoattribute:: ISRES.is_gradient_ignored
+   .. autoattribute:: ISRES.is_gradient_required
+   .. autoattribute:: ISRES.is_gradient_supported
+   .. autoattribute:: ISRES.is_initial_point_ignored
+   .. autoattribute:: ISRES.is_initial_point_required
+   .. autoattribute:: ISRES.is_initial_point_supported
+   .. autoattribute:: ISRES.setting
+   .. autoattribute:: ISRES.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: ISRES.get_nlopt_optimizer
+   .. automethod:: ISRES.get_support_level
+   .. automethod:: ISRES.gradient_num_diff
+   .. automethod:: ISRES.minimize
+   .. automethod:: ISRES.print_options
+   .. automethod:: ISRES.set_max_evals_grouped
+   .. automethod:: ISRES.set_options
+   .. automethod:: ISRES.wrap_function
+
+   
+   

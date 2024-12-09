@@ -1,0 +1,52 @@
+﻿
+
+CG
+=====================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: CG
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: CG.bounds_support_level
+   .. autoattribute:: CG.gradient_support_level
+   .. autoattribute:: CG.initial_point_support_level
+   .. autoattribute:: CG.is_bounds_ignored
+   .. autoattribute:: CG.is_bounds_required
+   .. autoattribute:: CG.is_bounds_supported
+   .. autoattribute:: CG.is_gradient_ignored
+   .. autoattribute:: CG.is_gradient_required
+   .. autoattribute:: CG.is_gradient_supported
+   .. autoattribute:: CG.is_initial_point_ignored
+   .. autoattribute:: CG.is_initial_point_required
+   .. autoattribute:: CG.is_initial_point_supported
+   .. autoattribute:: CG.setting
+   .. autoattribute:: CG.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: CG.get_support_level
+   .. automethod:: CG.gradient_num_diff
+   .. automethod:: CG.minimize
+   .. automethod:: CG.print_options
+   .. automethod:: CG.set_max_evals_grouped
+   .. automethod:: CG.set_options
+   .. automethod:: CG.wrap_function
+
+   
+   
