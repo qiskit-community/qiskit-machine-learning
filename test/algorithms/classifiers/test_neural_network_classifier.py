@@ -521,7 +521,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         loss_history = []
 
-        def store_loss(nfev, x_next, loss, update, is_accepted):
+        def store_loss(nfev, x_next, loss, update, is_accepted):  # pylint: disable=unused-argument
             if is_accepted:
                 loss_history.append(loss)
 
