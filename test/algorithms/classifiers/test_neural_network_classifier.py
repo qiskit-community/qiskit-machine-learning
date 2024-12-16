@@ -521,17 +521,18 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
         loss_history = []
 
-        def store_loss(_, loss):
-            loss_history.append(loss)
+        def store_loss(nfev, x_next, loss, update, is_accepted):
+            if is_accepted:
+                loss_history.append(loss)
 
         # use setter for the callback instead of providing in the initialize method
-        classifier.callback = store_loss
+        classifier.optimizer.callback = store_loss
 
         features = np.array([[0, 0], [1, 1]])
         labels = np.array([0, 1])
         classifier.fit(features, labels)
 
-        self.assertEqual(len(loss_history), 3)
+        self.assertEqual(len(loss_history), 1)
 
 
 if __name__ == "__main__":
