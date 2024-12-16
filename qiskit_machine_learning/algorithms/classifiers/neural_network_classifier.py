@@ -140,22 +140,75 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         return function
 
     def predict(self, X: np.ndarray) -> np.ndarray:
-        self._check_fitted()
+        """
+        Perform classification on samples in X.
 
+        Args:
+            X (np.ndarray): Input features. For a callable kernel (an instance of
+                :class:`~qiskit_machine_learning.kernels.BaseKernel`), the shape
+                should be ``(m_samples, n_features)``. For a pre-computed kernel, the shape should be
+                ``(m_samples, n_samples)``. Here, ``m_*`` denotes the set to be
+                predicted, and ``n_*`` denotes the size of the training set.
+                In the case of a pre-computed kernel, the kernel values in ``X`` must be calculated
+                with respect to the elements of the set to be predicted and the training set.
+
+        Returns:
+            np.ndarray: An array of shape ``(n_samples,)``, representing the predicted class labels for
+                each sample in ``X``.
+
+        Raises:
+            QiskitMachineLearningError:
+                - If the :meth:`predict` method is called before the model has been fit.
+            ValueError:
+                - If the pre-computed kernel matrix has the wrong shape and/or dimension.
+        """
+        self._check_fitted()
         X, _ = self._validate_input(X)
 
         if self._neural_network.output_shape == (1,):
-            predict = np.sign(self._neural_network.forward(X, self._fit_result.x))
+            # Binary classification
+            raw_output = self._neural_network.forward(X, self._fit_result.x)
+            predict = np.sign(raw_output)
         else:
+            # Multi-class classification
             forward = self._neural_network.forward(X, self._fit_result.x)
             predict_ = np.argmax(forward, axis=1)
+
             if self._one_hot:
+                # Convert class indices to one-hot encoded format
                 predict = np.zeros(forward.shape)
                 for i, v in enumerate(predict_):
                     predict[i, v] = 1
             else:
                 predict = predict_
+
         return self._validate_output(predict)
+
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        """
+        Extracts the predicted probabilities for each class based on the output of a neural
+        network.
+
+        Args:
+            X (np.ndarray): Input features. For a callable kernel (an instance of
+                :class:`~qiskit_machine_learning.kernels.BaseKernel`), the shape
+                should be ``(m_samples, n_features)``. For a pre-computed kernel, the shape should be
+                ``(m_samples, n_samples)``. Here, ``m_*`` denotes the set to be
+                predicted, and ``n_*`` denotes the size of the training set. In the case of a
+                pre-computed kernel, the kernel values in ``X`` must be calculated with respect to
+                the elements of the set to be predicted and the training set.
+
+        Returns:
+            np.ndarray: An array of shape ``(n_samples, n_classes)`` representing the predicted class
+                probabilities (in the range :math:`[0, 1]`) for each sample in ``X``.
+        """
+        self._check_fitted()
+        X, _ = self._validate_input(X)
+
+        # Assumes an activation function is applied within the forward method
+        proba = self._neural_network.forward(X, self._fit_result.x)
+
+        return proba
 
     def score(self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None) -> float:
         return ClassifierMixin.score(self, X, y, sample_weight)
