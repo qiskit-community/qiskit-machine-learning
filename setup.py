@@ -65,7 +65,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
-        "Topic :: Scientific/Engineering",
+        "Programming Language :: Python :: 3.13",
+        "Topic :: Scientific/Engineering"
     ],
     keywords="qiskit sdk quantum machine learning ml",
     packages=setuptools.find_packages(
