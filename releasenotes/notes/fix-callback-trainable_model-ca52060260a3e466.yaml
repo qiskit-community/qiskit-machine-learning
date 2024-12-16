@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+      Fixed a compatibility issue for different `callback` functions when they are 
+      used in :class:`~qiskit_machine_learning.algorithms.trainable_model` based algorithms.
