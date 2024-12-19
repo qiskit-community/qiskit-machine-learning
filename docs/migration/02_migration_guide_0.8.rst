@@ -34,9 +34,14 @@ Users can switch between `V1` primitives and `V2` primitives from version `0.8`.
 with V2 primitives, review the transpilation and pass managers section if your primitives require transpilation, 
 such as those from `qiskit-ibm-runtime`.
 
+Pleae bear in mind that not all V2 primitives are directly supported. Should you require assistance, 
+please do not hesitate to reach out via our 
+`Slack channel <https://qiskit.enterprise.slack.com/archives/C07JE3V55C1>`__ or submit an issue on 
+`GitHub <https://github.com/qiskit-community/qiskit-machine-learning/issues>`__.
+
 Usage of V2 primitives is as straightforward as using V1:
 
-- For kernel based methods:
+- For kernel-based methods:
 
 .. code:: ipython3
 
@@ -100,7 +105,7 @@ Transpilation and Pass Managers
 If your primitives require transpiled circuits,i.e. `qiskit-ibm-runtime.primitives`,
 use `pass_manager` with `qiskit-machine-learning` functions to optimize performance.
 
-- For kernel based methods:
+- For kernel-based methods:
 
 .. code:: ipython3
 
@@ -210,7 +215,7 @@ or with more details:
     pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
 
     sampler = SamplerV2(mode=session)
-    sampler_gradient = ParamShiftSamplerGradient(sampler=sampler, pass_manager=self.pass_manager)
+    sampler_gradient = ParamShiftSamplerGradient(sampler=sampler, pass_manager=pass_manager)
     isa_qc = pass_manager.run(qc)
     sampler_qnn = SamplerQNN(
         circuit=isa_qc,
