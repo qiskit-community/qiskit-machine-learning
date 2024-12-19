@@ -34,7 +34,7 @@ Users can switch between `V1` primitives and `V2` primitives from version `0.8`.
 with V2 primitives, review the transpilation and pass managers section if your primitives require transpilation, 
 such as those from `qiskit-ibm-runtime`.
 
-Pleae bear in mind that not all V2 primitives are directly supported. Should you require assistance, 
+Please bear in mind that not all V2 primitives are directly supported. Should you require assistance, 
 please do not hesitate to reach out via our 
 `Slack channel <https://qiskit.enterprise.slack.com/archives/C07JE3V55C1>`__ or submit an issue on 
 `GitHub <https://github.com/qiskit-community/qiskit-machine-learning/issues>`__.
