@@ -70,63 +70,87 @@ class SamplerQNN(NeuralNetwork):
     from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
 
     The output can be set up in different formats, and an optional post-processing step
-    can be used to interpret the sampler's output in a particular context (e.g. mapping the
-    resulting bitstring to match the number of classes).
+    can be used to interpret or map the sampler's raw output in a particular context (e.g. mapping
+    the resulting bitstring to match the number of classes) via an ``interpret`` function.
 
-    In this example the network maps the output of the quantum circuit to two classes via a custom
-    `interpret` function:
+    The ``output_shape`` parameter defines the shape of the output array after applying the
+    interpret function, and can be set following the guidelines below.
 
-    .. code-block::
+    * **Default behavior:** if no interpret function is provided, the default output_shape is
+      ``2**num_qubits``, which corresponds to the number of possible bit-strings for the given
+      number of qubits.
+    * **Custom interpret function:** when using a custom interpret function, you must specify
+      ``output_shape`` to match the expected output of the interpret function. For instance, if
+      your interpret function maps bit-strings to two classes, you should set ``output_shape=2``.
+    * **Number of classical registers:** if you want to reshape the output by the number of
+      classical registers, set ``output_shape=2**circuit.num_clbits``. This is useful when
+      the number of classical registers differs from the number of qubits.
+    * **Tuple shape:** if the interpret function returns a tuple, ``output_shape`` should be a
+      ``tuple`` that matches the dimensions of the interpreted output.
+
+    In this example, the network maps the output of the quantum circuit to two classes via a custom
+    ``interpret`` function:
+
+
+    .. code-block:: python
 
         from qiskit import QuantumCircuit
         from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
         from qiskit_machine_learning.circuit.library import QNNCircuit
-
         from qiskit_machine_learning.neural_networks import SamplerQNN
 
         num_qubits = 2
 
+        # Define a custom interpret function that calculates the parity of the bitstring
         def parity(x):
             return f"{bin(x)}".count("1") % 2
 
-        # Using the QNNCircuit:
-        # Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map
-        # and RealAmplitudes ansatz.
+        # Example 1: Using the QNNCircuit class
+        # QNNCircuit automatically combines a feature map and an ansatz into a single circuit
         qnn_qc = QNNCircuit(num_qubits)
 
         qnn = SamplerQNN(
-            circuit=qnn_qc,
+            circuit=qnn_qc,  # Note that this is a QNNCircuit instance
             interpret=parity,
-            output_shape=2
+            output_shape=2  # Reshape by the number of classical registers
         )
 
+        # Do a forward pass with input data and custom weights
         qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
-        # Explicitly specifying the ansatz and feature map:
+        # Example 2: Explicitly specifying the feature map and ansatz
+        # Create a feature map and an ansatz separately
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)
         ansatz = RealAmplitudes(num_qubits=num_qubits)
 
+        # Compose the feature map and ansatz manually (otherwise done within QNNCircuit)
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
 
         qnn = SamplerQNN(
-            circuit=qc,
+            circuit=qc,  # Note that this is a QuantumCircuit instance
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
             interpret=parity,
-            output_shape=2
+            output_shape=2  # Reshape by the number of classical registers
         )
 
+        # Perform a forward pass with input data and weights
         qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
+
 
     The following attributes can be set via the constructor but can also be read and
     updated once the SamplerQNN object has been constructed.
 
     Attributes:
 
-        sampler (BaseSampler): The sampler primitive used to compute the neural network's results.
-        gradient (BaseSamplerGradient): A sampler gradient to be used for the backward pass.
+        sampler (BaseSampler): The sampler primitive used to compute the neural network's
+          results. If not provided, a default instance of the reference sampler defined by
+          :class:`~qiskit.primitives.Sampler` will be used.
+        gradient (BaseSamplerGradient): An optional sampler gradient used for the backward
+          pass. If not provided, a default instance of
+          :class:`~qiskit_machine_learning.gradients.ParamShiftSamplerGradient` will be used.
     """
 
     def __init__(
@@ -173,8 +197,8 @@ class SamplerQNN(NeuralNetwork):
             sparse: Returns whether the output is sparse or not.
             interpret: A callable that maps the measured integer to another unsigned integer or tuple
                 of unsigned integers. These are used as new indices for the (potentially sparse)
-                output array. If no interpret function is passed, then an identity function will be
-                used by this neural network.
+                output array. If the interpret function is ``None``, then an identity function will be
+                used by this neural network: ``lambda x: x`` (default).
             output_shape: The output shape of the custom interpretation. For SamplerV1, it is ignored
                 if no custom interpret method is provided where the shape is taken to be
                 ``2^circuit.num_qubits``.
@@ -190,7 +214,7 @@ class SamplerQNN(NeuralNetwork):
         Raises:
             QiskitMachineLearningError: Invalid parameter values.
         """
-        # set primitive, provide default
+        # Set primitive, provide default
         if sampler is None:
             sampler = Sampler()
 
@@ -223,8 +247,10 @@ class SamplerQNN(NeuralNetwork):
         if sparse:
             _optionals.HAS_SPARSE.require_now("DOK")
 
+        self._interpret = interpret
         self.set_interpret(interpret, output_shape)
-        # set gradient
+
+        # Set gradient
         if gradient is None:
             if isinstance(sampler, BaseSamplerV1):
                 gradient = ParamShiftSamplerGradient(sampler=self.sampler)
@@ -280,7 +306,7 @@ class SamplerQNN(NeuralNetwork):
         interpret: Callable[[int], int | tuple[int, ...]] | None = None,
         output_shape: int | tuple[int, ...] | None = None,
     ) -> None:
-        """Change 'interpret' and corresponding 'output_shape'.
+        """Change ``interpret`` and corresponding ``output_shape``.
 
         Args:
             interpret: A callable that maps the measured integer to another unsigned integer or
@@ -305,13 +331,13 @@ class SamplerQNN(NeuralNetwork):
             QiskitMachineLearningError: If an invalid ``sampler``provided.
         """
 
-        # this definition is required by mypy
+        # This definition is required by mypy
         output_shape_: tuple[int, ...] = (-1,)
 
         if interpret is not None:
             if output_shape is None:
                 raise QiskitMachineLearningError(
-                    "No output shape given; it's required when using custom interpret!"
+                    "No output shape given, but it's required when using custom interpret function."
                 )
             if isinstance(output_shape, Integral):
                 output_shape = int(output_shape)
@@ -351,6 +377,7 @@ class SamplerQNN(NeuralNetwork):
                 else:
                     # Fallback to 'c' if 'meas' is not available.
                     bitstring_counts = result[i].data.c.get_counts()
+
                 # Normalize the counts to probabilities
                 total_shots = sum(bitstring_counts.values())
                 probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
