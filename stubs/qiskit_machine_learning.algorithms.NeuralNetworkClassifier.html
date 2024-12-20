@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="QSVR" href="qiskit_machine_learning.algorithms.QSVR.html" /><link rel="prev" title="VQC" href="qiskit_machine_learning.algorithms.VQC.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>NeuralNetworkClassifier - Qiskit Machine Learning 0.8.1</title>
+        <title>NeuralNetworkClassifier - Qiskit Machine Learning 0.8.2</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.1</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.1</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -451,7 +451,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.NeuralNetworkClassifier">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NeuralNetworkClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neural_network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'squared_error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_hot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/classifiers/neural_network_classifier.html#NeuralNetworkClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.NeuralNetworkClassifier" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="qiskit_machine_learning.algorithms.TrainableModel.html#qiskit_machine_learning.algorithms.TrainableModel" title="qiskit_machine_learning.algorithms.trainable_model.TrainableModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainableModel</span></code></a>, <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="(in scikit-learn v1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="qiskit_machine_learning.algorithms.TrainableModel.html#qiskit_machine_learning.algorithms.TrainableModel" title="qiskit_machine_learning.algorithms.trainable_model.TrainableModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainableModel</span></code></a>, <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="(in scikit-learn v1.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a></p>
 <p>Implements a basic quantum neural network classifier. Implements Scikit-Learn compatible
 methods for classification and extends <code class="docutils literal notranslate"><span class="pre">ClassifierMixin</span></code>.
 See <a class="reference external" href="https://scikit-learn.org">Scikit-Learn</a> for more details.</p>
@@ -573,8 +573,8 @@ class for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – The input data.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – The target values.</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – The input data.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – The target values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -701,9 +701,9 @@ determination <span class="math notranslate nohighlight">\(R^2\)</span> of the p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – Test samples.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – True values for <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
-<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>) – Sample weights. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – Test samples.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – True values for <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a><em> | </em><em>None</em>) – Sample weights. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -818,7 +818,7 @@ determination <span class="math notranslate nohighlight">\(R^2\)</span> of the p
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=ec16d22d"></script>
+    <script src="../_static/documentation_options.js?v=dbee5847"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

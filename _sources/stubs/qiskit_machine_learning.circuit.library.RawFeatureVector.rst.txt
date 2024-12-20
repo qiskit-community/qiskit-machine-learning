@@ -21,8 +21,6 @@ RawFeatureVector
    .. autoattribute:: RawFeatureVector.num_qubits
    .. autoattribute:: RawFeatureVector.name
    .. autoattribute:: RawFeatureVector.cregs
-   .. autoattribute:: RawFeatureVector.duration
-   .. autoattribute:: RawFeatureVector.unit
    
    
 

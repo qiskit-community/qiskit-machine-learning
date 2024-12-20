@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Machine Learning Tutorials" href="../tutorials/index.html" /><link rel="prev" title="Qiskit Machine Learning v0.5 Migration Guide" href="01_migration_guide_0.5.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Qiskit Machine Learning v0.8 Migration Guide - Qiskit Machine Learning 0.8.1</title>
+        <title>Qiskit Machine Learning v0.8 Migration Guide - Qiskit Machine Learning 0.8.2</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.1</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.1</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -473,9 +473,13 @@ requirements and the constraints of the instruction set architecture (ISA) for c
 <p><strong>Warning</strong>:  V1 primitives are deprecated and will be removed in version <cite>0.9</cite>. To ensure full compatibility
 with V2 primitives, review the transpilation and pass managers section if your primitives require transpilation,
 such as those from <cite>qiskit-ibm-runtime</cite>.</p>
+<p>Please bear in mind that not all V2 primitives are directly supported. Should you require assistance,
+please do not hesitate to reach out via our
+<a class="reference external" href="https://qiskit.enterprise.slack.com/archives/C07JE3V55C1">Slack channel</a> or submit an issue on
+<a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/issues">GitHub</a>.</p>
 <p>Usage of V2 primitives is as straightforward as using V1:</p>
 <ul class="simple">
-<li><p>For kernel based methods:</p></li>
+<li><p>For kernel-based methods:</p></li>
 </ul>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
 <span class="kn">from</span> <span class="nn">qiskit_machine_learning.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
@@ -537,7 +541,7 @@ such as those from <cite>qiskit-ibm-runtime</cite>.</p>
 <p>If your primitives require transpiled circuits,i.e. <cite>qiskit-ibm-runtime.primitives</cite>,
 use <cite>pass_manager</cite> with <cite>qiskit-machine-learning</cite> functions to optimize performance.</p>
 <ul class="simple">
-<li><p>For kernel based methods:</p></li>
+<li><p>For kernel-based methods:</p></li>
 </ul>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_ibm_runtime</span> <span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">SamplerV2</span>
 <span class="kn">from</span> <span class="nn">qiskit.providers.fake_provider</span> <span class="kn">import</span> <span class="n">GenericBackendV2</span>
@@ -641,7 +645,7 @@ use <cite>pass_manager</cite> with <cite>qiskit-machine-learning</cite> function
 <span class="n">pass_manager</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span><span class="n">optimization_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
 
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">SamplerV2</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-<span class="n">sampler_gradient</span> <span class="o">=</span> <span class="n">ParamShiftSamplerGradient</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span> <span class="n">pass_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pass_manager</span><span class="p">)</span>
+<span class="n">sampler_gradient</span> <span class="o">=</span> <span class="n">ParamShiftSamplerGradient</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span> <span class="n">pass_manager</span><span class="o">=</span><span class="n">pass_manager</span><span class="p">)</span>
 <span class="n">isa_qc</span> <span class="o">=</span> <span class="n">pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">qc</span><span class="p">)</span>
 <span class="n">sampler_qnn</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">isa_qc</span><span class="p">,</span>
@@ -895,7 +899,7 @@ Please use <cite>meas</cite> or <cite>c</cite> for your register names to avoid 
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=ec16d22d"></script>
+    <script src="../_static/documentation_options.js?v=dbee5847"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

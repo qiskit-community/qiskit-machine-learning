@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Pegasos Quantum Support Vector Classifier" href="07_pegasos_qsvc.html" /><link rel="prev" title="PyTorch qGAN Implementation" href="04_torch_qgan.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Torch Connector and Hybrid QNNs - Qiskit Machine Learning 0.8.1</title>
+        <title>Torch Connector and Hybrid QNNs - Qiskit Machine Learning 0.8.2</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.1</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.1</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -625,7 +625,7 @@ Initial weights:  [-0.01256962  0.06653564  0.04005302 -0.03752667  0.06645196  
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor([-0.3358], grad_fn=&lt;_TorchNNFunctionBackward&gt;)
+tensor([-0.3230], grad_fn=&lt;_TorchNNFunctionBackward&gt;)
 </pre></div></div>
 </div>
 <section id="Optimizer">
@@ -674,26 +674,26 @@ the output (the following section shows an example of application of parity mapp
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-25.615406036376953
-22.832935333251953
-19.872636795043945
-19.702011108398438
-19.45696449279785
-18.938806533813477
-18.815305709838867
-17.863750457763672
-16.97269630432129
-16.364004135131836
-17.142831802368164
-15.615911483764648
-15.355899810791016
-15.341121673583984
-15.156383514404297
-15.02320671081543
-14.924695014953613
-15.110147476196289
-14.877695083618164
-15.102740287780762
+25.5554141998291
+22.84799575805664
+19.960691452026367
+19.278564453125
+19.302776336669922
+18.135221481323242
+17.3953857421875
+21.259014129638672
+25.036849975585938
+21.41744041442871
+27.72951889038086
+23.96538543701172
+25.911020278930664
+25.522098541259766
+24.56904411315918
+20.529380798339844
+24.416887283325195
+21.865007400512695
+25.827163696289062
+26.854175567626953
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -702,7 +702,7 @@ the output (the following section shows an example of application of parity mapp
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor(25.6154, grad_fn=&lt;MseLossBackward0&gt;)
+tensor(25.5554, grad_fn=&lt;MseLossBackward0&gt;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -737,7 +737,7 @@ tensor(25.6154, grad_fn=&lt;MseLossBackward0&gt;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Accuracy: 0.8
+Accuracy: 0.65
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -843,26 +843,26 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.6930415034294128
-0.6905773878097534
-0.6607152223587036
-0.6495684385299683
-0.6469475626945496
-0.6406522989273071
-0.6370075345039368
-0.6281819343566895
-0.6216543912887573
-0.619498074054718
-0.6163892149925232
-0.6195348501205444
-0.6126415729522705
-0.619985044002533
-0.6267299056053162
-0.6137303113937378
-0.6166812181472778
-0.7431613206863403
-0.6621139049530029
-0.7551048994064331
+0.6882659196853638
+0.6913522481918335
+0.691373348236084
+0.6647081971168518
+0.6528792381286621
+0.6443885564804077
+0.6994273066520691
+0.7723010182380676
+0.7129653096199036
+0.6990549564361572
+0.6716065406799316
+0.7544995546340942
+0.6825253367424011
+0.6849457621574402
+0.7210066914558411
+0.7053173184394836
+0.6781826019287109
+0.7493025064468384
+0.7046105265617371
+0.6678831577301025
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -897,7 +897,7 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Accuracy: 0.7
+Accuracy: 0.65
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1013,26 +1013,26 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-14.842913627624512
-3.0293147563934326
-10.062498092651367
-0.37367233633995056
-0.25424596667289734
-0.2517828643321991
-0.2527725398540497
-0.2350931167602539
-0.25780123472213745
-0.24182289838790894
-0.26555195450782776
-0.2332778126001358
-0.25430482625961304
-0.26607733964920044
-0.25583699345588684
-0.24412399530410767
-0.25075221061706543
-0.23292240500450134
-0.2673132121562958
-0.26535332202911377
+14.9714994430542
+2.9661648273468018
+8.842530250549316
+0.4107576608657837
+0.2440420687198639
+0.25234255194664
+0.2235121876001358
+0.27348196506500244
+0.2771543860435486
+0.25521329045295715
+0.2350853979587555
+0.24883446097373962
+0.2356414496898651
+0.24924549460411072
+0.2499208003282547
+0.2549074590206146
+0.2685125470161438
+0.24676817655563354
+0.23014217615127563
+0.27330708503723145
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1041,7 +1041,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor(14.8429, grad_fn=&lt;MseLossBackward0&gt;)
+tensor(14.9715, grad_fn=&lt;MseLossBackward0&gt;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1148,21 +1148,6 @@ Failed to download (trying next):
 HTTP Error 403: Forbidden
 
 Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-6.0%
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
 Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz to ./data/MNIST/raw/train-images-idx3-ubyte.gz
 </pre></div></div>
 </div>
@@ -1186,6 +1171,7 @@ Failed to download (trying next):
 HTTP Error 403: Forbidden
 
 Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1201,26 +1187,9 @@ Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyt
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
 Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz to ./data/MNIST/raw
 
 Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-
-6.0%
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
 Failed to download (trying next):
 HTTP Error 403: Forbidden
 
@@ -1244,6 +1213,11 @@ Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte
 Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw
 
 Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+Failed to download (trying next):
+HTTP Error 403: Forbidden
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1259,11 +1233,6 @@ Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Failed to download (trying next):
-HTTP Error 403: Forbidden
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
 Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
 
 </pre></div></div>
@@ -1446,16 +1415,16 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Training [10%]  Loss: -1.1620
-Training [20%]  Loss: -1.5305
-Training [30%]  Loss: -1.7883
-Training [40%]  Loss: -1.9838
-Training [50%]  Loss: -2.2275
-Training [60%]  Loss: -2.4484
-Training [70%]  Loss: -2.6728
-Training [80%]  Loss: -2.8583
-Training [90%]  Loss: -3.1088
-Training [100%] Loss: -3.3160
+Training [10%]  Loss: -1.1616
+Training [20%]  Loss: -1.5284
+Training [30%]  Loss: -1.7868
+Training [40%]  Loss: -1.9830
+Training [50%]  Loss: -2.2307
+Training [60%]  Loss: -2.4558
+Training [70%]  Loss: -2.6722
+Training [80%]  Loss: -2.8756
+Training [90%]  Loss: -3.1111
+Training [100%] Loss: -3.3085
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1507,7 +1476,7 @@ Training [100%] Loss: -3.3160
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-/tmp/ipykernel_4472/2057927024.py:3: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+/tmp/ipykernel_4510/2057927024.py:3: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
   model5.load_state_dict(torch.load(&#34;model4.pt&#34;))
 </pre></div></div>
 </div>
@@ -1553,7 +1522,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Performance on test data:
-        Loss: -3.3604
+        Loss: -3.3448
         Accuracy: 100.0%
 </pre></div></div>
 </div>
@@ -1611,7 +1580,7 @@ Performance on test data:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.1</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Dec 09 12:15:31 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.3.1</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.2</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Dec 20 15:48:50 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1728,7 +1697,7 @@ Performance on test data:
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=ec16d22d"></script>
+    <script src="../_static/documentation_options.js?v=dbee5847"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Neural Network Classifier &amp; Regressor" href="02_neural_network_classifier_and_regressor.html" /><link rel="prev" title="Machine Learning Tutorials" href="index.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Quantum Neural Networks - Qiskit Machine Learning 0.8.1</title>
+        <title>Quantum Neural Networks - Qiskit Machine Learning 0.8.2</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.1</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.1</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -592,7 +592,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7f5d2182fa00&gt;
+&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7f7317cd6740&gt;
 </pre></div></div>
 </div>
 <p>We’ll see how to use the QNN in the following sections, but before that, let’s check out the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> class.</p>
@@ -681,7 +681,7 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7f5d3495e6b0&gt;
+&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7f730236b5b0&gt;
 </pre></div></div>
 </div>
 <p>In addition to the basic arguments shown above, the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> accepts three more settings: <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code>, <code class="docutils literal notranslate"><span class="pre">interpret</span></code>, and <code class="docutils literal notranslate"><span class="pre">output_shape</span></code>. These will be introduced in sections 4 and 5.</p>
@@ -788,7 +788,7 @@ Weights: [0.09417735 0.97562235 0.7611397  0.78606431]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for EstimatorQNN: [[0.28876492]].
+Forward pass result for EstimatorQNN: [[0.28127517]].
 Shape: (1, 1)
 </pre></div></div>
 </div>
@@ -813,7 +813,7 @@ Shape: (1, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for SamplerQNN: [[0.01855469 0.25       0.53222656 0.19921875]].
+Forward pass result for SamplerQNN: [[0.01171875 0.24316406 0.55175781 0.19335938]].
 Shape: (1, 4)
 </pre></div></div>
 </div>
@@ -843,8 +843,8 @@ Shape: (1, 4)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for EstimatorQNN: [[0.28522337]
- [0.31456228]].
+Forward pass result for EstimatorQNN: [[0.28503768]
+ [0.28725616]].
 Shape: (2, 1)
 </pre></div></div>
 </div>
@@ -871,8 +871,8 @@ Shape: (2, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for SamplerQNN: [[0.0234375  0.2578125  0.51074219 0.20800781]
- [0.01269531 0.26757812 0.51171875 0.20800781]].
+Forward pass result for SamplerQNN: [[0.01171875 0.22949219 0.54003906 0.21875   ]
+ [0.01855469 0.265625   0.515625   0.20019531]].
 Shape: (2, 4)
 </pre></div></div>
 </div>
@@ -948,10 +948,10 @@ Shape: (1, 1, 1)
 <div class="highlight"><pre>
 Input gradients for SamplerQNN: None.
 Shape: None
-Weight gradients for SamplerQNN: [[[ 0.00585938 -0.10595703 -0.07519531 -0.12402344]
-  [ 0.20996094 -0.08935547  0.06054688 -0.21142578]
-  [-0.48779297  0.32226562 -0.31347656  0.10205078]
-  [ 0.27197266 -0.12695312  0.328125    0.23339844]]].
+Weight gradients for SamplerQNN: [[[ 0.00390625 -0.12451172 -0.06640625 -0.09277344]
+  [ 0.21533203 -0.08007812  0.06689453 -0.22705078]
+  [-0.48974609  0.32226562 -0.31542969  0.09375   ]
+  [ 0.27050781 -0.11767578  0.31494141  0.22607422]]].
 Shape: (1, 4, 4)
 </pre></div></div>
 </div>
@@ -1026,15 +1026,15 @@ Shape: (1, 1, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Input gradients for SamplerQNN: [[[-0.05371094 -0.11865234]
-  [ 0.38037109 -0.19677734]
-  [-0.34326172  0.11474609]
-  [ 0.01660156  0.20068359]]].
+Input gradients for SamplerQNN: [[[-0.05664062 -0.10107422]
+  [ 0.38330078 -0.19335938]
+  [-0.34375     0.07861328]
+  [ 0.01708984  0.21582031]]].
 Shape: (1, 4, 2)
-Weight gradients for SamplerQNN: [[[ 0.00488281 -0.11132812 -0.06201172 -0.10839844]
-  [ 0.21386719 -0.08544922  0.05908203 -0.21923828]
-  [-0.48974609  0.32080078 -0.31396484  0.10400391]
-  [ 0.27099609 -0.12402344  0.31689453  0.22363281]]].
+Weight gradients for SamplerQNN: [[[ 0.00732422 -0.11376953 -0.07080078 -0.08886719]
+  [ 0.21972656 -0.08496094  0.05419922 -0.23193359]
+  [-0.48828125  0.32128906 -0.31787109  0.10205078]
+  [ 0.26123047 -0.12255859  0.33447266  0.21875   ]]].
 Shape: (1, 4, 4)
 </pre></div></div>
 </div>
@@ -1175,7 +1175,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.2.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.1</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Dec 09 12:06:41 2024 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.3.1</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.2</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.15</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Dec 20 15:40:14 2024 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1315,7 +1315,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=ec16d22d"></script>
+    <script src="../_static/documentation_options.js?v=dbee5847"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

@@ -26,8 +26,6 @@ QNNCircuit
    .. autoattribute:: QNNCircuit.weight_parameters
    .. autoattribute:: QNNCircuit.name
    .. autoattribute:: QNNCircuit.cregs
-   .. autoattribute:: QNNCircuit.duration
-   .. autoattribute:: QNNCircuit.unit
    
    
 

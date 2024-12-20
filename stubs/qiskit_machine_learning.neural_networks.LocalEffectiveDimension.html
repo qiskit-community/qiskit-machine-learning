@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Optimizers (qiskit_machine_learning.optimizers)" href="../apidocs/qiskit_machine_learning.optimizers.html" /><link rel="prev" title="EffectiveDimension" href="qiskit_machine_learning.neural_networks.EffectiveDimension.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>LocalEffectiveDimension - Qiskit Machine Learning 0.8.1</title>
+        <title>LocalEffectiveDimension - Qiskit Machine Learning 0.8.2</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.1</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.1</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -471,11 +471,11 @@ Fisher Information Matrix <code class="docutils literal notranslate"><span class
 <span class="pre">num_weights)</span></code> used to compute the global effective dimension for a set of
 <code class="docutils literal notranslate"><span class="pre">input_samples</span></code>, of shape <code class="docutils literal notranslate"><span class="pre">(num_input_samples,</span> <span class="pre">qnn_input_size)</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">weight_samples</span></code>, of shape <code class="docutils literal notranslate"><span class="pre">(num_weight_samples,</span> <span class="pre">num_weights)</span></code>.</p></li>
-<li><p><strong>weight_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – An array of neural network parameters (weights), of shape
+<li><p><strong>weight_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – An array of neural network parameters (weights), of shape
 <code class="docutils literal notranslate"><span class="pre">(num_weight_samples,</span> <span class="pre">num_weights)</span></code>, or an <code class="docutils literal notranslate"><span class="pre">int</span></code> to indicate the number of
 parameter sets to sample randomly from a uniform distribution. By default,
 <code class="docutils literal notranslate"><span class="pre">weight_samples</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p></li>
-<li><p><strong>input_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – An array of samples to the neural network, of shape
+<li><p><strong>input_samples</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – An array of samples to the neural network, of shape
 <code class="docutils literal notranslate"><span class="pre">(num_input_samples,</span> <span class="pre">qnn_input_size)</span></code>, or an <code class="docutils literal notranslate"><span class="pre">int</span></code> to indicate the number of
 input sets to sample randomly from a normal distribution. By default,
 <code class="docutils literal notranslate"><span class="pre">input_samples</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p></li>
@@ -503,7 +503,7 @@ input sets to sample randomly from a normal distribution. By default,
 array is passed, then effective dimension computed for each value in the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – array of data sizes or a single integer value.</p>
+<dd class="field-odd"><p><strong>dataset_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – array of data sizes or a single integer value.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>array of effective dimensions for each dataset size in <code class="docutils literal notranslate"><span class="pre">num_data</span></code>.</p>
@@ -522,9 +522,9 @@ shown in Abbas et al.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gradients</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – A numpy array, result of the neural network’s backward pass, of
+<li><p><strong>gradients</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – A numpy array, result of the neural network’s backward pass, of
 shape <code class="docutils literal notranslate"><span class="pre">(num_input_samples</span> <span class="pre">*</span> <span class="pre">num_weight_samples,</span> <span class="pre">output_size,</span> <span class="pre">num_weights)</span></code>.</p></li>
-<li><p><strong>model_outputs</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – A numpy array, result of the neural networks’ forward pass,
+<li><p><strong>model_outputs</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – A numpy array, result of the neural networks’ forward pass,
 of shape <code class="docutils literal notranslate"><span class="pre">(num_input_samples</span> <span class="pre">*</span> <span class="pre">num_weight_samples,</span> <span class="pre">output_size)</span></code>.</p></li>
 </ul>
 </dd>
@@ -548,7 +548,7 @@ with the average Jacobian  for every set of gradients and model output given.</p
 <dd><p>This method computes the normalized Fisher Information Matrix and extracts its trace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>normalized_fisher</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a>) – The Fisher Information Matrix to be normalized.</p>
+<dd class="field-odd"><p><strong>normalized_fisher</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – The Fisher Information Matrix to be normalized.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -680,7 +680,7 @@ weight samples.</p>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=ec16d22d"></script>
+    <script src="../_static/documentation_options.js?v=dbee5847"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
