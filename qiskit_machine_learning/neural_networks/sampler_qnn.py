@@ -233,7 +233,10 @@ class SamplerQNN(NeuralNetwork):
                 self.num_virtual_qubits = circuit.num_qubits
             else:
                 circuit = pass_manager.run(circuit)
-                self.num_virtual_qubits = circuit.layout._input_qubit_count
+                if hasattr(circuit.layout, "_input_qubit_count"):
+                    self.num_virtual_qubits = circuit.layout._input_qubit_count
+                else:
+                    self.num_virtual_qubits = circuit.num_qubits
 
         self._org_circuit = circuit
 

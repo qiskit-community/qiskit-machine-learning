@@ -20,7 +20,7 @@ from qiskit_machine_learning import QiskitMachineLearningError
 
 from .objective_functions import ObjectiveFunction
 from .serializable_model import SerializableModelMixin
-from ..optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
+from ..optimizers import Optimizer, SciPyOptimizer, SLSQP, OptimizerResult, Minimizer
 from ..utils import algorithm_globals
 from ..neural_networks import NeuralNetwork
 from ..utils.loss_functions import (
@@ -269,7 +269,8 @@ class TrainableModel(SerializableModelMixin):
 
         def objective(objective_weights):
             objective_value = function.objective(objective_weights)
-            self._callback(objective_weights, objective_value)
+            if isinstance(self._optimizer, SciPyOptimizer):
+                self._callback(objective_weights, objective_value)
             return objective_value
 
         return objective
