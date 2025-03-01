@@ -82,21 +82,26 @@ def ad_hoc_data(
     `arXiv:1804.11326 <https://arxiv.org/abs/1804.11326>`_
 
     Args:
-        training_size: the number of training samples.
-        test_size: the number of testing samples.
-        n: number of qubits (dimension of the feature space). 
-        gap: separation gap (:math:`\Delta`).
-        divisions: non-zero value does 1D stratified sampling.
-            This defaults to zero which will set this to Sobol sampling.
-            It's recommended to have a total number of datapoints = 2^n
-            for Sobol sampling
-        plot_data: whether to plot the data. Automatically disabled if n>3
-        one_hot: if True, return the data in one-hot format.
-        include_sample_total: if True, return all points in the uniform
-            grid in addition to training and testing samples.
+        train_size (int): Number of training samples.
+        test_size (int): Number of testing samples.
+        n (int): Number of qubits (dimension of the feature space).
+        gap (int): Separation gap (Δ).
+        divisions (int, optional): For 1D stratified sampling. If zero, Sobol
+            sampling is used. It is recommended that the total number of datapoints
+            equals 2^n for Sobol sampling.
+        plot_data (bool, optional): Whether to plot the data. Disabled if n > 3.
+        one_hot (bool, optional): If True, return labels in one-hot format.
+        include_sample_total (bool, optional): If True, return the total number
+            of accepted samples along with training and testing samples.
 
     Returns:
-        Training and testing samples.
+        Tuple: A tuple containing:
+            - Training features (np.ndarray)
+            - Training labels (np.ndarray)
+            - Testing features (np.ndarray)
+            - Testing labels (np.ndarray)
+            - (Optional) Total accepted samples (int), if
+              include_sample_total is True.
 
     """
 
@@ -133,7 +138,8 @@ def ad_hoc_data(
 
     # Loop for Data Acceptance & Regeneration
     n_samples = train_size+test_size
-    features, labels = np.empty((n_samples,n),dtype=float), np.empty(n_samples, dtype=int)
+    features = np.empty((n_samples, n), dtype=float)
+    labels = np.empty(n_samples, dtype=int)
     cur = 0
 
     while n_samples > 0:
@@ -177,18 +183,27 @@ def ad_hoc_data(
     if one_hot:
         labels = _onehot_labels(labels)
 
-    res = []
-    res.append(features[:train_size])
-    res.append(labels[:train_size])
-    res.append(features[train_size:])
-    res.append(labels[train_size:])
-    if include_sample_total: res.append(cur)
+    res = [
+        features[:train_size],
+        labels[:train_size],
+        features[train_size:],
+        labels[train_size:],
+    ]
+    if include_sample_total:
+        res.append(cur)
 
     return tuple(res)
 
 
 @optionals.HAS_MATPLOTLIB.require_in_call
-def _plot_ad_hoc_data(x_total, y_total, training_size):
+def _plot_ad_hoc_data(x_total: np.ndarray, y_total: np.ndarray, training_size: int) -> None:
+    """Plot the ad hoc dataset.
+
+    Args:
+        x_total (np.ndarray): The dataset features.
+        y_total (np.ndarray): The dataset labels.
+        training_size (int): Number of training samples to plot.
+    """
     import matplotlib.pyplot as plt
 
     n = x_total.shape[1]
@@ -201,67 +216,145 @@ def _plot_ad_hoc_data(x_total, y_total, training_size):
     plt.show()
 
 
-def _onehot_labels(labels):
+def _onehot_labels(labels: np.ndarray) -> np.ndarray:
+    """Convert labels to one-hot encoded format.
+
+    Args:
+        labels (np.ndarray): Array of labels.
+
+    Returns:
+        np.ndarray: One-hot encoded labels.
+    """
     from sklearn.preprocessing import OneHotEncoder
+
     encoder = OneHotEncoder(sparse_output=False)
     labels_one_hot = encoder.fit_transform(labels.reshape(-1, 1))
     return labels_one_hot
 
-def _n_hadamard(n: int):
-    
+
+def _n_hadamard(n: int) -> np.ndarray:
+    """Generate an n-qubit Hadamard matrix.
+
+    Args:
+        n (int): Number of qubits.
+
+    Returns:
+        np.ndarray: The n-qubit Hadamard matrix.
+    """
     base = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
     result = 1
     expo = n
 
-    while expo>0:
-        if expo%2==1:
+    while expo > 0:
+        if expo % 2 == 1:
             result = np.kron(result, base)
         base = np.kron(base, base)
         expo //= 2
 
     return result
 
-def _i_z(i: int, n: int):
 
+def _i_z(i: int, n: int) -> np.ndarray:
+    """Create the i-th single-qubit Z gate in an n-qubit system.
+
+    Args:
+        i (int): Index of the qubit.
+        n (int): Total number of qubits.
+
+    Returns:
+        np.ndarray: The Z gate acting on the i-th qubit.
+    """
     z = np.diag([1, -1])
     i_1 = np.eye(2**i)
-    i_2 = np.eye(2**(n-i-1))
+    i_2 = np.eye(2 ** (n - i - 1))
 
-    result = np.kron(i_1,z)
+    result = np.kron(i_1, z)
     result = np.kron(result, i_2)
 
     return result
-    
-def _n_z(h_n: np.ndarray):
+
+
+def _n_z(h_n: np.ndarray) -> np.ndarray:
+    """Generate an n-qubit Z gate from the n-qubit Hadamard matrix.
+
+    Args:
+        h_n (np.ndarray): n-qubit Hadamard matrix.
+
+    Returns:
+        np.ndarray: The n-qubit Z gate.
+    """
     res = np.diag(h_n)
     res = np.sign(res)
     res = np.diag(res)
     return res
 
-def _modified_LHC(n:int, n_samples:int, n_div:int):
-    samples = np.empty((n_samples,n),dtype = float)
-    bin_size = 2*np.pi/n_div
-    n_passes = (n_samples+n_div-1)//n_div
 
-    all_bins = np.tile(np.arange(n_div),n_passes)
+def _modified_LHC(n: int, n_samples: int, n_div: int) -> np.ndarray:
+    """Generate samples using modified Latin Hypercube Sampling.
+
+    Args:
+        n (int): Dimensionality of the data.
+        n_samples (int): Number of samples to generate.
+        n_div (int): Number of divisions for stratified sampling.
+
+    Returns:
+        np.ndarray: Generated samples.
+    """
+    samples = np.empty((n_samples, n), dtype=float)
+    bin_size = 2 * np.pi / n_div
+    n_passes = (n_samples + n_div - 1) // n_div
+
+    all_bins = np.tile(np.arange(n_div), n_passes)
 
     for dim in range(n):
         algorithm_globals.random.shuffle(all_bins)
         chosen_bins = all_bins[:n_samples]
         offsets = algorithm_globals.random.random(n_samples)
-        samples[:, dim] = (chosen_bins+offsets)*bin_size
+        samples[:, dim] = (chosen_bins + offsets) * bin_size
 
     return samples
 
-def _sobol_sampling(n, n_samples):
+
+def _sobol_sampling(n: int, n_samples: int) -> np.ndarray:
+    """Generate samples using Sobol sequence sampling.
+
+    Args:
+        n (int): Dimensionality of the data.
+        n_samples (int): Number of samples to generate.
+
+    Returns:
+        np.ndarray: Generated samples scaled to the interval [0, 2π].
+    """
     sampler = Sobol(d=n, scramble=True)
-    p = 2*np.pi*sampler.random(n_samples)
+    p = 2 * np.pi * sampler.random(n_samples)
     return p
 
-def _phi_i(x_vecs: np.ndarray, i: int):
-    return x_vecs[:,i].reshape((-1,1))
 
-def _phi_ij(x_vecs: np.ndarray, i: int, j: int):
-    return ((np.pi - x_vecs[:,i])*(np.pi - x_vecs[:,j])).reshape((-1,1))
+def _phi_i(x_vecs: np.ndarray, i: int) -> np.ndarray:
+    """Compute the φ_i term for a given dimension.
 
+    Args:
+        x_vecs (np.ndarray): Input sample vectors.
+        i (int): Dimension index.
+
+    Returns:
+        np.ndarray: Computed φ_i values.
+    """
+    return x_vecs[:, i].reshape((-1, 1))
+
+
+def _phi_ij(x_vecs: np.ndarray, i: int, j: int) -> np.ndarray:
+    """Compute the φ_ij term for given dimensions.
+
+    Args:
+        x_vecs (np.ndarray): Input sample vectors.
+        i (int): First dimension index.
+        j (int): Second dimension index.
+
+    Returns:
+        np.ndarray: Computed φ_ij values.
+    """
+    return ((np.pi - x_vecs[:, i]) * (np.pi - x_vecs[:, j])).reshape((-1, 1))
+
+# Uncomment to test
 # print(ad_hoc_data(10,10,5,0.1,3))
