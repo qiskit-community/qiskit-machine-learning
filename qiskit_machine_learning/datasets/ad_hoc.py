@@ -126,7 +126,7 @@ def ad_hoc_data(
     z_n = _n_z(h_n)
 
     # V change of basis: Eigenbasis of a random hermitian will be a random unitary
-    A = np.array(algorithm_globals.random.random((dims, )) 
+    A = np.array(algorithm_globals.random.random((dims, dims)) 
                 + 1j * algorithm_globals.random.random((dims, dims)))
     Herm = A.conj().T @ A 
     eigvals, eigvecs = np.linalg.eig(Herm)
