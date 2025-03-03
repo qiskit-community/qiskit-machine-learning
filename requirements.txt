@@ -1,7 +1,11 @@
 qiskit>=1.0,<2.0
 numpy>=2.0
 scipy>=1.4
+<<<<<<< HEAD
 psutil>=5
+=======
+numpy>=1.17
+>>>>>>> 06075c1 (Remove psutil from requirements.txt (#894))
 scikit-learn>=1.2
 setuptools>=40.1
 dill>=0.3.4
