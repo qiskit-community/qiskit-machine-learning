@@ -27,14 +27,14 @@ from scipy.stats.qmc import Sobol
 
 # pylint: disable=too-many-positional-arguments
 def ad_hoc_data(
-    train_size: int,
+    training_size: int,
     test_size: int,
     n: int,
     gap: int,
-    divisions: int = 0,
     plot_data: bool = False,
-    one_hot: bool = False,
+    one_hot: bool = True,
     include_sample_total: bool = False,
+    divisions: int = 0
 ) -> (
     Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
@@ -82,17 +82,17 @@ def ad_hoc_data(
     `arXiv:1804.11326 <https://arxiv.org/abs/1804.11326>`_
 
     Args:
-        train_size (int): Number of training samples.
+        training_size (int): Number of training samples.
         test_size (int): Number of testing samples.
         n (int): Number of qubits (dimension of the feature space).
         gap (int): Separation gap (Δ).
-        divisions (int, optional): For 1D stratified sampling. If zero, Sobol
-            sampling is used. It is recommended that the total number of datapoints
-            equals 2^n for Sobol sampling.
         plot_data (bool, optional): Whether to plot the data. Disabled if n > 3.
         one_hot (bool, optional): If True, return labels in one-hot format.
         include_sample_total (bool, optional): If True, return the total number
             of accepted samples along with training and testing samples.
+        divisions (int, optional): For 1D stratified sampling. If zero, Sobol
+            sampling is used. It is recommended that the total number of datapoints
+            equals 2^n for Sobol sampling.
 
     Returns:
         Tuple: A tuple containing:
@@ -137,7 +137,7 @@ def ad_hoc_data(
     O = V.conj().T @ z_n @ V
 
     # Loop for Data Acceptance & Regeneration
-    n_samples = train_size+test_size
+    n_samples = training_size+test_size
     features = np.empty((n_samples, n), dtype=float)
     labels = np.empty(n_samples, dtype=int)
     cur = 0
@@ -178,16 +178,16 @@ def ad_hoc_data(
         n_samples -= count
         cur += count
 
-    if plot_data: _plot_ad_hoc_data(features, labels, train_size)
+    if plot_data: _plot_ad_hoc_data(features, labels, training_size)
 
     if one_hot:
         labels = _onehot_labels(labels)
 
     res = [
-        features[:train_size],
-        labels[:train_size],
-        features[train_size:],
-        labels[train_size:],
+        features[:training_size],
+        labels[:training_size],
+        features[training_size:],
+        labels[training_size:],
     ]
     if include_sample_total:
         res.append(cur)
