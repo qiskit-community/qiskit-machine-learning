@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,20 +11,19 @@
 # that they have been altered from the originals.
 
 """
-ad hoc dataset
+
+Ad Hoc Dataset
+
 """
 from __future__ import annotations
-
 from functools import reduce
 import itertools as it
 from typing import Tuple, Dict, List
 import numpy as np
 from sklearn import preprocessing
-
 from qiskit.utils import optionals
-
 from ..utils import algorithm_globals
-
+from scipy.stats.qmc import Sobol
 
 # pylint: disable=too-many-positional-arguments
 def ad_hoc_data(
@@ -35,6 +34,7 @@ def ad_hoc_data(
     plot_data: bool = False,
     one_hot: bool = True,
     include_sample_total: bool = False,
+    divisions: int = 0
 ) -> (
     Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
@@ -74,8 +74,6 @@ def ad_hoc_data(
     where :math:`\Delta` is the separation gap, and
     :math:`V\in \mathrm{SU}(4)` is a random unitary.
 
-    The current implementation only works with n = 2 or 3.
-
     **References:**
 
     [1] Havlíček V, Córcoles AD, Temme K, Harrow AW, Kandala A, Chow JM,
@@ -84,140 +82,128 @@ def ad_hoc_data(
     `arXiv:1804.11326 <https://arxiv.org/abs/1804.11326>`_
 
     Args:
-        training_size: the number of training samples.
-        test_size: the number of testing samples.
-        n: number of qubits (dimension of the feature space). Must be 2 or 3.
-        gap: separation gap (:math:`\Delta`).
-        plot_data: whether to plot the data. Requires matplotlib.
-        one_hot: if True, return the data in one-hot format.
-        include_sample_total: if True, return all points in the uniform
-            grid in addition to training and testing samples.
+        training_size (int): Number of training samples.
+        test_size (int): Number of testing samples.
+        n (int): Number of qubits (dimension of the feature space).
+        gap (int): Separation gap (Δ).
+        plot_data (bool, optional): Whether to plot the data. Disabled if n > 3.
+        one_hot (bool, optional): If True, return labels in one-hot format.
+        include_sample_total (bool, optional): If True, return the total number
+            of accepted samples along with training and testing samples.
+        divisions (int, optional): For 1D stratified sampling. If zero, Sobol
+            sampling is used. It is recommended that the total number of datapoints
+            equals 2^n for Sobol sampling.
 
     Returns:
-        Training and testing samples.
+        Tuple: A tuple containing:
+            - Training features (np.ndarray)
+            - Training labels (np.ndarray)
+            - Testing features (np.ndarray)
+            - Testing labels (np.ndarray)
+            - (Optional) Total accepted samples (int), if
+              include_sample_total is True.
 
-    Raises:
-        ValueError: if n is not 2 or 3.
     """
-    class_labels = [r"A", r"B"]
-    count = 0
-    if n == 2:
-        count = 100
-    elif n == 3:
-        count = 20  # coarseness of data separation
-    else:
-        raise ValueError(f"Supported values of 'n' are 2 and 3 only, but {n} is provided.")
 
-    # Define auxiliary matrices and initial state
-    z = np.diag([1, -1])
-    i_2 = np.eye(2)
-    h_2 = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
-    h_n = reduce(np.kron, [h_2] * n)
-    psi_0 = np.ones(2**n) / np.sqrt(2**n)
+    if n>3: plot_data = False
 
-    # Generate Z matrices acting on each qubits
-    z_i = np.array([reduce(np.kron, [i_2] * i + [z] + [i_2] * (n - i - 1)) for i in range(n)])
+    # Initial State
+    dims = 2**n
+    psi_0 = np.ones(dims) / np.sqrt(dims)
 
-    # Construct the parity operator
-    bitstrings = ["".join(bstring) for bstring in it.product(*[["0", "1"]] * n)]
-    if n == 2:
-        bitstring_parity = [bstr.count("1") % 2 for bstr in bitstrings]
-        d_m = np.diag((-1) ** np.array(bitstring_parity))
-    else:  # n must be 3 here, as n checked above which allows only 2 and 3
-        bitstring_majority = [0 if bstr.count("0") > 1 else 1 for bstr in bitstrings]
-        d_m = np.diag((-1) ** np.array(bitstring_majority))
+    # n-qubit Hadamard
+    h_n = _n_hadamard(n)
 
-    # Generate a random unitary operator by collecting eigenvectors of a
-    # random hermitian operator
-    basis = algorithm_globals.random.random(
-        (2**n, 2**n)
-    ) + 1j * algorithm_globals.random.random((2**n, 2**n))
-    basis = np.array(basis).conj().T @ np.array(basis)
-    eigvals, eigvecs = np.linalg.eig(basis)
+    # Single qubit Z gates
+    z_diags = np.array([np.diag(_i_z(i,n)).reshape((1,-1)) for i in range(n)])
+
+    # Precompute Pairwise ZZ block diagonals
+    zz_diags = {}
+    for (i, j) in it.combinations(range(n), 2):
+        zz_diags[(i, j)] = z_diags[i] * z_diags[j] 
+
+    # n-qubit Z gate: notice that h_n[0,:] has the same elements as diagonal of z_n
+    z_n = _n_z(h_n)
+
+    # V change of basis: Eigenbasis of a random hermitian will be a random unitary
+    A = np.array(algorithm_globals.random.random((dims, dims)) 
+                + 1j * algorithm_globals.random.random((dims, dims)))
+    Herm = A.conj().T @ A 
+    eigvals, eigvecs = np.linalg.eig(Herm)
     idx = eigvals.argsort()[::-1]
-    eigvecs = eigvecs[:, idx]
-    m_m = eigvecs.conj().T @ d_m @ eigvecs
+    V = eigvecs[:, idx]
 
-    # Generate a grid of points in the feature space and compute the
-    # expectation value of the parity
-    xvals = np.linspace(0, 2 * np.pi, count, endpoint=False)
-    ind_pairs = list(it.combinations(range(n), 2))
-    _sample_total = []
-    for x in it.product(*[xvals] * n):
-        x_arr = np.array(x)
-        phi = np.sum(x_arr[:, None, None] * z_i, axis=0)
-        phi += sum(
-            ((np.pi - x_arr[i1]) * (np.pi - x_arr[i2]) * z_i[i1] @ z_i[i2] for i1, i2 in ind_pairs)
-        )
-        # u_u was actually scipy.linalg.expm(1j * phi), but this method is
-        # faster because phi is always a diagonal matrix.
-        # We first extract the diagonal elements, then do exponentiation, then
-        # construct a diagonal matrix from them.
-        u_u = np.diag(np.exp(1j * np.diag(phi)))
-        psi = u_u @ h_n @ u_u @ psi_0
-        exp_val = np.real(psi.conj().T @ m_m @ psi)
-        if np.abs(exp_val) > gap:
-            _sample_total.append(np.sign(exp_val))
-        else:
-            _sample_total.append(0)
-    sample_total = np.array(_sample_total).reshape(*[count] * n)
+    # Observable for labelling boundary
+    O = V.conj().T @ z_n @ V
 
-    # Extract training and testing samples from grid
-    x_sample, y_sample = _sample_ad_hoc_data(sample_total, xvals, training_size + test_size, n)
+    # Loop for Data Acceptance & Regeneration
+    n_samples = training_size+test_size
+    features = np.empty((n_samples, n), dtype=float)
+    labels = np.empty(n_samples, dtype=int)
+    cur = 0
 
-    if plot_data:
-        _plot_ad_hoc_data(x_sample, y_sample, training_size)
+    while n_samples > 0:
+        # Stratified Sampling for x vector
+        if divisions>0: x_vecs = _modified_LHC(n, n_samples, divisions)
+        else: x_vecs = _sobol_sampling(n, n_samples) 
 
-    training_input = {
-        key: (x_sample[y_sample == k, :])[:training_size] for k, key in enumerate(class_labels)
-    }
-    test_input = {
-        key: (x_sample[y_sample == k, :])[training_size : (training_size + test_size)]
-        for k, key in enumerate(class_labels)
-    }
+        # Seperable ZZFeaturemap: exp(sum j phi Zi + sum j phi Zi Zj)
+        ind_pairs = zz_diags.keys()
+        pre_exp = np.zeros((n_samples, dims))
 
-    training_feature_array, training_label_array = _features_and_labels_transform(
-        training_input, class_labels, one_hot
-    )
-    test_feature_array, test_label_array = _features_and_labels_transform(
-        test_input, class_labels, one_hot
-    )
+        # First Order Terms
+        for i in range(n):
+            pre_exp += _phi_i(x_vecs, i)*z_diags[i]
+        # Second Order Terms 
+        for (i,j) in ind_pairs:
+            pre_exp += _phi_ij(x_vecs, i, j)*zz_diags[(i,j)]
+        
+        # Since pre_exp is purely diagonal, exp(A) = diag(exp(Aii))
+        post_exp = np.exp(1j * pre_exp)
+        Uphi = np.zeros((n_samples, dims, dims), dtype = post_exp.dtype)
+        cols = range(dims)
+        Uphi[:,cols, cols] = post_exp[:, cols]
 
+        Psi = (Uphi @ h_n @ Uphi @ psi_0).reshape((-1, dims, 1))
+
+        # Labelling
+        Psi_dag = np.transpose(Psi.conj(), (0, 2, 1))
+        exp_val = np.real(Psi_dag @ O @ Psi).flatten()
+        
+        indx = np.abs(exp_val) > gap
+        count = np.sum(indx)
+        features[cur:cur+count] = x_vecs[indx]
+        labels[cur:cur+count] = np.sign(exp_val[indx])
+
+        n_samples -= count
+        cur += count
+
+    if plot_data: _plot_ad_hoc_data(features, labels, training_size)
+
+    if one_hot:
+        labels = _onehot_labels(labels)
+
+    res = [
+        features[:training_size],
+        labels[:training_size],
+        features[training_size:],
+        labels[training_size:],
+    ]
     if include_sample_total:
-        return (
-            training_feature_array,
-            training_label_array,
-            test_feature_array,
-            test_label_array,
-            sample_total,
-        )
-    else:
-        return (
-            training_feature_array,
-            training_label_array,
-            test_feature_array,
-            test_label_array,
-        )
+        res.append(cur)
 
-
-def _sample_ad_hoc_data(sample_total, xvals, num_samples, n):
-    count = sample_total.shape[0]
-    sample_a, sample_b = [], []
-    for i, sample_list in enumerate([sample_a, sample_b]):
-        label = 1 if i == 0 else -1
-        while len(sample_list) < num_samples:
-            draws = tuple(algorithm_globals.random.choice(count) for i in range(n))
-            if sample_total[draws] == label:
-                sample_list.append([xvals[d] for d in draws])
-
-    labels = np.array([0] * num_samples + [1] * num_samples)
-    samples = [sample_a, sample_b]
-    samples = np.reshape(samples, (2 * num_samples, n))
-    return samples, labels
+    return tuple(res)
 
 
 @optionals.HAS_MATPLOTLIB.require_in_call
-def _plot_ad_hoc_data(x_total, y_total, training_size):
+def _plot_ad_hoc_data(x_total: np.ndarray, y_total: np.ndarray, training_size: int) -> None:
+    """Plot the ad hoc dataset.
+
+    Args:
+        x_total (np.ndarray): The dataset features.
+        y_total (np.ndarray): The dataset labels.
+        training_size (int): Number of training samples to plot.
+    """
     import matplotlib.pyplot as plt
 
     n = x_total.shape[1]
@@ -230,41 +216,145 @@ def _plot_ad_hoc_data(x_total, y_total, training_size):
     plt.show()
 
 
-def _features_and_labels_transform(
-    dataset: Dict[str, np.ndarray], class_labels: List[str], one_hot: bool = True
-) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Converts a dataset into arrays of features and labels.
+def _onehot_labels(labels: np.ndarray) -> np.ndarray:
+    """Convert labels to one-hot encoded format.
 
     Args:
-        dataset: A dictionary in the format of {'A': numpy.ndarray, 'B': numpy.ndarray, ...}
-        class_labels: A list of classes in the dataset
-        one_hot (bool): if True - return one-hot encoded label
+        labels (np.ndarray): Array of labels.
 
     Returns:
-        A tuple of features as np.ndarray, label as np.ndarray
+        np.ndarray: One-hot encoded labels.
     """
-    features = np.concatenate(list(dataset.values()))
+    from sklearn.preprocessing import OneHotEncoder
 
-    raw_labels = []
-    for category in dataset.keys():
-        num_samples = dataset[category].shape[0]
-        raw_labels += [category] * num_samples
+    encoder = OneHotEncoder(sparse_output=False)
+    labels_one_hot = encoder.fit_transform(labels.reshape(-1, 1))
+    return labels_one_hot
 
-    if not raw_labels:
-        # no labels, empty dataset
-        labels = np.zeros((0, len(class_labels)))
-        return features, labels
 
-    if one_hot:
-        encoder = preprocessing.OneHotEncoder()
-        encoder.fit(np.array(class_labels).reshape(-1, 1))
-        labels = encoder.transform(np.array(raw_labels).reshape(-1, 1))
-        if not isinstance(labels, np.ndarray):
-            labels = np.array(labels.todense())
-    else:
-        encoder = preprocessing.LabelEncoder()
-        encoder.fit(np.array(class_labels))
-        labels = encoder.transform(np.array(raw_labels))
+def _n_hadamard(n: int) -> np.ndarray:
+    """Generate an n-qubit Hadamard matrix.
 
-    return features, labels
+    Args:
+        n (int): Number of qubits.
+
+    Returns:
+        np.ndarray: The n-qubit Hadamard matrix.
+    """
+    base = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
+    result = 1
+    expo = n
+
+    while expo > 0:
+        if expo % 2 == 1:
+            result = np.kron(result, base)
+        base = np.kron(base, base)
+        expo //= 2
+
+    return result
+
+
+def _i_z(i: int, n: int) -> np.ndarray:
+    """Create the i-th single-qubit Z gate in an n-qubit system.
+
+    Args:
+        i (int): Index of the qubit.
+        n (int): Total number of qubits.
+
+    Returns:
+        np.ndarray: The Z gate acting on the i-th qubit.
+    """
+    z = np.diag([1, -1])
+    i_1 = np.eye(2**i)
+    i_2 = np.eye(2 ** (n - i - 1))
+
+    result = np.kron(i_1, z)
+    result = np.kron(result, i_2)
+
+    return result
+
+
+def _n_z(h_n: np.ndarray) -> np.ndarray:
+    """Generate an n-qubit Z gate from the n-qubit Hadamard matrix.
+
+    Args:
+        h_n (np.ndarray): n-qubit Hadamard matrix.
+
+    Returns:
+        np.ndarray: The n-qubit Z gate.
+    """
+    res = np.diag(h_n)
+    res = np.sign(res)
+    res = np.diag(res)
+    return res
+
+
+def _modified_LHC(n: int, n_samples: int, n_div: int) -> np.ndarray:
+    """Generate samples using modified Latin Hypercube Sampling.
+
+    Args:
+        n (int): Dimensionality of the data.
+        n_samples (int): Number of samples to generate.
+        n_div (int): Number of divisions for stratified sampling.
+
+    Returns:
+        np.ndarray: Generated samples.
+    """
+    samples = np.empty((n_samples, n), dtype=float)
+    bin_size = 2 * np.pi / n_div
+    n_passes = (n_samples + n_div - 1) // n_div
+
+    all_bins = np.tile(np.arange(n_div), n_passes)
+
+    for dim in range(n):
+        algorithm_globals.random.shuffle(all_bins)
+        chosen_bins = all_bins[:n_samples]
+        offsets = algorithm_globals.random.random(n_samples)
+        samples[:, dim] = (chosen_bins + offsets) * bin_size
+
+    return samples
+
+
+def _sobol_sampling(n: int, n_samples: int) -> np.ndarray:
+    """Generate samples using Sobol sequence sampling.
+
+    Args:
+        n (int): Dimensionality of the data.
+        n_samples (int): Number of samples to generate.
+
+    Returns:
+        np.ndarray: Generated samples scaled to the interval [0, 2π].
+    """
+    sampler = Sobol(d=n, scramble=True)
+    p = 2 * np.pi * sampler.random(n_samples)
+    return p
+
+
+def _phi_i(x_vecs: np.ndarray, i: int) -> np.ndarray:
+    """Compute the φ_i term for a given dimension.
+
+    Args:
+        x_vecs (np.ndarray): Input sample vectors.
+        i (int): Dimension index.
+
+    Returns:
+        np.ndarray: Computed φ_i values.
+    """
+    return x_vecs[:, i].reshape((-1, 1))
+
+
+def _phi_ij(x_vecs: np.ndarray, i: int, j: int) -> np.ndarray:
+    """Compute the φ_ij term for given dimensions.
+
+    Args:
+        x_vecs (np.ndarray): Input sample vectors.
+        i (int): First dimension index.
+        j (int): Second dimension index.
+
+    Returns:
+        np.ndarray: Computed φ_ij values.
+    """
+    return ((np.pi - x_vecs[:, i]) * (np.pi - x_vecs[:, j])).reshape((-1, 1))
+
+# Uncomment to test
+# print(ad_hoc_data(10,10,5,0.1,3))
