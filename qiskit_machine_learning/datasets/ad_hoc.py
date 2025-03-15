@@ -41,7 +41,7 @@ def ad_hoc_data(
     sampling_method: str = "grid",
     divisions: int = 0,
     labelling_method: str = "expectation",
-    class_labels: list[str, str] = [r"A", r"B"],
+    class_labels: list = [0, 1],
 ) -> (
     Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
@@ -85,15 +85,17 @@ def ad_hoc_data(
 
     .. math::
         m(\vec{x}) = \begin{cases}
-        1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle > \Delta \\
-        -1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V | \Phi(\vec{x}) \rangle < -\Delta
+        1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V |
+        \Phi(\vec{x}) \rangle > \Delta \\
+        -1 & \langle \Phi(\vec{x}) | V^\dagger \prod_i Z_i V |
+        \Phi(\vec{x}) \rangle < -\Delta
         \end{cases}
 
-    where :math:`\Delta` is the separation gap, and
-    :math:`V` is a random unitary matrix.
+    where :math:`\Delta` is the separation gap, and :math:`V` is a random
+    unitary matrix.
 
-    The method used for the uniform sampling of :math:`\vec{x}` is decided by the
-    sampling method argument given. (See Args for more information)
+    The method used for the uniform sampling of :math:`\vec{x}` is decided by
+    the sampling method argument given. (See Args for more information)
 
     **References:**
 
@@ -108,18 +110,18 @@ def ad_hoc_data(
         n (int): Number of qubits (dimension of the feature space).
         gap (int, optional): If `labelling_method="expectation"`, this defines
             the separation gap (Δ).
-        plot_data (bool, optional): Whether to plot the data. Disabled if `n > 3`.
+        plot_data (bool, optional): Whether to plot the data. Disabled if `n>3`.
         one_hot (bool, optional): If `True`, returns labels in one-hot format.
-        include_sample_total (bool, optional): If `True`, returns the total number
-            of accepted samples along with training and testing samples.
+        include_sample_total (bool, optional): If `True`, returns the total
+            number of accepted samples along with training and testing samples.
         entanglement (str, optional):
             - `"linear"`: Includes all terms of the form :math:`Z_{i}Z_{i+1}`.
             - `"circular"`: Includes `linear` terms and additionally
               :math:`Z_{n-1}Z_{0}`.
             - `"full"`: Includes all possible pairs :math:`Z_iZ_j`.
         sampling_method (str, optional):
-            - `"grid"`: Generates a uniform grid and selects :math:`\vec{x}` from
-              the grid. (Only supported for `n <= 3`).
+            - `"grid"`: Generates a uniform grid and selects :math:`\vec{x}`
+              from the grid. (Only supported for `n <= 3`).
             - `"hypercube"`: Uses a variant of the Latin hypercube to generate
               1D stratified samples.
             - `"sobol"`: Uses Sobol sequences to generate uniformly
@@ -131,8 +133,8 @@ def ad_hoc_data(
         labelling_method (str, optional): Determines how labels are assigned.
             - `"expectation"`: Labels the datapoints based on the expectation
               value discussed above.
-            - `"measurement"`: Labels the datapoints based on a simple measurement
-              performed on the states.
+            - `"measurement"`: Labels the datapoints based on a simple
+              measurement performed on the states.
 
     Returns:
         Tuple: A tuple containing:
@@ -179,12 +181,13 @@ def ad_hoc_data(
 
     if sampling_method == "grid" and (training_size + test_size) > 4000:
         warnings.warn(
-            "Grid Sampling for large number of samples is not recommended.",
+            """Grid Sampling for large number of samples is not recommended 
+            and can lead to samples repeating in the training and testing sets""",
             UserWarning,
         )
 
     # Initial State
-    dims = 2**n
+    dims = 2 ** n
     psi_0 = np.ones(dims) / np.sqrt(dims)
 
     # n-qubit Hadamard
@@ -219,7 +222,8 @@ def ad_hoc_data(
     if labelling_method == "expectation":
         lab_fn = lambda x: _exp_label(x, gap, O)
     else:
-        lab_fn = lambda x: _measure(x, O)
+        eig = np.linalg.eigh(O)
+        lab_fn = lambda x: _measure(x, eig)
 
     # Sampling Methods
     if sampling_method == "grid":
@@ -253,19 +257,19 @@ def ad_hoc_data(
     res[0] = np.concatenate(
         (a_features[:training_size], b_features[:training_size]), axis=0
     )
-    res[1] = np.array(
-        [[class_labels[0]] * training_size + [class_labels[1]] * training_size]
-    )
     res[2] = np.concatenate(
         (a_features[training_size:], b_features[training_size:]), axis=0
     )
-    res[3] = np.array(
-        [[class_labels[0]] * test_size + [class_labels[1]] * test_size]
-    )
-
     if one_hot:
-        res[1] = _onehot_labels(res[1])
-        res[3] = _onehot_labels(res[3])
+        res[1] = np.array([[1, 0]] * training_size + [[0, 1]] * training_size)
+        res[3] = np.array([[1, 0]] * test_size + [[0, 1]] * test_size)
+    else:
+        res[1] = np.array(
+            [class_labels[0]] * training_size + [class_labels[1]] * training_size
+        )
+        res[3] = np.array(
+            [class_labels[0]] * test_size + [class_labels[1]] * test_size
+        )
 
     if include_sample_total:
         res.append(n_samples)
@@ -295,22 +299,6 @@ def _plot_ad_hoc_data(
     ax1.scatter(*b_features[:training_size].T)
     ax1.set_title("Ad-hoc Data")
     plt.show()
-
-
-def _onehot_labels(labels: np.ndarray) -> np.ndarray:
-    """Convert labels to one-hot encoded format.
-
-    Args:
-        labels (np.ndarray): Array of labels.
-
-    Returns:
-        np.ndarray: One-hot encoded labels.
-    """
-    from sklearn.preprocessing import OneHotEncoder
-
-    encoder = OneHotEncoder(sparse_output=False)
-    labels_one_hot = encoder.fit_transform(labels.reshape(-1, 1))
-    return labels_one_hot
 
 
 def _n_hadamard(n: int) -> np.ndarray:
@@ -346,7 +334,7 @@ def _i_z(i: int, n: int) -> np.ndarray:
         np.ndarray: The Z gate acting on the i-th qubit.
     """
     z = np.diag([1, -1])
-    i_1 = np.eye(2**i)
+    i_1 = np.eye(2 ** i)
     i_2 = np.eye(2 ** (n - i - 1))
 
     result = np.kron(i_1, z)
@@ -469,7 +457,8 @@ def _loop_sampling(
         n (int): Number of qubits (feature dimension).
         n_samples (int): Number of samples needed per class.
         z_diags (np.ndarray): Array of single-qubit Z diagonal elements.
-        zz_diags (dict): Dictionary of ZZ-diagonal elements keyed by qubit pairs.
+        zz_diags (dict): Dictionary of ZZ-diagonal elements keyed by qubit
+            pairs.
         O (np.ndarray): Observable for label determination.
         psi_0 (np.ndarray): Initial state vector.
         h_n (np.ndarray): n-qubit Hadamard matrix.
@@ -487,7 +476,7 @@ def _loop_sampling(
     a_features = np.empty((n_samples, n), dtype=float)
     b_features = np.empty((n_samples, n), dtype=float)
 
-    dims = 2**n
+    dims = 2 ** n
     a_cur, b_cur = 0, 0
     a_needed, b_needed = n_samples, n_samples
 
@@ -523,14 +512,14 @@ def _loop_sampling(
         raw_labels = lab_fn(Psi)
 
         if a_needed > 0:
-            a_indx = (raw_labels == 1)
+            a_indx = raw_labels == 1
             a_count = min(int(np.sum(a_indx)), a_needed)
             a_features[a_cur : a_cur + a_count] = x_vecs[a_indx][:a_count]
             a_cur += a_count
             a_needed -= a_count
 
         if b_needed > 0:
-            b_indx = (raw_labels == -1)
+            b_indx = raw_labels == -1
             b_count = min(int(np.sum(b_indx)), b_needed)
             b_features[b_cur : b_cur + b_count] = x_vecs[b_indx][:b_count]
             b_cur += b_count
@@ -546,8 +535,8 @@ def _exp_label(Psi, gap, O):
     Args:
         Psi (np.ndarray): Array of shape `(num_samples, dim, 1)` containing
             the statevectors for each sample.
-        gap (float): Separation gap (Δ). If the absolute expectation exceeds this,
-            the sample is labeled ±1 based on the sign.
+        gap (float): Separation gap (Δ). If the absolute expectation exceeds
+            this, the sample is labeled ±1 based on the sign.
         O (np.ndarray): Observable used for label determination.
 
     Returns:
@@ -560,7 +549,7 @@ def _exp_label(Psi, gap, O):
     return labels
 
 
-def _measure(Psi, O):
+def _measure(Psi, eig):
     """
     Compute labels by simulating a measurement of the observable on each state.
 
@@ -571,14 +560,15 @@ def _measure(Psi, O):
     Args:
         Psi (np.ndarray): Array of shape `(num_samples, dim, 1)` containing
             the statevectors for each sample.
-        O (np.ndarray): Observable to be 'measured', used to determine labels.
+        eig (np.ndarray): Eigenvalues of Observable to be 'measured'
 
     Returns:
         np.ndarray: Labels for each sample, set to one of the eigenvalues
-        of the observable `O`.
+        of the observable O.
     """
-    eigenvalues, eigenvectors = np.linalg.eigh(O)
-    new_psi = eigenvectors.T.conj().reshape((1, O.shape[0], O.shape[0])) @ Psi
+    eigenvalues, eigenvectors = eig
+    eigshape = eigenvectors.shape
+    new_psi = eigenvectors.T.conj().reshape((1, eigshape[1], eigshape[0])) @ Psi
 
     probab = np.abs(new_psi) ** 2
     toss = algorithm_globals.random.random((Psi.shape[0], 1))
@@ -586,7 +576,7 @@ def _measure(Psi, O):
     collapsed = (cum_probab >= toss).argmax(axis=-1, keepdims=True)
     labels = eigenvalues[collapsed.flatten()]
 
-    return labels
+    return np.sign(labels)
 
 
 def _grid_sampling(n, n_samples, z_diags, zz_diags, O, psi_0, h_n, lab_fn):
@@ -613,7 +603,7 @@ def _grid_sampling(n, n_samples, z_diags, zz_diags, O, psi_0, h_n, lab_fn):
             so the returned arrays are empty placeholders by default.
     """
     if n == 1:
-        count = 1000
+        count = 5000
     elif n == 2:
         count = 100
     elif n == 3:
