@@ -12,12 +12,13 @@
 
 """ Test Ad Hoc Data """
 
+from test import QiskitMachineLearningTestCase
+
 import unittest
-import warnings
 import json
 import numpy as np
 from ddt import ddt, unpack, idata
-from test import QiskitMachineLearningTestCase
+
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.datasets import ad_hoc_data
 
@@ -42,9 +43,7 @@ class TestAdHocData(QiskitMachineLearningTestCase):
         )
         np.testing.assert_array_equal(training_features.shape, (40, num_features))
         np.testing.assert_array_equal(training_labels.shape, (40,))
-        np.testing.assert_array_almost_equal(
-            test_labels, np.array([0] * 10 + [1] * 10)
-        )
+        np.testing.assert_array_almost_equal(test_labels, np.array([0] * 10 + [1] * 10))
 
         # Now one_hot=True
         _, _, _, test_labels_oh = ad_hoc_data(
@@ -56,9 +55,7 @@ class TestAdHocData(QiskitMachineLearningTestCase):
             one_hot=True,
         )
         np.testing.assert_array_equal(test_labels_oh.shape, (20, 2))
-        np.testing.assert_array_equal(
-            test_labels_oh, np.array([[1, 0]] * 10 + [[0, 1]] * 10)
-        )
+        np.testing.assert_array_equal(test_labels_oh, np.array([[1, 0]] * 10 + [[0, 1]] * 10))
 
     def test_ref_data(self):
         """Tests ad hoc against known reference data"""
@@ -267,10 +264,10 @@ class TestAdHocData(QiskitMachineLearningTestCase):
         """Test custom class labels."""
         custom_labels = ["Class1", "Class2"]
         (
-            training_features,
+            _,
             training_labels,
-            test_features,
-            test_labels,
+            _,
+            _,
         ) = ad_hoc_data(
             training_size=10,
             test_size=5,
@@ -320,9 +317,9 @@ class TestAdHocData(QiskitMachineLearningTestCase):
         """Test with dimensions higher than 3 (n=4)."""
         (
             training_features,
-            training_labels,
+            _,
             test_features,
-            test_labels,
+            _,
         ) = ad_hoc_data(
             training_size=5,
             test_size=3,
@@ -449,10 +446,9 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_measurement_sobol_sampling(self):
         """Test custom labels with circular entanglement."""
-        custom_labels = ["Yes", "No"]
         (
             training_features,
-            training_labels,
+            _,
             test_features,
             _,
         ) = ad_hoc_data(
