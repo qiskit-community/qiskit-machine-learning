@@ -93,10 +93,11 @@ class QNSPSA(SPSA):
 
     """
 
-    # pylint: disable=too-many-positional-arguments
+
     def __init__(
         self,
         fidelity: FIDELITY,
+        *,
         maxiter: int = 100,
         blocking: bool = True,
         allowed_increase: float | None = None,

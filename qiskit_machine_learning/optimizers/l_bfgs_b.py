@@ -50,6 +50,7 @@ class L_BFGS_B(SciPyOptimizer):  # pylint: disable=invalid-name
     # pylint: disable=unused-argument
     def __init__(
         self,
+        *,
         maxfun: int = 15000,
         maxiter: int = 15000,
         ftol: SupportsFloat = 10 * np.finfo(float).eps,

@@ -174,9 +174,10 @@ class GradientDescent(SteppableOptimizer):
 
     """
 
-    # pylint: disable=too-many-positional-arguments
+
     def __init__(
         self,
+        *,
         maxiter: int = 100,
         learning_rate: (
             float | list[float] | np.ndarray | Callable[[], Generator[float, None, None]]
