@@ -80,6 +80,7 @@ class QNNCircuit(BlueprintCircuit):
 
     def __init__(
         self,
+        *,
         num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
