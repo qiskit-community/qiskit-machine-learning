@@ -76,7 +76,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             feature_map=self.feature_map,
             training_parameters=self.training_parameters,
         )
-        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel)
+        qkt = QuantumKernelTrainer(quantum_kernel)
         qkt_result = qkt.fit(self.sample_train, self.label_train)
 
         self._fit_and_assert_score(qkt_result)
@@ -93,7 +93,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         )
         loss = SVCLoss(C=0.8, gamma="auto")
         optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
-        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer)
+        qkt = QuantumKernelTrainer(quantum_kernel, loss=loss, optimizer=optimizer)
         qkt_result = qkt.fit(self.sample_train, self.label_train)
 
         # Ensure user parameters are bound to real values
@@ -113,7 +113,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
         )
         loss = SVCLoss(C=0.8, gamma="auto")
         optimizer = partial(minimize, method="COBYLA", options={"maxiter": 25})
-        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel, loss=loss, optimizer=optimizer)
+        qkt = QuantumKernelTrainer(quantum_kernel, loss=loss, optimizer=optimizer)
         with self.assertRaises(ValueError):
             qkt.fit(self.sample_train, self.label_train)
 
@@ -135,7 +135,7 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
             training_parameters=[training_parameters],
         )
 
-        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel)
+        qkt = QuantumKernelTrainer(quantum_kernel)
         qkt_result = qkt.fit(self.sample_train, self.label_train)
 
         self._fit_and_assert_score(qkt_result)
