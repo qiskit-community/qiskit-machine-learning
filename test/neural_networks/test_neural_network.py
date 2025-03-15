@@ -128,13 +128,13 @@ class TestNeuralNetwork(QiskitMachineLearningTestCase):
 
     def test_data_gradients(self):
         """Tests data_gradient setter/getter."""
-        network = _NeuralNetwork(1, 1, True, 1)
+        network = _NeuralNetwork(num_inputs=1,num_weights=1,sparse=True,output_shape=1)
         self.assertFalse(network.input_gradients)
 
         network.input_gradients = True
         self.assertTrue(network.input_gradients)
 
-        network = _NeuralNetwork(1, 1, True, 1, True)
+        network = _NeuralNetwork(num_inputs=1,num_weights=1,sparse=True,output_shape=1,input_gradients=True)
         self.assertTrue(network.input_gradients)
 
 
