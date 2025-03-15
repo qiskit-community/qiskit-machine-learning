@@ -163,7 +163,7 @@ class SPSA(Optimizer):
 
     def __init__(
         self,
-        *,        
+        *,
         maxiter: int = 100,
         blocking: bool = False,
         allowed_increase: float | None = None,

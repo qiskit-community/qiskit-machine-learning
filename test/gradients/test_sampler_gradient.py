@@ -1122,7 +1122,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
                     {0: -0.17677624757590138, 1: 0.17677624757590138},
                 ],
             ]
-            for i, p in enumerate(param): 
+            for i, p in enumerate(param):
                 gradient = SPSASamplerGradient(self.sampler, epsilon=1e-6, seed=123)
                 gradients = gradient.run([qc], param_list, parameters=[p]).result().gradients[0]
                 array1 = _quasi2array(gradients, num_qubits=1)

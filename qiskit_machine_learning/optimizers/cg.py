@@ -33,7 +33,6 @@ class CG(SciPyOptimizer):
 
     _OPTIONS = ["maxiter", "disp", "gtol", "eps"]
 
-
     # pylint: disable=unused-argument
     def __init__(
         self,

@@ -93,7 +93,6 @@ class QNSPSA(SPSA):
 
     """
 
-
     def __init__(
         self,
         fidelity: FIDELITY,

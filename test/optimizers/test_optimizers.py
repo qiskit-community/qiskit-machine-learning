@@ -195,7 +195,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
             optimizer = SciPyOptimizer("SLSQP")
 
             # Call minimize method with a simple lambda function and bounds
-            optimizer.minimize(lambda x: -x,jac=1.0, bounds=[(0.0, 1.0)])
+            optimizer.minimize(lambda x: -x, jac=1.0, bounds=[(0.0, 1.0)])
 
             # Assert that "bounds" is not present in optimizer options and kwargs
             self.assertFalse("bounds" in optimizer._options)

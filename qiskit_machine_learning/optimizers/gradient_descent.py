@@ -174,7 +174,6 @@ class GradientDescent(SteppableOptimizer):
 
     """
 
-
     def __init__(
         self,
         *,

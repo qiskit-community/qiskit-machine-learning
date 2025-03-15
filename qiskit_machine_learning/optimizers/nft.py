@@ -29,7 +29,6 @@ class NFT(SciPyOptimizer):
 
     _OPTIONS = ["maxiter", "maxfev", "disp", "reset_interval"]
 
-
     # pylint: disable=unused-argument
     def __init__(
         self,
