@@ -91,7 +91,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        super().__init__(neural_network, loss, optimizer, warm_start, initial_point, callback)
+        super().__init__(neural_network)
         self._one_hot = one_hot
         # encodes the target data if categorical
         self._target_encoder = OneHotEncoder(sparse_output=False) if one_hot else LabelEncoder()

@@ -74,7 +74,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
         x_0 = np.asarray([1.3, 0.7, 0.8, 1.9, 1.2])
         jac = rosen_der if grad else None
 
-        res = optimizer.minimize(rosen, x_0, jac, bounds)
+        res = optimizer.minimize(rosen, x_0, jac=jac, bounds=bounds)
         x_opt = res.x
         nfev = res.nfev
 
@@ -195,7 +195,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
             optimizer = SciPyOptimizer("SLSQP")
 
             # Call minimize method with a simple lambda function and bounds
-            optimizer.minimize(lambda x: -x, 1.0, bounds=[(0.0, 1.0)])
+            optimizer.minimize(lambda x: -x,jac=1.0, bounds=[(0.0, 1.0)])
 
             # Assert that "bounds" is not present in optimizer options and kwargs
             self.assertFalse("bounds" in optimizer._options)
