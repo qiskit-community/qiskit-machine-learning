@@ -42,10 +42,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     See `Scikit-Learn <https://scikit-learn.org>`__ for more details.
     """
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         neural_network: NeuralNetwork,
+        /,
+        *,
         loss: str | Loss = "squared_error",
         one_hot: bool = False,
         optimizer: Optimizer | Minimizer | None = None,

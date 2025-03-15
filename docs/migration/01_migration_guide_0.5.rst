@@ -395,7 +395,7 @@ small number to reduce overall execution time.
     from qiskit_machine_learning.algorithms import NeuralNetworkClassifier
 
     classifier = NeuralNetworkClassifier(
-        neural_network=circuit_qnn,
+        circuit_qnn,
         loss="cross_entropy",
         one_hot=True,
         optimizer=COBYLA(maxiter=40),
@@ -447,7 +447,7 @@ pass a created ``SamplerQNN`` and this is the only difference.
 .. code:: ipython3
 
     classifier = NeuralNetworkClassifier(
-        neural_network=sampler_qnn,
+        sampler_qnn,
         loss="cross_entropy",
         one_hot=True,
         optimizer=COBYLA(maxiter=40),
