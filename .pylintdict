@@ -3,6 +3,7 @@ adam
 adjoint
 ae
 aer
+aii
 al
 alan
 algo
@@ -125,13 +126,16 @@ dω
 eda
 edaspy
 egger
+eig
 eigen
+eigenbasis
 eigenphase
 eigenproblem
 eigensolver
 eigensolvers
 eigenstate
 eigenstates
+eigenvectors
 einstein
 einsum
 elif
@@ -210,6 +214,7 @@ hashable
 hatano
 havlíček
 heidelberg
+hermitian
 hessians
 hilbert
 hoc
@@ -263,8 +268,10 @@ kumar
 kwarg
 kwargs
 labelled
+labelling
 lagrange
 langle
+latin
 linux
 larrañaga
 lcu
@@ -301,6 +308,7 @@ mcry
 mcrz
 mcz
 michael
+minima
 minimised
 minimizer
 minwidth
@@ -351,6 +359,7 @@ num
 numpy
 nxd
 nxm
+o
 o'brien
 objval
 observables
@@ -379,6 +388,7 @@ parametrization
 parametrizations
 parametrize
 parametrized
+parameterized
 params
 pauli
 paulis
@@ -497,6 +507,7 @@ sklearn
 skquant
 sle
 slsqp
+sobol
 softmax
 soloviev
 spall
@@ -611,3 +622,6 @@ zz
 θ
 ψ
 ω
+φ_i
+φ_ij
+Δ

@@ -1,0 +1,21 @@
+
+features:
+  - |
+    The :class:`~qiskit_machine_learning.datasets.ad_hoc_data` class now supports more than
+    three qubits. It also now supports multiple sampling methods, linear/circular/full
+    entanglements and also both expectation-based and measurement-based labelling.
+
+    Example of a 4-qubit dataset with the new features:
+
+    .. code-block:: python
+    
+        ad_hoc_data(
+            training_size=8,
+            test_size=4,
+            n=4,
+            plot_data=False,
+            one_hot=False,
+            labelling_method="measurement",
+            sampling_method="sobol",
+            entanglement="circular"
+        )
