@@ -311,7 +311,7 @@ class TestAdHocData(QiskitMachineLearningTestCase):
             include_sample_total=True,
         )
         self.assertEqual(len(result), 5)
-        self.assertIsInstance(result[4], int)
+        np.testing.assert_array_equal(result[4], np.array([30]))
 
     def test_higher_qubits(self):
         """Test with dimensions higher than 3 (n=4)."""

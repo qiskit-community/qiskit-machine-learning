@@ -288,10 +288,10 @@ def ad_hoc_data(
         y_test = np.array([class_labels[0]] * test_size + [class_labels[1]] * test_size)
 
     if include_sample_total:
-        samples = np.array([include_sample_total])
+        samples = np.array([n_samples * 2])
         return (x_train, y_train, x_test, y_test, samples)
 
-    return (x_train, y_train, x_test, y_test, samples)
+    return (x_train, y_train, x_test, y_test)
 
 
 @optionals.HAS_MATPLOTLIB.require_in_call
