@@ -43,6 +43,7 @@ benchmarking
 bergholm
 bfgs
 bielza
+bigl
 bitstring
 bitstrings
 bivariate
@@ -529,6 +530,8 @@ stefano
 steppable
 stepsize
 str
+stratifications
+stratification
 subcircuits
 subclassed
 subclasses

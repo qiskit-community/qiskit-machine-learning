@@ -278,21 +278,20 @@ def ad_hoc_data(
     if plot_data:
         _plot_ad_hoc_data(a_features, b_features, training_size)
 
-    res = [None] * 4
-
-    res[0] = np.concatenate((a_features[:training_size], b_features[:training_size]), axis=0)
-    res[2] = np.concatenate((a_features[training_size:], b_features[training_size:]), axis=0)
+    x_train = np.concatenate((a_features[:training_size], b_features[:training_size]), axis=0)
+    x_test = np.concatenate((a_features[training_size:], b_features[training_size:]), axis=0)
     if one_hot:
-        res[1] = np.array([[1, 0]] * training_size + [[0, 1]] * training_size)
-        res[3] = np.array([[1, 0]] * test_size + [[0, 1]] * test_size)
+        y_train = np.array([[1, 0]] * training_size + [[0, 1]] * training_size)
+        y_test = np.array([[1, 0]] * test_size + [[0, 1]] * test_size)
     else:
-        res[1] = np.array([class_labels[0]] * training_size + [class_labels[1]] * training_size)
-        res[3] = np.array([class_labels[0]] * test_size + [class_labels[1]] * test_size)
+        y_train = np.array([class_labels[0]] * training_size + [class_labels[1]] * training_size)
+        y_test = np.array([class_labels[0]] * test_size + [class_labels[1]] * test_size)
 
     if include_sample_total:
-        res.append(n_samples)
+        samples = np.array([include_sample_total])
+        return (x_train, y_train, x_test, y_test, samples)
 
-    return tuple(res)
+    return (x_train, y_train, x_test, y_test, samples)
 
 
 @optionals.HAS_MATPLOTLIB.require_in_call
@@ -325,7 +324,7 @@ def _n_hadamard(n: int) -> np.ndarray:
         np.ndarray: The n-qubit Hadamard matrix.
     """
     base = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
-    result = 1
+    result = np.eye(1)
     expo = n
 
     while expo > 0:
