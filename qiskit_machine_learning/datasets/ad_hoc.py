@@ -119,7 +119,7 @@ def ad_hoc_data(
 
             Default is ``"grid"``.
         divisions : Must be specified if ``sampling_method="hypercube"``. This parameter 
-            determines the number of stratifications along each dimension. Recommened 
+            determines the number of stratifications along each dimension. Recommended 
             to be chosen close to ``training_size``. 
         labelling_method : Method for assigning labels. The options are:
 
