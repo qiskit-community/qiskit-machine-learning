@@ -47,12 +47,8 @@ def ad_hoc_data(
     r"""
     Generates a dataset that can be fully separated by
     :class:`~qiskit.circuit.library.ZZFeatureMap` according to the procedure
-    outlined in [1].
-
-    **Overview**
-
-    First, vectors :math:`\vec{x} \in (0, 2\pi]^{n}` are generated from a uniform
-    distribution, using a sampling method determined by the ``sampling_method``
+    outlined in [1]. First, vectors :math:`\vec{x} \in (0, 2\pi]^{n}` are generated from a 
+    uniform distribution, using a sampling method determined by the ``sampling_method``
     argument. Next, a feature map is applied:
 
     .. math::
@@ -69,98 +65,81 @@ def ad_hoc_data(
     and
 
     .. math::
-       \phi_{\{i,j\}} = (\pi - x_i)(\pi - x_j), \quad
-       \phi_{\{i\}} = x_i.
+        \begin{cases}\phi_{\{i, j\}} = (\pi - x_i)(\pi - x_j) \\
+        \phi_{\{i\}} = x_i \end{cases}
 
-    The choice of second-order terms :math:`Z_i Z_j` in the sum depends on the
-    ``entanglement`` argument (e.g., ``"linear"``, ``"circular"``, or
-    ``"full"``).
+    The choice of second-order terms :math:`Z_i Z_j` in the above summation depends 
+    on the ``entanglement`` argument (``"linear"``, ``"circular"``, or
+    ``"full"``). See arguments for more information.
 
     An observable is then defined as
 
     .. math::
-       O = V^\dagger \bigl(\prod_i Z_i\bigr) V,
+       O = V^\dagger \bigl(\prod_i Z_i\bigr) V
 
-    where :math:`V` is a random unitary matrix. Depending on the
-    ``labelling_method``:
+    where :math:`V` is a randomly generated unitary matrix. Depending on the
+    ``labelling_method``, if ``"expectation"`` is used, the expectation value
+    :math:`\langle \Phi(\vec{x})| O |\Phi(\vec{x})\rangle` is compared to the
+    gap parameter :math:`\Delta` (from ``gap``) to assign :math:`\pm 1` labels. 
+    if ``"measurement"`` is used, a simple measurement in the computational 
+    basis is performed to assign labels.
 
-    - If ``"expectation"``, the expectation value
-      :math:`\langle \Phi(\vec{x})| O |\Phi(\vec{x})\rangle` is compared to the
-      gap parameter :math:`\Delta` (from ``gap``) to assign :math:`\pm 1` labels.
-    - If ``"measurement"``, a simple measurement in the computational basis is
-      performed to assign labels.
-
-    **References**
+    **References:**
 
     [1] Havlíček V, Córcoles AD, Temme K, Harrow AW, Kandala A, Chow JM,
     Gambetta JM. *Supervised learning with quantum-enhanced feature spaces*.
     Nature. 2019 Mar;567(7747):209–212.
     `arXiv:1804.11326 <https://arxiv.org/abs/1804.11326>`_
 
-    Parameters
-    ----------
-    training_size : int
-        Number of training samples **per class**.
-    test_size : int
-        Number of testing samples **per class**.
-    n : int
-        Number of qubits (dimension of the feature space).
-    gap : int, optional
-        Separation gap :math:`\Delta` when ``labelling_method="expectation"``.
-        Default is 0.
-    plot_data : bool, optional
-        If True, plots the sampled data (disabled automatically if ``n > 3``).
-        Default is False.
-    one_hot : bool, optional
-        If True, returns labels in one-hot format. Default is True.
-    include_sample_total : bool, optional
-        If True, the function also returns the total number of accepted samples
-        (those that fall outside the ``\pm \Delta`` zone). Default is False.
-    entanglement : str, optional
-        Determines which second-order terms :math:`Z_i Z_j` appear in
-        :math:`U_{\Phi(\vec{x})}`. The options are:
+    Parameters:
+        training_size : Number of training samples per class.
+        test_size :  Number of testing samples per class.
+        n : Number of qubits (dimension of the feature space).
+        gap : Separation gap :math:`\Delta` used when ``labelling_method="expectation"``.
+            Default is 0.
+        plot_data : If True, plots the sampled data (disabled automatically if 
+            ``n > 3``). Default is False.
+        one_hot : If True, returns labels in one-hot format. Default is True.
+        include_sample_total : If True, the function also returns the total number 
+            of accepted samples. Default is False.
+        entanglement : Determines which second-order terms :math:`Z_i Z_j` appear in
+            :math:`U_{\Phi(\vec{x})}`. The options are:
 
-        * ``"linear"``: Includes terms :math:`Z_i Z_{i+1}`.
-        * ``"circular"``: Includes ``"linear"`` terms plus :math:`Z_{n-1}Z_0`.
-        * ``"full"``: Includes all pairwise terms :math:`Z_i Z_j`.
+                * ``"linear"``: Includes terms :math:`Z_i Z_{i+1}`.
+                * ``"circular"``: Includes ``"linear"`` terms plus :math:`Z_{n-1}Z_0`.
+                * ``"full"``: Includes all pairwise terms :math:`Z_i Z_j`.
 
-        Default is ``"full"``.
-    sampling_method : str, optional
-        The method used to generate uniform samples :math:`\vec{x}`:
+            Default is ``"full"``.
+        sampling_method: The method used to generate uniform samples :math:`\vec{x}`.
+            Choices are:
 
-        * ``"grid"``: Generates a uniform grid and selects points (supported only
-          if ``n <= 3``).
-        * ``"hypercube"``: Uses a variant of Latin hypercube sampling for
-          stratified samples.
-        * ``"sobol"``: Uses Sobol sequences.
+                * ``"grid"``: Chooses points from a uniform grid (supported only if ``n <= 3``)
+                * ``"hypercube"``: Uses a variant of Latin Hypercube sampling for stratification
+                * ``"sobol"``: Uses Sobol sequences
 
-        Default is ``"grid"``.
-    divisions : int, optional
-        If ``sampling_method="hypercube"``, this parameter determines the number
-        of stratifications along each dimension. Should be chosen close to
-        ``training_size``. Default is 0 (unused by other methods).
-    labelling_method : str, optional
-        Method for assigning labels:
+            Default is ``"grid"``.
+        divisions : Must be specified if ``sampling_method="hypercube"``. This parameter 
+            determines the number of stratifications along each dimension. Recommened 
+            to be chosen close to ``training_size``. 
+        labelling_method : Method for assigning labels. The options are:
 
-        * ``"expectation"``: Uses the expectation value of :math:`O`.
-        * ``"measurement"``: Performs a measurement in the computational basis.
+                * ``"expectation"``: Uses the expectation value of the observable.
+                * ``"measurement"``: Performs a measurement in the computational basis.
 
-        Default is ``"expectation"``.
-    class_labels : list, optional
-        Custom labels for the two classes. If not provided, the labels default to
-        ``-1`` and ``+1`` (or one-hot encoded equivalents).
+            Default is ``"expectation"``.
+        class_labels : Custom labels for the two classes when one-hot is not enabled. 
+            If not provided, the labels default to ``-1`` and ``+1``
 
-    Returns
-    -------
-    Tuple
-        A tuple containing:
+    Returns:
+        Tuple
+        containing the following:
 
         * **training_features** : ``np.ndarray``
         * **training_labels** : ``np.ndarray``
         * **testing_features** : ``np.ndarray``
         * **testing_labels** : ``np.ndarray``
 
-        If ``include_sample_total=True``, a fifth element (``int``) is included
+        If ``include_sample_total=True``, a fifth element (``np.ndarray``) is included
         that specifies the total number of accepted samples.
     """
 
@@ -174,7 +153,7 @@ def ad_hoc_data(
     if test_size < 0:
         raise ValueError("Test size can't be less than 0")
     if n <= 0:
-        raise ValueError("Number of qubits can't be less than 0")
+        raise ValueError("Number of qubits can't be less than 1")
     if gap < 0 and labelling_method == "expectation":
         raise ValueError("Gap can't be less than 0")
     if entanglement not in {"linear", "circular", "full"}:
