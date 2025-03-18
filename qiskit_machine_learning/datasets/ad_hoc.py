@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import warnings
 import itertools as it
-from typing import Tuple
 
 import numpy as np
 from scipy.stats.qmc import Sobol
@@ -41,8 +40,8 @@ def ad_hoc_data(
     labelling_method: str = "expectation",
     class_labels: list | None = None,
 ) -> (
-    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-    | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+    | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 ):
     r"""
     Generates a dataset that can be fully separated by
