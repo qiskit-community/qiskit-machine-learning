@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -41,6 +41,13 @@ class GradientDescentState(OptimizerState):
     next step) but it can also return  the current learning rate with ``learning_rate.current``.
 
     """
+
+    # See parent class for a comment on having a custom equals. I needed this
+    # too as it does not appear to use super by default and without this failed
+    # the exact same way. Note it does not include learning rate as that field
+    # is not included in the compare as pre the field decorator.
+    def __eq__(self, other: GradientDescentState):
+        return super().__eq__(other) and self.stepsize == other.stepsize
 
 
 class GradientDescent(SteppableOptimizer):
