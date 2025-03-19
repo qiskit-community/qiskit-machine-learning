@@ -45,8 +45,17 @@ class GradientDescentState(OptimizerState):
     # See parent class for a comment on having a custom equals. I needed this
     # too as it does not appear to use super by default and without this failed
     # the exact same way. Note it does not include learning rate as that field
-    # is not included in the compare as pre the field decorator.
-    def __eq__(self, other: GradientDescentState):
+    # is not included in the compare as pre the field decorator. The __eq__
+    # method is supposed to accept any object. If you update the version of
+    # mypy you're using, it'll print out a note recommending this code
+    # structure.
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GradientDescentState):
+            # If we return NotImplemented, Python will automatically try
+            # running other.__eq__(self), in case 'other' knows what to do with
+            # Person objects.
+            return NotImplemented
+
         return super().__eq__(other) and self.stepsize == other.stepsize
 
 

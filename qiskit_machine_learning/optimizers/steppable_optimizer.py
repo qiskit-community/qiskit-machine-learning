@@ -75,8 +75,16 @@ class OptimizerState:
 
     # Under Python 3.13 the auto-generated equal fails with an error around
     # using numpy all or any. See https://github.com/qiskit-community/qiskit-algorithms/pull/225
-    # for further information. Hence, this custom function was added.
-    def __eq__(self, other: OptimizerState):
+    # for further information. Hence, this custom function was added. The __eq__
+    # method is supposed to accept any object. If you update the version of
+    # mypy you're using, it'll print out a note recommending this code structure.
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, OptimizerState):
+            # If we return NotImplemented, Python will automatically try
+            # running other.__eq__(self), in case 'other' knows what to do with
+            # Person objects.
+            return NotImplemented
+
         return (
             (
                 self.x == other.x
