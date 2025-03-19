@@ -1,2 +1,1 @@
-numpy>=2
-qiskit<2.0
+
