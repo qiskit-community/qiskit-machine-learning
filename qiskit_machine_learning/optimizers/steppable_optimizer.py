@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -72,6 +72,35 @@ class OptimizerState:
     """Number of jacobian evaluations so far in the optimization."""
     nit: int | None
     """Number of optimization steps performed so far in the optimization."""
+
+    # Under Python 3.13 the auto-generated equal fails with an error around
+    # using numpy all or any. See https://github.com/qiskit-community/qiskit-algorithms/pull/225
+    # for further information. Hence, this custom function was added. The __eq__
+    # method is supposed to accept any object. If you update the version of
+    # mypy you're using, it'll print out a note recommending this code structure.
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, OptimizerState):
+            # If we return NotImplemented, Python will automatically try
+            # running other.__eq__(self), in case 'other' knows what to do with
+            # Person objects.
+            return NotImplemented
+
+        return (
+            (
+                self.x == other.x
+                if isinstance(self.x, float) and isinstance(other.x, float)
+                else (
+                    False
+                    if isinstance(self.x, float) or isinstance(other.x, float)
+                    else self.x.shape == other.x.shape and (self.x == other.x).all()
+                )
+            )
+            and self.fun == other.fun
+            and self.jac == other.jac
+            and self.nfev == other.nfev
+            and self.njev == other.njev
+            and self.nit == other.nit
+        )
 
 
 class SteppableOptimizer(Optimizer):
