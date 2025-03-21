@@ -88,8 +88,12 @@ class OptimizerState:
         return (
             (
                 self.x == other.x
-                if isinstance(self.x, float)
-                else (self.x.shape == other.x.shape and (self.x == other.x).all())
+                if isinstance(self.x, float) and isinstance(other.x, float)
+                else (
+                    False
+                    if isinstance(self.x, float) or isinstance(other.x, float)
+                    else self.x.shape == other.x.shape and (self.x == other.x).all()
+                )
             )
             and self.fun == other.fun
             and self.jac == other.jac
