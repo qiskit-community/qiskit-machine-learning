@@ -88,6 +88,7 @@ class QuantumKernelTrainer:
     def __init__(
         self,
         quantum_kernel: TrainableKernel,
+        *,
         loss: str | KernelLoss | None = None,
         optimizer: Optimizer | Minimizer | None = None,
         initial_point: Sequence[float] | None = None,

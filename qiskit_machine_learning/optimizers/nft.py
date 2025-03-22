@@ -29,10 +29,10 @@ class NFT(SciPyOptimizer):
 
     _OPTIONS = ["maxiter", "maxfev", "disp", "reset_interval"]
 
-    # pylint: disable=too-many-positional-arguments
     # pylint: disable=unused-argument
     def __init__(
         self,
+        *,
         maxiter: int | None = None,
         maxfev: int = 1024,
         disp: bool = False,

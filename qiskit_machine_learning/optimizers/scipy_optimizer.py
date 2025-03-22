@@ -113,6 +113,7 @@ class SciPyOptimizer(Optimizer):
         self,
         fun: Callable[[POINT], float],
         x0: POINT,
+        *,
         jac: Callable[[POINT], POINT] | None = None,
         bounds: list[tuple[float, float]] | None = None,
     ) -> OptimizerResult:

@@ -62,6 +62,7 @@ class ADAM(Optimizer):
     # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
+        *,
         maxiter: int = 10000,
         tol: float = 1e-6,
         lr: float = 1e-3,

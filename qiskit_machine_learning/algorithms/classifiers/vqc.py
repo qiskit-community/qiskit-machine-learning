@@ -144,7 +144,7 @@ class VQC(NeuralNetworkClassifier):
         )
 
         super().__init__(
-            neural_network=neural_network,
+            neural_network,
             loss=loss,
             one_hot=True,
             optimizer=optimizer,

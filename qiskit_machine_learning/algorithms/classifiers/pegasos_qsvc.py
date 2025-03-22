@@ -45,7 +45,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
 
         quantum_kernel = FidelityQuantumKernel()
 
-        pegasos_qsvc = PegasosQSVC(quantum_kernel=quantum_kernel)
+        pegasos_qsvc = PegasosQSVC(quantum_kernel)
         pegasos_qsvc.fit(sample_train, label_train)
         pegasos_qsvc.predict(sample_test)
 
@@ -58,11 +58,11 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     FITTED = 0
     UNFITTED = 1
 
-    # pylint: disable=too-many-positional-arguments
-    # pylint: disable=invalid-name
     def __init__(
         self,
         quantum_kernel: BaseKernel | None = None,
+        /,
+        *,
         C: float = 1.0,
         num_steps: int = 1000,
         precomputed: bool = False,

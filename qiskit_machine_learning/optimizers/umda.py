@@ -123,6 +123,7 @@ class UMDA(Optimizer):
 
     def __init__(
         self,
+        *,
         maxiter: int = 100,
         size_gen: int = 20,
         alpha: float = 0.5,
@@ -208,6 +209,7 @@ class UMDA(Optimizer):
         self,
         fun: Callable[[POINT], float],
         x0: POINT,
+        *,
         jac: Callable[[POINT], POINT] | None = None,
         bounds: list[tuple[float, float]] | None = None,
     ) -> OptimizerResult:

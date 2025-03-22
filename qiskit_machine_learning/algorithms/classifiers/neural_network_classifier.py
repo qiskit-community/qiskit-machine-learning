@@ -42,10 +42,11 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     See `Scikit-Learn <https://scikit-learn.org>`__ for more details.
     """
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         neural_network: NeuralNetwork,
+        /,
+        *,
         loss: str | Loss = "squared_error",
         one_hot: bool = False,
         optimizer: Optimizer | Minimizer | None = None,
@@ -90,7 +91,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
         Raises:
             QiskitMachineLearningError: unknown loss, invalid neural network
         """
-        super().__init__(neural_network, loss, optimizer, warm_start, initial_point, callback)
+        super().__init__(neural_network)
         self._one_hot = one_hot
         # encodes the target data if categorical
         self._target_encoder = OneHotEncoder(sparse_output=False) if one_hot else LabelEncoder()

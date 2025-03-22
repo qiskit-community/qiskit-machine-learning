@@ -95,7 +95,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
     def test_alg_results(self, qnn_name, num_inputs, num_params, result):
         """Test that the algorithm results match the original code's."""
         qnn = self.qnns[qnn_name]
-        global_ed = EffectiveDimension(qnn=qnn, weight_samples=num_params, input_samples=num_inputs)
+        global_ed = EffectiveDimension(qnn, weight_samples=num_params, input_samples=num_inputs)
 
         effdim = global_ed.get_effective_dimension(self.n)
 
@@ -109,13 +109,13 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         qnn2 = self.qnns["estimator_qnn"]
 
         global_ed1 = EffectiveDimension(
-            qnn=qnn1,
+            qnn1,
             weight_samples=num_weight_samples,
             input_samples=num_input_samples,
         )
 
         global_ed2 = EffectiveDimension(
-            qnn=qnn2,
+            qnn2,
             weight_samples=num_weight_samples,
             input_samples=num_input_samples,
         )
@@ -133,7 +133,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         qnn = self.qnns["sampler_qnn_1"]
 
         global_ed1 = EffectiveDimension(
-            qnn=qnn,
+            qnn,
             weight_samples=num_weight_samples,
             input_samples=num_input_samples,
         )
@@ -153,13 +153,13 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         weights = algorithm_globals.random.uniform(0, 1, size=(num_weight_samples, qnn.num_weights))
 
         global_ed1 = EffectiveDimension(
-            qnn=qnn,
+            qnn,
             weight_samples=num_weight_samples,
             input_samples=num_input_samples,
         )
 
         global_ed2 = EffectiveDimension(
-            qnn=qnn,
+            qnn,
             weight_samples=weights,
             input_samples=inputs,
         )
@@ -183,14 +183,14 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
         with self.assertRaises(QiskitMachineLearningError):
             EffectiveDimension(
-                qnn=qnn,
+                qnn,
                 weight_samples=weights_ok,
                 input_samples=inputs_wrong,
             )
 
         with self.assertRaises(QiskitMachineLearningError):
             EffectiveDimension(
-                qnn=qnn,
+                qnn,
                 weight_samples=weights_wrong,
                 input_samples=inputs_ok,
             )
@@ -207,20 +207,20 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
         weights_wrong = algorithm_globals.random.uniform(0, 1, size=(num_params, qnn.num_weights))
 
         LocalEffectiveDimension(
-            qnn=qnn,
+            qnn,
             weight_samples=weights_ok,
             input_samples=inputs_ok,
         )
 
         LocalEffectiveDimension(
-            qnn=qnn,
+            qnn,
             weight_samples=weights_ok2,
             input_samples=inputs_ok,
         )
 
         with self.assertRaises(QiskitMachineLearningError):
             LocalEffectiveDimension(
-                qnn=qnn,
+                qnn,
                 weight_samples=weights_wrong,
                 input_samples=inputs_ok,
             )

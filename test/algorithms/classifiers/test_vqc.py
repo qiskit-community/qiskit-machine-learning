@@ -309,7 +309,7 @@ class TestVQC(QiskitMachineLearningTestCase):
 
         classifier = VQC(
             num_qubits=2,
-            optimizer=COBYLA(25),
+            optimizer=COBYLA(maxiter=25),
         )
         dataset = self.properties.get("no_one_hot")
         features = dataset.x

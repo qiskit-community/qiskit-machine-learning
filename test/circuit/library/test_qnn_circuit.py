@@ -55,7 +55,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
     def test_num_qubit_construction(self):
         """Test building the ``QNNCircuit`` with number of qubits."""
 
-        circuit = QNNCircuit(1)
+        circuit = QNNCircuit(num_qubits=1)
         circuit._build()
 
         # If not otherwise specified, the defaults are a ZFeatureMap/ZZFeatureMap and a
@@ -111,7 +111,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
         """Test the properties after the number of qubits are updated."""
 
         # Instantiate a QNNCircuit with 3 qubits.
-        circuit = QNNCircuit(3)
+        circuit = QNNCircuit(num_qubits=3)
         # Update the number of qubits to 4.
         circuit.num_qubits = 4
 
@@ -125,7 +125,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
     def test_ansatz_setter(self):
         """Test the properties after the ansatz is updated."""
         # Instantiate QNNCircuit 2 qubits a PauliFeatureMap the default ansatz RealAmplitudes
-        circuit = QNNCircuit(2, feature_map=PauliFeatureMap(2))
+        circuit = QNNCircuit(num_qubits=2, feature_map=PauliFeatureMap(2))
         # Update the ansatz to a 3 qubit "EfficientSU2"
         circuit.ansatz = EfficientSU2(3)
 
@@ -144,7 +144,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
 
         # Instantiate QNNCircuit 3 qubits and the default feature map ZZFeatureMap and ansatz
         # RealAmplitudes
-        circuit = QNNCircuit(3)
+        circuit = QNNCircuit(num_qubits=3)
         # Update the feature_map to a 1 qubit "EfficientSU2"
         circuit.feature_map = ZFeatureMap(1)
 
@@ -160,7 +160,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
     def test_copy(self):
         """Test copy operation for ``QNNCircuit``."""
 
-        circuit = QNNCircuit(8)
+        circuit = QNNCircuit(num_qubits=8)
         circuit_copy = circuit.copy()
 
         # make sure that the copied circuit has the same properties as the original one
