@@ -3,6 +3,7 @@ adam
 adjoint
 ae
 aer
+aii
 al
 alan
 algo
@@ -42,6 +43,7 @@ benchmarking
 bergholm
 bfgs
 bielza
+bigl
 bitstring
 bitstrings
 bivariate
@@ -123,20 +125,25 @@ dp
 dt
 dω
 eda
+edaspy
 egger
+eig
 eigen
+eigenbasis
 eigenphase
 eigenproblem
 eigensolver
 eigensolvers
 eigenstate
 eigenstates
+eigenvectors
 einstein
 einsum
 elif
 endian
 entangler
 enum
+eol
 eps
 estimatorqnn
 et
@@ -208,6 +215,7 @@ hashable
 hatano
 havlíček
 heidelberg
+hermitian
 hessians
 hilbert
 hoc
@@ -261,8 +269,10 @@ kumar
 kwarg
 kwargs
 labelled
+labelling
 lagrange
 langle
+latin
 linux
 larrañaga
 lcu
@@ -299,6 +309,7 @@ mcry
 mcrz
 mcz
 michael
+minima
 minimised
 minimizer
 minwidth
@@ -311,6 +322,7 @@ monte
 mosca
 mpl
 mprev
+msg
 multiclass
 multinomial
 multioutput
@@ -348,10 +360,12 @@ num
 numpy
 nxd
 nxm
+o
 o'brien
 objval
 observables
 oct
+october
 olson
 onboarding
 onodera
@@ -375,6 +389,7 @@ parametrization
 parametrizations
 parametrize
 parametrized
+parameterized
 params
 pauli
 paulis
@@ -387,6 +402,7 @@ platt
 polyfit
 postprocess
 powell
+pragma
 pre
 precompute
 precomputed
@@ -492,6 +508,7 @@ sklearn
 skquant
 sle
 slsqp
+sobol
 softmax
 soloviev
 spall
@@ -499,6 +516,7 @@ sparsearray
 spedalieri
 spsa
 sqrt
+stacklevel
 statefn
 statevector
 statevectors
@@ -512,6 +530,8 @@ stefano
 steppable
 stepsize
 str
+stratifications
+stratification
 subcircuits
 subclassed
 subclasses
@@ -571,6 +591,7 @@ vatan
 vec
 vectorized
 veeravalli
+vicente
 vicentini
 vigo
 ville
@@ -604,3 +625,6 @@ zz
 θ
 ψ
 ω
+φ_i
+φ_ij
+Δ

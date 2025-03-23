@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -36,7 +36,7 @@ runs:
         if [ "${{ inputs.event-name }}" == "schedule" ] || [ "${{ inputs.run-slow }}" == "true" ]; then
           export QISKIT_TESTS="run_slow"
         fi
-        if [ "${{ inputs.os }}" == "ubuntu-latest" ] && [ "${{ inputs.python-version }}" == "3.8" ]; then
+        if [ "${{ inputs.os }}" == "ubuntu-latest" ] && [ "${{ inputs.python-version }}" == "3.9" ]; then
           export PYTHON="coverage3 run --source qiskit_machine_learning --parallel-mode"
         fi
         stestr --test-path test run 2> >(tee /dev/stderr out.txt > /dev/null)

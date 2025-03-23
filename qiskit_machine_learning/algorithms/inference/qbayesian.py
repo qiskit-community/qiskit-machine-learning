@@ -15,11 +15,16 @@ from __future__ import annotations
 
 import copy
 from typing import Tuple, Dict, Set, List
+
 from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.quantum_info import Statevector
-from qiskit.circuit.library import GroverOperator
-from qiskit.primitives import BaseSampler, Sampler
 from qiskit.circuit import Qubit
+from qiskit.circuit.library import GroverOperator
+from qiskit.primitives import BaseSampler, Sampler, BaseSamplerV2, BaseSamplerV1
+from qiskit.transpiler.passmanager import BasePassManager
+from qiskit.result import QuasiDistribution
+
+from ...utils.deprecation import issue_deprecation_msg
 
 
 class QBayesian:
@@ -62,7 +67,8 @@ class QBayesian:
         *,
         limit: int = 10,
         threshold: float = 0.9,
-        sampler: BaseSampler | None = None,
+        sampler: BaseSampler | BaseSamplerV2 | None = None,
+        pass_manager: BasePassManager | None = None,
     ):
         """
         Args:
@@ -83,14 +89,34 @@ class QBayesian:
         # Test valid input
         for qrg in circuit.qregs:
             if qrg.size > 1:
-                raise ValueError("Every register needs to be mapped to exactly one unique qubit")
+                raise ValueError("Every register needs to be mapped to exactly one unique qubit.")
+
         # Initialize parameter
         self._circ = circuit
         self._limit = limit
         self._threshold = threshold
         if sampler is None:
             sampler = Sampler()
+
+        if isinstance(sampler, BaseSamplerV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
+
         self._sampler = sampler
+
+        if hasattr(circuit.layout, "_input_qubit_count"):
+            self.num_virtual_qubits = circuit.layout._input_qubit_count
+        else:
+            if pass_manager is None:
+                self.num_virtual_qubits = circuit.num_qubits
+            else:
+                circuit = pass_manager.run(circuit)
+                self.num_virtual_qubits = circuit.layout._input_qubit_count
+        self._pass_manager = pass_manager
 
         # Label of register mapped to its qubit
         self._label2qubit = {qrg.name: qrg[0] for qrg in self._circ.qregs}
@@ -139,11 +165,37 @@ class QBayesian:
 
     def _run_circuit(self, circuit: QuantumCircuit) -> Dict[str, float]:
         """Run the quantum circuit with the sampler."""
-        # Sample from circuit
-        job = self._sampler.run(circuit)
-        result = job.result()
-        # Get the counts of quantum state results
-        counts = result.quasi_dists[0].nearest_probability_distribution().binary_probabilities()
+        counts = {}
+
+        if isinstance(self._sampler, BaseSampler):
+            # Sample from circuit
+            job = self._sampler.run(circuit)
+            result = job.result()
+
+            # Get the counts of quantum state results
+            counts = result.quasi_dists[0].nearest_probability_distribution().binary_probabilities()
+
+        elif isinstance(self._sampler, BaseSamplerV2):
+            # Sample from circuit
+            if self._pass_manager is not None:
+                circuit = self._pass_manager.run(circuit)
+            job = self._sampler.run([circuit])
+            result = job.result()
+
+            bit_array = list(result[0].data.values())[0]
+            bitstring_counts = bit_array.get_counts()
+
+            # Normalize the counts to probabilities
+            total_shots = sum(bitstring_counts.values())
+            probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
+            # Convert to quasi-probabilities
+            quasi_dist = QuasiDistribution(probabilities)
+            binary_prob = quasi_dist.nearest_probability_distribution().binary_probabilities()
+            counts = {k: v for k, v in binary_prob.items() if int(k) < 2**self.num_virtual_qubits}
+
+            # counts = QuasiDistribution(probabilities)
+            # counts = {k: v for k, v in counts.items()}
+
         return counts
 
     def __power_grover(
@@ -360,12 +412,12 @@ class QBayesian:
         self._limit = limit
 
     @property
-    def sampler(self) -> BaseSampler:
+    def sampler(self) -> BaseSampler | BaseSamplerV2:
         """Returns the sampler primitive used to compute the samples."""
         return self._sampler
 
     @sampler.setter
-    def sampler(self, sampler: BaseSampler):
+    def sampler(self, sampler: BaseSampler | BaseSamplerV2):
         """Set the sampler primitive used to compute the samples."""
         self._sampler = sampler
 

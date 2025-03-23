@@ -256,6 +256,7 @@ class FidelityQuantumKernel(BaseKernel):
                     kernel_entries.extend(job.result().fidelities)
         return kernel_entries
 
+    # pylint: disable=too-many-positional-arguments
     def _is_trivial(
         self, i: int, j: int, x_i: np.ndarray, y_j: np.ndarray, symmetric: bool
     ) -> bool:

@@ -16,6 +16,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from typing import Dict
+import warnings
 
 import numpy as np
 from sklearn.base import ClassifierMixin
@@ -23,6 +24,7 @@ from sklearn.base import ClassifierMixin
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
 from ...kernels import BaseKernel, FidelityQuantumKernel
+from ...exceptions import QiskitMachineLearningWarning
 from ...utils import algorithm_globals
 
 
@@ -56,6 +58,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
     FITTED = 0
     UNFITTED = 1
 
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=invalid-name
     def __init__(
         self,
@@ -96,6 +99,8 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
                 raise ValueError("'quantum_kernel' has to be None to use a precomputed kernel")
         else:
             if quantum_kernel is None:
+                msg = "No quantum kernel is provided, SamplerV1 based quantum kernel will be used."
+                warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
                 quantum_kernel = FidelityQuantumKernel()
 
         self._quantum_kernel = quantum_kernel
@@ -198,7 +203,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
 
         self.fit_status_ = PegasosQSVC.FITTED
 
-        logger.debug("fit completed after %s", str(datetime.now() - t_0)[:-7])
+        logger.debug("Fit completed after %s", str(datetime.now() - t_0)[:-7])
 
         return self
 
@@ -208,33 +213,62 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         Perform classification on samples in X.
 
         Args:
-            X: Features. For a callable kernel (an instance of
-               :class:`~qiskit_machine_learning.kernels.BaseKernel`) the shape
-               should be ``(m_samples, n_features)``, for a precomputed kernel the shape should be
-               ``(m_samples, n_samples)``. Where ``m`` denotes the set to be predicted and ``n`` the
-               size of the training set. In that case, the kernel values in X have to be calculated
-               with respect to the elements of the set to be predicted and the training set.
+            X (np.ndarray): Input features. For a callable kernel (an instance of
+                :class:`~qiskit_machine_learning.kernels.BaseKernel`), the shape
+                should be ``(m_samples, n_features)``. For a pre-computed kernel, the shape should be
+                ``(m_samples, n_samples)``. Here, ``m_*`` denotes the set to be
+                predicted, and ``n_*`` denotes the size of the training set. In the case of a
+                pre-computed kernel, the kernel values in ``X`` must be calculated with respect to
+                the elements of the set to be predicted and the training set.
 
         Returns:
-            An array of the shape (n_samples), the predicted class labels for samples in X.
+            np.ndarray: An array of shape ``(n_samples,)``, representing the predicted class labels for
+                each sample in ``X``.
 
         Raises:
             QiskitMachineLearningError:
-                - predict is called before the model has been fit.
+                - If the :meth:`predict` method is called before the model has been fit.
             ValueError:
-                - Pre-computed kernel matrix has the wrong shape and/or dimension.
+                - If the pre-computed kernel matrix has the wrong shape and/or dimension.
         """
 
         t_0 = datetime.now()
         values = self.decision_function(X)
         y = np.array([self._label_pos if val > 0 else self._label_neg for val in values])
-        logger.debug("prediction completed after %s", str(datetime.now() - t_0)[:-7])
+        logger.debug("Prediction completed after %s", str(datetime.now() - t_0)[:-7])
 
         return y
 
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        """
+        Extract class prediction probabilities. The decision function values are
+        not bounded in the range :math:`[0, 1]`. Therefore, these values are
+        converted into probabilities using the sigmoid activation
+        function, which maps the real-valued outputs to the :math:`[0, 1]` range.
+
+        Args:
+            X (np.ndarray): Input features. For a callable kernel (an instance of
+                :class:`~qiskit_machine_learning.kernels.BaseKernel`), the shape
+                should be ``(m_samples, n_features)``. For a pre-computed kernel, the shape should be
+                ``(m_samples, n_samples)``. Here, ``m_*`` denotes the set to be
+                predicted, and ``n_*`` denotes the size of the training set. In the case of a
+                pre-computed kernel, the kernel values in ``X`` must be calculated with respect to
+                the elements of the set to be predicted and the training set.
+
+        Returns:
+            np.ndarray: An array of shape ``(n_samples, 2)``, representing the predicted class
+                probabilities (in the range :math:`[0, 1]`) for each sample in ``X``.
+        """
+        values = self.decision_function(X)
+
+        probabilities = 1 / (1 + np.exp(-values))  # Sigmoid activation function
+        probabilities = np.dstack((1 - probabilities, probabilities))[0]
+
+        return probabilities
+
     def decision_function(self, X: np.ndarray) -> np.ndarray:
         """
-        Evaluate the decision function for the samples in X.
+        Evaluate the decision function for the samples in ``X``.
 
         Args:
             X: Features. For a callable kernel (an instance of
@@ -254,7 +288,7 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
                 - Pre-computed kernel matrix has the wrong shape and/or dimension.
         """
         if self.fit_status_ == PegasosQSVC.UNFITTED:
-            raise QiskitMachineLearningError("The PegasosQSVC has to be fit first")
+            raise QiskitMachineLearningError("The PegasosQSVC has to be fit first.")
         if np.ndim(X) != 2:
             raise ValueError("X has to be a 2D array")
         if self._precomputed and self._n_samples != X.shape[1]:

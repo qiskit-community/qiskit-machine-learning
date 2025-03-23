@@ -40,13 +40,13 @@ logger = logging.getLogger(__name__)
 class SPSA(Optimizer):
     """Simultaneous Perturbation Stochastic Approximation (SPSA) optimizer.
 
-    SPSA [1] is an gradient descent method for optimizing systems with multiple unknown parameters.
+    SPSA [1] is a gradient descent method for optimizing systems with multiple unknown parameters.
     As an optimization method, it is appropriately suited to large-scale population models,
     adaptive modeling, and simulation optimization.
 
     .. seealso::
 
-        Many examples are presented at the `SPSA Web site <http://www.jhuapl.edu/SPSA>`__.
+        Many examples are presented at the `SPSA website <http://www.jhuapl.edu/SPSA>`__.
 
     The main feature of SPSA is the stochastic gradient approximation, which requires only two
     measurements of the objective function, regardless of the dimension of the optimization
@@ -76,7 +76,7 @@ class SPSA(Optimizer):
     .. note::
 
         This component has some function that is normally random. If you want to reproduce behavior
-        then you should set the random number generator seed in the algorithm_globals
+        then you should set the random number generator seed in the ``algorithm_globals``
         (``qiskit_machine_learning.utils.algorithm_globals.random_seed = seed``).
 
 
@@ -105,15 +105,15 @@ class SPSA(Optimizer):
             spsa = SPSA(maxiter=300)
             result = spsa.minimize(loss, x0=initial_point)
 
-        To use the Hessian information, i.e. 2-SPSA, you can add `second_order=True` to the
-        initializer of the `SPSA` class, the rest of the code remains the same.
+        To use the Hessian information, i.e. 2-SPSA, you can add ``second_order=True`` to the
+        initializer of the ``SPSA`` class, the rest of the code remains the same.
 
         .. code-block:: python
 
             two_spsa = SPSA(maxiter=300, second_order=True)
             result = two_spsa.minimize(loss, x0=initial_point)
 
-        The `termination_checker` can be used to implement a custom termination criterion.
+        The ``termination_checker`` can be used to implement a custom termination criterion.
 
         .. code-block:: python
 
@@ -161,6 +161,7 @@ class SPSA(Optimizer):
 
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         maxiter: int = 100,
@@ -213,23 +214,23 @@ class SPSA(Optimizer):
             second_order: If True, use 2-SPSA instead of SPSA. In 2-SPSA, the Hessian is estimated
                 additionally to the gradient, and the gradient is preconditioned with the inverse
                 of the Hessian to improve convergence.
-            regularization: To ensure the preconditioner is symmetric and positive definite, the
+            regularization: To ensure the pre-conditioner is symmetric and positive definite, the
                 identity times a small coefficient is added to it. This generator yields that
                 coefficient.
             hessian_delay: Start multiplying the gradient with the inverse Hessian only after a
                 certain number of iterations. The Hessian is still evaluated and therefore this
                 argument can be useful to first get a stable average over the last iterations before
-                using it as preconditioner.
+                using it as pre-conditioner.
             lse_solver: The method to solve for the inverse of the Hessian. Per default an
                 exact LSE solver is used, but can e.g. be overwritten by a minimization routine.
-            initial_hessian: The initial guess for the Hessian. By default the identity matrix
+            initial_hessian: The initial guess for the Hessian. By default, the identity matrix
                 is used.
             callback: A callback function passed information in each iteration step. The
                 information is, in this order: the number of function evaluations, the parameters,
-                the function value, the stepsize, whether the step was accepted.
+                the function value, the step-size, whether the step was accepted.
             termination_checker: A callback function executed at the end of each iteration step. The
                 arguments are, in this order: the parameters, the function value, the number
-                of function evaluations, the stepsize, whether the step was accepted. If the callback
+                of function evaluations, the step-size, whether the step was accepted. If the callback
                 returns True, the optimization is terminated.
                 To prevent additional evaluations of the objective method, if the objective has not yet
                 been evaluated, the objective is estimated by taking the mean of the objective
@@ -237,7 +238,7 @@ class SPSA(Optimizer):
 
 
         Raises:
-            ValueError: If ``learning_rate`` or ``perturbation`` is an array with less elements
+            ValueError: If ``learning_rate`` or ``perturbation`` is an array with fewer elements
                 than the number of iterations.
 
 
@@ -254,7 +255,7 @@ class SPSA(Optimizer):
         for attr, name in zip([learning_rate, perturbation], ["learning_rate", "perturbation"]):
             if isinstance(attr, (list, np.ndarray)):
                 if len(attr) < maxiter:
-                    raise ValueError(f"Length of {name} is smaller than maxiter ({maxiter}).")
+                    raise ValueError(f"Length of {name} is smaller than 'maxiter' ({maxiter}).")
 
         self.learning_rate = learning_rate
         self.perturbation = perturbation
@@ -280,6 +281,7 @@ class SPSA(Optimizer):
         self._nfev: int | None = None  # the number of function evaluations
         self._smoothed_hessian: np.ndarray | None = None  # smoothed average of the Hessians
 
+    # pylint: disable=too-many-positional-arguments
     @staticmethod
     def calibrate(
         loss: Callable[[np.ndarray], float],
@@ -304,7 +306,7 @@ class SPSA(Optimizer):
             loss: The loss function.
             initial_point: The initial guess of the iteration.
             c: The initial perturbation magnitude.
-            stability_constant: The value of `A`.
+            stability_constant: The value of :math:`A`.
             target_magnitude: The target magnitude for the first update step, defaults to
                 :math:`2\pi / 10`.
             alpha: The exponent of the learning rate power series.
@@ -413,6 +415,7 @@ class SPSA(Optimizer):
             "termination_checker": self.termination_checker,
         }
 
+    # pylint: disable=too-many-positional-arguments
     def _point_sample(self, loss, x, eps, delta1, delta2):
         """A single sample of the gradient at position ``x`` in direction ``delta``."""
         # points to evaluate
@@ -478,6 +481,7 @@ class SPSA(Optimizer):
             hessian_estimate / num_samples,
         )
 
+    # pylint: disable=too-many-positional-arguments
     def _compute_update(self, loss, x, k, eps, lse_solver):
         # compute the perturbations
         if isinstance(self.resamplings, dict):
@@ -624,10 +628,10 @@ class SPSA(Optimizer):
                 if self.termination_checker(
                     self._nfev, x_next, fx_check, np.linalg.norm(update), True
                 ):
-                    logger.info("terminated optimization at {k}/{self.maxiter} iterations")
+                    logger.info("Terminated optimization at %s/%s iterations.", k, self.maxiter)
                     break
 
-        logger.info("SPSA: Finished in %s", time() - start)
+        logger.info("SPSA: Finished in %s.", time() - start)
 
         if self.last_avg > 1:
             x = np.mean(np.asarray(last_steps), axis=0)

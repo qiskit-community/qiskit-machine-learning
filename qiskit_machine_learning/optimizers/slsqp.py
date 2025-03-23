@@ -36,6 +36,7 @@ class SLSQP(SciPyOptimizer):
 
     _OPTIONS = ["maxiter", "disp", "ftol", "eps"]
 
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=unused-argument
     def __init__(
         self,

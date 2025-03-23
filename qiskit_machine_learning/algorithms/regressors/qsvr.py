@@ -57,7 +57,9 @@ class QSVR(SVR, SerializableModelMixin):
             warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
-
+        if quantum_kernel is None:
+            msg = "No quantum kernel is provided, SamplerV1 based quantum kernel will be used."
+            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
         self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 
         super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)

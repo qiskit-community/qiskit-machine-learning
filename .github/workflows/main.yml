@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8]
+        python-version: [3.9]
     steps:
       - name: Print Concurrency Group
         env:
@@ -112,20 +112,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8, 3.9, '3.10', 3.11, 3.12]
+        python-version: [3.9, '3.10', 3.11, 3.12]
         include:
+          # macos-latest is an Arm64 image
           - os: macos-latest
-            python-version: 3.8
+            python-version: 3.9
           - os: macos-latest
             python-version: 3.12
           - os: windows-latest
-            python-version: 3.8
+            python-version: 3.9
           - os: windows-latest
-            python-version: 3.12
-          # macos-14 is an Arm64 image
-          - os: macos-14
-            python-version: '3.10'
-          - os: macos-14
             python-version: 3.12
     steps:
       - uses: actions/checkout@v4
@@ -146,7 +142,7 @@ jobs:
       - run: make lint
         shell: bash
       - run: make mypy
-        if: ${{ !cancelled() && matrix.os != 'windows-latest' }}
+        if: ${{ !cancelled() }}
         shell: bash
       - name: Machine Learning Unit Tests under Python ${{ matrix.python-version }}
         uses: ./.github/actions/run-tests
@@ -165,7 +161,7 @@ jobs:
         run: |
           coverage3 combine
           mv .coverage ./ci-artifact-data/ml.dat
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == 3.8 }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == 3.9 }}
         shell: bash
       - uses: actions/upload-artifact@v4
         with:
@@ -188,7 +184,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8, 3.12]
+        python-version: [3.9, 3.12]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -229,51 +225,47 @@ jobs:
         with:
           name: tutorials${{ matrix.python-version }}
           path: docs/_build/html/artifacts/tutorials.tar.gz
-#      - name: Run stable tutorials
-#        env:
-#          QISKIT_PARALLEL: False
-#          QISKIT_DOCS_BUILD_TUTORIALS: 'always'
-#        run: |
-#          # clean last sphinx output
-#          make clean_sphinx
-#          # get current version
-#          version=$(pip show qiskit-machine-learning | awk -F. '/^Version:/ { print substr($1,10), $2-1 }' OFS=.)
-#          # download stable version
-#          wget https://codeload.github.com/qiskit-community/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
-#          unzip /tmp/repo.zip -d /tmp/
-#          # copy stable tutorials to main tutorials
-#          cp -R /tmp/qiskit-machine-learning-stable-$version/docs/tutorials/* docs/tutorials
-#          # run tutorials and zip results
-#          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
-#          # ignore unreleased/untagged notes
-#          tools/ignore_untagged_notes.sh
-#          make html
-#          cd docs/_build/html
-#          mkdir artifacts
-#          tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
-#        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
-#        shell: bash
-#      - name: Run upload stable tutorials
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: tutorials-stable${{ matrix.python-version }}
-#          path: docs/_build/html/artifacts/tutorials.tar.gz
-#        if: ${{ matrix.python-version == 3.8 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+      - name: Run stable tutorials
+        env:
+          QISKIT_PARALLEL: False
+          QISKIT_DOCS_BUILD_TUTORIALS: 'always'
+        run: |
+          # clean last sphinx output
+          make clean_sphinx
+          # get current version
+          version=$(pip show qiskit-machine-learning | awk -F. '/^Version:/ { print substr($1,10), $2-1 }' OFS=.)
+          # download stable version
+          wget https://codeload.github.com/qiskit-community/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
+          unzip /tmp/repo.zip -d /tmp/
+          # copy stable tutorials to main tutorials
+          cp -R /tmp/qiskit-machine-learning-stable-$version/docs/tutorials/* docs/tutorials
+          # run tutorials and zip results
+          echo "earliest_version: 0.1.0" >> releasenotes/config.yaml
+          # ignore unreleased/untagged notes
+          tools/ignore_untagged_notes.sh
+          make html
+          cd docs/_build/html
+          mkdir artifacts
+          tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
+        shell: bash
+      - name: Run upload stable tutorials
+        uses: actions/upload-artifact@v4
+        with:
+          name: tutorials-stable${{ matrix.python-version }}
+          path: docs/_build/html/artifacts/tutorials.tar.gz
+        if: ${{ matrix.python-version == 3.9 && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
   Deprecation_Messages_and_Coverage:
     needs: [Checks, MachineLearning, Tutorials]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.9]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: ubuntu-latest-3.8
-          path: /tmp/u38
       - uses: actions/download-artifact@v4
         with:
           name: ubuntu-latest-3.9
@@ -292,37 +284,29 @@ jobs:
           path: /tmp/u312
       - uses: actions/download-artifact@v4
         with:
-          name: macos-latest-3.8
-          path: /tmp/m38
+          name: macos-latest-3.9
+          path: /tmp/m39
       - uses: actions/download-artifact@v4
         with:
           name: macos-latest-3.12
           path: /tmp/m312
       - uses: actions/download-artifact@v4
         with:
-          name: windows-latest-3.8
-          path: /tmp/w38
+          name: windows-latest-3.9
+          path: /tmp/w39
       - uses: actions/download-artifact@v4
         with:
           name: windows-latest-3.12
           path: /tmp/w312
-      - uses: actions/download-artifact@v4
-        with:
-          name: macos-14-3.10
-          path: /tmp/a310
-      - uses: actions/download-artifact@v4
-        with:
-          name: macos-14-3.12
-          path: /tmp/a312
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/u38/ml.dep /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m38/ml.dep /tmp/m312/ml.dep /tmp/w38/ml.dep /tmp/w312/ml.dep /tmp/a310/ml.dep /tmp/a312/ml.dep || true
+          sort -f -u /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m39/ml.dep /tmp/m312/ml.dep /tmp/w39/ml.dep /tmp/w312/ml.dep || true
         shell: bash
       - name: Coverage combine
-        run: coverage3 combine /tmp/u38/ml.dat
+        run: coverage3 combine /tmp/u39/ml.dat
         shell: bash
       - name: Upload to Coveralls
         env:
