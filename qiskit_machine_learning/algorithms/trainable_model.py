@@ -34,10 +34,10 @@ from ..utils.loss_functions import (
 class TrainableModel(SerializableModelMixin):
     """Base class for ML model that defines a scikit-learn-like interface for `Estimator` instances."""
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         neural_network: NeuralNetwork,
+        *,
         loss: str | Loss = "squared_error",
         optimizer: Optimizer | Minimizer | None = None,
         warm_start: bool = False,

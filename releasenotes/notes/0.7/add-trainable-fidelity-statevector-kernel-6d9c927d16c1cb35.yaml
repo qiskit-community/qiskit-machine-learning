@@ -37,7 +37,7 @@ features:
        )
 
        # Instantiate a quantum kernel trainer (QKT).
-       qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel)
+       qkt = QuantumKernelTrainer(quantum_kernel)
 
        # Train the kernel using QKT directly.
        qkt_results = qkt.fit(<your_X_train>, <your_y_train>)

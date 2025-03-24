@@ -45,6 +45,7 @@ class NeuralNetwork(ABC):
     # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
+        *,
         num_inputs: int,
         num_weights: int,
         sparse: bool,

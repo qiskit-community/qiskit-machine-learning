@@ -40,6 +40,7 @@ class SLSQP(SciPyOptimizer):
     # pylint: disable=unused-argument
     def __init__(
         self,
+        *,
         maxiter: int = 100,
         disp: bool = False,
         ftol: float = 1e-06,

@@ -55,6 +55,7 @@ class GSLS(Optimizer):
     # pylint: disable=unused-argument
     def __init__(
         self,
+        *,
         maxiter: int = 10000,
         max_eval: int = 10000,
         disp: bool = False,

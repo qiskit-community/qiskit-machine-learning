@@ -161,9 +161,9 @@ class SPSA(Optimizer):
 
     """
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
+        *,
         maxiter: int = 100,
         blocking: bool = False,
         allowed_increase: float | None = None,

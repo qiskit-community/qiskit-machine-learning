@@ -44,6 +44,7 @@ class NELDER_MEAD(SciPyOptimizer):  # pylint: disable=invalid-name
     # pylint: disable=unused-argument
     def __init__(
         self,
+        *,
         maxiter: int | None = None,
         maxfev: int = 1000,
         disp: bool = False,

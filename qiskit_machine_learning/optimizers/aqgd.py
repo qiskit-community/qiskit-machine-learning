@@ -49,9 +49,9 @@ class AQGD(Optimizer):
 
     _OPTIONS = ["maxiter", "eta", "tol", "disp", "momentum", "param_tol", "averaging"]
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
+        *,
         maxiter: int | list[int] = 1000,
         eta: float | list[float] = 1.0,
         tol: float = 1e-6,  # this is tol

@@ -40,6 +40,7 @@ class EffectiveDimension:
     def __init__(
         self,
         qnn: NeuralNetwork,
+        *,
         weight_samples: Union[np.ndarray, int] = 1,
         input_samples: Union[np.ndarray, int] = 1,
     ) -> None:
