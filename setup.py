@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2025.
+# (C) Copyright IBM 2021, 2024.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -65,8 +65,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: 3.13",
-        "Topic :: Scientific/Engineering"
+        "Topic :: Scientific/Engineering",
     ],
     keywords="qiskit sdk quantum machine learning ml",
     packages=setuptools.find_packages(
