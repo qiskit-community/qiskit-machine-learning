@@ -21,6 +21,7 @@ from ddt import ddt, unpack, idata
 
 
 from qiskit.quantum_info import Statevector, partial_trace
+from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.datasets import entanglement_concentration_data
 
 
@@ -105,14 +106,16 @@ class TestEntangledConcentration(QiskitMachineLearningTestCase):
     def test_CE_values(self, n, mode, targets):
         """Check if the right CE values are generated"""
 
-        count = 48 // n
+        algorithm_globals.random_seed = 2
+
+        count = 25
 
         x_train, _, _, _ = entanglement_concentration_data(
             training_size=count, test_size=0, n=n, mode=mode, formatting="statevector"
         )
 
-        low_ce = np.mean(np.array([_compute_ce(x_train[i]) for i in range(count)]))
-        high_ce = np.mean(np.array([_compute_ce(x_train[i]) for i in range(count, 2 * count)]))
+        low_ce = np.mean([_compute_ce(x_train[i]) for i in range(count)])
+        high_ce = np.mean([_compute_ce(x_train[i + count]) for i in range(count)])
 
         self.assertTrue(abs(low_ce - targets[0]) < 0.02)
         self.assertTrue(abs(high_ce - targets[1]) < 0.02)
