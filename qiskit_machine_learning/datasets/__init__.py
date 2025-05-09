@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,23 +14,23 @@
 Datasets (:mod:`qiskit_machine_learning.datasets`)
 ==================================================
 
-A set of sample datasets to test machine learning algorithms.
+A collection of synthetic datasets used to test and benchmark machine-learning
+algorithms implemented in Qiskit Machine Learning.
 
 .. currentmodule:: qiskit_machine_learning.datasets
 
-Datasets
---------
+Synthetic dataset generators
+----------------------------
 
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
 
    ad_hoc_data
-
+   entanglement_concentration_data
 """
 
 from .ad_hoc import ad_hoc_data
+from .entanglement_concentration import entanglement_concentration_data
 
-__all__ = [
-    "ad_hoc_data",
-]
+__all__ = ["ad_hoc_data", "entanglement_concentration_data"]
