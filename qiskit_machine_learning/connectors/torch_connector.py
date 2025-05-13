@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -237,7 +237,7 @@ class _TorchNNFunction(Function):
                     from sparse import COO
 
                     grad_output = grad_output.detach().cpu()
-                    grad_coo = COO(grad_output.indices(), grad_output.values())
+                    grad_coo = COO(grad_output.indices(), grad_output.values(), shape=grad_output.shape)
 
                     # Takes gradients from previous layer in backward pass (i.e. later layer in
                     # forward pass) j for each observation i in the batch. Multiplies this with
@@ -280,7 +280,7 @@ class _TorchNNFunction(Function):
                     from sparse import COO
 
                     grad_output = grad_output.detach().cpu()
-                    grad_coo = COO(grad_output.indices(), grad_output.values())
+                    grad_coo = COO(grad_output.indices(), grad_output.values(), shape=grad_output.shape)
 
                     # Takes gradients from previous layer in backward pass (i.e. later layer in
                     # forward pass) j for each observation i in the batch. Multiplies this with
