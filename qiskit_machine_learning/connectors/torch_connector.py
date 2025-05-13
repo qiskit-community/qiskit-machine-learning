@@ -237,7 +237,9 @@ class _TorchNNFunction(Function):
                     from sparse import COO
 
                     grad_output = grad_output.detach().cpu()
-                    grad_coo = COO(grad_output.indices(), grad_output.values(), shape=grad_output.shape)
+                    grad_coo = COO(
+                        grad_output.indices(), grad_output.values(), shape=grad_output.shape
+                    )
 
                     # Takes gradients from previous layer in backward pass (i.e. later layer in
                     # forward pass) j for each observation i in the batch. Multiplies this with
@@ -280,7 +282,9 @@ class _TorchNNFunction(Function):
                     from sparse import COO
 
                     grad_output = grad_output.detach().cpu()
-                    grad_coo = COO(grad_output.indices(), grad_output.values(), shape=grad_output.shape)
+                    grad_coo = COO(
+                        grad_output.indices(), grad_output.values(), shape=grad_output.shape
+                    )
 
                     # Takes gradients from previous layer in backward pass (i.e. later layer in
                     # forward pass) j for each observation i in the batch. Multiplies this with
