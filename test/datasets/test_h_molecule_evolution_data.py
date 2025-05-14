@@ -32,7 +32,7 @@ from qiskit_machine_learning.datasets import h_molecule_evolution_data
 class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
     """H Molecule Evolution Tests"""
 
-    @idata([('H2', 4), ('H3', 6)])
+    @idata([("H2", 4), ("H3", 6)])
     @unpack
     def test_default_params(self, molecule, n_qubits):
         """Checking for right shapes and labels"""
@@ -46,7 +46,7 @@ class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
         np.testing.assert_array_equal(y_train.shape, (3, 2**n_qubits, 1))
         np.testing.assert_array_equal(y_test.shape, (3, 2**n_qubits, 1))
 
-    @idata([('H2',), ('H3',)])
+    @idata([("H2",), ("H3",)])
     @unpack
     def test_statevector_formatting_noiseless(self, molecule):
         """Check if output values are normalized qiskit.circuit_info.Statevector objects"""
@@ -71,7 +71,7 @@ class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
         self.assertEqual(len(y_te), 2)
 
     def test_connecting_to_runtime(self):
-        """Fetches the best runtime and connects to it's noise model"""
+        """Fetches the best runtime and connects to its noise model"""
         try:
             service = QiskitRuntimeService()
             backend = service.backends(min_num_qubits=4, operational=True, simulator=False)[0]
@@ -89,6 +89,7 @@ class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
         np.testing.assert_array_equal(psi_hf.shape, (2**4,))
         self.assertEqual(y_tr.shape[-1], 1)
         self.assertEqual(y_te.shape[-1], 1)
+
 
     def test_error_raises(self):
         """Check if parameter errors are handled"""
