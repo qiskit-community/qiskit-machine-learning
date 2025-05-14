@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -106,10 +106,10 @@ class ADAM(Optimizer):
 
         # runtime variables
         self._t = 0  # time steps
-        self._m = np.zeros(1)
-        self._v = np.zeros(1)
+        self._m: Any = np.zeros(1)
+        self._v: Any = np.zeros(1)
         if self._amsgrad:
-            self._v_eff = np.zeros(1)
+            self._v_eff: Any = np.zeros(1)
 
         if self._snapshot_dir is not None:
             file_path = os.path.join(self._snapshot_dir, "adam_params.csv")
