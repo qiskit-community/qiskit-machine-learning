@@ -19,9 +19,11 @@ import numpy as np
 from ddt import ddt, unpack, idata
 
 from qiskit.quantum_info import Statevector
-from qiskit_ibm_runtime import QiskitRuntimeService
+from qiskit.providers.exceptions import QiskitBackendNotFoundError
 
-from qiskit_machine_learning.utils import algorithm_globals
+from qiskit_ibm_runtime import QiskitRuntimeService
+from qiskit_ibm_runtime.exceptions import IBMInputValueError
+
 from qiskit_machine_learning.datasets import h_molecule_evolution_data
 
 
@@ -29,25 +31,25 @@ from qiskit_machine_learning.datasets import h_molecule_evolution_data
 class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
     """H Molecule Evolution Tests"""
 
-    @idata([(Hx, nq) for Hx, nq in [("H2", 4), ("H3", 6)]])
+    @idata([('H2', 4), ('H3', 6)])
     @unpack
     def test_default_params(self, molecule, n_qubits):
         """Checking for right shapes and labels"""
-        HF, x_train, y_train, x_test, y_test = h_molecule_evolution_data(
+        psi_hf, x_train, y_train, x_test, y_test = h_molecule_evolution_data(
             delta_t=1.0, train_end=2, test_start=4, test_end=6, molecule=molecule
         )
 
-        np.testing.assert_array_equal(HF.shape, (2**n_qubits,))
+        np.testing.assert_array_equal(psi_hf.shape, (2**n_qubits,))
         np.testing.assert_array_equal(x_train.shape, (3,))
         np.testing.assert_array_equal(x_test.shape, (3,))
         np.testing.assert_array_equal(y_train.shape, (3, 2**n_qubits, 1))
         np.testing.assert_array_equal(y_test.shape, (3, 2**n_qubits, 1))
 
-    @idata([(Hx, nq) for Hx, nq in [("H2", 4), ("H3", 6)]])
+    @idata([('H2',), ('H3',)])
     @unpack
-    def test_statevector_formatting_noiseless(self, molecule, n_qubits):
+    def test_statevector_formatting_noiseless(self, molecule):
         """Check if output values are normalized qiskit.circuit_info.Statevector objects"""
-        HF, x_tr, y_tr, x_te, y_te = h_molecule_evolution_data(
+        psi_hf, x_tr, y_tr, x_te, y_te = h_molecule_evolution_data(
             1.0,
             1,
             3,
@@ -56,10 +58,10 @@ class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
             formatting="statevector",
             noise_mode="noiseless",
         )
-        self.assertIsInstance(HF, Statevector)
+        self.assertIsInstance(psi_hf, Statevector)
         self.assertTrue(all(isinstance(sv, Statevector) for sv in y_tr))
         self.assertTrue(all(isinstance(sv, Statevector) for sv in y_te))
-        self.assertAlmostEqual(HF.probabilities().sum(), 1.0, places=7)
+        self.assertAlmostEqual(psi_hf.probabilities().sum(), 1.0, places=7)
         for sv in y_tr[:2] + y_te[:2]:
             self.assertAlmostEqual(sv.probabilities().sum(), 1.0, places=7)
         np.testing.assert_array_equal(x_tr.shape, (2,))
@@ -67,32 +69,23 @@ class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
         self.assertEqual(len(y_tr), 2)
         self.assertEqual(len(y_te), 2)
 
-    @idata(
-        [
-            (Hx, nq)
-            for Hx, nq in [
-                ("H2", 4),
-            ]
-        ]
-    )
-    @unpack
-    def test_connecting_to_runtime(self, molecule, n_qubits):
+    def test_connecting_to_runtime(self):
         """Fetches the best runtime and connects to it's noise model"""
         try:
             service = QiskitRuntimeService()
             backend = service.backends(min_num_qubits=4, operational=True, simulator=False)[0]
-        except Exception:
+        except (IBMInputValueError, QiskitBackendNotFoundError):
             self.skipTest("IBMQ account or internet unavailable")
-        HF, _, y_tr, _, y_te = h_molecule_evolution_data(
+        psi_hf, _, y_tr, _, y_te = h_molecule_evolution_data(
             1.0,
             1,
             2,
             3,
-            molecule=molecule,
+            molecule="H2",
             noise_mode=backend.name,
             formatting="ndarray",
         )
-        np.testing.assert_array_equal(HF.shape, (2**n_qubits,))
+        np.testing.assert_array_equal(psi_hf.shape, (2**4,))
         self.assertEqual(y_tr.shape[-1], 1)
         self.assertEqual(y_te.shape[-1], 1)
 

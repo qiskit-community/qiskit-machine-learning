@@ -66,6 +66,8 @@ centroid
 chernoff
 choi
 chuang
+cincio
+cîrstoiu
 clbit
 clbits
 clopper
@@ -164,14 +166,17 @@ fae
 failsafe
 farhi
 farrokh
+fermionic
 fi
 fidelities
 fidelity
 fidelityquantumkernel
 filippo
+filip
 fletcher
 fm
 fmin
+fock
 formatter
 fourier
 frac
@@ -240,6 +245,7 @@ instantiations
 interatomic
 interdependencies
 ints
+iosue
 iprint
 iqft
 isaac
@@ -253,11 +259,13 @@ izaac
 izz
 jac
 jacobian
+jhp
 jm
 jonathan
 jones
 july
 jupyter
+jw
 kandala
 kernelized
 killoran
@@ -281,6 +289,7 @@ leq
 lin
 linalg
 loglik
+longterm
 loglikelihood
 lov
 lr
@@ -326,6 +335,7 @@ msg
 multiclass
 multinomial
 multioutput
+muñoz
 mxd
 mypy
 nabla
@@ -355,6 +365,7 @@ nones
 nonlocal
 nosignatures
 np
+npj
 ns
 num
 numpy
@@ -398,6 +409,7 @@ pedro
 pegasos
 peruzzo
 pixelated
+pj
 platt
 polyfit
 postprocess
@@ -452,6 +464,7 @@ quantile
 quantumcircuit
 qubit
 qubits
+ramo
 rangle
 raymond
 rbf
@@ -501,6 +514,7 @@ serializable
 shalev
 shanno
 shende
+shortterm
 shwartz
 sigmoid
 sima
@@ -511,6 +525,7 @@ slsqp
 sobol
 softmax
 soloviev
+sornborger
 spall
 sparsearray
 spedalieri
@@ -575,6 +590,7 @@ transpiling
 trotterization
 trotterized
 tunable
+uncertainities
 uncompiled
 uncompress
 uncompute
@@ -583,6 +599,7 @@ univariate
 uno
 unscaled
 unsymmetric
+usecase
 utf
 utils
 varadarajan
@@ -591,6 +608,7 @@ vatan
 vec
 vectorized
 veeravalli
+vff
 vicente
 vicentini
 vigo

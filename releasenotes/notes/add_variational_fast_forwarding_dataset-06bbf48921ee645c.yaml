@@ -5,7 +5,7 @@ features:
     realistic noise models from IBM Quantum backends and can be used to benchmark 
     variational fast-forwarding algorithms.
 
-    Example of a 4-qubit H₂ dataset in noiseless statevector format:
+    Example of a 4-qubit H₂ dataset in noiseless statevector format is below.
 
     .. code-block:: python
 

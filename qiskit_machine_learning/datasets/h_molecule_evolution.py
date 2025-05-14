@@ -18,16 +18,15 @@ from __future__ import annotations
 
 import warnings
 import os
+import pickle as pkl
 
 import numpy as np
-import pickle as pkl
 
 from qiskit import QuantumCircuit, transpile
 from qiskit.circuit import Parameter
-from qiskit.quantum_info import SparsePauliOp, Statevector
+from qiskit.quantum_info import Statevector
 from qiskit.circuit.library import PauliEvolutionGate
 from qiskit.synthesis import SuzukiTrotter
-from qiskit.providers import QiskitBackendNotFoundError
 
 from qiskit_ibm_runtime import QiskitRuntimeService
 
@@ -35,9 +34,6 @@ from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel, depolarizing_error
 
 from scipy.linalg import expm
-
-
-from ..utils import algorithm_globals
 
 
 # pylint: disable=too-many-positional-arguments
@@ -72,10 +68,10 @@ def h_molecule_evolution_data(
 
     For generating the short-term evolutions with realistic noise models that will be
     incurred by a Quantum Computer if it were to simulate short-term evolution terms,
-    the unitary operator for the evolution is first traspiled into a circuit with
+    the unitary operator for the evolution is first transpiled into a circuit with
     :class:`~qiskit.synthesis.SuzukiTrotter` and :class:`~qiskit.circuit.library.PauliEvolutionGate`.
     That is, suppose :math:`U` represents the noisy circuit's effect on a given state to simulate
-    the evolution through a time step of :math:`\Delta T` (``delta_t`` given by the user), then:
+    the evolution through a time step of :math:`\Delta T` (``delta_t`` given by the user), then
 
 
     .. math::
@@ -85,7 +81,7 @@ def h_molecule_evolution_data(
     Where the approximate sign signifies that there is noise added by the noisy simulation and
     also the approximate nature of transpiling with a trotterized hamiltonian. Now, the
     short-term evolution terms are generate until ``train_end`` such evolutions. Suppose we
-    denote ``train_end`` as N. Then:
+    denote ``train_end`` as N. Then
 
     .. math::
        \text{y_train} =
@@ -94,7 +90,7 @@ def h_molecule_evolution_data(
 
     Long-term evolution for testing as numerically generated from the exact Hamiltonian without
     the uncertainities introduced by noise and trotterization. Suppose ``test_start`` is denoted
-    as P and ``test_end`` as Q. Then:
+    as P and ``test_end`` as Q. Then
 
 
     .. math::
@@ -113,7 +109,7 @@ def h_molecule_evolution_data(
     with Variational Fast Forwarding*. Quantum. 2024 Mar;8:1278.
     `arXiv:2211.16097 <https://arxiv.org/abs/2211.16097>`_
 
-    [2] Cîrstoiu C, Holmes Z, Iosue J, Cincio Ł, Coles PJ, Sornborger A.
+    [2] Cîrstoiu C, Holmes Z, Iosue J, Cincio L, Coles PJ, Sornborger A.
     *Variational fast forwarding for quantum simulation beyond the coherence time*.
     npj Quantum Information. 2020 Sep;6(1):82.
     `arXiv:1910.04292 <https://arxiv.org/abs/1910.04292>`_
@@ -216,8 +212,8 @@ def h_molecule_evolution_data(
     simulator = _noise_simulator(noise_mode, backend)
 
     # Import Hamiltonian and Unitary Evolution Circuit
-    qc, t, hamiltonian = _evolution_circuit(molecule)
-    qc_evo = qc.assign_parameters({t: delta_t})
+    qc, time, hamiltonian = _evolution_circuit(molecule)
+    qc_evo = qc.assign_parameters({time: delta_t})
 
     # Get Hartree Fock State
     psi_hf = _initial_state(hamiltonian, num_occupancy)
@@ -249,9 +245,9 @@ def _evolution_circuit(molecule):
 
     spo = _hamiltonian_import(molecule)
 
-    t = Parameter("t")
+    time = Parameter("time")
     trotterizer = SuzukiTrotter(order=2, reps=1)
-    u_evolution = PauliEvolutionGate(spo, time=t, synthesis=trotterizer)
+    u_evolution = PauliEvolutionGate(spo, time=time, synthesis=trotterizer)
 
     n_qubits = spo.num_qubits
     qc = QuantumCircuit(n_qubits)
@@ -259,17 +255,17 @@ def _evolution_circuit(molecule):
 
     qc_flat = qc.decompose()
 
-    return qc_flat, t, spo
+    return qc_flat, time, spo
 
 
 def _hamiltonian_import(molecule):
     """Import Hamiltonian from Hamiltonians folder"""
 
     dir_path = os.path.dirname(__file__)
-    filename = os.path.join(dir_path, f"hamiltonians\\h_molecule_hamiltonians\\{molecule}.bin")
+    filename = os.path.join(dir_path, f"hamiltonians/h_molecule_hamiltonians/{molecule}.bin")
 
-    with open(filename, "rb") as f:
-        spo = pkl.load(f)
+    with open(filename, "rb") as ham_file:
+        spo = pkl.load(ham_file)
 
     return spo
 
@@ -340,15 +336,15 @@ def _simulate_shortterm(psi_hf, qc_evo, simulator, train_end):
     return y_train
 
 
-def _ideal_longterm(psi_hf, H, t):
+def _ideal_longterm(psi_hf, hamiltonian, timestamps):
     """
     Return the list of statevectors  exp(-i H t_k) @ psi_hf
     for every t_k in `times`, using an exact matrix exponential.
     """
-    h_dense = H.to_matrix()
+    h_dense = hamiltonian.to_matrix()
     y_test = []
 
-    for t_k in t:
+    for t_k in timestamps:
         u_t = expm(-1j * h_dense * t_k)
         psi_t = Statevector(u_t @ psi_hf.data)
         y_test.append(psi_t)
