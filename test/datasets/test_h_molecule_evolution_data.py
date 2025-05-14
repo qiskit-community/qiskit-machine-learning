@@ -23,6 +23,7 @@ from qiskit.providers.exceptions import QiskitBackendNotFoundError
 
 from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit_ibm_runtime.exceptions import IBMInputValueError
+from qiskit_ibm_runtime.accounts.exceptions import AccountNotFoundError
 
 from qiskit_machine_learning.datasets import h_molecule_evolution_data
 
@@ -74,7 +75,7 @@ class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
         try:
             service = QiskitRuntimeService()
             backend = service.backends(min_num_qubits=4, operational=True, simulator=False)[0]
-        except (IBMInputValueError, QiskitBackendNotFoundError):
+        except (IBMInputValueError, QiskitBackendNotFoundError, AccountNotFoundError):
             self.skipTest("IBMQ account or internet unavailable")
         psi_hf, _, y_tr, _, y_te = h_molecule_evolution_data(
             1.0,
