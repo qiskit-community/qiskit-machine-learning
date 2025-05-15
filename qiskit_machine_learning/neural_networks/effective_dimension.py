@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,7 +13,7 @@
 
 import logging
 import time
-from typing import Union, List, Tuple
+from typing import Any, Union, List, Tuple
 
 import numpy as np
 from scipy.special import logsumexp
@@ -136,14 +136,14 @@ class EffectiveDimension:
              outputs: QNN output vector, result of forward passes, of shape
                 ``(num_input_samples * num_weight_samples, output_size)``.
         """
-        grads = np.zeros(
+        grads: Any = np.zeros(
             (
                 self._num_input_samples * self._num_weight_samples,
                 self._model.output_shape[0],
                 self._model.num_weights,
             )
         )
-        outputs = np.zeros(
+        outputs: Any = np.zeros(
             (self._num_input_samples * self._num_weight_samples, self._model.output_shape[0])
         )
 
