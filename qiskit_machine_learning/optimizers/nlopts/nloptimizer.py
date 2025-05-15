@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -33,12 +33,13 @@ class NLoptOptimizerType(Enum):
     GN_DIRECT_L = 3
     GN_ESCH = 4
     GN_ISRES = 5
+    LN_SBPLX = 6
 
 
 @_optionals.HAS_NLOPT.require_in_instance
 class NLoptOptimizer(Optimizer):
     """
-    NLopt global optimizer base class
+    NLopt local and global optimizer base class
     """
 
     _OPTIONS = ["max_evals"]
@@ -64,6 +65,7 @@ class NLoptOptimizer(Optimizer):
             NLoptOptimizerType.GN_DIRECT_L: nlopt.GN_DIRECT_L,
             NLoptOptimizerType.GN_ESCH: nlopt.GN_ESCH,
             NLoptOptimizerType.GN_ISRES: nlopt.GN_ISRES,
+            NLoptOptimizerType.LN_SBPLX: nlopt.LN_SBPLX,
         }
 
     @abstractmethod
