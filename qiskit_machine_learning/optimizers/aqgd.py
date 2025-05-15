@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -161,7 +161,7 @@ class AQGD(Optimizer):
         # Evaluate,
         # reshaping to flatten, as expected by objective function
         if self._max_evals_grouped > 1:
-            batches = [
+            batches: Any = [
                 param_sets_to_eval[i : i + self._max_evals_grouped]
                 for i in range(0, len(param_sets_to_eval), self._max_evals_grouped)
             ]
