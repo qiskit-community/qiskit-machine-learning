@@ -10,11 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""NLopt based global optimizers"""
+"""NLopt-based global and local optimizers"""
 
 from .crs import CRS
 from .direct_l import DIRECT_L
 from .direct_l_rand import DIRECT_L_RAND
 from .esch import ESCH
 from .isres import ISRES
+from .sbplx import SBPLX
 from .nloptimizer import NLoptOptimizer

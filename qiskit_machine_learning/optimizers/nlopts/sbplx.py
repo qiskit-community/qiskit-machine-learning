@@ -19,13 +19,12 @@ class SBPLX(NLoptOptimizer):
     """
     Subplex optimizer.
 
-    "Subplex (a variant of Nelder-Mead that uses Nelder-Mead on a sequence of subspaces)
+    'Subplex (a variant of Nelder-Mead that uses Nelder-Mead on a sequence of subspaces)
     is claimed to be much more efficient and robust than the original Nelder-Mead,
-    while retaining the latter's facility with discontinuous objectives,
-    and in my experience these claims seem to be true in many cases.
-    (However, I'm not aware of any proof that Subplex is globally convergent,
-    and perhaps it may fail for some objectives like Nelder-Mead; YMMV.)"
-    Description by Steven G. Johnson, author of NLopt library.
+    while retaining the latter's facility with discontinuous objectives.
+    While these claims seem to be true in many cases, we could not find any proof that
+    Subplex is globally convergent, and perhaps it may fail for some objective functions
+    like Nelder-Mead; YMMV.)', by Steven G. Johnson, author of NLopt library.
 
     NLopt local optimizer, derivative-free.
     For further detail, please refer to
