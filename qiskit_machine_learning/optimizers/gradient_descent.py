@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -28,7 +28,7 @@ CALLBACK = Callable[[int, np.ndarray, float, SupportsFloat], None]
 class GradientDescentState(OptimizerState):
     """State of :class:`~.GradientDescent`.
 
-    Dataclass with all the information of an optimizer plus the learning_rate and the stepsize.
+    Dataclass with all the information of an optimizer plus the learning_rate and the step-size.
     """
 
     stepsize: float | None
@@ -41,6 +41,22 @@ class GradientDescentState(OptimizerState):
     next step) but it can also return  the current learning rate with ``learning_rate.current``.
 
     """
+
+    # See parent class for a comment on having custom equals. I needed this
+    # too as it does not appear to use super by default and without this failed
+    # the exact same way. Note it does not include learning rate as that field
+    # is not included in the compare as per the field decorator. The __eq__
+    # method is supposed to accept any object. If you update the version of
+    # mypy you're using, it'll print out a note recommending this code
+    # structure.
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GradientDescentState):
+            # If we return NotImplemented, Python will automatically try
+            # running other.__eq__(self), in case 'other' knows what to do with
+            # Person objects.
+            return NotImplemented
+
+        return super().__eq__(other) and self.stepsize == other.stepsize
 
 
 class GradientDescent(SteppableOptimizer):
@@ -88,7 +104,7 @@ class GradientDescent(SteppableOptimizer):
                 "of {result.fun} using {result.nfev} evaluations.")
 
         An example where the learning rate is an iterator and we supply the analytic gradient.
-        Note how much faster this convergences (i.e. less ``nfev``) compared to the previous
+        Note how much faster this converges (i.e. less ``nfev``) compared to the previous
         example.
 
         .. code-block:: python
@@ -121,7 +137,7 @@ class GradientDescent(SteppableOptimizer):
             "of {result.fun} using {result.nfev} evaluations.")
 
 
-    An other example where the evaluation of the function has a chance of failing. The user, with
+    Another example where the evaluation of the function has a chance of failing. The user, with
     specific knowledge about his function can catch this errors and handle them before passing the
     result to the optimizer.
 
@@ -227,7 +243,7 @@ class GradientDescent(SteppableOptimizer):
     def tol(self) -> float:
         """Returns the tolerance of the optimizer.
 
-        Any step with smaller stepsize than this value will stop the optimization."""
+        Any step with smaller step-size than this value will stop the optimization."""
         return self._tol
 
     @tol.setter
