@@ -83,6 +83,7 @@ Local optimizers
    SciPyOptimizer
    UMDA
 
+
 The optimizers from
 `scikit-quant <https://scikit-quant.readthedocs.io/en/latest/>`_ are not included in the
 Qiskit Machine Learning library.
