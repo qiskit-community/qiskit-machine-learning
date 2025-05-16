@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -39,6 +39,7 @@ from qiskit_machine_learning.optimizers import (
     Optimizer,
     P_BFGS,
     POWELL,
+    SBPLX,
     SLSQP,
     SPSA,
     QNSPSA,
@@ -221,6 +222,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
         (CRS, False),
         (DIRECT_L, False),
         (DIRECT_L_RAND, False),
+        (SBPLX, True),
     )
     @unpack
     def test_nlopt(self, optimizer_cls, use_bound):
