@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023.
+# (C) Copyright IBM 2023, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -88,10 +88,10 @@ class TrainableFidelityStatevectorKernel(TrainableKernel, FidelityStatevectorKer
         )
 
         # Override the number of features defined in the base class.
-        self._num_features = feature_map.num_parameters - self._num_training_parameters
+        self._num_features = self.feature_map.num_parameters - self._num_training_parameters
         self._feature_parameters = [
             parameter
-            for parameter in feature_map.parameters
+            for parameter in self.feature_map.parameters
             if parameter not in self._training_parameters
         ]
         self._parameter_dict = {parameter: None for parameter in self.feature_map.parameters}
