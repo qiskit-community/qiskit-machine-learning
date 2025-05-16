@@ -20,9 +20,10 @@ import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes, ZFeatureMap
 from qiskit.quantum_info import SparsePauliOp
-from qiskit_machine_learning.circuit.library import QNNCircuit
 
+from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
+from qiskit_machine_learning.utils import algorithm_globals
 
 CASE_DATA = {
     "shape_1_1": {
@@ -178,6 +179,7 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
         estimator_qnn,
         case_data,
     ):
+        algorithm_globals.random_seed = 52
         test_data = case_data["test_data"]
         weights = case_data["weights"]
         correct_forwards = case_data["correct_forwards"]
@@ -407,7 +409,7 @@ class TestEstimatorQNN(QiskitMachineLearningTestCase):
             estimator_qnn.input_gradients = True
             self.assertTrue(estimator_qnn.input_gradients)
 
-    def test_qnn_qc_circui_construction(self):
+    def test_qnn_qc_circuit_construction(self):
         """Test Estimator QNN properties and forward/backward pass for QNNCircuit construction"""
         num_qubits = 2
         feature_map = ZZFeatureMap(feature_dimension=num_qubits)

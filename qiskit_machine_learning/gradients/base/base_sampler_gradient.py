@@ -22,10 +22,11 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseSampler
+from qiskit.primitives import BaseSampler, BaseSamplerV1
 from qiskit.primitives.utils import _circuit_key
 from qiskit.providers import Options
 from qiskit.transpiler.passes import TranslateParameterizedGates
+from qiskit.transpiler.passmanager import BasePassManager
 
 from .sampler_gradient_result import SamplerGradientResult
 from ..utils import (
@@ -34,14 +35,19 @@ from ..utils import (
     _make_gradient_parameters,
     _make_gradient_parameter_values,
 )
-
+from ...utils.deprecation import issue_deprecation_msg
 from ...algorithm_job import AlgorithmJob
 
 
 class BaseSamplerGradient(ABC):
     """Base class for a ``SamplerGradient`` to compute the gradients of the sampling probability."""
 
-    def __init__(self, sampler: BaseSampler, options: Options | None = None):
+    def __init__(
+        self,
+        sampler: BaseSampler,
+        options: Options | None = None,
+        pass_manager: BasePassManager | None = None,
+    ):
         """
         Args:
             sampler: The sampler used to compute the gradients.
@@ -49,8 +55,18 @@ class BaseSamplerGradient(ABC):
                 The order of priority is: options in ``run`` method > gradient's
                 default options > primitive's default setting.
                 Higher priority setting overrides lower priority setting
+            pass_manager: The pass manager to transpile the circuits if necessary.
+            Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
+        if isinstance(sampler, BaseSamplerV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
         self._sampler: BaseSampler = sampler
+        self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:
             self._default_options.update_options(**options)

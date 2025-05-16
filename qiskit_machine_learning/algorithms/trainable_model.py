@@ -20,7 +20,7 @@ from qiskit_machine_learning import QiskitMachineLearningError
 
 from .objective_functions import ObjectiveFunction
 from .serializable_model import SerializableModelMixin
-from ..optimizers import Optimizer, SLSQP, OptimizerResult, Minimizer
+from ..optimizers import Optimizer, SciPyOptimizer, SLSQP, OptimizerResult, Minimizer
 from ..utils import algorithm_globals
 from ..neural_networks import NeuralNetwork
 from ..utils.loss_functions import (
@@ -32,7 +32,7 @@ from ..utils.loss_functions import (
 
 
 class TrainableModel(SerializableModelMixin):
-    """Base class for ML model that defines a scikit-learn like interface for Estimators."""
+    """Base class for ML model that defines a scikit-learn-like interface for `Estimator` instances."""
 
     # pylint: disable=too-many-positional-arguments
     def __init__(
@@ -46,10 +46,10 @@ class TrainableModel(SerializableModelMixin):
     ):
         """
         Args:
-            neural_network: An instance of an quantum neural network. If the neural network has a
+            neural_network: An instance of a quantum neural network. If the neural network has a
                 one-dimensional output, i.e., `neural_network.output_shape=(1,)`, then it is
                 expected to return values in [-1, +1] and it can only be used for binary
-                classification. If the output is multi-dimensional, it is assumed that the result
+                classification. If the output is multidimensional, it is assumed that the result
                 is a probability distribution, i.e., that the entries are non-negative and sum up
                 to one. Then there are two options, either one-hot encoding or not. In case of
                 one-hot encoding, each probability vector resulting a neural network is considered
@@ -269,7 +269,8 @@ class TrainableModel(SerializableModelMixin):
 
         def objective(objective_weights):
             objective_value = function.objective(objective_weights)
-            self._callback(objective_weights, objective_value)
+            if isinstance(self._optimizer, SciPyOptimizer):
+                self._callback(objective_weights, objective_value)
             return objective_value
 
         return objective

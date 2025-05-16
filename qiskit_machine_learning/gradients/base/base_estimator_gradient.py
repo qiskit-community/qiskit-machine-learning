@@ -23,11 +23,13 @@ from copy import copy
 import numpy as np
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseEstimator
+from qiskit.primitives import BaseEstimator, BaseEstimatorV1
+from qiskit.primitives.base import BaseEstimatorV2
 from qiskit.primitives.utils import _circuit_key
 from qiskit.providers import Options
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passes import TranslateParameterizedGates
+from qiskit.transpiler.passmanager import BasePassManager
 
 from .estimator_gradient_result import EstimatorGradientResult
 from ..utils import (
@@ -37,7 +39,7 @@ from ..utils import (
     _make_gradient_parameters,
     _make_gradient_parameter_values,
 )
-
+from ...utils.deprecation import issue_deprecation_msg
 from ...algorithm_job import AlgorithmJob
 
 
@@ -46,9 +48,10 @@ class BaseEstimatorGradient(ABC):
 
     def __init__(
         self,
-        estimator: BaseEstimator,
+        estimator: BaseEstimator | BaseEstimatorV2,
         options: Options | None = None,
         derivative_type: DerivativeType = DerivativeType.REAL,
+        pass_manager: BasePassManager | None = None,
     ):
         r"""
         Args:
@@ -67,8 +70,18 @@ class BaseEstimatorGradient(ABC):
                 Defaults to ``DerivativeType.REAL``, as this yields e.g. the commonly-used energy
                 gradient and this type is the only supported type for function-level schemes like
                 finite difference.
+            pass_manager: The pass manager to transpile the circuits if necessary.
+            Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
+        if isinstance(estimator, BaseEstimatorV1):
+            issue_deprecation_msg(
+                msg="V1 Primitives are deprecated",
+                version="0.8.0",
+                remedy="Use V2 primitives for continued compatibility and support.",
+                period="4 months",
+            )
         self._estimator: BaseEstimator = estimator
+        self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:
             self._default_options.update_options(**options)
@@ -92,7 +105,7 @@ class BaseEstimatorGradient(ABC):
         self,
         circuits: Sequence[QuantumCircuit],
         observables: Sequence[BaseOperator],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter] | None] | None = None,
         **options,
     ) -> AlgorithmJob:
@@ -157,7 +170,7 @@ class BaseEstimatorGradient(ABC):
         self,
         circuits: Sequence[QuantumCircuit],
         observables: Sequence[BaseOperator],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
         **options,
     ) -> EstimatorGradientResult:
@@ -167,7 +180,7 @@ class BaseEstimatorGradient(ABC):
     def _preprocess(
         self,
         circuits: Sequence[QuantumCircuit],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
         supported_gates: Sequence[str],
     ) -> tuple[Sequence[QuantumCircuit], Sequence[Sequence[float]], Sequence[Sequence[Parameter]]]:
@@ -209,7 +222,7 @@ class BaseEstimatorGradient(ABC):
         self,
         results: EstimatorGradientResult,
         circuits: Sequence[QuantumCircuit],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
     ) -> EstimatorGradientResult:
         """Postprocess the gradients. This method computes the gradient of the original circuits
@@ -269,7 +282,7 @@ class BaseEstimatorGradient(ABC):
     def _validate_arguments(
         circuits: Sequence[QuantumCircuit],
         observables: Sequence[BaseOperator],
-        parameter_values: Sequence[Sequence[float]],
+        parameter_values: Sequence[Sequence[float]] | np.ndarray,
         parameters: Sequence[Sequence[Parameter]],
     ) -> None:
         """Validate the arguments of the ``run`` method.

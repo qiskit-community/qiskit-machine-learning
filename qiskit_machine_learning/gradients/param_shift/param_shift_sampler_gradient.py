@@ -20,10 +20,13 @@ from collections.abc import Sequence
 
 from qiskit.circuit import Parameter, QuantumCircuit
 
+from qiskit.primitives import BaseSamplerV1
+from qiskit.primitives.base import BaseSamplerV2
+from qiskit.result import QuasiDistribution
+
 from ..base.base_sampler_gradient import BaseSamplerGradient
 from ..base.sampler_gradient_result import SamplerGradientResult
 from ..utils import _make_param_shift_parameter_values
-
 from ...exceptions import AlgorithmError
 
 
@@ -75,7 +78,10 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
         parameters: Sequence[Sequence[Parameter]],
         **options,
     ) -> SamplerGradientResult:
-        """Compute the sampler gradients on the given circuits."""
+        """Compute the sampler gradients on the given circuits.
+        Raises:
+            AlgorithmError: If an invalid ``sampler``provided or if sampler job failed.
+        """
         job_circuits, job_param_values, metadata = [], [], []
         all_n = []
         for circuit, parameter_values_, parameters_ in zip(circuits, parameter_values, parameters):
@@ -91,18 +97,55 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
             all_n.append(n)
 
         # Run the single job with all circuits.
-        job = self._sampler.run(job_circuits, job_param_values, **options)
+        if isinstance(self._sampler, BaseSamplerV1):
+            job = self._sampler.run(job_circuits, job_param_values, **options)
+        elif isinstance(self._sampler, BaseSamplerV2):
+            if self._pass_manager is None:
+                _circs = job_circuits
+                _len_quasi_dist = 2 ** job_circuits[0].num_qubits
+            else:
+                _circs = self._pass_manager.run(job_circuits)
+                _len_quasi_dist = 2 ** _circs[0].layout._input_qubit_count
+            circ_params = [(_circs[i], job_param_values[i]) for i in range(len(job_param_values))]
+            job = self._sampler.run(circ_params)
+        else:
+            raise AlgorithmError(
+                "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got "
+                + f"{type(self._sampler)} instead."
+            )
         try:
             results = job.result()
         except Exception as exc:
-            raise AlgorithmError("Estimator job failed.") from exc
+            raise AlgorithmError("Sampler job failed.") from exc
 
         # Compute the gradients.
         gradients = []
         partial_sum_n = 0
+        opt = None  # Required by PyLint: possibly-used-before-assignment
         for n in all_n:
             gradient = []
-            result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
+
+            if isinstance(self._sampler, BaseSamplerV1):
+                result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
+                opt = self._get_local_options(options)
+
+            elif isinstance(self._sampler, BaseSamplerV2):
+                result = []
+                for i in range(partial_sum_n, partial_sum_n + n):
+                    if hasattr(results[i].data, "meas"):
+                        bitstring_counts = results[i].data.meas.get_counts()
+                    else:
+                        # Fallback to 'c' if 'meas' is not available.
+                        bitstring_counts = results[i].data.c.get_counts()
+                    # Normalize the counts to probabilities
+                    total_shots = sum(bitstring_counts.values())
+                    probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
+
+                    # Convert to quasi-probabilities
+                    counts = QuasiDistribution(probabilities)
+                    result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
+                    opt = options
+
             for dist_plus, dist_minus in zip(result[: n // 2], result[n // 2 :]):
                 grad_dist: dict[int, float] = defaultdict(float)
                 for key, val in dist_plus.items():
@@ -113,5 +156,4 @@ class ParamShiftSamplerGradient(BaseSamplerGradient):
             gradients.append(gradient)
             partial_sum_n += n
 
-        opt = self._get_local_options(options)
         return SamplerGradientResult(gradients=gradients, metadata=metadata, options=opt)

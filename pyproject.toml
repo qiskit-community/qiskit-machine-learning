@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 100
-target-version = ['py38', 'py39', 'py310', 'py311']
+
+target-version = ['py39', 'py310', 'py311', 'py312', 'py313']
 
 [tool.pylint.main]
 extension-pkg-allow-list = [
@@ -12,7 +13,7 @@ extension-pkg-allow-list = [
     "rustworkx",
 ]
 load-plugins = ["pylint.extensions.docparams", "pylint.extensions.docstyle"]
-py-version = "3.8"  # update it when bumping minimum supported python version
+py-version = "3.9"  # update it when bumping minimum supported python version
 
 [tool.pylint.basic]
 good-names = ["a", "b", "i", "j", "k", "d", "n", "m", "ex", "v", "w", "x", "y", "z", "Run", "_", "logger", "q", "c", "r", "qr", "cr", "qc", "nd", "pi", "op", "b", "ar", "br", "p", "cp", "ax", "dt", "__unittest", "iSwapGate", "mu"]

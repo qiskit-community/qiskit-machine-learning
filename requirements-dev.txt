@@ -17,3 +17,4 @@ mypy>=0.981
 mypy-extensions>=0.4.3
 nbsphinx
 qiskit_sphinx_theme~=1.16.0
+qiskit-ibm-runtime>=0.21

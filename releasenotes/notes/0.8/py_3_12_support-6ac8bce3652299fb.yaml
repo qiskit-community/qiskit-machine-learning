@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Added support for using Qiskit Machine Learning with Python 3.12
+    (`PEP 693 <https://peps.python.org/pep-0693/>`__).
