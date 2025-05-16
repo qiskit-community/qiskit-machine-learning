@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023, 2024.
+# (C) Copyright IBM 2023, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -24,6 +24,7 @@ from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_ibm_runtime import Session, SamplerV2
+from qiskit_ibm_runtime.options import SamplerOptions, SimulatorOptions
 
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QBayesian
@@ -222,8 +223,12 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
             seed=123,
         )
         session = Session(backend=backend)
-        _sampler = SamplerV2(mode=session)
-        pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
+        simopts = SimulatorOptions(seed_simulator=123)
+        samopts = SamplerOptions(simulator=simopts)
+        _sampler = SamplerV2(mode=session, options=samopts)
+        pass_manager = generate_preset_pass_manager(
+            optimization_level=0, backend=backend, seed_transpiler=123
+        )
 
         # Define rotation angles
         theta_a = 2 * np.arcsin(np.sqrt(0.2))
