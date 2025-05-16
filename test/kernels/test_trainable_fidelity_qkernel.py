@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -180,6 +180,24 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         )
         self.assertEqual(len(self.training_parameters), kernel.num_training_parameters)
         self.assertEqual(self.num_features, kernel.num_features)
+
+    # Testing changes related to the bug fix for
+    # https://github.com/qiskit-community/qiskit-machine-learning/issues/911
+    @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
+    def test_default_feature_map(self, trainable_kernel_type):
+        """Test properties of the trainable quantum kernel."""
+        with self.subTest("Do not pass feature map at all"):
+            kernel = trainable_kernel_type()
+            # The above would crash as per the reference issue. This following checks
+            # just make sure feature map is present and built as expected
+            self.assertIsNotNone(kernel.feature_map)
+            self.assertEqual(len(kernel.feature_map.parameters), 2)
+
+        # As above but explicitly pass None
+        with self.subTest("Pass feature map with value None"):
+            kernel = trainable_kernel_type(feature_map=None)
+            self.assertIsNotNone(kernel.feature_map)
+            self.assertEqual(len(kernel.feature_map.parameters), 2)
 
 
 if __name__ == "__main__":
