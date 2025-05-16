@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -112,17 +112,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.9, '3.10', 3.11, 3.12]
+        python-version: [3.9, '3.10', 3.11, 3.12, 3.13]
         include:
           # macos-latest is an Arm64 image
           - os: macos-latest
             python-version: 3.9
           - os: macos-latest
-            python-version: 3.12
+            python-version: 3.13
           - os: windows-latest
             python-version: 3.9
           - os: windows-latest
-            python-version: 3.12
+            python-version: 3.13
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -184,7 +184,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.9, 3.12]
+        python-version: [3.9, 3.13]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -284,26 +284,30 @@ jobs:
           path: /tmp/u312
       - uses: actions/download-artifact@v4
         with:
+          name: ubuntu-latest-3.13
+          path: /tmp/u313
+      - uses: actions/download-artifact@v4
+        with:
           name: macos-latest-3.9
           path: /tmp/m39
       - uses: actions/download-artifact@v4
         with:
-          name: macos-latest-3.12
-          path: /tmp/m312
+          name: macos-latest-3.13
+          path: /tmp/m313
       - uses: actions/download-artifact@v4
         with:
           name: windows-latest-3.9
           path: /tmp/w39
       - uses: actions/download-artifact@v4
         with:
-          name: windows-latest-3.12
-          path: /tmp/w312
+          name: windows-latest-3.13
+          path: /tmp/w313
       - name: Install Dependencies
         run: pip install -U coverage coveralls diff-cover
         shell: bash
       - name: Combined Deprecation Messages
         run: |
-          sort -f -u /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/m39/ml.dep /tmp/m312/ml.dep /tmp/w39/ml.dep /tmp/w312/ml.dep || true
+          sort -f -u /tmp/u39/ml.dep /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/u313/ml.dep /tmp/m39/ml.dep /tmp/m313/ml.dep /tmp/w39/ml.dep /tmp/w313/ml.dep || true
         shell: bash
       - name: Coverage combine
         run: coverage3 combine /tmp/u39/ml.dat
