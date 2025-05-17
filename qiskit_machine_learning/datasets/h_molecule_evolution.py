@@ -75,29 +75,30 @@ def h_molecule_evolution_data(
 
 
     .. math::
-       U \approx e^{- j H \Delta T}
-
-
+        U \approx e^{- j H \Delta T}
+    
+    
     Where the approximate sign signifies that there is noise added by the noisy simulation and
     also the approximate nature of transpiling with a trotterized hamiltonian. Now, the
     short-term evolution terms are generate until ``train_end`` such evolutions. Suppose we
     denote ``train_end`` as N. Then
+    
 
     .. math::
-       \text{y_train} =
+        \text{y_train} =
             \left[\ket{\psi_{HF}}, U \ket{\psi_{HF}}, ...U^N \ket{\psi_{HF}}\right]
-
-
+    
+    
     Long-term evolution for testing as numerically generated from the exact Hamiltonian without
     the uncertainities introduced by noise and trotterization. Suppose ``test_start`` is denoted
     as P and ``test_end`` as Q. Then
 
 
     .. math::
-       \text{y_test} =
+        \text{y_test} =
             \left[e^{-jHP\Delta T} \ket{\psi_{HF}}...e^{-jHQ\Delta T} \ket{\psi_{HF}}\right]
-
-
+    
+    
     The choice of noise added in simulation is determined by ``noise_mode``, which can also
     fetch calibration data from IBM runtimes. ``formatting`` parameter can be used to get
     the data as numpy arrays or as list of statevectors as per the usecase.
