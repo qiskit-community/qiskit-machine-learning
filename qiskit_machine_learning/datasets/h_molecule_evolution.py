@@ -115,13 +115,6 @@ def h_molecule_evolution_data(
     npj Quantum Information. 2020 Sep;6(1):82.
     `arXiv:1910.04292 <https://arxiv.org/abs/1910.04292>`_
 
-    delta_t: float,
-    train_end: int,
-    test_start: int,
-    test_end: int,
-    molecule: str = "H2",
-    noise_mode: str = "reduced",
-    formatting: str = "ndarray"
     Parameters:
         delta_t : Time step per evolution term (in atomic units). 1 a.u. = 2.42e-17 s
         train_end :  Generate short term evolutions up until math::`U ^ \text{train_end}`
