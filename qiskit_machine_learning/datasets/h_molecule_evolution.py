@@ -117,9 +117,9 @@ def h_molecule_evolution_data(
 
     Parameters:
         delta_t : Time step per evolution term (in atomic units). 1 a.u. = 2.42e-17 s
-        train_end :  Generate short term evolutions up until math::`U ^ \text{train_end}`
-        test_start : Generate long term evolution terms from math::`U ^ \text{test_start}`
-        test_end : Generate long term evolution terms until math::`U ^ \text{test_end}`
+        train_end :  Generate short term evolutions up until :math:`U ^ \text{train_end}`
+        test_start : Generate long term evolution terms from :math:`U ^ \text{test_start}`
+        test_end : Generate long term evolution terms until :math:`U ^ \text{test_end}`
         molecule : Decides which molecule is being simulation. The options are:
 
                 * ``"H2"``: A linear H2 molecule at 0.735 A bond-length
