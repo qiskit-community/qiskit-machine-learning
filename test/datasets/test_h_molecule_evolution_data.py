@@ -90,7 +90,6 @@ class TestHMoleculeEvolution(QiskitMachineLearningTestCase):
         self.assertEqual(y_tr.shape[-1], 1)
         self.assertEqual(y_te.shape[-1], 1)
 
-
     def test_error_raises(self):
         """Check if parameter errors are handled"""
         valid = dict(
