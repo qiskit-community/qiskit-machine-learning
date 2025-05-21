@@ -176,7 +176,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
-    "qiskit": ("https://docs.quantum.ibm.com/api/qiskit", None),
+    "qiskit": ("https://quantum.cloud.ibm.com/docs/api/qiskit", None),
 }
 
 html_context = {"analytics_enabled": True}

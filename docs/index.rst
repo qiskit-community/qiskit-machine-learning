@@ -41,11 +41,11 @@ Quantum Neural Networks (QNNs)
 Qiskit Machine Learning defines a generic interface for neural networks, implemented by two core (derived) primitives:
 
 - :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN` leverages the Qiskit
-  `Estimator <https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator>`__ primitive, combining parametrized quantum circuits
+  `Estimator <https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.primitives.BaseEstimator>`__ primitive, combining parametrized quantum circuits
   with quantum mechanical observables. The output is the expected value of the observable.
 
 - :class:`~qiskit_machine_learning.neural_networks.SamplerQNN` leverages the Qiskit
-  `Sampler <https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler>`__ primitive,
+  `Sampler <https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.primitives.BaseSampler>`__ primitive,
   translating bit-string counts into the desired outputs.
 
 To train and use neural networks, Qiskit Machine Learning provides learning algorithms such as the :class:`~qiskit_machine_learning.algorithms.NeuralNetworkClassifier`

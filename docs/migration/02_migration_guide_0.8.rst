@@ -23,7 +23,7 @@ Overview of the primitives
 
 With the launch of `Qiskit 1.0`, V1 primitives are deprecated and replaced by V2 primitives. Further details
 are available in the 
-`V2 primitives migration guide <https://docs.quantum.ibm.com/migration-guides/v2-primitives>`__.
+`V2 primitives migration guide <https://quantum.cloud.ibm.com/docs/migration-guides/v2-primitives>`__.
 
 The Qiskit Machine Learning 0.8 update aligns with the Qiskit IBM Runtime’s Primitive Unified Block (PUB) 
 requirements and the constraints of the instruction set architecture (ISA) for circuits and observables. 

@@ -46,9 +46,9 @@ to solve classification or regression problems respectively. It is also compatib
 
 Qiskit Machine Learning defines a generic interface for neural networks, implemented by two core (derived) primitives:
 
-- **[`EstimatorQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html):** Leverages the [`Estimator`](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator) primitive, combining parametrized quantum circuits with quantum mechanical observables. The output is the expected value of the observable.
+- **[`EstimatorQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html):** Leverages the [`Estimator`](https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.primitives.BaseEstimator) primitive, combining parametrized quantum circuits with quantum mechanical observables. The output is the expected value of the observable.
   
-- **[`SamplerQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html):** Leverages the [`Sampler`](https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler) primitive, translating bit-string counts into the desired outputs.
+- **[`SamplerQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html):** Leverages the [`Sampler`](https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.primitives.BaseSampler) primitive, translating bit-string counts into the desired outputs.
 
 To train and use neural networks, Qiskit Machine Learning provides learning algorithms such as the [`NeuralNetworkClassifier`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier) 
 and [`NeuralNetworkRegressor`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor). 
@@ -102,7 +102,7 @@ For more details on how to do so and much more, follow the instructions in the
 > Learning, Qiskit `1.0` or above will be required. If you have a pre-`1.0` version of Qiskit 
 > installed in your environment (however it was installed), you should upgrade to `1.x` to 
 > continue using the latest features. You may refer to the 
-> official [Qiskit 1.0 Migration Guide](https://docs.quantum.ibm.com/api/migration-guides/qiskit-1.0) 
+> official [Qiskit 1.0 Migration Guide](https://quantum.cloud.ibm.com/docs/migration-guides/qiskit-1.0) 
 > for detailed instructions and examples on how to upgrade Qiskit.
 
 ----------------------------------------------------------------------------------------------------
