@@ -35,10 +35,10 @@ respectively, that implement these two operations:
 
 -  Sampler class calculates probabilities or quasi-probabilities of
    bitstrings from quantum circuits. The base class is
-   `qiskit.primitives.BaseSampler <https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.primitives.BaseSampler>`__.
+   `qiskit.primitives.BaseSampler <https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseSampler>`__.
 -  Estimator class estimates expectation values of quantum circuits and
    observables. The base class is
-   `qiskit.primitives.BaseEstimator <https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.primitives.BaseEstimator>`__.
+   `qiskit.primitives.BaseEstimator <https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseEstimator>`__.
 
 Qiskit Terra provides core interfaces and two implementations:
 
