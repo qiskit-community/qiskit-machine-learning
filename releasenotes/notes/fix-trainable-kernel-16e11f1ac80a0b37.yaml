@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Fixed a bug in :class:`.TrainableFidelityQuantumKernel` and
+    :class:`.TrainableFidelityStatevectorKernel` where not passing a feature map
+    (or explicitly passing None to do the equivalent) would fail internally with
+    a NoneType AttributeError as described by
+    `issue 911 <https://github.com/qiskit-community/qiskit-machine-learning/issues/911>`__.

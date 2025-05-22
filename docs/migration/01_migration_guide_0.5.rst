@@ -35,36 +35,36 @@ respectively, that implement these two operations:
 
 -  Sampler class calculates probabilities or quasi-probabilities of
    bitstrings from quantum circuits. The base class is
-   `qiskit.primitives.BaseSampler <https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler>`__.
+   `qiskit.primitives.BaseSampler <https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseSampler>`__.
 -  Estimator class estimates expectation values of quantum circuits and
    observables. The base class is
-   `qiskit.primitives.BaseEstimator <https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator>`__.
+   `qiskit.primitives.BaseEstimator <https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseEstimator>`__.
 
 Qiskit Terra provides core interfaces and two implementations:
 
 -  The reference implementation that is statevector based. This
    implementation does require a backend or a simulator, it relies on
    the classes from the
-   `quantum_info <https://docs.quantum.ibm.com/api/qiskit/quantum_info>`__
+   `quantum_info <https://quantum.cloud.ibm.com/docs/api/qiskit/quantum_info>`__
    package.
 -  The backend based primitives are to support provider/backends that do
    not support primitives directly. This implementation requires an
    instance of a backend to be passed to a primitive.
 
 More information on the Qiskit Terra primitives can be found in the
-`documentation <https://docs.quantum.ibm.com/api/qiskit/primitives>`__.
+`documentation <https://quantum.cloud.ibm.com/docs/api/qiskit/primitives>`__.
 
 It is worth mentioning other implementations as well:
 
 -  Aer primitives should be used for Aer simulator. They extend
    corresponding interfaces from Terra and can be used in the same way
    as primitives from Terra. See
-   `documentation <https://docs.quantum.ibm.com/api/qiskit/0.39/aer_primitives>`__
+   `documentation <https://quantum.cloud.ibm.com/docs/api/qiskit/0.39/aer_primitives>`__
    for more information.
 -  The runtime primitives to be used with IBM devices. This is an
    implementation that is focused on cloud computing on actual hardware.
    See
-   `here <https://docs.quantum.ibm.com/api/qiskit-ibm-runtime>`__.
+   `here <https://quantum.cloud.ibm.com/docs/api/qiskit-ibm-runtime>`__.
 
 Along with the primitives Terra has some primitive-like algorithms that
 are highly useful in QML and used by the new 0.5 functions:
@@ -240,7 +240,7 @@ none is passed. But here, we create it manually for illustrative
 purposes. To create a fidelity instance we pass a sampler. The sampler
 is the reference implementation and defines where our quantum circuits
 are executed. You may create a sampler instance from
-`QiskitRuntimeService <https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService>`__
+`QiskitRuntimeService <https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/qiskit-runtime-service>`__
 to leverage Qiskit runtime services.
 
 .. code:: ipython3
@@ -596,7 +596,7 @@ Building a regressor using ``EstimatorQNN``
 
 Create an instance of the reference Estimator. You may create an
 estimator instance from
-`QiskitRuntimeService <https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService>`__
+`QiskitRuntimeService <https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/qiskit-runtime-service>`__
 to leverage Qiskit runtime services.
 
 .. code:: ipython3
@@ -679,7 +679,7 @@ deprecated or pending deprecation:
    Qiskit Programs that embed Qiskit Runtime in the algorithmic
    interfaces and facilitate usage of algorithms and scripts in the
    cloud. You should use
-   `QiskitRuntimeService <https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService>`__
+   `QiskitRuntimeService <https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/qiskit-runtime-service>`__
    to leverage primitives and runtimes.
 
 .. code:: ipython3
