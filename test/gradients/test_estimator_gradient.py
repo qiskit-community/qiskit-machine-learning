@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -29,6 +29,7 @@ from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_ibm_runtime import Session, EstimatorV2
+from qiskit_ibm_runtime.options import EstimatorOptions, SimulatorOptions
 
 from qiskit_machine_learning.gradients import (
     LinCombEstimatorGradient,
@@ -461,7 +462,9 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
     def __init__(self, TestCase):
         backend = GenericBackendV2(num_qubits=3, seed=123)
         session = Session(backend=backend)
-        self.estimator = EstimatorV2(mode=session)
+        simopts = SimulatorOptions(seed_simulator=123)
+        estopts = EstimatorOptions(simulator=simopts)
+        self.estimator = EstimatorV2(mode=session, options=estopts)
         self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
         super().__init__(TestCase)
 
