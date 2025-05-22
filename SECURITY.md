@@ -8,7 +8,7 @@ Qiskit Machine Learning supports one minor version release at a time, both for b
 > For example, if the most recent release is `0.7.2`, then the current major release series is `0.x` the current minor 
 > release is `0.7.x`, with `0.7.2` being the current patch release.
 
-As an additional resource, you can find more details on the release and support schedule of Qiskit in the [documentation](https://docs.quantum.ibm.com/start/install#release-schedule).
+As an additional resource, you can find more details on the release and support schedule of Qiskit in the [documentation](https://quantum.cloud.ibm.com/docs/en/open-source/qiskit-sdk-version-strategy).
 
 ## Reporting a Vulnerability
 

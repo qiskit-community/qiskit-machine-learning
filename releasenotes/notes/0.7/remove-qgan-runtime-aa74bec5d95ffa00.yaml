@@ -9,5 +9,5 @@ upgrade:
       - New primitive based quantum neural networks :class:`~qiskit_machine_learning.neural_networks.EstimatorQNN`,
         :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`, PyTorch connector
         :class:`~qiskit_machine_learning.connectors.TorchConnector`, and
-        `Qiskit Runtime Service <https://docs.quantum.ibm.com/api/qiskit-ibm-runtime>`__
+        `Qiskit Runtime Service <https://quantum.cloud.ibm.com/docs/api/qiskit-ibm-runtime>`__
         to get functionality similar to what the removed `runtime` package provided.
