@@ -8,7 +8,7 @@ Installation
 ============
 
 Qiskit Machine Learning depends on Qiskit, which has its own
-`installation instructions <https://docs.quantum.ibm.com/start/install>`__ detailing
+`installation instructions <https://quantum.cloud.ibm.com/docs/guides/install-qiskit>`__ detailing
 installation options and its supported environments/platforms. You should refer to
 that first. Then the information here can be followed which focuses on the additional installation
 specific to Qiskit Machine Learning.
@@ -21,7 +21,7 @@ See :ref:`optional_installs` for more information.
 
     .. tab-item:: Start locally
 
-        The simplest way to get started is to follow the installation guide for Qiskit `here <https://docs.quantum.ibm.com/start/install>`__
+        The simplest way to get started is to follow the installation guide for Qiskit `here <https://quantum.cloud.ibm.com/docs/guides/install-qiskit>`__
 
         In your virtual environment, where you installed Qiskit, install ``qiskit-machine-learning`` as follows:
 
@@ -44,7 +44,7 @@ See :ref:`optional_installs` for more information.
 
        Since Qiskit Machine Learning depends on Qiskit, and its latest changes may require new or changed
        features of Qiskit, you should first follow Qiskit's `"Install from source"` instructions
-       `here <https://docs.quantum.ibm.com/start/install-qiskit-source>`__
+       `here <https://quantum.cloud.ibm.com/docs/guides/install-qiskit-source>`__
 
        .. raw:: html
 
@@ -114,7 +114,7 @@ Migration to Qiskit 1.x
    Learning, Qiskit ``1.0`` or above will be required. If you have a pre-``1.0`` version of Qiskit
    installed in your environment (however it was installed), you should upgrade to ``1.x`` to
    continue using the latest features. You may refer to the
-   official `Qiskit 1.0 Migration Guide <https://docs.quantum.ibm.com/api/migration-guides/qiskit-1.0>`_
+   official `Qiskit 1.0 Migration Guide <https://quantum.cloud.ibm.com/docs/migration-guides/qiskit-1.0>`_
    for detailed instructions and examples on how to upgrade Qiskit.
 
 
