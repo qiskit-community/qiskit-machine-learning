@@ -21,6 +21,9 @@ on the Qiskit software development kit. As of version `0.7`, Qiskit Machine Lear
 by IBM and the [Hartree Center](https://www.hartree.stfc.ac.uk/), part of the UK Science and 
 Technologies Facilities Council (STFC).
 
+A description of the library structure, features, and domain-specific applications, can be found 
+in a dedicated [ArXiv paper](https://arxiv.org/abs/2505.17756).
+
 The Qiskit Machine Learning framework aims to be:
 
 * **User-friendly**, allowing users to quickly and easily prototype quantum machine learning models without 
@@ -188,8 +191,9 @@ work of
 who contribute to the project at different levels.
 
 ## How can I cite Qiskit Machine Learning?
-If you use Qiskit, please cite as per the provided
-[BibTeX file](https://github.com/Qiskit/qiskit/blob/main/CITATION.bib).
+If you use Qiskit Machine Learning in your work, please cite the "overview" paper to 
+support the continued development and visibility of the library. The BibTeX citation handle can be found in the 
+[`CITATION.bib`](./CITATION.bib) file.
 
 ## License
 
