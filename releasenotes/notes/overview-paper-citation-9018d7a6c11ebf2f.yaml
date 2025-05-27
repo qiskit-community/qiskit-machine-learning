@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    A description of the library structure, features, and domain-specific applications, can be found
+    in a dedicated `ArXiv paper <https://arxiv.org/abs/2505.17756>`__. If you use Qiskit Machine Learning
+    in your work, please cite this paper to support the continued development and
+    visibility of the library. The **BibTeX citation handle** can be found in
+    `this file <https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CITATION.bib>`__.

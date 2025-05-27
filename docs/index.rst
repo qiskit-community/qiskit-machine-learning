@@ -14,6 +14,12 @@ on the Qiskit software development kit. As of version ``0.7``, Qiskit Machine Le
 by IBM and the `Hartree Center <https://www.hartree.stfc.ac.uk/>`__, part of the UK Science and
 Technologies Facilities Council (STFC).
 
+A description of the library structure, features, and domain-specific applications, can be found
+in a dedicated `ArXiv paper <https://arxiv.org/abs/2505.17756>`__. If you use Qiskit Machine Learning
+in your work, please cite this paper to support the continued development and
+visibility of the library. The **BibTeX citation handle** can be found in
+`this file <https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CITATION.bib>`__.
+
 The Qiskit Machine Learning framework aims to be:
 
 * **User-friendly**, allowing users to quickly and easily prototype quantum machine learning models without
