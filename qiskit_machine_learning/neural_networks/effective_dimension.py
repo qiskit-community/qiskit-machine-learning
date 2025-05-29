@@ -70,10 +70,10 @@ class EffectiveDimension:
 
         # Setup things for weight and input samples via setters that deal
         # with the union of types that can be passed so that the private
-        # vars above that have just bee,n set with temp values of right types
+        # vars above that have just been set with temp values of right types
         # to establish typing, get the right values per what was passed.
-        # Note: the samples ones above had been set to None but this results
-        # in errors when checkin using mypy 1.16.0
+        # Note, the samples ones above had been set to None but this results
+        # in errors when checking using mypy 1.16.0
         self.weight_samples = weight_samples
         self.input_samples = input_samples
 
