@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -233,7 +233,9 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
                     gradient.imag = results[partial_sum_n + n // 2 : partial_sum_n + n]
 
                 else:
-                    gradient = np.real(results[partial_sum_n : partial_sum_n + n])
+                    gradient = np.real(
+                        results[partial_sum_n : partial_sum_n + n]
+                    )  # type: ignore[assignment, unused-ignore]
                 partial_sum_n += n
                 gradients.append(gradient)
 

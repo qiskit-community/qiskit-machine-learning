@@ -62,16 +62,20 @@ class EffectiveDimension:
         """
 
         # Store arguments
-        self._weight_samples = None
-        self._input_samples = None
-        self._num_weight_samples = 1
-        self._num_input_samples = 1
+        self._weight_samples = np.asarray([0.25])
+        self._input_samples = np.asarray([0.5])
+        self._num_weight_samples = len(self._weight_samples)
+        self._num_input_samples = len(self._input_samples)
         self._model = qnn
 
-        # Define weight samples and input samples
-        self.weight_samples = weight_samples  # type: ignore
-        # input setter uses self._model
-        self.input_samples = input_samples  # type: ignore
+        # Setup things for weight and input samples via setters that deal
+        # with the union of types that can be passed so that the private
+        # vars above that have just been set with temp values of right types
+        # to establish typing, get the right values per what was passed.
+        # Note, the samples ones above had been set to None but this results
+        # in errors when checking using mypy 1.16.0
+        self.weight_samples = weight_samples
+        self.input_samples = input_samples
 
     @property
     def weight_samples(self) -> np.ndarray:
