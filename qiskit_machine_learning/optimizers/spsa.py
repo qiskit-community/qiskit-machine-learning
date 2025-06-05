@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -83,17 +83,17 @@ class SPSA(Optimizer):
     Examples:
 
         This short example runs SPSA for the ground state calculation of the ``Z ^ Z``
-        observable where the ansatz is a ``PauliTwoDesign`` circuit.
+        observable where the ansatz is a ``pauli_two_design`` circuit.
 
         .. code-block:: python
 
             import numpy as np
             from qiskit_machine_learning.optimizers import SPSA
-            from qiskit.circuit.library import PauliTwoDesign
+            from qiskit.circuit.library import pauli_two_design
             from qiskit.primitives import Estimator
             from qiskit.quantum_info import SparsePauliOp
 
-            ansatz = PauliTwoDesign(2, reps=1, seed=2)
+            ansatz = pauli_two_design(2, reps=1, seed=2)
             observable = SparsePauliOp("ZZ")
             initial_point = np.random.random(ansatz.num_parameters)
             estimator = Estimator()

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import zz_feature_map
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC, SerializableModelMixin
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
@@ -36,7 +36,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 10598
 
-        self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
+        self.feature_map = zz_feature_map(feature_dimension=2, reps=2)
 
         self.sample_train = np.asarray(
             [
@@ -97,7 +97,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
         labels = np.array([0, 0, 1, 1])
 
-        quantum_kernel = FidelityQuantumKernel(feature_map=ZZFeatureMap(2))
+        quantum_kernel = FidelityQuantumKernel(feature_map=zz_feature_map(2))
         classifier = QSVC(quantum_kernel=quantum_kernel)
         classifier.fit(features, labels)
 

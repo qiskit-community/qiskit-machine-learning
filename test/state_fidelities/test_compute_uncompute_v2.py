@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 
 from qiskit.circuit import QuantumCircuit, ParameterVector
-from qiskit.circuit.library import RealAmplitudes
+from qiskit.circuit.library import real_amplitudes
 from qiskit.primitives import Sampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
@@ -226,7 +226,7 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
     def test_input_format(self):
         """test for different input format variations"""
 
-        circuit = RealAmplitudes(2)
+        circuit = real_amplitudes(2)
         fidelity = ComputeUncompute(self._sampler, pass_manager=self.pass_manager)
         values = np.random.random(circuit.num_parameters)
         shift = np.ones_like(values) * 0.01

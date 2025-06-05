@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from qiskit.circuit.library import ZFeatureMap
+from qiskit.circuit.library import z_feature_map
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler
 
@@ -40,7 +40,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         # number of steps performed during the training procedure
         self.tau = 100
 
-        self.feature_map = ZFeatureMap(feature_dimension=self.q, reps=1)
+        self.feature_map = z_feature_map(feature_dimension=self.q, reps=1)
 
         sample, label = make_blobs(
             n_samples=20, n_features=2, centers=2, random_state=3, shuffle=True
@@ -56,7 +56,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         # The same for a 4-dimensional example
         # number of qubits is equal to the number of features
         self.q_4d = 4
-        self.feature_map_4d = ZFeatureMap(feature_dimension=self.q_4d, reps=1)
+        self.feature_map_4d = z_feature_map(feature_dimension=self.q_4d, reps=1)
 
         sample_4d, label_4d = make_blobs(
             n_samples=20, n_features=self.q_4d, centers=2, random_state=3, shuffle=True

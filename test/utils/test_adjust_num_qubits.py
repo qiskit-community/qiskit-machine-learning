@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,7 +16,7 @@ from test import QiskitMachineLearningTestCase
 
 from ddt import idata, unpack, ddt
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZFeatureMap, RealAmplitudes, ZZFeatureMap
+from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.utils import derive_num_qubits_feature_map_ansatz
@@ -105,11 +105,11 @@ class TestAdjustNumQubits(QiskitMachineLearningTestCase):
         self.assertEqual(feature_map_der.num_qubits, num_qubits_expected)
 
         if feature_map_org is None and num_qubits_expected == 1:
-            self.assertIsInstance(feature_map_der, ZFeatureMap)
+            self.assertIsInstance(feature_map_der, QuantumCircuit)
         if feature_map_org is None and num_qubits_expected == 2:
-            self.assertIsInstance(feature_map_der, ZZFeatureMap)
+            self.assertIsInstance(feature_map_der, QuantumCircuit)
 
     def _test_ansatz(self, ansatz_der, num_qubits_expected):
         self.assertIsNotNone(ansatz_der)
         self.assertEqual(ansatz_der.num_qubits, num_qubits_expected)
-        self.assertIsInstance(ansatz_der, RealAmplitudes)
+        self.assertIsInstance(ansatz_der, QuantumCircuit)

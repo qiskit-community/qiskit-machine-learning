@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,7 +25,7 @@ from ddt import ddt, unpack, idata
 from scipy.optimize import minimize
 
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.circuit.library import zz_feature_map, real_amplitudes
 
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B, SPSA
 from qiskit_machine_learning.utils import algorithm_globals
@@ -168,8 +168,8 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         labels = np.array([0, 0.1, 0.4, 1])
         num_inputs = 2
 
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs)
+        feature_map = zz_feature_map(num_inputs)
+        ansatz = real_amplitudes(num_inputs)
         qc = QuantumCircuit(num_inputs)
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
@@ -222,8 +222,8 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
     def test_callback_setter(self):
         """Test the callback setter."""
         num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs)
+        feature_map = zz_feature_map(num_inputs)
+        ansatz = real_amplitudes(num_inputs)
         qc = QuantumCircuit(num_inputs)
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)

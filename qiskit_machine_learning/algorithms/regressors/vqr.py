@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -52,13 +52,13 @@ class VQR(NeuralNetworkRegressor):
                 If ``None`` then the number of qubits is derived from the
                 feature map or ansatz, but if neither of these are given an error is raised.
                 The number of qubits in the feature map and ansatz are adjusted to this
-                number if required.
+                number if required and possible (such adjustment is deprecated).
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
-                QNN. If ``None`` the :class:`~qiskit.circuit.library.ZZFeatureMap`
+                QNN. If ``None`` the :meth:`~qiskit.circuit.library.zz_feature_map`
                 is used if the number of qubits is larger than 1. For a single qubit regression
-                problem the :class:`~qiskit.circuit.library.ZFeatureMap` is used by default.
+                problem the :meth:`~qiskit.circuit.library.z_feature_map` is used by default.
             ansatz: The (parametrized) circuit to be used as an ansatz for the underlying
-                QNN. If ``None`` then the :class:`~qiskit.circuit.library.RealAmplitudes`
+                QNN. If ``None`` then the :meth:`~qiskit.circuit.library.real_amplitudes`
                 circuit is used.
             observable: The observable to be measured in the underlying QNN. If ``None``,
                 use the default :math:`Z^{\otimes num\_qubits}` observable.
@@ -94,7 +94,7 @@ class VQR(NeuralNetworkRegressor):
         self._estimator = estimator
 
         num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-            num_qubits, feature_map, ansatz
+            num_qubits, feature_map, ansatz, use_methods=True
         )
 
         # construct circuit

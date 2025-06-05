@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes, ZFeatureMap
+from qiskit.circuit.library import zz_feature_map, real_amplitudes, z_feature_map
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
@@ -477,8 +477,8 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
     def test_qnn_qc_circuit_construction(self):
         """Test Estimator QNN properties and forward/backward pass for QNNCircuit construction"""
         num_qubits = 2
-        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+        feature_map = zz_feature_map(feature_dimension=num_qubits)
+        ansatz = real_amplitudes(num_qubits=num_qubits, reps=1)
 
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
@@ -529,7 +529,7 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
 
     def test_binding_order(self):
         """Test parameter binding order gives result as expected"""
-        qc = ZFeatureMap(feature_dimension=2, reps=1)
+        qc = z_feature_map(feature_dimension=2, reps=1)
         input_params = qc.parameters
         weight = Parameter("weight")
         for i in range(qc.num_qubits):
