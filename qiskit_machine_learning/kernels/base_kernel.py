@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,6 +19,8 @@ from abc import abstractmethod, ABC
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import ZZFeatureMap
+
+from ..utils.deprecation import issue_deprecation_msg
 
 
 class BaseKernel(ABC):
@@ -54,6 +56,18 @@ class BaseKernel(ABC):
                 Default ``True``.
         """
         if feature_map is None:
+            # Note: when removing None it should be done in all the derived classes as well
+            # along with an appropriate update to the docstring in each case
+            issue_deprecation_msg(
+                msg="Passing None as a feature_map is deprecated",
+                version="0.9.0",
+                remedy="Pass a feature map with the required number of qubits to match "
+                "the features. Adjusting the number of qubits after instantiation will be "
+                "removed from Qiskit as circuits based on BlueprintCircuit, "
+                "like ZZFeatureMap to which this defaults, which could do this, "
+                "have been deprecated.",
+                period="4 months",
+            )
             feature_map = ZZFeatureMap(2)
 
         self._num_features = feature_map.num_parameters

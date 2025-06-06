@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,7 +25,7 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.circuit.library import real_amplitudes, zz_feature_map
 
 from qiskit_ibm_runtime import Session, SamplerV2
 
@@ -70,8 +70,8 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # define feature map and ansatz
         num_qubits = 2
-        feature_map = ZZFeatureMap(num_qubits, reps=1)
-        var_form = RealAmplitudes(num_qubits, reps=1)
+        feature_map = zz_feature_map(num_qubits, reps=1)
+        var_form = real_amplitudes(num_qubits, reps=1)
 
         # construct circuit
         self.qc = QuantumCircuit(num_qubits)
@@ -383,8 +383,8 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
     def test_qnn_qc_circuit_construction(self):
         """Test Sampler QNN properties and forward/backward pass for QNNCircuit construction"""
         num_qubits = 2
-        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits, reps=1)
+        feature_map = zz_feature_map(feature_dimension=num_qubits)
+        ansatz = real_amplitudes(num_qubits=num_qubits, reps=1)
 
         def parity(x):
             return f"{bin(x)}".count("1") % 2

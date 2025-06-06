@@ -117,7 +117,7 @@ Learning module. Let's try an experiment using VQC (Variational Quantum Classifi
 train and test samples from a data set to see how accurately the test set can be classified.
 
 ```python
-from qiskit.circuit.library import TwoLocal, ZZFeatureMap
+from qiskit.circuit.library import n_local, zz_feature_map
 from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
 
@@ -138,8 +138,8 @@ training_features, training_labels, test_features, test_labels = ad_hoc_data(
     training_size=training_size, test_size=test_size, n=feature_dim, gap=0.3
 )
 
-feature_map = ZZFeatureMap(feature_dimension=feature_dim, reps=2, entanglement="linear")
-ansatz = TwoLocal(feature_map.num_qubits, ["ry", "rz"], "cz", reps=3)
+feature_map = zz_feature_map(feature_dimension=feature_dim, reps=2, entanglement="linear")
+ansatz = n_local(feature_map.num_qubits, ["ry", "rz"], "cz", reps=3)
 vqc = VQC(
     feature_map=feature_map,
     ansatz=ansatz,

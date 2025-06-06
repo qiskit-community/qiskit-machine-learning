@@ -21,7 +21,7 @@ from ddt import ddt, data
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import EfficientSU2, RealAmplitudes
+from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate, RYYGate, RZXGate, RZZGate
 from qiskit.primitives import Estimator
 from qiskit.quantum_info import SparsePauliOp
@@ -130,7 +130,7 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
     def test_gradient_efficient_su2(self, grad):
         """Test the estimator gradient for EfficientSU2"""
 
-        qc = EfficientSU2(2, reps=1)
+        qc = efficient_su2(2, reps=1)
         op = SparsePauliOp.from_list([("ZI", 1)])
         gradient = grad(self.estimator)
         param_list = [
@@ -183,7 +183,7 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
     def test_gradient_parameter_coefficient(self, grad):
         """Test the estimator gradient for parameter variables with coefficients"""
 
-        qc = RealAmplitudes(num_qubits=2, reps=1)
+        qc = real_amplitudes(num_qubits=2, reps=1)
         qc.rz(qc.parameters[0].exp() + 2 * qc.parameters[1], 0)
         qc.rx(3.0 * qc.parameters[0] + qc.parameters[1].sin(), 1)
         qc.u(qc.parameters[0], qc.parameters[1], qc.parameters[3], 1)
@@ -546,7 +546,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
     def test_gradient_efficient_su2(self, grad):
         """Test the estimator gradient for EfficientSU2"""
 
-        qc = EfficientSU2(2, reps=1)
+        qc = efficient_su2(2, reps=1)
         op = SparsePauliOp.from_list([("ZI", 1)])
         gradient = grad(estimator=self.estimator, pass_manager=self.pass_manager)
         param_list = [
@@ -599,7 +599,7 @@ class TestEstimatorGradientV2(QiskitAlgorithmsTestCase):
     def test_gradient_parameter_coefficient(self, grad):
         """Test the estimator gradient for parameter variables with coefficients"""
 
-        qc = RealAmplitudes(num_qubits=2, reps=1)
+        qc = real_amplitudes(num_qubits=2, reps=1)
         qc.rz(qc.parameters[0].exp() + 2 * qc.parameters[1], 0)
         qc.rx(3.0 * qc.parameters[0] + qc.parameters[1].sin(), 1)
         qc.u(qc.parameters[0], qc.parameters[1], qc.parameters[3], 1)

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2024.
+# (C) Copyright IBM 2020, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -28,6 +28,7 @@ Feature maps
    :template: autosummary/class_no_inherited_members.rst
 
    RawFeatureVector
+   raw_feature_vector
 
 Helper circuits
 ---------------
@@ -38,12 +39,10 @@ Helper circuits
    :template: autosummary/class_no_inherited_members.rst
 
    QNNCircuit
+   qnn_circuit
 """
 
-from .raw_feature_vector import RawFeatureVector
-from .qnn_circuit import QNNCircuit
+from .raw_feature_vector import RawFeatureVector, raw_feature_vector
+from .qnn_circuit import QNNCircuit, qnn_circuit
 
-__all__ = [
-    "RawFeatureVector",
-    "QNNCircuit",
-]
+__all__ = ["RawFeatureVector", "raw_feature_vector", "QNNCircuit", "qnn_circuit"]

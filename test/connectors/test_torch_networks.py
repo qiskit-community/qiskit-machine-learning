@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ import numpy as np
 from ddt import ddt, idata
 
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.circuit.library import real_amplitudes, zz_feature_map
 from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.connectors import TorchConnector
 
@@ -56,8 +56,8 @@ class TestTorchNetworks(TestTorch):
     def _create_estimator_qnn(self) -> EstimatorQNN:
         num_inputs = 2
 
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, entanglement="linear", reps=1)
+        feature_map = zz_feature_map(num_inputs)
+        ansatz = real_amplitudes(num_inputs, entanglement="linear", reps=1)
 
         qc = QuantumCircuit(num_inputs)
         qc.append(feature_map, range(num_inputs))
@@ -78,8 +78,8 @@ class TestTorchNetworks(TestTorch):
         def interpret(x):
             return f"{x:b}".count("1") % 2
 
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, entanglement="linear", reps=1)
+        feature_map = zz_feature_map(num_inputs)
+        ansatz = real_amplitudes(num_inputs, entanglement="linear", reps=1)
 
         qc = QuantumCircuit(num_inputs)
         qc.append(feature_map, range(num_inputs))
