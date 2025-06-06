@@ -62,7 +62,7 @@ class BaseKernel(ABC):
                 msg="Passing None as a feature_map is deprecated",
                 version="0.9.0",
                 remedy="Pass a feature map with the required number of qubits to match "
-                "the features. Later any adjustment of the number of qubits will be "
+                "the features. Adjusting the number of qubits after instantiation will be "
                 "removed from Qiskit as circuits based on BlueprintCircuit, "
                 "like ZZFeatureMap to which this defaults, which could do this, "
                 "have been deprecated.",
