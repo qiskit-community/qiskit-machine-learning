@@ -153,7 +153,7 @@ class RawFeatureVector(BlueprintCircuit):
             msg="RawFeatureVector, a BlueprintCircuit based class, is deprecated",
             version="0.9.0",
             remedy="Use raw_feature_vector instead but note that later "
-            "adjustment of the feature dimension (i,e updating num qubits) is not "
+            "adjustment of the feature dimension (i,e updating num_qubits) is not "
             "possible anymore.",
             period="4 months",
         )
