@@ -3,11 +3,13 @@
 [![License](https://img.shields.io/github/license/qiskit-community/qiskit-machine-learning.svg?)](https://opensource.org/licenses/Apache-2.0) <!--- long-description-skip-begin -->
 [![Current Release](https://img.shields.io/github/release/qiskit-community/qiskit-machine-learning.svg?logo=Qiskit)](https://github.com/qiskit-community/qiskit-machine-learning/releases)
 [![Build Status](https://github.com/qiskit-community/qiskit-machine-learning/actions/workflows/main.yml/badge.svg)](https://github.com/qiskit-community/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)
-[![Monthly downloads](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg)](https://pypi.org/project/qiskit-machine-learning/)
 [![Coverage Status](https://coveralls.io/repos/github/qiskit-community/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/qiskit-community/qiskit-machine-learning?branch=main)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/qiskit-machine-learning)
+[![Monthly downloads](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg)](https://pypi.org/project/qiskit-machine-learning/)
 [![Total downloads](https://static.pepy.tech/badge/qiskit-machine-learning)](https://pepy.tech/project/qiskit-machine-learning)
 [![Slack Organisation](https://img.shields.io/badge/slack-chat-blueviolet.svg?label=Qiskit%20Slack&logo=slack)](https://slack.qiskit.org)
+[![arXiv](https://img.shields.io/badge/arXiv-2505.17756-b31b1b.svg)](https://arxiv.org/abs/2505.17756)
+
 <!--- long-description-skip-end -->
 
 ## What is Qiskit Machine Learning?
@@ -21,8 +23,9 @@ on the Qiskit software development kit. As of version `0.7`, Qiskit Machine Lear
 by IBM and the [Hartree Center](https://www.hartree.stfc.ac.uk/), part of the UK Science and 
 Technologies Facilities Council (STFC).
 
-A description of the library structure, features, and domain-specific applications, can be found 
-in a dedicated [ArXiv paper](https://arxiv.org/abs/2505.17756).
+> [!NOTE]
+> A description of the library structure, features, and domain-specific applications, can be found 
+> in a dedicated [ArXiv paper](https://arxiv.org/abs/2505.17756).
 
 The Qiskit Machine Learning framework aims to be:
 
