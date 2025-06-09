@@ -11,9 +11,9 @@
 # that they have been altered from the originals.
 
 """ Test QSVC """
-import os
 import tempfile
 import unittest
+from pathlib import Path
 
 from test import QiskitMachineLearningTestCase
 
@@ -92,39 +92,101 @@ class TestQSVC(QiskitMachineLearningTestCase):
         with self.assertWarns(QiskitMachineLearningWarning):
             QSVC(kernel=1)
 
-    def test_save_load(self):
-        """Tests save and load models."""
-        features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
-        labels = np.array([0, 0, 1, 1])
+    def test_save_load_default_filename(self):
+        """Saving and loading with default 'qsvc.pkl' should preserve predictions."""
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
-        quantum_kernel = FidelityQuantumKernel(feature_map=zz_feature_map(2))
-        classifier = QSVC(quantum_kernel=quantum_kernel)
-        classifier.fit(features, labels)
+        # temporary working directory
+        tmpdir = Path(tempfile.mkdtemp())
 
-        # predicted labels from the newly trained model
-        test_features = np.array([[0.2, 0.1], [0.8, 0.9]])
-        original_predicts = classifier.predict(test_features)
+        qsvc = QSVC(quantum_kernel=qkernel)
+        qsvc.fit(self.sample_train, self.label_train)
+        orig_preds = qsvc.predict(self.sample_test)
 
-        # save/load, change the quantum instance and check if predicted values are the same
-        file_name = os.path.join(tempfile.gettempdir(), "qsvc.model")
-        classifier.save(file_name)
-        try:
-            classifier_load = QSVC.load(file_name)
-            loaded_model_predicts = classifier_load.predict(test_features)
+        # save into subdirectory (should be auto-created)
+        out_dir = tmpdir / "subfolder"
+        qsvc.save(str(out_dir))
 
-            np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
+        # verify file exists
+        pkl = out_dir / "qsvc.pkl"
+        self.assertTrue(pkl.is_file(), f"{pkl} was not created")
 
-            # test loading warning
-            class FakeModel(SerializableModelMixin):
-                """Fake model class for test purposes."""
+        # load and compare
+        loaded = QSVC.load(str(out_dir))
+        load_preds = loaded.predict(self.sample_test)
+        np.testing.assert_array_equal(orig_preds, load_preds)
 
-                pass
+    def test_save_load_custom_filename(self):
+        """Saving and loading with a custom filename works identically."""
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
-            with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+        # temporary working directory
+        tmpdir = Path(tempfile.mkdtemp())
 
-        finally:
-            os.remove(file_name)
+        qsvc = QSVC(quantum_kernel=qkernel)
+        qsvc.fit(self.sample_train, self.label_train)
+        orig_preds = qsvc.predict(self.sample_test)
+
+        # use a custom filename
+        fname = "my_model.bin"
+        out_dir = tmpdir / "custom"
+        qsvc.save(str(out_dir), filename=fname)
+
+        full_path = out_dir / fname
+        self.assertTrue(full_path.is_file())
+
+        loaded = QSVC.load(str(out_dir), filename=fname)
+        np.testing.assert_array_equal(orig_preds, loaded.predict(self.sample_test))
+
+    def test_load_missing_file_raises(self):
+        """Attempting to load from a missing file should raise FileNotFoundError."""
+        tmpdir = Path(tempfile.mkdtemp())
+        missing_dir = tmpdir / "nope"
+        with self.assertRaises(FileNotFoundError):
+            QSVC.load(str(missing_dir))
+
+        # also if filename changed
+        valid_dir = tmpdir / "empty"
+        valid_dir.mkdir()
+        with self.assertRaises(FileNotFoundError):
+            QSVC.load(str(valid_dir), filename="does_not_exist.pkl")
+
+    def test_load_wrong_type_raises(self):
+        """Loading via SerializableModelMixin.load on a non-QSVC class should TypeError."""
+        # first save a valid QSVC
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
+
+        # temporary working directory
+        tmpdir = Path(tempfile.mkdtemp())
+
+        qsvc = QSVC(quantum_kernel=qkernel)
+        qsvc.fit(self.sample_train, self.label_train)
+        qsvc.save(str(tmpdir))
+
+        # define a dummy class using the mixin
+        class FakeModel(SerializableModelMixin):
+            """Class that pretends to be QSVC"""
+
+            pass
+
+        # FakeModel.load should raise TypeError when unpickling a QSVC
+        with self.assertRaises(TypeError):
+            FakeModel.load(str(tmpdir / "qsvc.pkl"))
+
+    def test_io_error_on_save_bad_folder(self):
+        """If the folder cannot be created (e.g. file in its place), save should IOError."""
+        # temporary working directory
+        tmpdir = Path(tempfile.mkdtemp())
+        # create a file where a folder should be
+        bad = tmpdir / "not_a_folder"
+        bad.write_text("I'm a file, not a directory")
+
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
+        qsvc = QSVC(quantum_kernel=qkernel)
+        qsvc.fit(self.sample_train, self.label_train)
+
+        with self.assertRaises(IOError):
+            qsvc.save(str(bad / "sub"), filename="model.pkl")
 
 
 if __name__ == "__main__":
