@@ -390,9 +390,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # save/load, change the quantum instance and check if predicted values are the same
         with tempfile.TemporaryDirectory() as dir_name:
             file_name = os.path.join(dir_name, "classifier.model")
-            classifier.save(file_name)
+            classifier.to_dill(file_name)
 
-            classifier_load = NeuralNetworkClassifier.load(file_name)
+            classifier_load = NeuralNetworkClassifier.from_dill(file_name)
             loaded_model_predicts = classifier_load.predict(test_features)
 
             np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
@@ -404,7 +404,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                 pass
 
             with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+                FakeModel.from_dill(file_name)
 
     @idata((True, False))
     def test_num_classes_data(self, one_hot):

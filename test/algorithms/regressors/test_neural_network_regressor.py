@@ -189,9 +189,9 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         # save/load, change the quantum instance and check if predicted values are the same
         with tempfile.TemporaryDirectory() as dir_name:
             file_name = os.path.join(dir_name, "regressor.model")
-            regressor.save(file_name)
+            regressor.to_dill(file_name)
 
-            regressor_load = NeuralNetworkRegressor.load(file_name)
+            regressor_load = NeuralNetworkRegressor.from_dill(file_name)
             loaded_model_predicts = regressor_load.predict(test_features)
 
             np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
@@ -203,7 +203,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
                 pass
 
             with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+                FakeModel.from_dill(file_name)
 
     def test_untrained(self):
         """Test untrained regressor."""

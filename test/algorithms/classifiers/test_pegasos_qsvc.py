@@ -227,9 +227,9 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         # save/load, change the quantum instance and check if predicted values are the same
         file_name = os.path.join(tempfile.gettempdir(), "pegasos.model")
-        regressor.save(file_name)
+        regressor.to_dill(file_name)
         try:
-            regressor_load = PegasosQSVC.load(file_name)
+            regressor_load = PegasosQSVC.from_dill(file_name)
             loaded_model_predicts = regressor_load.predict(test_features)
 
             np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
@@ -241,7 +241,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
                 pass
 
             with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+                FakeModel.from_dill(file_name)
 
         finally:
             os.remove(file_name)
