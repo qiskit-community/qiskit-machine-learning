@@ -105,6 +105,7 @@ datasets
 deepcopy
 denoising
 deriv
+deserialize
 deterministically
 diag
 dicts
@@ -398,6 +399,8 @@ pearson
 pedro
 pegasos
 peruzzo
+picklable
+pkl
 pixelated
 platt
 polyfit
@@ -585,6 +588,7 @@ uncompute
 unitaries
 univariate
 uno
+unpickling
 unscaled
 unsymmetric
 utf
