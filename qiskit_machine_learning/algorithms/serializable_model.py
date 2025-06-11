@@ -54,7 +54,7 @@ class SerializableModelMixin:
         """Backwards compatibility with :meth:`to_dill`, deprecated in v0.9.0."""
         issue_deprecation_msg(
             msg="SerializableModelMixin.save() is deprecated.",
-            version="0.9.0",
+            version="0.10.0",
             remedy="Use the to_dill() method instead.",
             period="4 months",
         )
@@ -94,7 +94,7 @@ class SerializableModelMixin:
         """Backwards compatibility with :meth:`from_dill`, deprecated in v0.9.0."""
         issue_deprecation_msg(
             msg="SerializableModelMixin.load() is deprecated.",
-            version="0.9.0",
+            version="0.10.0",
             remedy="Use the from_dill() classmethod instead.",
             period="4 months",
         )
