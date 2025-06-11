@@ -2,7 +2,7 @@
 upgrade:
   - |
     Added new methods :meth:`to_dill` and :meth:`from_dill`, with improved docstrings and examples.
-    Deprecated :meth:`save` and :meth:`load` in favor of the `{to/from}_dill` methods.
+    Deprecated :meth:`save` and :meth:`load` in favor of :meth:`to_dill` and :meth:`from_dill`.
 deprecations:
   - |
     The methods :meth:`SerializableModelMixin.save` and :meth:`SerializableModelMixin.load` have
