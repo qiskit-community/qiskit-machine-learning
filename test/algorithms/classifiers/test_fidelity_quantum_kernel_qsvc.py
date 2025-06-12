@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import zz_feature_map
 
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC, SerializableModelMixin
@@ -34,7 +34,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 10598
 
-        self.feature_map = ZZFeatureMap(feature_dimension=2, reps=2)
+        self.feature_map = zz_feature_map(feature_dimension=2, reps=2)
 
         self.sample_train = np.asarray(
             [
@@ -105,9 +105,9 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
         # save/load, change the quantum instance and check if predicted values are the same
         file_name = os.path.join(tempfile.gettempdir(), "qsvc.model")
-        classifier.save(file_name)
+        classifier.to_dill(file_name)
         try:
-            classifier_load = QSVC.load(file_name)
+            classifier_load = QSVC.from_dill(file_name)
             loaded_model_predicts = classifier_load.predict(test_features)
 
             np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
@@ -119,7 +119,7 @@ class TestQSVC(QiskitMachineLearningTestCase):
                 pass
 
             with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+                FakeModel.from_dill(file_name)
 
         finally:
             os.remove(file_name)

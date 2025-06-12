@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -26,7 +26,7 @@ from sklearn.svm import SVC
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import ZFeatureMap
+from qiskit.circuit.library import z_feature_map
 from qiskit.primitives import Sampler
 
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
@@ -48,7 +48,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 10598
 
-        self.feature_map = ZFeatureMap(feature_dimension=2, reps=2)
+        self.feature_map = z_feature_map(feature_dimension=2, reps=2)
 
         self.sample_train = np.asarray(
             [
@@ -378,7 +378,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
     def setUp(self) -> None:
         super().setUp()
 
-        self.feature_map = ZFeatureMap(feature_dimension=2, reps=1)
+        self.feature_map = z_feature_map(feature_dimension=2, reps=1)
 
         self.properties = {
             "no_dups": np.array([[1, 2], [2, 3], [3, 4]]),

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -67,7 +67,7 @@ class SamplerQNN(NeuralNetwork):
     circuit to simplify the composition of a feature map and ansatz.
     If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
     input and weight parameters do not have to be provided, because these two properties are taken
-    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is deprecated.
 
     The output can be set up in different formats, and an optional post-processing step
     can be used to interpret or map the sampler's raw output in a particular context (e.g. mapping
@@ -95,8 +95,8 @@ class SamplerQNN(NeuralNetwork):
     .. code-block:: python
 
         from qiskit import QuantumCircuit
-        from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-        from qiskit_machine_learning.circuit.library import QNNCircuit
+        from qiskit.circuit.library import zz_feature_map, real_amplitudes
+        from qiskit_machine_learning.circuit.library import qnn_circuit
         from qiskit_machine_learning.neural_networks import SamplerQNN
 
         num_qubits = 2
@@ -105,12 +105,14 @@ class SamplerQNN(NeuralNetwork):
         def parity(x):
             return f"{bin(x)}".count("1") % 2
 
-        # Example 1: Using the QNNCircuit class
-        # QNNCircuit automatically combines a feature map and an ansatz into a single circuit
-        qnn_qc = QNNCircuit(num_qubits)
+        # Example 1: Using the qnn_circuit
+        # qnn_circuit automatically combines a feature map and an ansatz into a single circuit
+        qnn_qc, fm_params, anz_params = qnn_circuit(num_qubits)
 
         qnn = SamplerQNN(
             circuit=qnn_qc,  # Note that this is a QNNCircuit instance
+            input_params=fm_params,
+            weight_params=anz_params,
             interpret=parity,
             output_shape=2  # Reshape by the number of classical registers
         )
@@ -120,8 +122,8 @@ class SamplerQNN(NeuralNetwork):
 
         # Example 2: Explicitly specifying the feature map and ansatz
         # Create a feature map and an ansatz separately
-        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits)
+        feature_map = zz_feature_map(feature_dimension=num_qubits)
+        ansatz = real_amplitudes(num_qubits=num_qubits)
 
         # Compose the feature map and ansatz manually (otherwise done within QNNCircuit)
         qc = QuantumCircuit(num_qubits)
@@ -174,7 +176,7 @@ class SamplerQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed,
                 the `input_params` and `weight_params` do not have to be provided, because these two
                 properties are taken from the
-                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` (DEPRECATED).
             sampler: The sampler primitive used to compute the neural network's results. If
                 ``None`` is given, a default instance of the reference sampler defined by
                 :class:`~qiskit.primitives.Sampler` will be used.
@@ -241,6 +243,13 @@ class SamplerQNN(NeuralNetwork):
         self._org_circuit = circuit
 
         if isinstance(circuit, QNNCircuit):
+            issue_deprecation_msg(
+                msg="Using QNNCircuit here is deprecated",
+                version="0.9.0",
+                remedy="Use qnn_circuit (instead) of QNNCircuit and pass "
+                "explicitly the input and weight parameters.",
+                period="4 months",
+            )
             self._input_params = list(circuit.input_parameters)
             self._weight_params = list(circuit.weight_parameters)
         else:

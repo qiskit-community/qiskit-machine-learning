@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -24,7 +24,7 @@ from scipy.optimize import minimize
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import zz_feature_map
 
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms.classifiers import QSVC
@@ -46,8 +46,8 @@ class TestQuantumKernelTrainer(QiskitMachineLearningTestCase):
     def setUp(self):
         super().setUp()
         algorithm_globals.random_seed = 10598
-        data_block = ZZFeatureMap(2)
-        trainable_block = ZZFeatureMap(2, parameter_prefix="θ")
+        data_block = zz_feature_map(2)
+        trainable_block = zz_feature_map(2, parameter_prefix="θ")
         training_parameters = trainable_block.parameters
 
         self.feature_map = data_block.compose(trainable_block).compose(data_block)

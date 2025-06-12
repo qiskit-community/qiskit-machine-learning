@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ from test.connectors.test_torch import TestTorch
 import numpy as np
 from ddt import ddt, data, unpack, idata
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import RealAmplitudes, ZFeatureMap
+from qiskit.circuit.library import real_amplitudes, z_feature_map
 from qiskit.quantum_info import SparsePauliOp
 
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -184,8 +184,8 @@ class TestTorchConnector(TestTorch):
         else:
             output_shape = None
 
-        fmap = ZFeatureMap(num_qubits, reps=1)
-        ansatz = RealAmplitudes(num_qubits, reps=1)
+        fmap = z_feature_map(num_qubits, reps=1)
+        ansatz = real_amplitudes(num_qubits, reps=1)
         qc = QuantumCircuit(num_qubits)
         qc.compose(fmap, inplace=True)
         qc.compose(ansatz, inplace=True)
@@ -224,8 +224,8 @@ class TestTorchConnector(TestTorch):
     @unpack
     def test_estimator_qnn(self, num_qubits, observables):
         """Test TorchConnector on EstimatorQNN."""
-        fmap = ZFeatureMap(num_qubits, reps=1)
-        ansatz = RealAmplitudes(num_qubits, reps=1)
+        fmap = z_feature_map(num_qubits, reps=1)
+        ansatz = real_amplitudes(num_qubits, reps=1)
         qc = QuantumCircuit(num_qubits)
         qc.compose(fmap, inplace=True)
         qc.compose(ansatz, inplace=True)

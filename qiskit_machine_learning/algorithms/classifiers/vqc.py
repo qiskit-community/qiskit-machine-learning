@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -69,14 +69,14 @@ class VQC(NeuralNetworkClassifier):
                 If ``None`` is given, the number of qubits is derived from the
                 feature map or ansatz. If neither of those is given, raises an exception.
                 The number of qubits in the feature map and ansatz are adjusted to this
-                number if required.
+                number if required and possible (such adjustment is deprecated).
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
-                QNN. If ``None`` is given, the :class:`~qiskit.circuit.library.ZZFeatureMap`
+                QNN. If ``None`` is given, the :meth:`~qiskit.circuit.library.zz_feature_map`
                 is used if the number of qubits is larger than 1. For a single qubit
-                classification problem the :class:`~qiskit.circuit.library.ZFeatureMap`
+                classification problem the :meth:`~qiskit.circuit.library.z_feature_map`
                 is used by default.
             ansatz: The (parametrized) circuit to be used as an ansatz for the underlying QNN.
-                If ``None`` is given then the :class:`~qiskit.circuit.library.RealAmplitudes`
+                If ``None`` is given then the :meth:`~qiskit.circuit.library.real_amplitudes`
                 circuit is used.
             loss: A target loss function to be used in training. Default value is ``cross_entropy``.
             optimizer: An instance of an optimizer or a callable to be used in training.
@@ -108,7 +108,7 @@ class VQC(NeuralNetworkClassifier):
         """
 
         num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-            num_qubits, feature_map, ansatz
+            num_qubits, feature_map, ansatz, use_methods=True
         )
 
         if output_shape is None:

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -25,7 +25,7 @@ import numpy as np
 import scipy
 from ddt import ddt, data, idata, unpack
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap
+from qiskit.circuit.library import real_amplitudes, zz_feature_map
 from scipy.optimize import minimize
 
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B, SPSA, Optimizer
@@ -93,8 +93,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         callback, history = self._create_callback(cb_flag)
 
         num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, reps=1)
+        feature_map = zz_feature_map(num_inputs)
+        ansatz = real_amplitudes(num_inputs, reps=1)
 
         qc = QuantumCircuit(num_inputs)
         qc.compose(feature_map, inplace=True)
@@ -136,8 +136,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
 
     def _create_sampler_qnn(self, output_shape=2) -> tuple[SamplerQNN, int, int]:
         num_inputs = 2
-        feature_map = ZZFeatureMap(num_inputs)
-        ansatz = RealAmplitudes(num_inputs, reps=1)
+        feature_map = zz_feature_map(num_inputs)
+        ansatz = real_amplitudes(num_inputs, reps=1)
 
         # construct circuit
         qc = QuantumCircuit(num_inputs)
@@ -361,8 +361,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             labels = np.array([-1, -1, 1, 1])
 
             num_qubits = 2
-            feature_map = ZZFeatureMap(num_qubits)
-            ansatz = RealAmplitudes(num_qubits, reps=1)
+            feature_map = zz_feature_map(num_qubits)
+            ansatz = real_amplitudes(num_qubits, reps=1)
             qc = QuantumCircuit(num_qubits)
             qc.compose(feature_map, inplace=True)
             qc.compose(ansatz, inplace=True)
@@ -390,9 +390,9 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
         # save/load, change the quantum instance and check if predicted values are the same
         with tempfile.TemporaryDirectory() as dir_name:
             file_name = os.path.join(dir_name, "classifier.model")
-            classifier.save(file_name)
+            classifier.to_dill(file_name)
 
-            classifier_load = NeuralNetworkClassifier.load(file_name)
+            classifier_load = NeuralNetworkClassifier.from_dill(file_name)
             loaded_model_predicts = classifier_load.predict(test_features)
 
             np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
@@ -404,7 +404,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
                 pass
 
             with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+                FakeModel.from_dill(file_name)
 
     @idata((True, False))
     def test_num_classes_data(self, one_hot):
@@ -508,8 +508,8 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
     def test_callback_setter(self):
         """Test the callback setter."""
         num_qubits = 2
-        feature_map = ZZFeatureMap(num_qubits)
-        ansatz = RealAmplitudes(num_qubits)
+        feature_map = zz_feature_map(num_qubits)
+        ansatz = real_amplitudes(num_qubits)
         qc = QuantumCircuit(2)
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)

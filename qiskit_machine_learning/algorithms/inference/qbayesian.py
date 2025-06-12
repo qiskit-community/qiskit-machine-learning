@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2023, 2024.
+# (C) Copyright IBM 2023, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,7 +19,7 @@ from typing import Tuple, Dict, Set, List
 from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit import Qubit
-from qiskit.circuit.library import GroverOperator
+from qiskit.circuit.library import grover_operator
 from qiskit.primitives import BaseSampler, Sampler, BaseSamplerV2, BaseSamplerV1
 from qiskit.transpiler.passmanager import BasePassManager
 from qiskit.result import QuasiDistribution
@@ -129,7 +129,7 @@ class QBayesian:
         # True if rejection sampling converged after limit
         self._converged = bool()
 
-    def _get_grover_op(self, evidence: Dict[str, int]) -> GroverOperator:
+    def _get_grover_op(self, evidence: Dict[str, int]) -> QuantumCircuit:
         """
         Constructs a Grover operator based on the provided evidence. The evidence is used to
         determine the "good states" that the Grover operator will amplify.
@@ -161,7 +161,7 @@ class QBayesian:
         oracle = Statevector(
             [int(format(i, f"0{num_qubits}b") in good_states) for i in range(2**num_qubits)]
         )
-        return GroverOperator(oracle, state_preparation=self._circ)
+        return grover_operator(oracle, state_preparation=self._circ)
 
     def _run_circuit(self, circuit: QuantumCircuit) -> Dict[str, float]:
         """Run the quantum circuit with the sampler."""
@@ -199,7 +199,7 @@ class QBayesian:
         return counts
 
     def __power_grover(
-        self, grover_op: GroverOperator, evidence: Dict[str, int], k: int
+        self, grover_op: QuantumCircuit, evidence: Dict[str, int], k: int
     ) -> Tuple[QuantumCircuit, Set[Tuple[Qubit, int]]]:
         """
         Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits,

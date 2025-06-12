@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,7 +21,7 @@ import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler
 
-from qiskit.circuit.library import ZFeatureMap
+from qiskit.circuit.library import z_feature_map
 
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import PegasosQSVC, SerializableModelMixin
@@ -40,7 +40,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         # number of steps performed during the training procedure
         self.tau = 100
 
-        self.feature_map = ZFeatureMap(feature_dimension=self.q, reps=1)
+        self.feature_map = z_feature_map(feature_dimension=self.q, reps=1)
 
         sample, label = make_blobs(
             n_samples=20, n_features=2, centers=2, random_state=3, shuffle=True
@@ -56,7 +56,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
         # The same for a 4-dimensional example
         # number of qubits is equal to the number of features
         self.q_4d = 4
-        self.feature_map_4d = ZFeatureMap(feature_dimension=self.q_4d, reps=1)
+        self.feature_map_4d = z_feature_map(feature_dimension=self.q_4d, reps=1)
 
         sample_4d, label_4d = make_blobs(
             n_samples=20, n_features=self.q_4d, centers=2, random_state=3, shuffle=True
@@ -227,9 +227,9 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
         # save/load, change the quantum instance and check if predicted values are the same
         file_name = os.path.join(tempfile.gettempdir(), "pegasos.model")
-        regressor.save(file_name)
+        regressor.to_dill(file_name)
         try:
-            regressor_load = PegasosQSVC.load(file_name)
+            regressor_load = PegasosQSVC.from_dill(file_name)
             loaded_model_predicts = regressor_load.predict(test_features)
 
             np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
@@ -241,7 +241,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
                 pass
 
             with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+                FakeModel.from_dill(file_name)
 
         finally:
             os.remove(file_name)

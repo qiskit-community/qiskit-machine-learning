@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2024.
+# (C) Copyright IBM 2020, 2025
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -24,9 +24,77 @@ from qiskit.circuit import (
 )
 from qiskit.circuit.library import BlueprintCircuit
 
+from ...utils.deprecation import issue_deprecation_msg
+
+
+def raw_feature_vector(feature_dimension: int) -> QuantumCircuit:
+    """The raw feature vector circuit.
+
+    This circuit acts as parameterized initialization for statevectors with ``feature_dimension``
+    dimensions, thus with ``log2(feature_dimension)`` qubits. The circuit contains a
+    placeholder instruction that can only be synthesized/defined when all parameters are bound.
+
+    In ML, this circuit can be used to load the training data into qubit amplitudes. It does not
+    apply an kernel transformation (therefore, it is a "raw" feature vector).
+
+    Since initialization is implemented via a ``QuantumCircuit.initialize()`` call, this circuit
+    can't be used with gradient based optimizers, one can see a warning that gradients can't be
+    computed.
+
+    Examples:
+
+    .. code-block::
+
+        from qiskit_machine_learning.circuit.library import RawFeatureVector
+        circuit = RawFeatureVector(4)
+        print(circuit.num_qubits)
+        # prints: 2
+
+        print(circuit.draw(output='text'))
+        # prints:
+        #      ┌───────────────────────────────────────────────┐
+        # q_0: ┤0                                              ├
+        #      │  Parameterizedinitialize(x[0],x[1],x[2],x[3]) │
+        # q_1: ┤1                                              ├
+        #      └───────────────────────────────────────────────┘
+
+        print(circuit.ordered_parameters)
+        # prints: [Parameter(p[0]), Parameter(p[1]), Parameter(p[2]), Parameter(p[3])]
+
+        import numpy as np
+        state = np.array([1, 0, 0, 1]) / np.sqrt(2)
+        bound = circuit.assign_parameters(state)
+        print(bound)
+        # prints:
+        #      ┌───────────────────────────────────────────────┐
+        # q_0: ┤0                                              ├
+        #      │  Parameterizedinitialize(0.70711,0,0,0.70711) │
+        # q_1: ┤1                                              ├
+        #      └───────────────────────────────────────────────┘
+
+    Args:
+        feature_dimension: The feature dimension from which the number of
+                           qubits is inferred as ``n_qubits = log2(feature_dim)``
+
+    Raises:
+        ValueError: If ``feature_dimension`` is not a power of 2.
+
+    Returns:
+        The raw feature
+    """
+    num_qubits = np.log2(feature_dimension)
+    if int(num_qubits) != num_qubits:
+        raise ValueError("feature_dimension must be a power of 2!")
+
+    ordered_parameters = ParameterVector("x", feature_dimension)
+    placeholder = ParameterizedInitialize(ordered_parameters[:])
+    qc = QuantumCircuit(num_qubits)
+    qc.append(placeholder, qc.qubits)
+    return qc
+
 
 class RawFeatureVector(BlueprintCircuit):
-    """The raw feature vector circuit.
+    """(DEPRECATED) The raw feature vector circuit.
 
     This circuit acts as parameterized initialization for statevectors with ``feature_dimension``
     dimensions, thus with ``log2(feature_dimension)`` qubits. The circuit contains a
@@ -80,6 +148,15 @@ class RawFeatureVector(BlueprintCircuit):
 
         """
         super().__init__()
+
+        issue_deprecation_msg(
+            msg="RawFeatureVector, a BlueprintCircuit based class, is deprecated",
+            version="0.9.0",
+            remedy="Use raw_feature_vector instead but note that later "
+            "adjustment of the feature dimension (i,e updating num_qubits) is not "
+            "possible anymore.",
+            period="4 months",
+        )
 
         self._ordered_parameters = ParameterVector("x")
         if feature_dimension is not None:

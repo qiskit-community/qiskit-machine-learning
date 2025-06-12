@@ -3,11 +3,13 @@
 [![License](https://img.shields.io/github/license/qiskit-community/qiskit-machine-learning.svg?)](https://opensource.org/licenses/Apache-2.0) <!--- long-description-skip-begin -->
 [![Current Release](https://img.shields.io/github/release/qiskit-community/qiskit-machine-learning.svg?logo=Qiskit)](https://github.com/qiskit-community/qiskit-machine-learning/releases)
 [![Build Status](https://github.com/qiskit-community/qiskit-machine-learning/actions/workflows/main.yml/badge.svg)](https://github.com/qiskit-community/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)
-[![Monthly downloads](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg)](https://pypi.org/project/qiskit-machine-learning/)
 [![Coverage Status](https://coveralls.io/repos/github/qiskit-community/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/qiskit-community/qiskit-machine-learning?branch=main)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/qiskit-machine-learning)
+[![Monthly downloads](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg)](https://pypi.org/project/qiskit-machine-learning/)
 [![Total downloads](https://static.pepy.tech/badge/qiskit-machine-learning)](https://pepy.tech/project/qiskit-machine-learning)
 [![Slack Organisation](https://img.shields.io/badge/slack-chat-blueviolet.svg?label=Qiskit%20Slack&logo=slack)](https://slack.qiskit.org)
+[![arXiv](https://img.shields.io/badge/arXiv-2505.17756-b31b1b.svg)](https://arxiv.org/abs/2505.17756)
+
 <!--- long-description-skip-end -->
 
 ## What is Qiskit Machine Learning?
@@ -21,8 +23,9 @@ on the Qiskit software development kit. As of version `0.7`, Qiskit Machine Lear
 by IBM and the [Hartree Center](https://www.hartree.stfc.ac.uk/), part of the UK Science and 
 Technologies Facilities Council (STFC).
 
-A description of the library structure, features, and domain-specific applications, can be found 
-in a dedicated [ArXiv paper](https://arxiv.org/abs/2505.17756).
+> [!NOTE]
+> A description of the library structure, features, and domain-specific applications, can be found 
+> in a dedicated [ArXiv paper](https://arxiv.org/abs/2505.17756).
 
 The Qiskit Machine Learning framework aims to be:
 
@@ -117,7 +120,7 @@ Learning module. Let's try an experiment using VQC (Variational Quantum Classifi
 train and test samples from a data set to see how accurately the test set can be classified.
 
 ```python
-from qiskit.circuit.library import TwoLocal, ZZFeatureMap
+from qiskit.circuit.library import n_local, zz_feature_map
 from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
 
@@ -138,8 +141,8 @@ training_features, training_labels, test_features, test_labels = ad_hoc_data(
     training_size=training_size, test_size=test_size, n=feature_dim, gap=0.3
 )
 
-feature_map = ZZFeatureMap(feature_dimension=feature_dim, reps=2, entanglement="linear")
-ansatz = TwoLocal(feature_map.num_qubits, ["ry", "rz"], "cz", reps=3)
+feature_map = zz_feature_map(feature_dimension=feature_dim, reps=2, entanglement="linear")
+ansatz = n_local(feature_map.num_qubits, ["ry", "rz"], "cz", reps=3)
 vqc = VQC(
     feature_map=feature_map,
     ansatz=ansatz,
