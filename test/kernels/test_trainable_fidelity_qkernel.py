@@ -19,7 +19,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import ddt, data, idata, unpack
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import zz_feature_map
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.kernels import (
@@ -36,8 +36,8 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         super().setUp()
 
         # Create an arbitrary 3-qubit feature map circuit
-        circ1 = ZZFeatureMap(3)
-        circ2 = ZZFeatureMap(3, parameter_prefix="θ")
+        circ1 = zz_feature_map(3)
+        circ2 = zz_feature_map(3, parameter_prefix="θ")
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.num_features = circ1.num_parameters
         self.training_parameters = circ2.parameters

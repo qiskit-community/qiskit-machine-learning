@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    The methods :meth:`SerializableModelMixin.save` and :meth:`SerializableModelMixin.load` have
+    been deprecated and will be removed (target v0.10.0). Please use
+    :meth:`SerializableModelMixin.to_dill` and :meth:`SerializableModelMixin.from_dill` instead.

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -49,38 +49,40 @@ class EstimatorQNN(NeuralNetwork):
     their expectation value(s). Quite often, a combined quantum circuit is used. Such a circuit is
     built from two circuits: a feature map, it provides input parameters for the network, and an
     ansatz (weight parameters).
-    In this case a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` can be passed as
-    circuit to simplify the composition of a feature map and ansatz.
-    If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
-    input and weight parameters do not have to be provided, because these two properties are taken
-    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+    In this case a :meth:`~qiskit_machine_learning.circuit.library.qnn_circuit` can be used to
+    simplify the composition of a feature map and ansatz.
+    Use of the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` being passed as circuit,
+    the input and weight parameters do not have to be provided, because these two properties are taken
+    from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is deprecated.
 
     Example:
 
     .. code-block::
 
         from qiskit import QuantumCircuit
-        from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
-        from qiskit_machine_learning.circuit.library import QNNCircuit
+        from qiskit.circuit.library import zz_feature_map, real_amplitudes
+        from qiskit_machine_learning.circuit.library import qnn_circuit
 
         from qiskit_machine_learning.neural_networks import EstimatorQNN
 
         num_qubits = 2
 
         # Using the QNNCircuit:
-        # Create a parametrized 2 qubit circuit composed of the default ZZFeatureMap feature map
-        # and RealAmplitudes ansatz.
-        qnn_qc = QNNCircuit(num_qubits)
+        # Create a parametrized 2 qubit circuit composed of the default zz_feature_map feature map
+        # and real_amplitudes ansatz.
+        qnn_qc, fm_params, anz_params = qnn_circuit(num_qubits)
 
         qnn = EstimatorQNN(
-            circuit=qnn_qc
+            circuit=qnn_qc,
+            input_params=fm_params,
+            weight_params=anz_params
         )
 
         qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
         # Explicitly specifying the ansatz and feature map:
-        feature_map = ZZFeatureMap(feature_dimension=num_qubits)
-        ansatz = RealAmplitudes(num_qubits=num_qubits)
+        feature_map = zz_feature_map(feature_dimension=num_qubits)
+        ansatz = real_amplitudes(num_qubits=num_qubits)
 
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
@@ -124,7 +126,7 @@ class EstimatorQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed, the
                 ``input_params`` and ``weight_params`` do not have to be provided, because these two
                 properties are taken from the
-                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit`.
+                :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` (DEPRECATED).
             estimator: The estimator used to compute neural network's results.
                 If ``None``, a default instance of the reference estimator,
                 :class:`~qiskit.primitives.Estimator`, will be used.
@@ -201,6 +203,13 @@ class EstimatorQNN(NeuralNetwork):
         self._observables = observables
 
         if isinstance(circuit, QNNCircuit):
+            issue_deprecation_msg(
+                msg="Using QNNCircuit here is deprecated",
+                version="0.9.0",
+                remedy="Use qnn_circuit (instead) of QNNCircuit and pass "
+                "explicitly the input and weight parameters.",
+                period="4 months",
+            )
             self._input_params = list(circuit.input_parameters)
             self._weight_params = list(circuit.weight_parameters)
         else:

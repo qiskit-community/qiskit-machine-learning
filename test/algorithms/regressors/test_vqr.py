@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,7 +17,6 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
 from qiskit.primitives import Estimator
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
@@ -107,11 +106,11 @@ class TestVQR(QiskitMachineLearningTestCase):
         """Test properties of VQR."""
         vqr = VQR(num_qubits=2)
         self.assertIsNotNone(vqr.feature_map)
-        self.assertIsInstance(vqr.feature_map, ZZFeatureMap)
+        self.assertIsInstance(vqr.feature_map, QuantumCircuit)
         self.assertEqual(vqr.feature_map.num_qubits, 2)
 
         self.assertIsNotNone(vqr.ansatz)
-        self.assertIsInstance(vqr.ansatz, RealAmplitudes)
+        self.assertIsInstance(vqr.ansatz, QuantumCircuit)
         self.assertEqual(vqr.ansatz.num_qubits, 2)
 
         self.assertEqual(vqr.num_qubits, 2)

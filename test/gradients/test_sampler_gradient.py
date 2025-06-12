@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,7 +21,7 @@ from ddt import ddt, data
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import EfficientSU2, RealAmplitudes
+from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
 from qiskit.primitives import Sampler
 from qiskit.result import QuasiDistribution
@@ -126,7 +126,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     def test_gradient_efficient_su2(self, grad):
         """Test the sampler gradient for EfficientSU2"""
 
-        qc = EfficientSU2(2, reps=1)
+        qc = efficient_su2(2, reps=1)
         qc.measure_all()
         gradient = grad(self.sampler)
         param_list = [
@@ -241,7 +241,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     def test_gradient_parameter_coefficient(self, grad):
         """Test the sampler gradient for parameter variables with coefficients"""
 
-        qc = RealAmplitudes(num_qubits=2, reps=1)
+        qc = real_amplitudes(num_qubits=2, reps=1)
         qc.rz(qc.parameters[0].exp() + 2 * qc.parameters[1], 0)
         qc.rx(3.0 * qc.parameters[0] + qc.parameters[1].sin(), 1)
         qc.u(qc.parameters[0], qc.parameters[1], qc.parameters[3], 1)
@@ -682,7 +682,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     def test_gradient_efficient_su2(self, grad):
         """Test the sampler gradient for EfficientSU2"""
 
-        qc = EfficientSU2(2, reps=1)
+        qc = efficient_su2(2, reps=1)
         qc.measure_all()
         gradient = grad(
             sampler=self.sampler,
@@ -802,7 +802,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
     def test_gradient_parameter_coefficient(self, grad):
         """Test the sampler gradient for parameter variables with coefficients"""
 
-        qc = RealAmplitudes(num_qubits=2, reps=1)
+        qc = real_amplitudes(num_qubits=2, reps=1)
         qc.rz(qc.parameters[0].exp() + 2 * qc.parameters[1], 0)
         qc.rx(3.0 * qc.parameters[0] + qc.parameters[1].sin(), 1)
         qc.u(qc.parameters[0], qc.parameters[1], qc.parameters[3], 1)

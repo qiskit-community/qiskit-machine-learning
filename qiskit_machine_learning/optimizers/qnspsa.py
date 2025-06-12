@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -56,18 +56,18 @@ class QNSPSA(SPSA):
     Examples:
 
         This short example runs QN-SPSA for the ground state calculation of the ``Z ^ Z``
-        observable where the ansatz is a ``PauliTwoDesign`` circuit.
+        observable where the ansatz is a ``pauli_two_design`` circuit.
 
         .. code-block:: python
 
             import numpy as np
             from qiskit_machine_learning.optimizers import QNSPSA
-            from qiskit.circuit.library import PauliTwoDesign
+            from qiskit.circuit.library import pauli_two_design
             from qiskit.primitives import Estimator, Sampler
             from qiskit.quantum_info import Pauli
 
             # problem setup
-            ansatz = PauliTwoDesign(2, reps=1, seed=2)
+            ansatz = pauli_two_design(2, reps=1, seed=2)
             observable = Pauli("ZZ")
             initial_point = np.random.random(ansatz.num_parameters)
 
