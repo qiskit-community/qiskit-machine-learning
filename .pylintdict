@@ -109,6 +109,7 @@ deterministically
 diag
 dicts
 diederik
+dill
 dimensionality
 dir
 discretization
@@ -119,6 +120,7 @@ disp
 distro
 dobsicek
 docstring
+docstrings
 doi
 dok
 dp
@@ -500,6 +502,7 @@ sdg
 seealso
 semidefinite
 serializable
+serializablemodelmixin
 shalev
 shanno
 shende

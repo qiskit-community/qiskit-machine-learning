@@ -136,9 +136,9 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
         with tempfile.TemporaryDirectory() as dir_name:
             file_name = os.path.join(dir_name, "qsvr.model")
-            regressor.save(file_name)
+            regressor.to_dill(file_name)
 
-            regressor_load = QSVR.load(file_name)
+            regressor_load = QSVR.from_dill(file_name)
             loaded_model_predicts = regressor_load.predict(test_features)
 
             np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
@@ -149,7 +149,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
                 pass
 
             with self.assertRaises(TypeError):
-                FakeModel.load(file_name)
+                FakeModel.from_dill(file_name)
 
 
 if __name__ == "__main__":

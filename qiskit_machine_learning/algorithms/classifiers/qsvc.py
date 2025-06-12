@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -34,13 +34,24 @@ class QSVC(SVC, SerializableModelMixin):
     Read more in the `scikit-learn user guide
     <https://scikit-learn.org/stable/modules/svm.html#svm-classification>`_.
 
-    **Example**
+    Examples:
+        .. code-block::
 
-    .. code-block::
+            from qiskit_machine_learning.kernels import FidelityQuantumKernel
+            from qiskit_machine_learning.algorithms import QSVC
 
-        qsvc = QSVC(quantum_kernel=qkernel)
-        qsvc.fit(sample_train,label_train)
-        qsvc.predict(sample_test)
+            kernel = FidelityQuantumKernel()
+            qsvc = QSVC(quantum_kernel=kernel)
+            qsvc.fit(X_train, y_train)
+            y_pred = qsvc.predict(X_test)
+
+            # Save the trained model
+            qsvc.to_dill('qsvc_model.dill')
+
+            # Load the model for later use
+            loaded_qsvc = QSVC.from_dill('qsvc_model.dill')
+            score = loaded_qsvc.score(X_test, y_test)
+
     """
 
     def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
