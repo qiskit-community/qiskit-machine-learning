@@ -1,0 +1,29 @@
+---
+deprecations:
+  - |
+    Qiskit has deprecated circuit library classes that were based on
+    `BlueprintCircuit` in favor of methods that construct the circuits
+    instead. However, with these methods, the number of qubits
+    cannot be adjusted later. So for example `RealAmplitudes` class is
+    replaced by `real_amplitudes` method, ZZFeatureMap` by
+    `zz_feature_map` etc.
+
+    As BlueprintCircuit will be removed from Qiskit, similarly based classes
+    in Qiskit Machine Learning are now deprecated. These classes are
+    :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` and
+    :class:`~qiskit_machine_learning.circuit.library.RawFeatureVector` where
+    similarly their replacements are the like-named methods
+    :meth:`~qiskit_machine_learning.circuit.library.qnn_circuit` and
+    :meth:`~qiskit_machine_learning.circuit.library.raw_feature_vector`
+    respectively.
+
+    Please note that, as mentioned earlier above, the same same restriction
+    on the number of qubits applies to these methods too, i.e. it must be
+    known/specified when the circuit is created and cannot be changed later.
+
+    Also where an algorithm might default to one of these Blueprint-based
+    classes, e.g. VQC, any such defaults have been changed to use the
+    replacement methods instead, where later adjustment of the circuit's
+    number of qubits is not possible. In such cases if the number of qubits
+    given to the algorithm does not match what is needed from the circuit
+    and it cannot be adjusted then an exception will be raised.
