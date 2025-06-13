@@ -13,7 +13,7 @@ deprecations:
     :class:`~qiskit_machine_learning.circuit.library.RawFeatureVector` that
     are replaced by methods
     :meth:`~qiskit_machine_learning.circuit.library.qnn_circuit` and
-    :meth:`~qiskit_machine_learning.circuit.library.raw_feature_vector
+    :meth:`~qiskit_machine_learning.circuit.library.raw_feature_vector`
     respectively.
 
     Please note that, as mentioned earlier above, the same same restriction
