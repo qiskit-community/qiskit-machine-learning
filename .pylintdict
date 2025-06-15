@@ -55,6 +55,7 @@ borujeni
 boyer
 brassard
 broyden
+brisbane
 callables
 cambridge
 cancelled
@@ -66,6 +67,8 @@ centroid
 chernoff
 choi
 chuang
+cincio
+cîrstoiu
 clbit
 clbits
 clopper
@@ -166,14 +169,18 @@ fae
 failsafe
 farhi
 farrokh
+fermionic
 fi
 fidelities
 fidelity
 fidelityquantumkernel
 filippo
+filip
+fitzpatrick
 fletcher
 fm
 fmin
+fock
 formatter
 fourier
 frac
@@ -221,6 +228,7 @@ hermitian
 hessians
 hilbert
 hoc
+holmes
 homebrew
 hopkins
 hoyer
@@ -230,6 +238,7 @@ hubbard
 hyperparameter
 hyperparameters
 hyperplanes
+ibm
 idx
 im
 imag
@@ -242,6 +251,7 @@ instantiations
 interatomic
 interdependencies
 ints
+iosue
 iprint
 iqft
 isaac
@@ -255,12 +265,15 @@ izaac
 izz
 jac
 jacobian
+jhp
 johnson
 jm
 jonathan
 jones
+jordan
 july
 jupyter
+jw
 kandala
 kernelized
 killoran
@@ -284,6 +297,7 @@ leq
 lin
 linalg
 loglik
+longterm
 loglikelihood
 lov
 lr
@@ -329,6 +343,7 @@ msg
 multiclass
 multinomial
 multioutput
+muñoz
 mxd
 mypy
 nabla
@@ -358,6 +373,7 @@ nones
 nonlocal
 nosignatures
 np
+npj
 ns
 num
 numpy
@@ -401,6 +417,7 @@ pedro
 pegasos
 peruzzo
 pixelated
+pj
 platt
 polyfit
 postprocess
@@ -455,6 +472,7 @@ quantile
 quantumcircuit
 qubit
 qubits
+ramo
 rangle
 raymond
 rbf
@@ -501,11 +519,13 @@ scipy
 sdg
 seealso
 semidefinite
+sep
 serializable
 serializablemodelmixin
 shalev
 shanno
 shende
+shortterm
 shwartz
 sigmoid
 sima
@@ -516,6 +536,7 @@ slsqp
 sobol
 softmax
 soloviev
+sornborger
 spall
 sparsearray
 spedalieri
@@ -582,6 +603,7 @@ transpiling
 trotterization
 trotterized
 tunable
+uncertainities
 uncompiled
 uncompress
 uncompute
@@ -590,6 +612,7 @@ univariate
 uno
 unscaled
 unsymmetric
+usecase
 utf
 utils
 varadarajan
@@ -598,6 +621,7 @@ vatan
 vec
 vectorized
 veeravalli
+vff
 vicente
 vicentini
 vigo
@@ -611,6 +635,7 @@ vx
 vy
 vz
 wavefunction
+wigner
 wikipedia
 wilhelm
 williams
