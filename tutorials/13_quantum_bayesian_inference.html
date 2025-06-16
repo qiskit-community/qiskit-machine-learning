@@ -6,9 +6,9 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Qiskit Machine Learning API Reference" href="../apidocs/qiskit_machine_learning.html" /><link rel="prev" title="The Quantum Autoencoder" href="12_quantum_autoencoder.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Quantum Bayesian Inference - Qiskit Machine Learning 0.8.2</title>
+        <title>Quantum Bayesian Inference - Qiskit Machine Learning 0.8.3</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -513,14 +513,14 @@ much faster.</p>
 <section id="2.1.1.-Two-Node-Bayesian-Network-Example">
 <h4>2.1.1. Two Node Bayesian Network Example<a class="headerlink" href="#2.1.1.-Two-Node-Bayesian-Network-Example" title="Link to this heading">¶</a></h4>
 <p>In the first example we consider a simple Bayesian network that is only based on two nodes.</p>
-<p><img alt="Two Node Bayesian Network Example" src="../_images/Two_Node_Bayesian_Network.png" /></p>
+<img alt="Two Node Bayesian Network Example" src="../_images/Two_Node_Bayesian_Network.png" />
 <p>For the quantum circuit we need rotation angles that represent the conditional probability tables. The corresponding rotation angles are:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Include libraries</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># Define rotation angles</span>
 <span class="n">theta_X</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
@@ -534,7 +534,7 @@ much faster.</p>
 <h4>2.1.2. Burglary Alarm Example<a class="headerlink" href="#2.1.2.-Burglary-Alarm-Example" title="Link to this heading">¶</a></h4>
 <p>Now consider a more complex network. Imagine you have an alarm system in your house that is triggered by either a burglary or an earthquake. You also have two neighbors, John and Mary, who will call you if they hear the alarm. The network has directed edges from the Burglary and Earthquake nodes to the Alarm node, indicating that both burglary and earthquake can cause the alarm to ring. There are also edges from the Alarm node to the John Calls and Mary Calls nodes, indicating that the alarm
 influences whether John and Mary call you.</p>
-<p><img alt="Burglary Alarm" src="../_images/Burglary_Alarm.png" /></p>
+<img alt="Burglary Alarm" src="../_images/Burglary_Alarm.png" />
 <p>The Bayesian Network for this scenario involves the following variables:</p>
 <p>Burglary (B): Whether a burglary has occurred. Earthquake (E): Whether an earthquake has occurred. Alarm (A): Whether the alarm goes off. John Calls (J): Whether John calls you. Mary Calls (M): Whether Mary calls you.</p>
 <p>Use the conditional probability tables:</p>
@@ -566,8 +566,8 @@ influences whether John and Mary call you.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumRegister</span>
-<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumRegister</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
 
 <span class="c1"># Define quantum registers</span>
 <span class="n">qrX</span> <span class="o">=</span> <span class="n">QuantumRegister</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
@@ -670,9 +670,9 @@ only specific measurement outcomes that meet desired criteria, here evidence, ar
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">QBayesian</span>
-<span class="kn">from</span> <span class="nn">qiskit.visualization</span> <span class="kn">import</span> <span class="n">plot_histogram</span>
-<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">QBayesian</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_histogram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
 
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 <span class="n">evidence</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
@@ -728,7 +728,7 @@ only specific measurement outcomes that meet desired criteria, here evidence, ar
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;P(Y=0|X=1)&#39;: 0.11328125, &#39;P(Y=1|X=1)&#39;: 0.88671875}
+{&#39;P(Y=0|X=1)&#39;: 0.1171875, &#39;P(Y=1|X=1)&#39;: 0.8828125}
 </pre></div></div>
 </div>
 </section>
@@ -785,7 +785,7 @@ only specific measurement outcomes that meet desired criteria, here evidence, ar
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.1171875
+0.091796875
 </pre></div></div>
 </div>
 </section>
@@ -895,7 +895,7 @@ Converged:  True
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -970,7 +970,7 @@ Converged:  True
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=dbee5847"></script>
+    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

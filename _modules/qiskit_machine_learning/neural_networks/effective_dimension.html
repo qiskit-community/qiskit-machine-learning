@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.neural_networks.effective_dimension - Qiskit Machine Learning 0.8.2</title>
+        <title>qiskit_machine_learning.neural_networks.effective_dimension - Qiskit Machine Learning 0.8.3</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -448,7 +448,7 @@
           <h1>Source code for qiskit_machine_learning.neural_networks.effective_dimension</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2024.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -459,24 +459,24 @@
 <span class="c1"># that they have been altered from the originals.</span>
 <span class="sd">&quot;&quot;&quot;An implementation of the effective dimension algorithm.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">logsumexp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp</span>
 
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
-<span class="kn">from</span> <span class="nn">..exceptions</span> <span class="kn">import</span> <span class="n">QiskitMachineLearningError</span>
-<span class="kn">from</span> <span class="nn">.estimator_qnn</span> <span class="kn">import</span> <span class="n">EstimatorQNN</span>
-<span class="kn">from</span> <span class="nn">.neural_network</span> <span class="kn">import</span> <span class="n">NeuralNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">QiskitMachineLearningError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.estimator_qnn</span><span class="w"> </span><span class="kn">import</span> <span class="n">EstimatorQNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.neural_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetwork</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="EffectiveDimension">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension">[docs]</a>
-<span class="k">class</span> <span class="nc">EffectiveDimension</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EffectiveDimension</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class computes the global effective dimension for a Qiskit</span>
 <span class="sd">    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`</span>
@@ -487,7 +487,7 @@
 <span class="sd">        `The power of QNNs &lt;https://arxiv.org/pdf/2011.00027.pdf&gt;`__.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">qnn</span><span class="p">:</span> <span class="n">NeuralNetwork</span><span class="p">,</span>
         <span class="n">weight_samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -512,24 +512,28 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Store arguments</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_input_samples</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_weight_samples</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_input_samples</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.25</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.5</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_weight_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_input_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_samples</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">qnn</span>
 
-        <span class="c1"># Define weight samples and input samples</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight_samples</span> <span class="o">=</span> <span class="n">weight_samples</span>  <span class="c1"># type: ignore</span>
-        <span class="c1"># input setter uses self._model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_samples</span> <span class="o">=</span> <span class="n">input_samples</span>  <span class="c1"># type: ignore</span>
+        <span class="c1"># Setup things for weight and input samples via setters that deal</span>
+        <span class="c1"># with the union of types that can be passed so that the private</span>
+        <span class="c1"># vars above that have just been set with temp values of right types</span>
+        <span class="c1"># to establish typing, get the right values per what was passed.</span>
+        <span class="c1"># Note, the samples ones above had been set to None but this results</span>
+        <span class="c1"># in errors when checking using mypy 1.16.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_samples</span> <span class="o">=</span> <span class="n">weight_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_samples</span> <span class="o">=</span> <span class="n">input_samples</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns network weight samples.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span>
 
     <span class="nd">@weight_samples</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets network weight samples.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight_samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="c1"># random sampling from uniform distribution</span>
@@ -550,12 +554,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_weight_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">input_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns network input samples.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_samples</span>
 
     <span class="nd">@input_samples</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">input_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets network input samples.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="c1"># random sampling from normal distribution</span>
@@ -577,7 +581,7 @@
 
 <div class="viewcode-block" id="EffectiveDimension.run_monte_carlo">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension.run_monte_carlo">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_monte_carlo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_monte_carlo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method computes the model&#39;s Monte Carlo sampling for a set of input samples and</span>
 <span class="sd">        weight samples.</span>
@@ -588,14 +592,14 @@
 <span class="sd">             outputs: QNN output vector, result of forward passes, of shape</span>
 <span class="sd">                ``(num_input_samples * num_weight_samples, output_size)``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">grads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">grads</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_num_input_samples</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_weight_samples</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">num_weights</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">outputs</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_input_samples</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_weight_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="p">)</span>
 
@@ -634,7 +638,7 @@
 
 <div class="viewcode-block" id="EffectiveDimension.get_fisher_information">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension.get_fisher_information">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_fisher_information</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fisher_information</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">gradients</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">model_outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -669,7 +673,7 @@
 
 <div class="viewcode-block" id="EffectiveDimension.get_normalized_fisher">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension.get_normalized_fisher">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_normalized_fisher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized_fisher</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_normalized_fisher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized_fisher</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method computes the normalized Fisher Information Matrix and extracts its trace.</span>
 
@@ -706,7 +710,7 @@
         <span class="k">return</span> <span class="n">normalized_fisher</span><span class="p">,</span> <span class="n">fisher_trace</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_effective_dimension</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_effective_dimension</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">normalized_fisher</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">dataset_size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -738,7 +742,7 @@
 
 <div class="viewcode-block" id="EffectiveDimension.get_effective_dimension">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension.get_effective_dimension">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_effective_dimension</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_effective_dimension</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -771,7 +775,7 @@
 
 <div class="viewcode-block" id="LocalEffectiveDimension">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html#qiskit_machine_learning.neural_networks.LocalEffectiveDimension">[docs]</a>
-<span class="k">class</span> <span class="nc">LocalEffectiveDimension</span><span class="p">(</span><span class="n">EffectiveDimension</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LocalEffectiveDimension</span><span class="p">(</span><span class="n">EffectiveDimension</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class computes the local effective dimension for a Qiskit</span>
 <span class="sd">    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`</span>
@@ -787,12 +791,12 @@
 
     <span class="c1"># override setter to enforce 1 set of parameters</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns network parameters.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span>
 
     <span class="nd">@weight_samples</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets network parameters.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight_samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="c1"># random sampling from uniform distribution</span>
@@ -839,7 +843,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -861,7 +865,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=dbee5847"></script>
+    <script src="../../../_static/documentation_options.js?v=7f96dc5e"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

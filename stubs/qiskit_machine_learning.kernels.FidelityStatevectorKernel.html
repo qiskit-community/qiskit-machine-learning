@@ -6,9 +6,9 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="TrainableKernel" href="qiskit_machine_learning.kernels.TrainableKernel.html" /><link rel="prev" title="FidelityQuantumKernel" href="qiskit_machine_learning.kernels.FidelityQuantumKernel.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>FidelityStatevectorKernel - Qiskit Machine Learning 0.8.2</title>
+        <title>FidelityStatevectorKernel - Qiskit Machine Learning 0.8.3</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -461,7 +461,7 @@ produced by a parametrized quantum circuit (called feature map):</p>
 \[K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2.\]</div>
 </div>
 <p>In this implementation, <span class="math notranslate nohighlight">\(|\phi(y)\rangle\)</span> is given by the <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute of a
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.quantum_info.Statevector" title="(in Qiskit v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statevector</span></code></a> object or one of its subclasses. These
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.quantum_info.Statevector" title="(in Qiskit v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statevector</span></code></a> object or one of its subclasses. These
 arrays are stored in a statevector cache to avoid repeated evaluation of the quantum circuit.
 This cache can be cleared using <a class="reference internal" href="#qiskit_machine_learning.kernels.FidelityStatevectorKernel.clear_cache" title="qiskit_machine_learning.kernels.FidelityStatevectorKernel.clear_cache"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clear_cache()</span></code></a>. By default the cache is cleared when
 <a class="reference internal" href="#qiskit_machine_learning.kernels.FidelityStatevectorKernel.evaluate" title="qiskit_machine_learning.kernels.FidelityStatevectorKernel.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a> is called, unless <code class="docutils literal notranslate"><span class="pre">auto_clear_cache</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
@@ -481,13 +481,13 @@ with quantum-enhanced feature spaces. Nature, 567(7747), 209-212.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>feature_map</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – Parameterized circuit to be used as the feature map. If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given,
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> is used with two qubits. If there’s
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> is used with two qubits. If there’s
 a mismatch in the number of qubits of the feature map and the number of features
 in the dataset, then the kernel will try to adjust the feature map to reflect the
 number of features.</p></li>
 <li><p><strong>statevector_type</strong> (<em>Type</em><em>[</em><em>SV</em><em>]</em>) – The type of Statevector that will be instantiated using the
 <code class="docutils literal notranslate"><span class="pre">feature_map</span></code> quantum circuit and used to compute the fidelity kernel. This type
-should inherit from (and defaults to) <a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.quantum_info.Statevector" title="(in Qiskit v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statevector</span></code></a>.</p></li>
+should inherit from (and defaults to) <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.quantum_info.Statevector" title="(in Qiskit v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statevector</span></code></a>.</p></li>
 <li><p><strong>cache_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – Maximum size of the statevector cache. When <code class="docutils literal notranslate"><span class="pre">None</span></code> this is unbounded.</p></li>
 <li><p><strong>auto_clear_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Determines whether the statevector cache is retained when
 <a class="reference internal" href="#qiskit_machine_learning.kernels.FidelityStatevectorKernel.evaluate" title="qiskit_machine_learning.kernels.FidelityStatevectorKernel.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a> is called. The cache is automatically cleared by default.</p></li>
@@ -534,9 +534,9 @@ semidefinite matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_vec</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – 1D or 2D array of datapoints, NxD, where N is the number of datapoints,
+<li><p><strong>x_vec</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – 1D or 2D array of datapoints, NxD, where N is the number of datapoints,
 D is the feature dimension</p></li>
-<li><p><strong>y_vec</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a><em> | </em><em>None</em>) – 1D or 2D array of datapoints, MxD, where M is the number of datapoints,
+<li><p><strong>y_vec</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a><em> | </em><em>None</em>) – 1D or 2D array of datapoints, MxD, where M is the number of datapoints,
 D is the feature dimension</p></li>
 </ul>
 </dd>
@@ -544,7 +544,7 @@ D is the feature dimension</p></li>
 <dd class="field-even"><p>2D matrix, NxM</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -594,7 +594,7 @@ D is the feature dimension</p></li>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -642,7 +642,7 @@ D is the feature dimension</p></li>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=dbee5847"></script>
+    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

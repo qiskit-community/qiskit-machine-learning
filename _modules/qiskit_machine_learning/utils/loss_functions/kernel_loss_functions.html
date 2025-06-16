@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.utils.loss_functions.kernel_loss_functions - Qiskit Machine Learning 0.8.2</title>
+        <title>qiskit_machine_learning.utils.loss_functions.kernel_loss_functions - Qiskit Machine Learning 0.8.3</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -460,19 +460,19 @@
 
 <span class="sd">&quot;&quot;&quot; Kernel Loss utilities &quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <span class="n">SVC</span>
 
 <span class="c1"># Prevent circular dependencies caused from type checking</span>
-<span class="kn">from</span> <span class="nn">...kernels</span> <span class="kn">import</span> <span class="n">TrainableKernel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainableKernel</span>
 
 
 <div class="viewcode-block" id="KernelLoss">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html#qiskit_machine_learning.utils.loss_functions.KernelLoss">[docs]</a>
-<span class="k">class</span> <span class="nc">KernelLoss</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">KernelLoss</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for computing the loss of a kernel function.</span>
 <span class="sd">    Unlike many loss functions, which only take into account the labels and predictions</span>
@@ -480,7 +480,7 @@
 <span class="sd">    quantities that are generated during training.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">,</span>
@@ -495,7 +495,7 @@
 <div class="viewcode-block" id="KernelLoss.evaluate">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html#qiskit_machine_learning.utils.loss_functions.KernelLoss.evaluate">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">,</span>
@@ -522,7 +522,7 @@
 
 <div class="viewcode-block" id="SVCLoss">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html#qiskit_machine_learning.utils.loss_functions.SVCLoss">[docs]</a>
-<span class="k">class</span> <span class="nc">SVCLoss</span><span class="p">(</span><span class="n">KernelLoss</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SVCLoss</span><span class="p">(</span><span class="n">KernelLoss</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class provides a kernel loss function for classification tasks by fitting an ``SVC`` model</span>
 <span class="sd">    from scikit-learn. Given training samples, :math:`x_{i}`, with binary labels, :math:`y_{i}`,</span>
@@ -543,7 +543,7 @@
 <span class="sd">    See https://arxiv.org/abs/2105.03406 for further details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            **kwargs: Arbitrary keyword arguments to pass to SVC constructor within</span>
@@ -553,7 +553,7 @@
 
 <div class="viewcode-block" id="SVCLoss.evaluate">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html#qiskit_machine_learning.utils.loss_functions.SVCLoss.evaluate">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">,</span>
@@ -609,7 +609,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -631,7 +631,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=dbee5847"></script>
+    <script src="../../../../_static/documentation_options.js?v=7f96dc5e"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

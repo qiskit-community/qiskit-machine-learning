@@ -6,9 +6,9 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Machine Learning Tutorials" href="../tutorials/index.html" /><link rel="prev" title="Qiskit Machine Learning v0.5 Migration Guide" href="01_migration_guide_0.5.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Qiskit Machine Learning v0.8 Migration Guide - Qiskit Machine Learning 0.8.2</title>
+        <title>Qiskit Machine Learning v0.8 Migration Guide - Qiskit Machine Learning 0.8.3</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -466,7 +466,7 @@ This release also incorporates selected algorithms from the now deprecated <cite
 <h2>Overview of the primitives<a class="headerlink" href="#overview-of-the-primitives" title="Link to this heading">¶</a></h2>
 <p>With the launch of <cite>Qiskit 1.0</cite>, V1 primitives are deprecated and replaced by V2 primitives. Further details
 are available in the
-<a class="reference external" href="https://docs.quantum.ibm.com/migration-guides/v2-primitives">V2 primitives migration guide</a>.</p>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/migration-guides/v2-primitives">V2 primitives migration guide</a>.</p>
 <p>The Qiskit Machine Learning 0.8 update aligns with the Qiskit IBM Runtime’s Primitive Unified Block (PUB)
 requirements and the constraints of the instruction set architecture (ISA) for circuits and observables.</p>
 <p>Users can switch between <cite>V1</cite> primitives and <cite>V2</cite> primitives from version <cite>0.8</cite>.</p>
@@ -481,9 +481,9 @@ please do not hesitate to reach out via our
 <ul class="simple">
 <li><p>For kernel-based methods:</p></li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.state_fidelities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputeUncompute</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
 <span class="o">...</span>
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 <span class="n">fidelity</span> <span class="o">=</span> <span class="n">ComputeUncompute</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">)</span>
@@ -495,9 +495,9 @@ please do not hesitate to reach out via our
 <ul class="simple">
 <li><p>For Estimator based neural_network based methods:</p></li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">StatevectorEstimator</span> <span class="k">as</span> <span class="n">Estimator</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">EstimatorQNN</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.gradients</span> <span class="kn">import</span> <span class="n">ParamShiftEstimatorGradient</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatevectorEstimator</span> <span class="k">as</span> <span class="n">Estimator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">EstimatorQNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.gradients</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParamShiftEstimatorGradient</span>
 <span class="o">...</span>
 <span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
 <span class="n">estimator_gradient</span> <span class="o">=</span> <span class="n">ParamShiftEstimatorGradient</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">)</span>
@@ -516,9 +516,9 @@ please do not hesitate to reach out via our
 <ul class="simple">
 <li><p>For Sampler based neural_network based methods:</p></li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">SamplerQNN</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.gradients</span> <span class="kn">import</span> <span class="n">ParamShiftSamplerGradient</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplerQNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.gradients</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParamShiftSamplerGradient</span>
 <span class="o">...</span>
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 <span class="n">sampler_gradient</span> <span class="o">=</span> <span class="n">ParamShiftSamplerGradient</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">)</span>
@@ -543,12 +543,12 @@ use <cite>pass_manager</cite> with <cite>qiskit-machine-learning</cite> function
 <ul class="simple">
 <li><p>For kernel-based methods:</p></li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_ibm_runtime</span> <span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">SamplerV2</span>
-<span class="kn">from</span> <span class="nn">qiskit.providers.fake_provider</span> <span class="kn">import</span> <span class="n">GenericBackendV2</span>
-<span class="kn">from</span> <span class="nn">qiskit.transpiler.preset_passmanagers</span> <span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_ibm_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">SamplerV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.providers.fake_provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericBackendV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler.preset_passmanagers</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
 
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.state_fidelities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputeUncompute</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
 
 <span class="o">...</span>
 <span class="n">backend</span> <span class="o">=</span> <span class="n">GenericBackendV2</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
@@ -566,12 +566,12 @@ use <cite>pass_manager</cite> with <cite>qiskit-machine-learning</cite> function
 <ul class="simple">
 <li><p>For Estimator based neural_network based methods:</p></li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_ibm_runtime</span> <span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">EstimatorV2</span>
-<span class="kn">from</span> <span class="nn">qiskit.providers.fake_provider</span> <span class="kn">import</span> <span class="n">GenericBackendV2</span>
-<span class="kn">from</span> <span class="nn">qiskit.transpiler.preset_passmanagers</span> <span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_ibm_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">EstimatorV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.providers.fake_provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericBackendV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler.preset_passmanagers</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
 
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">EstimatorQNN</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.gradients</span> <span class="kn">import</span> <span class="n">ParamShiftEstimatorGradient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">EstimatorQNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.gradients</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParamShiftEstimatorGradient</span>
 
 <span class="o">...</span>
 <span class="n">backend</span> <span class="o">=</span> <span class="n">GenericBackendV2</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
@@ -615,12 +615,12 @@ use <cite>pass_manager</cite> with <cite>qiskit-machine-learning</cite> function
 <ul class="simple">
 <li><p>For Sampler based neural_network based methods:</p></li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_ibm_runtime</span> <span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">SamplerV2</span>
-<span class="kn">from</span> <span class="nn">qiskit.providers.fake_provider</span> <span class="kn">import</span> <span class="n">GenericBackendV2</span>
-<span class="kn">from</span> <span class="nn">qiskit.transpiler.preset_passmanagers</span> <span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_ibm_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">SamplerV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.providers.fake_provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericBackendV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler.preset_passmanagers</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
 
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">SamplerQNN</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.gradients</span> <span class="kn">import</span> <span class="n">ParamShiftSamplerGradient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplerQNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.gradients</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParamShiftSamplerGradient</span>
 
 <span class="o">...</span>
 <span class="n">backend</span> <span class="o">=</span> <span class="n">GenericBackendV2</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
@@ -685,9 +685,9 @@ Learning, please open a feature-request issue at
 <p>Four examples of upgrading the code can be found below.</p>
 <p>Gradients:</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Before:</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.gradients</span> <span class="kn">import</span> <span class="n">SPSA</span><span class="p">,</span> <span class="n">ParameterShift</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_algorithms.gradients</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPSA</span><span class="p">,</span> <span class="n">ParameterShift</span>
 <span class="c1"># After:</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.gradients</span> <span class="kn">import</span> <span class="n">SPSA</span><span class="p">,</span> <span class="n">ParameterShift</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.gradients</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPSA</span><span class="p">,</span> <span class="n">ParameterShift</span>
 <span class="c1"># Usage</span>
 <span class="n">spsa</span> <span class="o">=</span> <span class="n">SPSA</span><span class="p">()</span>
 <span class="n">param_shift</span> <span class="o">=</span> <span class="n">ParameterShift</span><span class="p">()</span>
@@ -695,9 +695,9 @@ Learning, please open a feature-request issue at
 </div>
 <p>Optimizers:</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Before:</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span><span class="p">,</span> <span class="n">ADAM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_algorithms.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">COBYLA</span><span class="p">,</span> <span class="n">ADAM</span>
 <span class="c1"># After:</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span><span class="p">,</span> <span class="n">ADAM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">COBYLA</span><span class="p">,</span> <span class="n">ADAM</span>
 <span class="c1"># Usage</span>
 <span class="n">cobyla</span> <span class="o">=</span> <span class="n">COBYLA</span><span class="p">()</span>
 <span class="n">adam</span> <span class="o">=</span> <span class="n">ADAM</span><span class="p">()</span>
@@ -705,18 +705,18 @@ Learning, please open a feature-request issue at
 </div>
 <p>Quantum state fidelities:</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Before:</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeFidelity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_algorithms.state_fidelities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputeFidelity</span>
 <span class="c1"># After:</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeFidelity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.state_fidelities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputeFidelity</span>
 <span class="c1"># Usage</span>
 <span class="n">fidelity</span> <span class="o">=</span> <span class="n">ComputeFidelity</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Algorithm globals (used to fix the random seed):</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Before:</span>
-<span class="kn">from</span> <span class="nn">qiskit_algorithms.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_algorithms.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm_globals</span>
 <span class="c1"># After:</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm_globals</span>
 <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">1234</span>
 </pre></div>
 </div>
@@ -854,7 +854,7 @@ Please use <cite>meas</cite> or <cite>c</cite> for your register names to avoid 
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -899,7 +899,7 @@ Please use <cite>meas</cite> or <cite>c</cite> for your register names to avoid 
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=dbee5847"></script>
+    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

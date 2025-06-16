@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.algorithms.classifiers.pegasos_qsvc - Qiskit Machine Learning 0.8.2</title>
+        <title>qiskit_machine_learning.algorithms.classifiers.pegasos_qsvc - Qiskit Machine Learning 0.8.3</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -448,7 +448,7 @@
           <h1>Source code for qiskit_machine_learning.algorithms.classifiers.pegasos_qsvc</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2024.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -459,21 +459,21 @@
 <span class="c1"># that they have been altered from the originals.</span>
 
 <span class="sd">&quot;&quot;&quot;Pegasos Quantum Support Vector Classifier.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">ClassifierMixin</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassifierMixin</span>
 
-<span class="kn">from</span> <span class="nn">...algorithms.serializable_model</span> <span class="kn">import</span> <span class="n">SerializableModelMixin</span>
-<span class="kn">from</span> <span class="nn">...exceptions</span> <span class="kn">import</span> <span class="n">QiskitMachineLearningError</span>
-<span class="kn">from</span> <span class="nn">...kernels</span> <span class="kn">import</span> <span class="n">BaseKernel</span><span class="p">,</span> <span class="n">FidelityQuantumKernel</span>
-<span class="kn">from</span> <span class="nn">...exceptions</span> <span class="kn">import</span> <span class="n">QiskitMachineLearningWarning</span>
-<span class="kn">from</span> <span class="nn">...utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...algorithms.serializable_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SerializableModelMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">QiskitMachineLearningError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseKernel</span><span class="p">,</span> <span class="n">FidelityQuantumKernel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">QiskitMachineLearningWarning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm_globals</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -481,7 +481,7 @@
 
 <div class="viewcode-block" id="PegasosQSVC">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html#qiskit_machine_learning.algorithms.PegasosQSVC">[docs]</a>
-<span class="k">class</span> <span class="nc">PegasosQSVC</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">SerializableModelMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PegasosQSVC</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">SerializableModelMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements Pegasos Quantum Support Vector Classifier algorithm. The algorithm has been</span>
 <span class="sd">    developed in [1] and includes methods ``fit``, ``predict`` and ``decision_function`` following</span>
@@ -510,7 +510,7 @@
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="c1"># pylint: disable=invalid-name</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">BaseKernel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">C</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -582,7 +582,7 @@
     <span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="PegasosQSVC.fit">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html#qiskit_machine_learning.algorithms.PegasosQSVC.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sample_weight</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PegasosQSVC&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model according to the given training data.</span>
@@ -645,7 +645,7 @@
         <span class="c1"># training loop</span>
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="c1"># for every step, a random index (determining a random datum) is fixed</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)))</span>
 
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_weighted_kernel_sum</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -663,7 +663,7 @@
     <span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="PegasosQSVC.predict">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html#qiskit_machine_learning.algorithms.PegasosQSVC.predict">[docs]</a>
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform classification on samples in X.</span>
 
@@ -697,7 +697,7 @@
 
 <div class="viewcode-block" id="PegasosQSVC.predict_proba">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html#qiskit_machine_learning.algorithms.PegasosQSVC.predict_proba">[docs]</a>
-    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract class prediction probabilities. The decision function values are</span>
 <span class="sd">        not bounded in the range :math:`[0, 1]`. Therefore, these values are</span>
@@ -727,7 +727,7 @@
 
 <div class="viewcode-block" id="PegasosQSVC.decision_function">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.PegasosQSVC.html#qiskit_machine_learning.algorithms.PegasosQSVC.decision_function">[docs]</a>
-    <span class="k">def</span> <span class="nf">decision_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decision_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluate the decision function for the samples in ``X``.</span>
 
@@ -764,7 +764,7 @@
         <span class="k">return</span> <span class="n">values</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_compute_weighted_kernel_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_weighted_kernel_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper function to compute the weighted sum over support vectors used for both training</span>
 <span class="sd">        and prediction with the Pegasos algorithm.</span>
 
@@ -802,12 +802,12 @@
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">quantum_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseKernel</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantum_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseKernel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns quantum kernel&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quantum_kernel</span>
 
     <span class="nd">@quantum_kernel</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">quantum_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">BaseKernel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantum_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">BaseKernel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets quantum kernel. If previously a precomputed kernel was set, it is reset to ``False``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -820,12 +820,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_state</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns number of steps in the Pegasos algorithm.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_steps</span>
 
     <span class="nd">@num_steps</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">num_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the number of steps to be used in the Pegasos algorithm.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_steps</span> <span class="o">=</span> <span class="n">num_steps</span>
 
@@ -833,12 +833,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_state</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">precomputed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">precomputed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a boolean flag indicating whether a precomputed kernel is used.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_precomputed</span>
 
     <span class="nd">@precomputed</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">precomputed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precomputed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">precomputed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precomputed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the pre-computed kernel flag. If ``True`` is passed then the previous kernel is</span>
 <span class="sd">        cleared. If ``False`` is passed then a new instance of</span>
 <span class="sd">        :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` is created.&quot;&quot;&quot;</span>
@@ -853,7 +853,7 @@
         <span class="c1"># reset training status</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_state</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_reset_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Resets internal data structures used in training.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_status_</span> <span class="o">=</span> <span class="n">PegasosQSVC</span><span class="o">.</span><span class="n">UNFITTED</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span> <span class="o">=</span> <span class="kc">None</span>
@@ -888,7 +888,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -910,7 +910,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=dbee5847"></script>
+    <script src="../../../../_static/documentation_options.js?v=7f96dc5e"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

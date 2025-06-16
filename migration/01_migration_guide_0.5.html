@@ -6,9 +6,9 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Qiskit Machine Learning v0.8 Migration Guide" href="02_migration_guide_0.8.html" /><link rel="prev" title="Qiskit Machine Learning Migration Guide" href="index.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Qiskit Machine Learning v0.5 Migration Guide - Qiskit Machine Learning 0.8.2</title>
+        <title>Qiskit Machine Learning v0.5 Migration Guide - Qiskit Machine Learning 0.8.3</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -201,7 +201,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.2</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +228,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.2</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -479,35 +479,35 @@ respectively, that implement these two operations:</p>
 <ul class="simple">
 <li><p>Sampler class calculates probabilities or quasi-probabilities of
 bitstrings from quantum circuits. The base class is
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseSampler">qiskit.primitives.BaseSampler</a>.</p></li>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseSampler">qiskit.primitives.BaseSampler</a>.</p></li>
 <li><p>Estimator class estimates expectation values of quantum circuits and
 observables. The base class is
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.primitives.BaseEstimator">qiskit.primitives.BaseEstimator</a>.</p></li>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseEstimator">qiskit.primitives.BaseEstimator</a>.</p></li>
 </ul>
 <p>Qiskit Terra provides core interfaces and two implementations:</p>
 <ul class="simple">
 <li><p>The reference implementation that is statevector based. This
 implementation does require a backend or a simulator, it relies on
 the classes from the
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/quantum_info">quantum_info</a>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/quantum_info">quantum_info</a>
 package.</p></li>
 <li><p>The backend based primitives are to support provider/backends that do
 not support primitives directly. This implementation requires an
 instance of a backend to be passed to a primitive.</p></li>
 </ul>
 <p>More information on the Qiskit Terra primitives can be found in the
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/primitives">documentation</a>.</p>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/primitives">documentation</a>.</p>
 <p>It is worth mentioning other implementations as well:</p>
 <ul class="simple">
 <li><p>Aer primitives should be used for Aer simulator. They extend
 corresponding interfaces from Terra and can be used in the same way
 as primitives from Terra. See
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit/0.39/aer_primitives">documentation</a>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/0.39/aer_primitives">documentation</a>
 for more information.</p></li>
 <li><p>The runtime primitives to be used with IBM devices. This is an
 implementation that is focused on cloud computing on actual hardware.
 See
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime">here</a>.</p></li>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit-ibm-runtime">here</a>.</p></li>
 </ul>
 <p>Along with the primitives Terra has some primitive-like algorithms that
 are highly useful in QML and used by the new 0.5 functions:</p>
@@ -595,13 +595,13 @@ implementations.</p>
 <section id="create-a-dataset">
 <h2>Create a dataset<a class="headerlink" href="#create-a-dataset" title="Link to this heading">¶</a></h2>
 <p>Fixing randomization.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.utils</span> <span class="kn">import</span> <span class="n">algorithm_globals</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm_globals</span>
 
 <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="mi">123456</span>
 </pre></div>
 </div>
 <p>Generate a simple dataset using scikit-learn.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_blobs</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_blobs</span>
 
 <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span>
     <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
@@ -618,8 +618,8 @@ implementations.</p>
 <code class="docutils literal notranslate"><span class="pre">QuantumInstance</span></code>. This class defines where our quantum circuits are
 executed. In this case we wrap a statevector simulator in the quantum
 instance.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">BasicAer</span>
-<span class="kn">from</span> <span class="nn">qiskit.utils</span> <span class="kn">import</span> <span class="n">QuantumInstance</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicAer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumInstance</span>
 
 <span class="n">sv_qi</span> <span class="o">=</span> <span class="n">QuantumInstance</span><span class="p">(</span>
     <span class="n">BasicAer</span><span class="o">.</span><span class="n">get_backend</span><span class="p">(</span><span class="s2">&quot;statevector_simulator&quot;</span><span class="p">),</span>
@@ -629,15 +629,15 @@ instance.</p>
 </pre></div>
 </div>
 <p>Then create a quantum kernel.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">ZZFeatureMap</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">QuantumKernel</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZFeatureMap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumKernel</span>
 
 <span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">previous_kernel</span> <span class="o">=</span> <span class="n">QuantumKernel</span><span class="p">(</span><span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">quantum_instance</span><span class="o">=</span><span class="n">sv_qi</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>And finally we fit an SVM classifier.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">QSVC</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">QSVC</span>
 
 <span class="n">qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">previous_kernel</span><span class="p">)</span>
 <span class="n">qsvc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
@@ -656,23 +656,23 @@ none is passed. But here, we create it manually for illustrative
 purposes. To create a fidelity instance we pass a sampler. The sampler
 is the reference implementation and defines where our quantum circuits
 are executed. You may create a sampler instance from
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService">QiskitRuntimeService</a>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/qiskit-runtime-service">QiskitRuntimeService</a>
 to leverage Qiskit runtime services.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.state_fidelities</span> <span class="kn">import</span> <span class="n">ComputeUncompute</span>
-<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.algorithms.state_fidelities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputeUncompute</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
 
 <span class="n">fidelity</span> <span class="o">=</span> <span class="n">ComputeUncompute</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">Sampler</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>Next, we create a new quantum kernel with the fidelity instance.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.kernels</span> <span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
 
 <span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">new_kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">(</span><span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">fidelity</span><span class="o">=</span><span class="n">fidelity</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then we fit an SVM classifier the same way as before.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">QSVC</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">QSVC</span>
 
 <span class="n">qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">new_kernel</span><span class="p">)</span>
 <span class="n">qsvc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
@@ -736,8 +736,8 @@ networks. For this purposes we re-use the dataset generated for the
 quantum kernel. For both quantum neural networks we still have to
 construct a feature map, an ansatz and combine them into a single
 quantum circuit.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
-<span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">RealAmplitudes</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealAmplitudes</span>
 
 <span class="n">num_inputs</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
@@ -750,7 +750,7 @@ quantum circuit.</p>
 </div>
 <p>We need an interpret function as well. We define our usual parity
 function that maps bitstrings either to <span class="math notranslate nohighlight">\(0\)</span> or <span class="math notranslate nohighlight">\(1\)</span>.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">parity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{:b}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
 </pre></div>
 </div>
@@ -763,7 +763,7 @@ function that maps bitstrings either to <span class="math notranslate nohighligh
 <h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code><a class="headerlink" href="#building-a-classifier-using-circuitqnn" title="Link to this heading">¶</a></h3>
 <p>We create a <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code> instance and re-use the quantum instance
 created for the quantum kernel.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">CircuitQNN</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitQNN</span>
 
 <span class="n">circuit_qnn</span> <span class="o">=</span> <span class="n">CircuitQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">,</span>
@@ -778,8 +778,8 @@ created for the quantum kernel.</p>
 <p>Construct a classifier out of the network, train it and score it. We are
 not aiming for good results, so the number of iterations is set to a
 small number to reduce overall execution time.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">NeuralNetworkClassifier</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.algorithms.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">COBYLA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkClassifier</span>
 
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">NeuralNetworkClassifier</span><span class="p">(</span>
     <span class="n">neural_network</span><span class="o">=</span><span class="n">circuit_qnn</span><span class="p">,</span>
@@ -800,14 +800,14 @@ small number to reduce overall execution time.</p>
 <h3>Building a classifier using <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code><a class="headerlink" href="#building-a-classifier-using-samplerqnn" title="Link to this heading">¶</a></h3>
 <p>Instead of <code class="docutils literal notranslate"><span class="pre">QuantumInstance</span></code> create an instance of the reference
 <code class="docutils literal notranslate"><span class="pre">Sampler</span></code>.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
 
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Now, we create a instance of <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>. The difference with
 <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code> is that we pass a sampler instead of a quantum instance.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">SamplerQNN</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplerQNN</span>
 
 <span class="n">sampler_qnn</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">,</span>
@@ -872,7 +872,7 @@ is now <strong>pending deprecation</strong>, will be deprecated in a future rele
 and subsequently removed after that.</p>
 <p>We’ll show how to train a variational quantum regressor using both
 networks. We start from generating a simple regression dataset.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">num_samples</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.2</span>
@@ -883,7 +883,7 @@ networks. We start from generating a simple regression dataset.</p>
 </div>
 <p>We still have to construct a feature map, an ansatz and combine them
 into a single quantum circuit for both quantum neural networks.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
 <span class="n">num_inputs</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">feature_map</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -906,8 +906,8 @@ into a single quantum circuit for both quantum neural networks.</p>
 <h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code><a class="headerlink" href="#building-a-regressor-using-opflowqnn" title="Link to this heading">¶</a></h3>
 <p>We create an <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code> instance and re-use the quantum instance
 created for the quantum kernel.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.opflow</span> <span class="kn">import</span> <span class="n">PauliSumOp</span><span class="p">,</span> <span class="n">StateFn</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">OpflowQNN</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.opflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">PauliSumOp</span><span class="p">,</span> <span class="n">StateFn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpflowQNN</span>
 
 <span class="n">observable</span> <span class="o">=</span> <span class="n">PauliSumOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 <span class="n">operator</span> <span class="o">=</span> <span class="n">StateFn</span><span class="p">(</span><span class="n">observable</span><span class="p">,</span> <span class="n">is_measurement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">@</span> <span class="n">StateFn</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
@@ -924,8 +924,8 @@ created for the quantum kernel.</p>
 case we use a gradient based optimizer, thus the network makes use of
 the gradient framework and due to nature of the dataset converges very
 quickly.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">L_BFGS_B</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">NeuralNetworkRegressor</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.algorithms.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">L_BFGS_B</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkRegressor</span>
 
 <span class="n">regressor</span> <span class="o">=</span> <span class="n">NeuralNetworkRegressor</span><span class="p">(</span>
     <span class="n">neural_network</span><span class="o">=</span><span class="n">opflow_qnn</span><span class="p">,</span>
@@ -944,9 +944,9 @@ quickly.</p>
 <h3>Building a regressor using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#building-a-regressor-using-estimatorqnn" title="Link to this heading">¶</a></h3>
 <p>Create an instance of the reference Estimator. You may create an
 estimator instance from
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService">QiskitRuntimeService</a>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/qiskit-runtime-service">QiskitRuntimeService</a>
 to leverage Qiskit runtime services.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Estimator</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">Estimator</span>
 
 <span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
 </pre></div>
@@ -954,7 +954,7 @@ to leverage Qiskit runtime services.</p>
 <p>Now, we create a instance of <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>. The network creates an
 observable as <span class="math notranslate nohighlight">\(Z^{\otimes n}\)</span>, where <span class="math notranslate nohighlight">\(n\)</span> is the number of
 qubit, if it is not specified.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_machine_learning.neural_networks</span> <span class="kn">import</span> <span class="n">EstimatorQNN</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">EstimatorQNN</span>
 
 <span class="n">estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">,</span>
@@ -969,8 +969,8 @@ use a gradient based optimizer, thus the network makes use of the
 <a class="reference external" href="https://qiskit-community.github.io/qiskit-algorithms/stubs/qiskit_algorithms.gradients.ParamShiftEstimatorGradient.html">default estimator
 gradient</a>
 that is created automatically.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">L_BFGS_B</span>
-<span class="kn">from</span> <span class="nn">qiskit_machine_learning.algorithms</span> <span class="kn">import</span> <span class="n">VQR</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.algorithms.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">L_BFGS_B</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VQR</span>
 
 <span class="n">regressor</span> <span class="o">=</span> <span class="n">NeuralNetworkRegressor</span><span class="p">(</span>
     <span class="n">neural_network</span><span class="o">=</span><span class="n">estimator_qnn</span><span class="p">,</span>
@@ -1015,10 +1015,10 @@ quantum neural networks.</p></li>
 Qiskit Programs that embed Qiskit Runtime in the algorithmic
 interfaces and facilitate usage of algorithms and scripts in the
 cloud. You should use
-<a class="reference external" href="https://docs.quantum.ibm.com/api/qiskit-ibm-runtime/qiskit_ibm_runtime.QiskitRuntimeService">QiskitRuntimeService</a>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/qiskit-runtime-service">QiskitRuntimeService</a>
 to leverage primitives and runtimes.</p></li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">qiskit.tools.jupyter</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">qiskit.tools.jupyter</span>
 
 <span class="o">%</span><span class="k">qiskit_version_table</span>
 <span class="o">%</span><span class="k">qiskit_copyright</span>
@@ -1068,7 +1068,7 @@ to leverage primitives and runtimes.</p></li>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2024, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1126,7 +1126,7 @@ to leverage primitives and runtimes.</p></li>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=dbee5847"></script>
+    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
