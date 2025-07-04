@@ -72,7 +72,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
             grad: Whether to pass the gradient function as input.
             bounds: Optimizer bounds.
         """
-        x_0 = np.asarray([1.3, 0.7, 0.8, 1.9, 1.2])
+        x_0 = np.asarray([1.13, 0.7, 0.8, 1.9, 1.2])
         jac = rosen_der if grad else None
 
         res = optimizer.minimize(rosen, x_0, jac, bounds)

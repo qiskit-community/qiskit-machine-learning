@@ -179,7 +179,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
         )
-        regressor = NeuralNetworkRegressor(qnn, optimizer=COBYLA())
+        regressor = NeuralNetworkRegressor(qnn, optimizer=COBYLA(maxiter=25))
         regressor.fit(features, labels)
 
         # predicted labels from the newly trained model

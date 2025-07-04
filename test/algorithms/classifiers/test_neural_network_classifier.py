@@ -379,7 +379,7 @@ class TestNeuralNetworkClassifier(QiskitMachineLearningTestCase):
             raise ValueError(f"Unsupported QNN type: {qnn_type}")
 
         classifier = self._create_classifier(
-            qnn, num_parameters=num_parameters, optimizer=COBYLA(), loss="squared_error"
+            qnn, num_parameters=num_parameters, optimizer=COBYLA(maxiter=25), loss="squared_error"
         )
         classifier.fit(features, labels)
 
