@@ -37,7 +37,7 @@ from qiskit_machine_learning.gradients import (
     SPSAEstimatorGradient,
 )
 
-from .logging_primitives import LoggingEstimator
+from logging_primitives import LoggingEstimator
 
 gradient_factories = [
     ParamShiftEstimatorGradient,

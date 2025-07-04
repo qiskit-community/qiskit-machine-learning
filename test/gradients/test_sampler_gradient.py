@@ -36,7 +36,7 @@ from qiskit_machine_learning.gradients import (
     SPSASamplerGradient,
 )
 
-from .logging_primitives import LoggingSampler
+from logging_primitives import LoggingSampler
 
 gradient_factories = [
     ParamShiftSamplerGradient,
