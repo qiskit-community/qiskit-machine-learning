@@ -2,7 +2,7 @@
 
 **We appreciate all kinds of help, so thank you!**
 
-First please read the overall project contributing guidelines. These are
+First, please read the overall project contributing guidelines. These are
 included in the Qiskit documentation here:
 
 https://github.com/Qiskit/qiskit/blob/main/CONTRIBUTING.md
@@ -58,12 +58,16 @@ please ensure that:
     make html
    ```
    from the root of the Machine Learning repository clone. You might also like to check the html output
-   to see the changes formatted output is as expected. You will find an index.html
-   file in docs\_build\html and you can navigate from there.
+   to see the changes formatted output is as expected. You will find an `index.html`
+   file in `docs\_build\html` and you can navigate from there.
    
-   Please note that a spell check is run in CI, on the docstrings.
+3. Please note that a spell check is run in CI, on the docstrings.
    
-   You can run `make spell` locally to check spelling though you would need to
+   You can run 
+   ```shell script
+    make spell
+   ```
+   locally to check spelling though you would need to
    [install pyenchant](https://pyenchant.github.io/pyenchant/install.html) and be using
    hunspell-en-us as is used by the CI. 
    
@@ -71,27 +75,47 @@ please ensure that:
    that are not in the en-us dictionary and get flagged as being misspelled, despite being correct,
    there is a [.pylintdict](./.pylintdict) custom word list file, in the root of the Machine Learning repo,
    where such words can be added, in alphabetic order, as needed.
-   
-3. If it makes sense for your change that you have added new tests that
+
+   > [!NOTE]
+   > When running PyEnchant on Apple Silicon M1(/2/3) hardware in a virtual environment, you may 
+   > encounter an error like:
+   > ```text
+   > ImportError: The ‘enchant’ C library was not found and maybe needs to be installed.
+   > ```
+   > This happens because the Arm-based `brew install` command places the library files 
+   > (libenchant-2 and dylib) in a non-standard location that PyEnchant doesn’t look into by 
+   > default. A convenient workaround (originally documented in the Plone documentation toolchain 
+   > and discussed in the PyEnchant issue tracker) is to point PyEnchant at the Homebrew library 
+   > _before_ launching your Python tool. On an Apple Silicon MacOS you can run
+   > ```bash
+   > export PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib
+   > ```
+   > in your shell session, and then invoke your script or REPL as usual. This forces PyEnchant to 
+   > load the correct C library, eliminating the import error.
+   > See the docs contribution guide for context on how they use PyEnchant in their toolchain
+   > (https://github.com/plone/documentation/pull/1242) and the related discussion in the 
+   > PyEnchant issue tracker (https://github.com/pyenchant/pyenchant/issues/265#issuecomment-1126415843).
+ 
+4. If it makes sense for your change that you have added new tests that
    cover the changes and any new function.
    
-4. Ensure that if your change has an end user facing impact (new feature,
+5. Ensure that if your change has an end user facing impact (new feature,
    deprecation, removal etc) that you have added a reno release note for
    that change and that the PR is tagged for the changelog.
 
-5. Ensure all code, including unit tests, has the copyright header. The copyright
+6. Ensure all code, including unit tests, has the copyright header. The copyright
    date will be checked by CI build. The format of the date(s) is _year of creation,
    last year changed_. So for example:
    
-   > \# (C) Copyright IBM 2018, 2021.
+   > \# (C) Copyright IBM 2018, 2025.
 
    If the _year of creation_ is the same as _last year changed_ then only
    one date is needed, for example:
 
-   > \# (C) Copyright IBM 2021.
+   > \# (C) Copyright IBM 2025.
                                                                                                                                                                                                  
    If code is changed in a file make sure the copyright includes the current year.
-   If there is just one date and it's a prior year then add the current year as the 2nd date, 
+   If there is just one date, and it's a prior year then add the current year as the 2nd date, 
    otherwise simply change the 2nd date to the current year. The _year of creation_ date is
    never changed.
 
