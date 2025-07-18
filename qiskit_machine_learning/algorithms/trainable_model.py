@@ -117,7 +117,7 @@ class TrainableModel(SerializableModelMixin):
     def optimizer(self, optimizer: Optimizer | Minimizer | None = None):
         """Sets the optimizer to use in training process."""
         if optimizer is None:
-            optimizer = SLSQP()
+            optimizer = SLSQP(maxiter=1000)
         self._optimizer = optimizer
 
     @property
