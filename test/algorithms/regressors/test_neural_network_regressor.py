@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-""" Test Neural Network Regressor """
+"""Test Neural Network Regressor"""
 from __future__ import annotations
 
 import itertools

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Implements a Lower Case Filter for Sphinx spelling """
+"""Implements a Lower Case Filter for Sphinx spelling"""
 
 from enchant import tokenize
 

@@ -31,13 +31,14 @@ from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import Session, EstimatorV2
 from qiskit_ibm_runtime.options import EstimatorOptions, SimulatorOptions
 
+from logging_primitives import LoggingEstimator
+
 from qiskit_machine_learning.gradients import (
     LinCombEstimatorGradient,
     ParamShiftEstimatorGradient,
     SPSAEstimatorGradient,
 )
 
-from logging_primitives import LoggingEstimator
 
 gradient_factories = [
     ParamShiftEstimatorGradient,

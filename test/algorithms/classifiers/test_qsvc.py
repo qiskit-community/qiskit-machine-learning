@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test QSVC """
+"""Test QSVC"""
 import os
 import tempfile
 import unittest

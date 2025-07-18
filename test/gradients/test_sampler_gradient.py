@@ -30,13 +30,14 @@ from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_ibm_runtime import Session, SamplerV2
 
+from logging_primitives import LoggingSampler
+
 from qiskit_machine_learning.gradients import (
     LinCombSamplerGradient,
     ParamShiftSamplerGradient,
     SPSASamplerGradient,
 )
 
-from logging_primitives import LoggingSampler
 
 gradient_factories = [
     ParamShiftSamplerGradient,
