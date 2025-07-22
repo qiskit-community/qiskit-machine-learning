@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import warnings
 import os
+import json
 
 import numpy as np
 
@@ -234,8 +235,9 @@ def _assign_parameters(
 ) -> QuantumCircuit:
     """Load pre‑trained parameters from ``models/`` and bind them."""
 
-    file_path = _get_path(f"models/entanglement_{mode}_{label}_{n_qubits}qubits.npy")
-    weights = np.load(file_path).flatten()
+    file_path = os.path.join(os.path.dirname(__file__), "models", f"entanglement_{mode}_{label}_{n_qubits}qubits.json")
+    with open(file_path, "r") as f:
+        weights = np.array(json.load(f)).flatten()
 
     expected = 3 * depth * n_qubits
     if len(weights) != expected:
@@ -272,11 +274,6 @@ def _hardware_efficient_ansatz(
 
         for i in range((n_qubits - 1) // 2):
             qc.cz(2 * i + 1, 2 * i + 2)
-
-
-def _get_path(relative_path: str) -> str:
-    """Return an absolute path inside the current module directory."""
-    return os.path.normpath(os.path.join(os.path.dirname(__file__), relative_path))
 
 
 def _cardinal(n_qubits: int, n_points: int) -> np.ndarray:
