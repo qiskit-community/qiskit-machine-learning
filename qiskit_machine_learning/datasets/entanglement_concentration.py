@@ -235,9 +235,11 @@ def _assign_parameters(
 ) -> QuantumCircuit:
     """Load pre‑trained parameters from ``models/`` and bind them."""
 
-    file_path = os.path.join(os.path.dirname(__file__), "models", f"entanglement_{mode}_{label}_{n_qubits}qubits.json")
-    with open(file_path, "r") as f:
-        weights = np.array(json.load(f)).flatten()
+    file_path = os.path.join(
+        os.path.dirname(__file__), "models", f"entanglement_{mode}_{label}_{n_qubits}qubits.json"
+    )
+    with open(file_path, "r") as weights_file:
+        weights = np.array(json.load(weights_file)).flatten()
 
     expected = 3 * depth * n_qubits
     if len(weights) != expected:
