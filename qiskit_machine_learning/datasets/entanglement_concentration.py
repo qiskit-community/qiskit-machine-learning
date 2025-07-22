@@ -27,11 +27,11 @@ from qiskit.circuit import ParameterVector
 from ..utils import algorithm_globals
 
 
-# pylint: disable=too-many-positional-arguments
 def entanglement_concentration_data(
     training_size: int,
     test_size: int,
     n: int,
+    *,
     mode: str = "easy",
     one_hot: bool = True,
     include_sample_total: bool = False,
