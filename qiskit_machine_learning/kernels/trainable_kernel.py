@@ -71,7 +71,7 @@ class TrainableKernel(BaseKernel, ABC):
                 if key not in self._training_parameters:
                     raise ValueError(
                         f"Parameter {key} is not a trainable parameter of the feature map and "
-                        f"thus cannot be bound. Make sure {key} is provided in the the trainable "
+                        f"thus cannot be bound. Make sure {key} is provided in the trainable "
                         "parameters when initializing the kernel."
                     )
                 self._parameter_dict[key] = parameter_values[key]

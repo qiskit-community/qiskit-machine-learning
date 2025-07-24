@@ -14,7 +14,7 @@
 Quantum neural networks (:mod:`qiskit_machine_learning.neural_networks`)
 ========================================================================
 
-A neural network is a parametrized network which may be defined as a artificial
+A neural network is a parametrized network which may be defined as an artificial
 neural network - classical neural network - or as parametrized quantum circuits
 - quantum neural network. Furthermore, neural networks can be defined with respect
 to a discriminative or generative task.

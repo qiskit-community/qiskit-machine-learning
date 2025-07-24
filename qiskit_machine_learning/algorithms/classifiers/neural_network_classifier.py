@@ -55,7 +55,7 @@ class NeuralNetworkClassifier(TrainableModel, ClassifierMixin):
     ):
         """
         Args:
-            neural_network: An instance of an quantum neural network. If the neural network has a
+            neural_network: An instance of a quantum neural network. If the neural network has a
                 one-dimensional output, i.e., `neural_network.output_shape=(1,)`, then it is
                 expected to return values in [-1, +1] and it can only be used for binary
                 classification. If the output is multi-dimensional, it is assumed that the result

@@ -46,7 +46,7 @@ class ObjectiveFunction:
         Args:
             X: The input data.
             y: The target values.
-            neural_network: An instance of an quantum neural network to be used by this
+            neural_network: An instance of a quantum neural network to be used by this
                 objective function.
             loss: A target loss function to be used in training.
         """
