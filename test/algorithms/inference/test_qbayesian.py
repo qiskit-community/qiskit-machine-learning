@@ -19,8 +19,8 @@ import numpy as np
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
-from qiskit.primitives import Sampler
-from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.primitives import StatevectorSampler # change: Sampler is migrated to StatevectorSampler
+from qiskit_ibm_runtime.fake_provider import GenericBackendV2 # change: GenericBackendV2 is migrated to qiskit_ibm_runtime.fake_provider
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_ibm_runtime import Session, SamplerV2
@@ -174,7 +174,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         self.assertTrue(self.qbayesian.converged)
         self.assertTrue(self.qbayesian.limit == 1)
         # Test sampler
-        sampler = Sampler()
+        sampler = StatevectorSampler() # change: Sampler is migrated to StatevectorSampler
         self.qbayesian.sampler = sampler
         self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0})
         self.assertTrue(self.qbayesian.sampler == sampler)

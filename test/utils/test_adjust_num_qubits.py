@@ -16,11 +16,10 @@ from test import QiskitMachineLearningTestCase
 
 from ddt import idata, unpack, ddt
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
+from qiskit.circuit.library import ZFeatureMap, real_amplitudes # change: RealAmplitudes is migrated to real_amplitudes
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.utils import derive_num_qubits_feature_map_ansatz
-
 
 @ddt
 class TestAdjustNumQubits(QiskitMachineLearningTestCase):
@@ -31,8 +30,8 @@ class TestAdjustNumQubits(QiskitMachineLearningTestCase):
         self.properties = {
             "z1": ZFeatureMap(1),
             "z2": ZFeatureMap(2),
-            "ra1": RealAmplitudes(1),
-            "ra2": RealAmplitudes(2),
+            "ra1": real_amplitudes(1), # change: RealAmplitudes is migrated to real_amplitudes
+            "ra2": real_amplitudes(2), # change: RealAmplitudes is migrated to real_amplitudes
         }
 
     def test_all_none(self):

@@ -27,9 +27,8 @@ import scipy
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-from qiskit.circuit.library import RealAmplitudes, ZFeatureMap
-from qiskit.circuit.library import real_amplitudes, zz_feature_map, z_feature_map
-from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.circuit.library import real_amplitudes, zz_feature_map, z_feature_map # change: RealAmplitudes is migrated to real_amplitudes
+from qiskit_ibm_runtime.fake_provider import GenericBackendV2 # change: GenericBackendV2 is migrated to qiskit_ibm_runtime.fake_provider
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import Session, SamplerV2
 from qiskit_machine_learning.optimizers import COBYLA
@@ -87,7 +86,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         # We want string keys to ensure DDT-generated tests have meaningful names.
         self.properties = {
             "cobyla": COBYLA(maxiter=25),
-            "real_amplitudes": real_amplitudes(num_qubits=2, reps=1),
+            "real_amplitudes": real_amplitudes(num_qubits=2, reps=1), # change: RealAmplitudes is migrated to real_amplitudes
             "zz_feature_map": zz_feature_map(2),
             "binary": _create_dataset(6, 2),
             "multiclass": _create_dataset(10, 3),
@@ -332,8 +331,8 @@ class TestVQC(QiskitMachineLearningTestCase):
         num_qubits = 2
         classifier = VQC(
             num_qubits=num_qubits,
-            feature_map=ZFeatureMap(1),
-            ansatz=RealAmplitudes(1),
+            feature_map=z_feature_map(1),
+            ansatz=real_amplitudes(1), # change: RealAmplitudes is migrated to real_amplitudes
         )
         self.assertEqual(classifier.feature_map.num_qubits, num_qubits)
         self.assertEqual(classifier.ansatz.num_qubits, num_qubits)
@@ -342,7 +341,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             _ = VQC(
                 num_qubits=num_qubits,
                 feature_map=z_feature_map(1),
-                ansatz=real_amplitudes(1),
+                ansatz=real_amplitudes(1), # change: RealAmplitudes is migrated to real_amplitudes
             )
 
 

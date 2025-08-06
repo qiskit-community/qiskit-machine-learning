@@ -20,14 +20,13 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from sklearn.metrics import mean_squared_error
 
-from qiskit.primitives import Sampler
+from qiskit.primitives import BaseSamplerV2 # change: Sampler migrated to BaseSamplerV2
 from qiskit.circuit.library import zz_feature_map
 
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVR, SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
-
 
 class TestQSVR(QiskitMachineLearningTestCase):
     """Test QSVR Algorithm on fidelity quantum kernel."""
@@ -37,7 +36,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 10598
 
-        self.sampler = Sampler()
+        self.sampler = BaseSamplerV2() # change: Sampler migrated to BaseSamplerV2
         self.feature_map = zz_feature_map(feature_dimension=2, reps=2)
 
         self.sample_train = np.asarray(
@@ -150,7 +149,6 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
             with self.assertRaises(TypeError):
                 FakeModel.from_dill(file_name)
-
 
 if __name__ == "__main__":
     unittest.main()

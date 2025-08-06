@@ -17,8 +17,8 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import Estimator
-from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.primitives import StatevectorEstimator # change: Estimator is migrated to StatevectorEstimator
+from qiskit_ibm_runtime.fake_provider import GenericBackendV2 # change: GenericBackendV2 is migrated to qiskit_ibm_runtime.fake_provider.GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_ibm_runtime import Session, EstimatorV2
@@ -38,7 +38,7 @@ class TestVQR(QiskitMachineLearningTestCase):
         # specify quantum instances
         algorithm_globals.random_seed = 12345
 
-        self.estimator = Estimator()
+        self.estimator = StatevectorEstimator() # change: Estimator is migrated to StatevectorEstimator
 
         num_samples = 20
         eps = 0.2
@@ -141,7 +141,7 @@ class TestVQR(QiskitMachineLearningTestCase):
         else:
             optimizer = None
 
-        backend = GenericBackendV2(
+        backend = GenericBackendV2( # change: GenericBackendV2 is migrated to qiskit_ibm_runtime.fake_provider.GenericBackendV2
             num_qubits=2,
             calibrate_instructions=None,
             pulse_channels=False,

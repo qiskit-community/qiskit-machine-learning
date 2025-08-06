@@ -18,12 +18,11 @@ from ddt import ddt, data
 import numpy as np
 
 from qiskit.circuit.library import pauli_two_design
-from qiskit.primitives import Estimator, Sampler
+from qiskit.primitives import StatevectorEstimator, BaseSamplerV2 # change: Estimator and Sampler are migrated to StatevectorEstimator and BaseSamplerV2
 from qiskit.quantum_info import SparsePauliOp, Statevector
 
 from qiskit_machine_learning.optimizers import SPSA, QNSPSA
 from qiskit_machine_learning.utils import algorithm_globals
-
 
 @ddt
 class TestSPSA(QiskitAlgorithmsTestCase):
@@ -57,7 +56,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
             settings["regularization"] = 0.01
             expected_nfev = settings["maxiter"] * 5 + 1
         elif method == "qnspsa":
-            settings["fidelity"] = QNSPSA.get_fidelity(circuit, sampler=Sampler())
+            settings["fidelity"] = QNSPSA.get_fidelity(circuit, sampler=BaseSamplerV2()) # change: Sampler is migrated to BaseSamplerV2
             settings["regularization"] = 0.001
             settings["learning_rate"] = 0.05
             settings["perturbation"] = 0.05
@@ -204,7 +203,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
         initial_point = np.random.random(ansatz.num_parameters)
 
         with self.subTest(msg="pass as kwarg"):
-            fidelity = QNSPSA.get_fidelity(ansatz, sampler=Sampler())
+            fidelity = QNSPSA.get_fidelity(ansatz, sampler=BaseSamplerV2()) # change: Sampler is migrated to BaseSamplerV2
             result = fidelity(initial_point, initial_point)
 
             self.assertAlmostEqual(result[0], 1)
@@ -215,7 +214,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
         num_parameters = circuit.num_parameters
 
         obs = SparsePauliOp("ZZI")  # Z^Z^I
-        estimator = Estimator(options={"seed": 12})
+        estimator = StatevectorEstimator(options={"seed": 12}) # change: Estimator is migrated to StatevectorEstimator
 
         initial_point = np.array(
             [0.82311034, 0.02611798, 0.21077064, 0.61842177, 0.09828447, 0.62013131]
@@ -226,7 +225,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
             n = len(x)
             return estimator.run(n * [circuit], n * [obs], x).result().values.real
 
-        fidelity = QNSPSA.get_fidelity(circuit, sampler=Sampler())
+        fidelity = QNSPSA.get_fidelity(circuit, sampler=BaseSamplerV2()) # change: Sampler is migrated to BaseSamplerV2
         optimizer = QNSPSA(fidelity)
         optimizer.maxiter = 1
         optimizer.learning_rate = 0.05

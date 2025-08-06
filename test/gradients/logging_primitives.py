@@ -12,31 +12,29 @@
 
 """Test primitives that check what kind of operations are in the circuits they execute."""
 
-from qiskit.primitives import Estimator, Sampler
+from qiskit.primitives import StatevectorEstimator, BaseSamplerV2 # change: Updated imports to match Qiskit 2.2 API
 
-
-class LoggingEstimator(Estimator):
+class LoggingEstimator(StatevectorEstimator): # change: Updated class definition to inherit from StatevectorEstimator
     """An estimator checking what operations were in the circuits it executed."""
 
     def __init__(self, options=None, operations_callback=None):
-        super().__init__(options=options)
+        super().__init__(default_precision=0.0, seed=None) # change: Updated super().__init__ call to match StatevectorEstimator
         self.operations_callback = operations_callback
 
-    def _run(self, circuits, observables, parameter_values, **run_options):
+    def _run(self, pubs, **run_options): # change: Updated _run method signature to match StatevectorEstimator
         if self.operations_callback is not None:
-            ops = [circuit.count_ops() for circuit in circuits]
+            ops = [pub[0].count_ops() for pub in pubs] # change: Updated ops extraction to match new pub format
             self.operations_callback(ops)
-        return super()._run(circuits, observables, parameter_values, **run_options)
+        return super()._run(pubs, **run_options) # change: Updated super()._run call to match StatevectorEstimator
 
-
-class LoggingSampler(Sampler):
+class LoggingSampler(BaseSamplerV2): # change: Updated class definition to inherit from BaseSamplerV2
     """A sampler checking what operations were in the circuits it executed."""
 
     def __init__(self, operations_callback):
-        super().__init__()
+        super().__init__() # change: Updated super().__init__ call to match BaseSamplerV2
         self.operations_callback = operations_callback
 
-    def _run(self, circuits, parameter_values, **run_options):
-        ops = [circuit.count_ops() for circuit in circuits]
+    def _run(self, pubs, **run_options): # change: Updated _run method signature to match BaseSamplerV2
+        ops = [pub[0].count_ops() for pub in pubs] # change: Updated ops extraction to match new pub format
         self.operations_callback(ops)
-        return super()._run(circuits, parameter_values, **run_options)
+        return super()._run(pubs, **run_options) # change: Updated super()._run call to match BaseSamplerV2

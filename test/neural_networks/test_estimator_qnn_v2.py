@@ -21,7 +21,7 @@ import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import zz_feature_map, real_amplitudes, z_feature_map
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit_ibm_runtime.fake_provider import GenericBackendV2  # change: Updated import path
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import Session, EstimatorV2
 
@@ -183,7 +183,7 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
     """EstimatorQNN Tests for estimator_v2. The correct references is obtained from EstimatorQNN"""
 
     tolerance: dict[str, float] = dict(atol=3 * 1.0e-1, rtol=3 * 1.0e-1)
-    backend = GenericBackendV2(num_qubits=2, seed=123)
+    backend = GenericBackendV2(num_qubits=2, seed=123)  # change: Updated import path
     session = Session(backend=backend)
 
     def __init__(
