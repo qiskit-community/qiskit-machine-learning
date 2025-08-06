@@ -18,8 +18,7 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseSampler, BaseSamplerV1, SamplerResult
-from qiskit.primitives.base import BaseSamplerV2
+from qiskit.primitives import BaseSamplerV2, SamplerResult # change: BaseSampler is migrated to BaseSamplerV2
 from qiskit.transpiler.passmanager import PassManager
 from qiskit.result import QuasiDistribution
 from qiskit.primitives.primitive_job import PrimitiveJob
@@ -30,7 +29,6 @@ from ..utils.deprecation import issue_deprecation_msg
 from .base_state_fidelity import BaseStateFidelity
 from .state_fidelity_result import StateFidelityResult
 from ..algorithm_job import AlgorithmJob
-
 
 class ComputeUncompute(BaseStateFidelity):
     r"""
@@ -57,7 +55,7 @@ class ComputeUncompute(BaseStateFidelity):
 
     def __init__(
         self,
-        sampler: BaseSampler | BaseSamplerV2,
+        sampler: BaseSamplerV2, # change: BaseSampler is migrated to BaseSamplerV2
         *,
         options: Options | None = None,
         local: bool = False,
@@ -84,22 +82,15 @@ class ComputeUncompute(BaseStateFidelity):
             pass_manager: The pass manager to transpile the circuits, if necessary.
                 Defaults to ``None``, as some primitives do not need transpiled circuits.
         Raises:
-            ValueError: If the sampler is not an instance of ``BaseSampler``.
+            ValueError: If the sampler is not an instance of ``BaseSamplerV2``.
         """
-        if (not isinstance(sampler, BaseSampler)) and (not isinstance(sampler, BaseSamplerV2)):
+        if not isinstance(sampler, BaseSamplerV2): # change: BaseSampler is migrated to BaseSamplerV2
             raise ValueError(
-                f"The sampler should be an instance of BaseSampler or BaseSamplerV2, "
+                f"The sampler should be an instance of BaseSamplerV2, " # change: BaseSampler is migrated to BaseSamplerV2
                 f"but got {type(sampler)}"
             )
 
-        if isinstance(sampler, BaseSamplerV1):
-            issue_deprecation_msg(
-                msg="V1 Primitives are deprecated",
-                version="0.8.0",
-                remedy="Use V2 primitives for continued compatibility and support.",
-                period="4 months",
-            )
-        self._sampler: BaseSampler = sampler
+        self._sampler: BaseSamplerV2 = sampler # change: BaseSampler is migrated to BaseSamplerV2
         self._pass_manager = pass_manager
         self._local = local
         self._default_options = Options()
@@ -162,7 +153,7 @@ class ComputeUncompute(BaseStateFidelity):
             ValueError: At least one pair of circuits must be defined.
             AlgorithmError: If the sampler job is not completed successfully.
             QiskitMachineLearningError: If the sampler is not an instance
-                of ``BaseSamplerV1`` or ``BaseSamplerV2``.
+                of ``BaseSamplerV2``.
         """
         circuits = self._construct_circuits(circuits_1, circuits_2)
         if len(circuits) == 0:
@@ -177,13 +168,7 @@ class ComputeUncompute(BaseStateFidelity):
         opts = copy(self._default_options)
         opts.update_options(**options)
 
-        if isinstance(self._sampler, BaseSamplerV1):
-            sampler_job = self._sampler.run(
-                circuits=circuits, parameter_values=values, **opts.__dict__
-            )
-            _len_quasi_dist = circuits[0].num_qubits
-            local_opts = self._get_local_options(opts.__dict__)
-        elif isinstance(self._sampler, BaseSamplerV2):
+        if isinstance(self._sampler, BaseSamplerV2): # change: BaseSampler is migrated to BaseSamplerV2
             sampler_job = self._sampler.run(
                 [(circuits[i], values[i]) for i in range(len(circuits))], **opts.__dict__
             )
@@ -194,7 +179,7 @@ class ComputeUncompute(BaseStateFidelity):
             local_opts = opts.__dict__
         else:
             raise QiskitMachineLearningError(
-                "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got"
+                "The accepted estimators are BaseSamplerV2; got" # change: BaseSampler is migrated to BaseSamplerV2
                 + f" {type(self._sampler)} instead."
             )
         return AlgorithmJob(
@@ -223,9 +208,7 @@ class ComputeUncompute(BaseStateFidelity):
         except Exception as exc:
             raise AlgorithmError("Sampler job failed!") from exc
 
-        if isinstance(_sampler, BaseSamplerV1):
-            quasi_dists = result.quasi_dists
-        elif isinstance(_sampler, BaseSamplerV2):
+        if isinstance(_sampler, BaseSamplerV2): # change: BaseSampler is migrated to BaseSamplerV2
             quasi_dists = _post_process_v2(result, num_virtual_qubits)
 
         if local:
@@ -234,7 +217,7 @@ class ComputeUncompute(BaseStateFidelity):
                     prob_dist,
                     (
                         num_virtual_qubits
-                        if isinstance(_sampler, BaseSamplerV2)
+                        if isinstance(_sampler, BaseSamplerV2) # change: BaseSampler is migrated to BaseSamplerV2
                         else circuit.num_qubits
                     ),
                 )

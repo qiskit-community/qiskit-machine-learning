@@ -21,8 +21,7 @@ import numpy as np
 
 from qiskit.circuit import Parameter, QuantumCircuit
 
-from qiskit.primitives import BaseSampler, BaseSamplerV1
-from qiskit.primitives.base import BaseSamplerV2
+from qiskit.primitives import BaseSamplerV1, BaseSamplerV2 # change: BaseSampler is migrated to BaseSamplerV2
 from qiskit.result import QuasiDistribution
 from qiskit.providers import Options
 from qiskit.transpiler.passmanager import BasePassManager
@@ -31,7 +30,6 @@ from ..base.base_sampler_gradient import BaseSamplerGradient
 from ..base.sampler_gradient_result import SamplerGradientResult
 
 from ...exceptions import AlgorithmError
-
 
 class SPSASamplerGradient(BaseSamplerGradient):
     """
@@ -47,7 +45,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
     # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
-        sampler: BaseSampler,
+        sampler: BaseSamplerV2, # change: BaseSampler is migrated to BaseSamplerV2
         epsilon: float = 1e-6,
         batch_size: int = 1,
         seed: int | None = None,

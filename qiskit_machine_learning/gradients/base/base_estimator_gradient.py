@@ -23,8 +23,7 @@ from copy import copy
 import numpy as np
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseEstimator, BaseEstimatorV1
-from qiskit.primitives.base import BaseEstimatorV2
+from qiskit.primitives import BaseEstimatorV2 # change: BaseEstimator is migrated to BaseEstimatorV2
 from qiskit.primitives.utils import _circuit_key
 from qiskit.providers import Options
 from qiskit.quantum_info.operators.base_operator import BaseOperator
@@ -42,13 +41,12 @@ from ..utils import (
 from ...utils.deprecation import issue_deprecation_msg
 from ...algorithm_job import AlgorithmJob
 
-
 class BaseEstimatorGradient(ABC):
     """Base class for an ``EstimatorGradient`` to compute the gradients of the expectation value."""
 
     def __init__(
         self,
-        estimator: BaseEstimator | BaseEstimatorV2,
+        estimator: BaseEstimatorV2, # change: BaseEstimator is migrated to BaseEstimatorV2
         options: Options | None = None,
         derivative_type: DerivativeType = DerivativeType.REAL,
         pass_manager: BasePassManager | None = None,
@@ -73,14 +71,7 @@ class BaseEstimatorGradient(ABC):
             pass_manager: The pass manager to transpile the circuits if necessary.
             Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        if isinstance(estimator, BaseEstimatorV1):
-            issue_deprecation_msg(
-                msg="V1 Primitives are deprecated",
-                version="0.8.0",
-                remedy="Use V2 primitives for continued compatibility and support.",
-                period="4 months",
-            )
-        self._estimator: BaseEstimator = estimator
+        self._estimator: BaseEstimatorV2 = estimator # change: BaseEstimator is migrated to BaseEstimatorV2
         self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:

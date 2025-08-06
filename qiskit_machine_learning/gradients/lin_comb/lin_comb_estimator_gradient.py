@@ -20,7 +20,7 @@ import numpy as np
 
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives.base import BaseEstimatorV2
-from qiskit.primitives import BaseEstimator, BaseEstimatorV1
+from qiskit.primitives import BaseEstimatorV1, BaseEstimatorV2 # change: BaseEstimator is migrated to BaseEstimatorV2
 from qiskit.transpiler.passmanager import BasePassManager
 
 from qiskit.primitives.utils import init_observable, _circuit_key
@@ -32,7 +32,6 @@ from ..base.estimator_gradient_result import EstimatorGradientResult
 from ..utils import DerivativeType, _make_lin_comb_gradient_circuit, _make_lin_comb_observables
 
 from ...exceptions import AlgorithmError
-
 
 class LinCombEstimatorGradient(BaseEstimatorGradient):
     """Compute the gradients of the expectation values.
@@ -68,7 +67,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
 
     def __init__(
         self,
-        estimator: BaseEstimator,
+        estimator: BaseEstimatorV2, # change: BaseEstimator is migrated to BaseEstimatorV2
         derivative_type: DerivativeType = DerivativeType.REAL,
         options: Options | None = None,
         pass_manager: BasePassManager | None = None,

@@ -18,13 +18,12 @@ from typing import List, Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.primitives import Sampler
+from qiskit.primitives import BaseSamplerV2  # change: Sampler is migrated to BaseSamplerV2
 from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 
 from .base_kernel import BaseKernel
 
 KernelIndices = List[Tuple[int, int]]
-
 
 class FidelityQuantumKernel(BaseKernel):
     r"""
@@ -59,7 +58,7 @@ class FidelityQuantumKernel(BaseKernel):
                 :class:`~qiskit_machine_learning.state_fidelities.BaseStateFidelity` primitive to be used
                 to compute fidelity between states. Default is
                 :class:`~qiskit_machine_learning.state_fidelities.ComputeUncompute` which is created on
-                top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
+                top of the reference sampler defined by :class:`~qiskit.primitives.BaseSamplerV2`.
             enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
@@ -84,11 +83,11 @@ class FidelityQuantumKernel(BaseKernel):
         eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
             raise ValueError(
-                f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
+                f"Unsupported value passed as evaluate_duplicates: {eval_duplicates}"
             )
         self._evaluate_duplicates = eval_duplicates
         if fidelity is None:
-            fidelity = ComputeUncompute(sampler=Sampler())
+            fidelity = ComputeUncompute(sampler=BaseSamplerV2())  # change: Sampler is migrated to BaseSamplerV2
         self._fidelity = fidelity
         if max_circuits_per_job is not None:
             if max_circuits_per_job < 1:

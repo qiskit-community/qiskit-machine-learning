@@ -21,11 +21,10 @@ import numpy as np
 
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives.base import BaseEstimatorV2
-from qiskit.primitives import BaseEstimator, BaseEstimatorV1, Estimator, EstimatorResult
+from qiskit.primitives import BaseEstimatorV1, StatevectorEstimator # change: Estimator is replaced by StatevectorEstimator
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
-
 
 from ..gradients import (
     BaseEstimatorGradient,
@@ -39,7 +38,6 @@ from ..utils.deprecation import issue_deprecation_msg
 from .neural_network import NeuralNetwork
 
 logger = logging.getLogger(__name__)
-
 
 class EstimatorQNN(NeuralNetwork):
     """A neural network implementation based on the Estimator primitive.
@@ -96,7 +94,6 @@ class EstimatorQNN(NeuralNetwork):
 
         qnn.forward(input_data=[1, 2], weights=[1, 2, 3, 4, 5, 6, 7, 8])
 
-
     The following attributes can be set via the constructor but can also be read and
     updated once the EstimatorQNN object has been constructed.
 
@@ -111,7 +108,7 @@ class EstimatorQNN(NeuralNetwork):
         self,
         *,
         circuit: QuantumCircuit,
-        estimator: BaseEstimator | BaseEstimatorV2 | None = None,
+        estimator: BaseEstimatorV1 | BaseEstimatorV2 | None = None, # change: BaseEstimator is replaced by BaseEstimatorV2
         observables: Sequence[BaseOperator] | BaseOperator | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
@@ -129,12 +126,12 @@ class EstimatorQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` (DEPRECATED).
             estimator: The estimator used to compute neural network's results.
                 If ``None``, a default instance of the reference estimator,
-                :class:`~qiskit.primitives.Estimator`, will be used.
+                :class:`~qiskit.primitives.StatevectorEstimator`, will be used. # change: Estimator is replaced by StatevectorEstimator
 
                 .. warning::
 
                     The assignment ``estimator=None`` defaults to using
-                    :class:`~qiskit.primitives.Estimator`, which points to a deprecated estimator V1
+                    :class:`~qiskit.primitives.StatevectorEstimator`, which points to a deprecated estimator V1 # change: Estimator is replaced by StatevectorEstimator
                     (as of Qiskit 1.2). ``EstimatorQNN`` will adopt Estimator V2 as default no later than
                     Qiskit Machine Learning 0.9.
 
@@ -166,7 +163,7 @@ class EstimatorQNN(NeuralNetwork):
             QiskitMachineLearningError: Invalid parameter values.
         """
         if estimator is None:
-            estimator = Estimator()
+            estimator = StatevectorEstimator() # change: Estimator is replaced by StatevectorEstimator
 
         if isinstance(estimator, BaseEstimatorV1):
             issue_deprecation_msg(

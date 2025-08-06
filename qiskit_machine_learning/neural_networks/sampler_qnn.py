@@ -22,7 +22,7 @@ from qiskit.primitives import BaseSamplerV1
 from qiskit.primitives.base import BaseSamplerV2
 
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import BaseSampler, SamplerResult, Sampler
+from qiskit.primitives import BaseSamplerV2, SamplerResult, StatevectorSampler # change: BaseSampler and Sampler are replaced by BaseSamplerV2 and StatevectorSampler
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
 
@@ -38,7 +38,6 @@ from ..exceptions import QiskitMachineLearningError
 from ..utils.deprecation import issue_deprecation_msg
 from .neural_network import NeuralNetwork
 
-
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error
     from sparse import SparseArray
@@ -51,9 +50,7 @@ else:
 
         pass
 
-
 logger = logging.getLogger(__name__)
-
 
 class SamplerQNN(NeuralNetwork):
     """A neural network implementation based on the Sampler primitive.
@@ -65,7 +62,8 @@ class SamplerQNN(NeuralNetwork):
     a feature map, it provides input parameters for the network, and an ansatz (weight parameters).
     In this case a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` can be passed as
     circuit to simplify the composition of a feature map and ansatz.
-    If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as circuit, the
+    If a :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is passed as
+    circuit, the
     input and weight parameters do not have to be provided, because these two properties are taken
     from the :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` is deprecated.
 
@@ -159,7 +157,7 @@ class SamplerQNN(NeuralNetwork):
         self,
         *,
         circuit: QuantumCircuit,
-        sampler: BaseSampler | None = None,
+        sampler: BaseSamplerV2 | None = None, # change: BaseSampler is replaced by BaseSamplerV2
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
         sparse: bool = False,
@@ -218,7 +216,7 @@ class SamplerQNN(NeuralNetwork):
         """
         # Set primitive, provide default
         if sampler is None:
-            sampler = Sampler()
+            sampler = StatevectorSampler() # change: Sampler is replaced by StatevectorSampler
 
         if isinstance(sampler, BaseSamplerV1):
             issue_deprecation_msg(

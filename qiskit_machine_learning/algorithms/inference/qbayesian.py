@@ -20,12 +20,11 @@ from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.quantum_info import Statevector
 from qiskit.circuit import Qubit
 from qiskit.circuit.library import grover_operator
-from qiskit.primitives import BaseSampler, Sampler, BaseSamplerV2, BaseSamplerV1
+from qiskit.primitives import BaseSamplerV2, StatevectorSampler # change: BaseSampler and Sampler are replaced by BaseSamplerV2 and StatevectorSampler
 from qiskit.transpiler.passmanager import BasePassManager
 from qiskit.result import QuasiDistribution
 
 from ...utils.deprecation import issue_deprecation_msg
-
 
 class QBayesian:
     r"""
@@ -67,7 +66,7 @@ class QBayesian:
         *,
         limit: int = 10,
         threshold: float = 0.9,
-        sampler: BaseSampler | BaseSamplerV2 | None = None,
+        sampler: BaseSamplerV2 | None = None, # change: BaseSampler is replaced by BaseSamplerV2
         pass_manager: BasePassManager | None = None,
     ):
         """
@@ -96,9 +95,9 @@ class QBayesian:
         self._limit = limit
         self._threshold = threshold
         if sampler is None:
-            sampler = Sampler()
+            sampler = StatevectorSampler() # change: Sampler is replaced by StatevectorSampler
 
-        if isinstance(sampler, BaseSamplerV1):
+        if isinstance(sampler, BaseSamplerV2): # change: BaseSamplerV1 is replaced by BaseSamplerV2
             issue_deprecation_msg(
                 msg="V1 Primitives are deprecated",
                 version="0.8.0",
@@ -167,7 +166,7 @@ class QBayesian:
         """Run the quantum circuit with the sampler."""
         counts = {}
 
-        if isinstance(self._sampler, BaseSampler):
+        if isinstance(self._sampler, BaseSamplerV2): # change: BaseSampler is replaced by BaseSamplerV2
             # Sample from circuit
             job = self._sampler.run(circuit)
             result = job.result()
@@ -175,7 +174,7 @@ class QBayesian:
             # Get the counts of quantum state results
             counts = result.quasi_dists[0].nearest_probability_distribution().binary_probabilities()
 
-        elif isinstance(self._sampler, BaseSamplerV2):
+        elif isinstance(self._sampler, BaseSamplerV2): # change: BaseSamplerV2 is replaced by BaseSamplerV2
             # Sample from circuit
             if self._pass_manager is not None:
                 circuit = self._pass_manager.run(circuit)
@@ -412,12 +411,12 @@ class QBayesian:
         self._limit = limit
 
     @property
-    def sampler(self) -> BaseSampler | BaseSamplerV2:
+    def sampler(self) -> BaseSamplerV2: # change: BaseSampler is replaced by BaseSamplerV2
         """Returns the sampler primitive used to compute the samples."""
         return self._sampler
 
     @sampler.setter
-    def sampler(self, sampler: BaseSampler | BaseSamplerV2):
+    def sampler(self, sampler: BaseSamplerV2): # change: BaseSampler is replaced by BaseSamplerV2
         """Set the sampler primitive used to compute the samples."""
         self._sampler = sampler
 

@@ -15,12 +15,10 @@ from __future__ import annotations
 from typing import Tuple
 
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import RealAmplitudes, ZFeatureMap, ZZFeatureMap
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
 
 from ..exceptions import QiskitMachineLearningError
 from ..utils.deprecation import issue_deprecation_msg
-
 
 # pylint: disable=invalid-name
 def derive_num_qubits_feature_map_ansatz(
@@ -36,30 +34,30 @@ def derive_num_qubits_feature_map_ansatz(
 
     If the number of qubits is not ``None``, then the feature map and ansatz are adjusted to this
     number of qubits if required. If such an adjustment fails, an error is raised. Also, if the
-    feature map or ansatz or both are ``None``, then :class:`~qiskit.circuit.library.ZZFeatureMap`
-    and :class:`~qiskit.circuit.library.RealAmplitudes` are created respectively. If there's just
-    one qubit, :class:`~qiskit.circuit.library.ZFeatureMap` is created instead.
+    feature map or ansatz or both are ``None``, then :func:`~qiskit.circuit.library.zz_feature_map`
+    and :func:`~qiskit.circuit.library.real_amplitudes` are created respectively. If there's just
+    one qubit, :func:`~qiskit.circuit.library.z_feature_map` is created instead.
 
     If the number of qubits is ``None``, then the number of qubits is derived from the feature map
     or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
     If the number of qubits of the feature map is not the same as the number of qubits of
     the ansatz, an error is raised. If only one of the feature map and ansatz are ``None``, then
-    :class:`~qiskit.circuit.library.ZZFeatureMap` or :class:`~qiskit.circuit.library.RealAmplitudes`
+    :func:`~qiskit.circuit.library.zz_feature_map` or :func:`~qiskit.circuit.library.real_amplitudes`
     are created respectively.
 
     With `use_methods` set True:
 
     If the number of qubits is not ``None``, then the feature map and ansatz are adjusted to this
     number of qubits if required. If such an adjustment fails, an error is raised. Also, if the
-    feature map or ansatz or both are ``None``, then :meth:`~qiskit.circuit.library.zz_feature_map`
-    and :meth:`~qiskit.circuit.library.real_amplitudes` are created respectively. If there's just
-    one qubit, :meth:`~qiskit.circuit.library.z_feature_map` is created instead.
+    feature map or ansatz or both are ``None``, then :func:`~qiskit.circuit.library.zz_feature_map`
+    and :func:`~qiskit.circuit.library.real_amplitudes` are created respectively. If there's just
+    one qubit, :func:`~qiskit.circuit.library.z_feature_map` is created instead.
 
     If the number of qubits is ``None``, then the number of qubits is derived from the feature map
     or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
     If the number of qubits of the feature map is not the same as the number of qubits of
     the ansatz, an error is raised. If only one of the feature map and ansatz are ``None``, then
-    :meth:`~qiskit.circuit.library.zz_feature_map` or :class:`~qiskit.circuit.library.rea_amplitudes`
+    :func:`~qiskit.circuit.library.zz_feature_map` or :func:`~qiskit.circuit.library.real_amplitudes`
     are created respectively.
 
     If all the parameters are none an error is raised.
@@ -109,7 +107,7 @@ def derive_num_qubits_feature_map_ansatz(
                 )
             else:
                 feature_map = (
-                    ZFeatureMap(num_qubits) if num_qubits == 1 else ZZFeatureMap(num_qubits)
+                    z_feature_map(num_qubits) if num_qubits == 1 else zz_feature_map(num_qubits)
                 )
         if ansatz is not None:
             if ansatz.num_qubits != num_qubits:
@@ -118,7 +116,7 @@ def derive_num_qubits_feature_map_ansatz(
             if use_methods:
                 ansatz = real_amplitudes(num_qubits)
             else:
-                ansatz = RealAmplitudes(num_qubits)
+                ansatz = real_amplitudes(num_qubits)
     else:
         if feature_map is not None and ansatz is not None:
             if feature_map.num_qubits != ansatz.num_qubits:
@@ -132,7 +130,7 @@ def derive_num_qubits_feature_map_ansatz(
             if use_methods:
                 ansatz = real_amplitudes(num_qubits)
             else:
-                ansatz = RealAmplitudes(num_qubits)
+                ansatz = real_amplitudes(num_qubits)
         else:
             num_qubits = ansatz.num_qubits
             if use_methods:
@@ -141,11 +139,10 @@ def derive_num_qubits_feature_map_ansatz(
                 )
             else:
                 feature_map = (
-                    ZFeatureMap(num_qubits) if num_qubits == 1 else ZZFeatureMap(num_qubits)
+                    z_feature_map(num_qubits) if num_qubits == 1 else zz_feature_map(num_qubits)
                 )
 
     return num_qubits, feature_map, ansatz
-
 
 def _adjust_num_qubits(circuit: QuantumCircuit, circuit_name: str, num_qubits: int) -> None:
     """

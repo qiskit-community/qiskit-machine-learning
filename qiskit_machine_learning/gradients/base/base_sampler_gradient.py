@@ -22,7 +22,7 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseSampler, BaseSamplerV1
+from qiskit.primitives import BaseSamplerV2, BaseSamplerV1 # change: BaseSampler is migrated to BaseSamplerV2
 from qiskit.primitives.utils import _circuit_key
 from qiskit.providers import Options
 from qiskit.transpiler.passes import TranslateParameterizedGates
@@ -38,13 +38,12 @@ from ..utils import (
 from ...utils.deprecation import issue_deprecation_msg
 from ...algorithm_job import AlgorithmJob
 
-
 class BaseSamplerGradient(ABC):
     """Base class for a ``SamplerGradient`` to compute the gradients of the sampling probability."""
 
     def __init__(
         self,
-        sampler: BaseSampler,
+        sampler: BaseSamplerV2, # change: BaseSampler is migrated to BaseSamplerV2
         options: Options | None = None,
         pass_manager: BasePassManager | None = None,
     ):
@@ -65,7 +64,7 @@ class BaseSamplerGradient(ABC):
                 remedy="Use V2 primitives for continued compatibility and support.",
                 period="4 months",
             )
-        self._sampler: BaseSampler = sampler
+        self._sampler: BaseSamplerV2 = sampler # change: BaseSampler is migrated to BaseSamplerV2
         self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:

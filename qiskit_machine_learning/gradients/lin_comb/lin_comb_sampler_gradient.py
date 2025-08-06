@@ -21,8 +21,7 @@ from collections.abc import Sequence
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives.utils import _circuit_key
 
-from qiskit.primitives import BaseSampler, BaseSamplerV1
-from qiskit.primitives.base import BaseSamplerV2
+from qiskit.primitives import BaseSamplerV1, BaseSamplerV2 # change: BaseSampler is migrated to BaseSamplerV2
 from qiskit.result import QuasiDistribution
 from qiskit.providers import Options
 from qiskit.transpiler.passmanager import BasePassManager
@@ -32,7 +31,6 @@ from ..base.sampler_gradient_result import SamplerGradientResult
 from ..utils import _make_lin_comb_gradient_circuit
 
 from ...exceptions import AlgorithmError
-
 
 class LinCombSamplerGradient(BaseSamplerGradient):
     """Compute the gradients of the sampling probability.
@@ -68,7 +66,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
 
     def __init__(
         self,
-        sampler: BaseSampler,
+        sampler: BaseSamplerV2, # change: BaseSampler is migrated to BaseSamplerV2
         options: Options | None = None,
         pass_manager: BasePassManager | None = None,
     ):

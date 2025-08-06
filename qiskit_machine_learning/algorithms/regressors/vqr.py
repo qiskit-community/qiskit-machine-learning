@@ -16,7 +16,7 @@ from typing import Callable
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseEstimator
+from qiskit.primitives import BaseEstimatorV2 # change: BaseEstimator is migrated to BaseEstimatorV2
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
 
@@ -25,7 +25,6 @@ from ...neural_networks import EstimatorQNN
 from ...optimizers import Optimizer, Minimizer
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
-
 
 class VQR(NeuralNetworkRegressor):
     """A convenient Variational Quantum Regressor implementation."""
@@ -43,7 +42,7 @@ class VQR(NeuralNetworkRegressor):
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
-        estimator: BaseEstimator | None = None,
+        estimator: BaseEstimatorV2 | None = None, # change: BaseEstimator is migrated to BaseEstimatorV2
         pass_manager: BasePassManager | None = None,
     ) -> None:
         r"""

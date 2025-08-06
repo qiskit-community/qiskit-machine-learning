@@ -18,10 +18,9 @@ from abc import abstractmethod, ABC
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import zz_feature_map  # change: ZZFeatureMap migrated to zz_feature_map
 
 from ..utils.deprecation import issue_deprecation_msg
-
 
 class BaseKernel(ABC):
     r"""
@@ -48,7 +47,7 @@ class BaseKernel(ABC):
         """
         Args:
             feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
-                :class:`~qiskit.circuit.library.ZZFeatureMap` is used with two qubits. If there's
+                :func:`~qiskit.circuit.library.zz_feature_map` is used with two qubits. If there's
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
@@ -68,7 +67,7 @@ class BaseKernel(ABC):
                 "have been deprecated.",
                 period="4 months",
             )
-            feature_map = ZZFeatureMap(2)
+            feature_map = zz_feature_map(2)  # change: ZZFeatureMap migrated to zz_feature_map
 
         self._num_features = feature_map.num_parameters
         self._feature_map = feature_map
