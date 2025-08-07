@@ -22,28 +22,28 @@ from collections.abc import Sequence
 from copy import copy
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseSamplerV2, BaseSamplerV1 # change: BaseSampler is migrated to BaseSamplerV2
-from qiskit.primitives.utils import _circuit_key
+from qiskit.primitives import BaseSamplerV2
 from qiskit.providers import Options
 from qiskit.transpiler.passes import TranslateParameterizedGates
 from qiskit.transpiler.passmanager import BasePassManager
+from qiskit_aer.primitives.sampler import _circuit_key
 
-from .sampler_gradient_result import SamplerGradientResult
+from ...algorithm_job import AlgorithmJob
 from ..utils import (
     GradientCircuit,
     _assign_unique_parameters,
-    _make_gradient_parameters,
     _make_gradient_parameter_values,
+    _make_gradient_parameters,
 )
-from ...utils.deprecation import issue_deprecation_msg
-from ...algorithm_job import AlgorithmJob
+from .sampler_gradient_result import SamplerGradientResult
+
 
 class BaseSamplerGradient(ABC):
     """Base class for a ``SamplerGradient`` to compute the gradients of the sampling probability."""
 
     def __init__(
         self,
-        sampler: BaseSamplerV2, # change: BaseSampler is migrated to BaseSamplerV2
+        sampler: BaseSamplerV2,
         options: Options | None = None,
         pass_manager: BasePassManager | None = None,
     ):
@@ -57,14 +57,7 @@ class BaseSamplerGradient(ABC):
             pass_manager: The pass manager to transpile the circuits if necessary.
             Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        if isinstance(sampler, BaseSamplerV1):
-            issue_deprecation_msg(
-                msg="V1 Primitives are deprecated",
-                version="0.8.0",
-                remedy="Use V2 primitives for continued compatibility and support.",
-                period="4 months",
-            )
-        self._sampler: BaseSamplerV2 = sampler # change: BaseSampler is migrated to BaseSamplerV2
+        self._sampler: BaseSamplerV2 = sampler
         self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:

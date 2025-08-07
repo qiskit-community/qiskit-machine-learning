@@ -14,13 +14,14 @@
 
 from __future__ import annotations
 
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import zz_feature_map  # change: ZZFeatureMap migrated to zz_feature_map
+from qiskit.circuit.library import zz_feature_map
 
 from ..utils.deprecation import issue_deprecation_msg
+
 
 class BaseKernel(ABC):
     r"""
@@ -63,11 +64,11 @@ class BaseKernel(ABC):
                 remedy="Pass a feature map with the required number of qubits to match "
                 "the features. Adjusting the number of qubits after instantiation will be "
                 "removed from Qiskit as circuits based on BlueprintCircuit, "
-                "like ZZFeatureMap to which this defaults, which could do this, "
+                "like zz_feature_map to which this defaults, which could do this, "
                 "have been deprecated.",
                 period="4 months",
             )
-            feature_map = zz_feature_map(2)  # change: ZZFeatureMap migrated to zz_feature_map
+            feature_map = zz_feature_map(2)
 
         self._num_features = feature_map.num_parameters
         self._feature_map = feature_map

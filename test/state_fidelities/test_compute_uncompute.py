@@ -13,15 +13,15 @@
 """Tests for Fidelity."""
 
 import unittest
-from test import QiskitAlgorithmsTestCase
 
 import numpy as np
-
-from qiskit.circuit import QuantumCircuit, ParameterVector
+from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes
-from qiskit.primitives import StatevectorSampler # change: Sampler is migrated to StatevectorSampler
-
+from qiskit.primitives import StatevectorSampler
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
+
+from test import QiskitAlgorithmsTestCase
+
 
 class TestComputeUncompute(QiskitAlgorithmsTestCase):
     """Test Compute-Uncompute Fidelity class"""
@@ -48,7 +48,7 @@ class TestComputeUncompute(QiskitAlgorithmsTestCase):
         rx_rotation.h(1)
 
         self._circuit = [rx_rotations, ry_rotations, plus, zero, rx_rotation]
-        self._sampler = StatevectorSampler() # change: Sampler is migrated to StatevectorSampler
+        self._sampler = StatevectorSampler()
         self._left_params = np.array([[0, 0], [np.pi / 2, 0], [0, np.pi / 2], [np.pi, np.pi]])
         self._right_params = np.array([[0, 0], [0, 0], [np.pi / 2, 0], [0, 0]])
 
@@ -218,7 +218,7 @@ class TestComputeUncompute(QiskitAlgorithmsTestCase):
 
     def test_options(self):
         """Test fidelity's run options"""
-        sampler_shots = StatevectorSampler(options={"shots": 1024}) # change: Sampler is migrated to StatevectorSampler
+        sampler_shots = StatevectorSampler(default_shots=1024)
 
         with self.subTest("sampler"):
             # Only options in sampler
@@ -258,6 +258,7 @@ class TestComputeUncompute(QiskitAlgorithmsTestCase):
             # Only default + sampler options. Not run.
             self.assertEqual(options.__dict__, {"shots": 2048, "dummy": 100})
             self.assertEqual(result.options.__dict__, {"shots": 50, "dummy": None})
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -12,17 +12,16 @@
 
 """Tests for the SPSA optimizer."""
 
-from test import QiskitAlgorithmsTestCase
-from ddt import ddt, data
-
 import numpy as np
-
+from ddt import data, ddt
 from qiskit.circuit.library import pauli_two_design
-from qiskit.primitives import StatevectorEstimator, BaseSamplerV2 # change: Estimator and Sampler are migrated to StatevectorEstimator and BaseSamplerV2
+from qiskit.primitives import StatevectorEstimator, StatevectorSampler
 from qiskit.quantum_info import SparsePauliOp, Statevector
-
-from qiskit_machine_learning.optimizers import SPSA, QNSPSA
+from qiskit_machine_learning.optimizers import QNSPSA, SPSA
 from qiskit_machine_learning.utils import algorithm_globals
+
+from test import QiskitAlgorithmsTestCase
+
 
 @ddt
 class TestSPSA(QiskitAlgorithmsTestCase):
@@ -56,7 +55,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
             settings["regularization"] = 0.01
             expected_nfev = settings["maxiter"] * 5 + 1
         elif method == "qnspsa":
-            settings["fidelity"] = QNSPSA.get_fidelity(circuit, sampler=BaseSamplerV2()) # change: Sampler is migrated to BaseSamplerV2
+            settings["fidelity"] = QNSPSA.get_fidelity(circuit, sampler=StatevectorSampler())
             settings["regularization"] = 0.001
             settings["learning_rate"] = 0.05
             settings["perturbation"] = 0.05
@@ -203,7 +202,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
         initial_point = np.random.random(ansatz.num_parameters)
 
         with self.subTest(msg="pass as kwarg"):
-            fidelity = QNSPSA.get_fidelity(ansatz, sampler=BaseSamplerV2()) # change: Sampler is migrated to BaseSamplerV2
+            fidelity = QNSPSA.get_fidelity(ansatz, sampler=StatevectorEstimator())
             result = fidelity(initial_point, initial_point)
 
             self.assertAlmostEqual(result[0], 1)
@@ -214,7 +213,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
         num_parameters = circuit.num_parameters
 
         obs = SparsePauliOp("ZZI")  # Z^Z^I
-        estimator = StatevectorEstimator(options={"seed": 12}) # change: Estimator is migrated to StatevectorEstimator
+        estimator = StatevectorEstimator(seed=12)
 
         initial_point = np.array(
             [0.82311034, 0.02611798, 0.21077064, 0.61842177, 0.09828447, 0.62013131]
@@ -222,10 +221,9 @@ class TestSPSA(QiskitAlgorithmsTestCase):
 
         def objective(x):
             x = np.reshape(x, (-1, num_parameters)).tolist()
-            n = len(x)
-            return estimator.run(n * [circuit], n * [obs], x).result().values.real
+            return estimator.run((circuit, obs, x)).result().values.real
 
-        fidelity = QNSPSA.get_fidelity(circuit, sampler=BaseSamplerV2()) # change: Sampler is migrated to BaseSamplerV2
+        fidelity = QNSPSA.get_fidelity(circuit, sampler=StatevectorEstimator())
         optimizer = QNSPSA(fidelity)
         optimizer.maxiter = 1
         optimizer.learning_rate = 0.05

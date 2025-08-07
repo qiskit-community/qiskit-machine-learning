@@ -14,19 +14,18 @@
 
 import unittest
 
-from test import QiskitMachineLearningTestCase
-
 import numpy as np
 import qiskit
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import real_amplitudes # change: RealAmplitudes is migrated to real_amplitudes
+from qiskit.circuit.library import real_amplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
+from qiskit_machine_learning.algorithms import VQC
+from qiskit_machine_learning.circuit.library import RawFeatureVector, raw_feature_vector
 from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
 
-from qiskit_machine_learning.algorithms import VQC
-from qiskit_machine_learning.circuit.library import RawFeatureVector, raw_feature_vector
+from test import QiskitMachineLearningTestCase
 
 
 class TestRawFeatureVectorFunction(QiskitMachineLearningTestCase):
@@ -106,7 +105,7 @@ class TestRawFeatureVectorFunction(QiskitMachineLearningTestCase):
         y = np.array([y, 1 - y]).transpose()
 
         feature_map = raw_feature_vector(feature_dimension=num_inputs)
-        ansatz = real_amplitudes(feature_map.num_qubits, reps=1) # change: RealAmplitudes is migrated to real_amplitudes
+        ansatz = real_amplitudes(feature_map.num_qubits, reps=1)
 
         vqc = VQC(
             feature_map=feature_map,
@@ -210,7 +209,9 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         y = np.array([y, 1 - y]).transpose()
 
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
-        ansatz = real_amplitudes(feature_map.num_qubits, reps=1) # change: RealAmplitudes is migrated to real_amplitudes
+        ansatz = real_amplitudes(
+            feature_map.num_qubits, reps=1
+        )  # change: RealAmplitudes is migrated to real_amplitudes
 
         vqc = VQC(
             feature_map=feature_map,

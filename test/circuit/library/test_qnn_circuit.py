@@ -13,14 +13,21 @@
 """Test the ``QNNCircuit`` circuit."""
 
 import unittest
-from test import QiskitMachineLearningTestCase
-from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import ZFeatureMap, zz_feature_map, real_amplitudes
-from qiskit.circuit.library import pauli_feature_map, efficient_su2
-from qiskit.circuit.library import z_feature_map
-from qiskit_machine_learning import QiskitMachineLearningError
 
+from qiskit.circuit import QuantumCircuit
+from qiskit.circuit.library import (
+    ZFeatureMap,
+    efficient_su2,
+    pauli_feature_map,
+    real_amplitudes,
+    z_feature_map,
+    zz_feature_map,
+)
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.circuit.library import QNNCircuit, qnn_circuit
+
+from test import QiskitMachineLearningTestCase
+
 
 class TestQNNCircuitFunction(QiskitMachineLearningTestCase):
     """Tests for the ``qnn_circuit`` circuit."""
@@ -76,6 +83,7 @@ class TestQNNCircuitFunction(QiskitMachineLearningTestCase):
         with self.assertRaises(QiskitMachineLearningError):
             qnn_circuit(num_qubits=4, feature_map=zz_feature_map(3), ansatz=real_amplitudes(2))
 
+
 class TestQNNCircuit(QiskitMachineLearningTestCase):
     """Tests for the ``QNNCircuit`` circuit."""
 
@@ -87,9 +95,13 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
         # The properties of the QNNCircuit are set when the class is instantiated.
         with self.subTest("check input configuration before circuit is build"):
             self.assertEqual(circuit.num_qubits, 2)
-            self.assertEqual(type(circuit.feature_map), zz_feature_map) # change: ZZFeatureMap is replaced by zz_feature_map
+            self.assertEqual(
+                type(circuit.feature_map), zz_feature_map
+            )  # change: ZZFeatureMap is replaced by zz_feature_map
             self.assertEqual(circuit.feature_map.num_qubits, 2)
-            self.assertEqual(type(circuit.ansatz), real_amplitudes) # change: RealAmplitudes is replaced by real_amplitudes
+            self.assertEqual(
+                type(circuit.ansatz), real_amplitudes
+            )  # change: RealAmplitudes is replaced by real_amplitudes
             self.assertEqual(circuit.ansatz.num_qubits, 2)
             self.assertEqual(circuit.num_input_parameters, 2)
             self.assertEqual(circuit.num_weight_parameters, 8)
@@ -100,7 +112,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
         # If no argument is passed a QiskitMachineLearningError is raised
         # when the class is attempted to be instantiated (before the circuit is built).
         with self.assertRaises(QiskitMachineLearningError):
-            QNNCircuit(feature_map=zz_feature_map(2), ansatz=real_amplitudes(1)) # change: ZZFeatureMap is replaced by zz_feature_map and RealAmplitudes is replaced by real_amplitudes
+            QNNCircuit(feature_map=zz_feature_map(2), ansatz=real_amplitudes(1))
 
         # If no argument is passed a QiskitMachineLearningError is raised
         # when the class is attempted to be instantiated (before the circuit is built).
@@ -119,7 +131,9 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_qubits, 1)
             self.assertEqual(type(circuit.feature_map), ZFeatureMap)
             self.assertEqual(circuit.feature_map.num_qubits, 1)
-            self.assertEqual(type(circuit.ansatz), real_amplitudes) # change: RealAmplitudes is replaced by real_amplitudes
+            self.assertEqual(
+                type(circuit.ansatz), real_amplitudes
+            )  # change: RealAmplitudes is replaced by real_amplitudes
             self.assertEqual(circuit.ansatz.num_qubits, 1)
             self.assertEqual(circuit.num_input_parameters, 1)
             self.assertEqual(circuit.num_weight_parameters, 4)
@@ -135,7 +149,9 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_qubits, 3)
 
         with self.subTest("check feature map type"):
-            self.assertEqual(type(circuit.feature_map), pauli_feature_map) # change: PauliFeatureMap is replaced by pauli_feature_map
+            self.assertEqual(
+                type(circuit.feature_map), pauli_feature_map
+            )  # change: PauliFeatureMap is replaced by pauli_feature_map
 
         with self.subTest("check number of qubits for feature map"):
             self.assertEqual(circuit.feature_map.num_qubits, 3)
@@ -144,12 +160,14 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.ansatz.num_qubits, 3)
 
         with self.subTest("check ansatz type"):
-            self.assertEqual(type(circuit.ansatz), real_amplitudes) # change: RealAmplitudes is replaced by real_amplitudes
+            self.assertEqual(
+                type(circuit.ansatz), real_amplitudes
+            )  # change: RealAmplitudes is replaced by real_amplitudes
 
     def test_construction_for_input_missmatch(self):
         """Test the construction of ``QNNCircuit`` for input that does not match."""
 
-        circuit = QNNCircuit(num_qubits=4, feature_map=zz_feature_map(3), ansatz=real_amplitudes(2)) # change: ZZFeatureMap is replaced by zz_feature_map and RealAmplitudes is replaced by real_amplitudes
+        circuit = QNNCircuit(num_qubits=4, feature_map=zz_feature_map(3), ansatz=real_amplitudes(2))
 
         # If the number of qubits is provided, it overrules the feature map
         # and ansatz settings.
@@ -180,9 +198,11 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
     def test_ansatz_setter(self):
         """Test the properties after the ansatz is updated."""
         # Instantiate QNNCircuit 2 qubits a PauliFeatureMap the default ansatz RealAmplitudes
-        circuit = QNNCircuit(2, feature_map=pauli_feature_map(2)) # change: PauliFeatureMap is replaced by pauli_feature_map
+        circuit = QNNCircuit(
+            2, feature_map=pauli_feature_map(2)
+        )  # change: PauliFeatureMap is replaced by pauli_feature_map
         # Update the ansatz to a 3 qubit "EfficientSU2"
-        circuit.ansatz = efficient_su2(3) # change: EfficientSU2 is replaced by efficient_su2
+        circuit.ansatz = efficient_su2(3)  # change: EfficientSU2 is replaced by efficient_su2
 
         with self.subTest("check number of qubits"):
             self.assertEqual(circuit.num_qubits, 3)
@@ -191,8 +211,12 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_input_parameters, 3)
             self.assertEqual(circuit.num_weight_parameters, 24)
         with self.subTest("check updated ansatz"):
-            self.assertEqual(type(circuit.feature_map), pauli_feature_map) # change: PauliFeatureMap is replaced by pauli_feature_map
-            self.assertEqual(type(circuit.ansatz), efficient_su2) # change: EfficientSU2 is replaced by efficient_su2
+            self.assertEqual(
+                type(circuit.feature_map), pauli_feature_map
+            )  # change: PauliFeatureMap is replaced by pauli_feature_map
+            self.assertEqual(
+                type(circuit.ansatz), efficient_su2
+            )  # change: EfficientSU2 is replaced by efficient_su2
 
     def test_feature_map_setter(self):
         """Test that the number of qubits cannot be updated by a new ansatz."""
@@ -201,7 +225,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
         # RealAmplitudes
         circuit = QNNCircuit(3)
         # Update the feature_map to a 1 qubit "EfficientSU2"
-        circuit.feature_map = z_feature_map(1) # change: ZFeatureMap is replaced by z_feature_map
+        circuit.feature_map = z_feature_map(1)  # change: ZFeatureMap is replaced by z_feature_map
 
         with self.subTest("check number of qubits"):
             self.assertEqual(circuit.num_qubits, 1)
@@ -210,7 +234,9 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
             self.assertEqual(circuit.num_input_parameters, 1)
             self.assertEqual(circuit.num_weight_parameters, 4)
         with self.subTest("check updated ansatz"):
-            self.assertEqual(type(circuit.feature_map), z_feature_map) # change: ZFeatureMap is replaced by z_feature_map
+            self.assertEqual(
+                type(circuit.feature_map), z_feature_map
+            )  # change: ZFeatureMap is replaced by z_feature_map
 
     def test_copy(self):
         """Test copy operation for ``QNNCircuit``."""
@@ -222,6 +248,7 @@ class TestQNNCircuit(QiskitMachineLearningTestCase):
         self.assertEqual(circuit.num_qubits, circuit_copy.num_qubits)
         self.assertEqual(circuit.feature_map, circuit_copy.feature_map)
         self.assertEqual(circuit.ansatz, circuit_copy.ansatz)
+
 
 if __name__ == "__main__":
     unittest.main()

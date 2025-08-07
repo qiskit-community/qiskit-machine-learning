@@ -18,12 +18,13 @@ from typing import List, Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseSamplerV2  # change: Sampler is migrated to BaseSamplerV2
-from ..state_fidelities import BaseStateFidelity, ComputeUncompute
+from qiskit.primitives import StatevectorEstimator
 
+from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 from .base_kernel import BaseKernel
 
 KernelIndices = List[Tuple[int, int]]
+
 
 class FidelityQuantumKernel(BaseKernel):
     r"""
@@ -50,7 +51,7 @@ class FidelityQuantumKernel(BaseKernel):
         """
         Args:
             feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
-                :class:`~qiskit.circuit.library.ZZFeatureMap` is used with two qubits. If there's
+                :func:`~qiskit.circuit.library.zz_feature_map` is used with two qubits. If there's
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
@@ -82,12 +83,10 @@ class FidelityQuantumKernel(BaseKernel):
 
         eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
-            raise ValueError(
-                f"Unsupported value passed as evaluate_duplicates: {eval_duplicates}"
-            )
+            raise ValueError(f"Unsupported value passed as evaluate_duplicates: {eval_duplicates}")
         self._evaluate_duplicates = eval_duplicates
         if fidelity is None:
-            fidelity = ComputeUncompute(sampler=BaseSamplerV2())  # change: Sampler is migrated to BaseSamplerV2
+            fidelity = ComputeUncompute(sampler=StatevectorEstimator())
         self._fidelity = fidelity
         if max_circuits_per_job is not None:
             if max_circuits_per_job < 1:

@@ -10,31 +10,30 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test Neural Network Classifier """
+"""Test Neural Network Classifier"""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-from test import QiskitMachineLearningTestCase
 import functools
 import itertools
 import unittest
+from dataclasses import dataclass
 
-from ddt import ddt, idata, unpack
 import numpy as np
 import scipy
+from ddt import ddt, idata, unpack
+from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
+from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+from qiskit_ibm_runtime import SamplerV2, Session
+from qiskit_machine_learning.algorithms import VQC
+from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from qiskit_machine_learning.optimizers import COBYLA
+from qiskit_machine_learning.utils import algorithm_globals
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-from qiskit.circuit.library import real_amplitudes, zz_feature_map, z_feature_map # change: RealAmplitudes is migrated to real_amplitudes
-from qiskit_ibm_runtime.fake_provider import GenericBackendV2 # change: GenericBackendV2 is migrated to qiskit_ibm_runtime.fake_provider
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import Session, SamplerV2
-from qiskit_machine_learning.optimizers import COBYLA
-from qiskit_machine_learning.utils import algorithm_globals
-from qiskit_machine_learning.algorithms import VQC
-from qiskit_machine_learning.exceptions import QiskitMachineLearningError
+from test import QiskitMachineLearningTestCase
 
 NUM_QUBITS_LIST = [2, None]
 FEATURE_MAPS = ["zz_feature_map", None]
@@ -42,7 +41,7 @@ ANSATZES = ["real_amplitudes", None]
 OPTIMIZERS = ["cobyla", None]
 DATASETS = ["binary", "multiclass", "no_one_hot"]
 LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
-SAMPLERS = ["samplerv1"]
+SAMPLERS = ["samplerv2"]
 
 
 @dataclass(frozen=True)
@@ -77,8 +76,6 @@ class TestVQC(QiskitMachineLearningTestCase):
         self.num_classes_by_batch = []
         self.backend = GenericBackendV2(
             num_qubits=3,
-            calibrate_instructions=None,
-            pulse_channels=False,
             noise_info=False,
             seed=123,
         )
@@ -86,12 +83,11 @@ class TestVQC(QiskitMachineLearningTestCase):
         # We want string keys to ensure DDT-generated tests have meaningful names.
         self.properties = {
             "cobyla": COBYLA(maxiter=25),
-            "real_amplitudes": real_amplitudes(num_qubits=2, reps=1), # change: RealAmplitudes is migrated to real_amplitudes
+            "real_amplitudes": real_amplitudes(num_qubits=2, reps=1),
             "zz_feature_map": zz_feature_map(2),
             "binary": _create_dataset(6, 2),
             "multiclass": _create_dataset(10, 3),
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
-            "samplerv1": None,
             "samplerv2": SamplerV2(mode=self.session),
         }
 
@@ -116,10 +112,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         dataset = self.properties.get(d_s)
         sampler = self.properties.get(smplr)
 
-        if smplr == "samplerv2":
-            pm = generate_preset_pass_manager(optimization_level=0, backend=self.backend)
-        else:
-            pm = None
+        pm = generate_preset_pass_manager(optimization_level=0, backend=self.backend)
 
         unique_labels = np.unique(dataset.y, axis=0)
         # we want to have labels as a column array, either 1D or 2D(one hot)
@@ -332,7 +325,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         classifier = VQC(
             num_qubits=num_qubits,
             feature_map=z_feature_map(1),
-            ansatz=real_amplitudes(1), # change: RealAmplitudes is migrated to real_amplitudes
+            ansatz=real_amplitudes(1),
         )
         self.assertEqual(classifier.feature_map.num_qubits, num_qubits)
         self.assertEqual(classifier.ansatz.num_qubits, num_qubits)
@@ -341,7 +334,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             _ = VQC(
                 num_qubits=num_qubits,
                 feature_map=z_feature_map(1),
-                ansatz=real_amplitudes(1), # change: RealAmplitudes is migrated to real_amplitudes
+                ansatz=real_amplitudes(1),
             )
 
 

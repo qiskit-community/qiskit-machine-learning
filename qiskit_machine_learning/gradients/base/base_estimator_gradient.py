@@ -21,32 +21,31 @@ from collections.abc import Sequence
 from copy import copy
 
 import numpy as np
-
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseEstimatorV2 # change: BaseEstimator is migrated to BaseEstimatorV2
-from qiskit.primitives.utils import _circuit_key
+from qiskit.primitives import BaseEstimatorV2
 from qiskit.providers import Options
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passes import TranslateParameterizedGates
 from qiskit.transpiler.passmanager import BasePassManager
+from qiskit_aer.primitives.sampler import _circuit_key
 
-from .estimator_gradient_result import EstimatorGradientResult
+from ...algorithm_job import AlgorithmJob
 from ..utils import (
     DerivativeType,
     GradientCircuit,
     _assign_unique_parameters,
-    _make_gradient_parameters,
     _make_gradient_parameter_values,
+    _make_gradient_parameters,
 )
-from ...utils.deprecation import issue_deprecation_msg
-from ...algorithm_job import AlgorithmJob
+from .estimator_gradient_result import EstimatorGradientResult
+
 
 class BaseEstimatorGradient(ABC):
     """Base class for an ``EstimatorGradient`` to compute the gradients of the expectation value."""
 
     def __init__(
         self,
-        estimator: BaseEstimatorV2, # change: BaseEstimator is migrated to BaseEstimatorV2
+        estimator: BaseEstimatorV2,
         options: Options | None = None,
         derivative_type: DerivativeType = DerivativeType.REAL,
         pass_manager: BasePassManager | None = None,
@@ -71,7 +70,7 @@ class BaseEstimatorGradient(ABC):
             pass_manager: The pass manager to transpile the circuits if necessary.
             Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        self._estimator: BaseEstimatorV2 = estimator # change: BaseEstimator is migrated to BaseEstimatorV2
+        self._estimator: BaseEstimatorV2 = estimator
         self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:

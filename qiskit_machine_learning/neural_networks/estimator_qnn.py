@@ -17,27 +17,27 @@ from __future__ import annotations
 import logging
 from copy import copy
 from typing import Sequence
-import numpy as np
 
+import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.primitives import StatevectorEstimator
 from qiskit.primitives.base import BaseEstimatorV2
-from qiskit.primitives import BaseEstimatorV1, StatevectorEstimator # change: Estimator is replaced by StatevectorEstimator
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
 
+from ..circuit.library import QNNCircuit
+from ..exceptions import QiskitMachineLearningError
 from ..gradients import (
     BaseEstimatorGradient,
     EstimatorGradientResult,
     ParamShiftEstimatorGradient,
 )
-
-from ..circuit.library import QNNCircuit
-from ..exceptions import QiskitMachineLearningError
 from ..utils.deprecation import issue_deprecation_msg
 from .neural_network import NeuralNetwork
 
 logger = logging.getLogger(__name__)
+
 
 class EstimatorQNN(NeuralNetwork):
     """A neural network implementation based on the Estimator primitive.
@@ -108,7 +108,7 @@ class EstimatorQNN(NeuralNetwork):
         self,
         *,
         circuit: QuantumCircuit,
-        estimator: BaseEstimatorV1 | BaseEstimatorV2 | None = None, # change: BaseEstimator is replaced by BaseEstimatorV2
+        estimator: BaseEstimatorV2 | None = None,
         observables: Sequence[BaseOperator] | BaseOperator | None = None,
         input_params: Sequence[Parameter] | None = None,
         weight_params: Sequence[Parameter] | None = None,
@@ -126,14 +126,15 @@ class EstimatorQNN(NeuralNetwork):
                 :class:`~qiskit_machine_learning.circuit.library.QNNCircuit` (DEPRECATED).
             estimator: The estimator used to compute neural network's results.
                 If ``None``, a default instance of the reference estimator,
-                :class:`~qiskit.primitives.StatevectorEstimator`, will be used. # change: Estimator is replaced by StatevectorEstimator
+                :class:`~qiskit.primitives.StatevectorEstimator`, will be used. # change: Estimator is
+                replaced by StatevectorEstimator
 
                 .. warning::
 
                     The assignment ``estimator=None`` defaults to using
-                    :class:`~qiskit.primitives.StatevectorEstimator`, which points to a deprecated estimator V1 # change: Estimator is replaced by StatevectorEstimator
-                    (as of Qiskit 1.2). ``EstimatorQNN`` will adopt Estimator V2 as default no later than
-                    Qiskit Machine Learning 0.9.
+                    :class:`~qiskit.primitives.StatevectorEstimator`, which points to a deprecated
+                    estimator V1 (as of Qiskit 1.2). ``EstimatorQNN`` will adopt Estimator V2 as
+                    default no later than Qiskit Machine Learning 0.9.
 
             observables: The observables for outputs of the neural network. If ``None``,
                 use the default :math:`Z^{\otimes n}` observable, where :math:`n`
@@ -163,15 +164,8 @@ class EstimatorQNN(NeuralNetwork):
             QiskitMachineLearningError: Invalid parameter values.
         """
         if estimator is None:
-            estimator = StatevectorEstimator() # change: Estimator is replaced by StatevectorEstimator
+            estimator = StatevectorEstimator()
 
-        if isinstance(estimator, BaseEstimatorV1):
-            issue_deprecation_msg(
-                msg="V1 Primitives are deprecated",
-                version="0.8.0",
-                remedy="Use V2 primitives for continued compatibility and support.",
-                period="4 months",
-            )
         self.estimator = estimator
 
         if hasattr(circuit.layout, "_input_qubit_count"):
@@ -215,17 +209,14 @@ class EstimatorQNN(NeuralNetwork):
 
         # set gradient
         if gradient is None:
-            if isinstance(estimator, BaseEstimatorV1):
-                gradient = ParamShiftEstimatorGradient(estimator=self.estimator)
-            else:
-                if pass_manager is None:
-                    logger.warning(
-                        "No gradient function provided, creating a gradient function."
-                        " If your Estimator requires transpilation, please provide a pass manager."
-                    )
-                gradient = ParamShiftEstimatorGradient(
-                    estimator=self.estimator, pass_manager=pass_manager
+            if pass_manager is None:
+                logger.warning(
+                    "No gradient function provided, creating a gradient function."
+                    " If your Estimator requires transpilation, please provide a pass manager."
                 )
+            gradient = ParamShiftEstimatorGradient(
+                estimator=self.estimator, pass_manager=pass_manager
+            )
         self._default_precision = default_precision
         self.gradient = gradient
         self._input_gradients = input_gradients
@@ -276,7 +267,7 @@ class EstimatorQNN(NeuralNetwork):
         """Return the default precision"""
         return self._default_precision
 
-    def _forward_postprocess(self, num_samples: int, result: EstimatorResult) -> np.ndarray:
+    def _forward_postprocess(self, num_samples: int, result: list) -> np.ndarray:
         """Post-processing during forward pass of the network."""
         return np.reshape(result, (-1, num_samples)).T
 
@@ -286,31 +277,14 @@ class EstimatorQNN(NeuralNetwork):
         """Forward pass of the neural network."""
         parameter_values_, num_samples = self._preprocess_forward(input_data, weights)
 
-        # Determine how to run the estimator based on its version
-        if isinstance(self.estimator, BaseEstimatorV1):
-            job = self.estimator.run(
-                [self._circuit] * num_samples * self.output_shape[0],
-                [op for op in self._observables for _ in range(num_samples)],
-                np.tile(parameter_values_, (self.output_shape[0], 1)),
-            )
-            results = job.result().values
+        # Prepare circuit-observable-parameter tuples (PUBs)
+        circuit_observable_params = []
+        for observable in self._observables:
+            circuit_observable_params.append((self._circuit, observable, parameter_values_))
 
-        elif isinstance(self.estimator, BaseEstimatorV2):
-
-            # Prepare circuit-observable-parameter tuples (PUBs)
-            circuit_observable_params = []
-            for observable in self._observables:
-                circuit_observable_params.append((self._circuit, observable, parameter_values_))
-
-            # For BaseEstimatorV2, run the estimator using PUBs and specified precision
-            job = self.estimator.run(circuit_observable_params, precision=self._default_precision)
-            results = [result.data.evs for result in job.result()]
-        else:
-            raise QiskitMachineLearningError(
-                "The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got "
-                + f"{type(self.estimator)} instead. Note that BaseEstimatorV1 is deprecated in"
-                + "Qiskit and removed in Qiskit IBM Runtime."
-            )
+        # For BaseEstimatorV2, run the estimator using PUBs and specified precision
+        job = self.estimator.run(circuit_observable_params, precision=self._default_precision)
+        results = [result.data.evs for result in job.result()]
         return self._forward_postprocess(num_samples, results)
 
     def _backward_postprocess(

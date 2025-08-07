@@ -10,26 +10,23 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test EstimatorQNN """
+"""Test EstimatorQNN"""
 
 import unittest
 
-from test import QiskitMachineLearningTestCase
-
 import numpy as np
-
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import zz_feature_map, real_amplitudes, z_feature_map
+from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
+from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.quantum_info import SparsePauliOp
-from qiskit_ibm_runtime.fake_provider import GenericBackendV2  # change: Updated import path
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import Session, EstimatorV2
-
+from qiskit_ibm_runtime import EstimatorV2, Session
 from qiskit_machine_learning.circuit.library import QNNCircuit
+from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 from qiskit_machine_learning.utils import algorithm_globals
 
-from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
+from test import QiskitMachineLearningTestCase
 
 algorithm_globals.random_seed = 52
 
@@ -183,7 +180,7 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
     """EstimatorQNN Tests for estimator_v2. The correct references is obtained from EstimatorQNN"""
 
     tolerance: dict[str, float] = dict(atol=3 * 1.0e-1, rtol=3 * 1.0e-1)
-    backend = GenericBackendV2(num_qubits=2, seed=123)  # change: Updated import path
+    backend = GenericBackendV2(num_qubits=2, seed=123)
     session = Session(backend=backend)
 
     def __init__(

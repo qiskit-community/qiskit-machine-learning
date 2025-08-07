@@ -13,11 +13,19 @@
 """Unit tests for NLopt optimizers."""
 
 import unittest
-from test import QiskitAlgorithmsTestCase
+
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
-from qiskit_machine_learning.optimizers.nlopts import CRS, DIRECT_L, DIRECT_L_RAND, ESCH, ISRES
+from qiskit_machine_learning.optimizers.nlopts import (
+    CRS,
+    DIRECT_L,
+    DIRECT_L_RAND,
+    ESCH,
+    ISRES,
+)
 from qiskit_machine_learning.utils import algorithm_globals
+
+from test import QiskitAlgorithmsTestCase
 
 
 class TestNLoptOptimizer(QiskitAlgorithmsTestCase):
@@ -152,6 +160,9 @@ class TestNLoptOptimizer(QiskitAlgorithmsTestCase):
             return np.sum((params - 2) ** 2)
 
         initial_point = np.array([10.0, -10.0])
+        initial_point = np.clip(
+            initial_point, [l for l, _ in self.bounds], [u for _, u in self.bounds]
+        )
 
         try:
             optimizers = [

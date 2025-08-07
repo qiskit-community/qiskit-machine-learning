@@ -17,21 +17,23 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 import numpy as np
-
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives.base import BaseEstimatorV2
-from qiskit.primitives import BaseEstimatorV1, BaseEstimatorV2 # change: BaseEstimator is migrated to BaseEstimatorV2
-from qiskit.transpiler.passmanager import BasePassManager
-
-from qiskit.primitives.utils import init_observable, _circuit_key
+from qiskit.primitives import BaseEstimatorV2
 from qiskit.providers import Options
+from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
-
-from ..base.base_estimator_gradient import BaseEstimatorGradient
-from ..base.estimator_gradient_result import EstimatorGradientResult
-from ..utils import DerivativeType, _make_lin_comb_gradient_circuit, _make_lin_comb_observables
+from qiskit.transpiler.passmanager import BasePassManager
+from qiskit_aer.primitives.sampler import _circuit_key
 
 from ...exceptions import AlgorithmError
+from ..base.base_estimator_gradient import BaseEstimatorGradient
+from ..base.estimator_gradient_result import EstimatorGradientResult
+from ..utils import (
+    DerivativeType,
+    _make_lin_comb_gradient_circuit,
+    _make_lin_comb_observables,
+)
+
 
 class LinCombEstimatorGradient(BaseEstimatorGradient):
     """Compute the gradients of the expectation values.
@@ -67,7 +69,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
 
     def __init__(
         self,
-        estimator: BaseEstimatorV2, # change: BaseEstimator is migrated to BaseEstimatorV2
+        estimator: BaseEstimatorV2,
         derivative_type: DerivativeType = DerivativeType.REAL,
         options: Options | None = None,
         pass_manager: BasePassManager | None = None,
@@ -147,7 +149,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
             n = len(gradient_circuits)
             # Make the observable as :class:`~qiskit.quantum_info.SparsePauliOp` and
             # add an ancillary operator to compute the gradient.
-            observable = init_observable(observable)
+            observable = SparsePauliOp(observable)
             observable_1, observable_2 = _make_lin_comb_observables(
                 observable, self._derivative_type
             )
@@ -167,81 +169,42 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
                 job_param_values.extend([parameter_values_] * n)
                 all_n.append(n)
 
-        if isinstance(self._estimator, BaseEstimatorV1):
-            # Run the single job with all circuits.
-            job = self._estimator.run(
-                job_circuits,
-                job_observables,
-                job_param_values,
-                **options,
-            )
-            try:
-                results = job.result()
-            except Exception as exc:
-                raise AlgorithmError("Estimator job failed.") from exc
-            # Compute the gradients.
-            gradients = []
-            partial_sum_n = 0
-            for n in all_n:
-                # this disable is needed as Pylint does not understand derivative_type is a property if
-                # it is only defined in the base class and the getter is in the child
-                # pylint: disable=comparison-with-callable
-                if self.derivative_type == DerivativeType.COMPLEX:
-                    gradient = np.zeros(n // 2, dtype="complex")
-                    gradient.real = results.values[partial_sum_n : partial_sum_n + n // 2]
-                    gradient.imag = results.values[partial_sum_n + n // 2 : partial_sum_n + n]
-
-                else:
-                    gradient = np.real(results.values[partial_sum_n : partial_sum_n + n])
-                partial_sum_n += n
-                gradients.append(gradient)
-
-            opt = self._get_local_options(options)
-        elif isinstance(self._estimator, BaseEstimatorV2):
-            if self._pass_manager is None:
-                circs = job_circuits
-                observables = job_observables
-            else:
-                circs = self._pass_manager.run(job_circuits)
-                observables = [
-                    op.apply_layout(circs[i].layout) for i, op in enumerate(job_observables)
-                ]
-            # Prepare circuit-observable-parameter tuples (PUBs)
-            circuit_observable_params = []
-            for pub in zip(circs, observables, job_param_values):
-                circuit_observable_params.append(pub)
-
-            # For BaseEstimatorV2, run the estimator using PUBs and specified precision
-            job = self._estimator.run(circuit_observable_params)
-            try:
-                results = job.result()
-            except Exception as exc:
-                raise AlgorithmError("Estimator job failed.") from exc
-            results = np.array([float(r.data.evs) for r in results])
-            opt = Options(**options)
-            # Compute the gradients.
-            gradients = []
-            partial_sum_n = 0
-            for n in all_n:
-                # this disable is needed as Pylint does not understand derivative_type is a property if
-                # it is only defined in the base class and the getter is in the child
-                # pylint: disable=comparison-with-callable
-                if self.derivative_type == DerivativeType.COMPLEX:
-                    gradient = np.zeros(n // 2, dtype="complex")
-                    gradient.real = results[partial_sum_n : partial_sum_n + n // 2]
-                    gradient.imag = results[partial_sum_n + n // 2 : partial_sum_n + n]
-
-                else:
-                    gradient = np.real(
-                        results[partial_sum_n : partial_sum_n + n]
-                    )  # type: ignore[assignment, unused-ignore]
-                partial_sum_n += n
-                gradients.append(gradient)
-
+        if self._pass_manager is None:
+            circs = job_circuits
+            observables = job_observables
         else:
-            raise AlgorithmError(
-                "The accepted estimators are BaseEstimatorV1 and BaseEstimatorV2; got "
-                + f"{type(self._estimator)} instead. Note that BaseEstimatorV1 is deprecated in"
-                + "Qiskit and removed in Qiskit IBM Runtime."
-            )
+            circs = self._pass_manager.run(job_circuits)
+            observables = [op.apply_layout(circs[i].layout) for i, op in enumerate(job_observables)]
+        # Prepare circuit-observable-parameter tuples (PUBs)
+        circuit_observable_params = []
+        for pub in zip(circs, observables, job_param_values):
+            circuit_observable_params.append(pub)
+
+        # Run the estimator using PUBs and specified precision
+        job = self._estimator.run(circuit_observable_params)
+        try:
+            results = job.result()
+        except Exception as exc:
+            raise AlgorithmError("Estimator job failed.") from exc
+        results = np.array([float(r.data.evs) for r in results])
+        opt = Options(**options)
+        # Compute the gradients.
+        gradients = []
+        partial_sum_n = 0
+        for n in all_n:
+            # this disable is needed as Pylint does not understand derivative_type is a property if
+            # it is only defined in the base class and the getter is in the child
+            # pylint: disable=comparison-with-callable
+            if self.derivative_type == DerivativeType.COMPLEX:
+                gradient = np.zeros(n // 2, dtype="complex")
+                gradient.real = results[partial_sum_n : partial_sum_n + n // 2]
+                gradient.imag = results[partial_sum_n + n // 2 : partial_sum_n + n]
+
+            else:
+                gradient = np.real(
+                    results[partial_sum_n : partial_sum_n + n]
+                )  # type: ignore[assignment, unused-ignore]
+            partial_sum_n += n
+            gradients.append(gradient)
+
         return EstimatorGradientResult(gradients=gradients, metadata=metadata, options=opt)

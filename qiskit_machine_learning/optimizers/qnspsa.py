@@ -19,14 +19,14 @@ from typing import Any, Callable
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit
+from qiskit.primitives import BaseSamplerV2
 
-from qiskit.primitives import BaseSamplerV2  # change: BaseSampler migrated to BaseSamplerV2
 from ..state_fidelities import ComputeUncompute
-
-from .spsa import SPSA, CALLBACK, TERMINATIONCHECKER, _batch_evaluate
+from .spsa import CALLBACK, SPSA, TERMINATIONCHECKER, _batch_evaluate
 
 # the function to compute the fidelity
 FIDELITY = Callable[[np.ndarray, np.ndarray], float]
+
 
 class QNSPSA(SPSA):
     r"""The Quantum Natural SPSA (QN-SPSA) optimizer.
@@ -232,7 +232,7 @@ class QNSPSA(SPSA):
     def get_fidelity(
         circuit: QuantumCircuit,
         *,
-        sampler: BaseSamplerV2 | None = None,  # change: BaseSampler migrated to BaseSamplerV2
+        sampler: BaseSamplerV2 | None = None,
     ) -> Callable[[np.ndarray, np.ndarray], float]:
         r"""Get a function to compute the fidelity of ``circuit`` with itself.
 

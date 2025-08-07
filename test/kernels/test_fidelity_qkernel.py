@@ -18,25 +18,24 @@ import itertools
 import unittest
 from typing import Sequence
 
-from test import QiskitMachineLearningTestCase
-
 import numpy as np
 from ddt import ddt, idata, unpack
-from sklearn.svm import SVC
-
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import z_feature_map
-from qiskit.primitives import BaseSamplerV2 # change: Sampler is replaced with BaseSamplerV2
-
+from qiskit.primitives import StatevectorSampler
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
-from qiskit_machine_learning.utils import algorithm_globals
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.state_fidelities import (
-    ComputeUncompute,
     BaseStateFidelity,
+    ComputeUncompute,
     StateFidelityResult,
 )
-from qiskit_machine_learning.kernels import FidelityQuantumKernel
+from qiskit_machine_learning.utils import algorithm_globals
+from sklearn.svm import SVC
+
+from test import QiskitMachineLearningTestCase
+
 
 @ddt
 class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
@@ -62,7 +61,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
 
-        self.sampler = BaseSamplerV2() # change: Sampler is replaced with BaseSamplerV2
+        self.sampler = StatevectorSampler()
         self.fidelity = ComputeUncompute(self.sampler)
 
         self.properties = {
@@ -358,7 +357,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         """Test properties of the base (abstract) class and fidelity based kernel."""
         qc = QuantumCircuit(1)
         qc.ry(Parameter("w"), 0)
-        fidelity = ComputeUncompute(sampler=BaseSamplerV2()) # change: Sampler is replaced with BaseSamplerV2
+        fidelity = ComputeUncompute(sampler=StatevectorSampler())
         kernel = FidelityQuantumKernel(
             feature_map=qc, fidelity=fidelity, enforce_psd=False, evaluate_duplicates="none"
         )
@@ -368,6 +367,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         self.assertEqual(False, kernel.enforce_psd)
         self.assertEqual("none", kernel.evaluate_duplicates)
         self.assertEqual(1, kernel.num_features)
+
 
 @ddt
 class TestDuplicates(QiskitMachineLearningTestCase):
@@ -384,7 +384,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
             "y_vec": np.array([[0, 1], [1, 2]]),
         }
 
-        counting_sampler = BaseSamplerV2() # change: Sampler is replaced with BaseSamplerV2
+        counting_sampler = StatevectorSampler()
         counting_sampler.run = self.count_circuits(counting_sampler.run)
         self.counting_sampler = counting_sampler
         self.circuit_counts = 0
@@ -449,6 +449,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
         )
         kernel.evaluate(self.properties.get(dataset_name), self.properties.get("y_vec"))
         self.assertEqual(self.circuit_counts, expected_num_circuits)
+
 
 if __name__ == "__main__":
     unittest.main()

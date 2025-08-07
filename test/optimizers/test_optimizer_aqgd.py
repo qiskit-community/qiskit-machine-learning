@@ -13,16 +13,18 @@
 """Test of AQGD optimizer"""
 
 import unittest
-from test import QiskitAlgorithmsTestCase
+
 import numpy as np
 from ddt import ddt
-from qiskit.primitives import StatevectorEstimator # change: Estimator is migrated to StatevectorEstimator
+from qiskit.primitives import StatevectorEstimator
 from qiskit.quantum_info import SparsePauliOp
-
 from qiskit_machine_learning import AlgorithmError
 from qiskit_machine_learning.gradients import LinCombEstimatorGradient
 from qiskit_machine_learning.optimizers import AQGD
 from qiskit_machine_learning.utils import algorithm_globals
+
+from test import QiskitAlgorithmsTestCase
+
 
 @ddt
 class TestOptimizerAQGD(QiskitAlgorithmsTestCase):
@@ -40,7 +42,7 @@ class TestOptimizerAQGD(QiskitAlgorithmsTestCase):
                 ("XX", 0.18093119978423156),
             ]
         )
-        self.estimator = StatevectorEstimator() # change: Estimator is migrated to StatevectorEstimator
+        self.estimator = StatevectorEstimator()
         self.gradient = LinCombEstimatorGradient(self.estimator)
 
     def test_raises_exception(self):
@@ -68,6 +70,7 @@ class TestOptimizerAQGD(QiskitAlgorithmsTestCase):
         aqgd.set_max_evals_grouped(2)
         with self.assertRaises(ValueError):
             aqgd.minimize(quadratic_objective, initial_point)
+
 
 if __name__ == "__main__":
     unittest.main()

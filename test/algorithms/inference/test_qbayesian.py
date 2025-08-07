@@ -10,24 +10,22 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Test Quantum Bayesian Inference """
+"""Test Quantum Bayesian Inference"""
 
 import unittest
-from test import QiskitMachineLearningTestCase
 
 import numpy as np
-
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
-from qiskit.primitives import StatevectorSampler # change: Sampler is migrated to StatevectorSampler
-from qiskit_ibm_runtime.fake_provider import GenericBackendV2 # change: GenericBackendV2 is migrated to qiskit_ibm_runtime.fake_provider
+from qiskit.primitives import StatevectorSampler
+from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
-from qiskit_ibm_runtime import Session, SamplerV2
+from qiskit_ibm_runtime import SamplerV2, Session
 from qiskit_ibm_runtime.options import SamplerOptions, SimulatorOptions
-
-from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QBayesian
+from qiskit_machine_learning.utils import algorithm_globals
+
+from test import QiskitMachineLearningTestCase
 
 
 class TestQBayesianInference(QiskitMachineLearningTestCase):
@@ -174,7 +172,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         self.assertTrue(self.qbayesian.converged)
         self.assertTrue(self.qbayesian.limit == 1)
         # Test sampler
-        sampler = StatevectorSampler() # change: Sampler is migrated to StatevectorSampler
+        sampler = StatevectorSampler()  # change: Sampler is migrated to StatevectorSampler
         self.qbayesian.sampler = sampler
         self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0})
         self.assertTrue(self.qbayesian.sampler == sampler)
@@ -217,8 +215,6 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
 
         backend = GenericBackendV2(
             num_qubits=2,
-            calibrate_instructions=None,
-            pulse_channels=False,
             noise_info=False,
             seed=123,
         )

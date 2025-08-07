@@ -14,27 +14,26 @@
 """Test Sampler Gradients"""
 
 import unittest
-from test import QiskitAlgorithmsTestCase
 from typing import List
-import numpy as np
-from ddt import ddt, data
 
+import numpy as np
+from ddt import data, ddt
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
 from qiskit.primitives import Sampler
-from qiskit.result import QuasiDistribution
 from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.result import QuasiDistribution
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
-from qiskit_ibm_runtime import Session, SamplerV2
-
+from qiskit_ibm_runtime import SamplerV2, Session
 from qiskit_machine_learning.gradients import (
     LinCombSamplerGradient,
     ParamShiftSamplerGradient,
     SPSASamplerGradient,
 )
+
+from test import QiskitAlgorithmsTestCase
 
 from .logging_primitives import LoggingSampler
 

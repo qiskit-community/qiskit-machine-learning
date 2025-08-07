@@ -14,21 +14,22 @@ Compute-uncompute fidelity interface using primitives
 """
 
 from __future__ import annotations
+
 from collections.abc import Sequence
 from copy import copy
 
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseSamplerV2, SamplerResult # change: BaseSampler is migrated to BaseSamplerV2
-from qiskit.transpiler.passmanager import PassManager
-from qiskit.result import QuasiDistribution
+from qiskit.primitives import BaseSamplerV2, PrimitiveResult, SamplerPubResult
 from qiskit.primitives.primitive_job import PrimitiveJob
 from qiskit.providers import Options
+from qiskit.result import QuasiDistribution
+from qiskit.transpiler.passmanager import PassManager
 
-from ..exceptions import AlgorithmError, QiskitMachineLearningError
-from ..utils.deprecation import issue_deprecation_msg
+from ..algorithm_job import AlgorithmJob
+from ..exceptions import AlgorithmError
 from .base_state_fidelity import BaseStateFidelity
 from .state_fidelity_result import StateFidelityResult
-from ..algorithm_job import AlgorithmJob
+
 
 class ComputeUncompute(BaseStateFidelity):
     r"""
@@ -55,7 +56,7 @@ class ComputeUncompute(BaseStateFidelity):
 
     def __init__(
         self,
-        sampler: BaseSamplerV2, # change: BaseSampler is migrated to BaseSamplerV2
+        sampler: BaseSamplerV2,
         *,
         options: Options | None = None,
         local: bool = False,
@@ -84,13 +85,8 @@ class ComputeUncompute(BaseStateFidelity):
         Raises:
             ValueError: If the sampler is not an instance of ``BaseSamplerV2``.
         """
-        if not isinstance(sampler, BaseSamplerV2): # change: BaseSampler is migrated to BaseSamplerV2
-            raise ValueError(
-                f"The sampler should be an instance of BaseSamplerV2, " # change: BaseSampler is migrated to BaseSamplerV2
-                f"but got {type(sampler)}"
-            )
 
-        self._sampler: BaseSamplerV2 = sampler # change: BaseSampler is migrated to BaseSamplerV2
+        self._sampler: BaseSamplerV2 = sampler
         self._pass_manager = pass_manager
         self._local = local
         self._default_options = Options()
@@ -153,7 +149,7 @@ class ComputeUncompute(BaseStateFidelity):
             ValueError: At least one pair of circuits must be defined.
             AlgorithmError: If the sampler job is not completed successfully.
             QiskitMachineLearningError: If the sampler is not an instance
-                of ``BaseSamplerV2``.
+            of ``BaseSamplerV2``.
         """
         circuits = self._construct_circuits(circuits_1, circuits_2)
         if len(circuits) == 0:
@@ -168,27 +164,19 @@ class ComputeUncompute(BaseStateFidelity):
         opts = copy(self._default_options)
         opts.update_options(**options)
 
-        if isinstance(self._sampler, BaseSamplerV2): # change: BaseSampler is migrated to BaseSamplerV2
-            sampler_job = self._sampler.run(
-                [(circuits[i], values[i]) for i in range(len(circuits))], **opts.__dict__
-            )
-            if hasattr(circuits[0].layout, "_input_qubit_count"):
-                _len_quasi_dist = circuits[0].layout._input_qubit_count
-            else:
-                _len_quasi_dist = circuits[0].num_qubits
-            local_opts = opts.__dict__
+        sampler_job = self._sampler.run(
+            [(circuits[i], values[i]) for i in range(len(circuits))], **opts.__dict__
+        )
+        if hasattr(circuits[0].layout, "_input_qubit_count"):
+            _len_quasi_dist = circuits[0].layout._input_qubit_count
         else:
-            raise QiskitMachineLearningError(
-                "The accepted estimators are BaseSamplerV2; got" # change: BaseSampler is migrated to BaseSamplerV2
-                + f" {type(self._sampler)} instead."
-            )
+            _len_quasi_dist = circuits[0].num_qubits
+        local_opts = opts.__dict__
         return AlgorithmJob(
             ComputeUncompute._call,
             sampler_job,
-            circuits,
             self._local,
             local_opts,
-            self._sampler,
             self._post_process_v2,
             _len_quasi_dist,
         )
@@ -196,10 +184,8 @@ class ComputeUncompute(BaseStateFidelity):
     @staticmethod
     def _call(
         job: PrimitiveJob,
-        circuits: Sequence[QuantumCircuit],
         local: bool,
         local_opts: Options = None,
-        _sampler=None,
         _post_process_v2=None,
         num_virtual_qubits=None,
     ) -> StateFidelityResult:
@@ -208,20 +194,12 @@ class ComputeUncompute(BaseStateFidelity):
         except Exception as exc:
             raise AlgorithmError("Sampler job failed!") from exc
 
-        if isinstance(_sampler, BaseSamplerV2): # change: BaseSampler is migrated to BaseSamplerV2
-            quasi_dists = _post_process_v2(result, num_virtual_qubits)
+        quasi_dists = _post_process_v2(result, num_virtual_qubits)
 
         if local:
             raw_fidelities = [
-                ComputeUncompute._get_local_fidelity(
-                    prob_dist,
-                    (
-                        num_virtual_qubits
-                        if isinstance(_sampler, BaseSamplerV2) # change: BaseSampler is migrated to BaseSamplerV2
-                        else circuit.num_qubits
-                    ),
-                )
-                for prob_dist, circuit in zip(quasi_dists, circuits)
+                ComputeUncompute._get_local_fidelity(prob_dist, num_virtual_qubits)
+                for prob_dist in quasi_dists
             ]
         else:
             raw_fidelities = [
@@ -272,10 +250,10 @@ class ComputeUncompute(BaseStateFidelity):
         opts.update_options(**options)
         return opts
 
-    def _post_process_v2(self, result: SamplerResult, num_virtual_qubits: int):
+    def _post_process_v2(self, results: PrimitiveResult[SamplerPubResult], num_virtual_qubits: int):
         quasis = []
-        for i in range(len(result)):
-            bitstring_counts = result[i].data.meas.get_counts()
+        for result in results:
+            bitstring_counts = result.join_data().get_counts()
 
             # Normalize the counts to probabilities
             total_shots = sum(bitstring_counts.values())

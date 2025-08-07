@@ -13,19 +13,18 @@
 """Tests for Fidelity."""
 
 import unittest
-from test import QiskitMachineLearningTestCase
 
 import numpy as np
-
-from qiskit.circuit import QuantumCircuit, ParameterVector
+from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes
-from qiskit.primitives import BaseSamplerV2 # change: Sampler is migrated to BaseSamplerV2
-from qiskit_ibm_runtime.fake_provider import GenericBackendV2 # change: GenericBackendV2 is migrated to qiskit_ibm_runtime.fake_provider.GenericBackendV2
+from qiskit.primitives import StatevectorSampler
+from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
-from qiskit_ibm_runtime import Session, SamplerV2
-
+from qiskit_ibm_runtime import SamplerV2, Session
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
+
+from test import QiskitMachineLearningTestCase
+
 
 class TestComputeUncompute(QiskitMachineLearningTestCase):
     """Test Compute-Uncompute Fidelity class"""
@@ -55,8 +54,6 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
 
         self.backend = GenericBackendV2(
             num_qubits=4,
-            calibrate_instructions=None,
-            pulse_channels=False,
             noise_info=False,
             seed=123,
         )
@@ -266,7 +263,7 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
 
     def test_options(self):
         """Test fidelity's run options"""
-        sampler_shots = BaseSamplerV2(options={"shots": 1024}) # change: Sampler is migrated to BaseSamplerV2
+        sampler_shots = StatevectorSampler(default_shots=1024)
 
         with self.subTest("sampler"):
             # Only options in sampler
@@ -318,6 +315,7 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
             # Only default + sampler options. Not run.
             self.assertEqual(options.__dict__, {"shots": 2048, "dummy": 100})
             self.assertEqual(result.options.__dict__, {"shots": 50, "dummy": None})
+
 
 if __name__ == "__main__":
     unittest.main()
