@@ -59,7 +59,7 @@ def derive_num_qubits_feature_map_ansatz(
     or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
     If the number of qubits of the feature map is not the same as the number of qubits of
     the ansatz, an error is raised. If only one of the feature map and ansatz are ``None``, then
-    :meth:`~qiskit.circuit.library.zz_feature_map` or :class:`~qiskit.circuit.library.rea_amplitudes`
+    :meth:`~qiskit.circuit.library.zz_feature_map` or :class:`~qiskit.circuit.library.real_amplitudes`
     are created respectively.
 
     If all the parameters are none an error is raised.
@@ -83,7 +83,7 @@ def derive_num_qubits_feature_map_ansatz(
         issue_deprecation_msg(
             msg="Using BlueprintCircuit based classes is deprecated",
             version="0.9.0",
-            remedy="Use QnnCircuit (instead) of QNNCircuit or is you "
+            remedy="Use QnnCircuit (instead) of QNNCircuit or if you "
             "are using this method directly set use_methods to True. "
             "When using methods later adjustment of the number of qubits is not "
             "possible and if not as circuits based on BlueprintCircuit, "

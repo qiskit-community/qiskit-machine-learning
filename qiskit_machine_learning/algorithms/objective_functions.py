@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -46,7 +46,7 @@ class ObjectiveFunction:
         Args:
             X: The input data.
             y: The target values.
-            neural_network: An instance of an quantum neural network to be used by this
+            neural_network: An instance of a quantum neural network to be used by this
                 objective function.
             loss: A target loss function to be used in training.
         """

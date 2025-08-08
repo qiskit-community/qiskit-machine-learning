@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@
 Quantum neural networks (:mod:`qiskit_machine_learning.neural_networks`)
 ========================================================================
 
-A neural network is a parametrized network which may be defined as a artificial
+A neural network is a parametrized network which may be defined as an artificial
 neural network - classical neural network - or as parametrized quantum circuits
 - quantum neural network. Furthermore, neural networks can be defined with respect
 to a discriminative or generative task.
