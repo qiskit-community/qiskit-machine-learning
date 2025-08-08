@@ -12,31 +12,31 @@
 
 """Test primitives that check what kind of operations are in the circuits they execute."""
 
-from qiskit.primitives import Estimator, Sampler
+from qiskit.primitives import BaseEstimatorV2, BaseSamplerV2
 
 
-class LoggingEstimator(Estimator):
+class LoggingEstimator(BaseEstimatorV2):
     """An estimator checking what operations were in the circuits it executed."""
 
-    def __init__(self, options=None, operations_callback=None):
-        super().__init__(options=options)
+    def __init__(self, operations_callback=None):
+        super().__init__(default_precision=0.0, seed=None)
         self.operations_callback = operations_callback
 
-    def _run(self, circuits, observables, parameter_values, **run_options):
+    def run(self, pubs, **run_options):
         if self.operations_callback is not None:
-            ops = [circuit.count_ops() for circuit in circuits]
+            ops = [pub[0].count_ops() for pub in pubs]
             self.operations_callback(ops)
-        return super()._run(circuits, observables, parameter_values, **run_options)
+        return super().run(pubs, **run_options)
 
 
-class LoggingSampler(Sampler):
+class LoggingSampler(BaseSamplerV2):
     """A sampler checking what operations were in the circuits it executed."""
 
     def __init__(self, operations_callback):
         super().__init__()
         self.operations_callback = operations_callback
 
-    def _run(self, circuits, parameter_values, **run_options):
-        ops = [circuit.count_ops() for circuit in circuits]
+    def run(self, pubs, **run_options):
+        ops = [pub[0].count_ops() for pub in pubs]
         self.operations_callback(ops)
-        return super()._run(circuits, parameter_values, **run_options)
+        return super().run(pubs, **run_options)

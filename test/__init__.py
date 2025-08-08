@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" ML test packages """
+"""ML test packages"""
 
 from .machine_learning_test_case import QiskitMachineLearningTestCase, gpu
 from .algorithms_test_case import QiskitAlgorithmsTestCase
