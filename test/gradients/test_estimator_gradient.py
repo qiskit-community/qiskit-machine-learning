@@ -14,28 +14,27 @@
 """Test Estimator Gradients"""
 
 import unittest
-from test import QiskitAlgorithmsTestCase
+from math import sqrt
 
 import numpy as np
-from ddt import ddt, data
-
+from ddt import data, ddt
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate, RYYGate, RZXGate, RZZGate
-from qiskit.primitives import Estimator
-from qiskit.quantum_info import SparsePauliOp
+from qiskit.primitives import StatevectorEstimator
 from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
-from qiskit_ibm_runtime import Session, EstimatorV2
+from qiskit_ibm_runtime import EstimatorV2, Session
 from qiskit_ibm_runtime.options import EstimatorOptions, SimulatorOptions
-
 from qiskit_machine_learning.gradients import (
     LinCombEstimatorGradient,
     ParamShiftEstimatorGradient,
     SPSAEstimatorGradient,
 )
+
+from test import QiskitAlgorithmsTestCase
 
 from .logging_primitives import LoggingEstimator
 
@@ -50,7 +49,7 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
     """Test Estimator Gradient"""
 
     def __init__(self, TestCase):
-        self.estimator = Estimator()
+        self.estimator = StatevectorEstimator()
         super().__init__(TestCase)
 
     @data(*gradient_factories)
@@ -373,7 +372,8 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
         op = SparsePauliOp.from_list([("Z", 1)])
-        estimator = Estimator(options={"shots": 100})
+        precision = 1 / sqrt(100)
+        estimator = StatevectorEstimator(default_precision=precision)
         with self.subTest("estimator"):
             if grad is SPSAEstimatorGradient:
                 gradient = grad(estimator, epsilon=1e-6)

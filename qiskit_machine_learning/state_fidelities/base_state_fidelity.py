@@ -14,14 +14,15 @@ Base state fidelity interface
 """
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections.abc import MutableMapping
-from typing import cast, Sequence, List
-import numpy as np
+from typing import List, Sequence, cast
 
+import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import ParameterVector
-from qiskit.primitives.utils import _circuit_key
+from qiskit_aer.primitives.sampler import _circuit_key
 
 from ..algorithm_job import AlgorithmJob
 

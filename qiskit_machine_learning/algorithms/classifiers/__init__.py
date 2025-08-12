@@ -10,11 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Classifiers Package """
+"""Classifiers Package"""
 
 from .neural_network_classifier import NeuralNetworkClassifier
-from .qsvc import QSVC
 from .pegasos_qsvc import PegasosQSVC
+from .qsvc import QSVC
 from .vqc import VQC
 
 __all__ = ["NeuralNetworkClassifier", "QSVC", "PegasosQSVC", "VQC"]

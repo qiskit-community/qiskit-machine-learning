@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Kernel Loss utilities """
+"""Kernel Loss utilities"""
 
 from abc import ABC, abstractmethod
 from typing import Sequence

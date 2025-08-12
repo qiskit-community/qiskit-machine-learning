@@ -10,10 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Regressors Package"""
+"""Regressors Package"""
 
-from .qsvr import QSVR
 from .neural_network_regressor import NeuralNetworkRegressor
+from .qsvr import QSVR
 from .vqr import VQR
 
 __all__ = ["QSVR", "VQR", "NeuralNetworkRegressor"]
