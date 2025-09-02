@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -71,7 +71,7 @@ class TrainableKernel(BaseKernel, ABC):
                 if key not in self._training_parameters:
                     raise ValueError(
                         f"Parameter {key} is not a trainable parameter of the feature map and "
-                        f"thus cannot be bound. Make sure {key} is provided in the the trainable "
+                        f"thus cannot be bound. Make sure {key} is provided in the trainable "
                         "parameters when initializing the kernel."
                     )
                 self._parameter_dict[key] = parameter_values[key]

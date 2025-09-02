@@ -44,7 +44,7 @@ jobs:
           echo -e "\033[31;1;4mConcurrency Group\033[0m"
           echo -e "$CONCURRENCY_GROUP\n"
         shell: bash
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v5
@@ -124,7 +124,7 @@ jobs:
           - os: windows-latest
             python-version: 3.13
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -186,7 +186,7 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.9, 3.13]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v5
@@ -262,43 +262,43 @@ jobs:
       matrix:
         python-version: [3.9]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: ubuntu-latest-3.9
           path: /tmp/u39
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: ubuntu-latest-3.10
           path: /tmp/u310
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: ubuntu-latest-3.11
           path: /tmp/u311
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: ubuntu-latest-3.12
           path: /tmp/u312
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: ubuntu-latest-3.13
           path: /tmp/u313
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: macos-latest-3.9
           path: /tmp/m39
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: macos-latest-3.13
           path: /tmp/m313
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: windows-latest-3.9
           path: /tmp/w39
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: windows-latest-3.13
           path: /tmp/w313
