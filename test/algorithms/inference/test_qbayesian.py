@@ -13,6 +13,7 @@
 """Test Quantum Bayesian Inference"""
 
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -24,8 +25,6 @@ from qiskit_ibm_runtime import SamplerV2, Session
 from qiskit_ibm_runtime.options import SamplerOptions, SimulatorOptions
 from qiskit_machine_learning.algorithms import QBayesian
 from qiskit_machine_learning.utils import algorithm_globals
-
-from test import QiskitMachineLearningTestCase
 
 
 class TestQBayesianInference(QiskitMachineLearningTestCase):

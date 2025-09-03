@@ -15,6 +15,7 @@
 
 import unittest
 from typing import List
+from test import QiskitAlgorithmsTestCase
 
 import numpy as np
 from ddt import data, ddt
@@ -32,8 +33,6 @@ from qiskit_machine_learning.gradients import (
     ParamShiftSamplerGradient,
     SPSASamplerGradient,
 )
-
-from test import QiskitAlgorithmsTestCase
 
 from .logging_primitives import LoggingSampler
 

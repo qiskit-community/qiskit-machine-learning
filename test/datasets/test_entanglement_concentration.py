@@ -19,12 +19,12 @@ import itertools
 import numpy as np
 from ddt import ddt, unpack, idata
 
-
 from qiskit.quantum_info import Statevector, partial_trace
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.datasets import entanglement_concentration_data
 
 
+#  pylint: disable=invalid-name
 def _compute_ce(sv):
     """Computing CE using Mathematical Expression due to Beckey, J. L. et al.
     (alternatively SWAP test can be used if done in a Quantum Circuit)"""

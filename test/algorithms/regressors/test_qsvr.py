@@ -14,16 +14,15 @@
 import os
 import tempfile
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
+from sklearn.metrics import mean_squared_error
 from qiskit.circuit.library import zz_feature_map
 from qiskit_machine_learning.algorithms import QSVR, SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.utils import algorithm_globals
-from sklearn.metrics import mean_squared_error
-
-from test import QiskitMachineLearningTestCase
 
 
 class TestQSVR(QiskitMachineLearningTestCase):

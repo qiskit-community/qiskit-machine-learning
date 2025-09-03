@@ -13,6 +13,7 @@
 """Unit tests for NLopt optimizers."""
 
 import unittest
+from test import QiskitAlgorithmsTestCase
 
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
@@ -24,8 +25,6 @@ from qiskit_machine_learning.optimizers.nlopts import (
     ISRES,
 )
 from qiskit_machine_learning.utils import algorithm_globals
-
-from test import QiskitAlgorithmsTestCase
 
 
 class TestNLoptOptimizer(QiskitAlgorithmsTestCase):

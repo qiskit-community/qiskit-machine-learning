@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Tests for the SPSA optimizer."""
+from test import QiskitAlgorithmsTestCase
 
 import numpy as np
 from ddt import data, ddt
@@ -19,8 +20,6 @@ from qiskit.primitives import StatevectorEstimator, StatevectorSampler
 from qiskit.quantum_info import SparsePauliOp, Statevector
 from qiskit_machine_learning.optimizers import QNSPSA, SPSA
 from qiskit_machine_learning.utils import algorithm_globals
-
-from test import QiskitAlgorithmsTestCase
 
 
 @ddt

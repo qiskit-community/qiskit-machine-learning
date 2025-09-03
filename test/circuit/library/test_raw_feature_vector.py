@@ -13,6 +13,7 @@
 """Test the ``RawFeatureVector`` circuit."""
 
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import qiskit
@@ -24,8 +25,6 @@ from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector, raw_feature_vector
 from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
-
-from test import QiskitMachineLearningTestCase
 
 
 class TestRawFeatureVectorFunction(QiskitMachineLearningTestCase):

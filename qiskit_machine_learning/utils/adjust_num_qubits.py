@@ -18,6 +18,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
 
 from ..exceptions import QiskitMachineLearningError
+from ..utils.deprecation import issue_deprecation_msg
 
 
 # pylint: disable=invalid-name
@@ -25,6 +26,7 @@ def derive_num_qubits_feature_map_ansatz(
     num_qubits: int | None = None,
     feature_map: QuantumCircuit | None = None,
     ansatz: QuantumCircuit | None = None,
+    use_methods: bool = True,
 ) -> Tuple[int, QuantumCircuit, QuantumCircuit]:
     """
     Derives a correct number of qubits, feature map, and ansatz from the parameters.
@@ -64,6 +66,8 @@ def derive_num_qubits_feature_map_ansatz(
         num_qubits: Number of qubits.
         feature_map: A feature map.
         ansatz: An ansatz.
+        use_methods: weather to use the method implementation of circuits (Qiskit >=2) or the class
+            implementation (deprecated in Qiskit 2 and will be removed in Qiskit 3).
 
     Returns:
         A tuple of number of qubits, feature map, and ansatz. All are not none.

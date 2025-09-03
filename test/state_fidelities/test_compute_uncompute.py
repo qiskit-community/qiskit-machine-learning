@@ -13,14 +13,13 @@
 """Tests for Fidelity."""
 
 import unittest
+from test import QiskitAlgorithmsTestCase
 
 import numpy as np
 from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes
 from qiskit.primitives import StatevectorSampler
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
-
-from test import QiskitAlgorithmsTestCase
 
 
 class TestComputeUncompute(QiskitAlgorithmsTestCase):

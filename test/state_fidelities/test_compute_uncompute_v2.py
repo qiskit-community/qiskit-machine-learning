@@ -13,6 +13,7 @@
 """Tests for Fidelity."""
 
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit import ParameterVector, QuantumCircuit
@@ -22,8 +23,6 @@ from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import SamplerV2, Session
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
-
-from test import QiskitMachineLearningTestCase
 
 
 class TestComputeUncompute(QiskitMachineLearningTestCase):

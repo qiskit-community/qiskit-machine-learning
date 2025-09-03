@@ -12,6 +12,7 @@
 """Test Neural Network Regressor with EstimatorQNN."""
 
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from ddt import data, ddt
@@ -23,8 +24,6 @@ from qiskit_ibm_runtime import EstimatorV2, Session
 from qiskit_machine_learning.algorithms import VQR
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
 from qiskit_machine_learning.utils import algorithm_globals
-
-from test import QiskitMachineLearningTestCase
 
 
 @ddt

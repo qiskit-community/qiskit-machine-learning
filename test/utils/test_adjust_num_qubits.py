@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Tests for adjusting number of qubits in a feature map / ansatz."""
+from test import QiskitMachineLearningTestCase
 import itertools
 
 from ddt import ddt, idata, unpack
@@ -17,8 +18,6 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.utils import derive_num_qubits_feature_map_ansatz
-
-from test import QiskitMachineLearningTestCase
 
 
 @ddt

@@ -18,10 +18,13 @@ import functools
 import itertools
 import unittest
 from dataclasses import dataclass
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import scipy
 from ddt import ddt, idata, unpack
+from sklearn.datasets import make_classification
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
@@ -30,10 +33,7 @@ from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
-from sklearn.datasets import make_classification
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-from test import QiskitMachineLearningTestCase
 
 NUM_QUBITS_LIST = [2, None]
 FEATURE_MAPS = ["zz_feature_map", None]

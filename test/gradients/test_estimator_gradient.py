@@ -15,6 +15,7 @@
 
 import unittest
 from math import sqrt
+from test import QiskitAlgorithmsTestCase
 
 import numpy as np
 from ddt import data, ddt
@@ -34,7 +35,6 @@ from qiskit_machine_learning.gradients import (
     SPSAEstimatorGradient,
 )
 
-from test import QiskitAlgorithmsTestCase
 
 from .logging_primitives import LoggingEstimator
 

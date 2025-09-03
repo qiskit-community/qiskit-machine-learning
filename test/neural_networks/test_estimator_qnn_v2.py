@@ -13,6 +13,7 @@
 """Test EstimatorQNN"""
 
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
@@ -26,7 +27,6 @@ from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 from qiskit_machine_learning.utils import algorithm_globals
 
-from test import QiskitMachineLearningTestCase
 
 algorithm_globals.random_seed = 52
 

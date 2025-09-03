@@ -13,6 +13,7 @@
 """Test the ``QNNCircuit`` circuit."""
 
 import unittest
+from test import QiskitMachineLearningTestCase
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import (
@@ -25,8 +26,6 @@ from qiskit.circuit.library import (
 )
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.circuit.library import QNNCircuit, qnn_circuit
-
-from test import QiskitMachineLearningTestCase
 
 
 class TestQNNCircuitFunction(QiskitMachineLearningTestCase):

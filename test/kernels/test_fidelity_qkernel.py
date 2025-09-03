@@ -18,12 +18,16 @@ import itertools
 import unittest
 from typing import Sequence
 
+from test import QiskitMachineLearningTestCase
+
 import numpy as np
 from ddt import ddt, idata, unpack
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import z_feature_map
 from qiskit.primitives import StatevectorSampler
+from sklearn.svm import SVC
+
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.state_fidelities import (
@@ -32,9 +36,6 @@ from qiskit_machine_learning.state_fidelities import (
     StateFidelityResult,
 )
 from qiskit_machine_learning.utils import algorithm_globals
-from sklearn.svm import SVC
-
-from test import QiskitMachineLearningTestCase
 
 
 @ddt

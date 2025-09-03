@@ -15,9 +15,9 @@ from __future__ import annotations
 
 import itertools
 import unittest
+from test import QiskitMachineLearningTestCase
 
 import numpy as np
-import qiskit_machine_learning.optionals as _optionals
 from ddt import ddt, idata
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
@@ -25,6 +25,7 @@ from qiskit.primitives import StatevectorSampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import SamplerV2, Session
+import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning.circuit.library import qnn_circuit
 from qiskit_machine_learning.gradients.param_shift.param_shift_sampler_gradient import (
     ParamShiftSamplerGradient,
@@ -32,7 +33,6 @@ from qiskit_machine_learning.gradients.param_shift.param_shift_sampler_gradient 
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
 from qiskit_machine_learning.utils import algorithm_globals
 
-from test import QiskitMachineLearningTestCase
 
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error
