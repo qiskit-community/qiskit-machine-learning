@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -133,9 +133,8 @@ class SciPyOptimizer(Optimizer):
                 Optimizer.gradient_num_diff, (fun, epsilon, self._max_evals_grouped)
             )
 
-        # Workaround for L_BFGS_B because it does not accept np.ndarray.
-        # See https://github.com/Qiskit/qiskit/pull/6373.
-        if jac is not None and self._method == "l-bfgs-b":
+        # Ensure gradient is 1D for scipy>=1.16
+        if jac is not None:
             jac = self._wrap_gradient(jac)
 
         # Starting in scipy 1.9.0 maxiter is deprecated and maxfun (added in 1.5.0)
@@ -170,8 +169,8 @@ class SciPyOptimizer(Optimizer):
     def _wrap_gradient(gradient_function):
         def wrapped_gradient(x):
             gradient = gradient_function(x)
-            if isinstance(gradient, np.ndarray):
-                return gradient.tolist()
+            # Ensure gradient is a 1D numpy array
+            gradient = np.asarray(gradient).ravel()
             return gradient
 
         return wrapped_gradient
