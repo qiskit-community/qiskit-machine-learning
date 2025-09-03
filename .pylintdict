@@ -21,6 +21,7 @@ arg
 argmax
 args
 armijo
+arrasmith
 arxiv
 asmatrix
 aspuru
@@ -39,6 +40,8 @@ barkoutsos
 batchsize
 bayes
 bayesian
+beckey
+benchmarked
 benchmarking
 bergholm
 bfgs
@@ -64,6 +67,7 @@ carleo
 carlo
 cbit
 centroid
+cerezo
 chernoff
 choi
 chuang
@@ -197,6 +201,7 @@ gellmann
 generalised
 getter
 getters
+gigena
 gilliam
 giuseppe
 globals
@@ -266,6 +271,7 @@ izz
 jac
 jacobian
 jhp
+jl
 johnson
 jm
 jonathan
@@ -375,6 +381,7 @@ nosignatures
 np
 npj
 ns
+ntangled
 num
 numpy
 nxd
@@ -416,6 +423,7 @@ pearson
 pedro
 pegasos
 peruzzo
+physrevlett
 pixelated
 pj
 platt
@@ -510,6 +518,7 @@ satisfiability
 satyen
 sbplx
 scalability
+schatzki
 schroediger
 schroedinger
 schrödinger
@@ -520,6 +529,8 @@ sdg
 seealso
 semidefinite
 sep
+seperate
+seperable
 serializable
 serializablemodelmixin
 shalev
