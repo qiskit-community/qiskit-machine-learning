@@ -39,7 +39,23 @@ def derive_num_qubits_feature_map_ansatz(
     or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
     If the number of qubits of the feature map is not the same as the number of qubits of
     the ansatz, an error is raised. If only one of the feature map and ansatz are ``None``, then
+
     :func:`~qiskit.circuit.library.zz_feature_map` or :func:`~qiskit.circuit.library.real_amplitudes`
+    are created respectively.
+
+    With `use_methods` set True:
+
+    If the number of qubits is not ``None``, then the feature map and ansatz are adjusted to this
+    number of qubits if required. If such an adjustment fails, an error is raised. Also, if the
+    feature map or ansatz or both are ``None``, then :meth:`~qiskit.circuit.library.zz_feature_map`
+    and :meth:`~qiskit.circuit.library.real_amplitudes` are created respectively. If there's just
+    one qubit, :meth:`~qiskit.circuit.library.z_feature_map` is created instead.
+
+    If the number of qubits is ``None``, then the number of qubits is derived from the feature map
+    or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
+    If the number of qubits of the feature map is not the same as the number of qubits of
+    the ansatz, an error is raised. If only one of the feature map and ansatz are ``None``, then
+    :meth:`~qiskit.circuit.library.zz_feature_map` or :class:`~qiskit.circuit.library.real_amplitudes`
     are created respectively.
 
     If all the parameters are none an error is raised.
@@ -56,6 +72,18 @@ def derive_num_qubits_feature_map_ansatz(
         QiskitMachineLearningError: If correct values can not be derived from the parameters.
     """
 
+    if not use_methods:
+        issue_deprecation_msg(
+            msg="Using BlueprintCircuit based classes is deprecated",
+            version="0.9.0",
+            remedy="Use QnnCircuit (instead) of QNNCircuit or if you "
+            "are using this method directly set use_methods to True. "
+            "When using methods later adjustment of the number of qubits is not "
+            "possible and if not as circuits based on BlueprintCircuit, "
+            "like ZZFeatureMap to which this defaults, which could do this, "
+            "have been deprecated.",
+            period="4 months",
+        )
     # check num_qubits, feature_map, and ansatz
     if num_qubits in (0, None) and feature_map is None and ansatz is None:
         raise QiskitMachineLearningError(
