@@ -71,7 +71,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
             grad: Whether to pass the gradient function as input.
             bounds: Optimizer bounds.
         """
-        x_0 = np.asarray([1.3, 0.7, 0.8, 1.9, 1.2])
+        x_0 = np.asarray([1.13, 0.7, 0.8, 1.9, 1.2])
         jac = rosen_der if grad else None
 
         res = optimizer.minimize(rosen, x_0, jac, bounds)
@@ -97,7 +97,10 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
         self.run_optimizer(optimizer, grad=True, max_nfev=100000)
 
     def test_cobyla(self):
-        """cobyla test"""
+        """cobyla test
+
+        Note: very slow (27.69s)
+        """
         optimizer = COBYLA(maxiter=100000, tol=1e-06)
         self.run_optimizer(optimizer, max_nfev=100000)
 
