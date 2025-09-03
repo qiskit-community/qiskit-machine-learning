@@ -22,7 +22,6 @@ from typing import List, Sequence, cast
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import ParameterVector
-from qiskit_aer.primitives.sampler import _circuit_key
 
 from ..algorithm_job import AlgorithmJob
 
@@ -171,8 +170,8 @@ class BaseStateFidelity(ABC):
 
         circuits = []
         for circuit_1, circuit_2 in zip(circuits_1, circuits_2):
-            # Use the same key for circuits as qiskit.primitives use.
-            circuit = self._circuit_cache.get((_circuit_key(circuit_1), _circuit_key(circuit_2)))
+            # Use the same key for circuits as qiskit.primitives use in 2.0+
+            circuit = self._circuit_cache.get((hash(circuit_1), hash(circuit_2)))
 
             if circuit is not None:
                 circuits.append(circuit)
@@ -191,7 +190,7 @@ class BaseStateFidelity(ABC):
                 )
                 circuits.append(circuit)
                 # update cache
-                self._circuit_cache[_circuit_key(circuit_1), _circuit_key(circuit_2)] = circuit
+                self._circuit_cache[hash(circuit_1), hash(circuit_2)] = circuit
 
         return circuits
 

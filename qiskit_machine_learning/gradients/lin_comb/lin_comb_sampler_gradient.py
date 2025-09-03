@@ -23,7 +23,6 @@ from qiskit.primitives import BaseSamplerV2
 from qiskit.providers import Options
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
-from qiskit_aer.primitives.sampler import _circuit_key
 
 from ...exceptions import AlgorithmError
 from ..base.base_sampler_gradient import BaseSamplerGradient
@@ -110,7 +109,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             # Prepare circuits for the gradient of the specified parameters.
             # TODO: why is this not wrapped into another list level like it is done elsewhere?
             metadata.append({"parameters": parameters_})
-            circuit_key = _circuit_key(circuit)
+            circuit_key = hash(circuit)
             if circuit_key not in self._lin_comb_cache:
                 # Cache the circuits for the linear combination of unitaries.
                 # We only cache the circuits for the specified parameters in the future.

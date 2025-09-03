@@ -27,7 +27,6 @@ from qiskit.providers import Options
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passes import TranslateParameterizedGates
 from qiskit.transpiler.passmanager import BasePassManager
-from qiskit_aer.primitives.sampler import _circuit_key
 
 from ...algorithm_job import AlgorithmJob
 from ..utils import (
@@ -194,7 +193,7 @@ class BaseEstimatorGradient(ABC):
         g_parameter_values: list[Sequence[float]] = []
         g_parameters: list[Sequence[Parameter]] = []
         for circuit, parameter_value_, parameters_ in zip(circuits, parameter_values, parameters):
-            circuit_key = _circuit_key(circuit)
+            circuit_key = hash(circuit)
             if circuit_key not in self._gradient_circuit_cache:
                 unrolled = translator(circuit)
                 self._gradient_circuit_cache[circuit_key] = _assign_unique_parameters(unrolled)
@@ -239,7 +238,7 @@ class BaseEstimatorGradient(ABC):
             ):
                 # If the derivative type is complex, cast the gradient to complex.
                 gradient = gradient.astype("complex")
-            gradient_circuit = self._gradient_circuit_cache[_circuit_key(circuit)]
+            gradient_circuit = self._gradient_circuit_cache[hash(circuit)]
             g_parameters = _make_gradient_parameters(gradient_circuit, parameters_)
             # Make a map from the gradient parameter to the respective index in the gradient.
             g_parameter_indices = {param: i for i, param in enumerate(g_parameters)}

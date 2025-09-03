@@ -23,7 +23,6 @@ from qiskit.providers import Options
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
-from qiskit_aer.primitives.sampler import _circuit_key
 
 from ...exceptions import AlgorithmError
 from ..base.base_estimator_gradient import BaseEstimatorGradient
@@ -135,7 +134,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
         ):
             # Prepare circuits for the gradient of the specified parameters.
             meta = {"parameters": parameters_}
-            circuit_key = _circuit_key(circuit)
+            circuit_key = hash(circuit)
             if circuit_key not in self._lin_comb_cache:
                 # Cache the circuits for the linear combination of unitaries.
                 # We only cache the circuits for the specified parameters in the future.
