@@ -91,6 +91,8 @@ class TrainableModel(SerializableModelMixin):
                 raise QiskitMachineLearningError(f"Unknown loss {loss}!")
 
         # call the setter that has some additional checks
+        if not isinstance(optimizer, SciPyOptimizer):
+            optimizer.callback=callback
         self.optimizer = optimizer
 
         self._warm_start = warm_start
