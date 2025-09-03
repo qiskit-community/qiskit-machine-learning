@@ -1,0 +1,20 @@
+
+features:
+  - |
+    The :class:`~qiskit_machine_learning.datasets.entanglement_concentration_data` class has 
+    been added. This is a dataset generator that gives quantum states from two different 
+    circuits with different levels of concentration of entanglement. Refer to the 
+    documentation for more detailed information. 
+
+    Example of a 4-qubit dataset:
+
+    .. code-block:: python
+    
+        entanglement_concentration_data(
+            training_size=1000,
+            test_size=200,
+            n=4,
+            mode="easy",
+            formatting="statevector"
+        )
+
