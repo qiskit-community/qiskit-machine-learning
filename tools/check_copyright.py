@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Fix copyright year in header """
+"""Fix copyright year in header"""
 
 from typing import Tuple, Union, List
 import builtins
