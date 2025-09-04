@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,14 +14,14 @@ Base state fidelity interface
 """
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections.abc import MutableMapping
-from typing import cast, Sequence, List
-import numpy as np
+from typing import List, Sequence, cast
 
+import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import ParameterVector
-from qiskit.primitives.utils import _circuit_key
 
 from ..algorithm_job import AlgorithmJob
 
@@ -170,8 +170,8 @@ class BaseStateFidelity(ABC):
 
         circuits = []
         for circuit_1, circuit_2 in zip(circuits_1, circuits_2):
-            # Use the same key for circuits as qiskit.primitives use.
-            circuit = self._circuit_cache.get((_circuit_key(circuit_1), _circuit_key(circuit_2)))
+            # Use the same key for circuits as qiskit.primitives use in 2.0+
+            circuit = self._circuit_cache.get((hash(circuit_1), hash(circuit_2)))
 
             if circuit is not None:
                 circuits.append(circuit)
@@ -190,7 +190,7 @@ class BaseStateFidelity(ABC):
                 )
                 circuits.append(circuit)
                 # update cache
-                self._circuit_cache[_circuit_key(circuit_1), _circuit_key(circuit_2)] = circuit
+                self._circuit_cache[hash(circuit_1), hash(circuit_2)] = circuit
 
         return circuits
 
