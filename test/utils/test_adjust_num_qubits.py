@@ -10,14 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Tests for adjusting number of qubits in a feature map / ansatz."""
+from test import QiskitMachineLearningTestCase
 import itertools
 
-from test import QiskitMachineLearningTestCase
-
-from ddt import idata, unpack, ddt
+from ddt import ddt, idata, unpack
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZFeatureMap, RealAmplitudes
-
+from qiskit.circuit.library import real_amplitudes, z_feature_map
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.utils import derive_num_qubits_feature_map_ansatz
 
@@ -29,10 +27,10 @@ class TestAdjustNumQubits(QiskitMachineLearningTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.properties = {
-            "z1": ZFeatureMap(1),
-            "z2": ZFeatureMap(2),
-            "ra1": RealAmplitudes(1),
-            "ra2": RealAmplitudes(2),
+            "z1": z_feature_map(1),
+            "z2": z_feature_map(2),
+            "ra1": real_amplitudes(1),
+            "ra2": real_amplitudes(2),
         }
 
     def test_all_none(self):

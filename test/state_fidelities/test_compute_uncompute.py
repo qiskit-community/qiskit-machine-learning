@@ -16,11 +16,9 @@ import unittest
 from test import QiskitAlgorithmsTestCase
 
 import numpy as np
-
-from qiskit.circuit import QuantumCircuit, ParameterVector
+from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes
-from qiskit.primitives import Sampler
-
+from qiskit.primitives import StatevectorSampler
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
 
 
@@ -49,7 +47,7 @@ class TestComputeUncompute(QiskitAlgorithmsTestCase):
         rx_rotation.h(1)
 
         self._circuit = [rx_rotations, ry_rotations, plus, zero, rx_rotation]
-        self._sampler = Sampler()
+        self._sampler = StatevectorSampler()
         self._left_params = np.array([[0, 0], [np.pi / 2, 0], [0, np.pi / 2], [np.pi, np.pi]])
         self._right_params = np.array([[0, 0], [0, 0], [np.pi / 2, 0], [0, 0]])
 
@@ -219,7 +217,7 @@ class TestComputeUncompute(QiskitAlgorithmsTestCase):
 
     def test_options(self):
         """Test fidelity's run options"""
-        sampler_shots = Sampler(options={"shots": 1024})
+        sampler_shots = StatevectorSampler(default_shots=1024)
 
         with self.subTest("sampler"):
             # Only options in sampler

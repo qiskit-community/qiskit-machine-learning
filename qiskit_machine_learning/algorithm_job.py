@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -29,17 +29,7 @@ class AlgorithmJob(PrimitiveJob):
         """
         Submit the job for execution.
 
-        For V1 primitives, Qiskit ``PrimitiveJob`` subclassed JobV1 and defined ``submit()``.
-        ``PrimitiveJob`` was updated for V2 primitives, no longer subclasses ``JobV1``, and
-        now has a private ``_submit()`` method, with ``submit()`` being deprecated as of
-        Qiskit version 0.46. This maintains the ``submit()`` for ``AlgorithmJob`` here as
-        it's called in many places for such a job. An alternative could be to make
-        0.46 the required minimum version and alter all algorithm's call sites to use
-        ``_submit()`` and make this an empty class again as it once was. For now this
-        way maintains compatibility with the current min version of 0.44.
+        Since the library has been migrated to Qiskit v2.1, it is no longer necessary to
+        keep the :meth:``JobV1.submit()`` for the exception handling.
         """
-        # TODO: Considering changing this in the future - see above docstring.
-        try:
-            super()._submit()
-        except AttributeError:
-            super().submit()  # pylint: disable=no-member
+        super()._submit()

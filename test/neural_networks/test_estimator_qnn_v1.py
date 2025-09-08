@@ -13,17 +13,16 @@
 """Test EstimatorQNN"""
 
 import unittest
-
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import zz_feature_map, real_amplitudes, z_feature_map
+from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
 from qiskit.quantum_info import SparsePauliOp
-
 from qiskit_machine_learning.circuit.library import QNNCircuit
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 from qiskit_machine_learning.utils import algorithm_globals
+
 
 CASE_DATA = {
     "shape_1_1": {

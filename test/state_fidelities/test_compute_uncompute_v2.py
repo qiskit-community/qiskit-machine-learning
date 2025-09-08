@@ -16,15 +16,12 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-
-from qiskit.circuit import QuantumCircuit, ParameterVector
+from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes
-from qiskit.primitives import Sampler
+from qiskit.primitives import StatevectorSampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
-from qiskit_ibm_runtime import Session, SamplerV2
-
+from qiskit_ibm_runtime import SamplerV2, Session
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
 
 
@@ -56,8 +53,6 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
 
         self.backend = GenericBackendV2(
             num_qubits=4,
-            calibrate_instructions=None,
-            pulse_channels=False,
             noise_info=False,
             seed=123,
         )
@@ -267,7 +262,7 @@ class TestComputeUncompute(QiskitMachineLearningTestCase):
 
     def test_options(self):
         """Test fidelity's run options"""
-        sampler_shots = Sampler(options={"shots": 1024})
+        sampler_shots = StatevectorSampler(default_shots=1024)
 
         with self.subTest("sampler"):
             # Only options in sampler

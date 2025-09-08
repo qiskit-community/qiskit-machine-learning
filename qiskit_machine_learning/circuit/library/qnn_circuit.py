@@ -12,11 +12,12 @@
 
 """The QNN circuit."""
 from __future__ import annotations
+
 from typing import List
 
-from qiskit.circuit import QuantumRegister, QuantumCircuit
-from qiskit.circuit.parametertable import ParameterView
+from qiskit.circuit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import BlueprintCircuit
+from qiskit.circuit.parametertable import ParameterView
 
 from qiskit_machine_learning import QiskitMachineLearningError
 
@@ -119,7 +120,7 @@ def qnn_circuit(
     """
     # Check if circuit is constructed with valid configuration and set properties accordingly.
     num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-        num_qubits, feature_map, ansatz, use_methods=True
+        num_qubits, feature_map, ansatz
     )
     qc = QuantumCircuit(num_qubits)
     qc.compose(feature_map, inplace=True)
