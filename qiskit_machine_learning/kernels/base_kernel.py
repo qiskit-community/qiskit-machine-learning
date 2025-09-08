@@ -130,7 +130,7 @@ class BaseKernel(ABC):
                 raise ValueError(
                     f"x_vec and class feature map have incompatible dimensions.\n"
                     f"x_vec has {x_vec.shape[1]} dimensions, "
-                    f"but feature map has {self._feature_map.num_parameters}."
+                    f"but feature map has {self._num_features}."
                 ) from a_e
 
         if y_vec is not None:
