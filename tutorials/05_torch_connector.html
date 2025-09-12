@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Pegasos Quantum Support Vector Classifier" href="07_pegasos_qsvc.html" /><link rel="prev" title="PyTorch qGAN Implementation" href="04_torch_qgan.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Torch Connector and Hybrid QNNs - Qiskit Machine Learning 0.8.3</title>
+        <title>Torch Connector and Hybrid QNNs - Qiskit Machine Learning 0.8.4</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -625,7 +625,7 @@ Initial weights:  [-0.01256962  0.06653564  0.04005302 -0.03752667  0.06645196  
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor([-0.3313], grad_fn=&lt;_TorchNNFunctionBackward&gt;)
+tensor([-0.3378], grad_fn=&lt;_TorchNNFunctionBackward&gt;)
 </pre></div></div>
 </div>
 <section id="Optimizer">
@@ -674,26 +674,43 @@ the output (the following section shows an example of application of parity mapp
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-25.64959716796875
-22.50166893005371
-19.90784454345703
-19.6928768157959
-18.741464614868164
-18.449417114257812
-19.0111026763916
-17.57064437866211
-16.755760192871094
-15.904250144958496
-16.65563201904297
-15.4246826171875
-15.191286087036133
-14.875397682189941
-14.943951606750488
-14.704404830932617
-14.938076972961426
-14.738551139831543
-14.902461051940918
-15.054840087890625
+25.53438377380371
+22.468095779418945
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/torch/optim/lbfgs.py:457: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  loss = float(closure())
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+20.13313102722168
+19.503992080688477
+19.2939453125
+19.062755584716797
+18.3799991607666
+17.240482330322266
+16.12813377380371
+29.43731117248535
+21.77602767944336
+21.800609588623047
+29.32451629638672
+28.12480926513672
+29.1919002532959
+18.985862731933594
+27.312971115112305
+27.335765838623047
+21.83635711669922
+23.96034049987793
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -702,7 +719,7 @@ the output (the following section shows an example of application of parity mapp
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor(25.6496, grad_fn=&lt;MseLossBackward0&gt;)
+tensor(25.5344, grad_fn=&lt;MseLossBackward0&gt;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -737,7 +754,7 @@ tensor(25.6496, grad_fn=&lt;MseLossBackward0&gt;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Accuracy: 0.8
+Accuracy: 0.55
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -843,26 +860,26 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.696611225605011
-0.6831842660903931
-0.667116641998291
-0.6586275696754456
-0.6440848708152771
-0.6399412751197815
-0.6287354230880737
-0.6197552680969238
-0.6171794533729553
-0.7930452227592468
-0.7436395883560181
-0.6776110529899597
-0.6734491586685181
-0.6570463180541992
-0.6279522776603699
-0.6220942139625549
-0.7201539278030396
-0.6278782486915588
-0.6809056997299194
-0.6382997035980225
+0.6940336227416992
+0.6881678700447083
+0.6724263429641724
+0.6631951928138733
+0.6827380061149597
+0.6502656936645508
+0.7123739719390869
+0.6896027326583862
+0.6473434567451477
+0.6307740211486816
+0.625375509262085
+0.6244851350784302
+0.6156406998634338
+0.6141911149024963
+0.6178864240646362
+0.6171678900718689
+0.622958242893219
+0.6137369871139526
+0.6181219816207886
+0.6163231134414673
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -897,7 +914,7 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Accuracy: 0.5
+Accuracy: 0.8
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1013,26 +1030,26 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-14.817197799682617
-2.9310615062713623
-9.029802322387695
-0.370554655790329
-0.24924612045288086
-0.25864377617836
-0.2360777109861374
-0.2732209861278534
-0.2468440681695938
-0.26957231760025024
-0.25627580285072327
-0.27410104870796204
-0.2692928612232208
-0.22305873036384583
-0.255578875541687
-0.2843675911426544
-0.24805721640586853
-0.24861188232898712
-0.2667614221572876
-0.2293444275856018
+15.086028099060059
+2.903151035308838
+8.037813186645508
+0.4092082977294922
+0.2700234353542328
+0.254330575466156
+0.24055267870426178
+0.2377428263425827
+0.23498545587062836
+0.24523262679576874
+0.2630581259727478
+0.24371649324893951
+0.2509814202785492
+0.2440876066684723
+0.2135881632566452
+0.2857442796230316
+0.2885182499885559
+0.2582851052284241
+0.25230249762535095
+0.24676957726478577
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1041,7 +1058,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor(14.8172, grad_fn=&lt;MseLossBackward0&gt;)
+tensor(15.0860, grad_fn=&lt;MseLossBackward0&gt;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1320,15 +1337,15 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Training [10%]  Loss: -1.1360
-Training [20%]  Loss: -1.5447
-Training [30%]  Loss: -1.7691
-Training [40%]  Loss: -2.0308
-Training [50%]  Loss: -2.2552
-Training [60%]  Loss: -2.4491
-Training [70%]  Loss: -2.6561
-Training [80%]  Loss: -2.8572
-Training [90%]  Loss: -3.0897
-Training [100%] Loss: -3.2545
+Training [20%]  Loss: -1.5440
+Training [30%]  Loss: -1.7713
+Training [40%]  Loss: -2.0370
+Training [50%]  Loss: -2.2366
+Training [60%]  Loss: -2.4387
+Training [70%]  Loss: -2.6603
+Training [80%]  Loss: -2.8607
+Training [90%]  Loss: -3.0718
+Training [100%] Loss: -3.2657
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1424,7 +1441,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Performance on test data:
-        Loss: -3.2933
+        Loss: -3.3240
         Accuracy: 100.0%
 </pre></div></div>
 </div>
@@ -1482,7 +1499,7 @@ Performance on test data:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.3</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Jun 16 17:41:41 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.4</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Sep 12 15:57:47 2025 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1599,7 +1616,7 @@ Performance on test data:
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
+    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

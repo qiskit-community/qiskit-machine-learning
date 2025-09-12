@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Neural Network Classifier &amp; Regressor" href="02_neural_network_classifier_and_regressor.html" /><link rel="prev" title="Machine Learning Tutorials" href="index.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Quantum Neural Networks - Qiskit Machine Learning 0.8.3</title>
+        <title>Quantum Neural Networks - Qiskit Machine Learning 0.8.4</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -592,7 +592,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7ff1a852fa30&gt;
+&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7ff3a89a2890&gt;
 </pre></div></div>
 </div>
 <p>We’ll see how to use the QNN in the following sections, but before that, let’s check out the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> class.</p>
@@ -681,7 +681,7 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7ff14f642560&gt;
+&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7ff34e82ec20&gt;
 </pre></div></div>
 </div>
 <p>In addition to the basic arguments shown above, the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> accepts three more settings: <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code>, <code class="docutils literal notranslate"><span class="pre">interpret</span></code>, and <code class="docutils literal notranslate"><span class="pre">output_shape</span></code>. These will be introduced in sections 4 and 5.</p>
@@ -770,7 +770,7 @@ Weights: [0.09417735 0.97562235 0.7611397  0.78606431]
 <h3>3.2. Non-batched Forward Pass<a class="headerlink" href="#3.2.-Non-batched-Forward-Pass" title="Link to this heading">¶</a></h3>
 <section id="3.2.1.-EstimatorQNN-Example">
 <h4>3.2.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.2.1.-EstimatorQNN-Example" title="Link to this heading">¶</a></h4>
-<p>For the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the expected output shape for the forward pass is <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">num_qubits</span> <span class="pre">*</span> <span class="pre">num_observables)</span></code> where <code class="docutils literal notranslate"><span class="pre">1</span></code> in our case is the number of samples:</p>
+<p>For the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the forward pass returns an array of shape <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">num_observables)</span></code>, where <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> is the number of input samples (1 in our case) and <code class="docutils literal notranslate"><span class="pre">num_observables</span></code> is the length of the observables list.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -788,7 +788,7 @@ Weights: [0.09417735 0.97562235 0.7611397  0.78606431]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for EstimatorQNN: [[0.29508795]].
+Forward pass result for EstimatorQNN: [[0.29515339]].
 Shape: (1, 1)
 </pre></div></div>
 </div>
@@ -813,7 +813,7 @@ Shape: (1, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for SamplerQNN: [[0.01660156 0.24511719 0.55175781 0.18652344]].
+Forward pass result for SamplerQNN: [[0.01953125 0.24511719 0.51953125 0.21582031]].
 Shape: (1, 4)
 </pre></div></div>
 </div>
@@ -823,7 +823,7 @@ Shape: (1, 4)
 <h3>3.3. Batched Forward Pass<a class="headerlink" href="#3.3.-Batched-Forward-Pass" title="Link to this heading">¶</a></h3>
 <section id="3.3.1.-EstimatorQNN-Example">
 <h4>3.3.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> Example<a class="headerlink" href="#3.3.1.-EstimatorQNN-Example" title="Link to this heading">¶</a></h4>
-<p>For the <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the expected output shape for the forward pass is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">num_qubits</span> <span class="pre">*</span> <span class="pre">num_observables)</span></code>:</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>, the forward pass returns an array of shape <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">num_observables)</span></code>, where <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> is the number of input samples and <code class="docutils literal notranslate"><span class="pre">num_observables</span></code> is the length of the observables list.:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -843,8 +843,8 @@ Shape: (1, 4)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for EstimatorQNN: [[0.29573578]
- [0.28950529]].
+Forward pass result for EstimatorQNN: [[0.31183549]
+ [0.30815444]].
 Shape: (2, 1)
 </pre></div></div>
 </div>
@@ -871,8 +871,8 @@ Shape: (2, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for SamplerQNN: [[0.01660156 0.24121094 0.52929688 0.21289062]
- [0.01074219 0.26464844 0.515625   0.20898438]].
+Forward pass result for SamplerQNN: [[0.02832031 0.25097656 0.53027344 0.19042969]
+ [0.01855469 0.27539062 0.51367188 0.19238281]].
 Shape: (2, 4)
 </pre></div></div>
 </div>
@@ -948,10 +948,10 @@ Shape: (1, 1, 1)
 <div class="highlight"><pre>
 Input gradients for SamplerQNN: None.
 Shape: None
-Weight gradients for SamplerQNN: [[[ 0.00634766 -0.11376953 -0.07226562 -0.10253906]
-  [ 0.20800781 -0.08935547  0.06298828 -0.22607422]
-  [-0.48925781  0.32226562 -0.30566406  0.09667969]
-  [ 0.27490234 -0.11914062  0.31494141  0.23193359]]].
+Weight gradients for SamplerQNN: [[[ 0.01416016 -0.10644531 -0.07128906 -0.09716797]
+  [ 0.21777344 -0.08789062  0.07128906 -0.23779297]
+  [-0.48388672  0.3203125  -0.328125    0.1015625 ]
+  [ 0.25195312 -0.12597656  0.328125    0.23339844]]].
 Shape: (1, 4, 4)
 </pre></div></div>
 </div>
@@ -1026,15 +1026,15 @@ Shape: (1, 1, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Input gradients for SamplerQNN: [[[-0.05761719 -0.10595703]
-  [ 0.38085938 -0.19970703]
-  [-0.34130859  0.10351562]
-  [ 0.01806641  0.20214844]]].
+Input gradients for SamplerQNN: [[[-0.05712891 -0.09814453]
+  [ 0.38818359 -0.20458984]
+  [-0.34570312  0.09765625]
+  [ 0.01464844  0.20507812]]].
 Shape: (1, 4, 2)
-Weight gradients for SamplerQNN: [[[ 0.00683594 -0.12646484 -0.05859375 -0.109375  ]
-  [ 0.22705078 -0.09326172  0.06054688 -0.22167969]
-  [-0.48828125  0.33203125 -0.32519531  0.09960938]
-  [ 0.25439453 -0.11230469  0.32324219  0.23144531]]].
+Weight gradients for SamplerQNN: [[[ 0.00537109 -0.10498047 -0.07226562 -0.10107422]
+  [ 0.21240234 -0.10351562  0.07910156 -0.22070312]
+  [-0.48779297  0.32568359 -0.32617188  0.09033203]
+  [ 0.27001953 -0.1171875   0.31933594  0.23144531]]].
 Shape: (1, 4, 4)
 </pre></div></div>
 </div>
@@ -1175,7 +1175,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.3</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Jun 16 17:32:52 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.4</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Sep 12 15:49:07 2025 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1315,7 +1315,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
+    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

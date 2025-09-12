@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Training a Quantum Model on a Real Dataset" href="02a_training_a_quantum_model_on_a_real_dataset.html" /><link rel="prev" title="Quantum Neural Networks" href="01_neural_networks.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Neural Network Classifier &amp; Regressor - Qiskit Machine Learning 0.8.3</title>
+        <title>Neural Network Classifier &amp; Regressor - Qiskit Machine Learning 0.8.4</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -580,7 +580,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([[0.24044157]])
+array([[0.23023914]])
 </pre></div></div>
 </div>
 <p>We will add a callback function called <code class="docutils literal notranslate"><span class="pre">callback_graph</span></code>. This will be called for each iteration of the optimizer and will be passed two parameters: the current weights and the value of the objective function at those weights. For our function, we append the value of the objective function to an array so we can plot iteration versus objective function value and update the graph with each iteration. However, you can do whatever you want with a callback function as long as it gets the two
@@ -644,7 +644,7 @@ parameters mentioned passed.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.75
+0.65
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -690,8 +690,8 @@ parameters mentioned passed.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([ 1.30948713, -0.89954275, -0.42154941, -0.60669366,  0.24554478,
-        0.79889948,  2.46704927, -0.68077514])
+array([ 1.3877519 , -1.3680923 , -1.09047196,  0.0083843 , -0.7353864 ,
+        1.39037687,  2.11613596, -0.71155935])
 </pre></div></div>
 </div>
 </section>
@@ -798,7 +798,7 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.65
+0.6
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -844,7 +844,7 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([ 0.33528392,  1.6328466 , -1.04349927,  0.12169458])
+array([ 1.51621883,  0.93492016, -0.86693326, -0.84445485])
 </pre></div></div>
 </div>
 </section>
@@ -911,7 +911,7 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.65
+0.6
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -983,7 +983,7 @@ features, these are features are generated as a combinations of the other featur
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.collections.PathCollection at 0x7f93e4e77040&gt;
+&lt;matplotlib.collections.PathCollection at 0x7f04c8dbd390&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1088,7 +1088,7 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Predicted labels: [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;B&#39; &#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;B&#39; &#39;A&#39; &#39;B&#39;]
+Predicted labels: [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;A&#39; &#39;B&#39; &#39;A&#39; &#39;B&#39; &#39;B&#39; &#39;A&#39; &#39;A&#39;]
 Ground truth:     [&#39;A&#39; &#39;A&#39; &#39;B&#39; &#39;C&#39; &#39;C&#39; &#39;A&#39; &#39;B&#39; &#39;B&#39; &#39;A&#39; &#39;C&#39;]
 </pre></div></div>
 </div>
@@ -1202,7 +1202,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.9773577597028779
+0.9754975890633036
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1244,7 +1244,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([-1.57844444])
+array([-1.58905381])
 </pre></div></div>
 </div>
 </section>
@@ -1305,7 +1305,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.9733920193709087
+0.9760185395903944
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1347,7 +1347,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.3</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Jun 16 17:33:31 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.4</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Sep 12 15:49:45 2025 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1452,7 +1452,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
+    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The Quantum Convolution Neural Network" href="11_quantum_convolutional_neural_networks.html" /><link rel="prev" title="Saving, Loading Qiskit Machine Learning Models and Continuous Training" href="09_saving_and_loading_models.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.8.3</title>
+        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.8.4</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.3</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.3</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -642,8 +642,8 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Data size: 5000, global effective dimension: 4.6963
-Number of weights: 6, normalized effective dimension: 0.7827
+Data size: 5000, global effective dimension: 4.6772
+Number of weights: 6, normalized effective dimension: 0.7795
 </pre></div></div>
 </div>
 <p>By calling the <code class="docutils literal notranslate"><span class="pre">EffectiveDimension</span></code> class with an array if input sizes <code class="docutils literal notranslate"><span class="pre">n</span></code>, we can monitor how the effective dimension changes with the dataset size.</p>
@@ -669,8 +669,8 @@ Number of weights: 6, normalized effective dimension: 0.7827
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Effective dimension: [4.72156755 4.77703036 4.80475408 4.97821692 5.02553589 5.08148127
- 5.12278374 5.15041419 5.22959011 5.2813772 ]
+Effective dimension: [4.70484471 4.75547033 4.78121061 4.94810138 4.99513756 5.05138922
+ 5.09328298 5.12144993 5.2026341  5.25599802]
 Number of weights: 6
 </pre></div></div>
 </div>
@@ -814,7 +814,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.94
+0.96
 </pre></div></div>
 </div>
 </section>
@@ -846,8 +846,8 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for trained QNN:  [0.57958596 0.59603188 0.60400038 0.65355208 0.66759979 0.684729
- 0.69775701 0.7066478  0.73280229 0.75033353]
+normalized local effective dimensions for trained QNN:  [0.62046666 0.63310129 0.63909181 0.67441118 0.68403632 0.69585232
+ 0.70508147 0.71158548 0.73211404 0.74725298]
 </pre></div></div>
 </div>
 </section>
@@ -877,8 +877,8 @@ normalized local effective dimensions for trained QNN:  [0.57958596 0.59603188 0
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for untrained QNN:  [0.73339923 0.74377359 0.74900312 0.78285996 0.79246524 0.8039964
- 0.81260996 0.81841079 0.83515928 0.84618238]
+normalized local effective dimensions for untrained QNN:  [0.68114526 0.69201968 0.69727384 0.73034559 0.74005412 0.75219463
+ 0.76166255 0.76823674 0.78804235 0.80162449]
 </pre></div></div>
 </div>
 </section>
@@ -928,7 +928,7 @@ implicit regularization), a trained model will not need to use so many parameter
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.3</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Mon Jun 16 17:45:39 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.4</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Sep 12 16:01:49 2025 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1037,7 +1037,7 @@ implicit regularization), a trained model will not need to use so many parameter
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=7f96dc5e"></script>
+    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
