@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import logging
 from numbers import Integral
-from typing import Callable, Iterable, Sequence, cast
+from typing import Callable, Iterable, Sequence, Any, cast
 
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
@@ -383,7 +383,7 @@ class SamplerQNN(NeuralNetwork):
         counts = {k: v for k, v in counts.items() if int(k) < 2**self.num_virtual_qubits}
 
         # Precompute interpreted keys
-        interpreted_keys = []
+        interpreted_keys: list = []
         for b in counts:
             key = self._interpret(b)
             if isinstance(key, Integral):

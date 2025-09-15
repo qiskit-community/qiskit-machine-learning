@@ -20,6 +20,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Sequence
 from copy import copy
+from typing import Any
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
 from qiskit.primitives import BaseSamplerV2
@@ -61,7 +62,7 @@ class BaseSamplerGradient(ABC):
         self._default_options = Options()
         if options is not None:
             self._default_options.update_options(**options)
-        self._gradient_circuit_cache: dict[tuple, GradientCircuit] = {}
+        self._gradient_circuit_cache: dict[int | tuple[Any, ...], GradientCircuit] = {}
 
     def run(
         self,

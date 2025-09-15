@@ -91,7 +91,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
             pass_manager: The pass manager to transpile the circuits if necessary.
                 Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        self._lin_comb_cache: dict[tuple, dict[Parameter, QuantumCircuit]] = {}
+        self._lin_comb_cache: dict[int | tuple, dict[Parameter, QuantumCircuit]] = {}
         super().__init__(
             estimator, options=options, derivative_type=derivative_type, pass_manager=pass_manager
         )

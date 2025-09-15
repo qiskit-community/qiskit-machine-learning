@@ -124,7 +124,7 @@ class SPSASamplerGradient(BaseSamplerGradient):
         result = []
         partial_sum_n = 0
         for i, n in enumerate(all_n):
-            dist_diffs: dict[str, dict[int, float]] = {}
+            dist_diffs: dict[int | str, dict[int, float]] = {}
             _result = []
             for m in range(partial_sum_n, partial_sum_n + n):
                 _bitstring_counts = results[m].join_data().get_counts()
