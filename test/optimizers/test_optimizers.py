@@ -22,7 +22,7 @@ from scipy.optimize import rosen, rosen_der
 
 from qiskit.circuit.library import real_amplitudes
 from qiskit.exceptions import MissingOptionalLibraryError
-from qiskit.primitives import Sampler
+from qiskit.primitives import StatevectorSampler
 
 from qiskit_machine_learning.optimizers import (
     ADAM,

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import logging
 from numbers import Integral
-from typing import Callable, Iterable, Sequence, Any, cast
+from typing import Callable, Iterable, Sequence, cast
 
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit

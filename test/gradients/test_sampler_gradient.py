@@ -23,7 +23,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
-from qiskit.primitives import Sampler
+from qiskit.primitives import StatevectorSampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
