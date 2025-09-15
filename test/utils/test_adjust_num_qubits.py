@@ -12,7 +12,7 @@
 """Tests for adjusting number of qubits in a feature map / ansatz."""
 from test import QiskitMachineLearningTestCase
 import itertools
-
+import unittest
 from ddt import ddt, idata, unpack
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map
@@ -49,24 +49,12 @@ class TestAdjustNumQubits(QiskitMachineLearningTestCase):
             self.properties["ra2"],
         )
 
-    def test_no_adjustment(self):
-        """Test when no adjustment can be made."""
-        self.assertRaises(
-            QiskitMachineLearningError,
-            derive_num_qubits_feature_map_ansatz,
-            2,
-            QuantumCircuit(1),
-            None,
+    @idata(
+        itertools.chain(
+            itertools.product([1], [None, "z1"], [None, "ra1"]),
+            itertools.product([2], [None, "z2"], [None, "ra2"]),
         )
-        self.assertRaises(
-            QiskitMachineLearningError,
-            derive_num_qubits_feature_map_ansatz,
-            2,
-            None,
-            QuantumCircuit(1),
-        )
-
-    @idata(itertools.product([1, 2], [None, "z1", "z2"], [None, "ra1", "ra2"]))
+    )
     @unpack
     def test_num_qubits_is_set(self, num_qubits, feature_map, ansatz):
         """Test when the number of qubits is set."""

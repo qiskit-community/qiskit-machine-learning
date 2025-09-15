@@ -13,7 +13,7 @@
 from __future__ import annotations
 
 from typing import Tuple
-
+import warnings
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
 
@@ -88,45 +88,90 @@ def derive_num_qubits_feature_map_ansatz(
             "have been deprecated.",
             period="4 months",
         )
-    # check num_qubits, feature_map, and ansatz
-    if num_qubits in (0, None) and feature_map is None and ansatz is None:
+    candidates = {}
+
+    if feature_map is not None:
+        candidates["feature_map"] = feature_map.num_qubits
+    if ansatz is not None:
+        candidates["ansatz"] = ansatz.num_qubits
+    if num_qubits is not None and feature_map is None and ansatz is None:
+        candidates["num_qubits"] = num_qubits
+
+    if not candidates:
         raise QiskitMachineLearningError(
-            "Need at least one of number of qubits, feature map, or ansatz!"
+            "Unable to determine number of qubits: "
+            "provide `num_qubits` (int), `feature_map` (QuantumCircuit), "
+            "or `ansatz` (QuantumCircuit)."
         )
 
-    if num_qubits not in (0, None):
-        if feature_map is not None:
-            if feature_map.num_qubits != num_qubits:
-                _adjust_num_qubits(feature_map, "feature map", num_qubits)
-        else:
-            feature_map = (
-                z_feature_map(num_qubits) if num_qubits == 1 else zz_feature_map(num_qubits)
-            )
-        if ansatz is not None:
-            if ansatz.num_qubits != num_qubits:
-                _adjust_num_qubits(ansatz, "ansatz", num_qubits)
-        else:
-            ansatz = real_amplitudes(num_qubits)
+    # Check consensus on num_qubits
+    unique_vals = set(candidates.values())
+    if len(unique_vals) > 1:
+        conflicts = ", ".join(f"{k}={v}" for k, v in candidates.items())
+        warnings.warn(
+            (
+                f"Inconsistent qubit numbers detected: {conflicts}. "
+                "Ensure all inputs agree on the number of qubits."
+            ),
+            UserWarning,
+        )
+
+    # Final resolved number of qubits
+    resolved_num_qubits = unique_vals.pop()
+
+    def default_feature_map(n: int) -> QuantumCircuit:
+        return z_feature_map(n) if n == 1 else zz_feature_map(n)
+
+    def default_ansatz(n: int) -> QuantumCircuit:
+        return real_amplitudes(n)
+
+    if feature_map is None:
+        feature_map = default_feature_map(resolved_num_qubits)
+        candidates["feature_map"] = feature_map.num_qubits
     else:
-        if feature_map is not None and ansatz is not None:
-            if feature_map.num_qubits != ansatz.num_qubits:
-                raise QiskitMachineLearningError(
-                    f"Mismatching number of qubits in the feature map ({feature_map.num_qubits}) "
-                    f"and the ansatz ({ansatz.num_qubits})!"
-                )
-            num_qubits = feature_map.num_qubits
-        elif feature_map is not None:
-            num_qubits = feature_map.num_qubits
-            ansatz = real_amplitudes(num_qubits)
-        else:
-            num_qubits = ansatz.num_qubits
-            feature_map = (
-                z_feature_map(num_qubits) if num_qubits == 1 else zz_feature_map(num_qubits)
-            )
+        feature_map = _pad_if_needed(feature_map, resolved_num_qubits)
 
-    return num_qubits, feature_map, ansatz
+    if ansatz is None:
+        ansatz = default_ansatz(resolved_num_qubits)
+        candidates["ansatz"] = ansatz.num_qubits
+    else:
+        ansatz = _pad_if_needed(ansatz, resolved_num_qubits)
+
+    # Mismatch in the circuits' num_qubits is unacceptable
+    if candidates["feature_map"] != candidates["ansatz"]:
+        raise QiskitMachineLearningError(
+            f"Inconsistent qubit numbers detected between the feature map ({candidates["feature_map"]}) "
+            f"and the ansatz ({candidates["ansatz"]}). These must match at all times."
+        )
+
+    return resolved_num_qubits, feature_map, ansatz
 
 
+def _pad_if_needed(circ: QuantumCircuit, requested_num_qubits: int) -> QuantumCircuit | None:
+    circ_nq = circ.num_qubits
+
+    if requested_num_qubits == circ_nq:
+        return circ
+
+    if requested_num_qubits < circ_nq:
+        raise QiskitMachineLearningError(
+            f"Requesting num_qubits={requested_num_qubits} to a circuit with {circ_nq} qubits. "
+            f"Circuit cutting is not supported by default. Please, remove qubit registers manually."
+        )
+
+    warnings.warn(
+        (
+            f"Requesting num_qubits={requested_num_qubits} to a circuit with {circ_nq} qubits. "
+            f"Padding with {requested_num_qubits - circ_nq} idle qubits."
+        ),
+        UserWarning,
+    )
+    padded = QuantumCircuit(requested_num_qubits, circ.num_clbits, name=circ.name)
+    padded.compose(circ, inplace=True)
+    return padded
+
+
+# pylint: disable=unused-argument
 def _adjust_num_qubits(circuit: QuantumCircuit, circuit_name: str, num_qubits: int) -> None:
     """
     Tries to adjust the number of qubits of the circuit by trying to set ``num_qubits`` properties.
@@ -140,11 +185,9 @@ def _adjust_num_qubits(circuit: QuantumCircuit, circuit_name: str, num_qubits: i
         QiskitMachineLearningError: if number of qubits can't be adjusted.
 
     """
-    try:
-        circuit.num_qubits = num_qubits
-    except AttributeError as ex:
-        raise QiskitMachineLearningError(
-            f"The number of qubits {circuit.num_qubits} of the {circuit_name} does not match "
-            f"the number of qubits {num_qubits}, and the {circuit_name} does not allow setting "
-            "the number of qubits using `num_qubits`."
-        ) from ex
+    issue_deprecation_msg(
+        msg="No longer in use",
+        version="0.9.0",
+        remedy="Check ",
+        period="0 months",
+    )
