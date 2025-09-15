@@ -12,7 +12,6 @@
 """Tests for adjusting number of qubits in a feature map / ansatz."""
 from test import QiskitMachineLearningTestCase
 import itertools
-import unittest
 from ddt import ddt, idata, unpack
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map

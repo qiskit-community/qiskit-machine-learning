@@ -140,8 +140,8 @@ def derive_num_qubits_feature_map_ansatz(
     # Mismatch in the circuits' num_qubits is unacceptable
     if candidates["feature_map"] != candidates["ansatz"]:
         raise QiskitMachineLearningError(
-            f"Inconsistent qubit numbers detected between the feature map ({candidates["feature_map"]}) "
-            f"and the ansatz ({candidates["ansatz"]}). These must match at all times."
+            f"Inconsistent qubit numbers detected between the feature map ({candidates['feature_map']}) "
+            f"and the ansatz ({candidates['ansatz']}). These must match at all times."
         )
 
     return resolved_num_qubits, feature_map, ansatz
