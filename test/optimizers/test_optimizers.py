@@ -391,7 +391,7 @@ class TestOptimizerSerialization(QiskitAlgorithmsTestCase):
     def test_qnspsa(self):
         """Test QN-SPSA optimizer is serializable."""
         ansatz = real_amplitudes(1)
-        fidelity = QNSPSA.get_fidelity(ansatz, sampler=Sampler())
+        fidelity = QNSPSA.get_fidelity(ansatz, sampler=StatevectorSampler())
         options = {
             "fidelity": fidelity,
             "maxiter": 100,
