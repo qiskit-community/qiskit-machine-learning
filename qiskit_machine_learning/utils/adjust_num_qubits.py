@@ -12,7 +12,6 @@
 """Helper functions to adjust number of qubits."""
 from __future__ import annotations
 
-from typing import Tuple
 import warnings
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
@@ -27,7 +26,7 @@ def derive_num_qubits_feature_map_ansatz(
     feature_map: QuantumCircuit | None = None,
     ansatz: QuantumCircuit | None = None,
     use_methods: bool = True,
-) -> Tuple[int, QuantumCircuit, QuantumCircuit]:
+) -> tuple[int, QuantumCircuit, QuantumCircuit]:
     """
     Derives a correct number of qubits, feature map, and ansatz from the parameters.
 

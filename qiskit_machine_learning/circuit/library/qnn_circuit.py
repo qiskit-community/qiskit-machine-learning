@@ -13,8 +13,6 @@
 """The QNN circuit."""
 from __future__ import annotations
 
-from typing import List
-
 from qiskit.circuit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import BlueprintCircuit
 from qiskit.circuit.parametertable import ParameterView
@@ -275,7 +273,7 @@ class QNNCircuit(BlueprintCircuit):
         if self.num_qubits != num_qubits:
             # invalidate the circuit
             self._invalidate()
-            self.qregs: List[QuantumRegister] = []
+            self.qregs: list[QuantumRegister] = []
             if num_qubits is not None and num_qubits > 0:
                 self.qregs = [QuantumRegister(num_qubits, name="q")]
                 (

@@ -12,7 +12,7 @@
 
 """Test Torch Connector."""
 import itertools
-from typing import cast, Union, List, Tuple, Any
+from typing import cast, Union, Any
 
 from test.connectors.test_torch import TestTorch
 
@@ -293,7 +293,7 @@ class TestTorchConnector(TestTorch):
             @staticmethod
             def build_circuit(
                 num_weights: int, num_input: int, num_qubits: int = 3
-            ) -> Tuple[QuantumCircuit, List[Parameter], List[Parameter]]:
+            ) -> tuple[QuantumCircuit, list[Parameter], list[Parameter]]:
                 """
                 Build the quantum circuit for the convolutional layer.
 
@@ -304,7 +304,7 @@ class TestTorchConnector(TestTorch):
                         Defaults to 3.
 
                 Returns:
-                    Tuple[QuantumCircuit, List[Parameter], List[Parameter]]: Quantum circuit,
+                    tuple[QuantumCircuit, list[Parameter], list[Parameter]]: Quantum circuit,
                         list of weight parameters, list of input parameters.
                 """
                 qc = QuantumCircuit(num_qubits)

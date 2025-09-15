@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Dict, List, Set, Tuple
+from typing import Dict, Set
 
 from qiskit import ClassicalRegister, QuantumCircuit
 from qiskit.circuit import Qubit
@@ -181,7 +181,7 @@ class QBayesian:
 
     def __power_grover(
         self, grover_op: QuantumCircuit, evidence: Dict[str, int], k: int
-    ) -> Tuple[QuantumCircuit, Set[Tuple[Qubit, int]]]:
+    ) -> tuple[QuantumCircuit, Set[tuple[Qubit, int]]]:
         """
         Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits,
         and returns a tuple containing the updated quantum circuit and a set of the measured
@@ -227,7 +227,7 @@ class QBayesian:
         }
         return qc, e_meas
 
-    def _format_samples(self, samples: Dict[str, float], evidence: List[str]) -> Dict[str, float]:
+    def _format_samples(self, samples: Dict[str, float], evidence: list[str]) -> Dict[str, float]:
         """Transforms samples keys back to their variables names."""
         f_samples: Dict[str, float] = {}
         for smpl_key, smpl_val in samples.items():
@@ -276,7 +276,7 @@ class QBayesian:
             grover_op = self._get_grover_op(evidence)
             # Amplitude amplification
             true_e = {(self._label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
-            meas_e: Set[Tuple[str, int]] = set()
+            meas_e: Set[tuple[str, int]] = set()
             best_qc, best_inter = QuantumCircuit(), -1
             self._converged = False
             k = -1

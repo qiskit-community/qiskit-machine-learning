@@ -14,8 +14,6 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import List, Tuple
-
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.primitives import StatevectorEstimator
@@ -23,7 +21,7 @@ from qiskit.primitives import StatevectorEstimator
 from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 from .base_kernel import BaseKernel
 
-KernelIndices = List[Tuple[int, int]]
+KernelIndices = list[tuple[int, int]]
 
 
 class FidelityQuantumKernel(BaseKernel):

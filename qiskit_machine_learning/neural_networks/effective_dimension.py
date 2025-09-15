@@ -13,7 +13,7 @@
 
 import logging
 import time
-from typing import Any, Union, List, Tuple
+from typing import Any, Union
 
 import numpy as np
 from scipy.special import logsumexp
@@ -129,7 +129,7 @@ class EffectiveDimension:
 
         self._num_input_samples = len(self._input_samples)
 
-    def run_monte_carlo(self) -> Tuple[np.ndarray, np.ndarray]:
+    def run_monte_carlo(self) -> tuple[np.ndarray, np.ndarray]:
         """
         This method computes the model's Monte Carlo sampling for a set of input samples and
         weight samples.
@@ -215,7 +215,7 @@ class EffectiveDimension:
 
         return fisher_information
 
-    def get_normalized_fisher(self, normalized_fisher: np.ndarray) -> Tuple[np.ndarray, float]:
+    def get_normalized_fisher(self, normalized_fisher: np.ndarray) -> tuple[np.ndarray, float]:
         """
         This method computes the normalized Fisher Information Matrix and extracts its trace.
 
@@ -254,7 +254,7 @@ class EffectiveDimension:
     def _get_effective_dimension(
         self,
         normalized_fisher: np.ndarray,
-        dataset_size: Union[List[int], np.ndarray, int],
+        dataset_size: Union[list[int], np.ndarray, int],
     ) -> Union[np.ndarray, int]:
         if not isinstance(dataset_size, int) and len(dataset_size) > 1:
             # expand dims for broadcasting
@@ -282,7 +282,7 @@ class EffectiveDimension:
         return np.squeeze(effective_dims)
 
     def get_effective_dimension(
-        self, dataset_size: Union[List[int], np.ndarray, int]
+        self, dataset_size: Union[list[int], np.ndarray, int]
     ) -> Union[np.ndarray, int]:
         """
         This method computes the effective dimension for a dataset of size ``dataset_size``. If an

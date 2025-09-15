@@ -14,7 +14,6 @@
 """Test Sampler Gradients"""
 
 import unittest
-from typing import List
 from test import QiskitAlgorithmsTestCase
 
 import numpy as np
@@ -1167,7 +1166,7 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
             np.testing.assert_allclose(array1, array2, atol=1e-5)
 
 
-def _quasi2array(quasis: List[QuasiDistribution], num_qubits: int) -> np.ndarray:
+def _quasi2array(quasis: list[QuasiDistribution], num_qubits: int) -> np.ndarray:
     ret = np.zeros((len(quasis), 2**num_qubits))
     for i, quasi in enumerate(quasis):
         ret[i, list(quasi.keys())] = list(quasi.values())

@@ -12,7 +12,7 @@
 
 """The raw feature vector circuit."""
 
-from typing import Optional, List
+from typing import Optional
 import numpy as np
 from qiskit.exceptions import QiskitError
 from qiskit.circuit import (
@@ -201,7 +201,7 @@ class RawFeatureVector(BlueprintCircuit):
         if self.num_qubits != num_qubits:
             # invalidate the circuit
             self._invalidate()
-            self.qregs: List[QuantumRegister] = []
+            self.qregs: list[QuantumRegister] = []
             if num_qubits is not None and num_qubits > 0:
                 self.qregs = [QuantumRegister(num_qubits, name="q")]
 
