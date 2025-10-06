@@ -24,6 +24,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import ParameterVector
 
 from ..algorithm_job import AlgorithmJob
+from ..utils import circuit_cache_key
 
 
 class BaseStateFidelity(ABC):
@@ -44,7 +45,7 @@ class BaseStateFidelity(ABC):
 
     def __init__(self) -> None:
         # use cache for preventing unnecessary circuit compositions
-        self._circuit_cache: MutableMapping[tuple[int, int], QuantumCircuit] = {}
+        self._circuit_cache: MutableMapping[tuple[str, str], QuantumCircuit] = {}
 
     @staticmethod
     def _preprocess_values(
@@ -171,7 +172,7 @@ class BaseStateFidelity(ABC):
         circuits = []
         for circuit_1, circuit_2 in zip(circuits_1, circuits_2):
             # Use the same key for circuits as qiskit.primitives use in 2.0+
-            circuit = self._circuit_cache.get((hash(circuit_1), hash(circuit_2)))
+            circuit = self._circuit_cache.get((circuit_cache_key(circuit_1), circuit_cache_key(circuit_2)))
 
             if circuit is not None:
                 circuits.append(circuit)
@@ -190,7 +191,7 @@ class BaseStateFidelity(ABC):
                 )
                 circuits.append(circuit)
                 # update cache
-                self._circuit_cache[hash(circuit_1), hash(circuit_2)] = circuit
+                self._circuit_cache[circuit_cache_key(circuit_1), circuit_cache_key(circuit_2)] = circuit
 
         return circuits
 

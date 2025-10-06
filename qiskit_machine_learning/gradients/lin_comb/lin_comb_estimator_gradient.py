@@ -25,6 +25,7 @@ from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
 
 from ...exceptions import AlgorithmError
+from ...utils import circuit_cache_key
 from ..base.base_estimator_gradient import BaseEstimatorGradient
 from ..base.estimator_gradient_result import EstimatorGradientResult
 from ..utils import (
@@ -91,7 +92,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
             pass_manager: The pass manager to transpile the circuits if necessary.
                 Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        self._lin_comb_cache: dict[int | tuple, dict[Parameter, QuantumCircuit]] = {}
+        self._lin_comb_cache: dict[str | tuple, dict[Parameter, QuantumCircuit]] = {}
         super().__init__(
             estimator, options=options, derivative_type=derivative_type, pass_manager=pass_manager
         )
@@ -134,7 +135,7 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
         ):
             # Prepare circuits for the gradient of the specified parameters.
             meta = {"parameters": parameters_}
-            circuit_key = hash(circuit)
+            circuit_key = circuit_cache_key(circuit)
             if circuit_key not in self._lin_comb_cache:
                 # Cache the circuits for the linear combination of unitaries.
                 # We only cache the circuits for the specified parameters in the future.

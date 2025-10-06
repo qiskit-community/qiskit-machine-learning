@@ -25,6 +25,7 @@ from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
 
 from ...exceptions import AlgorithmError
+from ...utils import circuit_cache_key
 from ..base.base_sampler_gradient import BaseSamplerGradient
 from ..base.sampler_gradient_result import SamplerGradientResult
 from ..utils import _make_lin_comb_gradient_circuit
@@ -78,7 +79,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             pass_manager: The pass manager to transpile the circuits if necessary.
                 Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        self._lin_comb_cache: dict[int | tuple, dict[Parameter, QuantumCircuit]] = {}
+        self._lin_comb_cache: dict[str | tuple, dict[Parameter, QuantumCircuit]] = {}
         super().__init__(sampler, options, pass_manager=pass_manager)
 
     def _run(
@@ -109,7 +110,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             # Prepare circuits for the gradient of the specified parameters.
             # TODO: why is this not wrapped into another list level like it is done elsewhere?
             metadata.append({"parameters": parameters_})
-            circuit_key = hash(circuit)
+            circuit_key = circuit_cache_key(circuit)
             if circuit_key not in self._lin_comb_cache:
                 # Cache the circuits for the linear combination of unitaries.
                 # We only cache the circuits for the specified parameters in the future.
