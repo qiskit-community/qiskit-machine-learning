@@ -70,6 +70,7 @@ cerezo
 chernoff
 choi
 chuang
+circ
 clbit
 clbits
 clopper
@@ -78,7 +79,9 @@ codebase
 codec
 coeffs
 colin
+coles
 combinatorial
+computable
 concha
 config
 configs
@@ -335,6 +338,7 @@ msg
 multiclass
 multinomial
 multioutput
+multipartite
 mxd
 mypy
 nabla
@@ -495,6 +499,7 @@ RuntimeError
 rx
 ry
 rz
+qpy
 samplerqnn
 sanjiv
 sashank

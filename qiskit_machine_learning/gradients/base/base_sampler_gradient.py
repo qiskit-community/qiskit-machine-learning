@@ -39,7 +39,6 @@ from ..utils import (
 from .sampler_gradient_result import SamplerGradientResult
 
 
-
 class BaseSamplerGradient(ABC):
     """Base class for a ``SamplerGradient`` to compute the gradients of the sampling probability."""
 

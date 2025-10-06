@@ -68,4 +68,3 @@ def circuit_cache_key(circ: QuantumCircuit) -> str:
     qpy.dump([circ], buffer)
     qpy_bytes = buffer.getvalue()
     return hashlib.sha256(qpy_bytes).hexdigest()
-
