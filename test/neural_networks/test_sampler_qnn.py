@@ -351,23 +351,23 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                 circuit=qc,
                 weight_params=params,
             )
-            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1., 2.])
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1.0, 2.0])
 
             sampler_qnn.input_gradients = True
-            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1., 2.])
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1.0, 2.0])
 
         with self.subTest("no weights"):
             sampler_qnn = SamplerQNN(
                 circuit=qc,
                 input_params=params,
             )
-            self._verify_qnn(sampler_qnn, 1, input_data=[1., 2.], weights=None)
+            self._verify_qnn(sampler_qnn, 1, input_data=[1.0, 2.0], weights=None)
 
             sampler_qnn.input_gradients = True
-            self._verify_qnn(sampler_qnn, 1, input_data=[1., 2.], weights=None)
+            self._verify_qnn(sampler_qnn, 1, input_data=[1.0, 2.0], weights=None)
 
         with self.subTest("no parameters"):
-            qc = qc.assign_parameters([1., 2.])
+            qc = qc.assign_parameters([1.0, 2.0])
 
             sampler_qnn = SamplerQNN(
                 circuit=qc,
@@ -405,16 +405,16 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
-            **common_kwargs
+            **common_kwargs,
         )
         sampler_qnn_qc = SamplerQNN(
             circuit=qnn_qc,
             input_params=feature_map_params,
             weight_params=ansatz_params,
-            **common_kwargs
+            **common_kwargs,
         )
 
-        input_data = [1., 2.]
+        input_data = [1.0, 2.0]
         weights = [1, 2, 3, 4]
 
         with self.subTest("Test circuit properties."):

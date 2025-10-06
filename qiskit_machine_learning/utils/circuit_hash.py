@@ -13,23 +13,23 @@
 
 import json
 import hashlib
-import numpy as np
 from typing import Any
+import numpy as np
 from qiskit.circuit import QuantumCircuit, Parameter, ParameterExpression
 
 
 def _param_to_jsonable(p: Any) -> Any:
-    """Canonicalize a gate parameter into a JSON-serializable, deterministic form."""
+    """Cast a gate parameter into a JSON-serializable, deterministic form."""
     # ParameterExpression (covers Parameter too, but treat Parameter explicitly first)
     if isinstance(p, Parameter):
         return {"type": "Parameter", "name": p.name}
     if isinstance(p, ParameterExpression):
-        # Use string expr + sorted parameter names for determinism
+        # Use string expression + sorted parameter names for determinism
         names = sorted(par.name for par in p.parameters)
         return {"type": "ParameterExpression", "expr": str(p), "params": names}
 
     # Numpy scalars
-    if isinstance(p, np.generic):
+    if isinstance(p, np.number):
         return float(p)
 
     # Plain numbers
@@ -57,7 +57,7 @@ def circuit_cache_key(circ: QuantumCircuit) -> str:
 
     Notes:
       - This is lighter-weight than QPY but less exhaustive (e.g., calibrations/metadata
-        aren’t included). If you need a *fully robust* fingerprint, prefer the QPY-based
+        are not included). If you need a *fully robust* fingerprint, prefer the QPY-based
         approach we discussed earlier.
     """
     q_index = {q: i for i, q in enumerate(circ.qubits)}

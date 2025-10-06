@@ -60,14 +60,14 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
             weight_params=ansatz.parameters,
             interpret=parity,
             output_shape=2,
-            sampler=StatevectorSampler(default_shots=512, seed=123)
+            sampler=StatevectorSampler(default_shots=512, seed=123),
         )
 
         sampler_qnn_2 = SamplerQNN(
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
-            sampler=StatevectorSampler(default_shots=512, seed=123)
+            sampler=StatevectorSampler(default_shots=512, seed=123),
         )
 
         # EstimatorQNN
@@ -75,7 +75,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
-            estimator=StatevectorEstimator(default_precision=0.01, seed=123)
+            estimator=StatevectorEstimator(default_precision=0.01, seed=123),
         )
 
         self.qnns = {
