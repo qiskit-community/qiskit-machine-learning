@@ -171,7 +171,9 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         self.assertTrue(self.qbayesian.converged)
         self.assertTrue(self.qbayesian.limit == 1)
         # Test sampler
-        sampler = StatevectorSampler()  # change: Sampler is migrated to StatevectorSampler
+        sampler = StatevectorSampler(
+            default_shots=2048
+        )  # change: Sampler is migrated to StatevectorSampler
         self.qbayesian.sampler = sampler
         self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0})
         self.assertTrue(self.qbayesian.sampler == sampler)

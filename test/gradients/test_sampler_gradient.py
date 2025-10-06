@@ -46,7 +46,8 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
     """Test Sampler Gradient"""
 
     def __init__(self, TestCase):
-        self.sampler = StatevectorSampler()
+        # Shots slightly increased to match the true statevector within tolerance
+        self.sampler = StatevectorSampler(default_shots=2048)
         super().__init__(TestCase)
 
     @data(*gradient_factories)

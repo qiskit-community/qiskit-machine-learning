@@ -93,7 +93,7 @@ def derive_num_qubits_feature_map_ansatz(
         candidates["feature_map"] = feature_map.num_qubits
     if ansatz is not None:
         candidates["ansatz"] = ansatz.num_qubits
-    if num_qubits is not None and feature_map is None and ansatz is None:
+    if num_qubits is not None:
         candidates["num_qubits"] = num_qubits
 
     if not candidates:
@@ -116,7 +116,7 @@ def derive_num_qubits_feature_map_ansatz(
         )
 
     # Final resolved number of qubits
-    resolved_num_qubits = unique_vals.pop()
+    resolved_num_qubits = max(unique_vals)
 
     def default_feature_map(n: int) -> QuantumCircuit:
         return z_feature_map(n) if n == 1 else zz_feature_map(n)
