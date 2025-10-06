@@ -156,12 +156,16 @@ class BaseSamplerGradient(ABC):
         g_circuits: list[QuantumCircuit] = []
         g_parameter_values: list[Sequence[float]] = []
         g_parameters: list[Sequence[Parameter]] = []
+
         for circuit, parameter_value_, parameters_ in zip(circuits, parameter_values, parameters):
+
             circuit_key = circuit_cache_key(circuit)
             if circuit_key not in self._gradient_circuit_cache:
                 unrolled = translator(circuit)
                 self._gradient_circuit_cache[circuit_key] = _assign_unique_parameters(unrolled)
+
             gradient_circuit = self._gradient_circuit_cache[circuit_key]
+
             g_circuits.append(gradient_circuit.gradient_circuit)
             g_parameter_values.append(
                 _make_gradient_parameter_values(  # type: ignore[arg-type]
@@ -202,6 +206,7 @@ class BaseSamplerGradient(ABC):
             # Compute the original gradient from the gradient of the gradient circuit
             # by using the chain rule.
             gradient = []
+
             for parameter in parameters_:
                 grad_dist: dict[int, float] = defaultdict(float)
                 for g_parameter, coeff in gradient_circuit.parameter_map[parameter]:

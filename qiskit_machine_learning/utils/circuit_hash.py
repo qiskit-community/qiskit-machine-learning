@@ -10,61 +10,76 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Helper function(s) to hash circuits and speed up pass managers."""
-from __future__ import annotations
 
-import io
+import json
 import hashlib
-from qiskit import qpy, QuantumCircuit
+import numpy as np
+from typing import Any
+from qiskit.circuit import QuantumCircuit, Parameter, ParameterExpression
+
+
+def _param_to_jsonable(p: Any) -> Any:
+    """Canonicalize a gate parameter into a JSON-serializable, deterministic form."""
+    # ParameterExpression (covers Parameter too, but treat Parameter explicitly first)
+    if isinstance(p, Parameter):
+        return {"type": "Parameter", "name": p.name}
+    if isinstance(p, ParameterExpression):
+        # Use string expr + sorted parameter names for determinism
+        names = sorted(par.name for par in p.parameters)
+        return {"type": "ParameterExpression", "expr": str(p), "params": names}
+
+    # Numpy scalars
+    if isinstance(p, np.generic):
+        return float(p)
+
+    # Plain numbers
+    if isinstance(p, (int, float)):
+        return float(p)
+
+    # Complex numbers
+    if isinstance(p, complex):
+        return {"type": "complex", "re": float(p.real), "im": float(p.imag)}
+
+    # Fallback: stable string form
+    return {"type": type(p).__name__, "repr": repr(p)}
 
 
 def circuit_cache_key(circ: QuantumCircuit) -> str:
     """
-    Generate a deterministic, stable cache key for a QuantumCircuit using QPY serialization.
+    Deterministic structural hash for a circuit using a canonical JSON encoding.
 
-    This function produces a reproducible key by serializing the given circuit to its
-    QPY (Quantum Program) binary representation in memory, without writing any files
-    to disk. The QPY format is Qiskit’s canonical and version-stable representation of
-    circuits, preserving structure, parameters, and metadata. By hashing the resulting
-    bytes, we obtain a unique fingerprint that changes only if the circuit’s logical
-    content changes.
+    Encodes:
+      - num_qubits / num_clbits
+      - global_phase (if any)
+      - operations as a list of {name, qinds, cinds, params}
+        where qinds/cinds are indices into circ.qubits / circ.clbits,
+        and params are serialized via `_param_to_jsonable`.
 
-    The implementation mirrors the behavior of :func:`qiskit.qpy.dump`, which normally
-    writes to a file object. Here, instead of saving to disk (e.g., ``with open('file.qpy', 'wb')``),
-    we direct the output to an in-memory :class:`io.BytesIO` buffer that is discarded after use.
-
-    Parameters
-    ----------
-    circ : QuantumCircuit
-        The circuit to serialize and hash.
-
-    Returns
-    -------
-    str
-        A deterministic hexadecimal digest (SHA-256) of the circuit’s QPY byte representation.
-        This can safely be used as a dictionary or cache key.
-
-    Notes
-    -----
-    - Using QPY ensures compatibility across Qiskit versions and Python sessions.
-    - Unlike Python’s built-in ``hash()``, the SHA-256 digest is stable across runs.
-    - This approach avoids file I/O entirely, as serialization happens in memory.
-
-    Example
-    -------
-
-    .. code-block:: python
-
-        from qiskit import QuantumCircuit
-        qc = QuantumCircuit(2)
-        qc.h(0)
-        qc.cx(0, 1)
-        key = circuit_cache_key(qc)
-        print(key)
-        # Output: '5e341a63f4c6a9d17a3d72b1c07d2ac4b8e9a7a1fbb9b7d93f6d6d2f0b59a6f2'
-
+    Notes:
+      - This is lighter-weight than QPY but less exhaustive (e.g., calibrations/metadata
+        aren’t included). If you need a *fully robust* fingerprint, prefer the QPY-based
+        approach we discussed earlier.
     """
-    buffer = io.BytesIO()
-    # QPY expects a list of programs (can be a single circuit or list)
-    qpy.dump([circ], buffer)
-    qpy_bytes = buffer.getvalue()
-    return hashlib.sha256(qpy_bytes).hexdigest()
+    q_index = {q: i for i, q in enumerate(circ.qubits)}
+    c_index = {c: i for i, c in enumerate(circ.clbits)}
+
+    ops = []
+    for inst in circ.data:
+        name = inst.operation.name
+        qinds = [q_index[q] for q in inst.qubits]
+        cinds = [c_index[c] for c in inst.clbits]
+        params = [_param_to_jsonable(p) for p in getattr(inst.operation, "params", ())]
+        ops.append({"name": name, "q": qinds, "c": cinds, "params": params})
+
+    meta = {
+        "num_qubits": circ.num_qubits,
+        "num_clbits": circ.num_clbits,
+        # Add below if you want them to affect the key:
+        # "global_phase": float(circ.global_phase) if circ.global_phase else 0.0,1
+        # "name": circ.name,
+        # "metadata": circ.metadata,   # must be JSON-serializable if enabled
+    }
+
+    payload = {"meta": meta, "ops": ops}
+    data = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(data).hexdigest()

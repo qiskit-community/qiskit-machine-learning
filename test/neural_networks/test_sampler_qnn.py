@@ -351,23 +351,23 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                 circuit=qc,
                 weight_params=params,
             )
-            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1, 2])
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1., 2.])
 
             sampler_qnn.input_gradients = True
-            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1, 2])
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1., 2.])
 
         with self.subTest("no weights"):
             sampler_qnn = SamplerQNN(
                 circuit=qc,
                 input_params=params,
             )
-            self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
+            self._verify_qnn(sampler_qnn, 1, input_data=[1., 2.], weights=None)
 
             sampler_qnn.input_gradients = True
-            self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
+            self._verify_qnn(sampler_qnn, 1, input_data=[1., 2.], weights=None)
 
         with self.subTest("no parameters"):
-            qc = qc.assign_parameters([1, 2])
+            qc = qc.assign_parameters([1., 2.])
 
             sampler_qnn = SamplerQNN(
                 circuit=qc,
@@ -383,7 +383,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         num_qubits = 2
         feature_map = zz_feature_map(feature_dimension=num_qubits)
         ansatz = real_amplitudes(num_qubits=num_qubits, reps=1)
-        pm = generate_preset_pass_manager(backend=self.backend)
 
         def parity(x):
             return f"{bin(x)}".count("1") % 2
@@ -395,26 +394,27 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
 
+        common_kwargs = dict(
+            sampler=StatevectorSampler(default_shots=128, seed=123),
+            interpret=parity,
+            output_shape=2,
+            input_gradients=True,
+            pass_manager=generate_preset_pass_manager(backend=self.backend),
+        )
         sampler_qc = SamplerQNN(
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
-            interpret=parity,
-            output_shape=2,
-            input_gradients=True,
-            pass_manager=pm,
+            **common_kwargs
         )
         sampler_qnn_qc = SamplerQNN(
             circuit=qnn_qc,
             input_params=feature_map_params,
             weight_params=ansatz_params,
-            interpret=parity,
-            output_shape=2,
-            input_gradients=True,
-            pass_manager=pm,
+            **common_kwargs
         )
 
-        input_data = [1, 2]
+        input_data = [1., 2.]
         weights = [1, 2, 3, 4]
 
         with self.subTest("Test circuit properties."):
