@@ -122,6 +122,7 @@ To install the ``NLOpt`` dependent package you can use ``pip install nlopt``.
 """
 
 from .adam_amsgrad import ADAM
+from .nadam import NAdam
 from .aqgd import AQGD
 from .cg import CG
 from .cobyla import COBYLA
@@ -157,6 +158,7 @@ __all__ = [
     "OptimizerResult",
     "Minimizer",
     "ADAM",
+    "NAdam",
     "AQGD",
     "CG",
     "COBYLA",
