@@ -278,7 +278,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
             self.assertEqual(result.precision, 0.3)
             self.assertEqual(precision, 0.2)
 
-    @unittest.skip
+    @unittest.skip("LoggingEstimator must be updated to work with PUBs.")
     def test_operations_preserved(self):
         """Test non-parameterized instructions are preserved and not unrolled."""
         x, y = Parameter("x"), Parameter("y")
