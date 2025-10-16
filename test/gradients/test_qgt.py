@@ -40,7 +40,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
     @data(LinCombQGT)
     def test_qgt_derivative_type(self, qgt_type):
         """Test QGT derivative_type"""
-        args = (self.estimator)
+        args = (self.estimator,)
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         a, b = Parameter("a"), Parameter("b")
@@ -79,7 +79,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
     @data(LinCombQGT)
     def test_qgt_phase_fix(self, qgt_type):
         """Test the phase-fix argument in a QGT calculation"""
-        args = (self.estimator)
+        args = (self.estimator,)
         qgt = qgt_type(*args, phase_fix=False)
 
         # create the circuit
@@ -119,7 +119,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
     @data(LinCombQGT)
     def test_qgt_coefficients(self, qgt_type):
         """Test the derivative option of QGT"""
-        args = (self.estimator)
+        args = (self.estimator,)
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         qc = real_amplitudes(num_qubits=2, reps=1)
@@ -157,7 +157,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
     @data(LinCombQGT)
     def test_qgt_parameters(self, qgt_type):
         """Test the QGT with specified parameters"""
-        args = (self.estimator)
+        args = (self.estimator,)
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         a = Parameter("a")
@@ -202,7 +202,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
     @data(LinCombQGT)
     def test_qgt_multi_arguments(self, qgt_type):
         """Test the QGT for multiple arguments"""
-        args = (self.estimator)
+        args = (self.estimator,)
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         a = Parameter("a")
@@ -224,7 +224,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
     @data(LinCombQGT)
     def test_qgt_validation(self, qgt_type):
         """Test estimator QGT's validation"""
-        args = (self.estimator)
+        args = (self.estimator,)
         qgt = qgt_type(*args)
 
         a = Parameter("a")
