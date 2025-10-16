@@ -24,7 +24,7 @@ from qiskit.circuit import Parameter
 from qiskit.circuit.library import real_amplitudes
 from qiskit.primitives import StatevectorEstimator
 
-from qiskit_algorithms.gradients import DerivativeType, LinCombQGT, ReverseQGT
+from qiskit_machine_learning.gradients import DerivativeType, LinCombQGT
 
 from .logging_primitives import LoggingEstimator
 
@@ -37,10 +37,10 @@ class TestQGT(QiskitAlgorithmsTestCase):
         super().setUp()
         self.estimator = StatevectorEstimator()
 
-    @data(LinCombQGT, ReverseQGT)
+    @data(LinCombQGT)
     def test_qgt_derivative_type(self, qgt_type):
         """Test QGT derivative_type"""
-        args = () if qgt_type == ReverseQGT else (self.estimator,)
+        args = ()
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         a, b = Parameter("a"), Parameter("b")
@@ -76,10 +76,10 @@ class TestQGT(QiskitAlgorithmsTestCase):
                 qgt_result = qgt.run([qc], [param]).result().qgts
                 np.testing.assert_allclose(qgt_result[0], correct_values[i], atol=1e-3)
 
-    @data(LinCombQGT, ReverseQGT)
+    @data(LinCombQGT)
     def test_qgt_phase_fix(self, qgt_type):
         """Test the phase-fix argument in a QGT calculation"""
-        args = () if qgt_type == ReverseQGT else (self.estimator,)
+        args = ()
         qgt = qgt_type(*args, phase_fix=False)
 
         # create the circuit
@@ -116,10 +116,10 @@ class TestQGT(QiskitAlgorithmsTestCase):
                 qgt_result = qgt.run([qc], [param]).result().qgts
                 np.testing.assert_allclose(qgt_result[0], correct_values[i], atol=1e-3)
 
-    @data(LinCombQGT, ReverseQGT)
+    @data(LinCombQGT)
     def test_qgt_coefficients(self, qgt_type):
         """Test the derivative option of QGT"""
-        args = () if qgt_type == ReverseQGT else (self.estimator,)
+        args = ()
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         qc = real_amplitudes(num_qubits=2, reps=1)
@@ -154,10 +154,10 @@ class TestQGT(QiskitAlgorithmsTestCase):
             qgt_result = qgt.run([qc], [param]).result().qgts
             np.testing.assert_allclose(qgt_result[0], correct_values[i], atol=1e-3)
 
-    @data(LinCombQGT, ReverseQGT)
+    @data(LinCombQGT)
     def test_qgt_parameters(self, qgt_type):
         """Test the QGT with specified parameters"""
-        args = () if qgt_type == ReverseQGT else (self.estimator,)
+        args = ()
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         a = Parameter("a")
@@ -199,10 +199,10 @@ class TestQGT(QiskitAlgorithmsTestCase):
                 qgt_result = qgt.run([qc2], [param_values], [param]).result().qgts
                 np.testing.assert_allclose(qgt_result[0], expected[i], atol=1e-3)
 
-    @data(LinCombQGT, ReverseQGT)
+    @data(LinCombQGT)
     def test_qgt_multi_arguments(self, qgt_type):
         """Test the QGT for multiple arguments"""
-        args = () if qgt_type == ReverseQGT else (self.estimator,)
+        args = ()
         qgt = qgt_type(*args, derivative_type=DerivativeType.REAL)
 
         a = Parameter("a")
@@ -221,10 +221,10 @@ class TestQGT(QiskitAlgorithmsTestCase):
         for i, _ in enumerate(param_list):
             np.testing.assert_allclose(qgt_results[i], correct_values[i], atol=1e-3)
 
-    @data(LinCombQGT, ReverseQGT)
+    @data(LinCombQGT)
     def test_qgt_validation(self, qgt_type):
         """Test estimator QGT's validation"""
-        args = () if qgt_type == ReverseQGT else (self.estimator,)
+        args = ()
         qgt = qgt_type(*args)
 
         a = Parameter("a")

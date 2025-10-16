@@ -93,11 +93,9 @@ class BaseQGT(ABC):
             precision: Precision to be used by the underlying Estimator. If provided, this number
                 takes precedence over the default precision of the primitive. If None, the default
                 precision of the primitive is used.
-            transpiler: An optional object with a `run` method allowing to transpile the circuits
+            pass_manager: An optional object with a `run` method allowing to transpile the circuits
                 that are run when using this algorithm. If set to `None`, these won't be
                 transpiled.
-            transpiler_options: A dictionary of options to be passed to the transpiler's `run`
-                method as keyword arguments.
         """
         self._estimator: BaseEstimatorV2 = estimator
         self._precision = precision
@@ -107,7 +105,9 @@ class BaseQGT(ABC):
         self._gradient_circuit_cache: dict[tuple, GradientCircuit] = {}
 
         self._pass_manager = pass_manager
-        self._pass_manager_options = pass_manager_options if pass_manager_options is not None else {}
+        self._pass_manager_options = (
+            pass_manager_options if pass_manager_options is not None else {}
+        )
 
     @property
     def derivative_type(self) -> DerivativeType:

@@ -16,7 +16,6 @@ A class for the Linear Combination Quantum Gradient Tensor.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any
 
 import numpy as np
 
@@ -269,7 +268,7 @@ class LinCombQGT(BaseQGT):
         # Compute the QGT
         qgts = []
         partial_sum_n = 0
-        for phase_fix, n, m in zip(phase_fixes, all_n, all_m):
+        for phase_fix, n, m in zip(phase_fixes, all_n, all_m):  # type: ignore
             qgt = np.zeros((m, m), dtype="complex")
             # Compute the first term in the QGT
             if self.derivative_type == DerivativeType.COMPLEX:
@@ -311,7 +310,7 @@ class LinCombQGT(BaseQGT):
         else:
             for i, (precision_, result) in enumerate(zip(precision, results)):
                 if precision_ is None:
-                    precision[i] = results[i].metadata["target_precision"]
+                    precision[i] = results[i].metadata["target_precision"]  # type: ignore
 
         return QGTResult(
             qgts=qgts, derivative_type=self.derivative_type, metadata=metadata, precision=precision
