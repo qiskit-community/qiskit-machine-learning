@@ -298,7 +298,7 @@ class LinCombQGT(BaseQGT):
                 qgt = np.imag(qgt)
 
             # Subtract the phase fix from the QGT
-            qgt = qgt - phase_fix
+            qgt -= phase_fix
             partial_sum_n += n
             qgts.append(qgt / 4)
 
