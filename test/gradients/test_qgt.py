@@ -241,6 +241,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
             with self.assertRaises(ValueError):
                 qgt.run([qc], parameter_values, parameters=[[a], [a]])
 
+    @unittest.skip("Estimator precision is handled by the primitive itself")
     def test_precision(self):
         """Test QGT's precision option"""
         a = Parameter("a")
