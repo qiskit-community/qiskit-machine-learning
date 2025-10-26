@@ -42,7 +42,7 @@ The Qiskit Machine Learning framework aims to be:
 ### Kernel-based methods
 
 The [`FidelityQuantumKernel`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel) 
-class uses the [`Fidelity`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.state_fidelities.BaseStateFidelity.html)) 
+class uses the [`Fidelity`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.state_fidelities.BaseStateFidelity.html) 
 algorithm. It computes kernel matrices for datasets and can be combined with a Quantum Support Vector Classifier ([`QSVC`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC)) 
 or a Quantum Support Vector Regressor ([`QSVR`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR)) 
 to solve classification or regression problems respectively. It is also compatible with classical kernel-based machine learning algorithms.
