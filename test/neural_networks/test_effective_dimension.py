@@ -20,7 +20,11 @@ from ddt import ddt, data, unpack
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import z_feature_map, real_amplitudes
-from qiskit.primitives import StatevectorSampler, StatevectorEstimator
+from qiskit.primitives import (
+    StatevectorEstimator,
+    # StatevectorSampler as Sampler,
+)
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.neural_networks import (
@@ -60,14 +64,14 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
             weight_params=ansatz.parameters,
             interpret=parity,
             output_shape=2,
-            sampler=StatevectorSampler(default_shots=512, seed=123),
+            sampler=Sampler(),
         )
 
         sampler_qnn_2 = SamplerQNN(
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
-            sampler=StatevectorSampler(default_shots=512, seed=123),
+            sampler=Sampler(),
         )
 
         # EstimatorQNN
@@ -90,10 +94,10 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
 
     @data(
         # qnn_name, num_inputs, num_weights, result
-        ("sampler_qnn_1", 10, 10, 4.544824425492262),
+        ("sampler_qnn_1", 10, 10, 4.51202148),
         ("sampler_qnn_1", 1, 1, 1.39529449),
-        ("sampler_qnn_1", 10, 1, 4.217321134198417),
-        ("sampler_qnn_2", 10, 10, 5.6899188393554105),
+        ("sampler_qnn_1", 10, 1, 3.97371533),
+        ("sampler_qnn_2", 10, 10, 5.90859124),
     )
     @unpack
     def test_alg_results(self, qnn_name, num_inputs, num_params, result):

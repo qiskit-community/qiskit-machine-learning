@@ -16,8 +16,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.primitives import StatevectorEstimator
 
+# from qiskit.primitives import StatevectorSampler as Sampler
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 from .base_kernel import BaseKernel
 
@@ -84,7 +85,7 @@ class FidelityQuantumKernel(BaseKernel):
             raise ValueError(f"Unsupported value passed as evaluate_duplicates: {eval_duplicates}")
         self._evaluate_duplicates = eval_duplicates
         if fidelity is None:
-            fidelity = ComputeUncompute(sampler=StatevectorEstimator())
+            fidelity = ComputeUncompute(sampler=Sampler())
         self._fidelity = fidelity
         if max_circuits_per_job is not None:
             if max_circuits_per_job < 1:

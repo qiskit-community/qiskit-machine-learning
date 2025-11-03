@@ -41,6 +41,7 @@ Submodules
    kernels
    neural_networks
    optimizers
+   primitives
    state_fidelities
    utils
 

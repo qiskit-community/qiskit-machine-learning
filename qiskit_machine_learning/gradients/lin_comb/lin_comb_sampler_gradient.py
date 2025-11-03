@@ -120,6 +120,8 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             lin_comb_circuits = self._lin_comb_cache[circuit_key]
             gradient_circuits = []
             for param in parameters_:
+                print(param)
+                print(self._lin_comb_cache)
                 gradient_circuits.append(lin_comb_circuits[param])
             # Combine inputs into a single job to reduce overhead.
             n = len(gradient_circuits)

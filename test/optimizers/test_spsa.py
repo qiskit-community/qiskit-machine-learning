@@ -16,7 +16,8 @@ from test import QiskitAlgorithmsTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit.library import pauli_two_design
-from qiskit.primitives import StatevectorEstimator, StatevectorSampler
+from qiskit.primitives import StatevectorEstimator  # , StatevectorSampler as Sampler
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.quantum_info import SparsePauliOp, Statevector
 from qiskit_machine_learning.optimizers import QNSPSA, SPSA
 from qiskit_machine_learning.utils import algorithm_globals
@@ -54,7 +55,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
             settings["regularization"] = 0.01
             expected_nfev = settings["maxiter"] * 5 + 1
         elif method == "qnspsa":
-            settings["fidelity"] = QNSPSA.get_fidelity(circuit, sampler=StatevectorSampler())
+            settings["fidelity"] = QNSPSA.get_fidelity(circuit, sampler=Sampler())
             settings["regularization"] = 0.001
             settings["learning_rate"] = 0.05
             settings["perturbation"] = 0.05

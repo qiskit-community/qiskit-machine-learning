@@ -21,7 +21,9 @@ import numpy as np
 from ddt import ddt, idata
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
-from qiskit.primitives import StatevectorSampler
+
+# from qiskit.primitives import StatevectorSampler as Sampler
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import SamplerV2, Session
@@ -97,8 +99,8 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         )  # 1st dim. takes values in {0, 1} 2nd dim in {0, 1, 2}
 
         # define sampler primitives
-        self.sampler = StatevectorSampler()
-        self.sampler_shots = StatevectorSampler(default_shots=100, seed=42)
+        self.sampler = Sampler()
+        self.sampler_shots = Sampler(default_shots=100, seed=42)
         self.backend = GenericBackendV2(num_qubits=8)
         self.session = Session(backend=self.backend)
         self.sampler_v2 = SamplerV2(mode=self.session)
@@ -395,7 +397,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         qc.compose(ansatz, inplace=True)
 
         common_kwargs = dict(
-            sampler=StatevectorSampler(default_shots=128, seed=123),
+            sampler=Sampler(default_shots=128, seed=123),
             interpret=parity,
             output_shape=2,
             input_gradients=True,

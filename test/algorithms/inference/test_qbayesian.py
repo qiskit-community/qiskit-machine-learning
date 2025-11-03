@@ -18,7 +18,9 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
-from qiskit.primitives import StatevectorSampler
+
+# from qiskit.primitives import StatevectorSampler as Sampler
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import SamplerV2, Session
@@ -149,6 +151,9 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         # 4. Query marginalized inference
         res.append(self.qbayesian.inference(query=test_q_4, evidence=test_e_4))
         # Correct inference
+        print(true_res)
+        print("-----=---------=-----------")
+        print(res)
         self.assertTrue(np.all(np.isclose(true_res, res, atol=0.04)))
         # No change in samples
         self.assertTrue(samples[0] == samples[1])
@@ -171,9 +176,7 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
         self.assertTrue(self.qbayesian.converged)
         self.assertTrue(self.qbayesian.limit == 1)
         # Test sampler
-        sampler = StatevectorSampler(
-            default_shots=2048
-        )  # change: Sampler is migrated to StatevectorSampler
+        sampler = Sampler(default_shots=2048)  # change: Sampler is migrated to Sampler
         self.qbayesian.sampler = sampler
         self.qbayesian.inference(query={"B": 1}, evidence={"A": 0, "C": 0})
         self.assertTrue(self.qbayesian.sampler == sampler)

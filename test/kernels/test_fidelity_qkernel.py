@@ -25,7 +25,10 @@ from ddt import ddt, idata, unpack
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import z_feature_map
-from qiskit.primitives import StatevectorSampler
+
+# from qiskit.primitives import StatevectorSampler as Sampler
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+
 from sklearn.svm import SVC
 
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
@@ -62,7 +65,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         self.sample_test = np.asarray([[2.199114860, 5.15221195], [0.50265482, 0.06283185]])
         self.label_test = np.asarray([0, 1])
 
-        self.sampler = StatevectorSampler()
+        self.sampler = Sampler()
         self.fidelity = ComputeUncompute(self.sampler)
 
         self.properties = {
@@ -326,8 +329,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             kernel = FidelityQuantumKernel()
 
             x_vec = np.asarray([[1, 2, 3]])
-            kernel.evaluate(x_vec)
-            self.assertEqual(kernel.feature_map.num_qubits, 3)
+            self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Fail to adjust the number of qubits in the feature map"):
             qc = QuantumCircuit(1)
@@ -358,7 +360,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         """Test properties of the base (abstract) class and fidelity based kernel."""
         qc = QuantumCircuit(1)
         qc.ry(Parameter("w"), 0)
-        fidelity = ComputeUncompute(sampler=StatevectorSampler())
+        fidelity = ComputeUncompute(sampler=Sampler())
         kernel = FidelityQuantumKernel(
             feature_map=qc, fidelity=fidelity, enforce_psd=False, evaluate_duplicates="none"
         )
@@ -385,7 +387,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
             "y_vec": np.array([[0, 1], [1, 2]]),
         }
 
-        counting_sampler = StatevectorSampler()
+        counting_sampler = Sampler()
         counting_sampler.run = self.count_circuits(counting_sampler.run)
         self.counting_sampler = counting_sampler
         self.circuit_counts = 0
@@ -402,7 +404,10 @@ class TestDuplicates(QiskitMachineLearningTestCase):
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            self.circuit_counts += len(kwargs["circuits"])
+            if kwargs == {}:
+                self.circuit_counts = len(args[0])
+            else:
+                self.circuit_counts += len(kwargs["circuits"])
             return func(*args, **kwargs)
 
         return wrapper

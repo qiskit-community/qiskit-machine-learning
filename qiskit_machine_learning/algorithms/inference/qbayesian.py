@@ -21,8 +21,9 @@ from qiskit.circuit import Qubit
 from qiskit.circuit.library import grover_operator
 from qiskit.primitives import (
     BaseSamplerV2,
-    StatevectorSampler,
+    # StatevectorSampler as Sampler,
 )
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.quantum_info import Statevector
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
@@ -97,7 +98,7 @@ class QBayesian:
         self._limit = limit
         self._threshold = threshold
         if sampler is None:
-            sampler = StatevectorSampler()
+            sampler = Sampler()
 
         self._sampler = sampler
 
@@ -157,27 +158,57 @@ class QBayesian:
         return grover_operator(oracle, state_preparation=self._circ)
 
     def _run_circuit(self, circuit: QuantumCircuit) -> Dict[str, float]:
-        """Run the quantum circuit with the sampler."""
-        counts = {}
-
-        # Sample from circuit
+        """Run the quantum circuit with the sampler and return P(bitstring) with fixed width."""
         if self._pass_manager is not None:
             circuit = self._pass_manager.run(circuit)
+
         job = self._sampler.run([circuit])
-        result = job.result()
+        res = job.result()
+        pub = res[0]
 
-        bit_array = list(result[0].data.values())[0]
-        bitstring_counts = bit_array.get_counts()
+        # Prefer robust, register-agnostic access.
+        try:
+            bit_counts = pub.join_data().get_counts()
+        except Exception:
+            # Fallback: try first known register if present (e.g., 'meas').
+            if hasattr(pub, "data") and hasattr(pub.data, "get"):
+                # pick any available register deterministically
+                for reg_name in getattr(pub.data, "__dir__", lambda: [])():
+                    try:
+                        bit_counts = getattr(pub.data, reg_name).get_counts()
+                        break
+                    except Exception:
+                        pass
+                else:
+                    bit_counts = {}
+            else:
+                bit_counts = {}
 
-        # Normalize the counts to probabilities
-        total_shots = sum(bitstring_counts.values())
-        probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
-        # Convert to quasi-probabilities
-        quasi_dist = QuasiDistribution(probabilities)
-        binary_prob = quasi_dist.nearest_probability_distribution().binary_probabilities()
-        counts = {k: v for k, v in binary_prob.items() if int(k) < 2**self.num_virtual_qubits}
+        total = sum(bit_counts.values())
+        if total == 0:
+            return {}
 
-        return counts
+        width = circuit.num_clbits  # number of measured classical bits in this circuit instance
+
+        out: Dict[str, float] = {}
+
+        def _to_bin_key(k) -> str:
+            if isinstance(k, (int,)):
+                return format(int(k), f"0{width}b")
+            ks = str(k).replace(" ", "")
+            if ks.startswith(("0b", "0B")):
+                return format(int(ks, 2), f"0{width}b")
+            if ks.startswith(("0x", "0X")):
+                return format(int(ks, 16), f"0{width}b")
+            if set(ks) <= {"0", "1"} and len(ks) <= width:
+                return ks.zfill(width)
+            # decimal string
+            return format(int(ks), f"0{width}b")
+
+        for k, v in bit_counts.items():
+            out[_to_bin_key(k)] = out.get(_to_bin_key(k), 0.0) + v / total
+
+        return out
 
     def __power_grover(
         self, grover_op: QuantumCircuit, evidence: Dict[str, int], k: int

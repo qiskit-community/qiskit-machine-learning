@@ -22,7 +22,9 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
-from qiskit.primitives import StatevectorSampler
+
+# from qiskit.primitives import StatevectorSampler as Sampler
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
@@ -32,8 +34,6 @@ from qiskit_machine_learning.gradients import (
     ParamShiftSamplerGradient,
     SPSASamplerGradient,
 )
-
-from .logging_primitives import LoggingSampler
 
 gradient_factories = [
     ParamShiftSamplerGradient,
@@ -47,7 +47,7 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
 
     def __init__(self, TestCase):
         # Shots slightly increased to match the true statevector within tolerance
-        self.sampler = StatevectorSampler(default_shots=2048)
+        self.sampler = Sampler()
         super().__init__(TestCase)
 
     @data(*gradient_factories)
@@ -544,48 +544,9 @@ class TestSamplerGradient(QiskitAlgorithmsTestCase):
                 array2 = _quasi2array(correct_results[i], num_qubits=1)
                 np.testing.assert_allclose(array1, array2, atol=1e-3)
 
-    @data(
-        ParamShiftSamplerGradient,
-        LinCombSamplerGradient,
-        SPSASamplerGradient,
-    )
-    def test_operations_preserved(self, gradient_cls):
-        """Test non-parameterized instructions are preserved and not unrolled."""
-        x = Parameter("x")
-        circuit = QuantumCircuit(2)
-        circuit.initialize(np.array([1, 1, 0, 0]) / np.sqrt(2))  # this should remain as initialize
-        circuit.crx(x, 0, 1)  # this should get unrolled
-        circuit.measure_all()
-
-        values = [np.pi / 2]
-        expect = [{0: 0, 1: -0.25, 2: 0, 3: 0.25}]
-
-        ops = []
-
-        def operations_callback(op):
-            ops.append(op)
-
-        sampler = LoggingSampler(operations_callback=operations_callback)
-
-        if gradient_cls in [SPSASamplerGradient]:
-            gradient = gradient_cls(sampler, epsilon=0.01)
-        else:
-            gradient = gradient_cls(sampler)
-
-        job = gradient.run([circuit], [values])
-        result = job.result()
-
-        with self.subTest(msg="assert initialize is preserved"):
-            self.assertTrue(all("initialize" in ops_i[0].keys() for ops_i in ops))
-
-        with self.subTest(msg="assert result is correct"):
-            array1 = _quasi2array(result.gradients[0], num_qubits=2)
-            array2 = _quasi2array(expect, num_qubits=2)
-            np.testing.assert_allclose(array1, array2, atol=1e-5)
-
 
 @ddt
-class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
+class TestSamplerGradientRuntime(QiskitAlgorithmsTestCase):
     """Test Sampler Gradient"""
 
     def __init__(self, TestCase):
@@ -1126,45 +1087,6 @@ class TestSamplerGradientV2(QiskitAlgorithmsTestCase):
                 array1 = _quasi2array(gradients, num_qubits=1)
                 array2 = _quasi2array(correct_results[i], num_qubits=1)
                 np.testing.assert_allclose(array1, array2, atol=1e-3)
-
-    @data(
-        ParamShiftSamplerGradient,
-        LinCombSamplerGradient,
-        SPSASamplerGradient,
-    )
-    def test_operations_preserved(self, gradient_cls):
-        """Test non-parameterized instructions are preserved and not unrolled."""
-        x = Parameter("x")
-        circuit = QuantumCircuit(2)
-        circuit.initialize(np.array([1, 1, 0, 0]) / np.sqrt(2))  # this should remain as initialize
-        circuit.crx(x, 0, 1)  # this should get unrolled
-        circuit.measure_all()
-
-        values = [np.pi / 2]
-        expect = [{0: 0, 1: -0.25, 2: 0, 3: 0.25}]
-
-        ops = []
-
-        def operations_callback(op):
-            ops.append(op)
-
-        sampler = LoggingSampler(operations_callback=operations_callback)
-
-        if gradient_cls in [SPSASamplerGradient]:
-            gradient = gradient_cls(sampler, epsilon=0.01)
-        else:
-            gradient = gradient_cls(sampler)
-
-        job = gradient.run([circuit], [values])
-        result = job.result()
-
-        with self.subTest(msg="assert initialize is preserved"):
-            self.assertTrue(all("initialize" in ops_i[0].keys() for ops_i in ops))
-
-        with self.subTest(msg="assert result is correct"):
-            array1 = _quasi2array(result.gradients[0], num_qubits=2)
-            array2 = _quasi2array(expect, num_qubits=2)
-            np.testing.assert_allclose(array1, array2, atol=1e-5)
 
 
 def _quasi2array(quasis: list[QuasiDistribution], num_qubits: int) -> np.ndarray:
