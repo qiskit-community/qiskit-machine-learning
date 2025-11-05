@@ -12,7 +12,6 @@
 
 <!--- long-description-skip-end -->
 
-
 ## What is Qiskit Machine Learning?
 
 Qiskit Machine Learning introduces fundamental computational building blocks, such as Quantum 
