@@ -77,8 +77,10 @@ cobyla
 codebase
 codec
 coeffs
+coles
 colin
 combinatorial
+computable
 concha
 config
 configs
@@ -335,6 +337,7 @@ msg
 multiclass
 multinomial
 multioutput
+multipartite
 mxd
 mypy
 nabla
@@ -511,7 +514,7 @@ scipy
 sdg
 seealso
 semidefinite
-sep 
+sep
 seperate
 seperable
 serializable
