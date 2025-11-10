@@ -266,39 +266,39 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: ubuntu-latest-3.9
           path: /tmp/u39
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: ubuntu-latest-3.10
           path: /tmp/u310
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: ubuntu-latest-3.11
           path: /tmp/u311
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: ubuntu-latest-3.12
           path: /tmp/u312
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: ubuntu-latest-3.13
           path: /tmp/u313
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: macos-latest-3.9
           path: /tmp/m39
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: macos-latest-3.13
           path: /tmp/m313
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: windows-latest-3.9
           path: /tmp/w39
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: windows-latest-3.13
           path: /tmp/w313
