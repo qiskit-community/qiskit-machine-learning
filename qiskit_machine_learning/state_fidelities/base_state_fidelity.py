@@ -57,7 +57,7 @@ class BaseStateFidelity(ABC):
         of the corresponding circuits and formats values to 2D list.
 
         Args:
-            circuits: List of circuits to be checked.
+            circuits: list of circuits to be checked.
             values: Parameter values corresponding to the circuits to be checked.
 
         Returns:

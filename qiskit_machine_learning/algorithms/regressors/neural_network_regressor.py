@@ -11,8 +11,6 @@
 # that they have been altered from the originals.
 """An implementation of quantum neural network regressor."""
 
-from typing import Optional
-
 import numpy as np
 from sklearn.base import RegressorMixin
 
@@ -48,7 +46,5 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
 
         return self._neural_network.forward(X, self._fit_result.x)
 
-    def score(
-        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
-    ) -> float:
+    def score(self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None) -> float:
         return RegressorMixin.score(self, X, y, sample_weight)

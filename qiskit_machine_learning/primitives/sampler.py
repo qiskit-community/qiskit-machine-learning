@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, Iterable, List, Mapping, Tuple, Any
+from dataclasses import dataclass, is_dataclass, asdict
+from typing import Iterable, Mapping, Any
+from types import SimpleNamespace
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, QuantumCircuit
@@ -15,9 +16,6 @@ from qiskit.primitives import (
     SamplerPubResult,
 )
 from qiskit.primitives.containers.sampler_pub import SamplerPub
-
-from dataclasses import is_dataclass, asdict
-from types import SimpleNamespace
 
 
 class QML_Sampler(StatevectorSampler):
@@ -77,8 +75,8 @@ class QML_Sampler(StatevectorSampler):
             joint_probs_per_index[index] = joint
 
         # Build per-register ExactProbArray views (one per broadcast index)
-        data_fields: Dict[str, Any] = {}
-        names: List[str] = []
+        data_fields: dict[str, Any] = {}
+        names: list[str] = []
         for item in meas_info:
             names.append(item.creg_name)
 
@@ -120,8 +118,8 @@ class ExactProbArray:
     """
     Deterministic probability container (scalar, i.e. shape == ()).
     Methods:
-      - get_probabilities(loc=None) -> Dict[str, float]
-      - get_counts(loc=None, shots=None) -> Dict[str, int]  # only if distribution is dyadic
+      - get_probabilities(loc=None) -> dict[str, float]
+      - get_counts(loc=None, shots=None) -> dict[str, int]  # only if distribution is dyadic
     Supports concatenation via concatenate_bits() so join_data() forms the exact joint.
     """
 
@@ -130,9 +128,9 @@ class ExactProbArray:
     def __init__(
         self,
         joint_probs: Mapping[str, float],  # over the full measured bitstring
-        mask: List[int],  # LSB-based indices this register exposes
+        mask: list[int],  # LSB-based indices this register exposes
         num_bits: int,
-        shape: Tuple[int, ...] = (),
+        shape: tuple[int, ...] = (),
     ):
         self._joint_probs = dict(joint_probs)
         self._mask = list(mask)
@@ -140,7 +138,7 @@ class ExactProbArray:
         self._shape = tuple(shape)
 
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         return self._shape
 
     @property
@@ -151,9 +149,9 @@ class ExactProbArray:
     def num_shots(self):
         return None  # exact, not sampled
 
-    def _project_joint_to_mask(self, probs: Mapping[str, float]) -> Dict[str, float]:
+    def _project_joint_to_mask(self, probs: Mapping[str, float]) -> dict[str, float]:
         # Marginalize the joint to this register's bits
-        out: Dict[str, float] = {}
+        out: dict[str, float] = {}
         for bitstr, p in probs.items():
             bits = list(bitstr)  # left
             sel = [bits[-1 - i] for i in reversed(self._mask)]  # LSB index 0 is rightmost char
@@ -161,12 +159,12 @@ class ExactProbArray:
             out[key] = out.get(key, 0.0) + p
         return out
 
-    def get_probabilities(self, loc=None) -> Dict[str, float]:
+    def get_probabilities(self) -> dict[str, float]:
         return self._project_joint_to_mask(self._joint_probs)
 
-    def get_counts(self, loc=None, shots: int | None = None) -> Dict[str, int]:
+    def get_counts(self, loc=None, shots: int | None = None) -> dict[str, int]:
         # Only when probabilities are exactly dyadic.
-        probs = self.get_probabilities(loc=loc)
+        probs = self.get_probabilities()
 
         def dyadic_k(p: float, tol=1e-12, kmax=60) -> int | None:
             if p in (0.0, 1.0):
@@ -189,7 +187,7 @@ class ExactProbArray:
         k_common = max(ks) if ks else 0
         M = (1 << k_common) if shots is None else int(shots)
 
-        counts: Dict[str, int] = {k: int(round(v * M)) for k, v in probs.items()}
+        counts: dict[str, int] = {k: int(round(v * M)) for k, v in probs.items()}
         total = sum(counts.values())
         if shots is None and counts and total != M:
             # Adjust the most likely entry to make totals consistent.
@@ -198,14 +196,14 @@ class ExactProbArray:
         return counts
 
     @staticmethod
-    def concatenate_bits(items: List["ExactProbArray"]) -> "ExactProbArray":
+    def concatenate_bits(items: list["ExactProbArray"]) -> "ExactProbArray":
         if not items:
             raise ValueError("No containers to concatenate.")
         joint = items[0]._joint_probs
         for it in items[1:]:
             if it._joint_probs is not joint and it._joint_probs != joint:
                 raise ValueError("Cannot join different joint distributions.")
-        mask: List[int] = []
+        mask: list[int] = []
         for it in items:
             mask.extend(it._mask)
         num_bits = sum(it._num_bits for it in items)
@@ -229,7 +227,7 @@ class ExactProbNDArray:
 
     # --- array-like protocol ---
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         return self._arr.shape
 
     def __getitem__(self, idx) -> Any:
@@ -256,7 +254,7 @@ class ExactProbNDArray:
             return 0
 
     # --- Sampler-style methods ---
-    def get_probabilities(self, loc: int | Tuple[int, ...] | None = None):
+    def get_probabilities(self, loc: int | tuple[int, ...] | None = None):
         if loc is not None:
             return self._arr[loc].get_probabilities()
         # Return element-wise probabilities as an ndarray[object] of dicts
@@ -265,13 +263,13 @@ class ExactProbNDArray:
             out[idx] = self._arr[idx].get_probabilities()
         return out
 
-    def get_counts(self, loc: int | Tuple[int, ...] | None = None, shots: int | None = None):
+    def get_counts(self, loc: int | tuple[int, ...] | None = None, shots: int | None = None):
         if loc is not None:
             return self._arr[loc].get_counts(shots=shots)
 
         # When location=None, follow BitArray semantics: union counts across all positions.
         # If you want per-position, index first (e.g., obj[i].get_counts()).
-        total: Dict[str, int] = {}
+        total: dict[str, int] = {}
         for elem in self._arr.flat:
             # for exact non-dyadic dists this raises; caller can use get_probabilities instead
             cnt = elem.get_counts(shots=shots)
@@ -321,17 +319,17 @@ class _OptionsNS(SimpleNamespace):
 class _MeasureInfo:
     creg_name: str
     num_bits: int  # measured bit-width of this register
-    qreg_indices: List[int]  # LSB-order indices into the joint measured-qubit list
+    qreg_indices: list[int]  # LSB-order indices into the joint measured-qubit list
 
 
-def _final_measurement_mapping(circuit: QuantumCircuit) -> Dict[Tuple[ClassicalRegister, int], int]:
+def _final_measurement_mapping(circuit: QuantumCircuit) -> dict[tuple[ClassicalRegister, int], int]:
     """
     Map each final classical bit to the (global) qubit index it measures.
     Only final measurements are allowed; any op after a measure breaks 'final'.
     """
     active_qubits = set(range(circuit.num_qubits))
     active_cbits = set(range(circuit.num_clbits))
-    mapping: Dict[Tuple[ClassicalRegister, int], int] = {}
+    mapping: dict[tuple[ClassicalRegister, int], int] = {}
     for inst in circuit[::-1]:
         op = inst.operation.name
         if op == "measure":
@@ -358,11 +356,11 @@ def _preprocess_circuit(circuit: QuantumCircuit):
     unitary_circ = circuit.remove_final_measurements(inplace=False)
 
     # Keep classical-register bit order for masks.
-    by_reg: Dict[str, List[Tuple[int, int]]] = {creg.name: [] for creg in circuit.cregs}
+    by_reg: dict[str, list[tuple[int, int]]] = {creg.name: [] for creg in circuit.cregs}
     for (creg, offset), q in mapping.items():
         by_reg[creg.name].append((offset, qargs_index[q]))  # (lsb_index_in_creg, joint_index)
 
-    meas_info: List[_MeasureInfo] = []
+    meas_info: list[_MeasureInfo] = []
     for name, pairs in by_reg.items():
         if not pairs:
             continue
@@ -392,7 +390,7 @@ class _ExactSamplerPubResult(SamplerPubResult):
         shape = self.data.shape
         if shape == ():
             # Scalar: concatenate and return a single ExactProbArray
-            items: List[ExactProbArray] = []
+            items: list[ExactProbArray] = []
             for n in names:
                 field = getattr(self.data, n)
                 items.append(field)  # field is ExactProbArray
@@ -401,7 +399,7 @@ class _ExactSamplerPubResult(SamplerPubResult):
         # ND case: build an ndarray of ExactProbArray and return a wrapper
         out = np.empty(shape, dtype=object)
         for idx in np.ndindex(shape):
-            items: List[ExactProbArray] = []
+            items: list[ExactProbArray] = []
             for n in names:
                 field = getattr(self.data, n)  # can be ExactProbNDArray
                 field_elem = field[idx] if isinstance(field, ExactProbNDArray) else field[idx]

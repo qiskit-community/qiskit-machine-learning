@@ -16,6 +16,9 @@ class QML_Estimator(BaseEstimatorV2):
     """
 
     def __init__(self, estimator: BaseEstimatorV2, pass_manager: PassManager | None = None):
+        """
+        Constructor
+        """
         if estimator is None:
             estimator = StatevectorEstimator()
         self._inner = estimator

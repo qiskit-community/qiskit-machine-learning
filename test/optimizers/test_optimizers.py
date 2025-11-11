@@ -15,7 +15,6 @@
 import unittest
 from test import QiskitAlgorithmsTestCase
 
-from typing import Optional
 from ddt import ddt, data, unpack
 import numpy as np
 from scipy.optimize import rosen, rosen_der
@@ -64,7 +63,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
         optimizer: Optimizer,
         max_nfev: int,
         grad: bool = False,
-        bounds: Optional[list[tuple[float, float]]] = None,
+        bounds: list[tuple[float, float]] | None = None,
     ):
         """Test the optimizer.
 

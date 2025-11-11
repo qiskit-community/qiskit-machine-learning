@@ -24,10 +24,8 @@ from qiskit.primitives import (
     BaseSamplerV2,
     PrimitiveResult,
     SamplerPubResult,
-    # StatevectorSampler as Sampler,
 )
 from qiskit_machine_learning.primitives import QML_Sampler as Sampler
-from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
 
 import qiskit_machine_learning.optionals as _optionals

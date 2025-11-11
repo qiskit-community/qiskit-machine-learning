@@ -15,20 +15,22 @@
 
 import unittest
 from test import QiskitAlgorithmsTestCase
+from qiskit_ibm_runtime import SamplerV2, Session
 
 import numpy as np
 from ddt import data, ddt
+
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
 
 # from qiskit.primitives import StatevectorSampler as Sampler
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import SamplerV2, Session
+
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit_machine_learning.gradients import (
     LinCombSamplerGradient,
     ParamShiftSamplerGradient,

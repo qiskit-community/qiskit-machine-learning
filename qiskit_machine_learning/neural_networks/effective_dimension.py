@@ -13,7 +13,7 @@
 
 import logging
 import time
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 from scipy.special import logsumexp
@@ -40,8 +40,8 @@ class EffectiveDimension:
     def __init__(
         self,
         qnn: NeuralNetwork,
-        weight_samples: Union[np.ndarray, int] = 1,
-        input_samples: Union[np.ndarray, int] = 1,
+        weight_samples: np.ndarray | int = 1,
+        input_samples: np.ndarray | int = 1,
     ) -> None:
         """
         Args:
@@ -83,7 +83,7 @@ class EffectiveDimension:
         return self._weight_samples
 
     @weight_samples.setter
-    def weight_samples(self, weight_samples: Union[np.ndarray, int]) -> None:
+    def weight_samples(self, weight_samples: np.ndarray | int) -> None:
         """Sets network weight samples."""
         if isinstance(weight_samples, int):
             # random sampling from uniform distribution
@@ -109,7 +109,7 @@ class EffectiveDimension:
         return self._input_samples
 
     @input_samples.setter
-    def input_samples(self, input_samples: Union[np.ndarray, int]) -> None:
+    def input_samples(self, input_samples: np.ndarray | int) -> None:
         """Sets network input samples."""
         if isinstance(input_samples, int):
             # random sampling from normal distribution
@@ -254,8 +254,8 @@ class EffectiveDimension:
     def _get_effective_dimension(
         self,
         normalized_fisher: np.ndarray,
-        dataset_size: Union[list[int], np.ndarray, int],
-    ) -> Union[np.ndarray, int]:
+        dataset_size: list[int] | np.ndarray | int,
+    ) -> np.ndarray | int:
         if not isinstance(dataset_size, int) and len(dataset_size) > 1:
             # expand dims for broadcasting
             normalized_fisher = np.expand_dims(normalized_fisher, axis=0)
@@ -282,8 +282,8 @@ class EffectiveDimension:
         return np.squeeze(effective_dims)
 
     def get_effective_dimension(
-        self, dataset_size: Union[list[int], np.ndarray, int]
-    ) -> Union[np.ndarray, int]:
+        self, dataset_size: list[int] | np.ndarray | int
+    ) -> np.ndarray | int:
         """
         This method computes the effective dimension for a dataset of size ``dataset_size``. If an
         array is passed, then effective dimension computed for each value in the array.
@@ -331,7 +331,7 @@ class LocalEffectiveDimension(EffectiveDimension):
         return self._weight_samples
 
     @weight_samples.setter
-    def weight_samples(self, weight_samples: Union[np.ndarray, int]) -> None:
+    def weight_samples(self, weight_samples: np.ndarray | int) -> None:
         """Sets network parameters."""
         if isinstance(weight_samples, int):
             # random sampling from uniform distribution

@@ -20,12 +20,12 @@ from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes
 
 # from qiskit.primitives import StatevectorSampler as Sampler
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+# from qiskit.primitives import BackendSamplerV2
+# from qiskit.providers.fake_provider import GenericBackendV2
+# from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
-from qiskit.primitives import BackendSamplerV2
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
-from qiskit.providers.fake_provider import GenericBackendV2
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 
 
 class TestComputeUncompute(QiskitAlgorithmsTestCase):

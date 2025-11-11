@@ -14,8 +14,8 @@
 """Test Estimator Gradients"""
 
 import unittest
-from math import sqrt
 from test import QiskitAlgorithmsTestCase
+from test.gradients.logging_primitives import LoggingEstimator
 
 import numpy as np
 from ddt import data, ddt
@@ -34,9 +34,6 @@ from qiskit_machine_learning.gradients import (
     ParamShiftEstimatorGradient,
     SPSAEstimatorGradient,
 )
-
-
-from test.gradients.logging_primitives import LoggingEstimator
 
 gradient_factories = [
     ParamShiftEstimatorGradient,
@@ -361,9 +358,9 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
                 )
                 np.testing.assert_allclose(gradients, expected[i], atol=1e-3)
 
-    '''
     # Options are different for each primitivesV2
     # TO DO: Rewrite the test_options from scratch for important primitives.
+    @unittest.skip("Options are different for each primitivesV2")
     @data(
         ParamShiftEstimatorGradient,
         LinCombEstimatorGradient,
@@ -375,7 +372,7 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
         op = SparsePauliOp.from_list([("Z", 1)])
-        precision = 1 / sqrt(100)
+        precision = 1 / np.sqrt(100)
         estimator = StatevectorEstimator(default_precision=precision)
         with self.subTest("estimator"):
             if grad is SPSAEstimatorGradient:
@@ -419,6 +416,7 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
             # Only default + estimator options. Not run.
             self.assertEqual(options.get("shots"), 200)
 
+    @unittest.skip("Options are different for each primitivesV2")
     @data(
         ParamShiftEstimatorGradient,
         LinCombEstimatorGradient,
@@ -456,7 +454,6 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
 
         with self.subTest(msg="assert result is correct"):
             self.assertAlmostEqual(result.gradients[0].item(), expect, places=5)
-    '''
 
 
 @ddt

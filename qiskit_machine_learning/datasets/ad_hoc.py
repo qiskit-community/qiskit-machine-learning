@@ -437,7 +437,7 @@ def _loop_sampling(n, n_samples, z_diags, zz_diags, psi_0, h_n, lab_fn, samp_fn,
         n (int): Number of qubits (feature dimension).
         n_samples (int): Number of samples needed per class.
         z_diags (np.ndarray): Array of single-qubit Z diagonal elements.
-        zz_diags (dict): Dictionary of ZZ-diagonal elements keyed by qubit
+        zz_diags (dict): dictionary of ZZ-diagonal elements keyed by qubit
             pairs.
         O (np.ndarray): Observable for label determination.
         psi_0 (np.ndarray): Initial state vector.
@@ -568,7 +568,7 @@ def _grid_sampling(n, n_samples, z_diags, zz_diags, psi_0, h_n, lab_fn):
         n (int): Number of qubits (dimension).
         n_samples (int): Number of samples needed per class.
         z_diags (np.ndarray): Array of single-qubit Z diagonal elements.
-        zz_diags (dict): Dictionary of ZZ-diagonal elements keyed by qubit pairs.
+        zz_diags (dict): dictionary of ZZ-diagonal elements keyed by qubit pairs.
         psi_0 (np.ndarray): Initial state vector.
         h_n (np.ndarray): n-qubit Hadamard matrix.
         lab_fn (Callable): Labeling function (either expectation-based or

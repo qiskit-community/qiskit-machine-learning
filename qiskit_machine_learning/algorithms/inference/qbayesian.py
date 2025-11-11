@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Dict, Set
+from typing import Set
 
 from qiskit import ClassicalRegister, QuantumCircuit
 from qiskit.circuit import Qubit
@@ -23,10 +23,11 @@ from qiskit.primitives import (
     BaseSamplerV2,
     # StatevectorSampler as Sampler,
 )
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.quantum_info import Statevector
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
+
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 
 
 class QBayesian:
@@ -119,11 +120,11 @@ class QBayesian:
             qrg.name: self._circ.num_qubits - idx - 1 for idx, qrg in enumerate(self._circ.qregs)
         }
         # Distribution of samples from rejection sampling
-        self._samples: Dict[str, float] = {}
+        self._samples: dict[str, float] = {}
         # True if rejection sampling converged after limit
         self._converged = bool()
 
-    def _get_grover_op(self, evidence: Dict[str, int]) -> QuantumCircuit:
+    def _get_grover_op(self, evidence: dict[str, int]) -> QuantumCircuit:
         """
         Constructs a Grover operator based on the provided evidence. The evidence is used to
         determine the "good states" that the Grover operator will amplify.
@@ -157,7 +158,7 @@ class QBayesian:
         )
         return grover_operator(oracle, state_preparation=self._circ)
 
-    def _run_circuit(self, circuit: QuantumCircuit) -> Dict[str, float]:
+    def _run_circuit(self, circuit: QuantumCircuit) -> dict[str, float]:
         """Run the quantum circuit with the sampler and return P(bitstring) with fixed width."""
         if self._pass_manager is not None:
             circuit = self._pass_manager.run(circuit)
@@ -190,7 +191,7 @@ class QBayesian:
 
         width = circuit.num_clbits  # number of measured classical bits in this circuit instance
 
-        out: Dict[str, float] = {}
+        out: dict[str, float] = {}
 
         def _to_bin_key(k) -> str:
             if isinstance(k, (int,)):
@@ -211,7 +212,7 @@ class QBayesian:
         return out
 
     def __power_grover(
-        self, grover_op: QuantumCircuit, evidence: Dict[str, int], k: int
+        self, grover_op: QuantumCircuit, evidence: dict[str, int], k: int
     ) -> tuple[QuantumCircuit, Set[tuple[Qubit, int]]]:
         """
         Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits,
@@ -258,9 +259,9 @@ class QBayesian:
         }
         return qc, e_meas
 
-    def _format_samples(self, samples: Dict[str, float], evidence: list[str]) -> Dict[str, float]:
+    def _format_samples(self, samples: dict[str, float], evidence: list[str]) -> dict[str, float]:
         """Transforms samples keys back to their variables names."""
-        f_samples: Dict[str, float] = {}
+        f_samples: dict[str, float] = {}
         for smpl_key, smpl_val in samples.items():
             q_str, e_str = "", ""
             for var_name, var_idx in sorted(self._label2qidx.items(), key=lambda x: -x[1]):
@@ -275,8 +276,8 @@ class QBayesian:
         return f_samples
 
     def rejection_sampling(
-        self, evidence: Dict[str, int], format_res: bool = False
-    ) -> Dict[str, float]:
+        self, evidence: dict[str, int], format_res: bool = False
+    ) -> dict[str, float]:
         """
         Performs quantum rejection sampling given the evidence.
 
@@ -363,8 +364,8 @@ class QBayesian:
 
     def inference(
         self,
-        query: Dict[str, int],
-        evidence: Dict[str, int] = None,
+        query: dict[str, int],
+        evidence: dict[str, int] = None,
     ) -> float:
         """
         Performs quantum inference for the query variables given the evidence. It uses quantum
@@ -409,7 +410,7 @@ class QBayesian:
         return self._converged
 
     @property
-    def samples(self) -> Dict[str, float]:
+    def samples(self) -> dict[str, float]:
         """Returns the samples generated from the rejection sampling."""
         return self._samples
 

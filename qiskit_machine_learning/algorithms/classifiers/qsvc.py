@@ -13,7 +13,6 @@
 """Quantum Support Vector Classifier"""
 
 import warnings
-from typing import Optional
 
 from sklearn.svm import SVC
 
@@ -54,7 +53,7 @@ class QSVC(SVC, SerializableModelMixin):
 
     """
 
-    def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
+    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
         """
         Args:
             quantum_kernel: A quantum kernel to be used for classification.

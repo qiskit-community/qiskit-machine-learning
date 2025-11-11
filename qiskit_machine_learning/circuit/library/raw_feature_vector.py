@@ -12,7 +12,6 @@
 
 """The raw feature vector circuit."""
 
-from typing import Optional
 import numpy as np
 from qiskit.exceptions import QiskitError
 from qiskit.circuit import (
@@ -140,7 +139,7 @@ class RawFeatureVector(BlueprintCircuit):
 
     """
 
-    def __init__(self, feature_dimension: Optional[int]) -> None:
+    def __init__(self, feature_dimension: int | None) -> None:
         """
         Args:
             feature_dimension: The feature dimension from which the number of

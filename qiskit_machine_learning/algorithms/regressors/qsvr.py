@@ -13,7 +13,6 @@
 """Quantum Support Vector Regressor"""
 
 import warnings
-from typing import Optional
 
 from sklearn.svm import SVR
 
@@ -41,7 +40,7 @@ class QSVR(SVR, SerializableModelMixin):
         qsvr.predict(sample_test)
     """
 
-    def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
+    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
         """
         Args:
             quantum_kernel: A quantum kernel to be used for regression. If None,

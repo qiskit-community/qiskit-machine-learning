@@ -12,7 +12,7 @@
 
 """Test Torch Connector."""
 import itertools
-from typing import cast, Union, Any
+from typing import cast, Any
 
 from test.connectors.test_torch import TestTorch
 
@@ -345,12 +345,12 @@ class TestTorchConnector(TestTorch):
                     output_shape=self.output_channel,
                 )
 
-            def interpret(self, output: Union[float, int]) -> Any:
+            def interpret(self, output: float | int) -> Any:
                 """
                 Interprets the output from the quantum circuit.
 
                 Args:
-                    output (Union[float, int]): Output from the quantum circuit.
+                    output (float | int): Output from the quantum circuit.
 
                 Returns:
                     Any: Remainder of the output divided by the
