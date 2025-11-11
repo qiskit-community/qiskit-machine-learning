@@ -36,7 +36,7 @@ from qiskit_machine_learning.gradients import (
 )
 
 
-from .logging_primitives import LoggingEstimator
+from test.gradients.logging_primitives import LoggingEstimator
 
 gradient_factories = [
     ParamShiftEstimatorGradient,
@@ -361,7 +361,7 @@ class TestEstimatorGradient(QiskitAlgorithmsTestCase):
                 )
                 np.testing.assert_allclose(gradients, expected[i], atol=1e-3)
 
-    ''' 
+    '''
     # Options are different for each primitivesV2
     # TO DO: Rewrite the test_options from scratch for important primitives.
     @data(

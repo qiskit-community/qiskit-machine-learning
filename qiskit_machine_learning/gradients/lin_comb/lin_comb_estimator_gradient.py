@@ -144,8 +144,14 @@ class LinCombEstimatorGradient(BaseEstimatorGradient):
                 )
             lin_comb_circuits = self._lin_comb_cache[circuit_key]
             gradient_circuits = []
-            for param in parameters_:
+            for param_ in parameters_:
+                # TODO: the uuid attribute of param_ doesn't match that of param_match
+                # TODO: causing the two objects to not be identical, even if all other attrs match
+                for param_match in lin_comb_circuits.keys():
+                    if param_match.name == param_.name:
+                        param = param_match
                 gradient_circuits.append(lin_comb_circuits[param])
+
             n = len(gradient_circuits)
             # Make the observable as :class:`~qiskit.quantum_info.SparsePauliOp` and
             # add an ancillary operator to compute the gradient.
