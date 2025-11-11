@@ -5,7 +5,6 @@ from typing import Iterable, Any
 from qiskit.primitives import (
     BaseEstimatorV2,
     StatevectorEstimator,
-    PrimitiveJob,
 )
 from qiskit.transpiler import PassManager
 

@@ -25,9 +25,9 @@ from qiskit.primitives import (
     PrimitiveResult,
     SamplerPubResult,
 )
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit.transpiler.passmanager import BasePassManager
 
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 import qiskit_machine_learning.optionals as _optionals
 
 from ..circuit.library import QNNCircuit

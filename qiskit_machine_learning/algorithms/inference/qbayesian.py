@@ -19,12 +19,8 @@ from typing import Set
 from qiskit import ClassicalRegister, QuantumCircuit
 from qiskit.circuit import Qubit
 from qiskit.circuit.library import grover_operator
-from qiskit.primitives import (
-    BaseSamplerV2,
-    # StatevectorSampler as Sampler,
-)
+from qiskit.primitives import BaseSamplerV2
 from qiskit.quantum_info import Statevector
-from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
 
 from qiskit_machine_learning.primitives import QML_Sampler as Sampler
