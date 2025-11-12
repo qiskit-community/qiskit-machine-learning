@@ -13,20 +13,18 @@
 """Test the ``RawFeatureVector`` circuit."""
 
 import unittest
-
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 import qiskit
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import RealAmplitudes, real_amplitudes
+from qiskit.circuit.library import real_amplitudes
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Statevector
-from qiskit_machine_learning.optimizers import COBYLA
-from qiskit_machine_learning.utils import algorithm_globals
-
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.circuit.library import RawFeatureVector, raw_feature_vector
+from qiskit_machine_learning.optimizers import COBYLA
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 class TestRawFeatureVectorFunction(QiskitMachineLearningTestCase):
@@ -210,7 +208,9 @@ class TestRawFeatureVector(QiskitMachineLearningTestCase):
         y = np.array([y, 1 - y]).transpose()
 
         feature_map = RawFeatureVector(feature_dimension=num_inputs)
-        ansatz = RealAmplitudes(feature_map.num_qubits, reps=1)
+        ansatz = real_amplitudes(
+            feature_map.num_qubits, reps=1
+        )  # change: RealAmplitudes is migrated to real_amplitudes
 
         vqc = VQC(
             feature_map=feature_map,

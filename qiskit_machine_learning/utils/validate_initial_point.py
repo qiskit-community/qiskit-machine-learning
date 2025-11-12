@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,8 +15,8 @@
 from __future__ import annotations
 
 import numpy as np
-
 from qiskit.circuit import QuantumCircuit
+
 from .algorithm_globals import algorithm_globals
 
 
@@ -42,6 +42,9 @@ def validate_initial_point(point: np.ndarray | None | None, circuit: QuantumCirc
 
     if point is None:
         # get bounds if circuit has them set, otherwise use [-2pi, 2pi] for each parameter
+        # This attribute "parameter_bounds" is available in classes derived from NLocal
+        # class like RealAmplitudes, EfficientSU2, etc. This class is deprecated in Qiskit 2.1
+        # and will be removed in Qiskit 3, so it would be better to removed after that version.
         bounds = getattr(circuit, "parameter_bounds", None)
         if bounds is None:
             bounds = [(-2 * np.pi, 2 * np.pi)] * expected_size

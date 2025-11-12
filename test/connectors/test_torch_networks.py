@@ -12,7 +12,7 @@
 
 """Abstract class to test PyTorch hybrid networks."""
 
-from typing import Optional, Union, cast
+from typing import cast
 from test.connectors.test_torch import TestTorch
 import numpy as np
 from ddt import ddt, idata
@@ -102,7 +102,7 @@ class TestTorchNetworks(TestTorch):
         from torch.nn import MSELoss
         from torch.optim import SGD
 
-        qnn: Optional[Union[SamplerQNN, EstimatorQNN]] = None
+        qnn: SamplerQNN | EstimatorQNN | None = None
         if qnn_type == "sampler_qnn":
             qnn = self._create_sampler_qnn()
             output_size = 2

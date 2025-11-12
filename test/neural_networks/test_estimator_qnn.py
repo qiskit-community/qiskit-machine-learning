@@ -13,23 +13,20 @@
 """Test EstimatorQNN"""
 
 import unittest
-
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import zz_feature_map, real_amplitudes, z_feature_map
-from qiskit.quantum_info import SparsePauliOp
+from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
 from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import Session, EstimatorV2
-
+from qiskit_ibm_runtime import EstimatorV2, Session
 from qiskit_machine_learning.circuit.library import QNNCircuit
+from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 from qiskit_machine_learning.utils import algorithm_globals
 
-from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 
 algorithm_globals.random_seed = 52
 

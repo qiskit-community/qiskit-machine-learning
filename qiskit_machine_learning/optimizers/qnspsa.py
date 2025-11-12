@@ -19,11 +19,10 @@ from typing import Any, Callable
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit
+from qiskit.primitives import BaseSamplerV2
 
-from qiskit.primitives import BaseSampler
 from ..state_fidelities import ComputeUncompute
-
-from .spsa import SPSA, CALLBACK, TERMINATIONCHECKER, _batch_evaluate
+from .spsa import CALLBACK, SPSA, TERMINATIONCHECKER, _batch_evaluate
 
 # the function to compute the fidelity
 FIDELITY = Callable[[np.ndarray, np.ndarray], float]
@@ -51,7 +50,7 @@ class QNSPSA(SPSA):
 
         This component has some function that is normally random. If you want to reproduce behavior
         then you should set the random number generator seed in the algorithm_globals
-        (``qiskit_machine_learning.utils.algorithm_globals.random_seed = seed``).
+        (`` qiskit_machine_learning.utils.algorithm_globals.random_seed = seed``).
 
     Examples:
 
@@ -233,7 +232,7 @@ class QNSPSA(SPSA):
     def get_fidelity(
         circuit: QuantumCircuit,
         *,
-        sampler: BaseSampler | None = None,
+        sampler: BaseSamplerV2 | None = None,
     ) -> Callable[[np.ndarray, np.ndarray], float]:
         r"""Get a function to compute the fidelity of ``circuit`` with itself.
 

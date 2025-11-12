@@ -70,6 +70,8 @@ cerezo
 chernoff
 choi
 chuang
+cinds
+circ
 clbit
 clbits
 clopper
@@ -78,7 +80,9 @@ codebase
 codec
 coeffs
 colin
+coles
 combinatorial
+computable
 concha
 config
 configs
@@ -335,6 +339,7 @@ msg
 multiclass
 multinomial
 multioutput
+multipartite
 mxd
 mypy
 nabla
@@ -357,6 +362,7 @@ nfevs
 nft
 nielsen
 njev
+nlocal
 nlopt
 nn
 noancilla
@@ -450,6 +456,7 @@ qgans
 qgt
 qgt's
 qgts
+qinds
 qiskit
 qiskit's
 qn
@@ -494,6 +501,7 @@ RuntimeError
 rx
 ry
 rz
+qpy
 samplerqnn
 sanjiv
 sashank
@@ -511,7 +519,7 @@ scipy
 sdg
 seealso
 semidefinite
-sep 
+sep
 seperate
 seperable
 serializable

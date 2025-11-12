@@ -1,4 +1,4 @@
-qiskit>=1.0,<2.0
+qiskit>=2.0
 numpy>=2.0
 scipy>=1.4
 scikit-learn>=1.2

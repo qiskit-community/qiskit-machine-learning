@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,11 +14,11 @@
 
 import unittest
 from test import QiskitAlgorithmsTestCase
+
 import numpy as np
 from ddt import ddt
-from qiskit.primitives import Estimator
+from qiskit.primitives import StatevectorEstimator
 from qiskit.quantum_info import SparsePauliOp
-
 from qiskit_machine_learning import AlgorithmError
 from qiskit_machine_learning.gradients import LinCombEstimatorGradient
 from qiskit_machine_learning.optimizers import AQGD
@@ -41,7 +41,7 @@ class TestOptimizerAQGD(QiskitAlgorithmsTestCase):
                 ("XX", 0.18093119978423156),
             ]
         )
-        self.estimator = Estimator()
+        self.estimator = StatevectorEstimator()
         self.gradient = LinCombEstimatorGradient(self.estimator)
 
     def test_raises_exception(self):

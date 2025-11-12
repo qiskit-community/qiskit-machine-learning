@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,7 +13,6 @@
 """Quantum Support Vector Regressor"""
 
 import warnings
-from typing import Optional
 
 from sklearn.svm import SVR
 
@@ -41,7 +40,7 @@ class QSVR(SVR, SerializableModelMixin):
         qsvr.predict(sample_test)
     """
 
-    def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
+    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
         """
         Args:
             quantum_kernel: A quantum kernel to be used for regression. If None,
@@ -58,7 +57,7 @@ class QSVR(SVR, SerializableModelMixin):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
         if quantum_kernel is None:
-            msg = "No quantum kernel is provided, SamplerV1 based quantum kernel will be used."
+            msg = "No quantum kernel is provided, SamplerV2 based fidelity quantum kernel will be used."
             warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
         self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 
