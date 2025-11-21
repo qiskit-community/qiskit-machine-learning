@@ -266,7 +266,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-            - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v6
         with:
           name: ubuntu-latest-3.10
           path: /tmp/u310
