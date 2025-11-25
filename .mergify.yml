@@ -1,12 +1,12 @@
 queue_rules:
   - name: automerge
     queue_conditions:
-      - check-success=Deprecation_Messages_and_Coverage (3.9)
+      - check-success=Deprecation_Messages_and_Coverage (3.10)
       - "#approved-reviews-by>=1"
       - label=automerge
       - label!=on hold
     merge_conditions:
-      - check-success=Deprecation_Messages_and_Coverage (3.9)
+      - check-success=Deprecation_Messages_and_Coverage (3.10)
     merge_method: squash
 
 pull_request_rules:
