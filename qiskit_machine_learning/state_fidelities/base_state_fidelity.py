@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,16 +14,17 @@ Base state fidelity interface
 """
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections.abc import MutableMapping
-from typing import cast, Sequence, List
-import numpy as np
+from typing import Sequence, cast
 
+import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import ParameterVector
-from qiskit.primitives.utils import _circuit_key
 
 from ..algorithm_job import AlgorithmJob
+from ..utils import circuit_cache_key
 
 
 class BaseStateFidelity(ABC):
@@ -44,7 +45,7 @@ class BaseStateFidelity(ABC):
 
     def __init__(self) -> None:
         # use cache for preventing unnecessary circuit compositions
-        self._circuit_cache: MutableMapping[tuple[int, int], QuantumCircuit] = {}
+        self._circuit_cache: MutableMapping[tuple[str, str], QuantumCircuit] = {}
 
     @staticmethod
     def _preprocess_values(
@@ -56,7 +57,7 @@ class BaseStateFidelity(ABC):
         of the corresponding circuits and formats values to 2D list.
 
         Args:
-            circuits: List of circuits to be checked.
+            circuits: list of circuits to be checked.
             values: Parameter values corresponding to the circuits to be checked.
 
         Returns:
@@ -95,11 +96,11 @@ class BaseStateFidelity(ABC):
 
             # ensure 2d
             if len(values) > 0 and not isinstance(values[0], Sequence) or len(values) == 0:
-                values = [cast(List[float], values)]
+                values = [cast(list[float], values)]
 
             # we explicitly cast the type here because mypy appears to be unable to understand the
             # above few lines where we ensure that values are 2d
-            return cast(Sequence[List[float]], values)
+            return cast(Sequence[list[float]], values)
 
     def _check_qubits_match(self, circuit_1: QuantumCircuit, circuit_2: QuantumCircuit) -> None:
         """
@@ -170,8 +171,10 @@ class BaseStateFidelity(ABC):
 
         circuits = []
         for circuit_1, circuit_2 in zip(circuits_1, circuits_2):
-            # Use the same key for circuits as qiskit.primitives use.
-            circuit = self._circuit_cache.get((_circuit_key(circuit_1), _circuit_key(circuit_2)))
+            # Use the same key for circuits as qiskit.primitives use in 2.0+
+            circuit = self._circuit_cache.get(
+                (circuit_cache_key(circuit_1), circuit_cache_key(circuit_2))
+            )
 
             if circuit is not None:
                 circuits.append(circuit)
@@ -190,7 +193,9 @@ class BaseStateFidelity(ABC):
                 )
                 circuits.append(circuit)
                 # update cache
-                self._circuit_cache[_circuit_key(circuit_1), _circuit_key(circuit_2)] = circuit
+                self._circuit_cache[circuit_cache_key(circuit_1), circuit_cache_key(circuit_2)] = (
+                    circuit
+                )
 
         return circuits
 

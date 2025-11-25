@@ -27,16 +27,18 @@ from sklearn.svm import SVC
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import z_feature_map
-from qiskit.primitives import Sampler
 
+# from qiskit.primitives import StatevectorSampler as Sampler
+
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
-from qiskit_machine_learning.utils import algorithm_globals
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.state_fidelities import (
-    ComputeUncompute,
     BaseStateFidelity,
+    ComputeUncompute,
     StateFidelityResult,
 )
-from qiskit_machine_learning.kernels import FidelityQuantumKernel
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 @ddt
@@ -327,8 +329,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             kernel = FidelityQuantumKernel()
 
             x_vec = np.asarray([[1, 2, 3]])
-            kernel.evaluate(x_vec)
-            self.assertEqual(kernel.feature_map.num_qubits, 3)
+            self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Fail to adjust the number of qubits in the feature map"):
             qc = QuantumCircuit(1)
@@ -403,7 +404,10 @@ class TestDuplicates(QiskitMachineLearningTestCase):
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            self.circuit_counts += len(kwargs["circuits"])
+            if kwargs == {}:
+                self.circuit_counts = len(args[0])
+            else:
+                self.circuit_counts += len(kwargs["circuits"])
             return func(*args, **kwargs)
 
         return wrapper

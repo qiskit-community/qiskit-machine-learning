@@ -15,14 +15,15 @@
 import unittest
 from test import QiskitAlgorithmsTestCase
 
-from typing import Optional, List, Tuple
 from ddt import ddt, data, unpack
 import numpy as np
 from scipy.optimize import rosen, rosen_der
 
 from qiskit.circuit.library import real_amplitudes
 from qiskit.exceptions import MissingOptionalLibraryError
-from qiskit.primitives import Sampler
+
+# from qiskit.primitives import StatevectorSampler as Sampler
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 
 from qiskit_machine_learning.optimizers import (
     ADAM,
@@ -62,7 +63,7 @@ class TestOptimizers(QiskitAlgorithmsTestCase):
         optimizer: Optimizer,
         max_nfev: int,
         grad: bool = False,
-        bounds: Optional[List[Tuple[float, float]]] = None,
+        bounds: list[tuple[float, float]] | None = None,
     ):
         """Test the optimizer.
 

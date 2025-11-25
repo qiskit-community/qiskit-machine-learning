@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from enum import IntEnum
 import logging
-from typing import Any, Union, Protocol
+from typing import Any, Protocol
 
 import numpy as np
 import scipy
@@ -27,7 +27,7 @@ from ..algorithm_result import AlgorithmResult
 
 logger = logging.getLogger(__name__)
 
-POINT = Union[float, np.ndarray]  # pylint: disable=invalid-name
+POINT = float | np.ndarray  # pylint: disable=invalid-name
 
 
 class OptimizerResult(AlgorithmResult):

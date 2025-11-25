@@ -14,17 +14,16 @@
 from __future__ import annotations
 
 import copy
-from typing import Tuple, Dict, Set, List
+from typing import Set
 
-from qiskit import QuantumCircuit, ClassicalRegister
-from qiskit.quantum_info import Statevector
+from qiskit import ClassicalRegister, QuantumCircuit
 from qiskit.circuit import Qubit
 from qiskit.circuit.library import grover_operator
-from qiskit.primitives import BaseSampler, Sampler, BaseSamplerV2, BaseSamplerV1
+from qiskit.primitives import BaseSamplerV2
+from qiskit.quantum_info import Statevector
 from qiskit.transpiler.passmanager import BasePassManager
-from qiskit.result import QuasiDistribution
 
-from ...utils.deprecation import issue_deprecation_msg
+from qiskit_machine_learning.primitives import QML_Sampler as Sampler
 
 
 class QBayesian:
@@ -67,7 +66,7 @@ class QBayesian:
         *,
         limit: int = 10,
         threshold: float = 0.9,
-        sampler: BaseSampler | BaseSamplerV2 | None = None,
+        sampler: BaseSamplerV2 | None = None,
         pass_manager: BasePassManager | None = None,
     ):
         """
@@ -98,14 +97,6 @@ class QBayesian:
         if sampler is None:
             sampler = Sampler()
 
-        if isinstance(sampler, BaseSamplerV1):
-            issue_deprecation_msg(
-                msg="V1 Primitives are deprecated",
-                version="0.8.0",
-                remedy="Use V2 primitives for continued compatibility and support.",
-                period="4 months",
-            )
-
         self._sampler = sampler
 
         if hasattr(circuit.layout, "_input_qubit_count"):
@@ -125,11 +116,11 @@ class QBayesian:
             qrg.name: self._circ.num_qubits - idx - 1 for idx, qrg in enumerate(self._circ.qregs)
         }
         # Distribution of samples from rejection sampling
-        self._samples: Dict[str, float] = {}
+        self._samples: dict[str, float] = {}
         # True if rejection sampling converged after limit
         self._converged = bool()
 
-    def _get_grover_op(self, evidence: Dict[str, int]) -> QuantumCircuit:
+    def _get_grover_op(self, evidence: dict[str, int]) -> QuantumCircuit:
         """
         Constructs a Grover operator based on the provided evidence. The evidence is used to
         determine the "good states" that the Grover operator will amplify.
@@ -163,44 +154,62 @@ class QBayesian:
         )
         return grover_operator(oracle, state_preparation=self._circ)
 
-    def _run_circuit(self, circuit: QuantumCircuit) -> Dict[str, float]:
-        """Run the quantum circuit with the sampler."""
-        counts = {}
+    def _run_circuit(self, circuit: QuantumCircuit) -> dict[str, float]:
+        """Run the quantum circuit with the sampler and return P(bitstring) with fixed width."""
+        if self._pass_manager is not None:
+            circuit = self._pass_manager.run(circuit)
 
-        if isinstance(self._sampler, BaseSampler):
-            # Sample from circuit
-            job = self._sampler.run(circuit)
-            result = job.result()
+        job = self._sampler.run([circuit])
+        res = job.result()
+        pub = res[0]
 
-            # Get the counts of quantum state results
-            counts = result.quasi_dists[0].nearest_probability_distribution().binary_probabilities()
+        # Prefer robust, register-agnostic access.
+        try:
+            bit_counts = pub.join_data().get_counts()
+        except Exception:
+            # Fallback: try first known register if present (e.g., 'meas').
+            if hasattr(pub, "data") and hasattr(pub.data, "get"):
+                # pick any available register deterministically
+                for reg_name in getattr(pub.data, "__dir__", lambda: [])():
+                    try:
+                        bit_counts = getattr(pub.data, reg_name).get_counts()
+                        break
+                    except Exception:
+                        pass
+                else:
+                    bit_counts = {}
+            else:
+                bit_counts = {}
 
-        elif isinstance(self._sampler, BaseSamplerV2):
-            # Sample from circuit
-            if self._pass_manager is not None:
-                circuit = self._pass_manager.run(circuit)
-            job = self._sampler.run([circuit])
-            result = job.result()
+        total = sum(bit_counts.values())
+        if total == 0:
+            return {}
 
-            bit_array = list(result[0].data.values())[0]
-            bitstring_counts = bit_array.get_counts()
+        width = circuit.num_clbits  # number of measured classical bits in this circuit instance
 
-            # Normalize the counts to probabilities
-            total_shots = sum(bitstring_counts.values())
-            probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
-            # Convert to quasi-probabilities
-            quasi_dist = QuasiDistribution(probabilities)
-            binary_prob = quasi_dist.nearest_probability_distribution().binary_probabilities()
-            counts = {k: v for k, v in binary_prob.items() if int(k) < 2**self.num_virtual_qubits}
+        out: dict[str, float] = {}
 
-            # counts = QuasiDistribution(probabilities)
-            # counts = {k: v for k, v in counts.items()}
+        def _to_bin_key(k) -> str:
+            if isinstance(k, (int,)):
+                return format(int(k), f"0{width}b")
+            ks = str(k).replace(" ", "")
+            if ks.startswith(("0b", "0B")):
+                return format(int(ks, 2), f"0{width}b")
+            if ks.startswith(("0x", "0X")):
+                return format(int(ks, 16), f"0{width}b")
+            if set(ks) <= {"0", "1"} and len(ks) <= width:
+                return ks.zfill(width)
+            # decimal string
+            return format(int(ks), f"0{width}b")
 
-        return counts
+        for k, v in bit_counts.items():
+            out[_to_bin_key(k)] = out.get(_to_bin_key(k), 0.0) + v / total
+
+        return out
 
     def __power_grover(
-        self, grover_op: QuantumCircuit, evidence: Dict[str, int], k: int
-    ) -> Tuple[QuantumCircuit, Set[Tuple[Qubit, int]]]:
+        self, grover_op: QuantumCircuit, evidence: dict[str, int], k: int
+    ) -> tuple[QuantumCircuit, Set[tuple[Qubit, int]]]:
         """
         Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits,
         and returns a tuple containing the updated quantum circuit and a set of the measured
@@ -246,9 +255,9 @@ class QBayesian:
         }
         return qc, e_meas
 
-    def _format_samples(self, samples: Dict[str, float], evidence: List[str]) -> Dict[str, float]:
+    def _format_samples(self, samples: dict[str, float], evidence: list[str]) -> dict[str, float]:
         """Transforms samples keys back to their variables names."""
-        f_samples: Dict[str, float] = {}
+        f_samples: dict[str, float] = {}
         for smpl_key, smpl_val in samples.items():
             q_str, e_str = "", ""
             for var_name, var_idx in sorted(self._label2qidx.items(), key=lambda x: -x[1]):
@@ -263,8 +272,8 @@ class QBayesian:
         return f_samples
 
     def rejection_sampling(
-        self, evidence: Dict[str, int], format_res: bool = False
-    ) -> Dict[str, float]:
+        self, evidence: dict[str, int], format_res: bool = False
+    ) -> dict[str, float]:
         """
         Performs quantum rejection sampling given the evidence.
 
@@ -295,7 +304,7 @@ class QBayesian:
             grover_op = self._get_grover_op(evidence)
             # Amplitude amplification
             true_e = {(self._label2qubit[e_key], e_val) for e_key, e_val in evidence.items()}
-            meas_e: Set[Tuple[str, int]] = set()
+            meas_e: Set[tuple[str, int]] = set()
             best_qc, best_inter = QuantumCircuit(), -1
             self._converged = False
             k = -1
@@ -351,8 +360,8 @@ class QBayesian:
 
     def inference(
         self,
-        query: Dict[str, int],
-        evidence: Dict[str, int] = None,
+        query: dict[str, int],
+        evidence: dict[str, int] = None,
     ) -> float:
         """
         Performs quantum inference for the query variables given the evidence. It uses quantum
@@ -397,7 +406,7 @@ class QBayesian:
         return self._converged
 
     @property
-    def samples(self) -> Dict[str, float]:
+    def samples(self) -> dict[str, float]:
         """Returns the samples generated from the rejection sampling."""
         return self._samples
 
@@ -412,12 +421,12 @@ class QBayesian:
         self._limit = limit
 
     @property
-    def sampler(self) -> BaseSampler | BaseSamplerV2:
+    def sampler(self) -> BaseSamplerV2:
         """Returns the sampler primitive used to compute the samples."""
         return self._sampler
 
     @sampler.setter
-    def sampler(self, sampler: BaseSampler | BaseSamplerV2):
+    def sampler(self, sampler: BaseSamplerV2):
         """Set the sampler primitive used to compute the samples."""
         self._sampler = sampler
 

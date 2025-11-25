@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,8 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """An implementation of quantum neural network regressor."""
-
-from typing import Optional
 
 import numpy as np
 from sklearn.base import RegressorMixin
@@ -48,7 +46,5 @@ class NeuralNetworkRegressor(TrainableModel, RegressorMixin):
 
         return self._neural_network.forward(X, self._fit_result.x)
 
-    def score(
-        self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
-    ) -> float:
+    def score(self, X: np.ndarray, y: np.ndarray, sample_weight: np.ndarray | None = None) -> float:
         return RegressorMixin.score(self, X, y, sample_weight)

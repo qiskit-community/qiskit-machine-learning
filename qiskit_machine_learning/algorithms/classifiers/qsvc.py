@@ -13,7 +13,6 @@
 """Quantum Support Vector Classifier"""
 
 import warnings
-from typing import Optional
 
 from sklearn.svm import SVC
 
@@ -54,7 +53,7 @@ class QSVC(SVC, SerializableModelMixin):
 
     """
 
-    def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
+    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
         """
         Args:
             quantum_kernel: A quantum kernel to be used for classification.
@@ -72,7 +71,7 @@ class QSVC(SVC, SerializableModelMixin):
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
         if quantum_kernel is None:
-            msg = "No quantum kernel is provided, SamplerV1 based quantum kernel will be used."
+            msg = "No quantum kernel is provided, SamplerV2 based fidelity quantum kernel will be used."
             warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
         self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 

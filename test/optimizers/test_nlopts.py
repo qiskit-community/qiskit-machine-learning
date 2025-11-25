@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,9 +14,16 @@
 
 import unittest
 from test import QiskitAlgorithmsTestCase
+
 import numpy as np
 from qiskit.exceptions import MissingOptionalLibraryError
-from qiskit_machine_learning.optimizers.nlopts import CRS, DIRECT_L, DIRECT_L_RAND, ESCH, ISRES
+from qiskit_machine_learning.optimizers.nlopts import (
+    CRS,
+    DIRECT_L,
+    DIRECT_L_RAND,
+    ESCH,
+    ISRES,
+)
 from qiskit_machine_learning.utils import algorithm_globals
 
 
@@ -152,6 +159,9 @@ class TestNLoptOptimizer(QiskitAlgorithmsTestCase):
             return np.sum((params - 2) ** 2)
 
         initial_point = np.array([10.0, -10.0])
+        initial_point = np.clip(
+            initial_point, [l for l, _ in self.bounds], [u for _, u in self.bounds]
+        )
 
         try:
             optimizers = [

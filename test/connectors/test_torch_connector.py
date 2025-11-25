@@ -12,7 +12,7 @@
 
 """Test Torch Connector."""
 import itertools
-from typing import cast, Union, List, Tuple, Any
+from typing import cast, Any
 
 from test.connectors.test_torch import TestTorch
 
@@ -293,7 +293,7 @@ class TestTorchConnector(TestTorch):
             @staticmethod
             def build_circuit(
                 num_weights: int, num_input: int, num_qubits: int = 3
-            ) -> Tuple[QuantumCircuit, List[Parameter], List[Parameter]]:
+            ) -> tuple[QuantumCircuit, list[Parameter], list[Parameter]]:
                 """
                 Build the quantum circuit for the convolutional layer.
 
@@ -304,7 +304,7 @@ class TestTorchConnector(TestTorch):
                         Defaults to 3.
 
                 Returns:
-                    Tuple[QuantumCircuit, List[Parameter], List[Parameter]]: Quantum circuit,
+                    tuple[QuantumCircuit, list[Parameter], list[Parameter]]: Quantum circuit,
                         list of weight parameters, list of input parameters.
                 """
                 qc = QuantumCircuit(num_qubits)
@@ -345,12 +345,12 @@ class TestTorchConnector(TestTorch):
                     output_shape=self.output_channel,
                 )
 
-            def interpret(self, output: Union[float, int]) -> Any:
+            def interpret(self, output: float | int) -> Any:
                 """
                 Interprets the output from the quantum circuit.
 
                 Args:
-                    output (Union[float, int]): Output from the quantum circuit.
+                    output (float | int): Output from the quantum circuit.
 
                 Returns:
                     Any: Remainder of the output divided by the
