@@ -20,7 +20,7 @@ and regression.
 
 This library is part of the Qiskit Community ecosystem, a collection of high-level codes that are based
 on the Qiskit software development kit. As of version `0.7`, Qiskit Machine Learning is co-maintained
-by IBM and the [Hartree Center](https://www.hartree.stfc.ac.uk/), part of the UK Science and 
+by IBM and the [Hartree Centre](https://www.hartree.stfc.ac.uk/), part of the UK Science and 
 Technologies Facilities Council (STFC).
 
 > [!NOTE]
@@ -31,7 +31,7 @@ The Qiskit Machine Learning framework aims to be:
 
 * **User-friendly**, allowing users to quickly and easily prototype quantum machine learning models without 
     the need of extensive quantum computing knowledge.
-* **Flexible**, providing tools and functionalities to conduct proof-of-concepts and innovative research 
+* **Flexible**, providing tools and functionalities to conduct proofs-of-concept and innovative research 
     in quantum machine learning for both beginners and experts.
 * **Extensible**, facilitating the integration of new cutting-edge features leveraging Qiskit's 
     architectures, patterns and related services.
