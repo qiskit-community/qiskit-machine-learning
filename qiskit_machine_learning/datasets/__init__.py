@@ -27,10 +27,13 @@ Synthetic dataset generators
    :nosignatures:
 
    ad_hoc_data
+   h_molecule_evolution_data
    entanglement_concentration_data
+
 """
 
 from .ad_hoc import ad_hoc_data
+from .h_molecule_evolution import h_molecule_evolution_data
 from .entanglement_concentration import entanglement_concentration_data
 
-__all__ = ["ad_hoc_data", "entanglement_concentration_data"]
+__all__ = ["ad_hoc_data", "h_molecule_evolution_data", "entanglement_concentration_data"]
