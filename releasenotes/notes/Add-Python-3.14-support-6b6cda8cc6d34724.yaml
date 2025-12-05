@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Added support for using Qiskit Machine Learning with Python 3.14 following the release of
+    Python 3.14 (final) in October 2025 (`PEP 745 <https://peps.python.org/pep-0745/>`__). To
+    access the latest features of Python 3.14, you may update your Qiskit Machine Learning
+    environment.
