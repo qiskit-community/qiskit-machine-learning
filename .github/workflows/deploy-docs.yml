@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   docs_publish:
-    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","woodsp-ibm","smens","edoaltamura","oscar-wallis","OkuyanBoga","Benjamin-Symons"]', github.actor) }}
+    if: ${{ startsWith(github.ref, 'refs/heads/stable') && contains('["adekusar-drl","mtreinish","woodsp-ibm","smens","edoaltamura","oscar-wallis","OkuyanBoga"]', github.actor) }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
