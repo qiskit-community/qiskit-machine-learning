@@ -202,7 +202,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
         initial_point = np.random.random(ansatz.num_parameters)
 
         with self.subTest(msg="pass as kwarg"):
-            fidelity = QNSPSA.get_fidelity(ansatz, sampler=StatevectorEstimator())
+            fidelity = QNSPSA.get_fidelity(ansatz, sampler=Sampler())
             result = fidelity(initial_point, initial_point)
 
             self.assertAlmostEqual(result[0], 1)
@@ -221,9 +221,11 @@ class TestSPSA(QiskitAlgorithmsTestCase):
 
         def objective(x):
             x = np.reshape(x, (-1, num_parameters)).tolist()
-            return estimator.run((circuit, obs, x)).result().values.real
+            job = estimator.run([(circuit, obs, x)])
+            evs = job.result()[0].data.evs.real
+            return evs
 
-        fidelity = QNSPSA.get_fidelity(circuit, sampler=StatevectorEstimator())
+        fidelity = QNSPSA.get_fidelity(circuit, sampler=Sampler())
         optimizer = QNSPSA(fidelity)
         optimizer.maxiter = 1
         optimizer.learning_rate = 0.05
