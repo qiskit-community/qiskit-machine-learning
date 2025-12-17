@@ -392,7 +392,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
         }
 
         counting_sampler = Sampler()
-        counting_sampler.run = self.count_circuits(counting_sampler.run)
+        counting_sampler.run = self.count_circuits(counting_sampler.run)  # type: ignore
         self.counting_sampler = counting_sampler
         self.circuit_counts = 0
 

@@ -281,7 +281,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         predict = classifier.predict(features[0, :])
         self.assertIn(predict, ["A", "B"])
 
-    @unittest.skip
+    @unittest.skip("Skip for now")
     def test_circuit_extensions(self):
         """Test VQC when the number of qubits is different compared to the feature map/ansatz."""
 

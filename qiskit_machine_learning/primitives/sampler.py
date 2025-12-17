@@ -293,7 +293,7 @@ class ExactProbNDArray:
         # Return element-wise probabilities as an ndarray[object] of dicts
         out = np.empty(self._arr.shape, dtype=object)
         for idx in np.ndindex(self._arr.shape):
-            out[idx] = self._arr[idx].get_probabilities()
+            out[idx] = self._arr[idx].get_probabilities()  # type: ignore
         return out
 
     def get_counts(self, loc: int | tuple[int, ...] | None = None, shots: int | None = None):
@@ -320,7 +320,7 @@ def _options_to_dict(opts) -> dict:
     if opts is None:
         return {}
     if is_dataclass(opts):
-        return asdict(opts)
+        return asdict(opts)  # type: ignore
     if hasattr(opts, "__dict__"):
         return {k: v for k, v in vars(opts).items() if not k.startswith("_")}
     # Fallback: probe attributes
@@ -442,7 +442,7 @@ class _ExactSamplerPubResult(SamplerPubResult):
         # ND case: build an ndarray of ExactProbArray and return a wrapper
         out = np.empty(shape, dtype=object)
         for idx in np.ndindex(shape):
-            items: list[ExactProbArray] = []
+            items: list[ExactProbArray] = []  # type: ignore
             for n in names:
                 field = getattr(self.data, n)  # can be ExactProbNDArray
                 field_elem = field[idx] if isinstance(field, ExactProbNDArray) else field[idx]
