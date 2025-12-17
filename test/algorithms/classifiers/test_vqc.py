@@ -29,7 +29,7 @@ from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_ma
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import SamplerV2, Session
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.optimizers import COBYLA

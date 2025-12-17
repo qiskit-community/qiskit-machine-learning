@@ -12,10 +12,10 @@
 
 """Test primitives that check what kind of operations are in the circuits they execute."""
 
-from qiskit_machine_learning.primitives import QML_Estimator, QML_Sampler
+from qiskit_machine_learning.primitives import QMLEstimator, QMLSampler
 
 
-class LoggingEstimator(QML_Estimator):
+class LoggingEstimator(QMLEstimator):
     """An estimator checking what operations were in the circuits it executed."""
 
     def __init__(self, operations_callback=None):
@@ -29,7 +29,7 @@ class LoggingEstimator(QML_Estimator):
         return super().run(pubs, **run_options)
 
 
-class LoggingSampler(QML_Sampler):
+class LoggingSampler(QMLSampler):
     """A sampler checking what operations were in the circuits it executed."""
 
     def __init__(self, operations_callback):

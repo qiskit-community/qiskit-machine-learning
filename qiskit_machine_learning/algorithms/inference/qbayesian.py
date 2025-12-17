@@ -23,7 +23,7 @@ from qiskit.primitives import BaseSamplerV2
 from qiskit.quantum_info import Statevector
 from qiskit.transpiler.passmanager import BasePassManager
 
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 
 
 class QBayesian:

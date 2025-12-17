@@ -15,12 +15,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import zz_feature_map
 
-from ..utils.deprecation import issue_deprecation_msg
 from ..exceptions import QiskitMachineLearningError
 
 
@@ -53,13 +50,13 @@ class BaseKernel(ABC):
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
-            enforce_psd: Project to closest positive semidefinite matrix if ``x = y``.
+            enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
         """
         if feature_map is None:
             raise QiskitMachineLearningError(
-                    "Passed None as a feature_map, please provide a feature map."
-                )
+                "Passed None as a feature_map, please provide a feature map."
+            )
 
         self._num_features = feature_map.num_parameters
         self._feature_map = feature_map

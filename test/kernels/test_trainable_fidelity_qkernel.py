@@ -41,7 +41,7 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         self.feature_map = circ1.compose(circ2).compose(circ1)
         self.num_features = circ1.num_parameters
         self.training_parameters = circ2.parameters
-        
+
         self.sample_train = np.array(
             [[0.53833689, 0.44832616, 0.74399926], [0.43359057, 0.11213606, 0.97568932]]
         )
@@ -180,7 +180,6 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         )
         self.assertEqual(len(self.training_parameters), kernel.num_training_parameters)
         self.assertEqual(self.num_features, kernel.num_features)
-
 
     @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
     def test_default_feature_map(self, trainable_kernel_type):

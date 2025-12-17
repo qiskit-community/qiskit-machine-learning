@@ -24,7 +24,7 @@ from qiskit.primitives import (
     StatevectorEstimator,
     # StatevectorSampler as Sampler,
 )
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.neural_networks import (

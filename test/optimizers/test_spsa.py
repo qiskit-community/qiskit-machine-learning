@@ -18,7 +18,7 @@ from ddt import data, ddt
 from qiskit.circuit.library import pauli_two_design
 from qiskit.primitives import StatevectorEstimator  # , StatevectorSampler as Sampler
 from qiskit.quantum_info import SparsePauliOp, Statevector
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.optimizers import QNSPSA, SPSA
 from qiskit_machine_learning.utils import algorithm_globals
 

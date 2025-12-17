@@ -30,7 +30,7 @@ from qiskit.circuit.library import z_feature_map, zz_feature_map
 
 # from qiskit.primitives import StatevectorSampler as Sampler
 
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.state_fidelities import (
@@ -301,14 +301,18 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                 return StateFidelityResult(fidelities, [], {}, options)  # type: ignore[arg-type]
 
         with self.subTest("No PSD enforcement"):
-            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=False)
+            kernel = FidelityQuantumKernel(
+                feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=False
+            )
             matrix = kernel.evaluate(self.sample_train)
             eigen_values = np.linalg.eigvals(matrix)
             # there's a negative eigenvalue
             self.assertFalse(np.all(np.greater_equal(eigen_values, -1e-10)))
 
         with self.subTest("PSD enforced"):
-            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=True)
+            kernel = FidelityQuantumKernel(
+                feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=True
+            )
             matrix = kernel.evaluate(self.sample_train)
             eigen_values = np.linalg.eigvals(matrix)
             # all eigenvalues are non-negative with some tolerance

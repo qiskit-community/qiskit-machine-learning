@@ -30,7 +30,7 @@ from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.gradients import (
     LinCombSamplerGradient,
     ParamShiftSamplerGradient,

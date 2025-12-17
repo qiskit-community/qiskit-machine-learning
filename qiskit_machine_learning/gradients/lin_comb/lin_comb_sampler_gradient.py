@@ -121,7 +121,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             gradient_circuits = []
             for param_ in parameters_:
                 # TODO: the uuid attribute of param_ doesn't match that of param_match
-                # TODO: causing the two objects to not be identical, even if all other attrs match
+                # TODO: causing the two objects to not be identical, even if all other attributes match
                 param = param_
                 for param_match in lin_comb_circuits.keys():
                     if param_match.name == param_.name:

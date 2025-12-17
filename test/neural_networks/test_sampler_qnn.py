@@ -28,7 +28,7 @@ from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_ibm_runtime import SamplerV2, Session
 
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning.circuit.library import qnn_circuit
 from qiskit_machine_learning.gradients.param_shift.param_shift_sampler_gradient import (

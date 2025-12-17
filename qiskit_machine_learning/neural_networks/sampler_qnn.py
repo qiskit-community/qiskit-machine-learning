@@ -27,7 +27,7 @@ from qiskit.primitives import (
 )
 from qiskit.transpiler.passmanager import BasePassManager
 
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 import qiskit_machine_learning.optionals as _optionals
 
 from ..circuit.library import QNNCircuit
@@ -372,12 +372,15 @@ class SamplerQNN(NeuralNetwork):
 
         pub = result[0]
 
-        # helper: convert key to integer index robustly
         def _key_to_int(k):
+            """helper: convert key to integer index robustly"""
             if isinstance(k, (int, np.integer)):
                 return int(k)
+
             if isinstance(k, str):
-                s = k.replace(" ", "")  # handle spaced bit strings if any
+                # handle spaced bit strings if any
+                s = k.replace(" ", "")  # pylint: disable=invalid-name
+
                 if s.startswith("0x") or s.startswith("0X"):
                     return int(s, 16)
                 if s.startswith("0b") or s.startswith("0B"):
@@ -386,6 +389,7 @@ class SamplerQNN(NeuralNetwork):
                 if set(s) <= {"0", "1"}:
                     return int(s, 2)
                 return int(s)  # decimal string
+
             # last resort
             return int(k)
 

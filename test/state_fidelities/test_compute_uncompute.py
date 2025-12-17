@@ -25,7 +25,7 @@ from qiskit.circuit.library import real_amplitudes
 # from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 
 
 class TestComputeUncompute(QiskitAlgorithmsTestCase):

@@ -16,9 +16,10 @@ from __future__ import annotations
 from collections.abc import Sequence
 import numpy as np
 from qiskit import QuantumCircuit
+from qiskit.circuit.library import zz_feature_map
 
 # from qiskit.primitives import StatevectorSampler as Sampler
-from qiskit_machine_learning.primitives import QML_Sampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 from .base_kernel import BaseKernel
 
@@ -78,6 +79,9 @@ class FidelityQuantumKernel(BaseKernel):
         Raises:
             ValueError: When unsupported value is passed to `evaluate_duplicates`.
         """
+        if feature_map is None:
+            feature_map = zz_feature_map(2)
+
         super().__init__(feature_map=feature_map, enforce_psd=enforce_psd)
 
         eval_duplicates = evaluate_duplicates.lower()

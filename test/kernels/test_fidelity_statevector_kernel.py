@@ -92,7 +92,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
-        kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map)
+        kernel = FidelityStatevectorKernel(feature_map=self.zz_feature_map)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
@@ -114,7 +114,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         """Test enforce_psd"""
 
         with self.subTest("No PSD enforcement"):
-            kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map, enforce_psd=False, shots=1)
+            kernel = FidelityStatevectorKernel(
+                feature_map=self.zz_feature_map, enforce_psd=False, shots=1
+            )
             kernel._add_shot_noise = lambda *args, **kwargs: -1
             matrix = kernel.evaluate(self.sample_train)
             w = np.linalg.eigvals(matrix)
@@ -122,7 +124,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             self.assertFalse(np.all(np.greater_equal(w, -1e-10)))
 
         with self.subTest("PSD enforced"):
-            kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map, enforce_psd=True, shots=1)
+            kernel = FidelityStatevectorKernel(
+                feature_map=self.zz_feature_map, enforce_psd=True, shots=1
+            )
             kernel._add_shot_noise = lambda *args, **kwargs: -1
             matrix = kernel.evaluate(self.sample_train)
             w = np.linalg.eigvals(matrix)
@@ -139,7 +143,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
-        kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map, statevector_type=AerStatevector)
+        kernel = FidelityStatevectorKernel(
+            feature_map=self.zz_feature_map, statevector_type=AerStatevector
+        )
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
@@ -148,7 +154,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
 
     def test_statevector_cache(self):
         """Test filling and clearing the statevector cache."""
-        kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map, auto_clear_cache=False)
+        kernel = FidelityStatevectorKernel(feature_map=self.zz_feature_map, auto_clear_cache=False)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         with self.subTest("Check cache fills correctly."):
@@ -163,7 +169,9 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
                 len(self.sample_train) + len(self.sample_test),
             )
 
-        kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map, cache_size=3, auto_clear_cache=False)
+        kernel = FidelityStatevectorKernel(
+            feature_map=self.zz_feature_map, cache_size=3, auto_clear_cache=False
+        )
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(self.sample_train, self.label_train)
         with self.subTest("Check cache limit respected."):
@@ -295,7 +303,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
     def test_validate_input(self):
         """Test validation of input data in the base (abstract) class."""
         with self.subTest("Incorrect size of x_vec"):
-            kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map)
+            kernel = FidelityStatevectorKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[[0]]])
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
@@ -304,10 +312,10 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Adjust the number of qubits in the feature map"):
-            kernel = FidelityStatevectorKernel(feature_map = z_feature_map(feature_dimension=3))
+            kernel = FidelityStatevectorKernel(feature_map=z_feature_map(feature_dimension=3))
             x_vec = np.asarray([[1, 2, 3]])
             kernel.evaluate(x_vec)
-            
+
             self.assertEqual(kernel.feature_map.num_qubits, 3)
 
         with self.subTest("Fail to adjust the number of qubits in the feature map"):
@@ -318,7 +326,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Incorrect size of y_vec"):
-            kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map)
+            kernel = FidelityStatevectorKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[[0]]])
@@ -329,7 +337,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec, y_vec)
 
         with self.subTest("Fail when x_vec and y_vec have different shapes"):
-            kernel = FidelityStatevectorKernel(feature_map = self.zz_feature_map)
+            kernel = FidelityStatevectorKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[1, 2, 3]])
@@ -354,7 +362,7 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
         pickled_obj = pickle.dumps(kernel1)
         kernel2 = pickle.loads(pickled_obj)
 
-        kernel3 = FidelityStatevectorKernel(feature_map = self.zz_feature_map)
+        kernel3 = FidelityStatevectorKernel(feature_map=self.zz_feature_map)
         kernel3.__setstate__(kernel1.__getstate__())
 
         with self.subTest("Pickle fail, kernels are not the same type"):

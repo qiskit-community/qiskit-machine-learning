@@ -170,7 +170,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
         labels = np.array([0, 0.1, 0.4, 1])
         num_inputs = 2
-        default_precision = 0.01
+        default_precision = 0.001
 
         feature_map = zz_feature_map(num_inputs)
         ansatz = real_amplitudes(num_inputs)

@@ -20,15 +20,15 @@ Primitives
    :toctree: ../stubs/
    :nosignatures:
 
-   QML_Estimator
-   QML_Sampler
+   QMLEstimator
+   QMLSampler
 
 """
 
-from .estimator import QML_Estimator
-from .sampler import QML_Sampler
+from .estimator import QMLEstimator
+from .sampler import QMLSampler
 
 __all__ = [
-    "QML_Estimator",
-    "QML_Sampler",
+    "QMLEstimator",
+    "QMLSampler",
 ]
