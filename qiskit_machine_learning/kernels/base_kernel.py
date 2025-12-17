@@ -21,6 +21,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import zz_feature_map
 
 from ..utils.deprecation import issue_deprecation_msg
+from ..exceptions import QiskitMachineLearningError
 
 
 class BaseKernel(ABC):
@@ -56,19 +57,9 @@ class BaseKernel(ABC):
                 Default ``True``.
         """
         if feature_map is None:
-            # Note: when removing None it should be done in all the derived classes as well
-            # along with an appropriate update to the docstring in each case
-            issue_deprecation_msg(
-                msg="Passing None as a feature_map is deprecated",
-                version="0.9.0",
-                remedy="Pass a feature map with the required number of qubits to match "
-                "the features. Adjusting the number of qubits after instantiation will be "
-                "removed from Qiskit as circuits based on BlueprintCircuit, "
-                "like zz_feature_map to which this defaults, which could do this, "
-                "have been deprecated.",
-                period="4 months",
-            )
-            feature_map = zz_feature_map(2)
+            raise QiskitMachineLearningError(
+                    "Passed None as a feature_map, please provide a feature map."
+                )
 
         self._num_features = feature_map.num_parameters
         self._feature_map = feature_map

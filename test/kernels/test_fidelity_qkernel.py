@@ -26,7 +26,7 @@ from sklearn.svm import SVC
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import z_feature_map
+from qiskit.circuit.library import z_feature_map, zz_feature_map
 
 # from qiskit.primitives import StatevectorSampler as Sampler
 
@@ -51,7 +51,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 10598
 
         self.feature_map = z_feature_map(feature_dimension=2, reps=2)
-
+        self.zz_feature_map = zz_feature_map(feature_dimension=2)
         self.sample_train = np.asarray(
             [
                 [3.07876080, 1.75929189],
@@ -73,7 +73,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             "samples_4": self.sample_train,
             "samples_test": self.sample_test,
             "z_fm": self.feature_map,
-            "no_fm": None,
+            "no_fm": self.zz_feature_map,
         }
 
     def test_svc_callable(self):
@@ -102,7 +102,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
-        kernel = FidelityQuantumKernel()
+        kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
@@ -127,9 +127,9 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
     def test_exceptions(self):
         """Test quantum kernel raises exceptions and warnings."""
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
-            _ = FidelityQuantumKernel(evaluate_duplicates="wrong")
+            _ = FidelityQuantumKernel(feature_map=self.zz_feature_map, evaluate_duplicates="wrong")
         with self.assertRaises(ValueError, msg="Unsupported value of 'max_circuits_per_job'."):
-            _ = FidelityQuantumKernel(max_circuits_per_job=-1)
+            _ = FidelityQuantumKernel(feature_map=self.zz_feature_map, max_circuits_per_job=-1)
 
     # pylint: disable=too-many-positional-arguments
     @idata(
@@ -301,14 +301,14 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                 return StateFidelityResult(fidelities, [], {}, options)  # type: ignore[arg-type]
 
         with self.subTest("No PSD enforcement"):
-            kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=False)
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=False)
             matrix = kernel.evaluate(self.sample_train)
             eigen_values = np.linalg.eigvals(matrix)
             # there's a negative eigenvalue
             self.assertFalse(np.all(np.greater_equal(eigen_values, -1e-10)))
 
         with self.subTest("PSD enforced"):
-            kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=True)
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=True)
             matrix = kernel.evaluate(self.sample_train)
             eigen_values = np.linalg.eigvals(matrix)
             # all eigenvalues are non-negative with some tolerance
@@ -317,7 +317,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
     def test_validate_input(self):
         """Test validation of input data in the base (abstract) class."""
         with self.subTest("Incorrect size of x_vec"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[[0]]])
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
@@ -326,7 +326,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Adjust the number of qubits in the feature map"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2, 3]])
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
@@ -339,7 +339,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Incorrect size of y_vec"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[[0]]])
@@ -350,7 +350,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec, y_vec)
 
         with self.subTest("Fail when x_vec and y_vec have different shapes"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[1, 2, 3]])
