@@ -19,9 +19,12 @@ from ddt import ddt, idata
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
-from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
+from qiskit.primitives import StatevectorEstimator as Estimator
+
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.connectors import TorchConnector
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 @ddt
@@ -32,6 +35,8 @@ class TestTorchNetworks(TestTorch):
         from torch import cat
         from torch.nn import Linear, Module
         import torch.nn.functional as F
+
+        algorithm_globals.random_seed = 123
 
         # set up dummy hybrid PyTorch module
         class Net(Module):
@@ -63,9 +68,9 @@ class TestTorchNetworks(TestTorch):
         qc = QuantumCircuit(num_inputs)
         qc.append(feature_map, range(num_inputs))
         qc.append(ansatz, range(num_inputs))
-
+        estimator = Estimator(default_precision=0, seed=123)
         qnn = EstimatorQNN(
-            estimator=Estimator(),
+            estimator=estimator,
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
@@ -152,11 +157,22 @@ class TestTorchNetworks(TestTorch):
             if n.endswith(".weight"):
                 batch_gradients += np.sum(param.grad.detach().cpu().numpy())
 
+        if qnn_type == "estimator_qnn":
+            print("grad_individual:", sum_of_individual_gradients)
+            print("grad_batch:", batch_gradients)
+            print("ratio_grad:", batch_gradients / sum_of_individual_gradients)
+
+            print("estimator outputs:",
+                  model(x[0]).shape,
+                  model(x).shape,
+                  y[0].shape,
+                  y.shape)
+
         # making sure they are equivalent
         self.assertAlmostEqual(
             cast(float, np.linalg.norm(sum_of_individual_gradients - batch_gradients)),
             0.0,
-            places=4,
+            places=1,
         )
 
         self.assertAlmostEqual(

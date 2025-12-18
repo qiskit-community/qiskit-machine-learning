@@ -22,7 +22,6 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import z_feature_map, real_amplitudes
 from qiskit.primitives import (
     StatevectorEstimator,
-    # StatevectorSampler as Sampler,
 )
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.utils import algorithm_globals
