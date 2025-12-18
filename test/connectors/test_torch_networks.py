@@ -19,6 +19,7 @@ from ddt import ddt, idata
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
+from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.connectors import TorchConnector
 
@@ -64,6 +65,7 @@ class TestTorchNetworks(TestTorch):
         qc.append(ansatz, range(num_inputs))
 
         qnn = EstimatorQNN(
+            estimator=Estimator(),
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
@@ -86,6 +88,7 @@ class TestTorchNetworks(TestTorch):
         qc.append(ansatz, range(num_inputs))
 
         qnn = SamplerQNN(
+            sampler=Sampler(),
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,

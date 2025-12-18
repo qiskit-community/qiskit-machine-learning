@@ -25,6 +25,7 @@ from qiskit.quantum_info import SparsePauliOp
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.connectors.torch_connector import _TorchNNFunction
+from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
 from qiskit_machine_learning.connectors.torch_connector import _get_einsum_signature
 
@@ -191,6 +192,7 @@ class TestTorchConnector(TestTorch):
         qc.compose(ansatz, inplace=True)
 
         qnn = SamplerQNN(
+            sampler=Sampler(),
             circuit=qc,
             input_params=fmap.parameters,
             weight_params=ansatz.parameters,
@@ -231,6 +233,7 @@ class TestTorchConnector(TestTorch):
         qc.compose(ansatz, inplace=True)
 
         qnn = EstimatorQNN(
+            estimator=Estimator(),
             circuit=qc,
             observables=observables,
             input_params=fmap.parameters,
@@ -338,6 +341,7 @@ class TestTorchConnector(TestTorch):
 
                 # Use SamplerQNN to convert the quantum circuit to a PyTorch module
                 return SamplerQNN(
+                    sampler=Sampler(),
                     circuit=qc,
                     weight_params=weight_params,
                     interpret=self.interpret,  # type: ignore
