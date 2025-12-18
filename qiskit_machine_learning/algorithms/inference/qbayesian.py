@@ -196,7 +196,6 @@ class QBayesian:
                             bit_counts = gc()
                             break
 
-
         total = sum(bit_counts.values())
         if total == 0:
             return {}
