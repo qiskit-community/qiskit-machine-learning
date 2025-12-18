@@ -45,8 +45,8 @@ class BaseKernel(ABC):
     def __init__(self, *, feature_map: QuantumCircuit = None, enforce_psd: bool = True) -> None:
         """
         Args:
-            feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
-                :func:`~qiskit.circuit.library.zz_feature_map` is used with two qubits. If there's
+            feature_map: Parameterized circuit to be used as the feature map. This is required: if
+                ``None`` is given, a :class:`~QiskitMachineLearningError` is raised. If there's
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
