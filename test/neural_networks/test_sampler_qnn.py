@@ -383,7 +383,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             self._verify_qnn(sampler_qnn, 1, input_data=None, weights=None)
 
     def test_qnn_qc_circuit_construction(self):
-        """Test Sampler QNN properties and forward/backward pass for QNNCircuit construction"""
+        """Test Sampler QNN properties and forward/backward pass for qnn_circuit construction"""
         num_qubits = 2
         feature_map = zz_feature_map(feature_dimension=num_qubits)
         ansatz = real_amplitudes(num_qubits=num_qubits, reps=1)

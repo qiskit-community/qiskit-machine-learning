@@ -15,16 +15,11 @@
 import numpy as np
 from qiskit.exceptions import QiskitError
 from qiskit.circuit import (
-    QuantumRegister,
     QuantumCircuit,
     ParameterVector,
     Instruction,
     ParameterExpression,
 )
-from qiskit.circuit.library import BlueprintCircuit
-
-from ...utils.deprecation import issue_deprecation_msg
-
 
 def raw_feature_vector(feature_dimension: int) -> QuantumCircuit:
     """The raw feature vector circuit.
