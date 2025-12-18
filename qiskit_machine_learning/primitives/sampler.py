@@ -57,7 +57,7 @@ class QMLSampler(StatevectorSampler):
         *,
         shots: int | None = None,
     ) -> PrimitiveJob[PrimitiveResult[SamplerPubResult]]:
-        """Run the sampler on the given publications, using exact probabilities in exact mode."""
+        """Run the sampler on the given PUBs, using exact probabilities."""
         if not self._exact_mode:
             return super().run(pubs, shots=shots)
 
@@ -70,7 +70,7 @@ class QMLSampler(StatevectorSampler):
     # -------------------- exact evaluation --------------------
 
     def _run_exact(self, pubs: Iterable[SamplerPub]) -> PrimitiveResult[SamplerPubResult]:
-        """Evaluate all pubs deterministically and wrap the results in a PrimitiveResult."""
+        """Evaluate all PUBs deterministically and wrap the results in a PrimitiveResult."""
         results = [self._run_pub_exact(pub) for pub in pubs]
         return PrimitiveResult(results)
 

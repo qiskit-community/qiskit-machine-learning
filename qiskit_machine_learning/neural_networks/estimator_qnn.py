@@ -173,7 +173,6 @@ class EstimatorQNN(NeuralNetwork):
 
         self._observables = observables
 
-
         self._input_params = list(input_params) if input_params is not None else []
         self._weight_params = list(weight_params) if weight_params is not None else []
 

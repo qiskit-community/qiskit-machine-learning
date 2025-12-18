@@ -21,6 +21,7 @@ from qiskit.circuit import (
     ParameterExpression,
 )
 
+
 def raw_feature_vector(feature_dimension: int) -> QuantumCircuit:
     """The raw feature vector circuit.
 
@@ -85,6 +86,7 @@ def raw_feature_vector(feature_dimension: int) -> QuantumCircuit:
     qc = QuantumCircuit(num_qubits)
     qc.append(placeholder, qc.qubits)
     return qc
+
 
 class ParameterizedInitialize(Instruction):
     """A normalized parameterized initialize instruction."""
