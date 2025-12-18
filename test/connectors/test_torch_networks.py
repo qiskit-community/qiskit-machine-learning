@@ -162,11 +162,7 @@ class TestTorchNetworks(TestTorch):
             print("grad_batch:", batch_gradients)
             print("ratio_grad:", batch_gradients / sum_of_individual_gradients)
 
-            print("estimator outputs:",
-                  model(x[0]).shape,
-                  model(x).shape,
-                  y[0].shape,
-                  y.shape)
+            print("estimator outputs:", model(x[0]).shape, model(x).shape, y[0].shape, y.shape)
 
         # making sure they are equivalent
         self.assertAlmostEqual(
