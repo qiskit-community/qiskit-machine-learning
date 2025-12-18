@@ -34,11 +34,19 @@ class QMLSampler(StatevectorSampler):
     """
     V2 sampler with two modes:
       - shots=None (default): exact mode, no sampling. Returns deterministic probabilities.
-      - shots=int        : sampling mode, delegate to StatevectorSampler with given default_shots.
+      - shots=int           : sampling mode, delegate to StatevectorSampler with given default_shots.
     """
 
     def __init__(self, *, shots: int | None = None, **kwargs):
-        """Initialize the sampler, selecting exact or sampling mode based on the shots argument."""
+        """Statevector-based sampler supporting exact (analytic) and sampling modes.
+
+        Args:
+            shots (int | None): Number of shots for sampling mode. If ``None``, run in exact mode.
+            **kwargs: Additional arguments forwarded to StatevectorSampler.
+
+        Returns:
+            QMLSampler: Configured sampler instance.
+        """
         self._exact_mode = shots is None
         if self._exact_mode:
             super().__init__(**kwargs)
@@ -57,7 +65,15 @@ class QMLSampler(StatevectorSampler):
         *,
         shots: int | None = None,
     ) -> PrimitiveJob[PrimitiveResult[SamplerPubResult]]:
-        """Run the sampler on the given PUBs, using exact probabilities."""
+        """Run the sampler on PUBs.
+
+        Args:
+            pubs (Iterable[SamplerPubLike]): Publications to evaluate.
+            shots (int | None): Optional override for number of shots.
+
+        Returns:
+            PrimitiveJob[PrimitiveResult[SamplerPubResult]]: Job executing the sampler.
+        """
         if not self._exact_mode:
             return super().run(pubs, shots=shots)
 
@@ -70,12 +86,26 @@ class QMLSampler(StatevectorSampler):
     # -------------------- exact evaluation --------------------
 
     def _run_exact(self, pubs: Iterable[SamplerPub]) -> PrimitiveResult[SamplerPubResult]:
-        """Evaluate all PUBs deterministically and wrap the results in a PrimitiveResult."""
+        """Deterministically evaluate all PUBs.
+
+        Args:
+            pubs (Iterable[SamplerPub]): Fully coerced PUBs.
+
+        Returns:
+            PrimitiveResult[SamplerPubResult]: Exact results for each PUB.
+        """
         results = [self._run_pub_exact(pub) for pub in pubs]
         return PrimitiveResult(results)
 
     def _run_pub_exact(self, pub: SamplerPub) -> SamplerPubResult:
-        """Compute exact per-register probability containers for a single SamplerPub."""
+        """Compute per-register exact probability containers for a single PUB.
+
+        Args:
+            pub (SamplerPub): PUB containing circuit and parameters.
+
+        Returns:
+            SamplerPubResult: Exact probability results for this PUB.
+        """
         unitary_circ, qargs, meas_info = _preprocess_circuit(pub.circuit)
 
         bound_circuits = pub.parameter_values.bind_all(unitary_circ)
@@ -148,7 +178,14 @@ class ExactProbArray:
         num_bits: int,
         shape: tuple[int, ...] = (),
     ):
-        """Create an ExactProbArray from a joint bitstring distribution and a register bit mask."""
+        """Exact probability container for a single classical register.
+
+        Args:
+            joint_probs (Mapping[str, float]): Full joint measured-bit distribution.
+            mask (list[int]): LSB-ordered indices selecting bits exposed by this register.
+            num_bits (int): Width of the classical register.
+            shape (tuple[int, ...]): Broadcast shape (default ()).
+        """
         self._joint_probs = dict(joint_probs)
         self._mask = list(mask)
         self._num_bits = int(num_bits)
@@ -170,7 +207,14 @@ class ExactProbArray:
         return None
 
     def _project_joint_to_mask(self, probs: Mapping[str, float]) -> dict[str, float]:
-        """Marginalize the joint distribution onto this register's bit mask."""
+        """Project the joint distribution to this register's bit mask.
+
+        Args:
+            probs (Mapping[str, float]): Full joint distribution.
+
+        Returns:
+            dict[str, float]: Marginalized probability distribution.
+        """
         out: dict[str, float] = {}
         for bitstr, p in probs.items():
             bits = list(bitstr)  # left
@@ -180,12 +224,25 @@ class ExactProbArray:
         return out
 
     def get_probabilities(self) -> dict[str, float]:
-        """Return the exact bitstring-to-probability map for this register."""
+        """Return exact bitstring probabilities.
+
+        Returns:
+            dict[str, float]: Map from bitstring to exact probability.
+        """
         return self._project_joint_to_mask(self._joint_probs)
 
     def get_counts(self, shots: int | None = None) -> dict[str, int]:
-        """Return dyadic counts consistent with the probabilities, optionally
-        for a given number of shots."""
+        """Return dyadic counts consistent with probabilities.
+
+        Args:
+            shots (int | None): Number of counts to generate. If ``None``, use dyadic size.
+
+        Returns:
+            dict[str, int]: Counts per bitstring.
+
+        Raises:
+            ValueError: If the distribution is not dyadic.
+        """
         probs = self.get_probabilities()
 
         def dyadic_k(p: float, tol=1e-12, kmax=60) -> int | None:
@@ -220,8 +277,17 @@ class ExactProbArray:
 
     @staticmethod
     def concatenate_bits(items: list["ExactProbArray"]) -> "ExactProbArray":
-        """Concatenate multiple ExactProbArray instances over a shared joint
-        distribution into a wider register."""
+        """Concatenate multiple ``ExactProbArray`` instances.
+
+        Args:
+            items (list[ExactProbArray]): Containers to concatenate.
+
+        Returns:
+            ExactProbArray: Wider register combining all bits.
+
+        Raises:
+            ValueError: If the joint distributions are incompatible.
+        """
         if not items:
             raise ValueError("No containers to concatenate.")
         joint = items[0]._joint_probs
@@ -247,7 +313,11 @@ class ExactProbNDArray:
     __slots__ = ("_arr",)
 
     def __init__(self, arr: np.ndarray):
-        """Wrap a numpy object array of ExactProbArray elements."""
+        """N-dimensional wrapper for arrays of ``ExactProbArray``.
+
+        Args:
+            arr (np.ndarray): Object array of ``ExactProbArray`` elements.
+        """
         self._arr = arr
 
     # --- array-like protocol ---
@@ -256,9 +326,15 @@ class ExactProbNDArray:
         """Return the shape of the underlying array."""
         return self._arr.shape
 
-    def __getitem__(self, idx) -> Any:
-        """Index into the underlying array, returning an ExactProbArray or
-        ExactProbNDArray as appropriate."""
+    def __getitem__(self, idx: int | tuple[int, ...] | None) -> Any:
+        """Return probabilities element-wise or at a specific index.
+
+        Args:
+            loc (int | tuple[int, ...] | None): Optional index.
+
+        Returns:
+            dict[str, float] | np.ndarray: Probabilities for the selected element or array.
+        """
         out = self._arr[idx]
         # Preserve behavior: if slicing returns an ndarray of ExactProbArray, wrap again.
         if isinstance(out, np.ndarray):
@@ -296,8 +372,18 @@ class ExactProbNDArray:
             out[idx] = self._arr[idx].get_probabilities()  # type: ignore
         return out
 
-    def get_counts(self, loc: int | tuple[int, ...] | None = None, shots: int | None = None):
-        """Return counts for a single location or the union of counts across all entries."""
+    def get_counts(
+        self, loc: int | tuple[int, ...] | None = None, shots: int | None = None
+    ) -> dict[str, int] | np.ndarray:
+        """Return counts element-wise or the union across positions.
+
+        Args:
+            loc (int | tuple[int, ...] | None): Optional index.
+            shots (int | None): Number of shots for counts.
+
+        Returns:
+            dict[str, int] | np.ndarray: Counts for the selected element or union.
+        """
         if loc is not None:
             return self._arr[loc].get_counts(shots=shots)
 
@@ -316,7 +402,14 @@ class ExactProbNDArray:
 
 
 def _options_to_dict(opts) -> dict:
-    """Best-effort conversion of an options-like object into a plain dictionary."""
+    """Convert an options object to a plain dict.
+
+    Args:
+        opts: Any options-like object.
+
+    Returns:
+        dict: Extracted key–value pairs.
+    """
     if opts is None:
         return {}
     if is_dataclass(opts):
@@ -339,7 +432,11 @@ class _OptionsNS(SimpleNamespace):
     """Mutable, dict-like options name space with an update(**kwargs) helper."""
 
     def update(self, **kwargs):
-        """Update the options name space in place with the given keyword arguments."""
+        """Update options in place.
+
+        Args:
+            **kwargs: Key–value pairs to update.
+        """
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -358,9 +455,13 @@ class _MeasureInfo:
 
 
 def _final_measurement_mapping(circuit: QuantumCircuit) -> dict[tuple[ClassicalRegister, int], int]:
-    """
-    Map each final classical bit to the (global) qubit index it measures.
-    Only final measurements are allowed; any op after a measure breaks 'final'.
+    """Map final classical bits to qubit indices.
+
+    Args:
+        circuit (QuantumCircuit): Circuit with final measurements.
+
+    Returns:
+        dict[(ClassicalRegister, int), int]: Mapping from classical bit to qubit index.
     """
     active_qubits = set(range(circuit.num_qubits))
     active_cbits = set(range(circuit.num_clbits))
@@ -385,8 +486,17 @@ def _final_measurement_mapping(circuit: QuantumCircuit) -> dict[tuple[ClassicalR
 
 
 def _preprocess_circuit(circuit: QuantumCircuit):
-    """Remove final measurements and return the unitary circuit, measured qubit list,
-    and per-register measurement metadata."""
+    """Preprocess a circuit to extract measurement mapping.
+
+    Args:
+        circuit (QuantumCircuit): Circuit with final measurements.
+
+    Returns:
+        tuple:
+            QuantumCircuit: Circuit with final measurements removed.
+            list[int]: Sorted measured qubit indices.
+            list[_MeasureInfo]: Measurement metadata per classical register.
+    """
     mapping = _final_measurement_mapping(circuit)
     qargs = sorted(set(mapping.values()))
     qargs_index = {q: i for i, q in enumerate(qargs)}
@@ -416,8 +526,17 @@ class _ExactSamplerPubResult(SamplerPubResult):
     ExactProbNDArray containers."""
 
     def join_data(self, names: Iterable[str] | None = None):
-        """Join per-register probability containers into a single ExactProbArray or
-        ExactProbNDArray over the requested registers."""
+        """Join named per-register probability containers.
+
+        Args:
+            names (Iterable[str] | None): Register names to join.
+
+        Returns:
+            ExactProbArray | ExactProbNDArray: Concatenated bit container.
+
+        Raises:
+            ValueError: If names are empty or missing.
+        """
         if names is None:
             names = list(self.metadata.get("names", []))
         names = list(names)

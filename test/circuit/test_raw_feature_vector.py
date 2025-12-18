@@ -12,7 +12,6 @@
 
 """Test the ``RawFeatureVector`` circuit."""
 
-import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np

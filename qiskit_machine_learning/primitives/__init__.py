@@ -25,7 +25,6 @@ Primitives
 
    QMLEstimator
    QMLSampler
-
 """
 
 from .estimator import QMLEstimator

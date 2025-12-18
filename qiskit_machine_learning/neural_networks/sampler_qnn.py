@@ -36,7 +36,6 @@ from ..gradients import (
     ParamShiftSamplerGradient,
     SamplerGradientResult,
 )
-from ..utils.deprecation import issue_deprecation_msg
 from .neural_network import NeuralNetwork
 
 if _optionals.HAS_SPARSE:

@@ -35,5 +35,14 @@ class QMLEstimator(BaseEstimatorV2):
         self.pass_manager = pass_manager  # stored for algorithms to use if they choose
 
     def run(self, pubs: Iterable[Any], *, precision: float | None = None):
+        """Run the sampler on PUBs.
+
+        Args:
+            pubs (Iterable[SamplerPubLike]): Publications to evaluate.
+            precision (float | None): Specifies precision (related to the number of shots).
+
+        Returns:
+            PrimitiveJob[PrimitiveResult[EstimatorPubResult]]: Job executing the estimator.
+        """
         # Delegate; if you need to apply a stored pass manager, do it in your pipeline.
         return self._inner.run(pubs, precision=precision)

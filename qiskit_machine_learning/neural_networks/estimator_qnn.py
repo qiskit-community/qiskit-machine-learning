@@ -26,14 +26,12 @@ from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
 
-from ..circuit.library import qnn_circuit
 from ..exceptions import QiskitMachineLearningError
 from ..gradients import (
     BaseEstimatorGradient,
     EstimatorGradientResult,
     ParamShiftEstimatorGradient,
 )
-from ..utils.deprecation import issue_deprecation_msg
 from .neural_network import NeuralNetwork
 
 logger = logging.getLogger(__name__)

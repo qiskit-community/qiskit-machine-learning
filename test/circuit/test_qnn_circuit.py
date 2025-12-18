@@ -12,7 +12,6 @@
 
 """Test the ``QNNCircuit`` circuit."""
 
-import unittest
 from test import QiskitMachineLearningTestCase
 
 from qiskit.circuit import QuantumCircuit

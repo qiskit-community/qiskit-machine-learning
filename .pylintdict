@@ -73,6 +73,7 @@ choi
 chuang
 cinds
 circ
+ClassicalRegister
 clbit
 clbits
 clopper
@@ -166,6 +167,7 @@ evolutions
 evolutionsynthesis
 evolver
 evolvers
+ExactProbArray
 excitations
 exponentials
 exponentiated
@@ -295,6 +297,7 @@ len
 leq
 lin
 linalg
+loc
 loglik
 loglikelihood
 lov
@@ -434,6 +437,7 @@ preprint
 preprocess
 preprocesses
 priori
+probs
 proj
 ps
 pvqd
@@ -505,6 +509,8 @@ ry
 rz
 qpy
 samplerqnn
+SamplerPub
+SamplerPubLike
 sanjiv
 sashank
 satisfiability
