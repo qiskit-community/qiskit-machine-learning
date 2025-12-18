@@ -364,20 +364,15 @@ class SamplerQNN(NeuralNetwork):
             counts_i = None
             # new API
             if hasattr(pub, "data") and hasattr(pub.data, "get_counts"):
-                try:
-                    counts_i = pub.data.get_counts(i)
-                except Exception:
-                    counts_i = None
+                counts_i = pub.data.get_counts(i)
             # alternative field names some builds expose
             if (
                 counts_i is None
                 and hasattr(pub.data, "meas")
                 and hasattr(pub.data.meas, "get_counts")
             ):
-                try:
-                    counts_i = pub.data.meas.get_counts(i)
-                except Exception:
-                    counts_i = None
+                counts_i = pub.data.meas.get_counts(i)
+
             # absolute fallback (aggregated; avoids crash but will degrade accuracy)
             if counts_i is None:
                 counts_i = pub.join_data().get_counts()
@@ -390,10 +385,7 @@ class SamplerQNN(NeuralNetwork):
             # keys -> ints, filter to valid range
             probs_i = {}
             for k, v in counts_i.items():
-                try:
-                    ki = _key_to_int(k)
-                except Exception:
-                    continue
+                ki = _key_to_int(k)
                 if ki < 2**self.num_virtual_qubits:
                     probs_i[ki] = v / total_shots
 

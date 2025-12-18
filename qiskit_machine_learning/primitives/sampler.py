@@ -328,10 +328,7 @@ def _options_to_dict(opts) -> dict:
     for k in dir(opts):
         if k.startswith("_"):
             continue
-        try:
-            v = getattr(opts, k)
-        except Exception:
-            continue
+        v = getattr(opts, k)
         if callable(v):
             continue
         d[k] = v

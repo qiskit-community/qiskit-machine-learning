@@ -163,23 +163,39 @@ class QBayesian:
         res = job.result()
         pub = res[0]
 
-        # Prefer robust, register-agnostic access.
-        try:
-            bit_counts = pub.join_data().get_counts()
-        except Exception:
-            # Fallback: try first known register if present (e.g., 'meas').
-            if hasattr(pub, "data") and hasattr(pub.data, "get"):
-                # pick any available register deterministically
-                for reg_name in getattr(pub.data, "__dir__", lambda: [])():
-                    try:
-                        bit_counts = getattr(pub.data, reg_name).get_counts()
-                        break
-                    except Exception:
-                        pass
+        # Default
+        bit_counts = {}
+
+        # 1) Prefer robust, register-agnostic access (no try/except: guards only)
+        join_data = getattr(pub, "join_data", None)
+        if callable(join_data):
+            joined = join_data()
+            get_counts = getattr(joined, "get_counts", None)
+            if callable(get_counts):
+                bit_counts = get_counts()
+
+        # 2) Fallback: first available register deterministically
+        if not bit_counts:
+            data = getattr(pub, "data", None)
+            if data is not None:
+                # dict-like (fast + deterministic)
+                if isinstance(data, dict):
+                    for reg_name in sorted(data):
+                        reg = data[reg_name]
+                        gc = getattr(reg, "get_counts", None)
+                        if callable(gc):
+                            bit_counts = gc()
+                            break
+
+                # object-like container (deterministic by sorted dir)
                 else:
-                    bit_counts = {}
-            else:
-                bit_counts = {}
+                    for reg_name in sorted(n for n in dir(data) if not n.startswith("_")):
+                        reg = getattr(data, reg_name, None)
+                        gc = getattr(reg, "get_counts", None)
+                        if callable(gc):
+                            bit_counts = gc()
+                            break
+
 
         total = sum(bit_counts.values())
         if total == 0:
