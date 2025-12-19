@@ -19,9 +19,8 @@ from ddt import ddt, idata
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
-from qiskit.primitives import StatevectorEstimator as Estimator
 
-from qiskit_machine_learning.primitives import QMLSampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.utils import algorithm_globals

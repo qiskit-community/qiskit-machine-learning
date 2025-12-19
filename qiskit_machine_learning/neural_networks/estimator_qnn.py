@@ -20,12 +20,12 @@ from typing import Sequence
 
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import StatevectorEstimator
 from qiskit.primitives.base import BaseEstimatorV2
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
 
+from ..primitives import QMLEstimator as Estimator
 from ..exceptions import QiskitMachineLearningError
 from ..gradients import (
     BaseEstimatorGradient,
@@ -120,7 +120,7 @@ class EstimatorQNN(NeuralNetwork):
             circuit: The quantum circuit to represent the neural network.
             estimator: The estimator used to compute neural network's results.
                 If ``None``, a default instance of the reference estimator,
-                :class:`~qiskit.primitives.StatevectorEstimator`, will be used.
+                :class:`~qiskit_machine_learning.primitives.Estimator`, will be used.
             observables: The observables for outputs of the neural network. If ``None``,
                 use the default :math:`Z^{\otimes n}` observable, where :math:`n`
                 is the number of qubits.
@@ -142,7 +142,7 @@ class EstimatorQNN(NeuralNetwork):
             QiskitMachineLearningError: Invalid parameter values.
         """
         if estimator is None:
-            estimator = StatevectorEstimator()
+            estimator = Estimator()
 
         self.estimator = estimator
 
