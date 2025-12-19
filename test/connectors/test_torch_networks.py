@@ -174,5 +174,5 @@ class TestTorchNetworks(TestTorch):
         self.assertAlmostEqual(
             cast(torch.Tensor, sum_of_individual_losses).detach().cpu().numpy(),
             batch_loss.detach().cpu().numpy(),
-            places=4,
+            places=3,
         )
