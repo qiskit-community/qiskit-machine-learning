@@ -9,6 +9,7 @@
 [![Total downloads](https://static.pepy.tech/badge/qiskit-machine-learning)](https://pepy.tech/project/qiskit-machine-learning)
 [![Slack Organisation](https://img.shields.io/badge/slack-chat-blueviolet.svg?label=Qiskit%20Slack&logo=slack)](https://slack.qiskit.org)
 [![arXiv](https://img.shields.io/badge/arXiv-2505.17756-b31b1b.svg)](https://arxiv.org/abs/2505.17756)
+[![arXiv](https://img.shields.io/badge/GitHub%20Pages-Documentation-blue.svg)](https://qiskit-community.github.io/qiskit-machine-learning/)
 
 <!--- long-description-skip-end -->
 
@@ -18,14 +19,15 @@ Qiskit Machine Learning introduces fundamental computational building blocks, su
 Kernels and Quantum Neural Networks, used in various applications including classification 
 and regression.
 
-This library is part of the Qiskit Community ecosystem, a collection of high-level codes that are based
+This library is part of the Qiskit Community ecosystem, a collection of high-level libraries that are based
 on the Qiskit software development kit. As of version `0.7`, Qiskit Machine Learning is co-maintained
 by IBM and the [Hartree Centre](https://www.hartree.stfc.ac.uk/), part of the UK Science and 
 Technologies Facilities Council (STFC).
 
 > [!NOTE]
 > A description of the library structure, features, and domain-specific applications, can be found 
-> in a dedicated [ArXiv paper](https://arxiv.org/abs/2505.17756).
+> in a dedicated [![arXiv](https://img.shields.io/badge/arXiv-2505.17756-b31b1b.svg)](https://arxiv.org/abs/2505.17756)
+> paper. For more details on usage and the API, refer to the [![arXiv](https://img.shields.io/badge/Documentation-blue.svg)](https://qiskit-community.github.io/qiskit-machine-learning/).
 
 The Qiskit Machine Learning framework aims to be:
 
@@ -68,7 +70,8 @@ The [`TorchConnector`](https://qiskit-community.github.io/qiskit-machine-learnin
 integrates QNNs with [PyTorch](https://pytorch.org). 
 Thanks to the gradient algorithms in Qiskit Machine Learning, this includes automatic differentiation. 
 The overall gradients computed by PyTorch during the backpropagation take into account quantum neural 
-networks, too. The flexible design also allows the building of connectors to other packages in the future.
+networks, too. The flexible design also allows the building of connectors to other packages or accelerated
+libraries.
 
 ## Installation and documentation
 
@@ -90,33 +93,25 @@ For more details on how to do so and much more, follow the instructions in the
 ### Optional Installs
 
 * **PyTorch** may be installed either using command `pip install 'qiskit-machine-learning[torch]'` to install the
-  package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/). When PyTorch
-  is installed, the `TorchConnector` facilitates its use of quantum computed networks.
+  package or refer to PyTorch [getting started](https://pytorch.org/get-started/locally/) guide. When PyTorch
+  is installed, the `TorchConnector` facilitates the combination of hybrid quantum-classical neural networks.
 
 * **Sparse** may be installed using command `pip install 'qiskit-machine-learning[sparse]'` to install the
-  package. Sparse being installed will enable the usage of sparse arrays and tensors.
+  package. [Sparse](https://sparse.pydata.org/en/latest/) is built on top of NumPy and `scipy.sparse`, and enables
+  efficient operations of sparse arrays and tensors. Refer to the Sparse [installation guide](https://sparse.pydata.org/en/latest/install/)
+  for further details.
 
 * **NLopt** is required for the global optimizers. [`NLopt`](https://nlopt.readthedocs.io/en/latest/) 
   can be installed manually with `pip install nlopt` on Windows and Linux platforms, or with `brew 
   install nlopt` on MacOS using the Homebrew package manager. For more information, 
   refer to the [installation guide](https://nlopt.readthedocs.io/en/latest/NLopt_Installation/).
 
-## Migration to Qiskit 1.x
-> [!NOTE]
-> Qiskit Machine Learning depends on Qiskit, which will be automatically installed as a 
-> dependency when you install Qiskit Machine Learning. From version `0.8` of Qiskit Machine 
-> Learning, Qiskit `1.0` or above will be required. If you have a pre-`1.0` version of Qiskit 
-> installed in your environment (however it was installed), you should upgrade to `1.x` to 
-> continue using the latest features. You may refer to the 
-> official [Qiskit 1.0 Migration Guide](https://quantum.cloud.ibm.com/docs/migration-guides/qiskit-1.0) 
-> for detailed instructions and examples on how to upgrade Qiskit.
-
 ----------------------------------------------------------------------------------------------------
 
-### Creating Your First Machine Learning Programming Experiment in Qiskit
+### Creating your first Qiskit Machine Learning program
 
-Now that Qiskit Machine Learning is installed, it's time to begin working with the Machine 
-Learning module. Let's try an experiment using VQC (Variational Quantum Classifier) algorithm to
+Now that Qiskit Machine Learning is installed, it's time to begin working with the machine 
+learning modules. Let's try an experiment using VQC (Variational Quantum Classifier) algorithm to
 train and test samples from a data set to see how accurately the test set can be classified.
 
 ```python
@@ -156,18 +151,20 @@ print(f"Testing accuracy: {score:0.2f}")
 
 ### More examples
 
-Learning path notebooks may be found in the
-[Machine Learning tutorials](https://qiskit-community.github.io/qiskit-machine-learning/tutorials/index.html) section
-of the documentation and are a great place to start. 
+Learning materials can be found in the
+[Tutorials](https://qiskit-community.github.io/qiskit-machine-learning/tutorials/index.html) section
+of the documentation. These notebooks will walk you step by step through different tasks and are designed to be hackable,
+making them a great place to start.
 
 Another good place to learn the fundamentals of quantum machine learning is the
-[Quantum Machine Learning](https://github.com/Qiskit/textbook/tree/main/notebooks/quantum-machine-learning#) notebooks from the original Qiskit Textbook. The notebooks are convenient for beginners who are eager to learn 
+[Quantum Machine Learning](https://github.com/Qiskit/textbook/tree/main/notebooks/quantum-machine-learning#) notebooks from the original Qiskit Textbook (now archived). 
+The notebooks are convenient for beginners who are eager to learn 
 quantum machine learning from scratch, as well as understand the background and theory behind algorithms in
-Qiskit Machine Learning. The notebooks cover a variety of topics to build understanding of parameterized
-circuits, data encoding, variational algorithms etc., and in the end the ultimate goal of machine
-learning - how to build and train quantum ML models for supervised and unsupervised learning. 
-The Textbook notebooks are complementary to the tutorials of this module; whereas these tutorials focus
-on actual Qiskit Machine Learning algorithms, the Textbook notebooks more explain and detail underlying fundamentals
+Qiskit Machine Learning. The notebooks cover a variety of topics to build an understanding of parameterized
+circuits, data encoding, variational algorithms and more, with the ultimate goal of building and training quantum ML models 
+for supervised and unsupervised learning. 
+The Textbook notebooks are complementary to the tutorials of this library. These tutorials focus emphasize the algorithms, 
+while the Textbook notebooks explain in more detail the underlying fundamental quantum information principles
 of quantum machine learning.
 
 ----------------------------------------------------------------------------------------------------
@@ -185,6 +182,12 @@ and use the [`#qiskit-machine-learning`](https://qiskit.enterprise.slack.com/arc
 channel for discussions and short questions.
 For questions that are more suited for a forum, you can use the **Qiskit** tag in [Stack Overflow](https://stackoverflow.com/questions/tagged/qiskit).
 
+## How can I cite Qiskit Machine Learning?
+
+If you use Qiskit Machine Learning in your work, please cite the "overview" [ArXiv paper](https://arxiv.org/abs/2505.17756) to 
+support the continued development and visibility of the library. The BibTeX citation handle can be found in the 
+[`CITATION.bib`](./CITATION.bib) file.
+
 ## Humans behind Qiskit Machine Learning
 
 Qiskit Machine Learning was inspired, authored and brought about by the collective work of a 
@@ -192,11 +195,6 @@ team of researchers  and software engineers. This library continues to grow with
 work of 
 [many people](https://github.com/qiskit-community/qiskit-machine-learning/graphs/contributors), 
 who contribute to the project at different levels.
-
-## How can I cite Qiskit Machine Learning?
-If you use Qiskit Machine Learning in your work, please cite the "overview" paper to 
-support the continued development and visibility of the library. The BibTeX citation handle can be found in the 
-[`CITATION.bib`](./CITATION.bib) file.
 
 ## License
 
