@@ -73,7 +73,7 @@ class QMLEstimator(StatevectorEstimator):
         else:
             super().__init__(default_precision=float(default_precision), seed=seed, **kwargs)
 
-        # Provide a mutable, V1-style `.options` namespace for ML integrations.
+        # Provide a mutable, V1-style `options` name space for ML integrations.
         parent_opts = object.__getattribute__(self, "__dict__").get("options", None)
         base = _options_to_dict(parent_opts)
         merged = dict(base)
@@ -200,7 +200,7 @@ def _options_to_dict(opts: Any) -> dict[str, Any]:
 
 
 class _OptionsNS(SimpleNamespace):
-    """Mutable options namespace supporting ``update(**kwargs)``."""
+    """Mutable options name space supporting ``update(**kwargs)``."""
 
     def update(self, **kwargs: Any) -> None:
         """Updates options"""

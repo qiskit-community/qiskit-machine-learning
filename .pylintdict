@@ -153,6 +153,7 @@ eigenvectors
 einstein
 einsum
 elif
+encodings
 endian
 entangler
 enum
@@ -252,6 +253,7 @@ inlier
 inplace
 instantiation
 instantiations
+integrations
 interatomic
 interdependencies
 ints
@@ -465,6 +467,7 @@ qgts
 qinds
 qiskit
 qiskit's
+qml
 qn
 qnn
 qnspsa
