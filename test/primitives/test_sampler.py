@@ -31,11 +31,13 @@ class TestQMLSampler(unittest.TestCase):
     def _assert_prob_dict_close(
         self, got: dict[str, float], ref: dict[str, float], atol: float = 1e-12
     ):
+        """Check probability dictionaries"""
         self.assertEqual(set(got.keys()), set(ref.keys()))
         for k in got:
             assert_allclose(got[k], ref[k], atol=atol, rtol=0.0)
 
     def test_exact_mode_probabilities_and_dyadic_counts(self):
+        """Check raw counts"""
         sampler = QMLSampler()  # shots=None => exact mode
 
         qc = QuantumCircuit(1, 1)
@@ -53,6 +55,7 @@ class TestQMLSampler(unittest.TestCase):
         self.assertIsNone(res.metadata.get("shots", None))
 
     def test_exact_mode_ignores_shots_override(self):
+        """Check exact sampler"""
         sampler = QMLSampler()  # exact mode
 
         qc = QuantumCircuit(1, 1)
@@ -64,6 +67,7 @@ class TestQMLSampler(unittest.TestCase):
         self._assert_prob_dict_close(r1, r0)
 
     def test_exact_mode_join_data_matches_statevector_probabilities(self):
+        """Check sampler"""
         sampler = QMLSampler()  # exact mode
 
         qr = QuantumRegister(2, "q")
@@ -84,6 +88,7 @@ class TestQMLSampler(unittest.TestCase):
         self._assert_prob_dict_close(joined, ref)
 
     def test_input_output_parameter_sweep_shape(self):
+        """Check output shape in sampler"""
         sampler = QMLSampler()  # exact mode
 
         theta = Parameter("theta")
@@ -115,6 +120,7 @@ class TestQMLSampler(unittest.TestCase):
         self._assert_prob_dict_close(p1, ref1)
 
     def test_sampling_mode_delegates_to_statevector_sampler(self):
+        """Check QML sampler vs StatevectorSampler"""
         qml = QMLSampler(shots=256, seed=123)
         ref = StatevectorSampler(default_shots=256, seed=123)
 

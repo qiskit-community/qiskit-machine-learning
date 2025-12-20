@@ -19,7 +19,7 @@ class LoggingEstimator(QMLEstimator):
     """An estimator checking what operations were in the circuits it executed."""
 
     def __init__(self, operations_callback=None):
-        super().__init__(estimator=None)
+        super().__init__()
         self.operations_callback = operations_callback
 
     def run(self, pubs, **run_options):

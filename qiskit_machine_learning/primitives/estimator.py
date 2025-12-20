@@ -7,8 +7,9 @@
 # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
 # Any modifications or derivative works of this code must retain this
-# copyright notice, and modified files must carry a notice indicating
+# copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
 """Qiskit Machine Learning estimator primitive.
 
 This module provides a small wrapper around Qiskit's ``StatevectorEstimator``
@@ -140,6 +141,7 @@ class QMLEstimator(StatevectorEstimator):
         return PubResult(data=data, metadata=meta)
 
 
+# pylint: disable=too-many-return-statements
 def _coerce_observable(obs: Any) -> Any:
     """Normalize supported observable formats.
 
@@ -173,7 +175,7 @@ def _coerce_observable(obs: Any) -> Any:
 
     try:
         return SparsePauliOp(obs)
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         return Operator(obs)
 
 
@@ -189,7 +191,7 @@ def _options_to_dict(opts: Any) -> dict[str, Any]:
     if callable(to_dict):
         try:
             return dict(to_dict())
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             pass
     try:
         return dict(vars(opts))
@@ -201,5 +203,6 @@ class _OptionsNS(SimpleNamespace):
     """Mutable options namespace supporting ``update(**kwargs)``."""
 
     def update(self, **kwargs: Any) -> None:
+        """Updates options"""
         for k, v in kwargs.items():
             setattr(self, k, v)

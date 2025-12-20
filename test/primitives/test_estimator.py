@@ -28,6 +28,7 @@ class TestQMLEstimator(unittest.TestCase):
     """Tests for the QMLEstimator wrapper."""
 
     def test_exact_mode_is_deterministic_and_ignores_precision(self):
+        """Checks exact estimator"""
         est = QMLEstimator(default_precision=0.0)
 
         qc = QuantumCircuit(1)
@@ -47,6 +48,7 @@ class TestQMLEstimator(unittest.TestCase):
         self.assertEqual(r0.metadata.get("target_precision"), 0.0)
 
     def test_delegate_mode_matches_statevector_estimator(self):
+        """Compares QML and Statevector estimators"""
         qml = QMLEstimator(default_precision=0.25, seed=123)
         ref = StatevectorEstimator(default_precision=0.25, seed=123)
 
@@ -62,6 +64,7 @@ class TestQMLEstimator(unittest.TestCase):
         assert_allclose(rq.data.stds, rr.data.stds)
 
     def test_input_output_formats(self):
+        """Checks IO of the QML estimator"""
         est = QMLEstimator(default_precision=0.0)
 
         qc = QuantumCircuit(1)
