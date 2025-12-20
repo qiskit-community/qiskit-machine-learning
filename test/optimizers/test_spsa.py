@@ -16,9 +16,8 @@ from test import QiskitAlgorithmsTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit.library import pauli_two_design
-from qiskit.primitives import StatevectorEstimator  # , StatevectorSampler as Sampler
 from qiskit.quantum_info import SparsePauliOp, Statevector
-from qiskit_machine_learning.primitives import QMLSampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.optimizers import QNSPSA, SPSA
 from qiskit_machine_learning.utils import algorithm_globals
 
@@ -213,7 +212,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
         num_parameters = circuit.num_parameters
 
         obs = SparsePauliOp("ZZI")  # Z^Z^I
-        estimator = StatevectorEstimator(seed=12)
+        estimator = Estimator(seed=12)
 
         initial_point = np.array(
             [0.82311034, 0.02611798, 0.21077064, 0.61842177, 0.09828447, 0.62013131]

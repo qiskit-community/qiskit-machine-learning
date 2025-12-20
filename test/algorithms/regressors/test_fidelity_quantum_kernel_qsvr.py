@@ -19,7 +19,7 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from qiskit.circuit.library import zz_feature_map
-from qiskit.primitives import StatevectorEstimator
+from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.algorithms import QSVR, SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
@@ -34,7 +34,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 10598
 
-        self.sampler = StatevectorEstimator()
+        self.sampler = Estimator(seed=123)
         self.feature_map = zz_feature_map(feature_dimension=2, reps=2)
 
         self.sample_train = np.asarray(

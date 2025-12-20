@@ -21,12 +21,11 @@ from ddt import ddt, data, unpack, idata
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.primitives import StatevectorEstimator as Estimator
 
 from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.connectors.torch_connector import _TorchNNFunction
-from qiskit_machine_learning.primitives import QMLSampler as Sampler
+from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
 from qiskit_machine_learning.connectors.torch_connector import _get_einsum_signature
 from qiskit_machine_learning.utils import algorithm_globals

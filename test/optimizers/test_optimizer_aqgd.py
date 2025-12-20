@@ -17,11 +17,11 @@ from test import QiskitAlgorithmsTestCase
 
 import numpy as np
 from ddt import ddt
-from qiskit.primitives import StatevectorEstimator
 from qiskit.quantum_info import SparsePauliOp
 from qiskit_machine_learning import AlgorithmError
 from qiskit_machine_learning.gradients import LinCombEstimatorGradient
 from qiskit_machine_learning.optimizers import AQGD
+from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.utils import algorithm_globals
 
 
@@ -41,7 +41,7 @@ class TestOptimizerAQGD(QiskitAlgorithmsTestCase):
                 ("XX", 0.18093119978423156),
             ]
         )
-        self.estimator = StatevectorEstimator()
+        self.estimator = Estimator()
         self.gradient = LinCombEstimatorGradient(self.estimator)
 
     def test_raises_exception(self):
