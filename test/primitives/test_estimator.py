@@ -70,9 +70,9 @@ class TestQMLEstimator(unittest.TestCase):
 
         # Various observable encodings should be accepted and produce the same output.
         pubs = [
-            (qc, [{"Z": 1.0}]),   # mapping encoding
-            (qc, ["Z"]),          # label string
-            (qc, [z_spo]),        # SparsePauliOp
+            (qc, [{"Z": 1.0}]),  # mapping encoding
+            (qc, ["Z"]),  # label string
+            (qc, [z_spo]),  # SparsePauliOp
         ]
         for pub in pubs:
             res = est.run([pub]).result()[0]

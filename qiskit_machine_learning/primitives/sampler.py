@@ -48,7 +48,7 @@ class QMLSampler(StatevectorSampler):
             QMLSampler: Configured sampler instance.
         """
         self._exact_mode = shots is None
-        
+
         if self._exact_mode:
             super().__init__(**kwargs)
         else:

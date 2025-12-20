@@ -156,12 +156,19 @@ def _coerce_observable(obs: Any) -> Any:
     if isinstance(obs, Mapping):
         if not obs:
             raise ValueError("Observable mapping is empty.")
-        return SparsePauliOp.from_list([(str(label), complex(coeff)) for label, coeff in obs.items()])
+        return SparsePauliOp.from_list(
+            [(str(label), complex(coeff)) for label, coeff in obs.items()]
+        )
 
     if isinstance(obs, str):
         return SparsePauliOp.from_list([(obs, 1.0)])
 
-    if isinstance(obs, (list, tuple)) and obs and isinstance(obs[0], (list, tuple)) and len(obs[0]) == 2:
+    if (
+        isinstance(obs, (list, tuple))
+        and obs
+        and isinstance(obs[0], (list, tuple))
+        and len(obs[0]) == 2
+    ):
         return SparsePauliOp.from_list([(str(lbl), complex(c)) for (lbl, c) in obs])
 
     try:

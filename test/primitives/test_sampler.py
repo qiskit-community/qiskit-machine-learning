@@ -28,7 +28,9 @@ from qiskit_machine_learning.primitives import QMLSampler
 class TestQMLSampler(unittest.TestCase):
     """Tests for the QMLSampler wrapper."""
 
-    def _assert_prob_dict_close(self, got: dict[str, float], ref: dict[str, float], atol: float = 1e-12):
+    def _assert_prob_dict_close(
+        self, got: dict[str, float], ref: dict[str, float], atol: float = 1e-12
+    ):
         self.assertEqual(set(got.keys()), set(ref.keys()))
         for k in got:
             assert_allclose(got[k], ref[k], atol=atol, rtol=0.0)
@@ -98,12 +100,16 @@ class TestQMLSampler(unittest.TestCase):
         p0 = res.data.c.get_probabilities(loc=0)
         p1 = res.data.c.get_probabilities(loc=1)
 
-        ref0 = Statevector.from_instruction(qc.assign_parameters({theta: 0.0}, inplace=False).remove_final_measurements(
-            inplace=False
-        )).probabilities_dict(qargs=[0])
-        ref1 = Statevector.from_instruction(qc.assign_parameters({theta: np.pi}, inplace=False).remove_final_measurements(
-            inplace=False
-        )).probabilities_dict(qargs=[0])
+        ref0 = Statevector.from_instruction(
+            qc.assign_parameters({theta: 0.0}, inplace=False).remove_final_measurements(
+                inplace=False
+            )
+        ).probabilities_dict(qargs=[0])
+        ref1 = Statevector.from_instruction(
+            qc.assign_parameters({theta: np.pi}, inplace=False).remove_final_measurements(
+                inplace=False
+            )
+        ).probabilities_dict(qargs=[0])
 
         self._assert_prob_dict_close(p0, ref0)
         self._assert_prob_dict_close(p1, ref1)
