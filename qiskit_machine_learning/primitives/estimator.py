@@ -184,7 +184,7 @@ def _options_to_dict(opts: Any) -> dict[str, Any]:
     if opts is None:
         return {}
     if is_dataclass(opts):
-        return dict(asdict(opts))
+        return dict(asdict(opts))  # type: ignore
     if isinstance(opts, Mapping):
         return dict(opts)
     to_dict = getattr(opts, "to_dict", None)
