@@ -1,0 +1,50 @@
+---
+prelude: >
+    This release migrates Qiskit Machine Learning to be compatible with Qiskit 2.x
+    and updates the library’s simulation primitives and documentation accordingly.
+features:
+  - |
+    **Documented QML “wrapper” primitives for simulation workflows:** A new primitives API page
+    explains that QML primitives are thin wrappers around Qiskit Statevector primitives (V2),
+    providing two simulation modes:
+
+    * **Exact mode (deterministic):** computes results from the full statevector (no sampling noise).
+    * **Statevector fallback (optional shot noise):** delegates to Qiskit’s statevector primitives
+      when shots/precision are requested.
+
+    The docs include examples for:
+
+    * ``QMLEstimator(default_precision=0)`` for exact mode and ``default_precision>0`` for shot-noise mode.
+    * ``QMLSampler(shots=None)`` for exact mode and finite ``shots`` for shot-noise mode. :contentReference[oaicite:2]{index=2}
+
+  - |
+    **IBM Runtime primitives guidance (docs):** The primitives documentation now explicitly points users
+    to ``qiskit-ibm-runtime`` primitives for hardware execution and includes a session-based example
+    (least-busy backend selection) illustrating kernel training / kernel alignment style workflows
+    with Runtime primitives.
+upgrade:
+  - |
+    **Qiskit 2.x migration (V2 primitives-first):** Qiskit Machine Learning is updated to work with
+    Qiskit’s V2 primitives ecosystem (PUB-based execution and structured results).
+  - |
+    Several commonly used feature maps and ansätze from
+    :mod:`qiskit.circuit.library` have transitioned from class-based
+    constructors to functional constructors. Qiskit Machine Learning now
+    follows this updated API.
+
+    The most common changes are:
+
+    * ``ZZFeatureMap`` -> ``zz_feature_map``
+    * ``ZFeatureMap`` -> ``z_feature_map``
+    * ``PauliFeatureMap`` -> ``pauli_feature_map``
+    * ``RealAmplitudes`` -> ``real_amplitudes``
+    * ``EfficientSU2`` -> ``efficient_su2``
+fixes:
+  - |
+    Hashing of :class:`qiskit.circuit.QuantumCircuit` objects used internally
+    by Qiskit Machine Learning is now deterministic. This improves stability
+    and reproducibility in workflows that rely on circuit hashing, caching,
+    or dictionary-based storage of circuits.
+  - |
+    **Remove duplicate import in classifiers package init:** ``QSVC`` is no longer imported twice in
+    ``qiskit_machine_learning.algorithms.classifiers``.
