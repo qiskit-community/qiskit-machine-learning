@@ -33,7 +33,8 @@ from qiskit.primitives.containers.sampler_pub import SamplerPub
 
 class QMLSampler(StatevectorSampler):
     """
-    V2 sampler with two modes:
+    V2-based sampler primitive with two modes.
+
       - shots=None (default): exact mode, no sampling. Returns deterministic probabilities.
       - shots=int           : sampling mode, delegate to StatevectorSampler with given default_shots.
     """

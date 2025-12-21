@@ -43,7 +43,7 @@ from qiskit.quantum_info import Operator, SparsePauliOp, Statevector
 
 
 class QMLEstimator(StatevectorEstimator):
-    """Statevector-based estimator with two execution modes.
+    """V2-based estimator primitive with two modes.
 
     Modes are selected at construction time:
 
@@ -51,7 +51,7 @@ class QMLEstimator(StatevectorEstimator):
       deterministic (analytic expectation values) with ``stds == 0``.
       Any per-call ``precision`` override is accepted for API compatibility
       but ignored.
-    * ``default_precision != 0.0``: delegate mode: Execution is delegated
+    * ``default_precision > 0.0``: delegate mode: Execution is delegated
       to :class:`~qiskit.primitives.StatevectorEstimator`, which interprets the
       precision parameter according to the reference primitive behavior.
     """
