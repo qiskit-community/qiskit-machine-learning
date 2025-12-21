@@ -15,7 +15,7 @@ features:
     The docs include examples for:
 
     * ``QMLEstimator(default_precision=0)`` for exact mode and ``default_precision>0`` for shot-noise mode.
-    * ``QMLSampler(shots=None)`` for exact mode and finite ``shots`` for shot-noise mode. :contentReference[oaicite:2]{index=2}
+    * ``QMLSampler(shots=None)`` for exact mode and finite ``shots`` for shot-noise mode.
 
   - |
     **IBM Runtime primitives guidance (docs):** The primitives documentation now explicitly points users
@@ -27,7 +27,7 @@ upgrade:
     **Qiskit 2.x migration (V2 primitives-first):** Qiskit Machine Learning is updated to work with
     Qiskit’s V2 primitives ecosystem (PUB-based execution and structured results).
   - |
-    Several commonly used feature maps and ansätze from
+    Several commonly used feature maps and ansatze from
     :mod:`qiskit.circuit.library` have transitioned from class-based
     constructors to functional constructors. Qiskit Machine Learning now
     follows this updated API.
