@@ -13,8 +13,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, is_dataclass, asdict
-from typing import Iterable, Mapping, Any
+from typing import Iterable, Mapping, Any, overload, cast
 from types import SimpleNamespace
+from numpy.typing import NDArray
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, QuantumCircuit
@@ -313,13 +314,13 @@ class ExactProbNDArray:
 
     __slots__ = ("_arr",)
 
-    def __init__(self, arr: np.ndarray):
+    def __init__(self, arr: NDArray[np.object_]):
         """N-dimensional wrapper for arrays of ``ExactProbArray``.
 
         Args:
             arr (np.ndarray): Object array of ``ExactProbArray`` elements.
         """
-        self._arr = arr
+        self._arr: NDArray[np.object_] = arr
 
     # --- array-like protocol ---
     @property
@@ -327,7 +328,13 @@ class ExactProbNDArray:
         """Return the shape of the underlying array."""
         return self._arr.shape
 
-    def __getitem__(self, idx: int | tuple[int, ...] | None) -> Any:
+    @overload
+    def __getitem__(self, idx: int | tuple[int, ...]) -> ExactProbArray: ...
+
+    @overload
+    def __getitem__(self, idx: slice | tuple[Any, ...]) -> "ExactProbNDArray": ...
+
+    def __getitem__(self, idx):
         """Return probabilities element-wise or at a specific index.
 
         Args:
@@ -352,31 +359,44 @@ class ExactProbNDArray:
     def num_bits(self) -> int:
         """Return the number of bits per element, inferred from a representative
         ExactProbArray."""
-        # Uniform across elements
-        _ = next(np.nditer(np.empty((1,), dtype=object), flags=[], op_flags=[]), None)
-        try:
-            # find a representative element
-            rep = next(x for x in self._arr.flat if isinstance(x, ExactProbArray))
-            return rep.num_bits
-        except StopIteration:
-            return 0
+        for raw in self._arr.flat:
+            if isinstance(raw, ExactProbArray):
+                rep = cast(ExactProbArray, raw)
+                return rep.num_bits
+        return 0
 
     # --- Sampler-style methods ---
+    @overload
+    def get_probabilities(self, loc: int | tuple[int, ...]) -> dict[str, float]: ...
+
+    @overload
+    def get_probabilities(self, loc: None = None) -> NDArray[np.object_]: ...
+
     def get_probabilities(self, loc: int | tuple[int, ...] | None = None):
         """Return probabilities for a single location or an array of probability dicts for
         all entries."""
         if loc is not None:
-            return self._arr[loc].get_probabilities()
-        # Return element-wise probabilities as an ndarray[object] of dicts
-        out = np.empty(self._arr.shape, dtype=object)
+            elem = cast(ExactProbArray, self._arr[loc])
+            return elem.get_probabilities()
+
+        out: NDArray[np.object_] = np.empty(self._arr.shape, dtype=object)
         for idx in np.ndindex(self._arr.shape):
-            out[idx] = self._arr[idx].get_probabilities()  # type: ignore
+            elem = cast(ExactProbArray, self._arr[idx])
+            out[idx] = elem.get_probabilities()
         return out
 
+    @overload
     def get_counts(
-        self, loc: int | tuple[int, ...] | None = None, shots: int | None = None
-    ) -> dict[str, int] | np.ndarray:
+        self, loc: int | tuple[int, ...], shots: int | None = None
+    ) -> dict[str, int]: ...
+
+    @overload
+    def get_counts(self, loc: None = None, shots: int | None = None) -> dict[str, int]: ...
+
+    def get_counts(self, loc: int | tuple[int, ...] | None = None, shots: int | None = None):
         """Return counts element-wise or the union across positions.
+        When ``location=None``, follow ``BitArray`` semantics: union counts across all positions.
+        If you want per-position, index first (e.g., ``obj[i].get_counts())``.
 
         Args:
             loc (int | tuple[int, ...] | None): Optional index.
@@ -386,13 +406,14 @@ class ExactProbNDArray:
             dict[str, int] | np.ndarray: Counts for the selected element or union.
         """
         if loc is not None:
-            return self._arr[loc].get_counts(shots=shots)
+            elem = cast(ExactProbArray, self._arr[loc])
+            return elem.get_counts(shots=shots)
 
-        # When location=None, follow BitArray semantics: union counts across all positions.
-        # If you want per-position, index first (e.g., obj[i].get_counts()).
         total: dict[str, int] = {}
-        for elem in self._arr.flat:
-            # for exact non-dyadic distributions this raises; caller can use get_probabilities instead
+
+        # for exact non-dyadic distributions this raises; caller can use get_probabilities instead
+        for raw in self._arr.flat:
+            elem = cast(ExactProbArray, raw)
             cnt = elem.get_counts(shots=shots)
             for k, v in cnt.items():
                 total[k] = total.get(k, 0) + v
