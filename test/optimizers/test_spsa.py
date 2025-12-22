@@ -80,7 +80,7 @@ class TestSPSA(QiskitAlgorithmsTestCase):
         """Test SPSA calibrates anew upon each optimization run, if no auto-calibration is set."""
 
         def objective(x):
-            return -(x ** 2)
+            return -(x**2)
 
         spsa = SPSA(maxiter=1)
         _ = spsa.minimize(objective, x0=np.array([0.5]))

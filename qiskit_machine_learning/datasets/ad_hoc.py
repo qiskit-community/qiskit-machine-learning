@@ -182,7 +182,7 @@ def ad_hoc_data(
         )
 
     # Initial State
-    dims = 2 ** n
+    dims = 2**n
     psi_0 = np.ones(dims) / np.sqrt(dims)
 
     # n-qubit Hadamard
@@ -325,7 +325,7 @@ def _i_z(i: int, n: int) -> np.ndarray:
         np.ndarray: The Z gate acting on the i-th qubit.
     """
     z = np.diag([1, -1])
-    i_1 = np.eye(2 ** i)
+    i_1 = np.eye(2**i)
     i_2 = np.eye(2 ** (n - i - 1))
 
     result = np.kron(i_1, z)
@@ -456,7 +456,7 @@ def _loop_sampling(n, n_samples, z_diags, zz_diags, psi_0, h_n, lab_fn, samp_fn,
     a_features = np.empty((n_samples, n), dtype=float)
     b_features = np.empty((n_samples, n), dtype=float)
 
-    dims = 2 ** n
+    dims = 2**n
     a_cur, b_cur = 0, 0
     a_needed, b_needed = n_samples, n_samples
 

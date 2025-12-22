@@ -16,9 +16,9 @@ import tempfile
 import unittest
 
 from test import QiskitMachineLearningTestCase
-from qiskit import QuantumCircuit
 
 import numpy as np
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import z_feature_map
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler

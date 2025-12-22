@@ -65,7 +65,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
         for seed in ref_data:
             algorithm_globals.random_seed = int(seed)
-            (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+            (
+                training_features,
+                training_labels,
+                test_features,
+                test_labels,
+            ) = ad_hoc_data(
                 training_size=20,
                 test_size=5,
                 n=2,
@@ -96,7 +101,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_entanglement_linear(self):
         """Test linear entanglement."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -111,7 +121,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_entanglement_circular(self):
         """Test circular entanglement."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -126,7 +141,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_entanglement_full(self):
         """Test full entanglement."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -141,7 +161,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_sampling_grid(self):
         """Test grid sampling method."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -156,7 +181,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_sampling_sobol(self):
         """Test Sobol sampling method."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -171,7 +201,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_sampling_hypercube(self):
         """Test hypercube sampling with divisions parameter."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -187,7 +222,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_labelling_expectation(self):
         """Test expectation labelling method."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -202,7 +242,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_labelling_measurement(self):
         """Test measurement labelling method."""
-        (training_features, training_labels, test_features, test_labels,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            test_labels,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -218,7 +263,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
     def test_custom_class_labels(self):
         """Test custom class labels."""
         custom_labels = ["Class1", "Class2"]
-        (_, training_labels, _, _,) = ad_hoc_data(
+        (
+            _,
+            training_labels,
+            _,
+            _,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -233,7 +283,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
             self.assertIn(label, unique_labels)
 
         # Test with one_hot=True
-        (_, training_labels_onehot, _, test_labels_onehot,) = ad_hoc_data(
+        (
+            _,
+            training_labels_onehot,
+            _,
+            test_labels_onehot,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -260,7 +315,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_higher_qubits(self):
         """Test with dimensions higher than 3 (n=4)."""
-        (training_features, _, test_features, _,) = ad_hoc_data(
+        (
+            training_features,
+            _,
+            test_features,
+            _,
+        ) = ad_hoc_data(
             training_size=5,
             test_size=3,
             n=4,
@@ -343,7 +403,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_hypercube_sampling_linear_entanglement(self):
         """Test hypercube sampling and linear entanglement."""
-        (training_features, _, test_features, _,) = ad_hoc_data(
+        (
+            training_features,
+            _,
+            test_features,
+            _,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,
@@ -359,7 +424,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
     def test_custom_labels_circular_entanglement(self):
         """Test custom labels with circular entanglement."""
         custom_labels = ["Yes", "No"]
-        (training_features, training_labels, test_features, _,) = ad_hoc_data(
+        (
+            training_features,
+            training_labels,
+            test_features,
+            _,
+        ) = ad_hoc_data(
             training_size=8,
             test_size=4,
             n=3,
@@ -376,7 +446,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_measurement_sobol_sampling(self):
         """Test custom labels with circular entanglement."""
-        (training_features, _, test_features, _,) = ad_hoc_data(
+        (
+            training_features,
+            _,
+            test_features,
+            _,
+        ) = ad_hoc_data(
             training_size=8,
             test_size=4,
             n=3,
@@ -390,7 +465,12 @@ class TestAdHocData(QiskitMachineLearningTestCase):
 
     def test_expectation_labelling_with_gap(self):
         """Test expectation labelling with a non-zero gap."""
-        (training_features, _, test_features, _,) = ad_hoc_data(
+        (
+            training_features,
+            _,
+            test_features,
+            _,
+        ) = ad_hoc_data(
             training_size=10,
             test_size=5,
             n=2,

@@ -315,7 +315,7 @@ class SamplerQNN(NeuralNetwork):
                     "No interpret function given, output_shape will be automatically "
                     "determined as 2^num_virtual_qubits."
                 )
-            output_shape_ = (2 ** self.num_virtual_qubits,)
+            output_shape_ = (2**self.num_virtual_qubits,)
         return output_shape_
 
     def _postprocess(
@@ -384,7 +384,7 @@ class SamplerQNN(NeuralNetwork):
             probs_i = {}
             for k, v in counts_i.items():
                 ki = _key_to_int(k)
-                if ki < 2 ** self.num_virtual_qubits:
+                if ki < 2**self.num_virtual_qubits:
                     probs_i[ki] = v / total_shots
 
             # map through interpret and write ONLY row i

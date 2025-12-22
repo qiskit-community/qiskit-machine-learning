@@ -17,8 +17,8 @@ import unittest
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
-from qiskit import QuantumCircuit
 from sklearn.metrics import mean_squared_error
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import zz_feature_map
 from qiskit_machine_learning.algorithms import QSVR, SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning

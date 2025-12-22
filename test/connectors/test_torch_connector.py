@@ -289,7 +289,7 @@ class TestTorchConnector(TestTorch):
                 self.num_input = kernel_size * kernel_size * input_channel
                 self.num_qubits = num_qubits
                 self.qnn = TorchConnector(self.sampler())
-                if 2 ** num_qubits < output_channel:
+                if 2**num_qubits < output_channel:
                     raise ValueError(
                         (
                             f"The output channel must be >= 2**num_qubits. "

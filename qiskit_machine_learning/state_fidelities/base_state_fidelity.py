@@ -193,9 +193,9 @@ class BaseStateFidelity(ABC):
                 )
                 circuits.append(circuit)
                 # update cache
-                self._circuit_cache[
-                    circuit_cache_key(circuit_1), circuit_cache_key(circuit_2)
-                ] = circuit
+                self._circuit_cache[circuit_cache_key(circuit_1), circuit_cache_key(circuit_2)] = (
+                    circuit
+                )
 
         return circuits
 

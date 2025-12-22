@@ -150,7 +150,7 @@ class QBayesian:
             good_states.append(b)
         # Get statevector by transform good states w.r.t its index to 1 and o/w to 0
         oracle = Statevector(
-            [int(format(i, f"0{num_qubits}b") in good_states) for i in range(2 ** num_qubits)]
+            [int(format(i, f"0{num_qubits}b") in good_states) for i in range(2**num_qubits)]
         )
         return grover_operator(oracle, state_preparation=self._circ)
 
@@ -244,7 +244,7 @@ class QBayesian:
         # Apply Grover operator 2^k times
         qc_grover = QuantumCircuit(*self._circ.qregs)
         qc_grover.append(grover_op, self._circ.qregs)
-        qc_grover = qc_grover.power(2 ** k)
+        qc_grover = qc_grover.power(2**k)
         qc.append(qc_grover, self._circ.qregs)
         # Add quantum circuit for measuring
         qc_measure = QuantumCircuit(*self._circ.qregs)

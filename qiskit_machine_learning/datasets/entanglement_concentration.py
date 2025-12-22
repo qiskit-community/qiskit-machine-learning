@@ -150,7 +150,7 @@ def entanglement_concentration_data(
         raise ValueError("Invalid mode. Must be 'easy' or 'hard'")
     if sampling_method not in {"isotropic", "cardinal"}:
         raise ValueError("Invalid sampling method. Must be 'isotropic' or 'cardinal'")
-    if sampling_method == "cardinal" and n_points >= (6 ** n):
+    if sampling_method == "cardinal" and n_points >= (6**n):
         raise ValueError(
             """Cardinal Sampling cannot generate a large number of unique
             datapoints due to the limited number of combinations possible.
@@ -163,7 +163,7 @@ def entanglement_concentration_data(
         )
 
     # Warnings
-    if sampling_method == "cardinal" and n_points > (3 ** n):
+    if sampling_method == "cardinal" and n_points > (3**n):
         warnings.warn(
             """Cardinal Sampling for large number of samples is not recommended
             and can lead to an arbitrarily large generation time due to
@@ -189,8 +189,8 @@ def entanglement_concentration_data(
     bound_qc_high = _assign_parameters(n, mode, "high", d_high, qc_high)
 
     # Convert them to Unitaries for batch processing
-    u_low = Operator(bound_qc_low, input_dims=(2 ** n, 1), output_dims=(2 ** n, 1)).data
-    u_high = Operator(bound_qc_high, input_dims=(2 ** n, 1), output_dims=(2 ** n, 1)).data
+    u_low = Operator(bound_qc_low, input_dims=(2**n, 1), output_dims=(2**n, 1)).data
+    u_high = Operator(bound_qc_high, input_dims=(2**n, 1), output_dims=(2**n, 1)).data
 
     # Sampling Input States
     if sampling_method == "isotropic":
@@ -306,7 +306,7 @@ def _cardinal(n_qubits: int, n_points: int) -> np.ndarray:
 
     rng = algorithm_globals.random
 
-    indices = rng.choice(6 ** n_qubits, size=n_points, replace=False)
+    indices = rng.choice(6**n_qubits, size=n_points, replace=False)
     choices = np.empty((n_points, n_qubits), dtype=np.int8)
     for q in range(n_qubits - 1, -1, -1):
         choices[:, q] = indices % 6
@@ -315,7 +315,7 @@ def _cardinal(n_qubits: int, n_points: int) -> np.ndarray:
     q_vectors = axis_states[choices]
 
     # Broadcast‑and‑Product evaluation of Kronecker products
-    ints = np.arange(2 ** n_qubits, dtype=np.uint16)[:, None]
+    ints = np.arange(2**n_qubits, dtype=np.uint16)[:, None]
     bits = ((ints >> np.arange(n_qubits)) & 1).astype(np.int8)
     labels = np.flip(bits, axis=1)
 
@@ -346,7 +346,7 @@ def _isotropic(n_qubits: int, n_points: int) -> np.ndarray:
     q_vectors = np.stack([cos, sin * np.exp(1j * phi)], axis=-1)
 
     # Broadcast-and-Product
-    ints = np.arange(2 ** n_qubits, dtype=np.uint16)[:, None]
+    ints = np.arange(2**n_qubits, dtype=np.uint16)[:, None]
     bits = ((ints >> np.arange(n_qubits)) & 1).astype(np.int8)
     labels = np.flip(bits, axis=1)
     picked = np.take_along_axis(

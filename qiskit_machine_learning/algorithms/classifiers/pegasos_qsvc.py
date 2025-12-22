@@ -15,15 +15,12 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-import warnings
-
 import numpy as np
 from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
 from ...kernels import BaseKernel, FidelityQuantumKernel
-from ...exceptions import QiskitMachineLearningWarning
 from ...utils import algorithm_globals
 
 

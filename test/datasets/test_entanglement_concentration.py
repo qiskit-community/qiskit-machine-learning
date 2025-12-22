@@ -45,7 +45,7 @@ def _compute_ce(sv):
             reduced_rho = partial_trace(rho, traced_out)
             ce_sum += reduced_rho.purity()
 
-    ce = 1 - (ce_sum / (2 ** n))
+    ce = 1 - (ce_sum / (2**n))
 
     return ce
 
@@ -65,8 +65,8 @@ class TestEntangledConcentration(QiskitMachineLearningTestCase):
             mode=mode,
             one_hot=False,
         )
-        np.testing.assert_array_equal(x_train.shape, (8, 2 ** n, 1))
-        np.testing.assert_array_equal(x_test.shape, (8, 2 ** n, 1))
+        np.testing.assert_array_equal(x_train.shape, (8, 2**n, 1))
+        np.testing.assert_array_equal(x_test.shape, (8, 2**n, 1))
         np.testing.assert_array_almost_equal(y_train, np.array([0] * 4 + [1] * 4))
         np.testing.assert_array_almost_equal(y_test, np.array([0] * 4 + [1] * 4))
 
