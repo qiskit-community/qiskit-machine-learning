@@ -40,12 +40,12 @@ class QSVR(SVR, SerializableModelMixin):
         qsvr.predict(sample_test)
     """
 
-    def __init__(self, *, quantum_kernel: BaseKernel | str | None = None, **kwargs):
+    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
         """
         Args:
             quantum_kernel: A quantum kernel to be used for regression.
             Has to be ``"precomputed"`` when a precomputed kernel is used. If None,
-                default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
+            default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             *args: Variable length argument list to pass to SVR constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
         """
@@ -69,18 +69,15 @@ class QSVR(SVR, SerializableModelMixin):
             super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
-    def quantum_kernel(self) -> BaseKernel | str:
+    def quantum_kernel(self) -> BaseKernel:
         """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: BaseKernel | str):
+    def quantum_kernel(self, quantum_kernel: BaseKernel):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
-        if isinstance(self._quantum_kernel, str):
-            self.kernel = self._quantum_kernel
-        else:
-            self.kernel = self._quantum_kernel.evaluate
+        self.kernel = self._quantum_kernel.evaluate
 
     # we override this method to be able to pretty print this instance
     @classmethod

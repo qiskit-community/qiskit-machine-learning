@@ -53,7 +53,7 @@ class QSVC(SVC, SerializableModelMixin):
 
     """
 
-    def __init__(self, *, quantum_kernel: BaseKernel | str | None = None, **kwargs):
+    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
         """
         Args:
             quantum_kernel: A quantum kernel to be used for classification.
@@ -84,18 +84,15 @@ class QSVC(SVC, SerializableModelMixin):
             super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
-    def quantum_kernel(self) -> BaseKernel | str:
+    def quantum_kernel(self) -> BaseKernel:
         """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: BaseKernel | str):
+    def quantum_kernel(self, quantum_kernel: BaseKernel):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
-        if isinstance(self._quantum_kernel, str):
-            self.kernel = self._quantum_kernel
-        else:
-            self.kernel = self._quantum_kernel.evaluate
+        self.kernel = self._quantum_kernel.evaluate
 
     # we override this method to be able to pretty print this instance
     @classmethod
