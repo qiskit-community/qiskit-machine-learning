@@ -40,10 +40,11 @@ class QSVR(SVR, SerializableModelMixin):
         qsvr.predict(sample_test)
     """
 
-    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
+    def __init__(self, *, quantum_kernel: BaseKernel | str | None = None, **kwargs):
         """
         Args:
-            quantum_kernel: A quantum kernel to be used for regression. If None,
+            quantum_kernel: A quantum kernel to be used for regression. 
+            Has to be ``"precomputed"`` when a precomputed kernel is used. If None,
                 default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
             *args: Variable length argument list to pass to SVR constructor.
             **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
@@ -56,12 +57,14 @@ class QSVR(SVR, SerializableModelMixin):
             warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
-        if quantum_kernel is None:
-            msg = "No quantum kernel is provided, SamplerV2 based fidelity quantum kernel will be used."
-            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
-        self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
+        feature_map = kwargs.pop("feature_map", None)
+        self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel(feature_map=feature_map)
+
+        if quantum_kernel == "precomputed":
+            super().__init__(kernel=self._quantum_kernel, **kwargs)
+        else:
+            super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
     def quantum_kernel(self) -> BaseKernel:

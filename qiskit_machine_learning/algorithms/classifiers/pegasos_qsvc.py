@@ -98,11 +98,6 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
                 raise ValueError("'quantum_kernel' has to be None to use a precomputed kernel")
         else:
             if quantum_kernel is None:
-                msg = (
-                    "No quantum kernel is provided, SamplerV2 based fidelity quantum kernel "
-                    + "will be used."
-                )
-                warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
                 quantum_kernel = FidelityQuantumKernel()
 
         self._quantum_kernel = quantum_kernel

@@ -16,7 +16,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import zz_feature_map
 
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from ..state_fidelities import BaseStateFidelity, ComputeUncompute
@@ -41,7 +40,7 @@ class FidelityQuantumKernel(BaseKernel):
     def __init__(
         self,
         *,
-        feature_map: QuantumCircuit | None = zz_feature_map(2),
+        feature_map: QuantumCircuit | None = None,
         fidelity: BaseStateFidelity | None = None,
         enforce_psd: bool = True,
         evaluate_duplicates: str = "off_diagonal",

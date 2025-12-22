@@ -21,12 +21,13 @@ import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler
 
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import z_feature_map
 
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import PegasosQSVC, SerializableModelMixin
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
-
+from qiskit_machine_learning import QiskitMachineLearningError
 
 class TestPegasosQSVC(QiskitMachineLearningTestCase):
     """Test Pegasos QSVC Algorithm"""
@@ -138,9 +139,10 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
 
     def test_change_kernel(self):
         """Test QSVC with FidelityQuantumKernel later"""
-        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
+        empty_kernel = QuantumCircuit(2)
+        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, quantum_kernel = empty_kernel)
 
-        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau)
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
         pegasos_qsvc.quantum_kernel = qkernel
         pegasos_qsvc.fit(self.sample_train, self.label_train)
         score = pegasos_qsvc.score(self.sample_test, self.label_test)
@@ -169,10 +171,8 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
     def test_constructor(self):
         """Tests properties of PegasosQSVC"""
         with self.subTest("Default parameters"):
-            pegasos_qsvc = PegasosQSVC()
-            self.assertIsInstance(pegasos_qsvc.quantum_kernel, FidelityQuantumKernel)
-            self.assertFalse(pegasos_qsvc.precomputed)
-            self.assertEqual(pegasos_qsvc.num_steps, 1000)
+            with self.assertRaises(QiskitMachineLearningError):
+                pegasos_qsvc = PegasosQSVC()
 
         with self.subTest("PegasosQSVC with QuantumKernel"):
             qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
