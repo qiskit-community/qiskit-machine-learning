@@ -579,7 +579,7 @@ class TestSamplerGradientRuntime(QiskitAlgorithmsTestCase):
 
 
 def _quasi2array(quasis: list[QuasiDistribution], num_qubits: int) -> np.ndarray:
-    ret = np.zeros((len(quasis), 2**num_qubits))
+    ret = np.zeros((len(quasis), 2 ** num_qubits))
     for i, quasi in enumerate(quasis):
         ret[i, list(quasi.keys())] = list(quasi.values())
     return ret

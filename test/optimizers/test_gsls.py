@@ -47,7 +47,7 @@ class TestGSLS(QiskitAlgorithmsTestCase):
 
         def objective(x):
             """Defines the objective."""
-            return np.sum(x**2)
+            return np.sum(x ** 2)
 
         starting_point = np.array([0.1, 0.1])
         bounds = [(-0.05, 0.05), (-0.05, 0.05)]

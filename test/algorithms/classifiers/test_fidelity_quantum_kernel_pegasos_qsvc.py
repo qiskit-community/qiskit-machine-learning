@@ -122,7 +122,7 @@ class TestPegasosQSVC(QiskitMachineLearningTestCase):
     def test_change_kernel(self):
         """Test QSVC with QuantumKernel later"""
         empty_kernel = QuantumCircuit(2)
-        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, quantum_kernel = empty_kernel)
+        pegasos_qsvc = PegasosQSVC(C=1000, num_steps=self.tau, quantum_kernel=empty_kernel)
 
         qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
         pegasos_qsvc.quantum_kernel = qkernel

@@ -74,7 +74,9 @@ class QSVC(SVC, SerializableModelMixin):
             del kwargs["kernel"]
 
         feature_map = kwargs.pop("feature_map", None)
-        self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel(feature_map=feature_map)
+        self._quantum_kernel = (
+            quantum_kernel if quantum_kernel else FidelityQuantumKernel(feature_map=feature_map)
+        )
 
         if quantum_kernel == "precomputed":
             super().__init__(kernel=self._quantum_kernel, **kwargs)
@@ -82,15 +84,18 @@ class QSVC(SVC, SerializableModelMixin):
             super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
-    def quantum_kernel(self) -> BaseKernel:
+    def quantum_kernel(self) -> BaseKernel | str:
         """Returns quantum kernel"""
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: BaseKernel):
+    def quantum_kernel(self, quantum_kernel: BaseKernel | str):
         """Sets quantum kernel"""
         self._quantum_kernel = quantum_kernel
-        self.kernel = self._quantum_kernel.evaluate
+        if isinstance(self._quantum_kernel, str):
+            self.kernel = self._quantum_kernel
+        else:
+            self.kernel = self._quantum_kernel.evaluate
 
     # we override this method to be able to pretty print this instance
     @classmethod

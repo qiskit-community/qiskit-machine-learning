@@ -89,7 +89,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         """Test QSVR with QuantumKernel set later"""
         qkernel = FidelityQuantumKernel(feature_map=self.feature_map, enforce_psd=False)
 
-        qsvr = QSVR(feature_map = QuantumCircuit(2))
+        qsvr = QSVR(feature_map=QuantumCircuit(2))
         qsvr.quantum_kernel = qkernel
         qsvr.fit(self.sample_train, self.label_train)
         predictions = qsvr.predict(self.sample_test)
@@ -108,13 +108,13 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def test_qsvr_to_string(self):
         """Test QSVR string representation"""
-        qsvr = QSVR(feature_map = self.feature_map)
+        qsvr = QSVR(feature_map=self.feature_map)
         _ = str(qsvr)
 
     def test_with_kernel_parameter(self):
         """Test QSVR with the `kernel` argument"""
         with self.assertWarns(QiskitMachineLearningWarning):
-            QSVR(feature_map = self.feature_map, kernel=1)
+            QSVR(feature_map=self.feature_map, kernel=1)
 
     def test_precomputed(self):
         """Test QSVC with the precomputed option."""

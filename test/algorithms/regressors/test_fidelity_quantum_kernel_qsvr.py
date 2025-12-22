@@ -91,7 +91,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         """Test QSVR with QuantumKernel later"""
         qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
-        qsvr = QSVR(feature_map = QuantumCircuit(2))
+        qsvr = QSVR(feature_map=QuantumCircuit(2))
         qsvr.quantum_kernel = qkernel
         qsvr.fit(self.sample_train, self.label_train)
 

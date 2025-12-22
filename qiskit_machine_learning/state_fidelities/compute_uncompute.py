@@ -261,7 +261,7 @@ class ComputeUncompute(BaseStateFidelity):
 
             # Convert to quasi-probabilities
             counts = QuasiDistribution(probabilities)
-            quasi_probs = {k: v for k, v in counts.items() if int(k) < 2**num_virtual_qubits}
+            quasi_probs = {k: v for k, v in counts.items() if int(k) < 2 ** num_virtual_qubits}
             quasis.append(quasi_probs)
         return quasis
 

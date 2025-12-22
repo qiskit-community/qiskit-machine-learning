@@ -330,10 +330,12 @@ class ExactProbNDArray:
         return self._arr.shape
 
     @overload
-    def __getitem__(self, idx: int | tuple[int, ...]) -> ExactProbArray: ...
+    def __getitem__(self, idx: int | tuple[int, ...]) -> ExactProbArray:
+        ...
 
     @overload
-    def __getitem__(self, idx: slice | tuple[Any, ...]) -> "ExactProbNDArray": ...
+    def __getitem__(self, idx: slice | tuple[Any, ...]) -> "ExactProbNDArray":
+        ...
 
     def __getitem__(self, idx):
         """Return probabilities element-wise or at a specific index.
@@ -368,10 +370,12 @@ class ExactProbNDArray:
 
     # --- Sampler-style methods ---
     @overload
-    def get_probabilities(self, loc: int | tuple[int, ...]) -> dict[str, float]: ...
+    def get_probabilities(self, loc: int | tuple[int, ...]) -> dict[str, float]:
+        ...
 
     @overload
-    def get_probabilities(self, loc: None = None) -> NDArray[np.object_]: ...
+    def get_probabilities(self, loc: None = None) -> NDArray[np.object_]:
+        ...
 
     def get_probabilities(self, loc: int | tuple[int, ...] | None = None):
         """Return probabilities for a single location or an array of probability dicts for
@@ -387,12 +391,12 @@ class ExactProbNDArray:
         return out
 
     @overload
-    def get_counts(
-        self, loc: int | tuple[int, ...], shots: int | None = None
-    ) -> dict[str, int]: ...
+    def get_counts(self, loc: int | tuple[int, ...], shots: int | None = None) -> dict[str, int]:
+        ...
 
     @overload
-    def get_counts(self, loc: None = None, shots: int | None = None) -> dict[str, int]: ...
+    def get_counts(self, loc: None = None, shots: int | None = None) -> dict[str, int]:
+        ...
 
     def get_counts(self, loc: int | tuple[int, ...] | None = None, shots: int | None = None):
         """Return counts element-wise or the union across positions.
