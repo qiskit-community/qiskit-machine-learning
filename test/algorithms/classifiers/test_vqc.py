@@ -42,7 +42,7 @@ ANSATZES = ["real_amplitudes", None]
 OPTIMIZERS = ["cobyla", None]
 DATASETS = ["binary", "multiclass", "no_one_hot"]
 LOSSES = ["squared_error", "absolute_error", "cross_entropy"]
-SAMPLERS = ["samplerv2", "QMLSampler"]
+SAMPLERS = ["runtime_sampler", "QMLSampler"]
 
 
 @dataclass(frozen=True)
@@ -89,7 +89,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             "binary": _create_dataset(6, 2),
             "multiclass": _create_dataset(10, 3),
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
-            "samplerv2": SamplerV2(mode=self.session, options={"default_shots": 10000}),
+            "runtime_sampler": SamplerV2(mode=self.session, options={"default_shots": 10000}),
             "QMLSampler": Sampler(),
         }
 
@@ -103,7 +103,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         Test VQC with binary and multiclass data using a range of quantum
         instances, numbers of qubits, feature maps, and optimizers.
         """
-        if smplr == "samplerv2":
+        if smplr == "runtime_sampler":
             pm = generate_preset_pass_manager(optimization_level=0, backend=self.backend)
         else:
             pm = None

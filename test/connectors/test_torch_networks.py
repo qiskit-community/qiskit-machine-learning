@@ -156,18 +156,10 @@ class TestTorchNetworks(TestTorch):
             if n.endswith(".weight"):
                 batch_gradients += np.sum(param.grad.detach().cpu().numpy())
 
-        if qnn_type == "estimator_qnn":
-            print("grad_individual:", sum_of_individual_gradients)
-            print("grad_batch:", batch_gradients)
-            print("ratio_grad:", batch_gradients / sum_of_individual_gradients)
-
-            print("estimator outputs:", model(x[0]).shape, model(x).shape, y[0].shape, y.shape)
-
-        # making sure they are equivalent
         self.assertAlmostEqual(
             cast(float, np.linalg.norm(sum_of_individual_gradients - batch_gradients)),
             0.0,
-            places=1,
+            places=3,
         )
 
         self.assertAlmostEqual(
