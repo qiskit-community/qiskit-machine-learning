@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,19 +19,16 @@ from collections import defaultdict
 from collections.abc import Sequence
 
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives.utils import _circuit_key
-
-from qiskit.primitives import BaseSampler, BaseSamplerV1
-from qiskit.primitives.base import BaseSamplerV2
-from qiskit.result import QuasiDistribution
+from qiskit.primitives import BaseSamplerV2
 from qiskit.providers import Options
+from qiskit.result import QuasiDistribution
 from qiskit.transpiler.passmanager import BasePassManager
 
+from ...exceptions import AlgorithmError
+from ...utils import circuit_cache_key
 from ..base.base_sampler_gradient import BaseSamplerGradient
 from ..base.sampler_gradient_result import SamplerGradientResult
 from ..utils import _make_lin_comb_gradient_circuit
-
-from ...exceptions import AlgorithmError
 
 
 class LinCombSamplerGradient(BaseSamplerGradient):
@@ -68,7 +65,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
 
     def __init__(
         self,
-        sampler: BaseSampler,
+        sampler: BaseSamplerV2,
         options: Options | None = None,
         pass_manager: BasePassManager | None = None,
     ):
@@ -82,7 +79,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             pass_manager: The pass manager to transpile the circuits if necessary.
                 Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        self._lin_comb_cache: dict[tuple, dict[Parameter, QuantumCircuit]] = {}
+        self._lin_comb_cache: dict[str | tuple, dict[Parameter, QuantumCircuit]] = {}
         super().__init__(sampler, options, pass_manager=pass_manager)
 
     def _run(
@@ -113,7 +110,7 @@ class LinCombSamplerGradient(BaseSamplerGradient):
             # Prepare circuits for the gradient of the specified parameters.
             # TODO: why is this not wrapped into another list level like it is done elsewhere?
             metadata.append({"parameters": parameters_})
-            circuit_key = _circuit_key(circuit)
+            circuit_key = circuit_cache_key(circuit)
             if circuit_key not in self._lin_comb_cache:
                 # Cache the circuits for the linear combination of unitaries.
                 # We only cache the circuits for the specified parameters in the future.
@@ -122,7 +119,13 @@ class LinCombSamplerGradient(BaseSamplerGradient):
                 )
             lin_comb_circuits = self._lin_comb_cache[circuit_key]
             gradient_circuits = []
-            for param in parameters_:
+            for param_ in parameters_:
+                # TODO: the uuid attribute of param_ doesn't match that of param_match
+                # TODO: causing the two objects to not be identical, even if all other attributes match
+                param = param_
+                for param_match in lin_comb_circuits.keys():
+                    if param_match.name == param_.name:
+                        param = param_match
                 gradient_circuits.append(lin_comb_circuits[param])
             # Combine inputs into a single job to reduce overhead.
             n = len(gradient_circuits)
@@ -132,23 +135,14 @@ class LinCombSamplerGradient(BaseSamplerGradient):
 
         opt = options
         # Run the single job with all circuits.
-        if isinstance(self._sampler, BaseSamplerV1):
-            job = self._sampler.run(job_circuits, job_param_values, **options)
-            opt = self._get_local_options(options)
-        elif isinstance(self._sampler, BaseSamplerV2):
-            if self._pass_manager is None:
-                circs = job_circuits
-                _len_quasi_dist = 2 ** job_circuits[0].num_qubits
-            else:
-                circs = self._pass_manager.run(job_circuits)
-                _len_quasi_dist = 2 ** circs[0].layout._input_qubit_count
-            circ_params = [(circs[i], job_param_values[i]) for i in range(len(job_param_values))]
-            job = self._sampler.run(circ_params)
+        if self._pass_manager is None:
+            circs = job_circuits
+            _len_quasi_dist = 2 ** job_circuits[0].num_qubits
         else:
-            raise AlgorithmError(
-                "The accepted estimators are BaseSamplerV1 (deprecated) and BaseSamplerV2; got "
-                + f"{type(self._sampler)} instead."
-            )
+            circs = self._pass_manager.run(job_circuits)
+            _len_quasi_dist = 2 ** circs[0].layout._input_qubit_count
+        circ_params = [(circs[i], job_param_values[i]) for i in range(len(job_param_values))]
+        job = self._sampler.run(circ_params)
         try:
             results = job.result()
         except Exception as exc:
@@ -159,25 +153,17 @@ class LinCombSamplerGradient(BaseSamplerGradient):
         partial_sum_n = 0
         for i, n in enumerate(all_n):
             gradient = []
-            if isinstance(self._sampler, BaseSamplerV1):
-                result = results.quasi_dists[partial_sum_n : partial_sum_n + n]
+            result = []
+            for x in range(partial_sum_n, partial_sum_n + n):
+                bitstring_counts = results[x].join_data().get_counts()
 
-            elif isinstance(self._sampler, BaseSamplerV2):
-                result = []
-                for x in range(partial_sum_n, partial_sum_n + n):
-                    if hasattr(results[x].data, "meas"):
-                        bitstring_counts = results[x].data.meas.get_counts()
-                    else:
-                        # Fallback to 'c' if 'meas' is not available.
-                        bitstring_counts = results[x].data.c.get_counts()
+                # Normalize the counts to probabilities
+                total_shots = sum(bitstring_counts.values())
+                probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
 
-                    # Normalize the counts to probabilities
-                    total_shots = sum(bitstring_counts.values())
-                    probabilities = {k: v / total_shots for k, v in bitstring_counts.items()}
-
-                    # Convert to quasi-probabilities
-                    counts = QuasiDistribution(probabilities)
-                    result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
+                # Convert to quasi-probabilities
+                counts = QuasiDistribution(probabilities)
+                result.append({k: v for k, v in counts.items() if int(k) < _len_quasi_dist})
             m = 2 ** circuits[i].num_qubits
             for dist in result:
                 grad_dist: dict[int, float] = defaultdict(float)

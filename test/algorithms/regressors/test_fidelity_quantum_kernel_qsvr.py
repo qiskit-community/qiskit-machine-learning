@@ -14,19 +14,17 @@
 import os
 import tempfile
 import unittest
-
 from test import QiskitMachineLearningTestCase
 
 import numpy as np
 from sklearn.metrics import mean_squared_error
-
-from qiskit.primitives import Sampler
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import zz_feature_map
-
-from qiskit_machine_learning.utils import algorithm_globals
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithms import QSVR, SerializableModelMixin
 from qiskit_machine_learning.exceptions import QiskitMachineLearningWarning
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 class TestQSVR(QiskitMachineLearningTestCase):
@@ -37,7 +35,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
         algorithm_globals.random_seed = 10598
 
-        self.sampler = Sampler()
+        self.sampler = Sampler(seed=123)
         self.feature_map = zz_feature_map(feature_dimension=2, reps=2)
 
         self.sample_train = np.asarray(
@@ -93,7 +91,7 @@ class TestQSVR(QiskitMachineLearningTestCase):
         """Test QSVR with QuantumKernel later"""
         qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
 
-        qsvr = QSVR()
+        qsvr = QSVR(feature_map=QuantumCircuit(2))
         qsvr.quantum_kernel = qkernel
         qsvr.fit(self.sample_train, self.label_train)
 
@@ -114,13 +112,13 @@ class TestQSVR(QiskitMachineLearningTestCase):
 
     def test_qsvc_to_string(self):
         """Test QSVR print works when no *args passed in"""
-        qsvr = QSVR()
+        qsvr = QSVR(feature_map=self.feature_map)
         _ = str(qsvr)
 
     def test_with_kernel_parameter(self):
         """Test QSVC with the `kernel` argument."""
         with self.assertWarns(QiskitMachineLearningWarning):
-            QSVR(kernel=1)
+            QSVR(feature_map=self.feature_map, kernel=1)
 
     def test_save_load(self):
         """Tests save and load models."""

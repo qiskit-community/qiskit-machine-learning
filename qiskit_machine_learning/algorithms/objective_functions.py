@@ -13,7 +13,6 @@
 for classifiers/regressors."""
 
 from abc import abstractmethod
-from typing import Optional, Union
 
 import numpy as np
 
@@ -56,8 +55,8 @@ class ObjectiveFunction:
         self._y = y
         self._neural_network = neural_network
         self._loss = loss
-        self._last_forward_weights: Optional[np.ndarray] = None
-        self._last_forward: Optional[Union[np.ndarray, SparseArray]] = None
+        self._last_forward_weights: np.ndarray | None = None
+        self._last_forward: np.ndarray | SparseArray | None = None
 
     @abstractmethod
     def objective(self, weights: np.ndarray) -> float:
@@ -83,7 +82,7 @@ class ObjectiveFunction:
         """
         raise NotImplementedError
 
-    def _neural_network_forward(self, weights: np.ndarray) -> Union[np.ndarray, SparseArray]:
+    def _neural_network_forward(self, weights: np.ndarray) -> np.ndarray | SparseArray:
         """
         Computes and caches the results of the forward pass. Cached values may be re-used in
         gradient computation.

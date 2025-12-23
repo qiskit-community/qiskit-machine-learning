@@ -12,19 +12,18 @@
 """An implementation of variational quantum classifier."""
 
 from __future__ import annotations
+
 from typing import Callable
 
 import numpy as np
-
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseSampler
+from qiskit.primitives import BaseSamplerV2
 from qiskit.transpiler.passmanager import BasePassManager
 
 from ...neural_networks import SamplerQNN
-from ...optimizers import Optimizer, OptimizerResult, Minimizer
+from ...optimizers import Minimizer, Optimizer, OptimizerResult
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
-
 from .neural_network_classifier import NeuralNetworkClassifier
 
 
@@ -58,7 +57,7 @@ class VQC(NeuralNetworkClassifier):
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
-        sampler: BaseSampler | None = None,
+        sampler: BaseSamplerV2 | None = None,  # change: BaseSampler is migrated to BaseSamplerV2
         interpret: Callable[[int], int | tuple[int, ...]] | None = None,
         output_shape: int | None = None,
         pass_manager: BasePassManager | None = None,
@@ -108,7 +107,7 @@ class VQC(NeuralNetworkClassifier):
         """
 
         num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-            num_qubits, feature_map, ansatz, use_methods=True
+            num_qubits, feature_map, ansatz
         )
 
         if output_shape is None:

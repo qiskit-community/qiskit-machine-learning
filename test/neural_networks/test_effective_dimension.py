@@ -20,6 +20,7 @@ from ddt import ddt, data, unpack
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import z_feature_map, real_amplitudes
+from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.utils import algorithm_globals
 
 from qiskit_machine_learning.neural_networks import (
@@ -59,12 +60,14 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
             weight_params=ansatz.parameters,
             interpret=parity,
             output_shape=2,
+            sampler=Sampler(),
         )
 
         sampler_qnn_2 = SamplerQNN(
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
+            sampler=Sampler(),
         )
 
         # EstimatorQNN
@@ -72,6 +75,7 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
+            estimator=Estimator(default_precision=0.01, seed=123),
         )
 
         self.qnns = {

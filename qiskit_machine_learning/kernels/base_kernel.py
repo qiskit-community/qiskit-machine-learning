@@ -14,13 +14,11 @@
 
 from __future__ import annotations
 
-from abc import abstractmethod, ABC
-
+from abc import ABC, abstractmethod
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap
 
-from ..utils.deprecation import issue_deprecation_msg
+from ..exceptions import QiskitMachineLearningError
 
 
 class BaseKernel(ABC):
@@ -47,28 +45,18 @@ class BaseKernel(ABC):
     def __init__(self, *, feature_map: QuantumCircuit = None, enforce_psd: bool = True) -> None:
         """
         Args:
-            feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
-                :class:`~qiskit.circuit.library.ZZFeatureMap` is used with two qubits. If there's
+            feature_map: Parameterized circuit to be used as the feature map. This is required: if
+                ``None`` is given, a :class:`~QiskitMachineLearningError` is raised. If there's
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
-            enforce_psd: Project to closest positive semidefinite matrix if ``x = y``.
+            enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
         """
         if feature_map is None:
-            # Note: when removing None it should be done in all the derived classes as well
-            # along with an appropriate update to the docstring in each case
-            issue_deprecation_msg(
-                msg="Passing None as a feature_map is deprecated",
-                version="0.9.0",
-                remedy="Pass a feature map with the required number of qubits to match "
-                "the features. Adjusting the number of qubits after instantiation will be "
-                "removed from Qiskit as circuits based on BlueprintCircuit, "
-                "like ZZFeatureMap to which this defaults, which could do this, "
-                "have been deprecated.",
-                period="4 months",
+            raise QiskitMachineLearningError(
+                "Passed None as a feature_map, please provide a feature map."
             )
-            feature_map = ZZFeatureMap(2)
 
         self._num_features = feature_map.num_parameters
         self._feature_map = feature_map

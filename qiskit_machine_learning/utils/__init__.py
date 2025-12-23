@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -31,10 +31,12 @@ from .adjust_num_qubits import derive_num_qubits_feature_map_ansatz
 from .algorithm_globals import algorithm_globals
 from .validate_initial_point import validate_initial_point
 from .validate_bounds import validate_bounds
+from .circuit_hash import circuit_cache_key
 
 __all__ = [
     "derive_num_qubits_feature_map_ansatz",
     "algorithm_globals",
     "validate_initial_point",
     "validate_bounds",
+    "circuit_cache_key",
 ]

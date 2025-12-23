@@ -12,10 +12,10 @@ sphinx-design>=0.4.0
 sphinxcontrib-spelling
 jupyter-sphinx
 discover
+qiskit-aer>=0.17.1
 mypy>=0.981
 mypy-extensions>=0.4.3
 nbsphinx
 qiskit_sphinx_theme~=1.16.0
-qiskit-aer>=0.11.2
-qiskit-ibm-runtime>=0.21
+qiskit-ibm-runtime>=0.40.0
 scikit-learn!=1.7.1

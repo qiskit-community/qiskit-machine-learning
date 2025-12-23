@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,16 +14,14 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import List, Tuple
-
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.primitives import Sampler
-from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
+from ..state_fidelities import BaseStateFidelity, ComputeUncompute
 from .base_kernel import BaseKernel
 
-KernelIndices = List[Tuple[int, int]]
+KernelIndices = list[tuple[int, int]]
 
 
 class FidelityQuantumKernel(BaseKernel):
@@ -51,7 +49,7 @@ class FidelityQuantumKernel(BaseKernel):
         """
         Args:
             feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,
-                :class:`~qiskit.circuit.library.ZZFeatureMap` is used with two qubits. If there's
+                :func:`~qiskit.circuit.library.zz_feature_map` is used with two qubits. If there's
                 a mismatch in the number of qubits of the feature map and the number of features
                 in the dataset, then the kernel will try to adjust the feature map to reflect the
                 number of features.
@@ -59,7 +57,7 @@ class FidelityQuantumKernel(BaseKernel):
                 :class:`~qiskit_machine_learning.state_fidelities.BaseStateFidelity` primitive to be used
                 to compute fidelity between states. Default is
                 :class:`~qiskit_machine_learning.state_fidelities.ComputeUncompute` which is created on
-                top of the reference sampler defined by :class:`~qiskit.primitives.Sampler`.
+                top of the reference sampler defined by :class:`~qiskit.primitives.BaseSamplerV2`.
             enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
             evaluate_duplicates: Defines a strategy how kernel matrix elements are evaluated if
@@ -83,9 +81,7 @@ class FidelityQuantumKernel(BaseKernel):
 
         eval_duplicates = evaluate_duplicates.lower()
         if eval_duplicates not in ("all", "off_diagonal", "none"):
-            raise ValueError(
-                f"Unsupported value passed as evaluate_duplicates: {evaluate_duplicates}"
-            )
+            raise ValueError(f"Unsupported value passed as evaluate_duplicates: {eval_duplicates}")
         self._evaluate_duplicates = eval_duplicates
         if fidelity is None:
             fidelity = ComputeUncompute(sampler=Sampler())

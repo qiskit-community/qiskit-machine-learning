@@ -46,7 +46,7 @@ def ad_hoc_data(
     r"""
     Generates a dataset that can be fully separated by
     :class:`~qiskit.circuit.library.ZZFeatureMap` according to the procedure
-    outlined in [1]. First, vectors :math:`\vec{x} \in (0, 2\pi]^{n}` are generated from a 
+    outlined in [1]. First, vectors :math:`\vec{x} \in (0, 2\pi]^{n}` are generated from a
     uniform distribution, using a sampling method determined by the ``sampling_method``
     argument. Next, a feature map is applied:
 
@@ -67,7 +67,7 @@ def ad_hoc_data(
         \begin{cases}\phi_{\{i, j\}} = (\pi - x_i)(\pi - x_j) \\
         \phi_{\{i\}} = x_i \end{cases}
 
-    The choice of second-order terms :math:`Z_i Z_j` in the above summation depends 
+    The choice of second-order terms :math:`Z_i Z_j` in the above summation depends
     on the ``entanglement`` argument (``"linear"``, ``"circular"``, or
     ``"full"``). See arguments for more information.
 
@@ -79,8 +79,8 @@ def ad_hoc_data(
     where :math:`V` is a randomly generated unitary matrix. Depending on the
     ``labelling_method``, if ``"expectation"`` is used, the expectation value
     :math:`\langle \Phi(\vec{x})| O |\Phi(\vec{x})\rangle` is compared to the
-    gap parameter :math:`\Delta` (from ``gap``) to assign :math:`\pm 1` labels. 
-    if ``"measurement"`` is used, a simple measurement in the computational 
+    gap parameter :math:`\Delta` (from ``gap``) to assign :math:`\pm 1` labels.
+    if ``"measurement"`` is used, a simple measurement in the computational
     basis is performed to assign labels.
 
     **References:**
@@ -96,10 +96,10 @@ def ad_hoc_data(
         n : Number of qubits (dimension of the feature space).
         gap : Separation gap :math:`\Delta` used when ``labelling_method="expectation"``.
             Default is 0.
-        plot_data : If True, plots the sampled data (disabled automatically if 
+        plot_data : If True, plots the sampled data (disabled automatically if
             ``n > 3``). Default is False.
         one_hot : If True, returns labels in one-hot format. Default is True.
-        include_sample_total : If True, the function also returns the total number 
+        include_sample_total : If True, the function also returns the total number
             of accepted samples. Default is False.
         entanglement : Determines which second-order terms :math:`Z_i Z_j` appear in
             :math:`U_{\Phi(\vec{x})}`. The options are:
@@ -117,16 +117,16 @@ def ad_hoc_data(
                 * ``"sobol"``: Uses Sobol sequences
 
             Default is ``"grid"``.
-        divisions : Must be specified if ``sampling_method="hypercube"``. This parameter 
-            determines the number of stratifications along each dimension. Recommended 
-            to be chosen close to ``training_size``. 
+        divisions : Must be specified if ``sampling_method="hypercube"``. This parameter
+            determines the number of stratifications along each dimension. Recommended
+            to be chosen close to ``training_size``.
         labelling_method : Method for assigning labels. The options are:
 
                 * ``"expectation"``: Uses the expectation value of the observable.
                 * ``"measurement"``: Performs a measurement in the computational basis.
 
             Default is ``"expectation"``.
-        class_labels : Custom labels for the two classes when one-hot is not enabled. 
+        class_labels : Custom labels for the two classes when one-hot is not enabled.
             If not provided, the labels default to ``-1`` and ``+1``
 
     Returns:
@@ -176,7 +176,7 @@ def ad_hoc_data(
 
     if sampling_method == "grid" and (training_size + test_size) > 4000:
         warnings.warn(
-            """Grid Sampling for large number of samples is not recommended 
+            """Grid Sampling for large number of samples is not recommended
             and can lead to samples repeating in the training and testing sets""",
             UserWarning,
         )
@@ -437,7 +437,7 @@ def _loop_sampling(n, n_samples, z_diags, zz_diags, psi_0, h_n, lab_fn, samp_fn,
         n (int): Number of qubits (feature dimension).
         n_samples (int): Number of samples needed per class.
         z_diags (np.ndarray): Array of single-qubit Z diagonal elements.
-        zz_diags (dict): Dictionary of ZZ-diagonal elements keyed by qubit
+        zz_diags (dict): dictionary of ZZ-diagonal elements keyed by qubit
             pairs.
         O (np.ndarray): Observable for label determination.
         psi_0 (np.ndarray): Initial state vector.
@@ -449,7 +449,7 @@ def _loop_sampling(n, n_samples, z_diags, zz_diags, psi_0, h_n, lab_fn, samp_fn,
             ("grid", "hypercube", or "sobol").
 
     Returns:
-        Tuple[np.ndarray, np.ndarray]:
+        tuple[np.ndarray, np.ndarray]:
             Two arrays of shape `(n_samples, n)`, each containing the sampled
             feature vectors belonging to class A and class B, respectively.
     """
@@ -568,14 +568,14 @@ def _grid_sampling(n, n_samples, z_diags, zz_diags, psi_0, h_n, lab_fn):
         n (int): Number of qubits (dimension).
         n_samples (int): Number of samples needed per class.
         z_diags (np.ndarray): Array of single-qubit Z diagonal elements.
-        zz_diags (dict): Dictionary of ZZ-diagonal elements keyed by qubit pairs.
+        zz_diags (dict): dictionary of ZZ-diagonal elements keyed by qubit pairs.
         psi_0 (np.ndarray): Initial state vector.
         h_n (np.ndarray): n-qubit Hadamard matrix.
         lab_fn (Callable): Labeling function (either expectation-based or
             measurement-based).
 
     Returns:
-        Tuple[np.ndarray, np.ndarray]:
+        tuple[np.ndarray, np.ndarray]:
             Two arrays of shape `(n_samples, n)`, each containing the sampled
             feature vectors belonging to class A and class B, respectively.
             This code is incomplete and references variables not defined above,
