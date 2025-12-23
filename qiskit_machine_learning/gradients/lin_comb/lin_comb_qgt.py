@@ -121,7 +121,7 @@ class LinCombQGT(BaseQGT):
             pass_manager=pass_manager,
         )
         self._lin_comb_qgt_circuit_cache: dict[
-            tuple, dict[tuple[Parameter, Parameter], QuantumCircuit]
+            str | tuple, dict[tuple[Parameter, Parameter], QuantumCircuit]
         ] = {}
 
     def _run(

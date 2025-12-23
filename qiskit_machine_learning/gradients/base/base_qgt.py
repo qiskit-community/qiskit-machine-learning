@@ -102,7 +102,10 @@ class BaseQGT(ABC):
         self._phase_fix: bool = phase_fix
         self._derivative_type: DerivativeType = derivative_type
         self._qgt_circuit_cache: dict[tuple, GradientCircuit] = {}
-        self._gradient_circuit_cache: dict[tuple, GradientCircuit] = {}
+        self._gradient_circuit_cache: dict[
+            str | tuple,
+            GradientCircuit,
+        ] = {}
 
         self._pass_manager = pass_manager
         self._pass_manager_options = (
