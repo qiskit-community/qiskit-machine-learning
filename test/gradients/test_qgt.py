@@ -22,8 +22,8 @@ import numpy as np
 from qiskit import QuantumCircuit, generate_preset_pass_manager
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import real_amplitudes
-from qiskit.primitives import StatevectorEstimator
 
+from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.gradients import DerivativeType, LinCombQGT
 
 from .logging_primitives import LoggingEstimator
@@ -35,7 +35,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
 
     def setUp(self):
         super().setUp()
-        self.estimator = StatevectorEstimator(default_precision=0)
+        self.estimator = Estimator(default_precision=0)
 
     @data(LinCombQGT)
     def test_qgt_derivative_type(self, qgt_type):
@@ -247,7 +247,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
-        estimator = StatevectorEstimator(default_precision=0.1)
+        estimator = Estimator(default_precision=0.1)
 
         with self.subTest("estimator"):
             qgt = LinCombQGT(estimator)
@@ -319,7 +319,7 @@ class TestQGT(QiskitAlgorithmsTestCase):
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
-        estimator = StatevectorEstimator(default_precision=0.1)
+        estimator = Estimator(default_precision=0.1)
         # Test transpiler without options
         qgt = LinCombQGT(estimator, pass_manager=pass_manager)
         qgt.run([qc], [[1]]).result()

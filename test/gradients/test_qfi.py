@@ -22,8 +22,8 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.parametervector import ParameterVector
-from qiskit.primitives import StatevectorEstimator
 
+from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.gradients import LinCombQGT, QFI, DerivativeType
 
 
@@ -33,7 +33,7 @@ class TestQFI(QiskitAlgorithmsTestCase):
 
     def setUp(self):
         super().setUp()
-        self.estimator = StatevectorEstimator()
+        self.estimator = Estimator()
         self.lcu_qgt = LinCombQGT(self.estimator, derivative_type=DerivativeType.REAL)
 
     def test_qfi(self):
@@ -119,7 +119,7 @@ class TestQFI(QiskitAlgorithmsTestCase):
         a = Parameter("a")
         qc = QuantumCircuit(1)
         qc.rx(a, 0)
-        estimator = StatevectorEstimator(default_precision=0.1)
+        estimator = Estimator(default_precision=0.1)
         qgt = LinCombQGT(estimator=estimator)
 
         with self.subTest("QGT"):

@@ -22,9 +22,9 @@ import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.primitives import BaseEstimatorV2
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.primitives.utils import _circuit_key
 from qiskit.passmanager import BasePassManager
 
+from ...utils import circuit_cache_key
 from ..base.base_qgt import BaseQGT
 from .lin_comb_estimator_gradient import LinCombEstimatorGradient
 from ..base.qgt_result import QGTResult
@@ -178,7 +178,7 @@ class LinCombQGT(BaseQGT):
             metadata.append(meta)
 
             # Compute the first term in the QGT
-            circuit_key = _circuit_key(circuit)
+            circuit_key = circuit_cache_key(circuit)
             if circuit_key not in self._lin_comb_qgt_circuit_cache:
                 # generate the all of the circuits for the first term in the QGT and cache them.
                 # Only the circuit related to specified parameters will be executed.
