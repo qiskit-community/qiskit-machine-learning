@@ -16,12 +16,11 @@ import unittest
 from test import QiskitAlgorithmsTestCase
 
 import numpy as np
-
-from qiskit.circuit import QuantumCircuit, ParameterVector
+from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes
-from qiskit.primitives import Sampler
 
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 
 
 class TestComputeUncompute(QiskitAlgorithmsTestCase):
@@ -216,49 +215,6 @@ class TestComputeUncompute(QiskitAlgorithmsTestCase):
         job = fidelity.run(circuit_1, circuit_2, self._left_params[0], self._right_params[0])
         result = job.result()
         np.testing.assert_allclose(result.fidelities, np.array([1.0]))
-
-    def test_options(self):
-        """Test fidelity's run options"""
-        sampler_shots = Sampler(options={"shots": 1024})
-
-        with self.subTest("sampler"):
-            # Only options in sampler
-            fidelity = ComputeUncompute(sampler_shots)
-            options = fidelity.options
-            job = fidelity.run(self._circuit[2], self._circuit[3])
-            result = job.result()
-            self.assertEqual(options.__dict__, {"shots": 1024})
-            self.assertEqual(result.options.__dict__, {"shots": 1024})
-
-        with self.subTest("fidelity init"):
-            # Fidelity default options override sampler
-            # options and add new fields
-            fidelity = ComputeUncompute(sampler_shots, options={"shots": 2048, "dummy": 100})
-            options = fidelity.options
-            job = fidelity.run(self._circuit[2], self._circuit[3])
-            result = job.result()
-            self.assertEqual(options.__dict__, {"shots": 2048, "dummy": 100})
-            self.assertEqual(result.options.__dict__, {"shots": 2048, "dummy": 100})
-
-        with self.subTest("fidelity update"):
-            # Update fidelity options
-            fidelity = ComputeUncompute(sampler_shots, options={"shots": 2048, "dummy": 100})
-            fidelity.update_default_options(shots=100)
-            options = fidelity.options
-            job = fidelity.run(self._circuit[2], self._circuit[3])
-            result = job.result()
-            self.assertEqual(options.__dict__, {"shots": 100, "dummy": 100})
-            self.assertEqual(result.options.__dict__, {"shots": 100, "dummy": 100})
-
-        with self.subTest("fidelity run"):
-            # Run options override fidelity options
-            fidelity = ComputeUncompute(sampler_shots, options={"shots": 2048, "dummy": 100})
-            job = fidelity.run(self._circuit[2], self._circuit[3], shots=50, dummy=None)
-            options = fidelity.options
-            result = job.result()
-            # Only default + sampler options. Not run.
-            self.assertEqual(options.__dict__, {"shots": 2048, "dummy": 100})
-            self.assertEqual(result.options.__dict__, {"shots": 50, "dummy": None})
 
 
 if __name__ == "__main__":

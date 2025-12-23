@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2025.
+# (C) Copyright IBM 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,10 +10,4 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Regressors Package"""
-
-from .neural_network_regressor import NeuralNetworkRegressor
-from .qsvr import QSVR
-from .vqr import VQR
-
-__all__ = ["QSVR", "VQR", "NeuralNetworkRegressor"]
+"""Qiskit Machine Learning primitives tests."""

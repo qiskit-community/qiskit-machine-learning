@@ -16,15 +16,15 @@ from typing import Callable
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.primitives import BaseEstimator
+from qiskit.primitives import BaseEstimatorV2
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passmanager import BasePassManager
 
-from .neural_network_regressor import NeuralNetworkRegressor
 from ...neural_networks import EstimatorQNN
-from ...optimizers import Optimizer, Minimizer
+from ...optimizers import Minimizer, Optimizer
 from ...utils import derive_num_qubits_feature_map_ansatz
 from ...utils.loss_functions import Loss
+from .neural_network_regressor import NeuralNetworkRegressor
 
 
 class VQR(NeuralNetworkRegressor):
@@ -43,7 +43,7 @@ class VQR(NeuralNetworkRegressor):
         initial_point: np.ndarray | None = None,
         callback: Callable[[np.ndarray, float], None] | None = None,
         *,
-        estimator: BaseEstimator | None = None,
+        estimator: BaseEstimatorV2 | None = None,
         pass_manager: BasePassManager | None = None,
     ) -> None:
         r"""
@@ -94,7 +94,7 @@ class VQR(NeuralNetworkRegressor):
         self._estimator = estimator
 
         num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-            num_qubits, feature_map, ansatz, use_methods=True
+            num_qubits, feature_map, ansatz
         )
 
         # construct circuit

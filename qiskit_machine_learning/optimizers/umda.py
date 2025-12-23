@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2024.
+# (C) Copyright IBM 2018, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -74,7 +74,7 @@ class UMDA(Optimizer):
             from qiskit_machine_learning.optimizers import UMDA
             from qiskit_machine_learning import QAOA
             from qiskit.quantum_info import Pauli
-            from qiskit.primitives import Sampler
+            from qiskit.primitives import StatevectorSampler
 
             X = Pauli("X")
             I = Pauli("I")

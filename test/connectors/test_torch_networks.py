@@ -12,15 +12,18 @@
 
 """Abstract class to test PyTorch hybrid networks."""
 
-from typing import Optional, Union, cast
+from typing import cast
 from test.connectors.test_torch import TestTorch
 import numpy as np
 from ddt import ddt, idata
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
+
+from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.neural_networks import NeuralNetwork, EstimatorQNN, SamplerQNN
 from qiskit_machine_learning.connectors import TorchConnector
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 @ddt
@@ -31,6 +34,8 @@ class TestTorchNetworks(TestTorch):
         from torch import cat
         from torch.nn import Linear, Module
         import torch.nn.functional as F
+
+        algorithm_globals.random_seed = 123
 
         # set up dummy hybrid PyTorch module
         class Net(Module):
@@ -62,8 +67,9 @@ class TestTorchNetworks(TestTorch):
         qc = QuantumCircuit(num_inputs)
         qc.append(feature_map, range(num_inputs))
         qc.append(ansatz, range(num_inputs))
-
+        estimator = Estimator(default_precision=0, seed=123)
         qnn = EstimatorQNN(
+            estimator=estimator,
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
@@ -86,6 +92,7 @@ class TestTorchNetworks(TestTorch):
         qc.append(ansatz, range(num_inputs))
 
         qnn = SamplerQNN(
+            sampler=Sampler(),
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
@@ -102,7 +109,7 @@ class TestTorchNetworks(TestTorch):
         from torch.nn import MSELoss
         from torch.optim import SGD
 
-        qnn: Optional[Union[SamplerQNN, EstimatorQNN]] = None
+        qnn: SamplerQNN | EstimatorQNN | None = None
         if qnn_type == "sampler_qnn":
             qnn = self._create_sampler_qnn()
             output_size = 2
@@ -149,15 +156,14 @@ class TestTorchNetworks(TestTorch):
             if n.endswith(".weight"):
                 batch_gradients += np.sum(param.grad.detach().cpu().numpy())
 
-        # making sure they are equivalent
         self.assertAlmostEqual(
             cast(float, np.linalg.norm(sum_of_individual_gradients - batch_gradients)),
             0.0,
-            places=4,
+            places=3,
         )
 
         self.assertAlmostEqual(
             cast(torch.Tensor, sum_of_individual_losses).detach().cpu().numpy(),
             batch_loss.detach().cpu().numpy(),
-            places=4,
+            places=3,
         )

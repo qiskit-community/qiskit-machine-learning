@@ -14,6 +14,7 @@ ancilla
 ancillas
 ansatz
 ansatz's
+ansatze
 ansatzes
 ap
 apl
@@ -66,11 +67,15 @@ carleo
 carlo
 cbit
 centre
+centric
 centroid
 cerezo
 chernoff
 choi
 chuang
+cinds
+circ
+ClassicalRegister
 clbit
 clbits
 clopper
@@ -80,6 +85,7 @@ codec
 coeffs
 coles
 colin
+coles
 combinatorial
 computable
 concha
@@ -132,6 +138,7 @@ doi
 dok
 dp
 dt
+dtype
 dω
 eda
 edaspy
@@ -149,6 +156,7 @@ eigenvectors
 einstein
 einsum
 elif
+encodings
 endian
 entangler
 enum
@@ -163,6 +171,7 @@ evolutions
 evolutionsynthesis
 evolver
 evolvers
+ExactProbArray
 excitations
 exponentials
 exponentiated
@@ -247,6 +256,7 @@ inlier
 inplace
 instantiation
 instantiations
+integrations
 interatomic
 interdependencies
 ints
@@ -288,10 +298,12 @@ latin
 linux
 larrañaga
 lcu
+learn's
 len
 leq
 lin
 linalg
+loc
 loglik
 loglikelihood
 lov
@@ -361,6 +373,7 @@ nfevs
 nft
 nielsen
 njev
+nlocal
 nlopt
 nn
 noancilla
@@ -430,6 +443,7 @@ preprint
 preprocess
 preprocesses
 priori
+probs
 proj
 ps
 pvqd
@@ -454,8 +468,10 @@ qgans
 qgt
 qgt's
 qgts
+qinds
 qiskit
 qiskit's
+qml
 qn
 qnn
 qnspsa
@@ -498,7 +514,10 @@ RuntimeError
 rx
 ry
 rz
+qpy
 samplerqnn
+SamplerPub
+SamplerPubLike
 sanjiv
 sashank
 satisfiability
@@ -555,6 +574,7 @@ steven
 str
 stratifications
 stratification
+stochasticity
 subcircuits
 subclassed
 subclasses
@@ -609,6 +629,7 @@ unscaled
 unsymmetric
 utf
 utils
+uuid
 varadarajan
 variational
 vatan

@@ -15,16 +15,12 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import Dict
-import warnings
-
 import numpy as np
 from sklearn.base import ClassifierMixin
 
 from ...algorithms.serializable_model import SerializableModelMixin
 from ...exceptions import QiskitMachineLearningError
 from ...kernels import BaseKernel, FidelityQuantumKernel
-from ...exceptions import QiskitMachineLearningWarning
 from ...utils import algorithm_globals
 
 
@@ -99,8 +95,6 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
                 raise ValueError("'quantum_kernel' has to be None to use a precomputed kernel")
         else:
             if quantum_kernel is None:
-                msg = "No quantum kernel is provided, SamplerV1 based quantum kernel will be used."
-                warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
                 quantum_kernel = FidelityQuantumKernel()
 
         self._quantum_kernel = quantum_kernel
@@ -115,11 +109,11 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
             raise ValueError(f"C has to be a positive number, found {C}.")
 
         # these are the parameters being fit and are needed for prediction
-        self._alphas: Dict[int, int] | None = None
+        self._alphas: dict[int, int] | None = None
         self._x_train: np.ndarray | None = None
         self._n_samples: int | None = None
         self._y_train: np.ndarray | None = None
-        self._label_map: Dict[int, int] | None = None
+        self._label_map: dict[int, int] | None = None
         self._label_pos: int | None = None
         self._label_neg: int | None = None
 

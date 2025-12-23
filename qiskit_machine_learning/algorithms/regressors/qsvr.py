@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,8 +12,8 @@
 
 """Quantum Support Vector Regressor"""
 
+from __future__ import annotations
 import warnings
-from typing import Optional
 
 from sklearn.svm import SVR
 
@@ -23,31 +23,63 @@ from ...kernels import BaseKernel, FidelityQuantumKernel
 
 
 class QSVR(SVR, SerializableModelMixin):
-    r"""Quantum Support Vector Regressor that extends the scikit-learn
-    `sklearn.svm.SVR <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html>`_
-    regressor and introduces an additional `quantum_kernel` parameter.
+    r"""Quantum Support Vector Regressor.
 
-    This class shows how to use a quantum kernel for regression. The class inherits its methods
-    like ``fit`` and ``predict`` from scikit-learn, see the example below.
-    Read more in the
+    It extends scikit-learn's
+    `sklearn.svm.SVR <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html>`_
+    by introducing a ``quantum_kernel`` parameter for computing similarity between samples using
+    a quantum kernel.
+
+    The class follows scikit-learn conventions and inherits methods such as :meth:`fit` and
+    :meth:`predict`. For general SVR usage and parameters, refer to the
     `scikit-learn user guide <https://scikit-learn.org/stable/modules/svm.html#svm-regression>`_.
+
+    Notes:
+        - Passing ``kernel=...`` to the constructor is not supported; use ``quantum_kernel``.
+          If ``kernel`` is provided, it is discarded and a
+          :class:`~qiskit_machine_learning.exceptions.QiskitMachineLearningWarning` is emitted.
+        - If ``quantum_kernel`` is ``None``, a
+          :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel` is created. A
+          ``feature_map`` may be provided via ``kwargs`` and will be forwarded to the default
+          fidelity kernel.
+        - If ``quantum_kernel == "precomputed"``, the estimator is configured for scikit-learn's
+          precomputed-kernel mode and expects kernel matrices as input.
+
 
     **Example**
 
-    .. code-block::
+    .. code-block:: python
 
         qsvr = QSVR(quantum_kernel=qkernel)
-        qsvr.fit(sample_train,label_train)
-        qsvr.predict(sample_test)
+        qsvr.fit(sample_train, label_train)
+        y_pred = qsvr.predict(sample_test)
+
     """
 
-    def __init__(self, *, quantum_kernel: Optional[BaseKernel] = None, **kwargs):
-        """
+    def __init__(self, *, quantum_kernel: BaseKernel | None = None, **kwargs):
+        """Create a quantum-kernel SVR estimator.
+
         Args:
-            quantum_kernel: A quantum kernel to be used for regression. If None,
-                default to :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
-            *args: Variable length argument list to pass to SVR constructor.
-            **kwargs: Arbitrary keyword arguments to pass to SVR constructor.
+            quantum_kernel: Quantum kernel configuration.
+
+                - If ``None``, defaults to
+                  :class:`~qiskit_machine_learning.kernels.FidelityQuantumKernel`.
+                  In this case, an optional ``feature_map`` may be provided via ``kwargs`` and
+                  is forwarded to the default fidelity kernel.
+                - If equal to the string ``"precomputed"``, the estimator is configured for
+                  scikit-learn's precomputed-kernel mode (i.e. it expects kernel matrices
+                  rather than raw samples).
+                - Otherwise, it must be a :class:`~qiskit_machine_learning.kernels.BaseKernel`
+                  instance and its :meth:`~qiskit_machine_learning.kernels.BaseKernel.evaluate`
+                  method will be used as the callable kernel by scikit-learn.
+            **kwargs: Keyword arguments forwarded to :class:`sklearn.svm.SVR`.
+
+                The ``kernel`` keyword is not supported and will be discarded (use
+                ``quantum_kernel`` instead). If provided, a warning is emitted.
+
+        Warns:
+            QiskitMachineLearningWarning: If a ``kernel`` argument is provided in ``kwargs`` and
+                is discarded.
         """
         if "kernel" in kwargs:
             msg = (
@@ -57,27 +89,60 @@ class QSVR(SVR, SerializableModelMixin):
             warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
             # if we don't delete, then this value clashes with our quantum kernel
             del kwargs["kernel"]
-        if quantum_kernel is None:
-            msg = "No quantum kernel is provided, SamplerV1 based quantum kernel will be used."
-            warnings.warn(msg, QiskitMachineLearningWarning, stacklevel=2)
-        self._quantum_kernel = quantum_kernel if quantum_kernel else FidelityQuantumKernel()
 
-        super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
+        feature_map = kwargs.pop("feature_map", None)
+
+        # Important: when quantum_kernel == "precomputed" we intentionally store the string
+        # and configure SVR accordingly.
+        self._quantum_kernel = (
+            quantum_kernel if quantum_kernel else FidelityQuantumKernel(feature_map=feature_map)
+        )
+
+        if quantum_kernel == "precomputed":
+            super().__init__(kernel=self._quantum_kernel, **kwargs)
+        else:
+            super().__init__(kernel=self._quantum_kernel.evaluate, **kwargs)
 
     @property
     def quantum_kernel(self) -> BaseKernel:
-        """Returns quantum kernel"""
+        """Quantum kernel configuration for this estimator.
+
+        Returns:
+            BaseKernel: a :class:`~qiskit_machine_learning.kernels.BaseKernel`
+            instance.
+        """
         return self._quantum_kernel
 
     @quantum_kernel.setter
-    def quantum_kernel(self, quantum_kernel: BaseKernel):
-        """Sets quantum kernel"""
+    def quantum_kernel(self, quantum_kernel: BaseKernel) -> None:
+        """Set the quantum kernel used by this estimator.
+
+        This updates the underlying scikit-learn ``kernel`` callable to use
+        ``quantum_kernel.evaluate``.
+
+        Args:
+            quantum_kernel: The new quantum kernel.
+
+        Notes:
+            Setting this always switches the estimator to callable-kernel mode (i.e. away from
+            ``"precomputed"``), because a :class:`~qiskit_machine_learning.kernels.BaseKernel`
+            is required to provide :meth:`~qiskit_machine_learning.kernels.BaseKernel.evaluate`.
+        """
         self._quantum_kernel = quantum_kernel
         self.kernel = self._quantum_kernel.evaluate
 
     # we override this method to be able to pretty print this instance
     @classmethod
-    def _get_param_names(cls):
+    def _get_param_names(cls) -> list[str]:
+        """Return estimator parameter names for scikit-learn compatibility.
+
+        This removes scikit-learn's ``kernel`` parameter from the public parameter list and
+        exposes ``quantum_kernel`` instead, so that :func:`sklearn.base.clone` and
+        :meth:`get_params` / :meth:`set_params` behave as expected.
+
+        Returns:
+            list[str]: Sorted list of parameter names.
+        """
         names = SVR._get_param_names()
         names.remove("kernel")
         return sorted(names + ["quantum_kernel"])
