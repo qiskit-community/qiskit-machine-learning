@@ -27,7 +27,6 @@ Feature maps
    :nosignatures:
    :template: autosummary/class_no_inherited_members.rst
 
-   RawFeatureVector
    raw_feature_vector
 
 Helper circuits
@@ -38,11 +37,10 @@ Helper circuits
    :nosignatures:
    :template: autosummary/class_no_inherited_members.rst
 
-   QNNCircuit
    qnn_circuit
 """
 
-from .raw_feature_vector import RawFeatureVector, raw_feature_vector
-from .qnn_circuit import QNNCircuit, qnn_circuit
+from .raw_feature_vector import raw_feature_vector
+from .qnn_circuit import qnn_circuit
 
-__all__ = ["RawFeatureVector", "raw_feature_vector", "QNNCircuit", "qnn_circuit"]
+__all__ = ["raw_feature_vector", "qnn_circuit"]

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,26 +21,23 @@ from collections.abc import Sequence
 from copy import copy
 
 import numpy as np
-
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseEstimator, BaseEstimatorV1
-from qiskit.primitives.base import BaseEstimatorV2
-from qiskit.primitives.utils import _circuit_key
+from qiskit.primitives import BaseEstimatorV2
 from qiskit.providers import Options
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.transpiler.passes import TranslateParameterizedGates
 from qiskit.transpiler.passmanager import BasePassManager
 
-from .estimator_gradient_result import EstimatorGradientResult
+from ...algorithm_job import AlgorithmJob
+from ...utils import circuit_cache_key
 from ..utils import (
     DerivativeType,
     GradientCircuit,
     _assign_unique_parameters,
-    _make_gradient_parameters,
     _make_gradient_parameter_values,
+    _make_gradient_parameters,
 )
-from ...utils.deprecation import issue_deprecation_msg
-from ...algorithm_job import AlgorithmJob
+from .estimator_gradient_result import EstimatorGradientResult
 
 
 class BaseEstimatorGradient(ABC):
@@ -48,7 +45,7 @@ class BaseEstimatorGradient(ABC):
 
     def __init__(
         self,
-        estimator: BaseEstimator | BaseEstimatorV2,
+        estimator: BaseEstimatorV2,
         options: Options | None = None,
         derivative_type: DerivativeType = DerivativeType.REAL,
         pass_manager: BasePassManager | None = None,
@@ -73,14 +70,7 @@ class BaseEstimatorGradient(ABC):
             pass_manager: The pass manager to transpile the circuits if necessary.
             Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        if isinstance(estimator, BaseEstimatorV1):
-            issue_deprecation_msg(
-                msg="V1 Primitives are deprecated",
-                version="0.8.0",
-                remedy="Use V2 primitives for continued compatibility and support.",
-                period="4 months",
-            )
-        self._estimator: BaseEstimator = estimator
+        self._estimator: BaseEstimatorV2 = estimator
         self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:
@@ -88,7 +78,7 @@ class BaseEstimatorGradient(ABC):
         self._derivative_type = derivative_type
 
         self._gradient_circuit_cache: dict[
-            tuple,
+            str | tuple,
             GradientCircuit,
         ] = {}
 
@@ -204,7 +194,7 @@ class BaseEstimatorGradient(ABC):
         g_parameter_values: list[Sequence[float]] = []
         g_parameters: list[Sequence[Parameter]] = []
         for circuit, parameter_value_, parameters_ in zip(circuits, parameter_values, parameters):
-            circuit_key = _circuit_key(circuit)
+            circuit_key = circuit_cache_key(circuit)
             if circuit_key not in self._gradient_circuit_cache:
                 unrolled = translator(circuit)
                 self._gradient_circuit_cache[circuit_key] = _assign_unique_parameters(unrolled)
@@ -249,7 +239,7 @@ class BaseEstimatorGradient(ABC):
             ):
                 # If the derivative type is complex, cast the gradient to complex.
                 gradient = gradient.astype("complex")
-            gradient_circuit = self._gradient_circuit_cache[_circuit_key(circuit)]
+            gradient_circuit = self._gradient_circuit_cache[circuit_cache_key(circuit)]
             g_parameters = _make_gradient_parameters(gradient_circuit, parameters_)
             # Make a map from the gradient parameter to the respective index in the gradient.
             g_parameter_indices = {param: i for i, param in enumerate(g_parameters)}

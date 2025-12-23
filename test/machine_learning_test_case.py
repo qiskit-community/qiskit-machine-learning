@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2023.
+# (C) Copyright IBM 2020, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,7 +12,6 @@
 
 """Machine Learning Test Case"""
 
-from typing import Optional
 from abc import ABC
 import warnings
 import inspect
@@ -98,7 +97,7 @@ class QiskitMachineLearningTestCase(unittest.TestCase, ABC):
             level = logging._nameToLevel.get(os.getenv("LOG_LEVEL"), logging.INFO)
             cls.log.setLevel(level)
 
-    def get_resource_path(self, filename: str, path: Optional[str] = None) -> str:
+    def get_resource_path(self, filename: str, path: str | None = None) -> str:
         """Get the absolute path to a resource.
         Args:
             filename: filename or relative path to the resource.

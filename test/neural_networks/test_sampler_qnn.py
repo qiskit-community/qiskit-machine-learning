@@ -13,29 +13,30 @@
 """Test Sampler QNN with Terra primitives."""
 from __future__ import annotations
 
-from test import QiskitMachineLearningTestCase
-
 import itertools
 import unittest
+from test import QiskitMachineLearningTestCase
+
 import numpy as np
-
 from ddt import ddt, idata
-
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import Sampler
-from qiskit.providers.fake_provider import GenericBackendV2
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
 
-from qiskit_ibm_runtime import Session, SamplerV2
+# from qiskit.primitives import StatevectorSampler as Sampler
+from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
-from qiskit_machine_learning.utils import algorithm_globals
-from qiskit_machine_learning.circuit.library import QNNCircuit
-from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
+from qiskit_ibm_runtime import SamplerV2, Session
+
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
+import qiskit_machine_learning.optionals as _optionals
+from qiskit_machine_learning.circuit.library import qnn_circuit
 from qiskit_machine_learning.gradients.param_shift.param_shift_sampler_gradient import (
     ParamShiftSamplerGradient,
 )
-import qiskit_machine_learning.optionals as _optionals
+from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
+from qiskit_machine_learning.utils import algorithm_globals
+
 
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error
@@ -101,7 +102,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # define sampler primitives
         self.sampler = Sampler()
-        self.sampler_shots = Sampler(options={"shots": 100, "seed": 42})
+        self.sampler_shots = Sampler(default_shots=100, seed=42)
         self.backend = GenericBackendV2(num_qubits=8)
         self.session = Session(backend=self.backend)
         self.sampler_v2 = SamplerV2(mode=self.session)
@@ -226,6 +227,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         sparse, sampler_type, interpret_type, batch_size, input_grads = config
         # Test QNN with input and weight params
+
         qnn = self._get_qnn(
             sparse,
             sampler_type,
@@ -353,23 +355,23 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                 circuit=qc,
                 weight_params=params,
             )
-            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1, 2])
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1.0, 2.0])
 
             sampler_qnn.input_gradients = True
-            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1, 2])
+            self._verify_qnn(sampler_qnn, 1, input_data=None, weights=[1.0, 2.0])
 
         with self.subTest("no weights"):
             sampler_qnn = SamplerQNN(
                 circuit=qc,
                 input_params=params,
             )
-            self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
+            self._verify_qnn(sampler_qnn, 1, input_data=[1.0, 2.0], weights=None)
 
             sampler_qnn.input_gradients = True
-            self._verify_qnn(sampler_qnn, 1, input_data=[1, 2], weights=None)
+            self._verify_qnn(sampler_qnn, 1, input_data=[1.0, 2.0], weights=None)
 
         with self.subTest("no parameters"):
-            qc = qc.assign_parameters([1, 2])
+            qc = qc.assign_parameters([1.0, 2.0])
 
             sampler_qnn = SamplerQNN(
                 circuit=qc,
@@ -381,7 +383,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             self._verify_qnn(sampler_qnn, 1, input_data=None, weights=None)
 
     def test_qnn_qc_circuit_construction(self):
-        """Test Sampler QNN properties and forward/backward pass for QNNCircuit construction"""
+        """Test Sampler QNN properties and forward/backward pass for qnn_circuit construction"""
         num_qubits = 2
         feature_map = zz_feature_map(feature_dimension=num_qubits)
         ansatz = real_amplitudes(num_qubits=num_qubits, reps=1)
@@ -389,24 +391,34 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         def parity(x):
             return f"{bin(x)}".count("1") % 2
 
-        qnn_qc = QNNCircuit(num_qubits=num_qubits, feature_map=feature_map, ansatz=ansatz)
+        qnn_qc, feature_map_params, ansatz_params = qnn_circuit(
+            num_qubits=num_qubits, feature_map=feature_map, ansatz=ansatz
+        )
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
 
+        common_kwargs = dict(
+            sampler=Sampler(default_shots=128, seed=123),
+            interpret=parity,
+            output_shape=2,
+            input_gradients=True,
+            pass_manager=generate_preset_pass_manager(backend=self.backend),
+        )
         sampler_qc = SamplerQNN(
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
-            interpret=parity,
-            output_shape=2,
-            input_gradients=True,
+            **common_kwargs,
         )
         sampler_qnn_qc = SamplerQNN(
-            circuit=qnn_qc, interpret=parity, output_shape=2, input_gradients=True
+            circuit=qnn_qc,
+            input_params=feature_map_params,
+            weight_params=ansatz_params,
+            **common_kwargs,
         )
 
-        input_data = [1, 2]
+        input_data = [1.0, 2.0]
         weights = [1, 2, 3, 4]
 
         with self.subTest("Test circuit properties."):

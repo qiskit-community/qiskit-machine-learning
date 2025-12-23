@@ -181,23 +181,16 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         self.assertEqual(len(self.training_parameters), kernel.num_training_parameters)
         self.assertEqual(self.num_features, kernel.num_features)
 
-    # Testing changes related to the bug fix for
-    # https://github.com/qiskit-community/qiskit-machine-learning/issues/911
     @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
     def test_default_feature_map(self, trainable_kernel_type):
-        """Test properties of the trainable quantum kernel."""
+        """Default feature map was removed; constructing without one should error."""
         with self.subTest("Do not pass feature map at all"):
-            kernel = trainable_kernel_type()
-            # The above would crash as per the reference issue. This following checks
-            # just make sure feature map is present and built as expected
-            self.assertIsNotNone(kernel.feature_map)
-            self.assertEqual(len(kernel.feature_map.parameters), 2)
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = trainable_kernel_type()
 
-        # As above but explicitly pass None
         with self.subTest("Pass feature map with value None"):
-            kernel = trainable_kernel_type(feature_map=None)
-            self.assertIsNotNone(kernel.feature_map)
-            self.assertEqual(len(kernel.feature_map.parameters), 2)
+            with self.assertRaises(QiskitMachineLearningError):
+                _ = trainable_kernel_type(feature_map=None)
 
 
 if __name__ == "__main__":

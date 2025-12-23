@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -20,23 +20,23 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Sequence
 from copy import copy
+from typing import Any
 
 from qiskit.circuit import Parameter, ParameterExpression, QuantumCircuit
-from qiskit.primitives import BaseSampler, BaseSamplerV1
-from qiskit.primitives.utils import _circuit_key
+from qiskit.primitives import BaseSamplerV2
 from qiskit.providers import Options
 from qiskit.transpiler.passes import TranslateParameterizedGates
 from qiskit.transpiler.passmanager import BasePassManager
 
-from .sampler_gradient_result import SamplerGradientResult
+from ...algorithm_job import AlgorithmJob
+from ...utils import circuit_cache_key
 from ..utils import (
     GradientCircuit,
     _assign_unique_parameters,
-    _make_gradient_parameters,
     _make_gradient_parameter_values,
+    _make_gradient_parameters,
 )
-from ...utils.deprecation import issue_deprecation_msg
-from ...algorithm_job import AlgorithmJob
+from .sampler_gradient_result import SamplerGradientResult
 
 
 class BaseSamplerGradient(ABC):
@@ -44,7 +44,7 @@ class BaseSamplerGradient(ABC):
 
     def __init__(
         self,
-        sampler: BaseSampler,
+        sampler: BaseSamplerV2,
         options: Options | None = None,
         pass_manager: BasePassManager | None = None,
     ):
@@ -58,19 +58,12 @@ class BaseSamplerGradient(ABC):
             pass_manager: The pass manager to transpile the circuits if necessary.
             Defaults to ``None``, as some primitives do not need transpiled circuits.
         """
-        if isinstance(sampler, BaseSamplerV1):
-            issue_deprecation_msg(
-                msg="V1 Primitives are deprecated",
-                version="0.8.0",
-                remedy="Use V2 primitives for continued compatibility and support.",
-                period="4 months",
-            )
-        self._sampler: BaseSampler = sampler
+        self._sampler: BaseSamplerV2 = sampler
         self._pass_manager = pass_manager
         self._default_options = Options()
         if options is not None:
             self._default_options.update_options(**options)
-        self._gradient_circuit_cache: dict[tuple, GradientCircuit] = {}
+        self._gradient_circuit_cache: dict[str | tuple[Any, ...], GradientCircuit] = {}
 
     def run(
         self,
@@ -163,12 +156,16 @@ class BaseSamplerGradient(ABC):
         g_circuits: list[QuantumCircuit] = []
         g_parameter_values: list[Sequence[float]] = []
         g_parameters: list[Sequence[Parameter]] = []
+
         for circuit, parameter_value_, parameters_ in zip(circuits, parameter_values, parameters):
-            circuit_key = _circuit_key(circuit)
+
+            circuit_key = circuit_cache_key(circuit)
             if circuit_key not in self._gradient_circuit_cache:
                 unrolled = translator(circuit)
                 self._gradient_circuit_cache[circuit_key] = _assign_unique_parameters(unrolled)
+
             gradient_circuit = self._gradient_circuit_cache[circuit_key]
+
             g_circuits.append(gradient_circuit.gradient_circuit)
             g_parameter_values.append(
                 _make_gradient_parameter_values(  # type: ignore[arg-type]
@@ -202,13 +199,14 @@ class BaseSamplerGradient(ABC):
         for idx, (circuit, parameter_values_, parameters_) in enumerate(
             zip(circuits, parameter_values, parameters)
         ):
-            gradient_circuit = self._gradient_circuit_cache[_circuit_key(circuit)]
+            gradient_circuit = self._gradient_circuit_cache[circuit_cache_key(circuit)]
             g_parameters = _make_gradient_parameters(gradient_circuit, parameters_)
             # Make a map from the gradient parameter to the respective index in the gradient.
             g_parameter_indices = {param: i for i, param in enumerate(g_parameters)}
             # Compute the original gradient from the gradient of the gradient circuit
             # by using the chain rule.
             gradient = []
+
             for parameter in parameters_:
                 grad_dist: dict[int, float] = defaultdict(float)
                 for g_parameter, coeff in gradient_circuit.parameter_map[parameter]:

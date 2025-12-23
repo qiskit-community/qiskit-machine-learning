@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2024.
+# (C) Copyright IBM 2022, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -32,6 +32,7 @@ from qiskit.circuit import (
     QuantumCircuit,
     QuantumRegister,
 )
+
 from qiskit.circuit.library.standard_gates import (
     CXGate,
     CYGate,
@@ -43,6 +44,7 @@ from qiskit.circuit.library.standard_gates import (
     RZGate,
     RZXGate,
     RZZGate,
+    XGate,
 )
 from qiskit.quantum_info import SparsePauliOp
 
@@ -300,3 +302,75 @@ def _make_gradient_parameters(
     ]
     # make g_parameters unique and return it.
     return list(dict.fromkeys(g_parameters))
+
+
+def _make_lin_comb_qgt_circuit(
+    circuit: QuantumCircuit, add_measurement: bool = False
+) -> dict[tuple[Parameter, Parameter], QuantumCircuit]:
+    """Makes a circuit that computes the linear combination of the QGT circuits."""
+    circuit_temp = circuit.copy()
+    qr_aux = QuantumRegister(1, "aux")
+    circuit_temp.add_register(qr_aux)
+    if add_measurement:
+        cr_aux = ClassicalRegister(1, "aux")
+        circuit_temp.add_bits(cr_aux)
+    circuit_temp.h(qr_aux)
+    circuit_temp.data.insert(0, circuit_temp.data.pop())
+
+    lin_comb_qgt_circuits = {}
+    for i, instruction_i in enumerate(circuit_temp.data):
+        if not instruction_i.operation.is_parameterized():
+            continue
+        for j, instruction_j in enumerate(circuit_temp.data):
+            if not instruction_j.operation.is_parameterized():
+                continue
+            # Calculate the QGT of the i-th gate with respect to the j-th gate.
+            param_i = instruction_i.operation.params[0]
+            param_j = instruction_j.operation.params[0]
+
+            for p_i in param_i.parameters:
+                for p_j in param_j.parameters:
+                    if circuit_temp.parameters.data.index(p_i) > circuit_temp.parameters.data.index(
+                        p_j
+                    ):
+                        continue
+                    gate_i = _gate_gradient(instruction_i.operation)
+                    gate_j = _gate_gradient(instruction_j.operation)
+                    lin_comb_qgt_circuit = circuit_temp.copy()
+                    if i < j:
+                        # insert gate_j to j-th position
+                        lin_comb_qgt_circuit.append(
+                            gate_j, [qr_aux[0]] + list(instruction_j.qubits), []
+                        )
+                        lin_comb_qgt_circuit.data.insert(j, lin_comb_qgt_circuit.data.pop())
+                        # insert gate_i to i-th position with two X gates at its sides
+                        lin_comb_qgt_circuit.append(XGate(), [qr_aux[0]], [])
+                        lin_comb_qgt_circuit.data.insert(i, lin_comb_qgt_circuit.data.pop())
+                        lin_comb_qgt_circuit.append(
+                            gate_i, [qr_aux[0]] + list(instruction_i.qubits), []
+                        )
+                        lin_comb_qgt_circuit.data.insert(i, lin_comb_qgt_circuit.data.pop())
+                        lin_comb_qgt_circuit.append(XGate(), [qr_aux[0]], [])
+                        lin_comb_qgt_circuit.data.insert(i, lin_comb_qgt_circuit.data.pop())
+                    else:
+                        # insert gate_i to i-th position
+                        lin_comb_qgt_circuit.append(
+                            gate_i, [qr_aux[0]] + list(instruction_i.qubits), []
+                        )
+                        lin_comb_qgt_circuit.data.insert(i, lin_comb_qgt_circuit.data.pop())
+                        # insert gate_j to j-th position with two X gates at its sides
+                        lin_comb_qgt_circuit.append(XGate(), [qr_aux[0]], [])
+                        lin_comb_qgt_circuit.data.insert(j, lin_comb_qgt_circuit.data.pop())
+                        lin_comb_qgt_circuit.append(
+                            gate_j, [qr_aux[0]] + list(instruction_j.qubits), []
+                        )
+                        lin_comb_qgt_circuit.data.insert(j, lin_comb_qgt_circuit.data.pop())
+                        lin_comb_qgt_circuit.append(XGate(), [qr_aux[0]], [])
+                        lin_comb_qgt_circuit.data.insert(j, lin_comb_qgt_circuit.data.pop())
+
+                    lin_comb_qgt_circuit.h(qr_aux)
+                    if add_measurement:
+                        lin_comb_qgt_circuit.measure(qr_aux, cr_aux)
+                    lin_comb_qgt_circuits[(p_i, p_j)] = lin_comb_qgt_circuit
+
+    return lin_comb_qgt_circuits
