@@ -1,0 +1,24 @@
+features:
+  - |
+    Added **Quantum Geometric Tensor (QGT)** and **Quantum Fisher Information (QFI)** gradient utilities to
+    :mod:`qiskit_machine_learning.gradients`, migrated from ``qiskit-algorithms``. These building blocks
+    can be used to construct natural-gradient / metric-aware optimizers and to analyze the local geometry
+    of variational circuits.
+    The new QGT/QFI implementation is compatible with **Qiskit Primitives V2**.
+
+upgrade:
+  - |
+    If you previously imported these utilities from ``qiskit-algorithms``, switch to the
+    :mod:`qiskit_machine_learning.gradients` equivalents (same API, now hosted in
+    Qiskit Machine Learning).
+
+    .. code-block:: python
+
+        from qiskit_machine_learning.gradients import QGT, QFI  # new location
+
+        qgt = QGT(estimator=estimator)   # primitive-backed
+        qfi = QFI(estimator=estimator)
+
+        # Typical usage: evaluate the metric-like objects for a parametrized circuit at given parameters.
+        qgt_result = qgt.run(circuit, parameter_values).result()
+        qfi_result = qfi.run(circuit, parameter_values).result()
