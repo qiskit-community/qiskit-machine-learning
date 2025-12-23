@@ -7,7 +7,7 @@ features:
     **Introduced QML wrapper primitives** for testing and prototyping:
     :class:`qiskit_machine_learning.primitives.QMLSampler` and
     :class:`qiskit_machine_learning.primitives.QMLEstimator`.
-    The associated documentation page explains the behaviour of these QML primitives and provides
+    The associated documentation page explains the behavior of these QML primitives and provides
     examples on when to use it and when, instead, other primitives are recommended. These
     primitives are fully V2-compatible and dedicated to classical simulations of circuits.
     QML primitives have two simulation modes:
@@ -34,7 +34,8 @@ upgrade:
     Several commonly used feature maps and ansatze from
     :mod:`qiskit.circuit.library` have transitioned from class-based
     constructors to functional constructors. Qiskit Machine Learning now
-    follows this updated API.
+    follows this updated API. Due to this, the default ``ZZFeatureMap(2)``
+    is removed when a feature map is not provided.
 
     The most common changes from Qiskit are:
 
