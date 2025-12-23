@@ -19,7 +19,9 @@ from test import QiskitMachineLearningTestCase
 
 import numpy as np
 
+from qiskit import QuantumCircuit
 from qiskit.circuit.library import zz_feature_map
+
 from qiskit_machine_learning.utils import algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC, SerializableModelMixin
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
@@ -63,10 +65,13 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def test_change_kernel(self):
         """Test QSVC with FidelityQuantumKernel later"""
-        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
+        empty_fm = QuantumCircuit(2)
+        empty_qkernel = FidelityQuantumKernel(feature_map=empty_fm)
+        qsvc = QSVC(quantum_kernel=empty_qkernel)
 
-        qsvc = QSVC()
+        qkernel = FidelityQuantumKernel(feature_map=self.feature_map)
         qsvc.quantum_kernel = qkernel
+
         qsvc.fit(self.sample_train, self.label_train)
         score = qsvc.score(self.sample_test, self.label_test)
 
@@ -84,13 +89,24 @@ class TestQSVC(QiskitMachineLearningTestCase):
 
     def test_qsvc_to_string(self):
         """Test QSVC print works when no *args passed in"""
-        qsvc = QSVC()
+        qsvc = QSVC(feature_map=self.feature_map)
         _ = str(qsvc)
 
     def test_with_kernel_parameter(self):
         """Test QSVC with the `kernel` argument."""
+        quantum_kernel = FidelityQuantumKernel(feature_map=zz_feature_map(2))
         with self.assertWarns(QiskitMachineLearningWarning):
-            QSVC(kernel=1)
+            QSVC(quantum_kernel=quantum_kernel, kernel=1)
+
+    def test_precomputed(self):
+        """Test QSVC with the precomputed option."""
+        features = np.array([[0, 0], [0.1, 0.2], [1, 1], [0.9, 0.8]])
+        labels = np.array([0, 0, 1, 1])
+
+        quantum_kernel = FidelityQuantumKernel(feature_map=zz_feature_map(2))
+        evaluated_kernel = quantum_kernel.evaluate(features)
+        classifier = QSVC(quantum_kernel="precomputed")
+        classifier.fit(evaluated_kernel, labels)
 
     def test_save_load(self):
         """Tests save and load models."""

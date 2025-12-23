@@ -114,7 +114,7 @@ class AQGD(Optimizer):
         """Support level dictionary
 
         Returns:
-            Dict[str, int]: gradient, bounds and initial point
+            dict[str, int]: gradient, bounds and initial point
                             support information that is ignored/required.
         """
         return {

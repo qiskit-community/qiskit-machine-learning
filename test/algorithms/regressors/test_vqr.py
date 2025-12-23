@@ -17,15 +17,13 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.primitives import Estimator
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
-from qiskit_ibm_runtime import Session, EstimatorV2
+from qiskit_ibm_runtime import EstimatorV2, Session
+from qiskit_machine_learning.primitives import QMLEstimator as Estimator
+from qiskit_machine_learning.algorithms import VQR
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
 from qiskit_machine_learning.utils import algorithm_globals
-
-from qiskit_machine_learning.algorithms import VQR
 
 
 @ddt
@@ -38,7 +36,7 @@ class TestVQR(QiskitMachineLearningTestCase):
         # specify quantum instances
         algorithm_globals.random_seed = 12345
 
-        self.estimator = Estimator()
+        self.estimator = Estimator(seed=123)
 
         num_samples = 20
         eps = 0.2
@@ -143,8 +141,6 @@ class TestVQR(QiskitMachineLearningTestCase):
 
         backend = GenericBackendV2(
             num_qubits=2,
-            calibrate_instructions=None,
-            pulse_channels=False,
             noise_info=False,
             seed=123,
         )

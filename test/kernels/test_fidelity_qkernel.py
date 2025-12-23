@@ -26,17 +26,17 @@ from sklearn.svm import SVC
 
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import z_feature_map
-from qiskit.primitives import Sampler
+from qiskit.circuit.library import z_feature_map, zz_feature_map
 
+from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithm_job import AlgorithmJob
-from qiskit_machine_learning.utils import algorithm_globals
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.state_fidelities import (
-    ComputeUncompute,
     BaseStateFidelity,
+    ComputeUncompute,
     StateFidelityResult,
 )
-from qiskit_machine_learning.kernels import FidelityQuantumKernel
+from qiskit_machine_learning.utils import algorithm_globals
 
 
 @ddt
@@ -49,7 +49,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         algorithm_globals.random_seed = 10598
 
         self.feature_map = z_feature_map(feature_dimension=2, reps=2)
-
+        self.zz_feature_map = zz_feature_map(feature_dimension=2)
         self.sample_train = np.asarray(
             [
                 [3.07876080, 1.75929189],
@@ -71,7 +71,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             "samples_4": self.sample_train,
             "samples_test": self.sample_test,
             "z_fm": self.feature_map,
-            "no_fm": None,
+            "no_fm": self.zz_feature_map,
         }
 
     def test_svc_callable(self):
@@ -100,7 +100,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
         features = algorithm_globals.random.random((10, 2)) - 0.5
         labels = np.sign(features[:, 0])
 
-        kernel = FidelityQuantumKernel()
+        kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
         svc = SVC(kernel=kernel.evaluate)
         svc.fit(features, labels)
         score = svc.score(features, labels)
@@ -125,9 +125,9 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
     def test_exceptions(self):
         """Test quantum kernel raises exceptions and warnings."""
         with self.assertRaises(ValueError, msg="Unsupported value of 'evaluate_duplicates'."):
-            _ = FidelityQuantumKernel(evaluate_duplicates="wrong")
+            _ = FidelityQuantumKernel(feature_map=self.zz_feature_map, evaluate_duplicates="wrong")
         with self.assertRaises(ValueError, msg="Unsupported value of 'max_circuits_per_job'."):
-            _ = FidelityQuantumKernel(max_circuits_per_job=-1)
+            _ = FidelityQuantumKernel(feature_map=self.zz_feature_map, max_circuits_per_job=-1)
 
     # pylint: disable=too-many-positional-arguments
     @idata(
@@ -299,14 +299,18 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
                 return StateFidelityResult(fidelities, [], {}, options)  # type: ignore[arg-type]
 
         with self.subTest("No PSD enforcement"):
-            kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=False)
+            kernel = FidelityQuantumKernel(
+                feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=False
+            )
             matrix = kernel.evaluate(self.sample_train)
             eigen_values = np.linalg.eigvals(matrix)
             # there's a negative eigenvalue
             self.assertFalse(np.all(np.greater_equal(eigen_values, -1e-10)))
 
         with self.subTest("PSD enforced"):
-            kernel = FidelityQuantumKernel(fidelity=MockFidelity(), enforce_psd=True)
+            kernel = FidelityQuantumKernel(
+                feature_map=self.zz_feature_map, fidelity=MockFidelity(), enforce_psd=True
+            )
             matrix = kernel.evaluate(self.sample_train)
             eigen_values = np.linalg.eigvals(matrix)
             # all eigenvalues are non-negative with some tolerance
@@ -315,7 +319,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
     def test_validate_input(self):
         """Test validation of input data in the base (abstract) class."""
         with self.subTest("Incorrect size of x_vec"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[[0]]])
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
@@ -324,11 +328,10 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Adjust the number of qubits in the feature map"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2, 3]])
-            kernel.evaluate(x_vec)
-            self.assertEqual(kernel.feature_map.num_qubits, 3)
+            self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Fail to adjust the number of qubits in the feature map"):
             qc = QuantumCircuit(1)
@@ -338,7 +341,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
         with self.subTest("Incorrect size of y_vec"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[[0]]])
@@ -349,7 +352,7 @@ class TestFidelityQuantumKernel(QiskitMachineLearningTestCase):
             self.assertRaises(ValueError, kernel.evaluate, x_vec, y_vec)
 
         with self.subTest("Fail when x_vec and y_vec have different shapes"):
-            kernel = FidelityQuantumKernel()
+            kernel = FidelityQuantumKernel(feature_map=self.zz_feature_map)
 
             x_vec = np.asarray([[1, 2]])
             y_vec = np.asarray([[1, 2, 3]])
@@ -387,7 +390,7 @@ class TestDuplicates(QiskitMachineLearningTestCase):
         }
 
         counting_sampler = Sampler()
-        counting_sampler.run = self.count_circuits(counting_sampler.run)
+        counting_sampler.run = self.count_circuits(counting_sampler.run)  # type: ignore
         self.counting_sampler = counting_sampler
         self.circuit_counts = 0
 
@@ -403,7 +406,10 @@ class TestDuplicates(QiskitMachineLearningTestCase):
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            self.circuit_counts += len(kwargs["circuits"])
+            if kwargs == {}:
+                self.circuit_counts = len(args[0])
+            else:
+                self.circuit_counts += len(kwargs["circuits"])
             return func(*args, **kwargs)
 
         return wrapper

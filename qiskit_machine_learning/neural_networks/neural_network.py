@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2024.
+# (C) Copyright IBM 2020, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -124,7 +124,7 @@ class NeuralNetwork(ABC):
     ) -> tuple[np.ndarray | None, tuple[int, ...] | None]:
         if input_data is None:
             return None, None
-        input_ = np.array(input_data)
+        input_ = np.array(input_data, dtype=float)
         shape = input_.shape
         if len(shape) == 0:
             # there's a single value in the input.
@@ -177,7 +177,7 @@ class NeuralNetwork(ABC):
     ) -> np.ndarray | None:
         if weights is None:
             return None
-        weights_ = np.array(weights)
+        weights_ = np.array(weights, dtype=float)
         return weights_.reshape(self._num_weights)
 
     def _validate_forward_output(

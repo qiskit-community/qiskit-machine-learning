@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2019, 2024.
+# (C) Copyright IBM 2019, 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,14 +14,14 @@
 
 import unittest
 from test import QiskitAlgorithmsTestCase
+
 import numpy as np
 from ddt import ddt
-from qiskit.primitives import Estimator
 from qiskit.quantum_info import SparsePauliOp
-
 from qiskit_machine_learning import AlgorithmError
 from qiskit_machine_learning.gradients import LinCombEstimatorGradient
 from qiskit_machine_learning.optimizers import AQGD
+from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.utils import algorithm_globals
 
 

@@ -90,7 +90,10 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
 
         # construct QNN
         regression_estimator_qnn = EstimatorQNN(
-            circuit=qc, input_params=feature_map.parameters, weight_params=ansatz.parameters
+            circuit=qc,
+            input_params=feature_map.parameters,
+            weight_params=ansatz.parameters,
+            default_precision=0.001,
         )
 
         initial_point = np.zeros(ansatz.num_parameters)
@@ -167,6 +170,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
         features = np.array([[0, 0], [0.1, 0.1], [0.4, 0.4], [1, 1]])
         labels = np.array([0, 0.1, 0.4, 1])
         num_inputs = 2
+        default_precision = 0.001
 
         feature_map = zz_feature_map(num_inputs)
         ansatz = real_amplitudes(num_inputs)
@@ -178,6 +182,7 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             circuit=qc,
             input_params=feature_map.parameters,
             weight_params=ansatz.parameters,
+            default_precision=default_precision,
         )
         regressor = NeuralNetworkRegressor(qnn, optimizer=COBYLA())
         regressor.fit(features, labels)
@@ -194,7 +199,9 @@ class TestNeuralNetworkRegressor(QiskitMachineLearningTestCase):
             regressor_load = NeuralNetworkRegressor.from_dill(file_name)
             loaded_model_predicts = regressor_load.predict(test_features)
 
-            np.testing.assert_array_almost_equal(original_predicts, loaded_model_predicts)
+            np.testing.assert_array_almost_equal(
+                original_predicts, loaded_model_predicts, decimal=-np.log10(default_precision)
+            )
 
             # test loading warning
             class FakeModel(SerializableModelMixin):
