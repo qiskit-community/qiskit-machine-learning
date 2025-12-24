@@ -233,7 +233,8 @@ jobs:
           # clean last sphinx output
           make clean_sphinx
           # get current version
-          version=$(pip show qiskit-machine-learning | awk -F. '/^Version:/ { print substr($1,10), $2-1 }' OFS=.)
+          version=$(pip show qiskit-machine-learning | awk -F. '/^Version:/ {maj=substr($1,10); min=$2;
+          if (min==0){maj=maj-1; min=9}else{min=min-1} print maj "." min}')
           # download stable version
           wget https://codeload.github.com/qiskit-community/qiskit-machine-learning/zip/stable/$version -O /tmp/repo.zip
           unzip /tmp/repo.zip -d /tmp/
