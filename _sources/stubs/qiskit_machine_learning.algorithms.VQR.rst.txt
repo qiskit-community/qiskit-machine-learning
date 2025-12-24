@@ -38,10 +38,12 @@ VQR
 
    
    .. automethod:: VQR.fit
+   .. automethod:: VQR.from_dill
    .. automethod:: VQR.load
    .. automethod:: VQR.predict
    .. automethod:: VQR.save
    .. automethod:: VQR.score
+   .. automethod:: VQR.to_dill
 
    
    

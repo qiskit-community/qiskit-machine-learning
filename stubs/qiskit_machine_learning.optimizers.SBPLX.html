@@ -1,0 +1,799 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CRS" href="qiskit_machine_learning.optimizers.CRS.html" /><link rel="prev" title="UMDA" href="qiskit_machine_learning.optimizers.UMDA.html" />
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
+        <title>SBPLX - Qiskit Machine Learning 0.9.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="../_static/js/web-components/top-nav-bar.js"></script>
+<script>
+  (function () {
+    window._analytics = {
+      segment_key: 'ffdYLviQze3kzomaINXNk6NwpY9LlXcw',
+      coremetrics: false,
+      optimizely: false,
+      googleAddServices: false,
+      fullStory: false,
+      autoPageEventSpa: false,
+      autoFormEvents: false,
+      autoPageView: false
+    }
+
+    window.digitalData = {
+      page: {
+        pageInfo: {
+          productTitle: 'IBM Q Experience',
+          analytics: {
+            category: 'Qiskit.org'
+          }
+        }
+      }
+    }
+  }());
+</script>
+<script src="https://cloud.ibm.com/analytics/build/bluemix-analytics.min.js"></script>
+<script>
+  (function () {
+    'use strict'
+
+    if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+    const category = window.digitalData.page.pageInfo.analytics.category
+    const productTitle = window.digitalData.page.pageInfo.productTitle
+    const routeName = 'documentation'
+
+    window.bluemixAnalytics.pageEvent(category, routeName, {
+      navigationType: 'pushState',
+      productTitle: productTitle,
+      title: document.title
+    })
+
+    window.trackCta = (action) => {
+      if (!window.bluemixAnalytics || !window.digitalData) { return }
+
+      const category = window.digitalData.page.pageInfo.analytics.category
+      const productTitle = window.digitalData.page.pageInfo.productTitle
+
+      window.bluemixAnalytics.trackEvent('CTA Clicked', {
+        productTitle,
+        category,
+        CTA: action
+      })
+    }
+
+  }());
+</script></head>
+  <body>
+    
+    <script>document.body.dataset.theme = "light";</script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM4,6H20V26H4ZM28,26H22V6h6Z"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <rect x="4" y="6" width="24" height="2"/>
+      <rect x="4" y="24" width="24" height="2"/>
+      <rect x="4" y="12" width="24" height="2"/>
+      <rect x="4" y="18" width="24" height="2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+         viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve"><polygon points="22,16 12,26 10.6,24.6 19.2,16 10.6,7.4 12,6 " stroke="currentColor"/>
+      <rect id="_x3C_Transparent_Rectangle_x3E_" fill="none" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-new-tab" viewBox="0 0 32 32">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs>
+        <style>
+          .cls-1 {
+            fill: none;
+          }
+        </style>
+      </defs>
+      <path fill="#6929C4" d="M26,28H6a2.0027,2.0027,0,0,1-2-2V6A2.0027,2.0027,0,0,1,6,4H16V6H6V26H26V16h2V26A2.0027,2.0027,0,0,1,26,28Z"/>
+      <polygon fill="#6929C4" points="20 2 20 4 26.586 4 18 12.586 19.414 14 28 5.414 28 12 30 12 30 2 20 2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-brand">
+  <a href="https://www.qiskit.org/ecosystem">
+    <div class="sidebar-logo-container">
+      <img class="sidebar-logo" src="../_static/images/ecosystem-logo.svg" alt="Qiskit Ecosystem logo"/>
+    </div>
+  </a>
+  
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migration Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Migration Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/01_migration_guide_0.5.html">Qiskit Machine Learning v0.5 Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../migration/02_migration_guide_0.8.html">Qiskit Machine Learning v0.8 Migration Guide</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_neural_networks.html">Quantum Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_neural_network_classifier_and_regressor.html">Neural Network Classifier &amp; Regressor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02a_training_a_quantum_model_on_a_real_dataset.html">Training a Quantum Model on a Real Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_quantum_kernel.html">Quantum Kernel Machine Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_torch_qgan.html">PyTorch qGAN Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_torch_connector.html">Torch Connector and Hybrid QNNs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/07_pegasos_qsvc.html">Pegasos Quantum Support Vector Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_quantum_kernel_trainer.html">Quantum Kernel Training for Machine Learning Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/09_saving_and_loading_models.html">Saving, Loading Qiskit Machine Learning Models and Continuous Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_effective_dimension.html">Effective Dimension of Qiskit Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_quantum_convolutional_neural_networks.html">The Quantum Convolution Neural Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_quantum_autoencoder.html">The Quantum Autoencoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_quantum_bayesian_inference.html">Quantum Bayesian Inference</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="qiskit_machine_learning.QiskitMachineLearningError.html">QiskitMachineLearningError</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.algorithms.html">Quantum machine learning algorithms (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.algorithms</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Quantum machine learning algorithms (qiskit_machine_learning.algorithms)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.TrainableModel.html">TrainableModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.ObjectiveFunction.html">ObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.SerializableModelMixin.html">SerializableModelMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html">BinaryObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.MultiClassObjectiveFunction.html">MultiClassObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html">OneHotObjectiveFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.PegasosQSVC.html">PegasosQSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVC.html">QSVC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQC.html">VQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html">NeuralNetworkClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QSVR.html">QSVR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.VQR.html">VQR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html">NeuralNetworkRegressor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.algorithms.QBayesian.html">QBayesian</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.raw_feature_vector.html">raw_feature_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.qnn_circuit.html">qnn_circuit</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.connectors.TorchConnector.html">TorchConnector</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.BaseEstimatorGradient.html">BaseEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.BaseSamplerGradient.html">BaseSamplerGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.EstimatorGradientResult.html">EstimatorGradientResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.SamplerGradientResult.html">SamplerGradientResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.LinCombEstimatorGradient.html">LinCombEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.LinCombSamplerGradient.html">LinCombSamplerGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.ParamShiftEstimatorGradient.html">ParamShiftEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.ParamShiftSamplerGradient.html">ParamShiftSamplerGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.SPSAEstimatorGradient.html">SPSAEstimatorGradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.gradients.SPSASamplerGradient.html">SPSASamplerGradient</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.html">Quantum kernels (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.kernels</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Quantum kernels (qiskit_machine_learning.kernels)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.kernels.BaseKernel.html">BaseKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.kernels.FidelityQuantumKernel.html">FidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.kernels.FidelityStatevectorKernel.html">FidelityStatevectorKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.kernels.TrainableKernel.html">TrainableKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html">TrainableFidelityQuantumKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.kernels.TrainableFidelityStatevectorKernel.html">TrainableFidelityStatevectorKernel</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.kernels.algorithms.html">Quantum Kernel Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Quantum Kernel Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html">QuantumKernelTrainer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html">QuantumKernelTrainerResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.neural_networks.html">Quantum neural networks (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.neural_networks</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Quantum neural networks (qiskit_machine_learning.neural_networks)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.neural_networks.NeuralNetwork.html">NeuralNetwork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.neural_networks.EstimatorQNN.html">EstimatorQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.neural_networks.SamplerQNN.html">SamplerQNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.neural_networks.EffectiveDimension.html">EffectiveDimension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html">LocalEffectiveDimension</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.optimizers.html">Optimizers (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.optimizers</span></code>)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Optimizers (qiskit_machine_learning.optimizers)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.OptimizerResult.html">OptimizerResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.Optimizer.html">Optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.Minimizer.html">Minimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.optimizer_utils.html">optimizer_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SteppableOptimizer.html">SteppableOptimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.AskData.html">AskData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.TellData.html">TellData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.OptimizerState.html">OptimizerState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ADAM.html">ADAM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.AQGD.html">AQGD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.CG.html">CG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.COBYLA.html">COBYLA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.L_BFGS_B.html">L_BFGS_B</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.GSLS.html">GSLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.GradientDescent.html">GradientDescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.GradientDescentState.html">GradientDescentState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.NELDER_MEAD.html">NELDER_MEAD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.NFT.html">NFT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.P_BFGS.html">P_BFGS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.POWELL.html">POWELL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SLSQP.html">SLSQP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SPSA.html">SPSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.QNSPSA.html">QNSPSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">SBPLX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ESCH.html">ESCH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html">Qiskit ML Primitives (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.primitives</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Qiskit ML Primitives (qiskit_machine_learning.primitives)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLEstimator.html">QMLEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLSampler.html">QMLSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#why-introduce-these-wrappers">Why introduce these wrappers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#execution-modes">Execution modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#examples-of-exact-simulation-and-with-shot-noise">Examples of exact simulation and with shot noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#executing-workloads-on-ibm-quantum-hardware">Executing workloads on IBM quantum hardware</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning">GitHub</a></li>
+</ul>
+
+</div></div><div class="qiskit-translations-container" aria-label="languages">
+  <input id="translations-checkbox" name="translations-checkbox" role="switch" type="checkbox">
+  <div class="qiskit-translations-header-container"><label for="translations-checkbox">
+      <p role="note">English</p>
+      <div class="qiskit-translations-toggle-container">
+        <div class="visually-hidden">Toggle translations list</div>
+        <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+      </div>
+    </label>
+  </div>
+  <div class="qiskit-translations-list-container">
+    <ul>
+      
+        <li><a href="/qiskit-machine-learning/stubs/qiskit_machine_learning.optimizers.SBPLX.html">English</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/ja_JP/stubs/qiskit_machine_learning.optimizers.SBPLX.html">Japanese</a></li>
+      
+        <li><a href="/qiskit-machine-learning/locale/es_UN/stubs/qiskit_machine_learning.optimizers.SBPLX.html">Spanish</a></li>
+      
+    </ul>
+  </div>
+  <script>
+    document.querySelectorAll('.version').forEach((element) => {
+      element.addEventListener('click', (evt) => {
+        const hash = window.location.hash;
+        const complete_url = evt.target.href + hash;
+        window.location = complete_url;
+        evt.preventDefault();
+      });
+    });
+  </script>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <br><br><br><section id="sbplx">
+<h1>SBPLX<a class="headerlink" href="#sbplx" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SBPLX</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_evals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/optimizers/nlopts/sbplx.html#SBPLX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NLoptOptimizer</span></code></p>
+<p>Subplex optimizer.</p>
+<p>‘Subplex (a variant of Nelder-Mead that uses Nelder-Mead on a sequence of subspaces)
+is claimed to be much more efficient and robust than the original Nelder-Mead,
+while retaining the latter’s facility with discontinuous objectives.
+While these claims seem to be true in many cases, we could not find any proof that
+Subplex is globally convergent, and perhaps it may fail for some objective functions
+like Nelder-Mead; YMMV.)’, by Steven G. Johnson, author of NLopt library.</p>
+<p>NLopt local optimizer, derivative-free.
+For further detail, please refer to
+<a class="reference external" href="https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#sbplx-based-on-subplex">https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#sbplx-based-on-subplex</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_evals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum allowed number of function evaluations.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>MissingOptionalLibraryError</strong> – NLopt library not installed.</p>
+</dd>
+</dl>
+<p class="rubric">Attributes</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.bounds_support_level">
+<span class="sig-name descname"><span class="pre">bounds_support_level</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.bounds_support_level" title="Link to this definition">¶</a></dt>
+<dd><p>Returns bounds support level</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.gradient_support_level">
+<span class="sig-name descname"><span class="pre">gradient_support_level</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.gradient_support_level" title="Link to this definition">¶</a></dt>
+<dd><p>Returns gradient support level</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.initial_point_support_level">
+<span class="sig-name descname"><span class="pre">initial_point_support_level</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.initial_point_support_level" title="Link to this definition">¶</a></dt>
+<dd><p>Returns initial point support level</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_bounds_ignored">
+<span class="sig-name descname"><span class="pre">is_bounds_ignored</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_bounds_ignored" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is bounds ignored</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_bounds_required">
+<span class="sig-name descname"><span class="pre">is_bounds_required</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_bounds_required" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is bounds required</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_bounds_supported">
+<span class="sig-name descname"><span class="pre">is_bounds_supported</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_bounds_supported" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is bounds supported</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_gradient_ignored">
+<span class="sig-name descname"><span class="pre">is_gradient_ignored</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_gradient_ignored" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is gradient ignored</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_gradient_required">
+<span class="sig-name descname"><span class="pre">is_gradient_required</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_gradient_required" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is gradient required</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_gradient_supported">
+<span class="sig-name descname"><span class="pre">is_gradient_supported</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_gradient_supported" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is gradient supported</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_initial_point_ignored">
+<span class="sig-name descname"><span class="pre">is_initial_point_ignored</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_initial_point_ignored" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is initial point ignored</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_initial_point_required">
+<span class="sig-name descname"><span class="pre">is_initial_point_required</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_initial_point_required" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is initial point required</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.is_initial_point_supported">
+<span class="sig-name descname"><span class="pre">is_initial_point_supported</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.is_initial_point_supported" title="Link to this definition">¶</a></dt>
+<dd><p>Returns is initial point supported</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.setting">
+<span class="sig-name descname"><span class="pre">setting</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.setting" title="Link to this definition">¶</a></dt>
+<dd><p>Return setting</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.settings">
+<span class="sig-name descname"><span class="pre">settings</span></span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.settings" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.get_nlopt_optimizer">
+<span class="sig-name descname"><span class="pre">get_nlopt_optimizer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/optimizers/nlopts/sbplx.html#SBPLX.get_nlopt_optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.get_nlopt_optimizer" title="Link to this definition">¶</a></dt>
+<dd><p>Return NLopt optimizer type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>NLoptOptimizerType</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.get_support_level">
+<span class="sig-name descname"><span class="pre">get_support_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.get_support_level" title="Link to this definition">¶</a></dt>
+<dd><p>return support level dictionary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.gradient_num_diff">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gradient_num_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_evals_grouped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.gradient_num_diff" title="Link to this definition">¶</a></dt>
+<dd><p>We compute the gradient with the numeric differentiation in the parallel way,
+around the point x_center.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_center</strong> (<em>ndarray</em>) – point around which we compute the gradient</p></li>
+<li><p><strong>f</strong> (<em>func</em>) – the function of which the gradient is to be computed.</p></li>
+<li><p><strong>epsilon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – the epsilon used in the numeric differentiation.</p></li>
+<li><p><strong>max_evals_grouped</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – max evals grouped, defaults to 1 (i.e. no batching).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the gradient computed</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>grad</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.minimize">
+<span class="sig-name descname"><span class="pre">minimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.minimize" title="Link to this definition">¶</a></dt>
+<dd><p>Minimize the scalar function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fun</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – The scalar function to minimize.</p></li>
+<li><p><strong>x0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – The initial point for the minimization.</p></li>
+<li><p><strong>jac</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em>] </em><em>| </em><em>None</em>) – The gradient of the scalar function <code class="docutils literal notranslate"><span class="pre">fun</span></code>.</p></li>
+<li><p><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em><em>] </em><em>| </em><em>None</em>) – Bounds for the variables of <code class="docutils literal notranslate"><span class="pre">fun</span></code>. This argument might be ignored if the
+optimizer does not support bounds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the optimization, containing e.g. the result as attribute <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qiskit_machine_learning.optimizers.OptimizerResult.html#qiskit_machine_learning.optimizers.OptimizerResult" title="qiskit_machine_learning.optimizers.optimizer.OptimizerResult"><em>OptimizerResult</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.print_options">
+<span class="sig-name descname"><span class="pre">print_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.print_options" title="Link to this definition">¶</a></dt>
+<dd><p>Print algorithm-specific options.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.set_max_evals_grouped">
+<span class="sig-name descname"><span class="pre">set_max_evals_grouped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.set_max_evals_grouped" title="Link to this definition">¶</a></dt>
+<dd><p>Set max evals grouped</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.set_options">
+<span class="sig-name descname"><span class="pre">set_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.set_options" title="Link to this definition">¶</a></dt>
+<dd><p>Sets or updates values in the options dictionary.</p>
+<p>The options dictionary may be used internally by a given optimizer to
+pass additional optional values for the underlying optimizer/optimization
+function used. The options dictionary may be initially populated with
+a set of key/values when the given optimizer is constructed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – options, given as name=value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.optimizers.SBPLX.wrap_function">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.optimizers.SBPLX.wrap_function" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap the function to implicitly inject the args at the call of the function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function</strong> (<em>func</em>) – the target function</p></li>
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>) – the args to be injected</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wrapper</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function_wrapper</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+  <script>
+    function userFeedbackClicked(ctaType) {
+      document.getElementById('qiskit-analytics-thank-you').style.visibility = 'visible';
+      window.trackCta(`Helpful - ${ctaType}`);
+    }
+  </script>
+    <div class="qiskit-analytics-container">
+      <div>Was this page helpful?</div>
+      <a onclick="userFeedbackClicked('yes')">Yes</a>
+      <a onclick="userFeedbackClicked('no')">No</a>
+      <div id="qiskit-analytics-thank-you">Thank you!</div>
+    </div>
+<div class="related-pages">
+          <a class="next-page" href="qiskit_machine_learning.optimizers.CRS.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">CRS</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="qiskit_machine_learning.optimizers.UMDA.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">UMDA</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">SBPLX</a><ul>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX"><code class="docutils literal notranslate"><span class="pre">SBPLX</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.bounds_support_level"><code class="docutils literal notranslate"><span class="pre">SBPLX.bounds_support_level</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.gradient_support_level"><code class="docutils literal notranslate"><span class="pre">SBPLX.gradient_support_level</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.initial_point_support_level"><code class="docutils literal notranslate"><span class="pre">SBPLX.initial_point_support_level</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_bounds_ignored"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_bounds_ignored</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_bounds_required"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_bounds_required</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_bounds_supported"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_bounds_supported</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_gradient_ignored"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_gradient_ignored</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_gradient_required"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_gradient_required</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_gradient_supported"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_gradient_supported</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_initial_point_ignored"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_initial_point_ignored</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_initial_point_required"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_initial_point_required</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.is_initial_point_supported"><code class="docutils literal notranslate"><span class="pre">SBPLX.is_initial_point_supported</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.setting"><code class="docutils literal notranslate"><span class="pre">SBPLX.setting</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.settings"><code class="docutils literal notranslate"><span class="pre">SBPLX.settings</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.get_nlopt_optimizer"><code class="docutils literal notranslate"><span class="pre">SBPLX.get_nlopt_optimizer()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.get_support_level"><code class="docutils literal notranslate"><span class="pre">SBPLX.get_support_level()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.gradient_num_diff"><code class="docutils literal notranslate"><span class="pre">SBPLX.gradient_num_diff()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.minimize"><code class="docutils literal notranslate"><span class="pre">SBPLX.minimize()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.print_options"><code class="docutils literal notranslate"><span class="pre">SBPLX.print_options()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.set_max_evals_grouped"><code class="docutils literal notranslate"><span class="pre">SBPLX.set_max_evals_grouped()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.set_options"><code class="docutils literal notranslate"><span class="pre">SBPLX.set_options()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.optimizers.SBPLX.wrap_function"><code class="docutils literal notranslate"><span class="pre">SBPLX.wrap_function()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

@@ -21,8 +21,10 @@ SerializableModelMixin
    .. rubric:: Methods
 
    
+   .. automethod:: SerializableModelMixin.from_dill
    .. automethod:: SerializableModelMixin.load
    .. automethod:: SerializableModelMixin.save
+   .. automethod:: SerializableModelMixin.to_dill
 
    
    

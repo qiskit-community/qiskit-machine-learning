@@ -6,12 +6,13 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="VQC" href="qiskit_machine_learning.algorithms.VQC.html" /><link rel="prev" title="PegasosQSVC" href="qiskit_machine_learning.algorithms.PegasosQSVC.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>QSVC - Qiskit Machine Learning 0.8.4</title>
+        <title>QSVC - Qiskit Machine Learning 0.9.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
@@ -201,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -279,8 +280,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.raw_feature_vector.html">raw_feature_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.qnn_circuit.html">qnn_circuit</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -289,6 +290,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -353,6 +355,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SBPLX.html">SBPLX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
@@ -360,14 +363,23 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html">Qiskit ML Primitives (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.primitives</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Qiskit ML Primitives (qiskit_machine_learning.primitives)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLEstimator.html">QMLEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLSampler.html">QMLSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#why-introduce-these-wrappers">Why introduce these wrappers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#execution-modes">Execution modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#examples-of-exact-simulation-and-with-shot-noise">Examples of exact simulation and with shot noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#executing-workloads-on-ibm-quantum-hardware">Executing workloads on IBM quantum hardware</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
@@ -451,24 +463,35 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.QSVC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">QSVC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantum_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/classifiers/qsvc.html#QSVC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVC</span></code></a>, <a class="reference internal" href="qiskit_machine_learning.algorithms.SerializableModelMixin.html#qiskit_machine_learning.algorithms.SerializableModelMixin" title="qiskit_machine_learning.algorithms.serializable_model.SerializableModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializableModelMixin</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="(in scikit-learn v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVC</span></code></a>, <a class="reference internal" href="qiskit_machine_learning.algorithms.SerializableModelMixin.html#qiskit_machine_learning.algorithms.SerializableModelMixin" title="qiskit_machine_learning.algorithms.serializable_model.SerializableModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializableModelMixin</span></code></a></p>
 <p>Quantum Support Vector Classifier that extends the scikit-learn
 <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html">sklearn.svm.SVC</a>
 classifier and introduces an additional <cite>quantum_kernel</cite> parameter.</p>
 <p>This class shows how to use a quantum kernel for classification. The class inherits its methods
 like <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">predict</span></code> from scikit-learn, see the example below.
 Read more in the <a class="reference external" href="https://scikit-learn.org/stable/modules/svm.html#svm-classification">scikit-learn user guide</a>.</p>
-<p><strong>Example</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">qkernel</span><span class="p">)</span>
-<span class="n">qsvc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">sample_train</span><span class="p">,</span><span class="n">label_train</span><span class="p">)</span>
-<span class="n">qsvc</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">sample_test</span><span class="p">)</span>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">QSVC</span>
+
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">()</span>
+<span class="n">qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">)</span>
+<span class="n">qsvc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">qsvc</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="c1"># Save the trained model</span>
+<span class="n">qsvc</span><span class="o">.</span><span class="n">to_dill</span><span class="p">(</span><span class="s1">&#39;qsvc_model.dill&#39;</span><span class="p">)</span>
+
+<span class="c1"># Load the model for later use</span>
+<span class="n">loaded_qsvc</span> <span class="o">=</span> <span class="n">QSVC</span><span class="o">.</span><span class="n">from_dill</span><span class="p">(</span><span class="s1">&#39;qsvc_model.dill&#39;</span><span class="p">)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">loaded_qsvc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>quantum_kernel</strong> (<a class="reference internal" href="qiskit_machine_learning.kernels.BaseKernel.html#qiskit_machine_learning.kernels.BaseKernel" title="qiskit_machine_learning.kernels.base_kernel.BaseKernel"><em>BaseKernel</em></a><em> | </em><em>None</em>) – A quantum kernel to be used for classification.
-Has to be <code class="docutils literal notranslate"><span class="pre">None</span></code> when a precomputed kernel is used. If None,
+Has to be <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code> when a precomputed kernel is used. If None,
 default to <a class="reference internal" href="qiskit_machine_learning.kernels.FidelityQuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel" title="qiskit_machine_learning.kernels.FidelityQuantumKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code></a>.</p></li>
 <li><p><strong>*args</strong> – Variable length argument list to pass to SVC constructor.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary keyword arguments to pass to SVC constructor.</p></li>
@@ -575,7 +598,7 @@ force the classifier to put more emphasis on these points.</p></li>
 <dd class="field-even"><p><strong>self</strong> – Fitted estimator.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -586,14 +609,46 @@ matrices as input.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.QSVC.from_dill">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.from_dill" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a model from a file. If the loaded model is not an instance of the class whose
+method was called, then a warning is raised. Nevertheless, the loaded model may be a valid
+model.</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.load" title="qiskit_machine_learning.algorithms.QSVC.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the dill file containing the serialized model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of the model loaded from disk.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loaded</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">from_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.QSVC.get_metadata_routing">
 <span class="sig-name descname"><span class="pre">get_metadata_routing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.get_metadata_routing" title="Link to this definition">¶</a></dt>
 <dd><p>Get metadata routing of this object.</p>
-<p>Please check <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.7)"><span class="xref std std-ref">User Guide</span></a> on how the routing
+<p>Please check <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.8)"><span class="xref std std-ref">User Guide</span></a> on how the routing
 mechanism works.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>routing</strong> – A <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.metadata_routing.MetadataRequest.html#sklearn.utils.metadata_routing.MetadataRequest" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataRequest</span></code></a> encapsulating
+<dd class="field-odd"><p><strong>routing</strong> – A <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.metadata_routing.MetadataRequest.html#sklearn.utils.metadata_routing.MetadataRequest" title="(in scikit-learn v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataRequest</span></code></a> encapsulating
 routing information.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -608,36 +663,25 @@ routing information.</p>
 <dd><p>Get parameters for this estimator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, will return the parameters for this estimator and
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, will return the parameters for this estimator and
 contained subobjects that are estimators.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>params</strong> – Parameter names mapped to their values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.QSVC.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.load" title="Link to this definition">¶</a></dt>
-<dd><p>Loads a model from the file. If the loaded model is not an instance of the class whose
-method was called, then a warning is raised. Nevertheless, the loaded model may be a valid
-model.</p>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.load" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.from_dill" title="qiskit_machine_learning.algorithms.QSVC.from_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_dill()</span></code></a>, deprecated in v0.9.0.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path to load a model from.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A loaded model.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -675,7 +719,7 @@ time: fit with attribute <cite>probability</cite> set to True.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>T</strong> – Returns the log-probabilities of the sample for each class in
 the model. The columns correspond to the classes in sorted
-order, as they appear in the attribute <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-classes_" title="(in scikit-learn v1.7)"><span class="xref std std-term">classes_</span></a>.</p>
+order, as they appear in the attribute <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-classes_" title="(in scikit-learn v1.8)"><span class="xref std std-term">classes_</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_samples, n_classes)</p>
@@ -702,7 +746,7 @@ time: fit with attribute <cite>probability</cite> set to True.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>T</strong> – Returns the probability of the sample for each class in
 the model. The columns correspond to the classes in sorted
-order, as they appear in the attribute <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-classes_" title="(in scikit-learn v1.7)"><span class="xref std std-term">classes_</span></a>.</p>
+order, as they appear in the attribute <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-classes_" title="(in scikit-learn v1.8)"><span class="xref std std-term">classes_</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_samples, n_classes)</p>
@@ -717,22 +761,16 @@ datasets.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.QSVC.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.save" title="Link to this definition">¶</a></dt>
-<dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
-All parameters are saved, including a primitive instance that is referenced by internal
-objects. That means if a model is loaded from a file and is used, for instance, for
-inference, the same primitive will be used even if a cloud primitive was used.</p>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.save" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.to_dill" title="qiskit_machine_learning.algorithms.QSVC.to_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dill()</span></code></a>, deprecated in v0.9.0.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path where to save the model.</p>
-</dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.QSVC.score">
 <span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.score" title="Link to this definition">¶</a></dt>
-<dd><p>Return <a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#accuracy-score" title="(in scikit-learn v1.7)"><span class="xref std std-ref">accuracy</span></a> on provided data and labels.</p>
+<dd><p>Return <a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#accuracy-score" title="(in scikit-learn v1.8)"><span class="xref std std-ref">accuracy</span></a> on provided data and labels.</p>
 <p>In multi-label classification, this is the subset accuracy
 which is a harsh metric since you require for each sample that
 each label set be correctly predicted.</p>
@@ -748,7 +786,7 @@ each label set be correctly predicted.</p>
 <dd class="field-even"><p><strong>score</strong> – Mean accuracy of <code class="docutils literal notranslate"><span class="pre">self.predict(X)</span></code> w.r.t. <cite>y</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -758,9 +796,9 @@ each label set be correctly predicted.</p>
 <span class="sig-name descname"><span class="pre">set_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.set_fit_request" title="Link to this definition">¶</a></dt>
 <dd><p>Configure whether metadata should be requested to be passed to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method.</p>
 <p>Note that this method is only relevant when this estimator is used as a
-sub-estimator within a <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-meta-estimator" title="(in scikit-learn v1.7)"><span class="xref std std-term">meta-estimator</span></a> and metadata routing is enabled
-with <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
-Please check the <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.7)"><span class="xref std std-ref">User Guide</span></a> on how the routing
+sub-estimator within a <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-meta-estimator" title="(in scikit-learn v1.8)"><span class="xref std std-term">meta-estimator</span></a> and metadata routing is enabled
+with <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
+Please check the <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.8)"><span class="xref std std-ref">User Guide</span></a> on how the routing
 mechanism works.</p>
 <p>The options for each parameter are:</p>
 <ul class="simple">
@@ -777,13 +815,13 @@ parameters and not others.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – The updated object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -793,12 +831,12 @@ parameters and not others.</p>
 <span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.set_params" title="Link to this definition">¶</a></dt>
 <dd><p>Set the parameters of this estimator.</p>
 <p>The method works on simple estimators as well as on nested objects
-(such as <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>). The latter have
+(such as <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>). The latter have
 parameters of the form <code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s
 possible to update each component of a nested object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Estimator parameters.</p>
+<dd class="field-odd"><p><strong>**params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Estimator parameters.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – Estimator instance.</p>
@@ -814,9 +852,9 @@ possible to update each component of a nested object.</p>
 <span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.set_score_request" title="Link to this definition">¶</a></dt>
 <dd><p>Configure whether metadata should be requested to be passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
 <p>Note that this method is only relevant when this estimator is used as a
-sub-estimator within a <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-meta-estimator" title="(in scikit-learn v1.7)"><span class="xref std std-term">meta-estimator</span></a> and metadata routing is enabled
-with <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
-Please check the <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.7)"><span class="xref std std-ref">User Guide</span></a> on how the routing
+sub-estimator within a <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-meta-estimator" title="(in scikit-learn v1.8)"><span class="xref std std-term">meta-estimator</span></a> and metadata routing is enabled
+with <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
+Please check the <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.8)"><span class="xref std std-ref">User Guide</span></a> on how the routing
 mechanism works.</p>
 <p>The options for each parameter are:</p>
 <ul class="simple">
@@ -833,15 +871,37 @@ parameters and not others.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – The updated object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.QSVC.to_dill">
+<span class="sig-name descname"><span class="pre">to_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.QSVC.to_dill" title="Link to this definition">¶</a></dt>
+<dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
+All parameters are saved, including a primitive instance that is referenced by internal
+objects. That means if a model is loaded from a file and is used, for instance, for
+inference, the same primitive will be used even if a cloud primitive was used.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.save" title="qiskit_machine_learning.algorithms.QSVC.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> method.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path where the serialized model will be written.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">to_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -925,6 +985,7 @@ parameters and not others.</p>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.unused_param"><code class="docutils literal notranslate"><span class="pre">QSVC.unused_param</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.decision_function"><code class="docutils literal notranslate"><span class="pre">QSVC.decision_function()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.fit"><code class="docutils literal notranslate"><span class="pre">QSVC.fit()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.from_dill"><code class="docutils literal notranslate"><span class="pre">QSVC.from_dill()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.get_metadata_routing"><code class="docutils literal notranslate"><span class="pre">QSVC.get_metadata_routing()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.get_params"><code class="docutils literal notranslate"><span class="pre">QSVC.get_params()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.load"><code class="docutils literal notranslate"><span class="pre">QSVC.load()</span></code></a></li>
@@ -936,6 +997,7 @@ parameters and not others.</p>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.set_fit_request"><code class="docutils literal notranslate"><span class="pre">QSVC.set_fit_request()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.set_params"><code class="docutils literal notranslate"><span class="pre">QSVC.set_params()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.set_score_request"><code class="docutils literal notranslate"><span class="pre">QSVC.set_score_request()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.QSVC.to_dill"><code class="docutils literal notranslate"><span class="pre">QSVC.to_dill()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -951,7 +1013,7 @@ parameters and not others.</p>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
+    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

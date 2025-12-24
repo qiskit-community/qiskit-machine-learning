@@ -1,0 +1,20 @@
+﻿
+
+raw_feature_vector
+==========================================================
+
+.. currentmodule:: qiskit_machine_learning.circuit.library
+
+.. autoclass:: raw_feature_vector
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+   

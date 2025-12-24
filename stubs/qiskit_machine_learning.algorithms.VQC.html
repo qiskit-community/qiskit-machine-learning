@@ -6,12 +6,13 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="NeuralNetworkClassifier" href="qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html" /><link rel="prev" title="QSVC" href="qiskit_machine_learning.algorithms.QSVC.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>VQC - Qiskit Machine Learning 0.8.4</title>
+        <title>VQC - Qiskit Machine Learning 0.9.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
@@ -201,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -279,8 +280,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.raw_feature_vector.html">raw_feature_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.qnn_circuit.html">qnn_circuit</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -289,6 +290,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -353,6 +355,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SBPLX.html">SBPLX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
@@ -360,14 +363,23 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html">Qiskit ML Primitives (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.primitives</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Qiskit ML Primitives (qiskit_machine_learning.primitives)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLEstimator.html">QMLEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLSampler.html">QMLSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#why-introduce-these-wrappers">Why introduce these wrappers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#execution-modes">Execution modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#examples-of-exact-simulation-and-with-shot-noise">Examples of exact simulation and with shot noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#executing-workloads-on-ibm-quantum-hardware">Executing workloads on IBM quantum hardware</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
@@ -466,41 +478,41 @@ to one hot encoding and the classifier is always trained on one hot labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_qubits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The number of qubits for the underlying QNN.
+<li><p><strong>num_qubits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – The number of qubits for the underlying QNN.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, the number of qubits is derived from the
 feature map or ansatz. If neither of those is given, raises an exception.
 The number of qubits in the feature map and ansatz are adjusted to this
-number if required.</p></li>
+number if required and possible (such adjustment is deprecated).</p></li>
 <li><p><strong>feature_map</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – The (parametrized) circuit to be used as a feature map for the underlying
-QNN. If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a>
+QNN. If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">zz_feature_map()</span></code>
 is used if the number of qubits is larger than 1. For a single qubit
-classification problem the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a>
+classification problem the <code class="xref py py-meth docutils literal notranslate"><span class="pre">z_feature_map()</span></code>
 is used by default.</p></li>
 <li><p><strong>ansatz</strong> (<em>QuantumCircuit</em><em> | </em><em>None</em>) – The (parametrized) circuit to be used as an ansatz for the underlying QNN.
-If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given then the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given then the <code class="xref py py-meth docutils literal notranslate"><span class="pre">real_amplitudes()</span></code>
 circuit is used.</p></li>
-<li><p><strong>loss</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html#qiskit_machine_learning.utils.loss_functions.Loss" title="qiskit_machine_learning.utils.loss_functions.Loss"><em>Loss</em></a>) – A target loss function to be used in training. Default value is <code class="docutils literal notranslate"><span class="pre">cross_entropy</span></code>.</p></li>
+<li><p><strong>loss</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html#qiskit_machine_learning.utils.loss_functions.Loss" title="qiskit_machine_learning.utils.loss_functions.Loss"><em>Loss</em></a>) – A target loss function to be used in training. Default value is <code class="docutils literal notranslate"><span class="pre">cross_entropy</span></code>.</p></li>
 <li><p><strong>optimizer</strong> (<a class="reference internal" href="qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer" title="qiskit_machine_learning.optimizers.Optimizer"><em>Optimizer</em></a><em> | </em><a class="reference internal" href="qiskit_machine_learning.optimizers.Minimizer.html#qiskit_machine_learning.optimizers.Minimizer" title="qiskit_machine_learning.optimizers.Minimizer"><em>Minimizer</em></a><em> | </em><em>None</em>) – An instance of an optimizer or a callable to be used in training.
 Refer to <a class="reference internal" href="qiskit_machine_learning.optimizers.Minimizer.html#qiskit_machine_learning.optimizers.Minimizer" title="qiskit_machine_learning.optimizers.Minimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Minimizer</span></code></a> for more information on
 the callable protocol. When <cite>None</cite> defaults to
 <a class="reference internal" href="qiskit_machine_learning.optimizers.SLSQP.html#qiskit_machine_learning.optimizers.SLSQP" title="qiskit_machine_learning.optimizers.SLSQP"><code class="xref py py-class docutils literal notranslate"><span class="pre">SLSQP</span></code></a>.</p></li>
-<li><p><strong>warm_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Use weights from previous fit to start next fit.</p></li>
+<li><p><strong>warm_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Use weights from previous fit to start next fit.</p></li>
 <li><p><strong>initial_point</strong> (<em>np.ndarray</em><em> | </em><em>None</em>) – Initial point for the optimizer to start from.</p></li>
-<li><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>]</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>) – a reference to a user’s callback function that has two parameters and
+<li><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>) – a reference to a user’s callback function that has two parameters and
 returns <code class="docutils literal notranslate"><span class="pre">None</span></code>. The callback can access intermediate data during training.
 On each iteration an optimizer invokes the callback and passes current weights
 as an array and a computed value as a float of the objective function being
 optimized. This allows to track how well optimization / training process is going on.</p></li>
-<li><p><strong>sampler</strong> (<em>BaseSampler</em><em> | </em><em>None</em>) – an optional Sampler primitive instance to be used by the underlying
+<li><p><strong>sampler</strong> (<em>BaseSamplerV2</em><em> | </em><em>None</em>) – an optional Sampler primitive instance to be used by the underlying
 <a class="reference internal" href="qiskit_machine_learning.neural_networks.SamplerQNN.html#qiskit_machine_learning.neural_networks.SamplerQNN" title="qiskit_machine_learning.neural_networks.SamplerQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a> neural network. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> is passed then an instance of the reference Sampler will be used.</p></li>
 <li><p><strong>pass_manager</strong> (<em>BasePassManager</em><em> | </em><em>None</em>) – The pass manager to transpile the circuits, if necessary.
 Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>, as some primitives do not need transpiled circuits.</p></li>
-<li><p><strong>interpret</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A callable that maps the measured integer to another unsigned integer or tuple
+<li><p><strong>interpret</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A callable that maps the measured integer to another unsigned integer or tuple
 of unsigned integers. These are used as new indices for the (potentially sparse)
 output array. If no interpret function is passed, then a basic parity function will be
 used by underlying neural network.</p></li>
-<li><p><strong>output_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The output shape for the underlying neural network, generally equals to
+<li><p><strong>output_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – The output shape for the underlying neural network, generally equals to
 number of classes. Defaults to binary classification, 2.</p></li>
 </ul>
 </dd>
@@ -611,8 +623,8 @@ class for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – The input data.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – The target values.</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – The input data.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – The target values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -628,23 +640,44 @@ class for more details.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQC.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQC.load" title="Link to this definition">¶</a></dt>
-<dd><p>Loads a model from the file. If the loaded model is not an instance of the class whose
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQC.from_dill">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQC.from_dill" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a model from a file. If the loaded model is not an instance of the class whose
 method was called, then a warning is raised. Nevertheless, the loaded model may be a valid
 model.</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.load" title="qiskit_machine_learning.algorithms.VQC.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a> method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path to load a model from.</p>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the dill file containing the serialized model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A loaded model.</p>
+<dd class="field-even"><p>An instance of the model loaded from disk.</p>
 </dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loaded</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">from_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQC.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQC.load" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.from_dill" title="qiskit_machine_learning.algorithms.VQC.from_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_dill()</span></code></a>, deprecated in v0.9.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -679,7 +712,7 @@ with respect to the elements of the set to be predicted and the training set.</p
 <li><p>If the <a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.predict" title="qiskit_machine_learning.algorithms.VQC.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code></a> method is called before the model has been fit.</p></li>
 </ul>
 </p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – <ul>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – <ul>
 <li><p>If the pre-computed kernel matrix has the wrong shape and/or dimension.</p></li>
 </ul>
 </p></li>
@@ -718,15 +751,9 @@ the elements of the set to be predicted and the training set.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQC.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQC.save" title="Link to this definition">¶</a></dt>
-<dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
-All parameters are saved, including a primitive instance that is referenced by internal
-objects. That means if a model is loaded from a file and is used, for instance, for
-inference, the same primitive will be used even if a cloud primitive was used.</p>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQC.save" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.to_dill" title="qiskit_machine_learning.algorithms.VQC.to_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dill()</span></code></a>, deprecated in v0.9.0.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path where to save the model.</p>
-</dd>
 </dl>
 </dd></dl>
 
@@ -739,18 +766,40 @@ determination <span class="math notranslate nohighlight">\(R^2\)</span> of the p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – Test samples.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – True values for <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
-<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a><em> | </em><em>None</em>) – Sample weights. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Test samples.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – True values for <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em> | </em><em>None</em>) – Sample weights. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a float score of the model.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.VQC.to_dill">
+<span class="sig-name descname"><span class="pre">to_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.VQC.to_dill" title="Link to this definition">¶</a></dt>
+<dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
+All parameters are saved, including a primitive instance that is referenced by internal
+objects. That means if a model is loaded from a file and is used, for instance, for
+inference, the same primitive will be used even if a cloud primitive was used.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.save" title="qiskit_machine_learning.algorithms.VQC.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> method.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path where the serialized model will be written.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">to_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -840,11 +889,13 @@ determination <span class="math notranslate nohighlight">\(R^2\)</span> of the p
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.warm_start"><code class="docutils literal notranslate"><span class="pre">VQC.warm_start</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.weights"><code class="docutils literal notranslate"><span class="pre">VQC.weights</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.fit"><code class="docutils literal notranslate"><span class="pre">VQC.fit()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.from_dill"><code class="docutils literal notranslate"><span class="pre">VQC.from_dill()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.load"><code class="docutils literal notranslate"><span class="pre">VQC.load()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.predict"><code class="docutils literal notranslate"><span class="pre">VQC.predict()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.predict_proba"><code class="docutils literal notranslate"><span class="pre">VQC.predict_proba()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.save"><code class="docutils literal notranslate"><span class="pre">VQC.save()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.score"><code class="docutils literal notranslate"><span class="pre">VQC.score()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.VQC.to_dill"><code class="docutils literal notranslate"><span class="pre">VQC.to_dill()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -860,7 +911,7 @@ determination <span class="math notranslate nohighlight">\(R^2\)</span> of the p
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
+    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

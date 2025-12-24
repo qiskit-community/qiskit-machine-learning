@@ -1,0 +1,20 @@
+﻿
+
+qnn_circuit
+===================================================
+
+.. currentmodule:: qiskit_machine_learning.circuit.library
+
+.. autoclass:: qnn_circuit
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+   

@@ -33,11 +33,13 @@ PegasosQSVC
    
    .. automethod:: PegasosQSVC.decision_function
    .. automethod:: PegasosQSVC.fit
+   .. automethod:: PegasosQSVC.from_dill
    .. automethod:: PegasosQSVC.load
    .. automethod:: PegasosQSVC.predict
    .. automethod:: PegasosQSVC.predict_proba
    .. automethod:: PegasosQSVC.save
    .. automethod:: PegasosQSVC.score
+   .. automethod:: PegasosQSVC.to_dill
 
    
    

@@ -6,12 +6,13 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="BinaryObjectiveFunction" href="qiskit_machine_learning.algorithms.BinaryObjectiveFunction.html" /><link rel="prev" title="ObjectiveFunction" href="qiskit_machine_learning.algorithms.ObjectiveFunction.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>SerializableModelMixin - Qiskit Machine Learning 0.8.4</title>
+        <title>SerializableModelMixin - Qiskit Machine Learning 0.9.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
@@ -201,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -279,8 +280,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.raw_feature_vector.html">raw_feature_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.qnn_circuit.html">qnn_circuit</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -289,6 +290,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -353,6 +355,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SBPLX.html">SBPLX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
@@ -360,14 +363,23 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html">Qiskit ML Primitives (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.primitives</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Qiskit ML Primitives (qiskit_machine_learning.primitives)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLEstimator.html">QMLEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLSampler.html">QMLSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#why-introduce-these-wrappers">Why introduce these wrappers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#execution-modes">Execution modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#examples-of-exact-simulation-and-with-shot-noise">Examples of exact simulation and with shot noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#executing-workloads-on-ibm-quantum-hardware">Executing workloads on IBM quantum hardware</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
@@ -451,43 +463,86 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.SerializableModelMixin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializableModelMixin</span></span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/serializable_model.html#SerializableModelMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.SerializableModelMixin" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Provides convenient methods for saving and loading models.</p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Provides convenient methods for saving and loading models via dill serialization.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The legacy <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.save" title="qiskit_machine_learning.algorithms.SerializableModelMixin.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> and <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.load" title="qiskit_machine_learning.algorithms.SerializableModelMixin.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a> methods are deprecated in v0.9.0
+and will be removed in a future release. Please use <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.to_dill" title="qiskit_machine_learning.algorithms.SerializableModelMixin.to_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dill()</span></code></a>
+and <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.from_dill" title="qiskit_machine_learning.algorithms.SerializableModelMixin.from_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_dill()</span></code></a> respectively.</p>
+</div>
 <p class="rubric">Methods</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.SerializableModelMixin.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/serializable_model.html#SerializableModelMixin.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.load" title="Link to this definition">¶</a></dt>
-<dd><p>Loads a model from the file. If the loaded model is not an instance of the class whose
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.SerializableModelMixin.from_dill">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/serializable_model.html#SerializableModelMixin.from_dill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.from_dill" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a model from a file. If the loaded model is not an instance of the class whose
 method was called, then a warning is raised. Nevertheless, the loaded model may be a valid
 model.</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.load" title="qiskit_machine_learning.algorithms.SerializableModelMixin.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a> method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path to load a model from.</p>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the dill file containing the serialized model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A loaded model.</p>
+<dd class="field-even"><p>An instance of the model loaded from disk.</p>
 </dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loaded</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">from_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.SerializableModelMixin.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/serializable_model.html#SerializableModelMixin.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.load" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.from_dill" title="qiskit_machine_learning.algorithms.SerializableModelMixin.from_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_dill()</span></code></a>, deprecated in v0.9.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.SerializableModelMixin.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/serializable_model.html#SerializableModelMixin.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.save" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/serializable_model.html#SerializableModelMixin.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.save" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.to_dill" title="qiskit_machine_learning.algorithms.SerializableModelMixin.to_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dill()</span></code></a>, deprecated in v0.9.0.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.SerializableModelMixin.to_dill">
+<span class="sig-name descname"><span class="pre">to_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/serializable_model.html#SerializableModelMixin.to_dill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.to_dill" title="Link to this definition">¶</a></dt>
 <dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
 All parameters are saved, including a primitive instance that is referenced by internal
 objects. That means if a model is loaded from a file and is used, for instance, for
 inference, the same primitive will be used even if a cloud primitive was used.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.save" title="qiskit_machine_learning.algorithms.SerializableModelMixin.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> method.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path where to save the model.</p>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path where the serialized model will be written.</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">to_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -563,8 +618,10 @@ inference, the same primitive will be used even if a cloud primitive was used.</
             <ul>
 <li><a class="reference internal" href="#">SerializableModelMixin</a><ul>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin"><code class="docutils literal notranslate"><span class="pre">SerializableModelMixin</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.from_dill"><code class="docutils literal notranslate"><span class="pre">SerializableModelMixin.from_dill()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.load"><code class="docutils literal notranslate"><span class="pre">SerializableModelMixin.load()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.save"><code class="docutils literal notranslate"><span class="pre">SerializableModelMixin.save()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.SerializableModelMixin.to_dill"><code class="docutils literal notranslate"><span class="pre">SerializableModelMixin.to_dill()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -580,7 +637,7 @@ inference, the same primitive will be used even if a cloud primitive was used.</
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
+    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

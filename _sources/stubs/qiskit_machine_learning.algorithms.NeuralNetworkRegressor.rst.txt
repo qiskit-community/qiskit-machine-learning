@@ -35,10 +35,12 @@ NeuralNetworkRegressor
 
    
    .. automethod:: NeuralNetworkRegressor.fit
+   .. automethod:: NeuralNetworkRegressor.from_dill
    .. automethod:: NeuralNetworkRegressor.load
    .. automethod:: NeuralNetworkRegressor.predict
    .. automethod:: NeuralNetworkRegressor.save
    .. automethod:: NeuralNetworkRegressor.score
+   .. automethod:: NeuralNetworkRegressor.to_dill
 
    
    

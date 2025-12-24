@@ -6,12 +6,13 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="EffectiveDimension" href="qiskit_machine_learning.neural_networks.EffectiveDimension.html" /><link rel="prev" title="EstimatorQNN" href="qiskit_machine_learning.neural_networks.EstimatorQNN.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>SamplerQNN - Qiskit Machine Learning 0.8.4</title>
+        <title>SamplerQNN - Qiskit Machine Learning 0.9.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
@@ -201,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -279,8 +280,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.raw_feature_vector.html">raw_feature_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.qnn_circuit.html">qnn_circuit</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -289,6 +290,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -353,6 +355,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SBPLX.html">SBPLX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
@@ -360,14 +363,23 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html">Qiskit ML Primitives (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.primitives</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Qiskit ML Primitives (qiskit_machine_learning.primitives)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLEstimator.html">QMLEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLSampler.html">QMLSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#why-introduce-these-wrappers">Why introduce these wrappers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#execution-modes">Execution modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#examples-of-exact-simulation-and-with-shot-noise">Examples of exact simulation and with shot noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#executing-workloads-on-ibm-quantum-hardware">Executing workloads on IBM quantum hardware</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
@@ -457,12 +469,7 @@
 with designated parameters for input data and/or weights and translates the quasi-probabilities
 estimated by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code> primitive into predicted classes. Quite
 often, a combined quantum circuit is used. Such a circuit is built from two circuits:
-a feature map, it provides input parameters for the network, and an ansatz (weight parameters).
-In this case a <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> can be passed as
-circuit to simplify the composition of a feature map and ansatz.
-If a <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is passed as circuit, the
-input and weight parameters do not have to be provided, because these two properties are taken
-from the <a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a>.</p>
+a feature map, it provides input parameters for the network, and an ansatz (weight parameters).</p>
 <p>The output can be set up in different formats, and an optional post-processing step
 can be used to interpret or map the sampler’s raw output in a particular context (e.g. mapping
 the resulting bitstring to match the number of classes) via an <code class="docutils literal notranslate"><span class="pre">interpret</span></code> function.</p>
@@ -484,8 +491,8 @@ the number of classical registers differs from the number of qubits.</p></li>
 <p>In this example, the network maps the output of the quantum circuit to two classes via a custom
 <code class="docutils literal notranslate"><span class="pre">interpret</span></code> function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZFeatureMap</span><span class="p">,</span> <span class="n">RealAmplitudes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">QNNCircuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">zz_feature_map</span><span class="p">,</span> <span class="n">real_amplitudes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">qnn_circuit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplerQNN</span>
 
 <span class="n">num_qubits</span> <span class="o">=</span> <span class="mi">2</span>
@@ -494,12 +501,14 @@ the number of classical registers differs from the number of qubits.</p></li>
 <span class="k">def</span><span class="w"> </span><span class="nf">parity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">bin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
 
-<span class="c1"># Example 1: Using the QNNCircuit class</span>
-<span class="c1"># QNNCircuit automatically combines a feature map and an ansatz into a single circuit</span>
-<span class="n">qnn_qc</span> <span class="o">=</span> <span class="n">QNNCircuit</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">)</span>
+<span class="c1"># Example 1: Using the qnn_circuit</span>
+<span class="c1"># qnn_circuit automatically combines a feature map and an ansatz into a single circuit</span>
+<span class="n">qnn_qc</span><span class="p">,</span> <span class="n">fm_params</span><span class="p">,</span> <span class="n">anz_params</span> <span class="o">=</span> <span class="n">qnn_circuit</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">)</span>
 
 <span class="n">qnn</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
-    <span class="n">circuit</span><span class="o">=</span><span class="n">qnn_qc</span><span class="p">,</span>  <span class="c1"># Note that this is a QNNCircuit instance</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">qnn_qc</span><span class="p">,</span>
+    <span class="n">input_params</span><span class="o">=</span><span class="n">fm_params</span><span class="p">,</span>
+    <span class="n">weight_params</span><span class="o">=</span><span class="n">anz_params</span><span class="p">,</span>
     <span class="n">interpret</span><span class="o">=</span><span class="n">parity</span><span class="p">,</span>
     <span class="n">output_shape</span><span class="o">=</span><span class="mi">2</span>  <span class="c1"># Reshape by the number of classical registers</span>
 <span class="p">)</span>
@@ -509,10 +518,10 @@ the number of classical registers differs from the number of qubits.</p></li>
 
 <span class="c1"># Example 2: Explicitly specifying the feature map and ansatz</span>
 <span class="c1"># Create a feature map and an ansatz separately</span>
-<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
-<span class="n">ansatz</span> <span class="o">=</span> <span class="n">RealAmplitudes</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">real_amplitudes</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
 
-<span class="c1"># Compose the feature map and ansatz manually (otherwise done within QNNCircuit)</span>
+<span class="c1"># Compose the feature map and ansatz manually</span>
 <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">)</span>
 <span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -561,42 +570,23 @@ pass. If not provided, a default instance of
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>circuit</strong> (<em>QuantumCircuit</em>) – The parametrized quantum
-circuit that generates the samples of this network. If a
-<a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is passed,
-the <cite>input_params</cite> and <cite>weight_params</cite> do not have to be provided, because these two
-properties are taken from the
-<a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a>.</p></li>
-<li><p><strong>sampler</strong> (<em>BaseSampler</em><em> | </em><em>None</em>) – <p>The sampler primitive used to compute the neural network’s results. If
+circuit that generates the samples of this network.</p></li>
+<li><p><strong>sampler</strong> (<em>BaseSamplerV2</em><em> | </em><em>None</em>) – The sampler primitive used to compute the neural network’s results. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, a default instance of the reference sampler defined by
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code> will be used.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The assignment <code class="docutils literal notranslate"><span class="pre">sampler=None</span></code> defaults to using
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code>, which points to a deprecated Sampler V1
-(as of Qiskit 1.2). <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> will adopt Sampler V2 as default no later than
-Qiskit Machine Learning 0.9.</p>
-</div>
-</p></li>
-<li><p><strong>input_params</strong> (<em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – The parameters of the circuit corresponding to the input. If a
-<a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is provided the
-<cite>input_params</cite> value here is ignored. Instead, the value is taken from the
-<a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> input_parameters.</p></li>
-<li><p><strong>weight_params</strong> (<em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – The parameters of the circuit corresponding to the trainable weights. If a
-<a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> is provided the
-<cite>weight_params</cite> value here is ignored. Instead, the value is taken from the
-<a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html#qiskit_machine_learning.circuit.library.QNNCircuit" title="qiskit_machine_learning.circuit.library.QNNCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code></a> <code class="docutils literal notranslate"><span class="pre">weight_parameters</span></code>.</p></li>
-<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Returns whether the output is sparse or not.</p></li>
-<li><p><strong>interpret</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A callable that maps the measured integer to another unsigned integer or tuple
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code> will be used.</p></li>
+<li><p><strong>input_params</strong> (<em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – The parameters of the circuit corresponding to the input.</p></li>
+<li><p><strong>weight_params</strong> (<em>Sequence</em><em>[</em><em>Parameter</em><em>] </em><em>| </em><em>None</em>) – The parameters of the circuit corresponding to the trainable weights.</p></li>
+<li><p><strong>interpret</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A callable that maps the measured integer to another unsigned integer or tuple
 of unsigned integers. These are used as new indices for the (potentially sparse)
 output array. If the interpret function is <code class="docutils literal notranslate"><span class="pre">None</span></code>, then an identity function will be
 used by this neural network: <code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">x:</span> <span class="pre">x</span></code> (default).</p></li>
-<li><p><strong>output_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>) – The output shape of the custom interpretation. For SamplerV1, it is ignored
+<li><p><strong>output_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>) – The output shape of the custom interpretation. For SamplerV1, it is ignored
 if no custom interpret method is provided where the shape is taken to be
 <code class="docutils literal notranslate"><span class="pre">2^circuit.num_qubits</span></code>.</p></li>
 <li><p><strong>gradient</strong> (<a class="reference internal" href="qiskit_machine_learning.gradients.BaseSamplerGradient.html#qiskit_machine_learning.gradients.BaseSamplerGradient" title="qiskit_machine_learning.gradients.BaseSamplerGradient"><em>BaseSamplerGradient</em></a><em> | </em><em>None</em>) – An optional sampler gradient to be used for the backward pass. If <code class="docutils literal notranslate"><span class="pre">None</span></code> is
 given, a default instance of
 <a class="reference internal" href="qiskit_machine_learning.gradients.ParamShiftSamplerGradient.html#qiskit_machine_learning.gradients.ParamShiftSamplerGradient" title="qiskit_machine_learning.gradients.ParamShiftSamplerGradient"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamShiftSamplerGradient</span></code></a> will be used.</p></li>
-<li><p><strong>input_gradients</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Determines whether to compute gradients with respect to input data. Note
+<li><p><strong>input_gradients</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Determines whether to compute gradients with respect to input data. Note
 that this parameter is <code class="docutils literal notranslate"><span class="pre">False</span></code> by default, and must be explicitly set to <code class="docutils literal notranslate"><span class="pre">True</span></code>
 for a proper gradient computation when using
 <a class="reference internal" href="qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector" title="qiskit_machine_learning.connectors.TorchConnector"><code class="xref py py-class docutils literal notranslate"><span class="pre">TorchConnector</span></code></a>.</p></li>
@@ -673,9 +663,9 @@ the constructor or can not be implicitly derived, then <code class="docutils lit
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a
+<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a
 single scalar input it is directly cast to and interpreted like a one-element array.</p></li>
-<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight</p></li>
+<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight</p></li>
 <li><p><strong>array.</strong> (<em>it is directly cast to and interpreted like a one-element</em>)</p></li>
 </ul>
 </dd>
@@ -685,7 +675,7 @@ for input and weights of shape (output_shape, num_input) and
 (output_shape, num_weights), respectively.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a> | <em>SparseArray</em> | None, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a> | <em>SparseArray</em> | None]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a> | <em>SparseArray</em> | None, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a> | <em>SparseArray</em> | None]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -697,9 +687,9 @@ for input and weights of shape (output_shape, num_input) and
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a single scalar input it is
+<li><p><strong>input_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em> | </em><em>None</em>) – input data of the shape (num_inputs). In case of a single scalar input it is
 directly cast to and interpreted like a one-element array.</p></li>
-<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight
+<li><p><strong>weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em> | </em><em>None</em>) – trainable weights of the shape (num_weights). In case of a single scalar weight
 it is directly cast to and interpreted like a one-element array.</p></li>
 </ul>
 </dd>
@@ -707,7 +697,7 @@ it is directly cast to and interpreted like a one-element array.</p></li>
 <dd class="field-even"><p>The result of the neural network of the shape (output_shape).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a> | <em>SparseArray</em></p>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a> | <em>SparseArray</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -719,9 +709,9 @@ it is directly cast to and interpreted like a one-element array.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>interpret</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A callable that maps the measured integer to another unsigned integer or
+<li><p><strong>interpret</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A callable that maps the measured integer to another unsigned integer or
 tuple of unsigned integers. See constructor for more details.</p></li>
-<li><p><strong>output_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>) – The output shape of the custom interpretation. It is ignored if no custom
+<li><p><strong>output_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>) – The output shape of the custom interpretation. It is ignored if no custom
 interpret method is provided where the shape is taken to be
 <code class="docutils literal notranslate"><span class="pre">2^circuit.num_qubits</span></code>.</p></li>
 </ul>
@@ -831,7 +821,7 @@ interpret method is provided where the shape is taken to be
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
+    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

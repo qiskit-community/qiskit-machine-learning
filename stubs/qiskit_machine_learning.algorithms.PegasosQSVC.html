@@ -6,12 +6,13 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="QSVC" href="qiskit_machine_learning.algorithms.QSVC.html" /><link rel="prev" title="OneHotObjectiveFunction" href="qiskit_machine_learning.algorithms.OneHotObjectiveFunction.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>PegasosQSVC - Qiskit Machine Learning 0.8.4</title>
+        <title>PegasosQSVC - Qiskit Machine Learning 0.9.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
@@ -201,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -228,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -279,8 +280,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.raw_feature_vector.html">raw_feature_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.circuit.library.qnn_circuit.html">qnn_circuit</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -289,6 +290,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -353,6 +355,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.SBPLX.html">SBPLX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
@@ -360,14 +363,23 @@
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html">Qiskit ML Primitives (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.primitives</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Qiskit ML Primitives (qiskit_machine_learning.primitives)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLEstimator.html">QMLEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.primitives.QMLSampler.html">QMLSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#why-introduce-these-wrappers">Why introduce these wrappers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#execution-modes">Execution modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#examples-of-exact-simulation-and-with-shot-noise">Examples of exact simulation and with shot noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#executing-workloads-on-ibm-quantum-hardware">Executing workloads on IBM quantum hardware</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
@@ -451,7 +463,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.PegasosQSVC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PegasosQSVC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quantum_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_machine_learning/algorithms/classifiers/pegasos_qsvc.html#PegasosQSVC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a>, <a class="reference internal" href="qiskit_machine_learning.algorithms.SerializableModelMixin.html#qiskit_machine_learning.algorithms.SerializableModelMixin" title="qiskit_machine_learning.algorithms.serializable_model.SerializableModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializableModelMixin</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="(in scikit-learn v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a>, <a class="reference internal" href="qiskit_machine_learning.algorithms.SerializableModelMixin.html#qiskit_machine_learning.algorithms.SerializableModelMixin" title="qiskit_machine_learning.algorithms.serializable_model.SerializableModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializableModelMixin</span></code></a></p>
 <p>Implements Pegasos Quantum Support Vector Classifier algorithm. The algorithm has been
 developed in [1] and includes methods <code class="docutils literal notranslate"><span class="pre">fit</span></code>, <code class="docutils literal notranslate"><span class="pre">predict</span></code> and <code class="docutils literal notranslate"><span class="pre">decision_function</span></code> following
 the signatures
@@ -479,22 +491,22 @@ This implementation is adapted to work with quantum kernels.</p>
 Has to be <code class="docutils literal notranslate"><span class="pre">None</span></code> when a precomputed kernel is used. If None,
 and <code class="docutils literal notranslate"><span class="pre">precomputed</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the quantum kernel will default to
 <a class="reference internal" href="qiskit_machine_learning.kernels.FidelityQuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel" title="qiskit_machine_learning.kernels.FidelityQuantumKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code></a>.</p></li>
-<li><p><strong>C</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Positive regularization parameter. The strength of the regularization is inversely
+<li><p><strong>C</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Positive regularization parameter. The strength of the regularization is inversely
 proportional to C. Smaller <code class="docutils literal notranslate"><span class="pre">C</span></code> induce smaller weights which generally helps
 preventing overfitting. However, due to the nature of this algorithm, some of the
 computation steps become trivial for larger <code class="docutils literal notranslate"><span class="pre">C</span></code>. Thus, larger <code class="docutils literal notranslate"><span class="pre">C</span></code> improve
 the performance of the algorithm drastically. If the data is linearly separable
 in feature space, <code class="docutils literal notranslate"><span class="pre">C</span></code> should be chosen to be large. If the separation is not
 perfect, <code class="docutils literal notranslate"><span class="pre">C</span></code> should be chosen smaller to prevent overfitting.</p></li>
-<li><p><strong>num_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The number of steps in the Pegasos algorithm. There is no early stopping
+<li><p><strong>num_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The number of steps in the Pegasos algorithm. There is no early stopping
 criterion. The algorithm iterates over all steps.</p></li>
-<li><p><strong>precomputed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – A boolean flag indicating whether a precomputed kernel is used. Set it to
+<li><p><strong>precomputed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – A boolean flag indicating whether a precomputed kernel is used. Set it to
 <code class="docutils literal notranslate"><span class="pre">True</span></code> in case of precomputed kernel.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – A seed for the random number generator.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – A seed for the random number generator.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – <ul class="simple">
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – <ul class="simple">
 <li><p>if <code class="docutils literal notranslate"><span class="pre">quantum_kernel</span></code> is passed and <code class="docutils literal notranslate"><span class="pre">precomputed</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. To use
     a precomputed kernel, <code class="docutils literal notranslate"><span class="pre">quantum_kernel</span></code> has to be of the <code class="docutils literal notranslate"><span class="pre">None</span></code> type.
     - if C is not a positive number.</p></li>
@@ -538,7 +550,7 @@ criterion. The algorithm iterates over all steps.</p></li>
 <dd><p>Evaluate the decision function for the samples in <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – Features. For a callable kernel (an instance of
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Features. For a callable kernel (an instance of
 <a class="reference internal" href="qiskit_machine_learning.kernels.BaseKernel.html#qiskit_machine_learning.kernels.BaseKernel" title="qiskit_machine_learning.kernels.BaseKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseKernel</span></code></a>) the shape
 should be <code class="docutils literal notranslate"><span class="pre">(m_samples,</span> <span class="pre">n_features)</span></code>, for a precomputed kernel the shape should be
 <code class="docutils literal notranslate"><span class="pre">(m_samples,</span> <span class="pre">n_samples)</span></code>. Where <code class="docutils literal notranslate"><span class="pre">m</span></code> denotes the set to be predicted and <code class="docutils literal notranslate"><span class="pre">n</span></code> the
@@ -554,14 +566,14 @@ with respect to the elements of the set to be predicted and the training set.</p
 <li><p>the method is called before the model has been fit.</p></li>
 </ul>
 </p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – <ul>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – <ul>
 <li><p>Pre-computed kernel matrix has the wrong shape and/or dimension.</p></li>
 </ul>
 </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -573,12 +585,12 @@ with respect to the elements of the set to be predicted and the training set.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – Train features. For a callable kernel (an instance of
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Train features. For a callable kernel (an instance of
 <a class="reference internal" href="qiskit_machine_learning.kernels.BaseKernel.html#qiskit_machine_learning.kernels.BaseKernel" title="qiskit_machine_learning.kernels.BaseKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseKernel</span></code></a>) the shape
 should be <code class="docutils literal notranslate"><span class="pre">(n_samples,</span> <span class="pre">n_features)</span></code>, for a precomputed kernel the shape should be
 <code class="docutils literal notranslate"><span class="pre">(n_samples,</span> <span class="pre">n_samples)</span></code>.</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a>) – shape (n_samples), train labels . Must not contain more than two unique labels.</p></li>
-<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>ndarray</em></a><em> | </em><em>None</em>) – this parameter is not supported, passing a value raises an error.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – shape (n_samples), train labels . Must not contain more than two unique labels.</p></li>
+<li><p><strong>sample_weight</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a><em> | </em><em>None</em>) – this parameter is not supported, passing a value raises an error.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -586,14 +598,14 @@ should be <code class="docutils literal notranslate"><span class="pre">(n_sample
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – <ul>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – <ul>
 <li><p>X and/or y have the wrong shape.
     - X and y have incompatible dimensions.
     - y includes more than two unique labels.
     - Pre-computed kernel matrix has the wrong shape and/or dimension.</p></li>
 </ul>
 </p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – <ul>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – <ul>
 <li><p>when a sample_weight which is not None is passed.</p></li>
 </ul>
 </p></li>
@@ -606,23 +618,44 @@ should be <code class="docutils literal notranslate"><span class="pre">(n_sample
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.PegasosQSVC.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC.load" title="Link to this definition">¶</a></dt>
-<dd><p>Loads a model from the file. If the loaded model is not an instance of the class whose
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.PegasosQSVC.from_dill">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC.from_dill" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a model from a file. If the loaded model is not an instance of the class whose
 method was called, then a warning is raised. Nevertheless, the loaded model may be a valid
 model.</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.load" title="qiskit_machine_learning.algorithms.PegasosQSVC.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a> method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path to load a model from.</p>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the dill file containing the serialized model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A loaded model.</p>
+<dd class="field-even"><p>An instance of the model loaded from disk.</p>
 </dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loaded</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">from_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – if a loaded model is not an instance of the expected class.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.PegasosQSVC.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC.load" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.from_dill" title="qiskit_machine_learning.algorithms.PegasosQSVC.from_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_dill()</span></code></a>, deprecated in v0.9.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -657,7 +690,7 @@ the elements of the set to be predicted and the training set.</p>
 <li><p>If the <a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.predict" title="qiskit_machine_learning.algorithms.PegasosQSVC.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code></a> method is called before the model has been fit.</p></li>
 </ul>
 </p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – <ul>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – <ul>
 <li><p>If the pre-computed kernel matrix has the wrong shape and/or dimension.</p></li>
 </ul>
 </p></li>
@@ -698,22 +731,16 @@ the elements of the set to be predicted and the training set.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.PegasosQSVC.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC.save" title="Link to this definition">¶</a></dt>
-<dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
-All parameters are saved, including a primitive instance that is referenced by internal
-objects. That means if a model is loaded from a file and is used, for instance, for
-inference, the same primitive will be used even if a cloud primitive was used.</p>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC.save" title="Link to this definition">¶</a></dt>
+<dd><p>Backwards compatibility with <a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.to_dill" title="qiskit_machine_learning.algorithms.PegasosQSVC.to_dill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dill()</span></code></a>, deprecated in v0.9.0.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – a file name or path where to save the model.</p>
-</dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.PegasosQSVC.score">
 <span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC.score" title="Link to this definition">¶</a></dt>
-<dd><p>Return <a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#accuracy-score" title="(in scikit-learn v1.7)"><span class="xref std std-ref">accuracy</span></a> on provided data and labels.</p>
+<dd><p>Return <a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#accuracy-score" title="(in scikit-learn v1.8)"><span class="xref std std-ref">accuracy</span></a> on provided data and labels.</p>
 <p>In multi-label classification, this is the subset accuracy
 which is a harsh metric since you require for each sample that
 each label set be correctly predicted.</p>
@@ -729,9 +756,31 @@ each label set be correctly predicted.</p>
 <dd class="field-even"><p><strong>score</strong> – Mean accuracy of <code class="docutils literal notranslate"><span class="pre">self.predict(X)</span></code> w.r.t. <cite>y</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_machine_learning.algorithms.PegasosQSVC.to_dill">
+<span class="sig-name descname"><span class="pre">to_dill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_machine_learning.algorithms.PegasosQSVC.to_dill" title="Link to this definition">¶</a></dt>
+<dd><p>Saves this model to the specified file. Internally, the model is serialized via <code class="docutils literal notranslate"><span class="pre">dill</span></code>.
+All parameters are saved, including a primitive instance that is referenced by internal
+objects. That means if a model is loaded from a file and is used, for instance, for
+inference, the same primitive will be used even if a cloud primitive was used.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Replaces the deprecated <a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.save" title="qiskit_machine_learning.algorithms.PegasosQSVC.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> method.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path where the serialized model will be written.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">to_dill</span><span class="p">(</span><span class="s1">&#39;model_state.dill&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -814,11 +863,13 @@ each label set be correctly predicted.</p>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.quantum_kernel"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.quantum_kernel</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.decision_function"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.decision_function()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.fit"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.fit()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.from_dill"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.from_dill()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.load"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.load()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.predict"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.predict()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.predict_proba"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.predict_proba()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.save"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.save()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.score"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.score()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_machine_learning.algorithms.PegasosQSVC.to_dill"><code class="docutils literal notranslate"><span class="pre">PegasosQSVC.to_dill()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -834,7 +885,7 @@ each label set be correctly predicted.</p>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
+    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

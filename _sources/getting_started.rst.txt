@@ -102,20 +102,30 @@ Optional installs
   ``brew install nlopt`` on MacOS using the Homebrew package manager. For more information, refer
   to the `installation guide <https://nlopt.readthedocs.io/en/latest/NLopt_Installation/>`__.
 
-.. _migration-to-qiskit-1x:
 
-Migration to Qiskit 1.x
-========================
+.. _contributing:
 
-.. note::
+How can I contribute?
+=====================
 
-   Qiskit Machine Learning depends on Qiskit, which will be automatically installed as a
-   dependency when you install Qiskit Machine Learning. From version ``0.8`` of Qiskit Machine
-   Learning, Qiskit ``1.0`` or above will be required. If you have a pre-``1.0`` version of Qiskit
-   installed in your environment (however it was installed), you should upgrade to ``1.x`` to
-   continue using the latest features. You may refer to the
-   official `Qiskit 1.0 Migration Guide <https://quantum.cloud.ibm.com/docs/migration-guides/qiskit-1.0>`_
-   for detailed instructions and examples on how to upgrade Qiskit.
+If you'd like to contribute to Qiskit, please take a look at our
+`contribution guidelines <https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CONTRIBUTING.md>`_.
+This project adheres to the Qiskit `code of conduct <https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md>`_.
+By participating, you are expected to uphold this code.
+
+We use `GitHub issues <https://github.com/qiskit-community/qiskit-machine-learning/issues>`_ for tracking requests and bugs. Please
+`join the Qiskit Slack community <https://qisk.it/join-slack>`_
+and use the `#qiskit-machine-learning <https://qiskit.enterprise.slack.com/archives/C07JE3V55C1>`_ 
+channel for discussions and short questions.
+For questions that are more suited for a forum, you can use the **Qiskit** tag in `Stack Overflow <https://stackoverflow.com/questions/tagged/qiskit>`_.
+
+.. _citing:
+
+How can I cite Qiskit Machine Learning?
+=======================================
+
+If you use Qiskit Machine Learning in your work, please cite the "overview" `ArXiv paper <https://arxiv.org/abs/2505.17756>`_ to 
+support the continued development and visibility of the library.
 
 
 ----

@@ -31,6 +31,7 @@ QSVR
 
    
    .. automethod:: QSVR.fit
+   .. automethod:: QSVR.from_dill
    .. automethod:: QSVR.get_metadata_routing
    .. automethod:: QSVR.get_params
    .. automethod:: QSVR.load
@@ -40,6 +41,7 @@ QSVR
    .. automethod:: QSVR.set_fit_request
    .. automethod:: QSVR.set_params
    .. automethod:: QSVR.set_score_request
+   .. automethod:: QSVR.to_dill
 
    
    

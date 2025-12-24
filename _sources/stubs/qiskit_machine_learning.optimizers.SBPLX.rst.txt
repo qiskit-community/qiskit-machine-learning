@@ -1,0 +1,53 @@
+﻿
+
+SBPLX
+========================================
+
+.. currentmodule:: qiskit_machine_learning.optimizers
+
+.. autoclass:: SBPLX
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: SBPLX.bounds_support_level
+   .. autoattribute:: SBPLX.gradient_support_level
+   .. autoattribute:: SBPLX.initial_point_support_level
+   .. autoattribute:: SBPLX.is_bounds_ignored
+   .. autoattribute:: SBPLX.is_bounds_required
+   .. autoattribute:: SBPLX.is_bounds_supported
+   .. autoattribute:: SBPLX.is_gradient_ignored
+   .. autoattribute:: SBPLX.is_gradient_required
+   .. autoattribute:: SBPLX.is_gradient_supported
+   .. autoattribute:: SBPLX.is_initial_point_ignored
+   .. autoattribute:: SBPLX.is_initial_point_required
+   .. autoattribute:: SBPLX.is_initial_point_supported
+   .. autoattribute:: SBPLX.setting
+   .. autoattribute:: SBPLX.settings
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: SBPLX.get_nlopt_optimizer
+   .. automethod:: SBPLX.get_support_level
+   .. automethod:: SBPLX.gradient_num_diff
+   .. automethod:: SBPLX.minimize
+   .. automethod:: SBPLX.print_options
+   .. automethod:: SBPLX.set_max_evals_grouped
+   .. automethod:: SBPLX.set_options
+   .. automethod:: SBPLX.wrap_function
+
+   
+   

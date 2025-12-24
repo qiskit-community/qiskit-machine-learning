@@ -1,0 +1,8 @@
+﻿
+
+entanglement_concentration_data
+================================================================
+
+.. currentmodule:: qiskit_machine_learning.datasets
+
+.. autofunction:: entanglement_concentration_data

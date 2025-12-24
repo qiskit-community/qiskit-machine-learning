@@ -34,6 +34,7 @@ QSVC
    
    .. automethod:: QSVC.decision_function
    .. automethod:: QSVC.fit
+   .. automethod:: QSVC.from_dill
    .. automethod:: QSVC.get_metadata_routing
    .. automethod:: QSVC.get_params
    .. automethod:: QSVC.load
@@ -45,6 +46,7 @@ QSVC
    .. automethod:: QSVC.set_fit_request
    .. automethod:: QSVC.set_params
    .. automethod:: QSVC.set_score_request
+   .. automethod:: QSVC.to_dill
 
    
    

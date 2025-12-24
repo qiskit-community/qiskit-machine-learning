@@ -36,11 +36,13 @@ NeuralNetworkClassifier
 
    
    .. automethod:: NeuralNetworkClassifier.fit
+   .. automethod:: NeuralNetworkClassifier.from_dill
    .. automethod:: NeuralNetworkClassifier.load
    .. automethod:: NeuralNetworkClassifier.predict
    .. automethod:: NeuralNetworkClassifier.predict_proba
    .. automethod:: NeuralNetworkClassifier.save
    .. automethod:: NeuralNetworkClassifier.score
+   .. automethod:: NeuralNetworkClassifier.to_dill
 
    
    

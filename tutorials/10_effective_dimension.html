@@ -6,12 +6,13 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The Quantum Convolution Neural Network" href="11_quantum_convolutional_neural_networks.html" /><link rel="prev" title="Saving, Loading Qiskit Machine Learning Models and Continuous Training" href="09_saving_and_loading_models.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.8.4</title>
+        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.9.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -202,7 +203,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.8.4</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +230,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.8.4</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -280,8 +281,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.circuit.library.html">Circuit library for machine learning applications (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.circuit.library</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Circuit library for machine learning applications (qiskit_machine_learning.circuit.library)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.RawFeatureVector.html">RawFeatureVector</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.QNNCircuit.html">QNNCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.raw_feature_vector.html">raw_feature_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.circuit.library.qnn_circuit.html">qnn_circuit</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.connectors.html">Connectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.connectors</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Connectors (qiskit_machine_learning.connectors)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -290,6 +291,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -354,6 +356,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.TNC.html">TNC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.SciPyOptimizer.html">SciPyOptimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.UMDA.html">UMDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.SBPLX.html">SBPLX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.CRS.html">CRS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.DIRECT_L.html">DIRECT_L</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.DIRECT_L_RAND.html">DIRECT_L_RAND</a></li>
@@ -361,14 +364,23 @@
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.optimizers.ISRES.html">ISRES</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html">Qiskit ML Primitives (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.primitives</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Qiskit ML Primitives (qiskit_machine_learning.primitives)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.primitives.QMLEstimator.html">QMLEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.primitives.QMLSampler.html">QMLSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#why-introduce-these-wrappers">Why introduce these wrappers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#execution-modes">Execution modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#examples-of-exact-simulation-and-with-shot-noise">Examples of exact simulation and with shot noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/qiskit_machine_learning.primitives.html#executing-workloads-on-ibm-quantum-hardware">Executing workloads on IBM quantum hardware</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.state_fidelities.html">State Fidelities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.state_fidelities</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of State Fidelities (qiskit_machine_learning.state_fidelities)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.state_fidelities.BaseStateFidelity.html">BaseStateFidelity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.state_fidelities.ComputeUncompute.html">ComputeUncompute</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.state_fidelities.StateFidelityResult.html">StateFidelityResult</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.html">Utility functions and classes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Utility functions and classes (qiskit_machine_learning.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.utils.loss_functions.html">Loss Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.utils.loss_functions</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Loss Functions (qiskit_machine_learning.utils.loss_functions)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.Loss.html">Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html">KernelLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L1Loss.html">L1Loss</a></li>
@@ -449,7 +461,7 @@
         <article role="main">
           <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.8/docs/tutorials/10_effective_dimension.ipynb">docs/tutorials/10_effective_dimension.ipynb</a>.</p>
+<p>This page was generated from <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/blob/stable/0.9/docs/tutorials/10_effective_dimension.ipynb">docs/tutorials/10_effective_dimension.ipynb</a>.</p>
 </div>
 <section id="Effective-Dimension-of-Qiskit-Neural-Networks">
 <h1>Effective Dimension of Qiskit Neural Networks<a class="headerlink" href="#Effective-Dimension-of-Qiskit-Neural-Networks" title="Link to this heading">¶</a></h1>
@@ -487,7 +499,7 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">clear_output</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZFeatureMap</span><span class="p">,</span> <span class="n">RealAmplitudes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">z_feature_map</span><span class="p">,</span> <span class="n">real_amplitudes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">COBYLA</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm_globals</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatevectorSampler</span> <span class="k">as</span> <span class="n">Sampler</span><span class="p">,</span> <span class="n">StatevectorEstimator</span> <span class="k">as</span> <span class="n">Estimator</span>
@@ -495,7 +507,7 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_classification</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinMaxScaler</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">QNNCircuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">qnn_circuit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.algorithms.classifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkClassifier</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">EffectiveDimension</span><span class="p">,</span> <span class="n">LocalEffectiveDimension</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplerQNN</span><span class="p">,</span> <span class="n">EstimatorQNN</span>
@@ -509,16 +521,16 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 </div>
 <section id="3.1-Define-QNN">
 <h3>3.1 Define QNN<a class="headerlink" href="#3.1-Define-QNN" title="Link to this heading">¶</a></h3>
-<p>The first step to create a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is to define a parametrized feature map and ansatz. In this toy example, we will use 3 qubits and the <code class="docutils literal notranslate"><span class="pre">QNNCircuit</span></code> class to simplify the composition of a feature map and an ansatz circuit. The resulting circuit is then used in the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> class.</p>
+<p>The first step to create a <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is to define a parametrized feature map and ansatz. In this toy example, we will use 3 qubits and the <code class="docutils literal notranslate"><span class="pre">qnn_circuit</span></code> function to simplify the composition of a feature map and an ansatz circuit. The resulting circuit is then used in the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> class.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_qubits</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="c1"># combine a custom feature map and ansatz into a single circuit</span>
-<span class="n">qc</span> <span class="o">=</span> <span class="n">QNNCircuit</span><span class="p">(</span>
-    <span class="n">feature_map</span><span class="o">=</span><span class="n">ZFeatureMap</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">ansatz</span><span class="o">=</span><span class="n">RealAmplitudes</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="n">qc</span><span class="p">,</span> <span class="n">fm_params</span><span class="p">,</span> <span class="n">anz_params</span> <span class="o">=</span> <span class="n">qnn_circuit</span><span class="p">(</span>
+    <span class="n">feature_map</span><span class="o">=</span><span class="n">z_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">ansatz</span><span class="o">=</span><span class="n">real_amplitudes</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;clifford&quot;</span><span class="p">)</span>
 </pre></div>
@@ -553,6 +565,8 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># construct QNN</span>
 <span class="n">qnn</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span>
+    <span class="n">input_params</span><span class="o">=</span><span class="n">fm_params</span><span class="p">,</span>
+    <span class="n">weight_params</span><span class="o">=</span><span class="n">anz_params</span><span class="p">,</span>
     <span class="n">interpret</span><span class="o">=</span><span class="n">parity</span><span class="p">,</span>
     <span class="n">output_shape</span><span class="o">=</span><span class="n">output_shape</span><span class="p">,</span>
     <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -642,8 +656,8 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Data size: 5000, global effective dimension: 4.6772
-Number of weights: 6, normalized effective dimension: 0.7795
+Data size: 5000, global effective dimension: 4.6597
+Number of weights: 6, normalized effective dimension: 0.7766
 </pre></div></div>
 </div>
 <p>By calling the <code class="docutils literal notranslate"><span class="pre">EffectiveDimension</span></code> class with an array if input sizes <code class="docutils literal notranslate"><span class="pre">n</span></code>, we can monitor how the effective dimension changes with the dataset size.</p>
@@ -669,8 +683,8 @@ Number of weights: 6, normalized effective dimension: 0.7795
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Effective dimension: [4.70484471 4.75547033 4.78121061 4.94810138 4.99513756 5.05138922
- 5.09328298 5.12144993 5.2026341  5.25599802]
+Effective dimension: [4.67251085 4.72134519 4.74629715 4.91027373 4.95726479 5.01394383
+ 5.05648904 5.08524448 5.16871264 5.22395324]
 Number of weights: 6
 </pre></div></div>
 </div>
@@ -727,7 +741,9 @@ Number of weights: 6
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimator_qnn</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span>
+    <span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span> <span class="n">input_params</span><span class="o">=</span><span class="n">fm_params</span><span class="p">,</span> <span class="n">weight_params</span><span class="o">=</span><span class="n">anz_params</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -814,7 +830,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.96
+0.98
 </pre></div></div>
 </div>
 </section>
@@ -846,8 +862,8 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for trained QNN:  [0.62046666 0.63310129 0.63909181 0.67441118 0.68403632 0.69585232
- 0.70508147 0.71158548 0.73211404 0.74725298]
+normalized local effective dimensions for trained QNN:  [0.48371015 0.498389   0.50562962 0.55278718 0.56692932 0.58476495
+ 0.59884961 0.60875745 0.639439   0.66127159]
 </pre></div></div>
 </div>
 </section>
@@ -877,8 +893,8 @@ normalized local effective dimensions for trained QNN:  [0.62046666 0.63310129 0
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for untrained QNN:  [0.68114526 0.69201968 0.69727384 0.73034559 0.74005412 0.75219463
- 0.76166255 0.76823674 0.78804235 0.80162449]
+normalized local effective dimensions for untrained QNN:  [0.73190006 0.742821   0.74814637 0.78165747 0.7911264  0.80254182
+ 0.81110743 0.81689376 0.83366829 0.84475014]
 </pre></div></div>
 </div>
 </section>
@@ -928,7 +944,7 @@ implicit regularization), a trained model will not need to use so many parameter
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>1.4.4</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.8.4</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.18</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Fri Sep 12 16:01:49 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.2.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.19</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Dec 24 14:02:36 2025 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1037,7 +1053,7 @@ implicit regularization), a trained model will not need to use so many parameter
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=b41f4c93"></script>
+    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

@@ -35,10 +35,12 @@ TrainableModel
 
    
    .. automethod:: TrainableModel.fit
+   .. automethod:: TrainableModel.from_dill
    .. automethod:: TrainableModel.load
    .. automethod:: TrainableModel.predict
    .. automethod:: TrainableModel.save
    .. automethod:: TrainableModel.score
+   .. automethod:: TrainableModel.to_dill
 
    
    

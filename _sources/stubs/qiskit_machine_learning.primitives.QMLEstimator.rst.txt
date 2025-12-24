@@ -1,0 +1,34 @@
+﻿
+
+QMLEstimator
+===============================================
+
+.. currentmodule:: qiskit_machine_learning.primitives
+
+.. autoclass:: QMLEstimator
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+
+   .. rubric:: Attributes
+
+   
+   .. autoattribute:: QMLEstimator.default_precision
+   .. autoattribute:: QMLEstimator.seed
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: QMLEstimator.run
+
+   
+   
