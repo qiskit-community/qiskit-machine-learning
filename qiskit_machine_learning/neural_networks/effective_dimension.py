@@ -205,10 +205,7 @@ class EffectiveDimension:
             # add dimension to model outputs for broadcasting
             model_outputs = np.expand_dims(model_outputs, axis=2)
 
-        # Ensure model_outputs are non-negative for Fisher Information calculation
-        # The Fisher Information Matrix requires probabilities (non-negative values)
-        # Clamp negative values to a small positive epsilon to avoid NaN from sqrt
-        # and to handle numerical precision issues
+        # Clamp model_outputs to epsilon to ensure non-negative probabilities for Fisher Information (avoids sqrt NaN)
         eps = np.finfo(model_outputs.dtype).eps * 10
         model_outputs = np.maximum(model_outputs, eps)
 
