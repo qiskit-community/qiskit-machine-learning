@@ -198,7 +198,7 @@ class EffectiveDimension:
         Returns:
             fisher: A numpy array of shape
                 ``(num_input_samples * num_weight_samples, num_weights, num_weights)``
-                with the average Jacobian  for every set of gradients and model output given.
+                with the average Jacobian for every set of gradients and model output given.
         """
 
         if model_outputs.shape < gradients.shape:

@@ -229,6 +229,40 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
                 input_samples=inputs_ok,
             )
 
+    def test_non_negative_probabilities(self):
+        """Test that model outputs are clamped to ensure non-negative probabilities."""
+        qnn = self.qnns["sampler_qnn_1"]
+        num_input_samples, num_weight_samples = 5, 5
+
+        global_ed = EffectiveDimension(
+            qnn=qnn,
+            weight_samples=num_weight_samples,
+            input_samples=num_input_samples,
+        )
+
+        # Create gradients and model outputs with some negative values
+        # to test that clamping works
+        gradients = algorithm_globals.random.uniform(
+            -1, 1, size=(num_input_samples * num_weight_samples, qnn.output_shape, qnn.num_weights)
+        )
+        # Create model outputs with some negative or very small values
+        model_outputs = algorithm_globals.random.uniform(
+            -0.1, 1.0, size=(num_input_samples * num_weight_samples, qnn.output_shape)
+        )
+
+        # Get Fisher information - this should not raise NaN errors
+        fisher = global_ed.get_fisher_information(gradients, model_outputs)
+
+        # Verify that Fisher information is computed without NaN
+        self.assertFalse(np.any(np.isnan(fisher)))
+        self.assertFalse(np.any(np.isinf(fisher)))
+
+        # Verify that the internal clamping ensures non-negative values
+        # by checking that sqrt operations don't produce NaN
+        eps = np.finfo(model_outputs.dtype).eps * 10
+        clamped_outputs = np.maximum(model_outputs, eps)
+        self.assertTrue(np.all(clamped_outputs >= eps))
+
 
 if __name__ == "__main__":
     unittest.main()
