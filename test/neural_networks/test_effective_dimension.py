@@ -240,14 +240,17 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
             input_samples=num_input_samples,
         )
 
+        # Get output size (output_shape is a tuple, need to compute total size)
+        output_size = np.prod(qnn.output_shape)
+
         # Create gradients and model outputs with some negative values
         # to test that clamping works
         gradients = algorithm_globals.random.uniform(
-            -1, 1, size=(num_input_samples * num_weight_samples, qnn.output_shape, qnn.num_weights)
+            -1, 1, size=(num_input_samples * num_weight_samples, output_size, qnn.num_weights)
         )
         # Create model outputs with some negative or very small values
         model_outputs = algorithm_globals.random.uniform(
-            -0.1, 1.0, size=(num_input_samples * num_weight_samples, qnn.output_shape)
+            -0.1, 1.0, size=(num_input_samples * num_weight_samples, output_size)
         )
 
         # Get Fisher information - this should not raise NaN errors
