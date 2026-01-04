@@ -198,12 +198,16 @@ class EffectiveDimension:
         Returns:
             fisher: A numpy array of shape
                 ``(num_input_samples * num_weight_samples, num_weights, num_weights)``
-                with the average Jacobian  for every set of gradients and model output given.
+                with the average Jacobian for every set of gradients and model output given.
         """
 
         if model_outputs.shape < gradients.shape:
             # add dimension to model outputs for broadcasting
             model_outputs = np.expand_dims(model_outputs, axis=2)
+
+        # Clamp to epsilon to ensure non-negative probabilities (avoids sqrt NaN)
+        eps = np.finfo(model_outputs.dtype).eps * 10
+        model_outputs = np.maximum(model_outputs, eps)
 
         # get grad-vectors (gradient_k/model_output_k)
         # multiply by sqrt(model_output) so that the outer product cross term is correct

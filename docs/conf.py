@@ -189,7 +189,7 @@ autodoc_mock_imports = ["torch"]
 
 def autodoc_process_bases(app, name, obj, options, bases):
     """
-    Now tha Torch is mocked, it needs a fake class in order to
+    Now that Torch is mocked, it needs a fake class in order to
     to print its class name correctly in the base class list.
     """
     for idx, base in enumerate(bases):

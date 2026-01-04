@@ -142,6 +142,7 @@ dtype
 dω
 eda
 edaspy
+efficientsu2
 egger
 eig
 eigen
@@ -419,7 +420,11 @@ parametrized
 parameterized
 params
 pauli
+paulifeaturemap
 paulis
+paulix
+pauliy
+pauliz
 pearson
 pedro
 pegasos
@@ -488,6 +493,7 @@ rangle
 raymond
 rbf
 readme
+realamplitudes
 recalibration
 reddi
 regressor
@@ -554,6 +560,7 @@ softmax
 soloviev
 spall
 sparsearray
+sparsepauliop
 spedalieri
 spsa
 sqrt
@@ -607,6 +614,7 @@ tnc
 toctree
 todo
 tol
+torchconnector
 traceback
 trainability
 trainablefidelityquantumkernel
@@ -664,9 +672,11 @@ york
 yy
 yz
 zi
+zfeaturemap
 zoufal
 zsh
 zz
+zzfeaturemap
 θ
 ψ
 ω

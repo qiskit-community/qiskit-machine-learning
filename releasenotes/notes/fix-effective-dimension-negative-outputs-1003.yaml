@@ -1,0 +1,10 @@
+---
+fixes:
+  - |
+    Fixed an issue where calculating the Effective Dimension for an `EstimatorQNN` 
+    would produce NaN values when the model outputs were negative (e.g., when using 
+    PauliZ observables that can yield negative expectation values). The 
+    `get_fisher_information` method now clamps negative or zero model outputs to a 
+    small positive epsilon before computing the square root, ensuring the Fisher 
+    Information Matrix calculation completes successfully without NaN values.
+
