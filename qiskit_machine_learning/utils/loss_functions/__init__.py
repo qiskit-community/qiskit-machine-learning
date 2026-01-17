@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2023.
+# (C) Copyright IBM 2021, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -40,6 +40,10 @@ Loss Functions
    L2Loss
    CrossEntropyLoss
    SVCLoss
+   SVRLoss
+   MSRLoss
+   MARLoss
+   HuberLoss
 """
 
 from .loss_functions import (
@@ -49,7 +53,7 @@ from .loss_functions import (
     CrossEntropyLoss,
 )
 
-from .kernel_loss_functions import KernelLoss, SVCLoss
+from .kernel_loss_functions import KernelLoss, SVCLoss, SVRLoss, MSRLoss, MARLoss, HuberLoss
 
 __all__ = [
     "Loss",
@@ -58,4 +62,8 @@ __all__ = [
     "L2Loss",
     "CrossEntropyLoss",
     "SVCLoss",
+    "SVRLoss",
+    "MSRLoss",
+    "MARLoss",
+    "HuberLoss",
 ]
