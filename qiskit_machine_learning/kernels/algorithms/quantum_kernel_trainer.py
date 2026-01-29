@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2024.
+# (C) Copyright IBM 2021, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,7 +21,14 @@ import numpy as np
 from ...optimizers import Optimizer, SPSA, Minimizer
 from ...utils import algorithm_globals
 from ...variational_algorithm import VariationalResult
-from ...utils.loss_functions import KernelLoss, SVCLoss
+from ...utils.loss_functions import (
+    KernelLoss,
+    SVCLoss,
+    SVRLoss,
+    MSRLoss,
+    MARLoss,
+    HuberLoss,
+)
 from ...kernels import TrainableKernel
 
 
@@ -97,10 +104,11 @@ class QuantumKernelTrainer:
             quantum_kernel: a trainable quantum kernel to be trained. The
                 :attr:`~.TrainableKernel.parameter_values` will be modified in place after the training.
             loss: A loss function available via string is "svc_loss" which is the same as
-                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss`. If a string is
-                passed as the loss function, then the underlying
-                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss` object will exhibit
-                default behavior.
+                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss`. Other available
+                options are "svr_loss", "msr_loss", "mar_loss", and "huber_loss", corresponding to
+                their respective classes in :mod:`~qiskit_machine_learning.utils.loss_functions`.
+                If a string is passed as the loss function, then the underlying loss object will
+                exhibit default behavior.
             optimizer: An instance of :class:`~qiskit_machine_learning.optimizers.Optimizer` or a
                 callable to be used in training. Refer to
                 :class:`~qiskit_machine_learning.optimizers.Minimizer` for more information on the
@@ -241,9 +249,17 @@ class QuantumKernelTrainer:
 
     def _str_to_loss(self, loss_str: str) -> KernelLoss:
         """Function which maps strings to default KernelLoss objects."""
-        if loss_str == "svc_loss":
-            loss_obj = SVCLoss()
-        else:
-            raise ValueError(f"Unknown loss {loss_str}!")
+        string_to_loss_map = {
+            "svc_loss": SVCLoss,
+            "svr_loss": SVRLoss,
+            "msr_loss": MSRLoss,
+            "mar_loss": MARLoss,
+            "huber_loss": HuberLoss,
+        }
+        try:
+            loss_class = string_to_loss_map[loss_str]
+            loss_obj = loss_class()
+        except KeyError as unknown_loss:
+            raise ValueError(f"Unknown loss {unknown_loss}!") from unknown_loss
 
         return loss_obj
