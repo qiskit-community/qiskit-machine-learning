@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Qiskit Machine Learning no longer supports Python 3.9, following its
+    EoL in October 2025. The minimum required Python
+    version is now 3.10.

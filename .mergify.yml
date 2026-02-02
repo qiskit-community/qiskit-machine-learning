@@ -16,7 +16,7 @@ pull_request_rules:
     actions:
       backport:
         branches:
-          - stable/0.8
+          - stable/0.9
   - name: automatic merge on CI success and review
     conditions: []
     actions:

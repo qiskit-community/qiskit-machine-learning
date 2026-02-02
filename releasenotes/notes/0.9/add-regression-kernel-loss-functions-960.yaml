@@ -1,0 +1,19 @@
+---
+features:
+  - |
+    Added regression-based kernel loss functions for use with
+    :class:`~qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer`.
+    The following new loss functions are now available:
+
+    * :class:`~qiskit_machine_learning.utils.loss_functions.SVRLoss` -
+      Dual objective-based loss for Support Vector Regression.
+    * :class:`~qiskit_machine_learning.utils.loss_functions.MSRLoss` -
+      Mean squared error loss.
+    * :class:`~qiskit_machine_learning.utils.loss_functions.MARLoss` -
+      Mean absolute error loss.
+    * :class:`~qiskit_machine_learning.utils.loss_functions.HuberLoss` -
+      Robust loss combining squared and absolute error.
+
+    These enable training quantum kernels for regression tasks with algorithms
+    like :class:`~qiskit_machine_learning.algorithms.regressors.QSVR`.
+    Closes `#960 <https://github.com/qiskit-community/qiskit-machine-learning/issues/960>`_.

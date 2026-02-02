@@ -45,7 +45,7 @@ with open(README_PATH) as readme_file:
 setuptools.setup(
     name="qiskit-machine-learning",
     version=VERSION,
-    description="Qiskit Machine Learning: A library of quantum computing machine learning experiments",
+    description="Qiskit Machine Learning: A library of quantum machine learning experiments",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/qiskit-community/qiskit-machine-learning",
