@@ -78,6 +78,22 @@ class TestRegressionKernelLoss(QiskitMachineLearningTestCase):
         # but we expect it to be a finite number.
         self.assertTrue(np.isfinite(score))
 
+    @data(
+        ("svr_loss", SVRLoss),
+        ("msr_loss", MSRLoss),
+        ("mar_loss", MARLoss),
+        ("huber_loss", HuberLoss),
+    )
+    def test_loss_strings(self, config):
+        """Test trainer with regression loss function strings."""
+        loss_str, loss_cls = config
+        quantum_kernel = TrainableFidelityQuantumKernel(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+        qkt = QuantumKernelTrainer(quantum_kernel=quantum_kernel, loss=loss_str)
+        self.assertIsInstance(qkt.loss, loss_cls)
+
 
 if __name__ == "__main__":
     unittest.main()

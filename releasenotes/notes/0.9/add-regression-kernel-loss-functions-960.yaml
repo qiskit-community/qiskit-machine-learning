@@ -16,4 +16,24 @@ features:
 
     These enable training quantum kernels for regression tasks with algorithms
     like :class:`~qiskit_machine_learning.algorithms.regressors.QSVR`.
+
+    Example usage:
+
+    .. code-block:: python
+
+        from qiskit_machine_learning.kernels import TrainableFidelityQuantumKernel
+        from qiskit_machine_learning.kernels.algorithms import QuantumKernelTrainer
+        from qiskit_machine_learning.utils.loss_functions import SVRLoss
+        from qiskit.circuit.library import ZZFeatureMap
+
+        feature_map = ZZFeatureMap(2)
+        kernel = TrainableFidelityQuantumKernel(
+            feature_map=feature_map,
+            training_parameters=feature_map.parameters
+        )
+        # Use SVRLoss for regression
+        loss = SVRLoss(C=1.0, epsilon=0.1)
+        trainer = QuantumKernelTrainer(quantum_kernel=kernel, loss=loss)
+        # result = trainer.fit(X_train, y_train)
+
     Closes `#960 <https://github.com/qiskit-community/qiskit-machine-learning/issues/960>`_.
