@@ -25,7 +25,6 @@ def derive_num_qubits_feature_map_ansatz(
     num_qubits: int | None = None,
     feature_map: QuantumCircuit | None = None,
     ansatz: QuantumCircuit | None = None,
-    use_methods: bool = True,
 ) -> tuple[int, QuantumCircuit, QuantumCircuit]:
     """
     Derives a correct number of qubits, feature map, and ansatz from the parameters.
