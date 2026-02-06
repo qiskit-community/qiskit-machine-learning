@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2025.
+# (C) Copyright IBM 2022, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -59,14 +59,12 @@ def derive_num_qubits_feature_map_ansatz(
     :meth:`~qiskit.circuit.library.zz_feature_map` or :class:`~qiskit.circuit.library.real_amplitudes`
     are created respectively.
 
-    If all the parameters are none an error is raised.
+    If all the parameters are ``None`` an error is raised.
 
     Args:
         num_qubits: Number of qubits.
         feature_map: A feature map.
         ansatz: An ansatz.
-        use_methods: weather to use the method implementation of circuits (Qiskit >=2) or the class
-            implementation (deprecated in Qiskit 2 and will be removed in Qiskit 3).
 
     Returns:
         A tuple of number of qubits, feature map, and ansatz. All are not none.
@@ -74,19 +72,6 @@ def derive_num_qubits_feature_map_ansatz(
     Raises:
         QiskitMachineLearningError: If correct values can not be derived from the parameters.
     """
-
-    if not use_methods:
-        issue_deprecation_msg(
-            msg="Using BlueprintCircuit based classes is deprecated",
-            version="0.9.0",
-            remedy="Use QnnCircuit (instead) of QNNCircuit or if you "
-            "are using this method directly set use_methods to True. "
-            "When using methods later adjustment of the number of qubits is not "
-            "possible and if not as circuits based on BlueprintCircuit, "
-            "like ZZFeatureMap to which this defaults, which could do this, "
-            "have been deprecated.",
-            period="4 months",
-        )
     candidates = {}
 
     if feature_map is not None:
