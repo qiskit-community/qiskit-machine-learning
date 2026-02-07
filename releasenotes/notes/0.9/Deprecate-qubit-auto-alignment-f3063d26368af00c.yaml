@@ -8,3 +8,4 @@ deprecations:
     constructed with the same number of qubits before passing them to APIs that previously
     accepted ``num_qubits``. In a future release, providing ``num_qubits`` or passing circuits
     with different number of qubits will raise an error.
+    See https://github.com/qiskit-community/qiskit-machine-learning/issues/1010 for more details.
