@@ -12,6 +12,7 @@
 """
 Gradient of probabilities with linear combination of unitaries (LCU)
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence

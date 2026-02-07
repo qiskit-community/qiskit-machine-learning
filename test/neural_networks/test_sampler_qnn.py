@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test Sampler QNN with Terra primitives."""
+
 from __future__ import annotations
 
 import itertools
@@ -36,7 +37,6 @@ from qiskit_machine_learning.gradients.param_shift.param_shift_sampler_gradient 
 )
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
 from qiskit_machine_learning.utils import algorithm_globals
-
 
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error

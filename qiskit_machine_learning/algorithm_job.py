@@ -13,6 +13,7 @@
 """
 AlgorithmJob class
 """
+
 from qiskit.primitives.primitive_job import PrimitiveJob
 
 

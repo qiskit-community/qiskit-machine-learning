@@ -32,7 +32,6 @@ sys.path.append(os.path.abspath("."))
 
 import qiskit_machine_learning
 
-
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
 os.environ["QISKIT_DOCS"] = "TRUE"
@@ -55,9 +54,7 @@ rst_prolog = """
     <br><br><br>
 
 .. |version| replace:: {0}
-""".format(
-    release
-)
+""".format(release)
 
 nbsphinx_prolog = """
 {% set docname = env.doc2path(env.docname, base=None) %}

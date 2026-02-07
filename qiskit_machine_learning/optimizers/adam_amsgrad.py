@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """The Adam and AMSGRAD optimizers."""
+
 from __future__ import annotations
 
 from collections.abc import Callable

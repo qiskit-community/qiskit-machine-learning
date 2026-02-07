@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Tests for the SPSA optimizer."""
+
 from test import QiskitAlgorithmsTestCase
 
 import numpy as np

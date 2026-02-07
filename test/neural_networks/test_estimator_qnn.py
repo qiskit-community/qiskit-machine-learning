@@ -27,7 +27,6 @@ from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 from qiskit_machine_learning.utils import algorithm_globals
 
-
 algorithm_globals.random_seed = 52
 
 CASE_DATA = {

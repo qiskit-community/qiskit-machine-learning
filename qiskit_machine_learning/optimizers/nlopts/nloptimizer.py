@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Minimize using objective function"""
+
 from __future__ import annotations
 
 from collections.abc import Callable

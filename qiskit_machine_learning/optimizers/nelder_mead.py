@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Nelder-Mead optimizer."""
+
 from __future__ import annotations
 
 

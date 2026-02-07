@@ -14,6 +14,7 @@
 
 This implementation allows both standard first-order and second-order SPSA.
 """
+
 from __future__ import annotations
 
 from collections import deque

@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """SteppableOptimizer interface"""
+
 from __future__ import annotations
 
 from abc import abstractmethod, ABC

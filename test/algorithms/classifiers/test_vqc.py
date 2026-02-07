@@ -35,7 +35,6 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
 
-
 NUM_QUBITS_LIST = [2, None]
 FEATURE_MAPS = ["zz_feature_map", None]
 ANSATZES = ["real_amplitudes", None]

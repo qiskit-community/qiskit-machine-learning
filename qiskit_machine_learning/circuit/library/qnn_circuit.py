@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """The QNN circuit."""
+
 from __future__ import annotations
 
 from qiskit.circuit import QuantumCircuit

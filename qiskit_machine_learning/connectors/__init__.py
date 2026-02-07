@@ -31,5 +31,4 @@ Connectors
 
 from .torch_connector import TorchConnector
 
-
 __all__ = ["TorchConnector"]

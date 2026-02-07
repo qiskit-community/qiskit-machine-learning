@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Helper functions to adjust number of qubits."""
+
 from __future__ import annotations
 
 import warnings
@@ -39,11 +40,8 @@ def derive_num_qubits_feature_map_ansatz(
     or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
     If the number of qubits of the feature map is not the same as the number of qubits of
     the ansatz, an error is raised. If only one of the feature map and ansatz are ``None``, then
-
     :func:`~qiskit.circuit.library.zz_feature_map` or :func:`~qiskit.circuit.library.real_amplitudes`
     are created respectively.
-
-    With `use_methods` set True:
 
     If the number of qubits is not ``None``, then the feature map and ansatz are adjusted to this
     number of qubits if required. If such an adjustment fails, an error is raised. Also, if the
@@ -51,22 +49,32 @@ def derive_num_qubits_feature_map_ansatz(
     and :meth:`~qiskit.circuit.library.real_amplitudes` are created respectively. If there's just
     one qubit, :meth:`~qiskit.circuit.library.z_feature_map` is created instead.
 
-    If the number of qubits is ``None``, then the number of qubits is derived from the feature map
-    or ansatz. Both the feature map and ansatz in this case must have the same number of qubits.
-    If the number of qubits of the feature map is not the same as the number of qubits of
-    the ansatz, an error is raised. If only one of the feature map and ansatz are ``None``, then
-    :meth:`~qiskit.circuit.library.zz_feature_map` or :class:`~qiskit.circuit.library.real_amplitudes`
-    are created respectively.
-
     If all the parameters are ``None`` an error is raised.
 
+    .. warning::
+
+        The ``num_qubits`` argument and automatic qubit alignment (padding or resizing of
+        ``feature_map`` and ``ansatz`` circuits) are **deprecated** as of version ``0.9.1`` and
+        will be removed after a 6-month deprecation period.
+
+        In a future release, this function will require that ``feature_map`` and ``ansatz`` are
+        explicitly provided with the **same number of qubits**, and passing ``num_qubits`` or
+        relying on automatic circuit alignment will raise an error.
+
+        To ensure forward compatibility, remove the ``num_qubits`` argument (or set it to
+        ``None``) and construct ``feature_map`` and ``ansatz`` with matching numbers of qubits
+        before calling this function.
+
+        See https://github.com/qiskit-community/qiskit-machine-learning/issues/1010 for details.
+
+
     Args:
-        num_qubits: Number of qubits.
+        num_qubits: Number of qubits (deprecated).
         feature_map: A feature map.
         ansatz: An ansatz.
 
     Returns:
-        A tuple of number of qubits, feature map, and ansatz. All are not none.
+        A tuple of number of qubits, feature map, and ansatz.
 
     Raises:
         QiskitMachineLearningError: If correct values can not be derived from the parameters.
@@ -79,6 +87,22 @@ def derive_num_qubits_feature_map_ansatz(
         candidates["ansatz"] = ansatz.num_qubits
     if num_qubits is not None:
         candidates["num_qubits"] = num_qubits
+
+        issue_deprecation_msg(
+            msg=(
+                "The num_qubits argument and the qubit auto-alignment of circuits are "
+                "deprecated and will be removed. "
+                "See https://github.com/qiskit-community/qiskit-machine-learning/issues/1010 "
+                "for more details."
+            ),
+            version="0.10.0",
+            remedy=(
+                "Remove the num_qubits argument (or set to None), and make sure that the "
+                "feature_map and ansatz have the same number of qubits before passing "
+                "them as arguments."
+            ),
+            period="6 months",
+        )
 
     if not candidates:
         raise QiskitMachineLearningError(
@@ -97,6 +121,21 @@ def derive_num_qubits_feature_map_ansatz(
                 "Ensure all inputs agree on the number of qubits."
             ),
             UserWarning,
+        )
+        issue_deprecation_msg(
+            msg=(
+                "Qubit auto-alignment of circuits is deprecated and will be removed. "
+                "In the future, an error will be raised if the number of qubits in "
+                "feature_map and ansatz are note the same. "
+                "See https://github.com/qiskit-community/qiskit-machine-learning/issues/1010 "
+                "for more details."
+            ),
+            version="0.10.0",
+            remedy=(
+                "Ensure that the feature_map and ansatz have the same number of qubits "
+                "before passing them as arguments."
+            ),
+            period="6 months",
         )
 
     # Final resolved number of qubits
@@ -131,6 +170,12 @@ def derive_num_qubits_feature_map_ansatz(
 
 
 def _pad_if_needed(circ: QuantumCircuit, requested_num_qubits: int) -> QuantumCircuit | None:
+    """
+    .. warning::
+
+        This function is **deprecated** as of version ``0.9.1``.
+        See https://github.com/qiskit-community/qiskit-machine-learning/issues/1010 for details.
+    """
     circ_nq = circ.num_qubits
 
     if requested_num_qubits == circ_nq:

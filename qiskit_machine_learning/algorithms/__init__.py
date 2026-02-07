@@ -78,6 +78,7 @@ Algorithms for inference.
 
    QBayesian
 """
+
 from .trainable_model import TrainableModel
 from .serializable_model import SerializableModelMixin
 from .objective_functions import (

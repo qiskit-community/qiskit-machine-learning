@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Tests for the ``circuit_cache_key`` utility (JSON-structural variant)."""
+
 import unittest
 
 from test import QiskitAlgorithmsTestCase

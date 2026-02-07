@@ -16,7 +16,6 @@ Additional optional constants.
 
 from qiskit.utils import LazyImportTester
 
-
 HAS_TORCH = LazyImportTester(
     {
         "torch": ("cat", "einsum", "is_tensor", "nn", "optim", "sparse_coo_tensor", "Tensor"),

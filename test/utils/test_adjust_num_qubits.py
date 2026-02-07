@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Tests for adjusting number of qubits in a feature map / ansatz."""
+
 from test import QiskitMachineLearningTestCase
 import itertools
 from ddt import ddt, idata, unpack

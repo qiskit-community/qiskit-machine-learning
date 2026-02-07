@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Powell optimizer."""
+
 from __future__ import annotations
 
 from .scipy_optimizer import SciPyOptimizer

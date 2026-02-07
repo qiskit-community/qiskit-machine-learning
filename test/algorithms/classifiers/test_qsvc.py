@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test QSVC"""
+
 import os
 import tempfile
 import unittest

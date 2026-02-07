@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Nakanishi-Fujii-Todo algorithm."""
+
 from __future__ import annotations
 
 

@@ -27,6 +27,7 @@ Utilities
    loss_functions
 
 """
+
 from .adjust_num_qubits import derive_num_qubits_feature_map_ansatz
 from .algorithm_globals import algorithm_globals
 from .validate_initial_point import validate_initial_point

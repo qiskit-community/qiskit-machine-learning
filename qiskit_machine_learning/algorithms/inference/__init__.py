@@ -12,7 +12,6 @@
 
 """Inference Package"""
 
-
 from .qbayesian import QBayesian
 
 __all__ = ["QBayesian"]

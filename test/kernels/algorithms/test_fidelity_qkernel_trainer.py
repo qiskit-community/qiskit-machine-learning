@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test QuantumKernelTrainer"""
+
 from __future__ import annotations
 
 import unittest

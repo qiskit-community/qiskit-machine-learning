@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """A connector to use Qiskit (Quantum) Neural Networks as PyTorch modules."""
+
 from __future__ import annotations
 from typing import Any, cast
 from string import ascii_lowercase

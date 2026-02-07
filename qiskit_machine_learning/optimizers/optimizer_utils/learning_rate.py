@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """A class to represent the Learning Rate."""
+
 from __future__ import annotations
 
 from collections.abc import Generator, Callable
