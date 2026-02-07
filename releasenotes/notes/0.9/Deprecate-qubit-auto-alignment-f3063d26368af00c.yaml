@@ -6,5 +6,5 @@ deprecations:
     ``ansatz`` circuits are deprecated as of version 0.10.0 and will be removed after a 6-month
     deprecation period. Users must ensure that ``feature_map`` and ``ansatz`` are explicitly
     constructed with the same number of qubits before passing them to APIs that previously
-    accepted ``num_qubits``. In a future release, providing ``num_qubits`` or relying on
-    automatic circuit alignment will raise an error.
+    accepted ``num_qubits``. In a future release, providing ``num_qubits`` or passing circuits
+    with different number of qubits will raise an error.
