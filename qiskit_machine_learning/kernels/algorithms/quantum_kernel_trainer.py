@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Quantum Kernel Trainer"""
+
 from __future__ import annotations
 
 from functools import partial

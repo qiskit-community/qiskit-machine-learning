@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2025.
+# (C) Copyright IBM 2021, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -27,6 +27,7 @@ Utilities
    loss_functions
 
 """
+
 from .adjust_num_qubits import derive_num_qubits_feature_map_ansatz
 from .algorithm_globals import algorithm_globals
 from .validate_initial_point import validate_initial_point
