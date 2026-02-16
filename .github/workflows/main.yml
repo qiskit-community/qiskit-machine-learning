@@ -310,3 +310,8 @@ jobs:
       - name: Coverage combine
         run: coverage3 combine /tmp/u310/ml.dat
         shell: bash
+      - name: Upload to Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
+        shell: bash
