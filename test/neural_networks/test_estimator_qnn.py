@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2025.
+# (C) Copyright IBM 2022, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -26,7 +26,6 @@ from qiskit_machine_learning.circuit.library import qnn_circuit
 from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
 from qiskit_machine_learning.utils import algorithm_globals
-
 
 algorithm_globals.random_seed = 52
 

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Qiskit Machine Learning Sampler"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, is_dataclass, asdict

@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2025.
+# (C) Copyright IBM 2022, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test Sampler QNN with Terra primitives."""
+
 from __future__ import annotations
 
 import itertools
@@ -36,7 +37,6 @@ from qiskit_machine_learning.gradients.param_shift.param_shift_sampler_gradient 
 )
 from qiskit_machine_learning.neural_networks.sampler_qnn import SamplerQNN
 from qiskit_machine_learning.utils import algorithm_globals
-
 
 if _optionals.HAS_SPARSE:
     # pylint: disable=import-error
