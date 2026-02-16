@@ -54,7 +54,9 @@ rst_prolog = """
     <br><br><br>
 
 .. |version| replace:: {0}
-""".format(release)
+""".format(
+    release
+)
 
 nbsphinx_prolog = """
 {% set docname = env.doc2path(env.docname, base=None) %}
