@@ -311,7 +311,7 @@ jobs:
         run: coverage3 combine /tmp/u310/ml.dat
         shell: bash
       - name: Upload to Coveralls
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github
-        shell: bash
+        uses: coverallsapp/github-action@v2.3.7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coveralls.info
