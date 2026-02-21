@@ -36,7 +36,6 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
         readme_path = Path(__file__).parent.parent.joinpath(readme_name)
         if not readme_path.exists() or not readme_path.is_file():
             self.fail(msg=f"{readme_name} not found at {readme_path}")
-            return
 
         # gets the first matched code sample
         # assumes one code sample to test per readme
@@ -60,7 +59,6 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
                 exec(readme_sample)
             except Exception as ex:  # pylint: disable=broad-except
                 self.fail(str(ex))
-                return
 
         score = None
         str_ref = "Testing accuracy: "
@@ -73,7 +71,6 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
 
         if score is None:
             self.fail(f"Failed to find final score inside {readme_name}.")
-            return
 
         self.assertGreater(score, 0.7)
 
