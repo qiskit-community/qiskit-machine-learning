@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2025.
+# (C) Copyright IBM 2022, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -208,10 +208,23 @@ class EffectiveDimension:
         # get grad-vectors (gradient_k/model_output_k)
         # multiply by sqrt(model_output) so that the outer product cross term is correct
         # after Einstein summation
-        gradvectors = np.sqrt(model_outputs) * gradients / model_outputs
+        # gradient vectors = np.sqrt(model_outputs) * gradients / model_outputs
+        # Numerical guard:
+
+        # EstimatorQNN-derived outputs can occasionally contain tiny negative values due to
+        # floating-point effects, which would make sqrt(...) invalid and propagate NaNs.
+        # We clip to 0 and mask zero entries to avoid divide-by-zero warnings.
+        model_outputs = np.clip(model_outputs, 0.0, None)
+
+        grad_vectors = np.divide(
+            gradients,
+            np.sqrt(model_outputs),
+            out=np.zeros_like(gradients),
+            where=model_outputs > 0,
+        )
 
         # compute the sum of matrices obtained from outer product of grad-vectors
-        fisher_information = np.einsum("ijk,lji->ikl", gradvectors, gradvectors.T)
+        fisher_information = np.einsum("ijk,lji->ikl", grad_vectors, grad_vectors.T)
 
         return fisher_information
 
