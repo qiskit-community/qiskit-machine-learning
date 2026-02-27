@@ -301,12 +301,32 @@ jobs:
           path: /tmp/w313
 
       - name: Install Dependencies
-        run: pip install -U coverage coveralls diff-cover
+        run: pip install -U "coverage[toml]" coveralls diff-cover
         shell: bash
+        
       - name: Combined Deprecation Messages
         run: |
           sort -f -u /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/u313/ml.dep /tmp/m310/ml.dep /tmp/m313/ml.dep /tmp/w310/ml.dep /tmp/w313/ml.dep || true
         shell: bash
+        
       - name: Coverage combine
-        run: coverage3 combine /tmp/u310/ml.dat
         shell: bash
+        run: |
+          set -euo pipefail
+          coverage3 combine /tmp/u310/ml.dat
+          coverage3 report -m
+          coverage3 xml -o coverage.xml
+    
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v2.3.7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: coverage.xml
+          fail-on-error: true
+          debug: true
+
+      - name: Coveralls diagnostics
+        if: failure()
+        run: |
+          coverage3 debug sys || true
+          coverage3 debug data || true
