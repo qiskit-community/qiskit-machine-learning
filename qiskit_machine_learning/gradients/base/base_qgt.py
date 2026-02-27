@@ -255,7 +255,9 @@ class BaseQGT(ABC):
         Returns:
             The QGTs of the original circuits.
         """
-        qgts, metadata = [], []
+        qgts: Sequence[np.ndarray] = []
+        metadata: Sequence[Any] = []
+
         for idx, (circuit, parameter_values_, parameters_) in enumerate(
             zip(circuits, parameter_values, parameters)
         ):
@@ -296,8 +298,8 @@ class BaseQGT(ABC):
                             float(bound_coeff1)
                             * float(bound_coeff2)
                             * results.qgts[idx][
-                                g_parameter_indices_d[g_parameter1],
-                                g_parameter_indices_d[g_parameter2],
+                                int(g_parameter_indices_d[g_parameter1]),
+                                int(g_parameter_indices_d[g_parameter2]),
                             ]
                         )
 
