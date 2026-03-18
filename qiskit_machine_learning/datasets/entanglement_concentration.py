@@ -41,10 +41,6 @@ def entanglement_concentration_data(
     class_labels: list | None = None,
     formatting: str = "ndarray",
 ) -> (
-    # tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-    # | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-    # | tuple[list[Statevector], np.ndarray, list[Statevector], np.ndarray]
-    # | tuple[list[Statevector], np.ndarray, list[Statevector], np.ndarray, np.ndarray]
     tuple[np.ndarray | list[Statevector], np.ndarray, np.ndarray | list[Statevector], np.ndarray]
     | tuple[
         np.ndarray | list[Statevector],
