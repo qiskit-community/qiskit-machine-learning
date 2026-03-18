@@ -274,8 +274,10 @@ class BaseQGT(ABC):
             g_parameter_indices_d = {param: i for i, param in enumerate(g_parameter_indices)}
             rows, cols = np.triu_indices(len(parameters_))
             for row, col in zip(rows, cols):
-                for g_parameter1, coeff1 in gradient_circuit.parameter_map[parameters_[row]]:
-                    for g_parameter2, coeff2 in gradient_circuit.parameter_map[parameters_[col]]:
+                for g_parameter1, coeff1 in gradient_circuit.parameter_map[parameters_[int(row)]]:
+                    for g_parameter2, coeff2 in gradient_circuit.parameter_map[
+                        parameters_[int(col)]
+                    ]:
                         if isinstance(coeff1, ParameterExpression):
                             local_map = {
                                 p: parameter_values_[circuit.parameters.data.index(p)]
