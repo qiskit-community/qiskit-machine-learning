@@ -52,7 +52,6 @@ class TestReadmeSample(QiskitMachineLearningTestCase):
 
         if readme_sample is None:
             self.skipTest(f"No sample found inside {readme_name}.")
-            return
 
         with contextlib.redirect_stdout(io.StringIO()) as out:
             try:
