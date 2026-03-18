@@ -41,10 +41,14 @@ def entanglement_concentration_data(
     class_labels: list | None = None,
     formatting: str = "ndarray",
 ) -> (
-    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-    | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-    | tuple[list[Statevector], np.ndarray, list[Statevector], np.ndarray]
-    | tuple[list[Statevector], np.ndarray, list[Statevector], np.ndarray, np.ndarray]
+    tuple[np.ndarray | list[Statevector], np.ndarray, np.ndarray | list[Statevector], np.ndarray]
+    | tuple[
+        np.ndarray | list[Statevector],
+        np.ndarray,
+        np.ndarray | list[Statevector],
+        np.ndarray,
+        np.ndarray,
+    ]
 ):
     r"""
     Generates a dataset that comprises Quantum States with two different
@@ -201,6 +205,9 @@ def entanglement_concentration_data(
 
     a_features = u_low @ psi_in
     b_features = u_high @ psi_in
+
+    x_train: np.ndarray | list[Statevector]
+    x_test: np.ndarray | list[Statevector]
 
     if formatting == "ndarray":
         x_train = np.concatenate((a_features[:training_size], b_features[:training_size]), axis=0)
