@@ -1,6 +1,6 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2025.
+# (C) Copyright IBM 2022, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -198,6 +198,21 @@ class TestEffectiveDimension(QiskitMachineLearningTestCase):
                 weight_samples=weights_wrong,
                 input_samples=inputs_ok,
             )
+
+    def test_get_fisher_information_handles_negative_model_outputs(self):
+        """Regression test for issue #1003: avoid NaN from sqrt(negative)."""
+        qnn = self.qnns["sampler_qnn_1"]
+        effective_dimension = EffectiveDimension(qnn=qnn, weight_samples=1, input_samples=1)
+
+        gradients = np.ones((1, 2, qnn.num_weights), dtype=float)
+        model_outputs = np.array([[-1e-12, 0.25]], dtype=float)
+
+        fisher = effective_dimension.get_fisher_information(
+            gradients=gradients, model_outputs=model_outputs
+        )
+
+        self.assertEqual(fisher.shape, (1, qnn.num_weights, qnn.num_weights))
+        self.assertTrue(np.all(np.isfinite(fisher)))
 
     def test_local_ed_params(self):
         """Test that QiskitMachineLearningError is raised for wrong parameters sizes."""
