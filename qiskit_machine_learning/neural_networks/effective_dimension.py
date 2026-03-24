@@ -208,11 +208,6 @@ class EffectiveDimension:
         # get grad-vectors (gradient_k/model_output_k)
         # multiply by sqrt(model_output) so that the outer product cross term is correct
         # after Einstein summation
-        # gradient vectors = np.sqrt(model_outputs) * gradients / model_outputs
-        # Numerical guard:
-
-        # EstimatorQNN-derived outputs can occasionally contain tiny negative values due to
-        # floating-point effects, which would make sqrt(...) invalid and propagate NaNs.
         # We clip to 0 and mask zero entries to avoid divide-by-zero warnings.
         model_outputs = np.clip(model_outputs, 0.0, None)
 
