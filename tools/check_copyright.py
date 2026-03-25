@@ -173,12 +173,13 @@ class CopyrightChecker:
                 )
 
                 if stfc_missing:
-                    if last_year < self._STFC_COPYRIGHT_YEAR and self._check:
-                        print(
-                            f"STFC copyright missing:'{relative_path}'",
-                            f"however last year {last_year}",
-                            f"< _STFC_COPYRIGHT_YEAR {self._STFC_COPYRIGHT_YEAR}... skipping",
-                        )
+                    if last_year < self._STFC_COPYRIGHT_YEAR:
+                        if self._check:
+                            print(
+                                f"STFC copyright missing:'{relative_path}'",
+                                f"however last year {last_year}",
+                                f"< _STFC_COPYRIGHT_YEAR {self._STFC_COPYRIGHT_YEAR}... skipping",
+                            )
                     else:
                         stfc_start_year = max(self._STFC_COPYRIGHT_YEAR, ibm_start_year)
                         stfc_line = new_line(
