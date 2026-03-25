@@ -45,6 +45,23 @@ def discover_files(code_paths, exclude_folders):
     return out_paths
 
 
+def get_years(line):
+    """Return first and last year for copyright line"""
+    curr_years = []
+    for word in line.strip().split():
+        for year in word.strip().split(","):
+            if year.startswith("20") and len(year) >= 4:
+                try:
+                    curr_years.append(int(year[0:4]))
+                except ValueError:
+                    pass
+    if len(curr_years) > 1:
+        return curr_years[0], curr_years[1]
+    if len(curr_years) == 1:
+        return curr_years[0], curr_years[0]
+    return None, None
+
+
 def validate_header(file_path):
     """Validate the header for a single file"""
     header = """# This code is part of a Qiskit project.
@@ -59,26 +76,50 @@ def validate_header(file_path):
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """
-    count = 0
+
     with open(file_path, encoding="utf8") as code_file:
         lines = code_file.readlines()
+
+    stfc_year = 2024
+    count = 0
     start = 0
+    reason = None
+    passed = True
     for index, line in enumerate(lines):
         count += 1
         if count > 5:
-            return file_path, False, "Header not found in first 5 lines"
+            reason = "Header not found in first 5 lines"
+            passed = False
         if count <= 2 and pep263.match(line):
-            return file_path, False, "Unnecessary encoding specification (PEP 263, 3120)"
-        if line == "# This code is part of a Qiskit project.\n":
+            reason = "Unnecessary encoding specification (PEP 263, 3120)"
+            passed = False
+        if passed and line == "# This code is part of a Qiskit project.\n":
             start = index
             break
-    if "".join(lines[start : start + 2]) != header:
-        return file_path, False, f"Header up to copyright line does not match: {header}"
-    if not lines[start + 2].startswith("# (C) Copyright IBM 20"):
-        return file_path, False, "Header copyright line not found"
-    if "".join(lines[start + 3 : start + 11]) != apache_text:
-        return file_path, False, f"Header apache text string doesn't match:\n {apache_text}"
-    return file_path, True, None
+
+    if passed and "".join(lines[start : start + 2]) != header:
+        reason = f"Header up to copyright line does not match: {header}"
+        passed = False
+
+    if passed and not lines[start + 2].startswith("# (C) Copyright IBM 20"):
+        reason = "Header IBM copyright line not found"
+        passed = False
+
+    _, ibm_last_year = get_years(lines[start + 2])
+    if passed and ibm_last_year >= stfc_year:
+        if not lines[start + 3].startswith("# (C) Copyright UKRI-STFC (Hartree Centre) 20"):
+            reason = "Header STFC copyright line not found"
+            passed = False
+
+        if passed and "".join(lines[start + 4 : start + 12]) != apache_text:
+            reason = f"Header apache text string doesn't match:\n {apache_text}"
+            passed = False
+    elif passed and ibm_last_year < stfc_year:
+        if "".join(lines[start + 3 : start + 11]) != apache_text:
+            reason = f"Header apache text string doesn't match:\n {apache_text}"
+            passed = False
+
+    return file_path, passed, reason
 
 
 def _main():
