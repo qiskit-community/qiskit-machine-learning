@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2020, 2025.
+# (C) Copyright IBM 2020, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -26,7 +27,9 @@ class CopyrightChecker:
     """Check copyright"""
 
     _UTF_STRING = "# -*- coding: utf-8 -*-"
-    _COPYRIGHT_STRING = "# (C) Copyright IBM "
+    _IBM_COPYRIGHT_STRING = "# (C) Copyright IBM "
+    _STFC_COPYRIGHT_STRING = "# (C) Copyright UKRI-STFC (Hartree Centre) "
+    _STFC_COPYRIGHT_YEAR = 2024
 
     def __init__(self, root_dir: str, check: bool) -> None:
         self._root_dir = root_dir
@@ -100,77 +103,137 @@ class CopyrightChecker:
 
     def check_copyright(self, file_path) -> Tuple[bool, bool, bool]:
         """check copyright for a file"""
+
+        def get_years(line) -> Tuple[int, int]:
+            """parse start and end years from line"""
+            curr_years = []
+            for word in line.strip().split():
+                for year in word.strip().split(","):
+                    if year.startswith("20") and len(year) >= 4:
+                        try:
+                            curr_years.append(int(year[0:4]))
+                        except ValueError:
+                            pass
+            if len(curr_years) > 1:
+                return curr_years[0], curr_years[1]
+            if len(curr_years) == 1:
+                return curr_years[0], curr_years[0]
+            return None, None
+
+        def new_line(copyright_string, start_year, last_year) -> str:
+            """create new copyright line"""
+            if start_year and start_year != last_year:
+                new_line = f"{copyright_string}{start_year}, {last_year}.\n"
+            else:
+                new_line = f"{copyright_string}{last_year}.\n"
+
+            return new_line
+
         file_with_utf8 = False
         file_with_invalid_year = False
         file_has_header = False
+        line_changes = []
         try:
-            new_line = "# (C) Copyright IBM "
             idx_utf8 = -1
-            idx_new_line = -1
             file_lines = None
             with open(file_path, "rt", encoding="utf8") as file:
                 file_lines = file.readlines()
-            for idx, line in enumerate(file_lines):
+            for ibm_idx, line in enumerate(file_lines):
                 relative_path = os.path.relpath(file_path, self._root_dir)
                 if line.startswith(CopyrightChecker._UTF_STRING):
                     if self._check:
                         print(f"File contains utf-8 header: '{relative_path}'")
                     file_with_utf8 = True
-                    idx_utf8 = idx
+                    idx_utf8 = ibm_idx
 
-                if not line.startswith(CopyrightChecker._COPYRIGHT_STRING):
+                if not line.startswith(CopyrightChecker._IBM_COPYRIGHT_STRING):
                     continue
 
                 file_has_header = True
-                curr_years = []
-                for word in line.strip().split():
-                    for year in word.strip().split(","):
-                        if year.startswith("20") and len(year) >= 4:
-                            try:
-                                curr_years.append(int(year[0:4]))
-                            except ValueError:
-                                pass
-
-                header_start_year = None
-                header_last_year = None
-                if len(curr_years) > 1:
-                    header_start_year = curr_years[0]
-                    header_last_year = curr_years[1]
-                elif len(curr_years) == 1:
-                    header_start_year = header_last_year = curr_years[0]
 
                 if relative_path in self._changed_files:
-                    self._changed_files.remove(relative_path)
                     last_year = self._current_year
                 else:
                     last_year = self._get_file_last_year(relative_path)
-                if last_year and header_last_year != last_year:
-                    if header_start_year and header_start_year != last_year:
-                        new_line += f"{header_start_year}, "
 
-                    new_line += f"{self._current_year}.\n"
+                ibm_start_year, _ = get_years(file_lines[ibm_idx])
+                ibm_line = new_line(self._IBM_COPYRIGHT_STRING, ibm_start_year, last_year)
+
+                if file_lines[ibm_idx] != ibm_line:
                     if self._check:
                         print(
                             f"Wrong Copyright Year:'{relative_path}': ",
-                            f"Current:'{line[:-1]}' Correct:'{new_line[:-1]}'",
+                            f"Current:'{file_lines[ibm_idx][:-1]}' Correct:'{ibm_line[:-1]}'",
                         )
                     file_with_invalid_year = True
-                    idx_new_line = idx
+                    line_changes.append(("replace", ibm_idx, ibm_line))
+
+                stfc_idx = ibm_idx + 1
+                stfc_missing = not file_lines[stfc_idx].startswith(
+                    CopyrightChecker._STFC_COPYRIGHT_STRING
+                )
+
+                if stfc_missing:
+                    if last_year < self._STFC_COPYRIGHT_YEAR:
+                        if self._check:
+                            print(
+                                f"STFC copyright missing:'{relative_path}'",
+                                f"however last year {last_year}",
+                                f"< _STFC_COPYRIGHT_YEAR {self._STFC_COPYRIGHT_YEAR}... skipping",
+                            )
+                    else:
+                        stfc_start_year = max(self._STFC_COPYRIGHT_YEAR, ibm_start_year)
+                        stfc_line = new_line(
+                            self._STFC_COPYRIGHT_STRING, stfc_start_year, last_year
+                        )
+
+                        if self._check:
+                            print(
+                                f"STFC copyright missing:'{relative_path}'",
+                                f"Current IBM line:'{file_lines[ibm_idx][:-1]}'",
+                                f"Correct STFC line:'{stfc_line[:-1]}'",
+                            )
+                        file_with_invalid_year = True
+                        line_changes.append(("insert", stfc_idx, stfc_line))
+                else:
+                    stfc_start_year, _ = get_years(file_lines[stfc_idx])
+                    stfc_start_year = max(
+                        self._STFC_COPYRIGHT_YEAR, stfc_start_year, ibm_start_year
+                    )
+                    stfc_line = new_line(self._STFC_COPYRIGHT_STRING, stfc_start_year, last_year)
+
+                    if file_lines[stfc_idx] != stfc_line:
+                        if self._check:
+                            print(
+                                f"Wrong Copyright Year:'{relative_path}': ",
+                                f"Current:'{file_lines[stfc_idx][:-1]}'",
+                                f"Correct:'{stfc_line[:-1]}'",
+                            )
+                        file_with_invalid_year = True
+                        line_changes.append(("replace", stfc_idx, stfc_line))
+
+                if not self._check and (idx_utf8 >= 0 or line_changes):
+                    for to_do, idx_new_line, line in line_changes:
+                        if to_do == "insert":
+                            file_lines.insert(idx_new_line, line)
+                            print(f"Added STFC copyright for {relative_path}.")
+                        else:
+                            if file_lines[idx_new_line].startswith(self._IBM_COPYRIGHT_STRING):
+                                print(f"Fixed IBM copyright year for {relative_path}.")
+                            else:
+                                print(f"Fixed STFC copyright year for {relative_path}.")
+
+                            file_lines[idx_new_line] = line
+
+                    if idx_utf8 >= 0:
+                        del file_lines[idx_utf8]
+                        file_with_utf8 = False
+                        print(f"Removed utf-8 header for {relative_path}.")
+
+                    with open(file_path, "w", encoding="utf8") as file:
+                        file.writelines(file_lines)
 
                 break
-            if not self._check and (idx_utf8 >= 0 or idx_new_line >= 0):
-                if idx_new_line >= 0:
-                    file_lines[idx_new_line] = new_line
-                if idx_utf8 >= 0:
-                    del file_lines[idx_utf8]
-                with open(file_path, "w", encoding="utf8") as file:
-                    file.writelines(file_lines)
-                if idx_new_line >= 0:
-                    file_with_invalid_year = False
-                    print(f"Fixed copyright year for {relative_path}.")
-                if idx_utf8 >= 0:
-                    file_with_utf8 = False
-                    print(f"Removed utf-8 header for {relative_path}.")
 
         except UnicodeDecodeError:
             return file_with_utf8, file_with_invalid_year, file_has_header
