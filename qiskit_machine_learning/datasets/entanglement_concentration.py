@@ -157,16 +157,12 @@ def entanglement_concentration_data(
     if sampling_method not in {"isotropic", "cardinal"}:
         raise ValueError("Invalid sampling method. Must be 'isotropic' or 'cardinal'")
     if sampling_method == "cardinal" and n_points >= (6**n):
-        raise ValueError(
-            """Cardinal Sampling cannot generate a large number of unique
+        raise ValueError("""Cardinal Sampling cannot generate a large number of unique
             datapoints due to the limited number of combinations possible.
-            Try "isotropic" sampling method"""
-        )
+            Try "isotropic" sampling method""")
     if formatting not in {"statevector", "ndarray"}:
-        raise ValueError(
-            """Formatting must be "statevector" or "ndarray". Please check for
-            case sensitivity."""
-        )
+        raise ValueError("""Formatting must be "statevector" or "ndarray". Please check for
+            case sensitivity.""")
 
     # Warnings
     if sampling_method == "cardinal" and n_points > (3**n):
