@@ -19,7 +19,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Sequence
+from typing import Sequence, Mapping, Type
 
 import numpy as np
 
@@ -246,9 +246,24 @@ class QuantumKernelTrainer:
 
     def _str_to_loss(self, loss_str: str) -> KernelLoss:
         """Function which maps strings to default KernelLoss objects."""
+<<<<<<< HEAD
         if loss_str == "svc_loss":
             loss_obj = SVCLoss()
         else:
             raise ValueError(f"Unknown loss {loss_str}!")
+=======
+        string_to_loss_map: Mapping[str, Type[KernelLoss]] = {
+            "svc_loss": SVCLoss,
+            "svr_loss": SVRLoss,
+            "msr_loss": MSRLoss,
+            "mar_loss": MARLoss,
+            "huber_loss": HuberLoss,
+        }
+        try:
+            loss_class = string_to_loss_map[loss_str]
+            loss_obj = loss_class()
+        except KeyError as unknown_loss:
+            raise ValueError(f"Unknown loss {unknown_loss}!") from unknown_loss
+>>>>>>> 324bfc7 (fix mypy issue with non-typed mapping (#1039))
 
         return loss_obj
