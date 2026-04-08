@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Sequence
+from typing import Sequence, Mapping, Type
 
 import numpy as np
 
@@ -251,7 +251,7 @@ class QuantumKernelTrainer:
 
     def _str_to_loss(self, loss_str: str) -> KernelLoss:
         """Function which maps strings to default KernelLoss objects."""
-        string_to_loss_map = {
+        string_to_loss_map: Mapping[str, Type[KernelLoss]] = {
             "svc_loss": SVCLoss,
             "svr_loss": SVRLoss,
             "msr_loss": MSRLoss,
