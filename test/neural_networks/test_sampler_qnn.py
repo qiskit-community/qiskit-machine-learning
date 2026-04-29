@@ -454,6 +454,9 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         This test forces logical qubits to high physical positions
         to ensure the fix handles this case correctly.
+        
+        Uses SamplerV2 (not QMLSampler) because QMLSampler returns                                                                                                         
+        logical-space bitstrings, which would mask the bug.
         """
         # Create a simple 2-qubit circuit
         qc = QuantumCircuit(2)
@@ -498,12 +501,6 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             f"{2**max(physical_positions)} should be >= "
             f"threshold {threshold} to trigger the bug.",
         )
-
-        # # Build a SamplerQNN from the transpiled circuit
-        # qnn = SamplerQNN(
-        #     circuit=transpiled,
-        #     sampler=Sampler(default_shots=1000, seed=42),
-        # )
 
         # Build a SamplerQNN from the transpiled circuit
         # Use SamplerV2 (not QMLSampler) because the bug only
