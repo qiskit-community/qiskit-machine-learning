@@ -499,10 +499,19 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             f"threshold {threshold} to trigger the bug.",
         )
 
+        # # Build a SamplerQNN from the transpiled circuit
+        # qnn = SamplerQNN(
+        #     circuit=transpiled,
+        #     sampler=Sampler(default_shots=1000, seed=42),
+        # )
+
         # Build a SamplerQNN from the transpiled circuit
+        # Use SamplerV2 (not QMLSampler) because the bug only
+        # manifests with samplers that return physical-space
+        # bitstrings, like real hardware or SamplerV2
         qnn = SamplerQNN(
             circuit=transpiled,
-            sampler=Sampler(default_shots=1000, seed=42),
+            sampler=SamplerV2(mode=self.backend),
         )
 
         # Confirm the QNN sees 2 logical qubits, not 8
