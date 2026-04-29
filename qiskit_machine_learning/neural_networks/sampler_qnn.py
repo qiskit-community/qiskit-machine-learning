@@ -381,12 +381,40 @@ class SamplerQNN(NeuralNetwork):
             if total_shots == 0:
                 continue
 
-            # keys -> ints, filter to valid range
+            # marginalise to logical qubit subspace
             probs_i = {}
-            for k, v in counts_i.items():
-                ki = _key_to_int(k)
-                if ki < 2**self.num_virtual_qubits:
-                    probs_i[ki] = v / total_shots
+            if (hasattr(self._org_circuit, "layout")
+                and self._org_circuit.layout is not None
+            ):
+                # circuit was transpiled: use the layout to find
+                # where each logical qubit ended up physically
+                physical_qubits = (
+                    self._org_circuit.layout.final_index_layout(
+                        filter_ancillas=True
+                    )
+                )
+                for k, v in counts_i.items():
+                    ki = _key_to_int(k)
+                    # extract only the bits at logical qubit positions
+                    logical_bits = tuple(
+                        (ki >> q) & 1 for q in physical_qubits
+                    )
+                    # reconstruct an integer in the logical qubit space
+                    logical_key = sum(
+                        b << idx
+                        for idx, b in enumerate(logical_bits)
+                    )
+                    # accumulate probabilities (marginalise ancillas)
+                    probs_i[logical_key] = (
+                        probs_i.get(logical_key, 0) + v / total_shots
+                    )
+            else:
+                # no layout: circuit was not transpiled,
+                # keep original behaviour
+                for k, v in counts_i.items():
+                    ki = _key_to_int(k)
+                    if ki < 2**self.num_virtual_qubits:
+                        probs_i[ki] = v / total_shots
 
             # map through interpret and write ONLY row i
             for k_int, value in probs_i.items():
