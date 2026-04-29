@@ -438,13 +438,13 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             np.testing.assert_array_almost_equal(backward_qc[0], backward_qnn_qc[0])
             # Test if weights grad is identical
             np.testing.assert_array_almost_equal(backward_qc[1], backward_qnn_qc[1])
-    
-    def test_postprocess_with_transpiled_layout(self):                                                                                                                 
-        """Test that _postprocess correctly marginalises ancilla qubits                                                                                          
-        when the circuit has been transpiled to a larger backend.                                                                                                  
-                                                                                                                                                                     
-        Regression test for https://github.com/qiskit-community/qiskit-machine-learning/issues/1040                                                                
-                                                                                                                                                                   
+
+    def test_postprocess_with_transpiled_layout(self):
+        """Test that _postprocess correctly marginalises ancilla qubits
+        when the circuit has been transpiled to a larger backend.
+
+        Regression test for https://github.com/qiskit-community/qiskit-machine-learning/issues/1040
+
         The bug: SamplerQNN._postprocess filters measurements by
         integer value (ki < 2^num_logical_qubits) instead of
         marginalising by bit position. This works only when logical
@@ -473,21 +473,18 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # Verify the layout: logical qubits must be at positions
         # where the old filter would fail
-        physical_positions = (
-            transpiled.layout.final_index_layout(
-                filter_ancillas=True
-            )
-        )
+        physical_positions = transpiled.layout.final_index_layout(filter_ancillas=True)
         num_logical = 2
         threshold = 2**num_logical  # = 4
 
         # The highest qubit position must be >= num_logical,
         # otherwise the old filter would work by accident
         self.assertGreaterEqual(
-            max(physical_positions), num_logical,
+            max(physical_positions),
+            num_logical,
             msg=f"Test requires qubits at high positions to trigger "
             f"the bug. Got positions {physical_positions}, but "
-            f"max must be >= {num_logical}."
+            f"max must be >= {num_logical}.",
         )
 
         # Confirm the old filter would break: any measurement
@@ -495,10 +492,11 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # far above the threshold of 4. The old code would
         # discard it.
         self.assertGreaterEqual(
-            2**max(physical_positions), threshold,
+            2 ** max(physical_positions),
+            threshold,
             msg=f"2^{max(physical_positions)} = "
             f"{2**max(physical_positions)} should be >= "
-            f"threshold {threshold} to trigger the bug."
+            f"threshold {threshold} to trigger the bug.",
         )
 
         # Build a SamplerQNN from the transpiled circuit
@@ -509,8 +507,9 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # Confirm the QNN sees 2 logical qubits, not 8
         self.assertEqual(
-            qnn.num_virtual_qubits, num_logical,
-            msg="QNN should see 2 logical qubits, not 8 physical."
+            qnn.num_virtual_qubits,
+            num_logical,
+            msg="QNN should see 2 logical qubits, not 8 physical.",
         )
 
         # Run a forward pass
@@ -519,9 +518,9 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # Output dimension must be 2^2 = 4 (logical space),
         # not 2^8 = 256 (physical space)
         self.assertEqual(
-            result.shape[1], 2**num_logical,
-            msg="Output dimension should match logical qubits, "
-            "not physical qubits."
+            result.shape[1],
+            2**num_logical,
+            msg="Output dimension should match logical qubits, " "not physical qubits.",
         )
 
         # All probability mass must be accounted for.
@@ -529,9 +528,10 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # With the fix, all shots are marginalised so sum = 1.
         prob_sum = float(np.sum(result[0]))
         self.assertAlmostEqual(
-            prob_sum, 1.0, places=1,
+            prob_sum,
+            1.0,
+            places=1,
             msg=f"Probabilities sum to {prob_sum:.4f} but should "
             f"be ~1.0. If significantly less, measurements are "
-            f"being discarded instead of marginalised."
+            f"being discarded instead of marginalised.",
         )
-
