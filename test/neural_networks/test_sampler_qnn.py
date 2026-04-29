@@ -454,8 +454,8 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         This test forces logical qubits to high physical positions
         to ensure the fix handles this case correctly.
-        
-        Uses SamplerV2 (not QMLSampler) because QMLSampler returns                                                                                                         
+
+        Uses SamplerV2 (not QMLSampler) because QMLSampler returns
         logical-space bitstrings, which would mask the bug.
         """
         # Create a simple 2-qubit circuit
