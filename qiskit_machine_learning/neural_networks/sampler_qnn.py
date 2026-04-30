@@ -381,7 +381,7 @@ class SamplerQNN(NeuralNetwork):
             if total_shots == 0:
                 continue
 
-            # marginalise to logical qubit subspace
+            # marginalize to logical qubit subspace
             probs_i = {}
             if hasattr(self._org_circuit, "layout") and self._org_circuit.layout is not None:
                 # circuit was transpiled: use the layout to find
@@ -393,11 +393,11 @@ class SamplerQNN(NeuralNetwork):
                     logical_bits = tuple((ki >> q) & 1 for q in physical_qubits)
                     # reconstruct an integer in the logical qubit space
                     logical_key = sum(b << idx for idx, b in enumerate(logical_bits))
-                    # accumulate probabilities (marginalise ancillas)
+                    # accumulate probabilities (marginalize ancillas)
                     probs_i[logical_key] = probs_i.get(logical_key, 0) + v / total_shots
             else:
                 # no layout: circuit was not transpiled,
-                # keep original behaviour
+                # keep original behavior
                 for k, v in counts_i.items():
                     ki = _key_to_int(k)
                     if ki < 2**self.num_virtual_qubits:

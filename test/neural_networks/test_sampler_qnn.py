@@ -440,14 +440,14 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             np.testing.assert_array_almost_equal(backward_qc[1], backward_qnn_qc[1])
 
     def test_postprocess_with_transpiled_layout(self):
-        """Test that _postprocess correctly marginalises ancilla qubits
+        """Test that _postprocess correctly marginalizes ancilla qubits
         when the circuit has been transpiled to a larger backend.
 
         Regression test for https://github.com/qiskit-community/qiskit-machine-learning/issues/1040
 
         The bug: SamplerQNN._postprocess filters measurements by
         integer value (ki < 2^num_logical_qubits) instead of
-        marginalising by bit position. This works only when logical
+        marginalizing by bit position. This works only when logical
         qubits are at positions [0, 1, ..., n-1]. When they are at
         higher positions, valid measurements are discarded because
         their integer value exceeds the threshold.
@@ -531,7 +531,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
 
         # All probability mass must be accounted for.
         # With the bug, shots are discarded so the sum < 1.
-        # With the fix, all shots are marginalised so sum = 1.
+        # With the fix, all shots are marginalized so sum = 1.
         prob_sum = float(np.sum(result[0]))
         self.assertAlmostEqual(
             prob_sum,
