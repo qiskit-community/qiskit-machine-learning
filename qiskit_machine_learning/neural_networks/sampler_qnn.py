@@ -382,7 +382,7 @@ class SamplerQNN(NeuralNetwork):
                 continue
 
             # marginalize to logical qubit subspace
-            probs_i = {}
+            probs_i: dict[int, float] = {}
             if hasattr(self._org_circuit, "layout") and self._org_circuit.layout is not None:
                 # circuit was transpiled: use the layout to find
                 # where each logical qubit ended up physically
