@@ -7,6 +7,6 @@ fixes:
     integer value (``ki < 2**num_virtual_qubits``), which silently
     discarded valid measurements when logical qubits were placed at
     high physical positions by the transpiler. The fix uses the circuit
-    layout to marginalise over ancilla qubits instead of filtering by
+    layout to marginalize over ancilla qubits instead of filtering by
     integer value.
     See `#1040 <https://github.com/qiskit-community/qiskit-machine-learning/issues/1040>`_.
