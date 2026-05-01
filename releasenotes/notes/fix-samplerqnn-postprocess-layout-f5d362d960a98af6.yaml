@@ -2,11 +2,13 @@
 fixes:
   - |
     Fixed ``SamplerQNN._postprocess`` to correctly handle transpiled
-    circuits where logical qubits are mapped to non-trivial physical
-    positions. Previously, the method filtered measurement results by
-    integer value (``ki < 2**num_virtual_qubits``), which silently
-    discarded valid measurements when logical qubits were placed at
-    high physical positions by the transpiler. The fix uses the circuit
-    layout to marginalize over ancilla qubits instead of filtering by
-    integer value.
+    circuits. Previously, the method filtered measurement results by
+    integer value (``ki < 2**num_virtual_qubits``), which caused two
+    problems: (1) valid measurements were silently discarded when logical
+    qubits were placed at high physical positions by the transpiler, and
+    (2) shots where ancilla qubits flipped due to hardware noise were
+    also discarded even when logical qubits occupied low positions. As a
+    result, the output probabilities did not sum to 1.0. The fix uses the
+    circuit layout to marginalize over ancilla qubits, preserving every
+    shot and producing a correctly normalized probability distribution.
     See `#1040 <https://github.com/qiskit-community/qiskit-machine-learning/issues/1040>`_.
