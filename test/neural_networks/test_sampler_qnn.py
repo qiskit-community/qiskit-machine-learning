@@ -446,11 +446,13 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         Regression test for https://github.com/qiskit-community/qiskit-machine-learning/issues/1040
 
         The bug: SamplerQNN._postprocess filters measurements by
-        integer value (ki < 2^num_logical_qubits) instead of
-        marginalizing by bit position. This works only when logical
-        qubits are at positions [0, 1, ..., n-1]. When they are at
-        higher positions, valid measurements are discarded because
-        their integer value exceeds the threshold.
+        integer value (ki < 2^num_logical_qubits). This causes two
+        problems: (1) when logical qubits are at higher positions,
+        valid measurements are discarded because their integer value
+        exceeds the threshold, and (2) even at low positions, shots
+        where ancilla qubits flip due to hardware noise are also
+        discarded. As a result, the output probabilities do not sum
+        to 1.0.
 
         This test forces logical qubits to high physical positions
         to ensure the fix handles this case correctly.
@@ -539,5 +541,5 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             places=1,
             msg=f"Probabilities sum to {prob_sum:.4f} but should "
             f"be ~1.0. If significantly less, measurements are "
-            f"being discarded instead of marginalised.",
+            f"being discarded instead of marginalized.",
         )
