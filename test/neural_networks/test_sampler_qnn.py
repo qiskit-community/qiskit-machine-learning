@@ -446,7 +446,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         Regression test for https://github.com/qiskit-community/qiskit-machine-learning/issues/1040
 
         The bug: SamplerQNN._postprocess filters measurements by
-        integer value (ki < 2^num_logical_qubits). This causes two
+        integer value (key_int < 2^num_logical_qubits). This causes two
         problems: (1) when logical qubits are at higher positions,
         valid measurements are discarded because their integer value
         exceeds the threshold, and (2) even at low positions, shots
@@ -493,7 +493,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         )
 
         # Confirm the old filter would break: any measurement
-        # with a 1 at position 5 gives ki >= 2^5 = 32, which is
+        # with a 1 at position 5 gives key_int >= 2^5 = 32, which is
         # far above the threshold of 4. The old code would
         # discard it.
         self.assertGreaterEqual(
