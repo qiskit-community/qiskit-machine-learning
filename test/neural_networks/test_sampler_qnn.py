@@ -438,3 +438,108 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             np.testing.assert_array_almost_equal(backward_qc[0], backward_qnn_qc[0])
             # Test if weights grad is identical
             np.testing.assert_array_almost_equal(backward_qc[1], backward_qnn_qc[1])
+
+    def test_postprocess_with_transpiled_layout(self):
+        """Test that _postprocess correctly marginalizes ancilla qubits
+        when the circuit has been transpiled to a larger backend.
+
+        Regression test for https://github.com/qiskit-community/qiskit-machine-learning/issues/1040
+
+        The bug: SamplerQNN._postprocess filters measurements by
+        integer value (key_int < 2^num_logical_qubits). This causes two
+        problems: (1) when logical qubits are at higher positions,
+        valid measurements are discarded because their integer value
+        exceeds the threshold, and (2) even at low positions, shots
+        where ancilla qubits flip due to hardware noise are also
+        discarded. As a result, the output probabilities do not sum
+        to 1.0.
+
+        This test forces logical qubits to high physical positions
+        to ensure the fix handles this case correctly.
+
+        Uses SamplerV2 (not QMLSampler) because QMLSampler returns
+        logical-space bitstrings, which would mask the bug.
+        """
+        # Create a simple 2-qubit circuit
+        qc = QuantumCircuit(2)
+        qc.h(0)
+        qc.cx(0, 1)
+        qc.measure_all()
+
+        # Transpile to an 8-qubit backend, forcing logical qubits
+        # to physical positions [5, 7] — deliberately high to
+        # trigger the bug
+        pm = generate_preset_pass_manager(
+            optimization_level=1,
+            backend=self.backend,
+            initial_layout=[5, 7],
+        )
+        transpiled = pm.run(qc)
+
+        # Verify the layout: logical qubits must be at positions
+        # where the old filter would fail
+        physical_positions = transpiled.layout.final_index_layout(filter_ancillas=True)
+        num_logical = 2
+        threshold = 2**num_logical  # = 4
+
+        # The highest qubit position must be >= num_logical,
+        # otherwise the old filter would work by accident
+        self.assertGreaterEqual(
+            max(physical_positions),
+            num_logical,
+            msg=f"Test requires qubits at high positions to trigger "
+            f"the bug. Got positions {physical_positions}, but "
+            f"max must be >= {num_logical}.",
+        )
+
+        # Confirm the old filter would break: any measurement
+        # with a 1 at position 5 gives key_int >= 2^5 = 32, which is
+        # far above the threshold of 4. The old code would
+        # discard it.
+        self.assertGreaterEqual(
+            2 ** max(physical_positions),
+            threshold,
+            msg=f"2^{max(physical_positions)} = "
+            f"{2**max(physical_positions)} should be >= "
+            f"threshold {threshold} to trigger the bug.",
+        )
+
+        # Build a SamplerQNN from the transpiled circuit
+        # Use SamplerV2 (not QMLSampler) because the bug only
+        # manifests with samplers that return physical-space
+        # bitstrings, like real hardware or SamplerV2
+        qnn = SamplerQNN(
+            circuit=transpiled,
+            sampler=SamplerV2(mode=self.backend),
+        )
+
+        # Confirm the QNN sees 2 logical qubits, not 8
+        self.assertEqual(
+            qnn.num_virtual_qubits,
+            num_logical,
+            msg="QNN should see 2 logical qubits, not 8 physical.",
+        )
+
+        # Run a forward pass
+        result = qnn.forward(input_data=None, weights=None)
+
+        # Output dimension must be 2^2 = 4 (logical space),
+        # not 2^8 = 256 (physical space)
+        self.assertEqual(
+            result.shape[1],
+            2**num_logical,
+            msg="Output dimension should match logical qubits, " "not physical qubits.",
+        )
+
+        # All probability mass must be accounted for.
+        # With the bug, shots are discarded so the sum < 1.
+        # With the fix, all shots are marginalized so sum = 1.
+        prob_sum = float(np.sum(result[0]))
+        self.assertAlmostEqual(
+            prob_sum,
+            1.0,
+            places=1,
+            msg=f"Probabilities sum to {prob_sum:.4f} but should "
+            f"be ~1.0. If significantly less, measurements are "
+            f"being discarded instead of marginalized.",
+        )
