@@ -1,0 +1,21 @@
+features:
+  - |
+    The :func:`~qiskit_machine_learning.datasets.h_molecule_evolution_data` function has 
+    been added. This dataset generator simulates time evolution of Hydrogen-based molecules 
+    (H₂, H₃) under their electronic Hamiltonians using quantum simulation. It supports 
+    realistic noise models from IBM Quantum backends and can be used to benchmark 
+    variational fast-forwarding algorithms.
+
+    Example of a 4-qubit H₂ dataset in noiseless statevector format is below.
+
+    .. code-block:: python
+
+        h_molecule_evolution_data(
+            delta_t=1.0,
+            train_end=5,
+            test_start=10,
+            test_end=15,
+            molecule="H2",
+            noise_mode="noiseless",
+            formatting="statevector"
+        )
