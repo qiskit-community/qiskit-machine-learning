@@ -695,3 +695,13 @@ paulis
 spt
 topological
 trivial
+atol
+ddt
+eigh
+geq
+idata
+namespace
+rng
+simulable
+zxz
+Simulatable

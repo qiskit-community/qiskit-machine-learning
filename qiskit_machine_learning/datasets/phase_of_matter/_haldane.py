@@ -49,8 +49,8 @@ def build_hamiltonian(n: int, h1: float, h2: float, j: float = 1.0) -> SparsePau
     Args:
         n: Number of lattice sites (qubits).
         h1: Transverse-field strength (units of *J*).
-        h2: Nearest-neighbour XX coupling (units of *J*).  Positive values
-            favour the SPT phase; negative values favour antiferromagnetic.
+        h2: Nearest-neighbor XX coupling (units of *J*).  Positive values
+            favor the SPT phase; negative values favor antiferromagnetic.
         j: Overall energy scale, default 1.0.
 
     Returns:

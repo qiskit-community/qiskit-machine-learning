@@ -15,7 +15,7 @@
 
 Follows qiskit-machine-learning test conventions:
   - QiskitMachineLearningTestCase base class
-  - ddt / @idata / @unpack for parameterised tests
+  - parameterized tests via the ddt library
   - np.testing.assert_* for array assertions
 """
 
@@ -49,10 +49,10 @@ from qiskit_machine_learning.datasets.phase_of_matter._heisenberg import (
 # ---------------------------------------------------------------------------
 
 
-def _is_hermitian(op: SparsePauliOp, atol: float = 1e-10) -> bool:
-    """Return True if op is Hermitian within atol."""
+def _is_hermitian(op: SparsePauliOp, tol: float = 1e-10) -> bool:
+    """Return True if op is Hermitian within the given tolerance."""
     mat = op.to_matrix()
-    return np.allclose(mat, mat.conj().T, atol=atol)
+    return np.allclose(mat, mat.conj().T, atol=tol)
 
 
 # ---------------------------------------------------------------------------
@@ -96,7 +96,7 @@ class TestHamiltonianBuilders(QiskitMachineLearningTestCase):
         """Cluster Hamiltonian must have more terms than diagonal Z terms alone."""
         n = 4
         ham = build_cluster(n, j1=1.0, j2=1.0)
-        # n Z terms + n XX two-body terms + n ZXZ three-body terms = 3n unique terms minimum
+        # n Z terms + n XX two-body terms + n Z-X-Z three-body terms = 3n unique terms minimum
         self.assertGreater(len(ham), n)
 
     def test_matrix_dimension(self):
@@ -162,7 +162,7 @@ class TestGroundState(QiskitMachineLearningTestCase):
         self.assertLess(residual, 1e-8, msg=f"{model} eigenstate residual {residual:.2e}")
 
     def test_lowest_eigenvalue(self):
-        """Energy from eigsh must match the minimum from np.linalg.eigh."""
+        """Energy from eigsh must match the minimum eigenvalue from dense diagonalization."""
         ham = build_heisenberg(4, j1=1.0, j2=2.0)
         gs = get_ground_state_exact(ham)
         mat = ham.to_matrix()
@@ -353,7 +353,7 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
         self.assertFalse(np.allclose(x1, x2))
 
     def test_train_test_sizes_respected(self):
-        """Exact training_size / test_size must be honoured."""
+        """Exact training_size / test_size must be honored."""
         for tr, te in [(10, 3), (7, 7), (1, 1)]:
             x_tr, _, x_te, _ = phase_of_matter_data(tr, te, 4, model="heisenberg", seed=0)
             self.assertEqual(len(x_tr), tr, f"train size mismatch (requested {tr})")
@@ -393,7 +393,7 @@ class TestImportPaths(QiskitMachineLearningTestCase):
     """Verify the package can be imported and is correctly wired up."""
 
     def test_importable(self):
-        """phase_of_matter_data must be accessible from the datasets namespace."""
+        """phase_of_matter_data must be accessible from the datasets module."""
         import qiskit_machine_learning.datasets as ds  # pylint: disable=import-outside-toplevel
 
         self.assertIsNotNone(ds.phase_of_matter_data)

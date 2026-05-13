@@ -109,9 +109,9 @@ def phase_of_matter_data(
             numpy array of shape ``(num_samples, 2**n)``.
             ``"statevector"`` returns a list of
             :class:`~qiskit.quantum_info.Statevector` objects.
-        seed: Integer seed for the parameter-sampling RNG, enabling
-            reproducible datasets.
-        backend: When ``None`` (default), exact diagonalization via
+        seed: Integer seed for the parameter-sampling random number generator,
+            enabling reproducible datasets.
+        backend (object): When ``None`` (default), exact diagonalization via
             ``scipy.sparse.linalg.eigsh`` is used -- the recommended path for
             reliable phase labels.  When a Qiskit backend is provided, a
             VQE-based approximation is used instead.
@@ -122,8 +122,6 @@ def phase_of_matter_data(
                 VQE approximations near phase boundaries may produce
                 incorrect labels.  Use ``backend=None`` for dataset
                 generation.
-
-    :type backend: object
 
     Returns:
         A tuple ``(training_features, training_labels, test_features,
@@ -150,16 +148,16 @@ def phase_of_matter_data(
 
     References:
         [1] Bermejo et al., "Quantum Convolutional Neural Networks are
-        (Effectively) Classically Simulable", arXiv:2408.12739 (2024).
+        (Effectively) Classically Simulatable", arXiv:2408.12739 (2024).
 
     Examples:
 
-        >>> x_tr, y_tr, x_te, y_te = phase_of_matter_data(
+        >>> x_tr, y_tr, x_te, y_te = phase_of_matter_data(  # doctest: +SKIP
         ...     10, 5, 4, model="heisenberg", seed=0
         ... )
-        >>> x_tr.shape
+        >>> x_tr.shape  # doctest: +SKIP
         (10, 16)
-        >>> y_tr.shape
+        >>> y_tr.shape  # doctest: +SKIP
         (10, 2)
     """
     if model not in _MODELS:

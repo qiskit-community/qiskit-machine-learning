@@ -93,10 +93,8 @@ def get_ground_state_vqe(
 
     Args:
         hamiltonian: Hamiltonian as a SparsePauliOp.
-        backend: Reserved for future hardware integration.  Currently unused;
+        backend (object): Reserved for future hardware integration.  Currently unused;
             pass any non-``None`` value to activate this pathway.
-
-    :type backend: object
 
     Returns:
         Qiskit ``Statevector`` of the approximate ground state.
