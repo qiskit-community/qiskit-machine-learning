@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2019, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -67,7 +68,7 @@ def sample_parameters(n_samples: int, rng: np.random.Generator) -> list[tuple[di
     """Sample coupling parameters uniformly from the interior of each phase.
 
     Sampling regions (see Fig. 6 in the reference) are placed well inside
-    each phase to avoid mislabelled points near boundaries.
+    each phase to avoid mislabeled points near boundaries.
 
     Args:
         n_samples: Number of samples to draw *per class*.

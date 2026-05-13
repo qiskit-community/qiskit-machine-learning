@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2019, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -111,7 +112,7 @@ def phase_of_matter_data(
         seed: Integer seed for the parameter-sampling RNG, enabling
             reproducible datasets.
         backend: When ``None`` (default), exact diagonalization via
-            ``scipy.sparse.linalg.eigsh`` is used — the recommended path for
+            ``scipy.sparse.linalg.eigsh`` is used -- the recommended path for
             reliable phase labels.  When a Qiskit backend is provided, a
             VQE-based approximation is used instead.
 
@@ -121,6 +122,8 @@ def phase_of_matter_data(
                 VQE approximations near phase boundaries may produce
                 incorrect labels.  Use ``backend=None`` for dataset
                 generation.
+
+    :type backend: object
 
     Returns:
         A tuple ``(training_features, training_labels, test_features,
@@ -202,8 +205,8 @@ def phase_of_matter_data(
     all_states: list[np.ndarray] = []
     all_labels: list[str] = []
     for params, phase in raw_samples:
-        H: SparsePauliOp = build_fn(n, params)
-        gs = gs_fn(H)
+        ham: SparsePauliOp = build_fn(n, params)
+        gs = gs_fn(ham)
         if isinstance(gs, Statevector):
             gs = gs.data
         all_states.append(gs)

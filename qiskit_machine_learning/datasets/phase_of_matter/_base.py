@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2019, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -43,7 +44,7 @@ def _canonicalize_phase(vec: np.ndarray) -> np.ndarray:
     """Fix the global phase so that the leading large-magnitude element is real positive.
 
     Eigenvectors are defined only up to a global complex phase; this
-    canonicalization makes repeated calls to ``eigsh`` return numerically
+    phase-fixing makes repeated calls to ``eigsh`` return numerically
     identical arrays for the same Hamiltonian.
     """
     threshold = 1e-10 * np.max(np.abs(vec))
@@ -57,16 +58,16 @@ def get_ground_state_exact(hamiltonian: SparsePauliOp) -> np.ndarray:
     """Return the ground-state vector via sparse exact diagonalization.
 
     Uses ``scipy.sparse.linalg.eigsh`` with ``which='SA'`` (smallest algebraic
-    eigenvalue).  Practical limit: n ≤ 16 qubits (2^16 × 2^16 matrix).
+    eigenvalue).  Practical limit: n <= 16 qubits (2^16 x 2^16 matrix).
 
-    The returned vector is phase-canonicalized so that repeated calls for the
+    The returned vector is phase-fixed so that repeated calls for the
     same Hamiltonian yield identical arrays.
 
     Args:
         hamiltonian: Hamiltonian as a SparsePauliOp.
 
     Returns:
-        Complex numpy array of shape ``(2**n,)`` — the normalised ground state.
+        Complex numpy array of shape ``(2**n,)`` -- the normalized ground state.
     """
     mat = hamiltonian.to_matrix(sparse=True).astype(complex)
     _, vecs = scipy.sparse.linalg.eigsh(mat, k=1, which="SA")
@@ -85,7 +86,7 @@ def get_ground_state_vqe(
         phase labels, use the default exact diagonalization (``backend=None``).
         VQE approximations near phase boundaries may produce incorrect labels.
 
-    Uses an ``EfficientSU2`` ansatz (1 repetition) with COBYLA optimisation via
+    Uses an ``EfficientSU2`` ansatz (1 repetition) with COBYLA optimization via
     ``StatevectorEstimator`` from ``qiskit.primitives``.  The ``backend``
     argument is accepted for API consistency and future hardware integration;
     the current implementation uses ``StatevectorEstimator`` unconditionally.
@@ -94,6 +95,8 @@ def get_ground_state_vqe(
         hamiltonian: Hamiltonian as a SparsePauliOp.
         backend: Reserved for future hardware integration.  Currently unused;
             pass any non-``None`` value to activate this pathway.
+
+    :type backend: object
 
     Returns:
         Qiskit ``Statevector`` of the approximate ground state.
@@ -109,6 +112,7 @@ def get_ground_state_vqe(
     estimator = StatevectorEstimator()
 
     def cost(params: np.ndarray) -> float:
+        """Evaluate energy expectation value for given parameters."""
         pub = (ansatz, [hamiltonian], [params])
         return float(estimator.run([pub]).result()[0].data.evs[0])
 

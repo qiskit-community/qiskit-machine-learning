@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2019, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -40,10 +41,10 @@ def build_hamiltonian(n: int, kappa: float, h: float, j1: float = 1.0) -> Sparse
     Phase diagram (see Fig. 5 in the reference, axes :math:`\kappa` vs
     :math:`h` with :math:`J_1 = 1`):
 
-    * **ferromagnetic** (I) — small :math:`\kappa`, small :math:`h`
-    * **paramagnetic** (II) — small :math:`\kappa`, large :math:`h`
-    * **floating** (III) — large :math:`\kappa`, moderate :math:`h`
-    * **antiphase** (IV) — large :math:`\kappa`, small :math:`h`
+    * **ferromagnetic** (I) -- small :math:`\kappa`, small :math:`h`
+    * **paramagnetic** (II) -- small :math:`\kappa`, large :math:`h`
+    * **floating** (III) -- large :math:`\kappa`, moderate :math:`h`
+    * **antiphase** (IV) -- large :math:`\kappa`, small :math:`h`
 
     Args:
         n: Number of lattice sites (qubits).
@@ -70,7 +71,7 @@ def sample_parameters(n_samples: int, rng: np.random.Generator) -> list[tuple[di
     """Sample coupling parameters uniformly from the interior of each phase.
 
     Sampling regions (see Fig. 5 in the reference) are placed well inside
-    each phase to avoid mislabelled points near boundaries.
+    each phase to avoid mislabeled points near boundaries.
 
     Args:
         n_samples: Number of samples to draw *per class*.
@@ -81,22 +82,22 @@ def sample_parameters(n_samples: int, rng: np.random.Generator) -> list[tuple[di
         *n_samples* entries for each phase in :data:`PHASE_LABELS`, in order.
     """
     samples: list[tuple[dict, str]] = []
-    # ferromagnetic (I): κ ∈ (0, 0.3), h ∈ (0, 0.25)
+    # ferromagnetic (I): kappa in (0, 0.3), h in (0, 0.25)
     ks = rng.uniform(0.0, 0.3, size=n_samples)
     hs = rng.uniform(0.0, 0.25, size=n_samples)
     for k, hv in zip(ks, hs):
         samples.append(({"kappa": float(k), "h": float(hv)}, "ferromagnetic"))
-    # paramagnetic (II): κ ∈ (0, 0.45), h ∈ (0.9, 1.5)
+    # paramagnetic (II): kappa in (0, 0.45), h in (0.9, 1.5)
     ks = rng.uniform(0.0, 0.45, size=n_samples)
     hs = rng.uniform(0.9, 1.5, size=n_samples)
     for k, hv in zip(ks, hs):
         samples.append(({"kappa": float(k), "h": float(hv)}, "paramagnetic"))
-    # floating (III): κ ∈ (0.55, 0.9), h ∈ (0.25, 0.65)
+    # floating (III): kappa in (0.55, 0.9), h in (0.25, 0.65)
     ks = rng.uniform(0.55, 0.9, size=n_samples)
     hs = rng.uniform(0.25, 0.65, size=n_samples)
     for k, hv in zip(ks, hs):
         samples.append(({"kappa": float(k), "h": float(hv)}, "floating"))
-    # antiphase (IV): κ ∈ (0.55, 0.9), h ∈ (0, 0.1)
+    # antiphase (IV): kappa in (0.55, 0.9), h in (0, 0.1)
     ks = rng.uniform(0.55, 0.9, size=n_samples)
     hs = rng.uniform(0.0, 0.1, size=n_samples)
     for k, hv in zip(ks, hs):

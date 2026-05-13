@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2019, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,11 +22,12 @@ Follows qiskit-machine-learning test conventions:
 from __future__ import annotations
 
 import unittest
+from test import QiskitMachineLearningTestCase
+from typing import Callable
 
 import numpy as np
 from ddt import ddt, idata, unpack
-from qiskit.quantum_info import Statevector
-from test import QiskitMachineLearningTestCase
+from qiskit.quantum_info import SparsePauliOp, Statevector
 
 from qiskit_machine_learning.datasets import phase_of_matter_data
 from qiskit_machine_learning.datasets.phase_of_matter._annni import (
@@ -47,7 +49,8 @@ from qiskit_machine_learning.datasets.phase_of_matter._heisenberg import (
 # ---------------------------------------------------------------------------
 
 
-def _is_hermitian(op, atol: float = 1e-10) -> bool:
+def _is_hermitian(op: SparsePauliOp, atol: float = 1e-10) -> bool:
+    """Return True if op is Hermitian within atol."""
     mat = op.to_matrix()
     return np.allclose(mat, mat.conj().T, atol=atol)
 
@@ -64,46 +67,50 @@ class TestHamiltonianBuilders(QiskitMachineLearningTestCase):
     @idata([(4,), (6,)])
     @unpack
     def test_heisenberg_hermitian(self, n):
-        H = build_heisenberg(n, j1=1.0, j2=0.5)
-        self.assertTrue(_is_hermitian(H), f"Heisenberg n={n} is not Hermitian")
+        """Heisenberg Hamiltonian must be Hermitian."""
+        ham = build_heisenberg(n, j1=1.0, j2=0.5)
+        self.assertTrue(_is_hermitian(ham), f"Heisenberg n={n} is not Hermitian")
 
     @idata([(4,), (6,)])
     @unpack
     def test_haldane_hermitian(self, n):
-        H = build_haldane(n, h1=0.5, h2=0.3)
-        self.assertTrue(_is_hermitian(H), f"Haldane n={n} is not Hermitian")
+        """Haldane Hamiltonian must be Hermitian."""
+        ham = build_haldane(n, h1=0.5, h2=0.3)
+        self.assertTrue(_is_hermitian(ham), f"Haldane n={n} is not Hermitian")
 
     @idata([(4,), (6,)])
     @unpack
     def test_annni_hermitian(self, n):
-        H = build_annni(n, kappa=0.3, h=0.5)
-        self.assertTrue(_is_hermitian(H), f"ANNNI n={n} is not Hermitian")
+        """ANNNI Hamiltonian must be Hermitian."""
+        ham = build_annni(n, kappa=0.3, h=0.5)
+        self.assertTrue(_is_hermitian(ham), f"ANNNI n={n} is not Hermitian")
 
     @idata([(4,), (6,)])
     @unpack
     def test_cluster_hermitian(self, n):
-        H = build_cluster(n, j1=1.0, j2=-1.0)
-        self.assertTrue(_is_hermitian(H), f"Cluster n={n} is not Hermitian")
+        """Cluster Hamiltonian must be Hermitian."""
+        ham = build_cluster(n, j1=1.0, j2=-1.0)
+        self.assertTrue(_is_hermitian(ham), f"Cluster n={n} is not Hermitian")
 
     def test_cluster_periodic_boundary(self):
         """Cluster Hamiltonian must have more terms than diagonal Z terms alone."""
         n = 4
-        H = build_cluster(n, j1=1.0, j2=1.0)
+        ham = build_cluster(n, j1=1.0, j2=1.0)
         # n Z terms + n XX two-body terms + n ZXZ three-body terms = 3n unique terms minimum
-        self.assertGreater(len(H), n)
+        self.assertGreater(len(ham), n)
 
     def test_matrix_dimension(self):
-        """All models should produce a 2^n × 2^n matrix for n=4."""
+        """All models should produce a 2^n x 2^n matrix for n=4."""
         n = 4
         dim = 2**n
-        builders = [
+        hamiltonians = [
             build_heisenberg(n, 1.0, 0.5),
             build_haldane(n, 0.5, 0.3),
             build_annni(n, 0.3, 0.5),
             build_cluster(n, 1.0, -1.0),
         ]
-        for H in builders:
-            mat = H.to_matrix()
+        for ham in hamiltonians:
+            mat = ham.to_matrix()
             self.assertEqual(mat.shape, (dim, dim))
 
 
@@ -116,14 +123,15 @@ class TestHamiltonianBuilders(QiskitMachineLearningTestCase):
 class TestGroundState(QiskitMachineLearningTestCase):
     """Verify exact-diagonalization ground-state properties."""
 
-    def _fixed_hamiltonian(self, model: str, n: int):
-        params = {
+    def _fixed_hamiltonian(self, model: str, n: int) -> SparsePauliOp:
+        """Return a Hamiltonian at fixed safe parameters for the given model."""
+        params: dict[str, tuple] = {
             "heisenberg": (n, 1.0, 0.5),
             "haldane": (n, 0.5, 0.3),
             "annni": (n, 0.3, 0.5),
             "cluster": (n, 1.0, -1.0),
         }
-        builders = {
+        builders: dict[str, Callable[..., SparsePauliOp]] = {
             "heisenberg": build_heisenberg,
             "haldane": build_haldane,
             "annni": build_annni,
@@ -134,19 +142,20 @@ class TestGroundState(QiskitMachineLearningTestCase):
     @idata([("heisenberg",), ("haldane",), ("annni",), ("cluster",)])
     @unpack
     def test_normalization(self, model):
-        H = self._fixed_hamiltonian(model, n=4)
-        gs = get_ground_state_exact(H)
+        """Ground state must be normalized to unit norm."""
+        ham = self._fixed_hamiltonian(model, n=4)
+        gs = get_ground_state_exact(ham)
         self.assertAlmostEqual(
-            np.linalg.norm(gs), 1.0, places=8, msg=f"{model} ground state is not normalised"
+            np.linalg.norm(gs), 1.0, places=8, msg=f"{model} ground state is not normalized"
         )
 
     @idata([("heisenberg",), ("haldane",), ("annni",), ("cluster",)])
     @unpack
     def test_is_eigenstate(self, model):
-        """H|ψ⟩ must equal E|ψ⟩ up to numerical noise."""
-        H = self._fixed_hamiltonian(model, n=4)
-        gs = get_ground_state_exact(H)
-        mat = H.to_matrix()
+        """H|psi> must equal E|psi> up to numerical noise."""
+        ham = self._fixed_hamiltonian(model, n=4)
+        gs = get_ground_state_exact(ham)
+        mat = ham.to_matrix()
         h_psi = mat @ gs
         energy = np.dot(gs.conj(), h_psi).real
         residual = np.linalg.norm(h_psi - energy * gs)
@@ -154,9 +163,9 @@ class TestGroundState(QiskitMachineLearningTestCase):
 
     def test_lowest_eigenvalue(self):
         """Energy from eigsh must match the minimum from np.linalg.eigh."""
-        H = build_heisenberg(4, j1=1.0, j2=2.0)
-        gs = get_ground_state_exact(H)
-        mat = H.to_matrix()
+        ham = build_heisenberg(4, j1=1.0, j2=2.0)
+        gs = get_ground_state_exact(ham)
+        mat = ham.to_matrix()
         e_eigsh = (gs.conj() @ mat @ gs).real
         e_min = np.linalg.eigvalsh(mat).min()
         self.assertAlmostEqual(e_eigsh, e_min, places=8)
@@ -198,6 +207,7 @@ class TestPhaseLabels(QiskitMachineLearningTestCase):
     )
     @unpack
     def test_annni_all_phases_present(self, phase):
+        """All four ANNNI phases must appear in a sufficiently large dataset."""
         _, y, _, _ = phase_of_matter_data(40, 8, 4, model="annni", one_hot=False, seed=42)
         self.assertIn(phase, set(y), msg=f"ANNNI phase '{phase}' missing from dataset")
 
@@ -211,6 +221,7 @@ class TestPhaseLabels(QiskitMachineLearningTestCase):
     )
     @unpack
     def test_cluster_all_phases_present(self, phase):
+        """All four Cluster phases must appear in a sufficiently large dataset."""
         _, y, _, _ = phase_of_matter_data(40, 8, 4, model="cluster", one_hot=False, seed=42)
         self.assertIn(phase, set(y), msg=f"Cluster phase '{phase}' missing from dataset")
 
@@ -223,6 +234,7 @@ class TestPhaseLabels(QiskitMachineLearningTestCase):
     )
     @unpack
     def test_haldane_all_phases_present(self, phase):
+        """All three Haldane phases must appear in a sufficiently large dataset."""
         _, y, _, _ = phase_of_matter_data(30, 6, 4, model="haldane", one_hot=False, seed=42)
         self.assertIn(phase, set(y), msg=f"Haldane phase '{phase}' missing from dataset")
 
@@ -246,6 +258,7 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
     )
     @unpack
     def test_return_shapes_ndarray(self, model, n_classes):
+        """Feature and label arrays must have the correct shapes."""
         x_tr, y_tr, x_te, y_te = phase_of_matter_data(8, 4, 4, model=model, one_hot=True, seed=0)
         np.testing.assert_array_equal(x_tr.shape, (8, 16))
         np.testing.assert_array_equal(y_tr.shape, (8, n_classes))
@@ -255,6 +268,7 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
     @idata([("heisenberg",), ("annni",)])
     @unpack
     def test_return_shapes_statevector(self, model):
+        """Statevector formatting must return normalized Statevector objects."""
         x_tr, _, x_te, _ = phase_of_matter_data(
             4, 2, 4, model=model, formatting="statevector", seed=0
         )
@@ -264,19 +278,23 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
         self.assertAlmostEqual(np.linalg.norm(x_tr[0].data), 1.0, places=6)
 
     def test_one_hot_true_sums_to_one(self):
+        """One-hot rows must each sum to exactly 1."""
         _, y_tr, _, _ = phase_of_matter_data(8, 4, 4, model="heisenberg", one_hot=True, seed=0)
         np.testing.assert_array_equal(y_tr.sum(axis=1), np.ones(8))
 
     def test_one_hot_false_returns_strings(self):
+        """String labels must be a subset of the model's phase names."""
         _, y_tr, _, _ = phase_of_matter_data(8, 4, 4, model="heisenberg", one_hot=False, seed=0)
         self.assertTrue(all(isinstance(lbl, str) for lbl in y_tr))
         self.assertTrue(set(y_tr).issubset({"trivial", "topological"}))
 
     def test_include_sample_total_false(self):
+        """Default return must be a 4-tuple."""
         result = phase_of_matter_data(4, 2, 4, model="heisenberg", seed=0)
         self.assertEqual(len(result), 4)
 
     def test_include_sample_total_true(self):
+        """include_sample_total=True must append a per-class count array."""
         result = phase_of_matter_data(
             4, 2, 4, model="heisenberg", include_sample_total=True, seed=0
         )
@@ -286,6 +304,7 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
         self.assertTrue(np.all(totals > 0))
 
     def test_custom_class_labels(self):
+        """Custom label names must replace the model defaults in string output."""
         _, y_tr, _, _ = phase_of_matter_data(
             8, 4, 4, model="heisenberg", one_hot=False, class_labels=["phase_A", "phase_B"], seed=0
         )
@@ -300,12 +319,12 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
         np.testing.assert_array_equal(y1, y2)
 
     def test_feature_normalization(self):
-        """All returned ground states must be normalised."""
+        """All returned ground states must be normalized."""
         x_tr, _, x_te, _ = phase_of_matter_data(8, 4, 4, model="annni", seed=1)
         for states in (x_tr, x_te):
             norms = np.linalg.norm(states, axis=1)
             np.testing.assert_allclose(
-                norms, 1.0, atol=1e-8, err_msg="Ground states are not normalised"
+                norms, 1.0, atol=1e-8, err_msg="Ground states are not normalized"
             )
 
     def test_seed_reproducibility(self):
@@ -345,24 +364,28 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
     # -----------------------------------------------------------------------
 
     def test_invalid_model_raises(self):
+        """An unknown model name must raise ValueError."""
         with self.assertRaises(ValueError):
             phase_of_matter_data(4, 2, 4, model="invalid")
 
     def test_invalid_formatting_raises(self):
+        """An unknown formatting string must raise ValueError."""
         with self.assertRaises(ValueError):
             phase_of_matter_data(4, 2, 4, model="heisenberg", formatting="bad")
 
     def test_n_too_small_raises(self):
+        """n < 4 must raise ValueError."""
         with self.assertRaises(ValueError):
             phase_of_matter_data(4, 2, 3, model="heisenberg")
 
     def test_wrong_class_labels_length_raises(self):
+        """class_labels with wrong length must raise ValueError."""
         with self.assertRaises(ValueError):
             phase_of_matter_data(4, 2, 4, model="heisenberg", class_labels=["only_one"])
 
 
 # ---------------------------------------------------------------------------
-# Integration — import paths
+# Integration -- import paths
 # ---------------------------------------------------------------------------
 
 
@@ -370,16 +393,19 @@ class TestImportPaths(QiskitMachineLearningTestCase):
     """Verify the package can be imported and is correctly wired up."""
 
     def test_importable(self):
+        """phase_of_matter_data must be accessible from the datasets namespace."""
         import qiskit_machine_learning.datasets as ds  # pylint: disable=import-outside-toplevel
 
         self.assertIsNotNone(ds.phase_of_matter_data)
 
     def test_in_all(self):
+        """phase_of_matter_data must be listed in datasets.__all__."""
         import qiskit_machine_learning.datasets as ds  # pylint: disable=import-outside-toplevel
 
         self.assertIn("phase_of_matter_data", ds.__all__)
 
     def test_hamiltonian_modules_importable(self):
+        """All Hamiltonian sub-modules must expose the required attributes."""
         from qiskit_machine_learning.datasets.phase_of_matter import (  # pylint: disable=import-outside-toplevel
             _annni,
             _cluster,
