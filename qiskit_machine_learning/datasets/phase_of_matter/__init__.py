@@ -1,7 +1,6 @@
 # This code is part of a Qiskit project.
 #
 # (C) Copyright IBM 2019, 2026.
-# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,28 +11,28 @@
 # that they have been altered from the originals.
 
 """
-Datasets (:mod:`qiskit_machine_learning.datasets`)
-==================================================
+Phase of Matter dataset (:mod:`phase_of_matter`)
 
-A collection of synthetic datasets used to test and benchmark machine-learning
-algorithms implemented in Qiskit Machine Learning.
+Quantum Phase of Matter classification dataset generator.
 
-.. currentmodule:: qiskit_machine_learning.datasets
+Each supported model lives in its own module:
 
-Synthetic dataset generators
-----------------------------
+* :mod:`._heisenberg` — Bond-alternating XXX Heisenberg chain
+* :mod:`._haldane`    — Haldane chain
+* :mod:`._annni`      — Axial Next-Nearest-Neighbor Ising (ANNNI) model
+* :mod:`._cluster`    — Cluster Hamiltonian
+
+The :func:`phase_of_matter_data` function is the single public entry point.
+
+.. currentmodule:: phase_of_matter
 
 .. autosummary::
    :toctree: ../stubs/
    :nosignatures:
 
-   ad_hoc_data
-   entanglement_concentration_data
    phase_of_matter_data
 """
 
-from .ad_hoc import ad_hoc_data
-from .entanglement_concentration import entanglement_concentration_data
 from .phase_of_matter import phase_of_matter_data
 
-__all__ = ["ad_hoc_data", "entanglement_concentration_data", "phase_of_matter_data"]
+__all__ = ["phase_of_matter_data"]
