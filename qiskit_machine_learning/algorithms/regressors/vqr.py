@@ -35,7 +35,6 @@ class VQR(NeuralNetworkRegressor):
     # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
-        num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
         observable: BaseOperator | None = None,
@@ -50,11 +49,6 @@ class VQR(NeuralNetworkRegressor):
     ) -> None:
         r"""
         Args:
-            num_qubits: The number of qubits for the underlying QNN.
-                If ``None`` then the number of qubits is derived from the
-                feature map or ansatz, but if neither of these are given an error is raised.
-                The number of qubits in the feature map and ansatz are adjusted to this
-                number if required and possible (such adjustment is deprecated).
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
                 QNN. If ``None`` the :meth:`~qiskit.circuit.library.zz_feature_map`
                 is used if the number of qubits is larger than 1. For a single qubit regression
@@ -82,9 +76,8 @@ class VQR(NeuralNetworkRegressor):
             pass_manager: The pass manager to transpile the circuits, if necessary.
                 Defaults to ``None``, as some primitives do not need transpiled circuits.
         Raises:
-            QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
-                ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
-                can't be adjusted to ``num_qubits``.
+            QiskitMachineLearningError: At least one of ``feature_map`` or ``ansatz`` must be
+                given, or the number of qubits in the feature map and ansatz must match.
             ValueError: if the type of the observable is not compatible with ``estimator``.
         """
         if observable is not None and not isinstance(observable, BaseOperator):
@@ -95,9 +88,7 @@ class VQR(NeuralNetworkRegressor):
 
         self._estimator = estimator
 
-        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-            num_qubits, feature_map, ansatz
-        )
+        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(feature_map, ansatz)
 
         # construct circuit
         self._feature_map = feature_map

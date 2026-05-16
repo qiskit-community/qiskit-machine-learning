@@ -103,7 +103,7 @@ class TestVQR(QiskitMachineLearningTestCase):
 
     def test_properties(self):
         """Test properties of VQR."""
-        vqr = VQR(num_qubits=2)
+        vqr = VQR(feature_map=QuantumCircuit(2))
         self.assertIsNotNone(vqr.feature_map)
         self.assertIsInstance(vqr.feature_map, QuantumCircuit)
         self.assertEqual(vqr.feature_map.num_qubits, 2)
@@ -117,7 +117,7 @@ class TestVQR(QiskitMachineLearningTestCase):
     def test_incorrect_observable(self):
         """Test VQR with a wrong observable."""
         with self.assertRaises(ValueError):
-            _ = VQR(num_qubits=2, observable=QuantumCircuit(2))
+            _ = VQR(feature_map=QuantumCircuit(2), observable=QuantumCircuit(2))
 
     @data(
         # optimizer, has ansatz

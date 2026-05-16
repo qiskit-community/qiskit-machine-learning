@@ -19,6 +19,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import (
     pauli_feature_map,
     real_amplitudes,
+    z_feature_map,
     zz_feature_map,
 )
 from qiskit_machine_learning import QiskitMachineLearningError
@@ -31,7 +32,7 @@ class TestQNNCircuitFunction(QiskitMachineLearningTestCase):
     def test_construction(self):
         """Test construction of ``qnn_circuit``."""
 
-        circuit, fm_params, anz_params = qnn_circuit(num_qubits=2)
+        circuit, fm_params, anz_params = qnn_circuit(feature_map=zz_feature_map(2))
 
         with self.subTest("check resultant circuit built"):
             self.assertEqual(circuit.num_qubits, 2)
@@ -41,21 +42,17 @@ class TestQNNCircuitFunction(QiskitMachineLearningTestCase):
     def test_construction_fails(self):
         """Test the faulty construction"""
 
-        # If no argument is passed a QiskitMachineLearningError is raised
         with self.assertRaises(QiskitMachineLearningError):
             qnn_circuit(feature_map=zz_feature_map(2), ansatz=real_amplitudes(1))
 
-        # If no argument is passed a QiskitMachineLearningError is raised
         with self.assertRaises(QiskitMachineLearningError):
             qnn_circuit()
 
     def test_num_qubit_construction(self):
-        """Test building the ``qnn_circuit`` with number of qubits."""
+        """Test building the ``qnn_circuit`` with a single-qubit feature map."""
 
-        circuit, fm_params, anz_params = qnn_circuit(1)
+        circuit, fm_params, anz_params = qnn_circuit(feature_map=z_feature_map(1))
 
-        # If not otherwise specified, the defaults are a ZFeatureMap/ZZFeatureMap and a
-        # RealAmplitudes ansatz.
         with self.subTest("check input configuration after the circuit is build"):
             self.assertEqual(circuit.num_qubits, 1)
             self.assertEqual(type(circuit), QuantumCircuit)
@@ -77,4 +74,4 @@ class TestQNNCircuitFunction(QiskitMachineLearningTestCase):
         """Test the construction of ``qnn_circuit`` for input that does not match fails."""
 
         with self.assertRaises(QiskitMachineLearningError):
-            qnn_circuit(num_qubits=4, feature_map=zz_feature_map(3), ansatz=real_amplitudes(2))
+            qnn_circuit(feature_map=zz_feature_map(3), ansatz=real_amplitudes(2))

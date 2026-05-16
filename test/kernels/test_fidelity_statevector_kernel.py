@@ -312,14 +312,12 @@ class TestStatevectorKernel(QiskitMachineLearningTestCase):
             x_vec = np.asarray([])
             self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
-        with self.subTest("Adjust the number of qubits in the feature map"):
+        with self.subTest("Reject feature dimension mismatch in the feature map"):
             kernel = FidelityStatevectorKernel(feature_map=z_feature_map(feature_dimension=3))
-            x_vec = np.asarray([[1, 2, 3]])
-            kernel.evaluate(x_vec)
+            x_vec = np.asarray([[1, 2]])
+            self.assertRaises(ValueError, kernel.evaluate, x_vec)
 
-            self.assertEqual(kernel.feature_map.num_qubits, 3)
-
-        with self.subTest("Fail to adjust the number of qubits in the feature map"):
+        with self.subTest("Reject feature maps that cannot match feature dimension"):
             qc = QuantumCircuit(1)
             kernel = FidelityStatevectorKernel(feature_map=qc)
 

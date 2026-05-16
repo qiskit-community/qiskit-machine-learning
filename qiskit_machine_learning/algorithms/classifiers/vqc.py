@@ -49,7 +49,6 @@ class VQC(NeuralNetworkClassifier):
     # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
-        num_qubits: int | None = None,
         feature_map: QuantumCircuit | None = None,
         ansatz: QuantumCircuit | None = None,
         loss: str | Loss = "cross_entropy",
@@ -65,11 +64,6 @@ class VQC(NeuralNetworkClassifier):
     ) -> None:
         """
         Args:
-            num_qubits: The number of qubits for the underlying QNN.
-                If ``None`` is given, the number of qubits is derived from the
-                feature map or ansatz. If neither of those is given, raises an exception.
-                The number of qubits in the feature map and ansatz are adjusted to this
-                number if required and possible (such adjustment is deprecated).
             feature_map: The (parametrized) circuit to be used as a feature map for the underlying
                 QNN. If ``None`` is given, the :meth:`~qiskit.circuit.library.zz_feature_map`
                 is used if the number of qubits is larger than 1. For a single qubit
@@ -102,14 +96,11 @@ class VQC(NeuralNetworkClassifier):
             output_shape: The output shape for the underlying neural network, generally equals to
                 number of classes. Defaults to binary classification, 2.
         Raises:
-            QiskitMachineLearningError: Needs at least one out of ``num_qubits``, ``feature_map`` or
-                ``ansatz`` to be given. Or the number of qubits in the feature map and/or ansatz
-                can't be adjusted to ``num_qubits``.
+            QiskitMachineLearningError: At least one of ``feature_map`` or ``ansatz`` must be
+                given, or the number of qubits in the feature map and ansatz must match.
         """
 
-        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-            num_qubits, feature_map, ansatz
-        )
+        num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(feature_map, ansatz)
 
         if output_shape is None:
             self.output_shape = 2

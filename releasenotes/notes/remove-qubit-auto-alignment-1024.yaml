@@ -1,0 +1,10 @@
+---
+upgrade:
+  - |
+    Removed the deprecated ``num_qubits`` argument and automatic qubit alignment (padding or
+    resizing) from :func:`~qiskit_machine_learning.utils.derive_num_qubits_feature_map_ansatz`,
+    :func:`~qiskit_machine_learning.circuit.library.qnn_circuit`, :class:`~.VQC`, and
+    :class:`~.VQR`. ``feature_map`` and ``ansatz`` must now be constructed with the same number
+    of qubits before being passed to these APIs. Quantum kernels no longer attempt to resize the
+    feature map when the input feature dimension does not match. See
+    `#1024 <https://github.com/qiskit-community/qiskit-machine-learning/issues/1024>`_.
