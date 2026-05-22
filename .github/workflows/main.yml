@@ -98,7 +98,7 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
       - name: Run upload documentation
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: documentation
           path: docs/_build/html/artifacts/documentation.tar.gz
@@ -163,7 +163,7 @@ jobs:
           mv .coverage ./ci-artifact-data/ml.dat
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10' }}
         shell: bash
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.os }}-${{ matrix.python-version }}
           path: ./ci-artifact-data/*
@@ -221,7 +221,7 @@ jobs:
           tar -zcvf artifacts/tutorials.tar.gz --exclude=./artifacts .
         shell: bash
       - name: Run upload tutorials
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: tutorials${{ matrix.python-version }}
           path: docs/_build/html/artifacts/tutorials.tar.gz
@@ -251,7 +251,7 @@ jobs:
         if: ${{ matrix.python-version == '3.10' && !startsWith(github.ref, 'refs/heads/stable') && !startsWith(github.base_ref, 'stable/') }}
         shell: bash
       - name: Run upload stable tutorials
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: tutorials-stable${{ matrix.python-version }}
           path: docs/_build/html/artifacts/tutorials.tar.gz
@@ -267,46 +267,66 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ubuntu-latest-3.10
           path: /tmp/u310
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ubuntu-latest-3.11
           path: /tmp/u311
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ubuntu-latest-3.12
           path: /tmp/u312
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ubuntu-latest-3.13
           path: /tmp/u313
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: macos-latest-3.10
           path: /tmp/m310
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: macos-latest-3.13
           path: /tmp/m313
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: windows-latest-3.10
           path: /tmp/w310
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: windows-latest-3.13
           path: /tmp/w313
 
       - name: Install Dependencies
-        run: pip install -U coverage coveralls diff-cover
+        run: pip install -U "coverage[toml]" coveralls diff-cover
         shell: bash
+        
       - name: Combined Deprecation Messages
         run: |
           sort -f -u /tmp/u310/ml.dep /tmp/u311/ml.dep /tmp/u312/ml.dep /tmp/u313/ml.dep /tmp/m310/ml.dep /tmp/m313/ml.dep /tmp/w310/ml.dep /tmp/w313/ml.dep || true
         shell: bash
+        
       - name: Coverage combine
-        run: coverage3 combine /tmp/u310/ml.dat
         shell: bash
+        run: |
+          set -euo pipefail
+          coverage3 combine /tmp/u310/ml.dat
+          coverage3 report -m
+          coverage3 xml -o coverage.xml
+    
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v2.3.7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: coverage.xml
+          fail-on-error: true
+          debug: true
+
+      - name: Coveralls diagnostics
+        if: failure()
+        run: |
+          coverage3 debug sys || true
+          coverage3 debug data || true

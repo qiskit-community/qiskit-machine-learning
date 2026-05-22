@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2018, 2025.
+# (C) Copyright IBM 2018, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,6 +15,7 @@
 
 This implementation allows both standard first-order and second-order SPSA.
 """
+
 from __future__ import annotations
 
 from collections import deque

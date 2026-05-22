@@ -3,4 +3,4 @@
 # least one codeowner. However, all QiskitML team members can (and should!) review the PRs.
 
 # Global rule, unless specialized by a later one
-* @adekusar-drl @edoaltamura @oscar-wallis @OkuyanBoga
+* @adekusar-drl @oscar-wallis @OkuyanBoga

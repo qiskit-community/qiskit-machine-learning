@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2021, 2025.
+# (C) Copyright IBM 2021, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -32,7 +33,6 @@ sys.path.append(os.path.abspath("."))
 
 import qiskit_machine_learning
 
-
 # Set env flag so that we can doc functions that may otherwise not be loaded
 # see for example interactive visualizations in qiskit.visualization.
 os.environ["QISKIT_DOCS"] = "TRUE"
@@ -55,9 +55,7 @@ rst_prolog = """
     <br><br><br>
 
 .. |version| replace:: {0}
-""".format(
-    release
-)
+""".format(release)
 
 nbsphinx_prolog = """
 {% set docname = env.doc2path(env.docname, base=None) %}

@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,6 +14,7 @@
 """
 Entanglement Concentration
 """
+
 from __future__ import annotations
 
 import warnings
@@ -40,10 +42,14 @@ def entanglement_concentration_data(
     class_labels: list | None = None,
     formatting: str = "ndarray",
 ) -> (
-    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-    | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-    | tuple[list[Statevector], np.ndarray, list[Statevector], np.ndarray]
-    | tuple[list[Statevector], np.ndarray, list[Statevector], np.ndarray, np.ndarray]
+    tuple[np.ndarray | list[Statevector], np.ndarray, np.ndarray | list[Statevector], np.ndarray]
+    | tuple[
+        np.ndarray | list[Statevector],
+        np.ndarray,
+        np.ndarray | list[Statevector],
+        np.ndarray,
+        np.ndarray,
+    ]
 ):
     r"""
     Generates a dataset that comprises Quantum States with two different
@@ -151,16 +157,12 @@ def entanglement_concentration_data(
     if sampling_method not in {"isotropic", "cardinal"}:
         raise ValueError("Invalid sampling method. Must be 'isotropic' or 'cardinal'")
     if sampling_method == "cardinal" and n_points >= (6**n):
-        raise ValueError(
-            """Cardinal Sampling cannot generate a large number of unique
+        raise ValueError("""Cardinal Sampling cannot generate a large number of unique
             datapoints due to the limited number of combinations possible.
-            Try "isotropic" sampling method"""
-        )
+            Try "isotropic" sampling method""")
     if formatting not in {"statevector", "ndarray"}:
-        raise ValueError(
-            """Formatting must be "statevector" or "ndarray". Please check for
-            case sensitivity."""
-        )
+        raise ValueError("""Formatting must be "statevector" or "ndarray". Please check for
+            case sensitivity.""")
 
     # Warnings
     if sampling_method == "cardinal" and n_points > (3**n):
@@ -200,6 +202,9 @@ def entanglement_concentration_data(
 
     a_features = u_low @ psi_in
     b_features = u_high @ psi_in
+
+    x_train: np.ndarray | list[Statevector]
+    x_test: np.ndarray | list[Statevector]
 
     if formatting == "ndarray":
         x_train = np.concatenate((a_features[:training_size], b_features[:training_size]), axis=0)

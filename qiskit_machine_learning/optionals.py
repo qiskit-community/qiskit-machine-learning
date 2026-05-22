@@ -1,6 +1,7 @@
 # This code is part of a Qiskit project.
 #
-# (C) Copyright IBM 2022, 2023.
+# (C) Copyright IBM 2022, 2026.
+# (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,7 +16,6 @@ Additional optional constants.
 """
 
 from qiskit.utils import LazyImportTester
-
 
 HAS_TORCH = LazyImportTester(
     {

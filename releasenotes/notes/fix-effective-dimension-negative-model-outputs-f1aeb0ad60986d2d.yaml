@@ -1,0 +1,9 @@
+---
+fixes:
+  - |
+    Fixed a numerical stability issue in
+    `qiskit_machine_learning.neural_networks.EffectiveDimension.get_fisher_information()`
+    so that small negative model outputs no longer result in NaN values. This makes the
+    effective dimension computation robust to signed outputs from EstimatorQNN.
+
+
