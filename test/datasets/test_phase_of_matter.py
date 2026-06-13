@@ -359,6 +359,18 @@ class TestPublicAPI(QiskitMachineLearningTestCase):
             self.assertEqual(len(x_tr), tr, f"train size mismatch (requested {tr})")
             self.assertEqual(len(x_te), te, f"test size mismatch (requested {te})")
 
+    def test_balanced_classes_non_divisible(self):
+        """Class counts must be balanced when size is not divisible by n_classes."""
+        # annni has 4 classes; 5 training samples -> per-class counts [2, 1, 1, 1]
+        _, y_tr, _, y_te = phase_of_matter_data(5, 3, 4, model="annni", one_hot=True, seed=0)
+        train_class_counts = y_tr.sum(axis=0)
+        test_class_counts = y_te.sum(axis=0)
+        self.assertEqual(int(train_class_counts.sum()), 5)
+        self.assertEqual(int(test_class_counts.sum()), 3)
+        # No class should be over-represented by more than 1 sample
+        self.assertLessEqual(int(train_class_counts.max() - train_class_counts.min()), 1)
+        self.assertLessEqual(int(test_class_counts.max() - test_class_counts.min()), 1)
+
     # -----------------------------------------------------------------------
     # Error cases
     # -----------------------------------------------------------------------

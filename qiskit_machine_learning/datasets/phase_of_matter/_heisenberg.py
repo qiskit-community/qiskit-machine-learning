@@ -35,7 +35,7 @@ def build_hamiltonian(n: int, j1: float, j2: float) -> SparsePauliOp:
         H = \sum_{i=1}^{n-1} J_i
             \left( X_i X_{i+1} + Y_i Y_{i+1} + Z_i Z_{i+1} \right)
 
-    where :math:`J_i = J_1` for even *i* and :math:`J_i = J_2` for odd *i*
+    where :math:`J_i = J_1` for odd *i* and :math:`J_i = J_2` for even *i*
     (1-indexed), with :math:`J_1, J_2 \geq 0`.
 
     Phase diagram (thermodynamic limit):
@@ -45,16 +45,18 @@ def build_hamiltonian(n: int, j1: float, j2: float) -> SparsePauliOp:
 
     Args:
         n: Number of lattice sites (qubits).
-        j1: Coupling constant on even bonds (:math:`J_1 \geq 0`).
-        j2: Coupling constant on odd bonds (:math:`J_2 \geq 0`).
+        j1: Coupling constant on odd-indexed bonds (1-indexed: bonds 1, 3, 5, ...).
+            (:math:`J_1 \geq 0`).
+        j2: Coupling constant on even-indexed bonds (1-indexed: bonds 2, 4, 6, ...).
+            (:math:`J_2 \geq 0`).
 
     Returns:
         SparsePauliOp for the Hamiltonian on *n* qubits.
     """
     terms: list[SparsePauliOp] = []
     for i in range(n - 1):
-        # i is 0-indexed; the paper is 1-indexed, so even bond = i % 2 == 0
-        j = j1 if (i % 2 == 0) else j2
+        # i is 0-indexed; i%2==0 means 0-indexed even = 1-indexed odd bond (bond 1, 3, 5, ...)
+        j = j1 if not i % 2 else j2
         for pauli in ("X", "Y", "Z"):
             terms.append(j * pauli_term([(pauli, i), (pauli, i + 1)], n))
     return SparsePauliOp.sum(terms).simplify()

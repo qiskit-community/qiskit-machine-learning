@@ -15,8 +15,6 @@
 
 from __future__ import annotations
 
-import math
-
 import numpy as np
 from qiskit.quantum_info import SparsePauliOp, Statevector
 
@@ -40,6 +38,16 @@ _BUILDERS = {
     "annni": lambda n, p: _annni.build_hamiltonian(n, p["kappa"], p["h"]),
     "cluster": lambda n, p: _cluster.build_hamiltonian(n, p["j1"], p["j2"]),
 }
+
+
+def _per_class_counts(total: int, n_classes: int) -> list[int]:
+    """Distribute *total* samples across *n_classes* as evenly as possible.
+
+    Classes with index < (total % n_classes) receive one extra sample so that
+    sum(result) == total and max(result) - min(result) <= 1.
+    """
+    base, rem = divmod(total, n_classes)
+    return [base + (1 if i < rem else 0) for i in range(n_classes)]
 
 
 # ---------------------------------------------------------------------------
@@ -113,7 +121,7 @@ def phase_of_matter_data(
             enabling reproducible datasets.
         backend (object): When ``None`` (default), exact diagonalization via
             ``scipy.sparse.linalg.eigsh`` is used -- the recommended path for
-            reliable phase labels.  When a Qiskit backend is provided, a
+            reliable phase labels.  When any non-``None`` value is passed, a
             VQE-based approximation is used instead.
 
             .. warning::
@@ -122,6 +130,12 @@ def phase_of_matter_data(
                 VQE approximations near phase boundaries may produce
                 incorrect labels.  Use ``backend=None`` for dataset
                 generation.
+
+                The current VQE implementation uses
+                ``StatevectorEstimator`` from ``qiskit.primitives``
+                unconditionally, regardless of the backend object passed.
+                The ``backend`` argument is accepted for API consistency
+                and is reserved for future hardware integration.
 
     Returns:
         A tuple ``(training_features, training_labels, test_features,
@@ -183,11 +197,11 @@ def phase_of_matter_data(
 
     rng = np.random.default_rng(seed)
 
-    # ceil ensures every class gets at least the requested count even when
-    # training_size / test_size are not divisible by n_classes.
-    n_per_class_train = math.ceil(training_size / n_classes)
-    n_per_class_test = math.ceil(test_size / n_classes)
-    n_per_class = n_per_class_train + n_per_class_test
+    # Compute exact per-class counts so the dataset is balanced to within 1 sample
+    # even when training_size / test_size are not divisible by n_classes.
+    train_counts = _per_class_counts(training_size, n_classes)
+    test_counts = _per_class_counts(test_size, n_classes)
+    n_per_class = max(tr + te for tr, te in zip(train_counts, test_counts))
 
     # Samplers return blocks of n_per_class per class, class order preserved.
     raw_samples = module.sample_parameters(n_per_class, rng)
@@ -222,17 +236,13 @@ def phase_of_matter_data(
         start = cls_idx * n_per_class
         cls_states = all_states[start : start + n_per_class]
         cls_labels = all_labels[start : start + n_per_class]
-        train_states.extend(cls_states[:n_per_class_train])
-        train_labels_raw.extend(cls_labels[:n_per_class_train])
-        test_states.extend(cls_states[n_per_class_train:])
-        test_labels_raw.extend(cls_labels[n_per_class_train:])
-        sample_totals[cls_idx] = n_per_class
-
-    # Trim to exact requested sizes (ceil may over-allocate by up to n_classes-1).
-    train_states = train_states[:training_size]
-    train_labels_raw = train_labels_raw[:training_size]
-    test_states = test_states[:test_size]
-    test_labels_raw = test_labels_raw[:test_size]
+        tr = train_counts[cls_idx]
+        te = test_counts[cls_idx]
+        train_states.extend(cls_states[:tr])
+        train_labels_raw.extend(cls_labels[:tr])
+        test_states.extend(cls_states[tr : tr + te])
+        test_labels_raw.extend(cls_labels[tr : tr + te])
+        sample_totals[cls_idx] = tr + te
 
     # Shuffle train and test independently to interleave classes.
     tr_idx = np.arange(len(train_states))
