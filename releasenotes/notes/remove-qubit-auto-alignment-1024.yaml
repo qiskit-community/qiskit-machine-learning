@@ -1,0 +1,22 @@
+---
+upgrade:
+  - |
+    The qubit auto-alignment behavior of
+    :func:`~qiskit_machine_learning.utils.derive_num_qubits_feature_map_ansatz`
+    has been removed, as previously announced in version ``0.9.1``. The
+    function no longer accepts a ``num_qubits`` argument; the number of qubits
+    is now derived directly from ``feature_map`` and/or ``ansatz``. If both
+    are provided, they must have the same number of qubits, otherwise a
+    ``QiskitMachineLearningError`` is raised.
+  - |
+    The ``num_qubits`` argument is no longer supported by the constructors of
+    :class:`~qiskit_machine_learning.algorithms.classifiers.VQC` and
+    :class:`~qiskit_machine_learning.algorithms.regressors.VQR`, nor by
+    :func:`~qiskit_machine_learning.circuit.library.qnn_circuit`. Passing it
+    raises a ``QiskitMachineLearningError``. Construct ``feature_map`` and
+    ``ansatz`` with the desired number of qubits before passing them to these
+    APIs.
+fixes:
+  - |
+    Removes the deprecated qubit auto-alignment feature. See
+    `#1024 <https://github.com/qiskit-community/qiskit-machine-learning/issues/1024>`__.
