@@ -47,10 +47,8 @@ class BaseKernel(ABC):
         """
         Args:
             feature_map: Parameterized circuit to be used as the feature map. This is required: if
-                ``None`` is given, a :class:`~QiskitMachineLearningError` is raised. If there's
-                a mismatch in the number of qubits of the feature map and the number of features
-                in the dataset, then the kernel will try to adjust the feature map to reflect the
-                number of features.
+                ``None`` is given, a :class:`~QiskitMachineLearningError` is raised. The number of
+                features in the input data must match the number of qubits in the feature map.
             enforce_psd: Project to the closest positive semidefinite matrix if ``x = y``.
                 Default ``True``.
         """
@@ -111,16 +109,12 @@ class BaseKernel(ABC):
             x_vec = np.reshape(x_vec, (-1, len(x_vec)))
 
         if x_vec.shape[1] != self._num_features:
-            # before raising an error we try to adjust the feature map
-            # to the required number of qubit.
-            try:
-                self._feature_map.num_qubits = x_vec.shape[1]
-            except AttributeError as a_e:
-                raise ValueError(
-                    f"x_vec and class feature map have incompatible dimensions.\n"
-                    f"x_vec has {x_vec.shape[1]} dimensions, "
-                    f"but feature map has {self._num_features}."
-                ) from a_e
+            raise ValueError(
+                f"x_vec and feature map have incompatible dimensions.\n"
+                f"x_vec has {x_vec.shape[1]} features, but the feature map expects "
+                f"{self._num_features} parameters. "
+                "Construct the feature map with a matching feature dimension."
+            )
 
         if y_vec is not None:
             y_vec = np.asarray(y_vec)

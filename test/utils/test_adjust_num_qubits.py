@@ -13,7 +13,6 @@
 """Tests for adjusting number of qubits in a feature map / ansatz."""
 
 from test import QiskitMachineLearningTestCase
-import itertools
 from ddt import ddt, idata, unpack
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map
@@ -37,7 +36,7 @@ class TestAdjustNumQubits(QiskitMachineLearningTestCase):
     def test_all_none(self):
         """Test when all parameters are ``None``."""
         self.assertRaises(
-            QiskitMachineLearningError, derive_num_qubits_feature_map_ansatz, None, None, None
+            QiskitMachineLearningError, derive_num_qubits_feature_map_ansatz, None, None
         )
 
     def test_incompatible_feature_map_ansatz(self):
@@ -45,41 +44,19 @@ class TestAdjustNumQubits(QiskitMachineLearningTestCase):
         self.assertRaises(
             QiskitMachineLearningError,
             derive_num_qubits_feature_map_ansatz,
-            None,
             self.properties["z1"],
             self.properties["ra2"],
         )
 
-    @idata(
-        itertools.chain(
-            itertools.product([1], [None, "z1"], [None, "ra1"]),
-            itertools.product([2], [None, "z2"], [None, "ra2"]),
-        )
-    )
+    @idata([(None, "z1"), (None, "z2"), ("z1", None), ("z1", "ra1"), ("z2", None), ("z2", "ra2")])
     @unpack
-    def test_num_qubits_is_set(self, num_qubits, feature_map, ansatz):
-        """Test when the number of qubits is set."""
-        feature_map = self.properties.get(feature_map)
-        ansatz = self.properties.get(ansatz)
-
-        # derived objects
-        num_qubits_der, feature_map_der, ansatz_der = derive_num_qubits_feature_map_ansatz(
-            num_qubits, feature_map, ansatz
-        )
-        self.assertEqual(num_qubits_der, num_qubits)
-
-        self._test_feature_map(feature_map_der, feature_map, num_qubits)
-        self._test_ansatz(ansatz_der, num_qubits)
-
-    @idata([(None, "ra1"), (None, "ra2"), ("z1", None), ("z1", "ra1"), ("z2", None), ("z2", "ra2")])
-    @unpack
-    def test_num_qubits_isnot_set(self, feature_map, ansatz):
-        """Test when the number of qubits is not set."""
+    def test_derive_from_circuits(self, feature_map, ansatz):
+        """Test deriving defaults when one or both circuits are provided."""
         ansatz = self.properties.get(ansatz)
         feature_map = self.properties.get(feature_map)
 
         num_qubits_der, feature_map_der, ansatz_der = derive_num_qubits_feature_map_ansatz(
-            None, feature_map, ansatz
+            feature_map, ansatz
         )
         num_qubits = feature_map.num_qubits if feature_map is not None else ansatz.num_qubits
 

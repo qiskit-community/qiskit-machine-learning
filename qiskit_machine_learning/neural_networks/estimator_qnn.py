@@ -67,7 +67,7 @@ class EstimatorQNN(NeuralNetwork):
         # Using the qnn_circuit:
         # Create a parametrized 2 qubit circuit composed of the default zz_feature_map feature map
         # and real_amplitudes ansatz.
-        qnn_qc, fm_params, anz_params = qnn_circuit(num_qubits)
+        qnn_qc, fm_params, anz_params = qnn_circuit(feature_map=zz_feature_map(num_qubits))
 
         qnn = EstimatorQNN(
             circuit=qnn_qc,
