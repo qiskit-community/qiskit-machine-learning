@@ -184,10 +184,24 @@ class BaseStateFidelity(ABC):
 
                 # re-parametrize input circuits
                 # TODO: make smarter checks to avoid unnecessary re-parametrizations
-                parameters_1 = ParameterVector("x", circuit_1.num_parameters)
-                parametrized_circuit_1 = circuit_1.assign_parameters(parameters_1)
-                parameters_2 = ParameterVector("y", circuit_2.num_parameters)
-                parametrized_circuit_2 = circuit_2.assign_parameters(parameters_2)
+                #
+                # NOTE (issue #1042): We decompose the input circuits before calling
+                # assign_parameters() to force full materialization of any BlueprintCircuit
+                # (e.g. ZZFeatureMap). BlueprintCircuits use lazy evaluation, meaning their
+                # internal gate-level symbolic expressions may still hold references to the
+                # original parameter UUIDs even after assign_parameters() is called on the
+                # outer circuit. When IBM Runtime serializes the SamplerV2 PUB via QPY for
+                # remote execution, the backend's expression tree contains the original UUID
+                # while the BindingsArray keys use the new UUID, causing:
+                #   QpyError: Cannot bind following parameters not present in expression
+                # Decomposing forces the circuit to be fully concrete before re-parametrization,
+                # ensuring all parameter references use consistent UUIDs end-to-end.
+                concrete_circuit_1 = circuit_1.decompose()
+                concrete_circuit_2 = circuit_2.decompose()
+                parameters_1 = ParameterVector("x", concrete_circuit_1.num_parameters)
+                parametrized_circuit_1 = concrete_circuit_1.assign_parameters(parameters_1)
+                parameters_2 = ParameterVector("y", concrete_circuit_2.num_parameters)
+                parametrized_circuit_2 = concrete_circuit_2.assign_parameters(parameters_2)
 
                 circuit = self.create_fidelity_circuit(
                     parametrized_circuit_1, parametrized_circuit_2
