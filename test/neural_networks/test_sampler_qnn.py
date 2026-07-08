@@ -393,7 +393,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             return f"{bin(x)}".count("1") % 2
 
         qnn_qc, feature_map_params, ansatz_params = qnn_circuit(
-            num_qubits=num_qubits, feature_map=feature_map, ansatz=ansatz
+            feature_map=feature_map, ansatz=ansatz
         )
         qc = QuantumCircuit(num_qubits)
         qc.compose(feature_map, inplace=True)
