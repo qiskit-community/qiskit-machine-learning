@@ -318,7 +318,7 @@ jobs:
           coverage3 xml -o coverage.xml
     
       - name: Upload to Coveralls
-        uses: coverallsapp/github-action@v2.3.7
+        uses: coverallsapp/github-action@v2.3.8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: coverage.xml
