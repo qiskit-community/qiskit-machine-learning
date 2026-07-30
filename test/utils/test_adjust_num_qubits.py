@@ -10,7 +10,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Tests for adjusting number of qubits in a feature map / ansatz."""
+"""Tests for derive_num_qubits_feature_map_ansatz."""
 
 from test import QiskitMachineLearningTestCase
 from ddt import ddt, idata, unpack
@@ -21,7 +21,7 @@ from qiskit_machine_learning.utils import derive_num_qubits_feature_map_ansatz
 
 
 @ddt
-class TestAdjustNumQubits(QiskitMachineLearningTestCase):
+class TestDeriveNumQubits(QiskitMachineLearningTestCase):
     """Tests for the derive_num_qubits_feature_map_ansatz function."""
 
     def setUp(self) -> None:

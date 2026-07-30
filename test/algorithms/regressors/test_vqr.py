@@ -18,6 +18,8 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import real_amplitudes, z_feature_map
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import EstimatorV2, Session
@@ -181,6 +183,14 @@ class TestVQR(QiskitMachineLearningTestCase):
         # score
         score = regressor.score(self.X, self.y)
         self.assertGreater(score, 0.5)
+
+    def test_mismatched_feature_map_and_ansatz(self):
+        """Test VQR raises when feature map and ansatz have different numbers of qubits."""
+        with self.assertRaises(QiskitMachineLearningError):
+            _ = VQR(
+                feature_map=z_feature_map(1),
+                ansatz=real_amplitudes(2),
+            )
 
 
 if __name__ == "__main__":

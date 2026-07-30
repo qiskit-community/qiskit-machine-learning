@@ -59,6 +59,16 @@ class TestQNNCircuitFunction(QiskitMachineLearningTestCase):
             self.assertEqual(len(fm_params), 1)
             self.assertEqual(len(anz_params), 4)
 
+    def test_ansatz_construction(self):
+        """Test building the ``qnn_circuit`` with an ansatz only."""
+
+        circuit, fm_params, anz_params = qnn_circuit(ansatz=real_amplitudes(2))
+
+        with self.subTest("check number of qubits"):
+            self.assertEqual(circuit.num_qubits, 2)
+            self.assertEqual(len(fm_params), 2)
+            self.assertEqual(len(anz_params), 8)
+
     def test_feature_map_construction(self):
         """Test building the ``qnn_circuit`` with a feature map"""
 
