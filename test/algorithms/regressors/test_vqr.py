@@ -19,10 +19,10 @@ import numpy as np
 from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map
-from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import EstimatorV2, Session
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.algorithms import VQR
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
