@@ -25,10 +25,11 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, zz_feature_map
 
 # from qiskit.primitives import StatevectorSampler as Sampler
-from qiskit.providers.fake_provider import GenericBackendV2
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
-from qiskit_ibm_runtime import SamplerV2, Session
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_runtime_pass_manager,
+    make_sampler_v2,
+)
 
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 import qiskit_machine_learning.optionals as _optionals
@@ -104,9 +105,9 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # define sampler primitives
         self.sampler = Sampler()
         self.sampler_shots = Sampler(default_shots=100, seed=42)
-        self.backend = GenericBackendV2(num_qubits=8)
-        self.session = Session(backend=self.backend)
-        self.sampler_v2 = SamplerV2(mode=self.session)
+        self.backend, self.session, self.sampler_v2 = make_sampler_v2(
+            8, seed=DEFAULT_RUNTIME_SEED
+        )
         self.pass_manager = None
         self.array_type = {True: SparseArray, False: np.ndarray}
 
@@ -135,8 +136,8 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             sampler = self.sampler_v2
 
             if self.qc.layout is None:
-                self.pass_manager = generate_preset_pass_manager(
-                    optimization_level=1, backend=self.backend
+                self.pass_manager = make_runtime_pass_manager(
+                    self.backend, optimization_level=1, seed=DEFAULT_RUNTIME_SEED
                 )
                 self.qc = self.pass_manager.run(self.qc)
             gradient = ParamShiftSamplerGradient(
@@ -404,7 +405,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             interpret=parity,
             output_shape=2,
             input_gradients=True,
-            pass_manager=generate_preset_pass_manager(backend=self.backend),
+            pass_manager=make_runtime_pass_manager(self.backend, seed=DEFAULT_RUNTIME_SEED),
         )
         sampler_qc = SamplerQNN(
             circuit=qc,
@@ -469,9 +470,10 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # Transpile to an 8-qubit backend, forcing logical qubits
         # to physical positions [5, 7] — deliberately high to
         # trigger the bug
-        pm = generate_preset_pass_manager(
+        pm = make_runtime_pass_manager(
+            self.backend,
             optimization_level=1,
-            backend=self.backend,
+            seed=DEFAULT_RUNTIME_SEED,
             initial_layout=[5, 7],
         )
         transpiled = pm.run(qc)

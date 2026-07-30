@@ -24,11 +24,12 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate, RYYGate, RZXGate, RZZGate
-from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import EstimatorV2, Session
-from qiskit_ibm_runtime.options import EstimatorOptions, SimulatorOptions
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_estimator_v2,
+    make_runtime_pass_manager,
+)
 from qiskit_machine_learning.gradients import (
     LinCombEstimatorGradient,
     ParamShiftEstimatorGradient,
@@ -403,12 +404,10 @@ class TestEstimatorGradientRuntime(QiskitAlgorithmsTestCase):
     """Test Estimator Gradient for IBM Runtime"""
 
     def __init__(self, TestCase):
-        backend = GenericBackendV2(num_qubits=3, seed=123)
-        session = Session(backend=backend)
-        simopts = SimulatorOptions(seed_simulator=123)
-        estopts = EstimatorOptions(simulator=simopts)
-        self.estimator = EstimatorV2(mode=session, options=estopts)
-        self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
+        backend, self.estimator = make_estimator_v2(3, seed=DEFAULT_RUNTIME_SEED)
+        self.pass_manager = make_runtime_pass_manager(
+            backend, optimization_level=1, seed=DEFAULT_RUNTIME_SEED
+        )
         super().__init__(TestCase)
 
     @data(*gradient_factories)

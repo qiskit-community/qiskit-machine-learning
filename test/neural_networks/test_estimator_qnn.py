@@ -19,10 +19,12 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
-from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import EstimatorV2, Session
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_estimator_v2,
+    make_runtime_pass_manager,
+)
 from qiskit_machine_learning.circuit.library import qnn_circuit
 from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
@@ -180,15 +182,17 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
     """EstimatorQNN Tests for estimator_v2. The correct references is obtained from EstimatorQNN"""
 
     tolerance: dict[str, float] = dict(atol=3 * 1.0e-1, rtol=3 * 1.0e-1)
-    backend = GenericBackendV2(num_qubits=2, seed=123)
-    session = Session(backend=backend)
+    _backend, _estimator = make_estimator_v2(2, seed=DEFAULT_RUNTIME_SEED, default_shots=1000)
 
     def __init__(
         self,
         TestCase,
     ):
-        self.estimator = EstimatorV2(mode=self.session, options={"default_shots": 1e3})
-        self.pass_manager = generate_preset_pass_manager(backend=self.backend, optimization_level=0)
+        self.estimator = self._estimator
+        self.backend = self._backend
+        self.pass_manager = make_runtime_pass_manager(
+            self.backend, optimization_level=0, seed=DEFAULT_RUNTIME_SEED
+        )
         self.gradient = ParamShiftEstimatorGradient(
             estimator=self.estimator, pass_manager=self.pass_manager
         )

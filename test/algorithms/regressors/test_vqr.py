@@ -18,9 +18,11 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.providers.fake_provider import GenericBackendV2
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import EstimatorV2, Session
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_estimator_v2,
+    make_runtime_pass_manager,
+)
 from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.algorithms import VQR
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
@@ -140,14 +142,10 @@ class TestVQR(QiskitMachineLearningTestCase):
         else:
             optimizer = None
 
-        backend = GenericBackendV2(
-            num_qubits=2,
-            noise_info=False,
-            seed=123,
+        backend, _estimator = make_estimator_v2(2, seed=DEFAULT_RUNTIME_SEED)
+        pass_manager = make_runtime_pass_manager(
+            backend, optimization_level=0, seed=DEFAULT_RUNTIME_SEED
         )
-        session = Session(backend=backend)
-        _estimator = EstimatorV2(mode=session)
-        pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
 
         num_qubits = 1
         # construct simple feature map

@@ -20,10 +20,11 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import QuantumRegister
 
-from qiskit.providers.fake_provider import GenericBackendV2
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import SamplerV2, Session
-from qiskit_ibm_runtime.options import SamplerOptions, SimulatorOptions
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_runtime_pass_manager,
+    make_sampler_v2,
+)
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithms import QBayesian
 from qiskit_machine_learning.utils import algorithm_globals
@@ -217,17 +218,9 @@ class TestQBayesianInference(QiskitMachineLearningTestCase):
     def test_trivial_circuit_V2(self):
         """Tests trivial quantum circuit for V2 primitives"""
 
-        backend = GenericBackendV2(
-            num_qubits=2,
-            noise_info=False,
-            seed=123,
-        )
-        session = Session(backend=backend)
-        simopts = SimulatorOptions(seed_simulator=123)
-        samopts = SamplerOptions(simulator=simopts)
-        _sampler = SamplerV2(mode=session, options=samopts)
-        pass_manager = generate_preset_pass_manager(
-            optimization_level=0, backend=backend, seed_transpiler=123
+        backend, _, _sampler = make_sampler_v2(2, seed=DEFAULT_RUNTIME_SEED)
+        pass_manager = make_runtime_pass_manager(
+            backend, optimization_level=0, seed=DEFAULT_RUNTIME_SEED
         )
 
         # Define rotation angles

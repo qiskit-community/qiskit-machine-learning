@@ -27,9 +27,11 @@ from ddt import ddt, idata, unpack
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
-from qiskit.providers.fake_provider import GenericBackendV2
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_ibm_runtime import SamplerV2, Session
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_runtime_pass_manager,
+    make_sampler_v2,
+)
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -75,12 +77,9 @@ class TestVQC(QiskitMachineLearningTestCase):
         super().setUp()
         algorithm_globals.random_seed = 1111111
         self.num_classes_by_batch = []
-        self.backend = GenericBackendV2(
-            num_qubits=3,
-            noise_info=False,
-            seed=123,
+        self.backend, _, runtime_sampler = make_sampler_v2(
+            3, seed=DEFAULT_RUNTIME_SEED, default_shots=10000
         )
-        self.session = Session(backend=self.backend)
         # We want string keys to ensure DDT-generated tests have meaningful names.
         self.properties = {
             "cobyla": COBYLA(maxiter=25),
@@ -89,7 +88,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             "binary": _create_dataset(6, 2),
             "multiclass": _create_dataset(10, 3),
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
-            "runtime_sampler": SamplerV2(mode=self.session, options={"default_shots": 10000}),
+            "runtime_sampler": runtime_sampler,
             "QMLSampler": Sampler(),
         }
 
@@ -104,7 +103,9 @@ class TestVQC(QiskitMachineLearningTestCase):
         instances, numbers of qubits, feature maps, and optimizers.
         """
         if smplr == "runtime_sampler":
-            pm = generate_preset_pass_manager(optimization_level=0, backend=self.backend)
+            pm = make_runtime_pass_manager(
+                self.backend, optimization_level=0, seed=DEFAULT_RUNTIME_SEED
+            )
         else:
             pm = None
 

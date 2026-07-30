@@ -16,7 +16,6 @@
 
 import unittest
 from test import QiskitAlgorithmsTestCase
-from qiskit_ibm_runtime import SamplerV2, Session
 
 import numpy as np
 from ddt import data, ddt
@@ -26,7 +25,11 @@ from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
 
-from qiskit.providers.fake_provider import GenericBackendV2
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_runtime_pass_manager,
+    make_sampler_v2,
+)
 from qiskit.result import QuasiDistribution
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
@@ -551,10 +554,10 @@ class TestSamplerGradientRuntime(QiskitAlgorithmsTestCase):
     """Test Sampler Gradient for IBM Runtime"""
 
     def __init__(self, TestCase):
-        backend = GenericBackendV2(num_qubits=3, seed=123)
-        session = Session(backend=backend)
-        self.sampler = SamplerV2(mode=session)
-        self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
+        backend, _, self.sampler = make_sampler_v2(3, seed=DEFAULT_RUNTIME_SEED)
+        self.pass_manager = make_runtime_pass_manager(
+            backend, optimization_level=1, seed=DEFAULT_RUNTIME_SEED
+        )
         super().__init__(TestCase)
 
     @data(*gradient_factories)
