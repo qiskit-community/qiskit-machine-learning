@@ -19,17 +19,16 @@ import itertools
 import unittest
 from test import QiskitMachineLearningTestCase
 
-import numpy as np
-from ddt import ddt, idata
-from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import real_amplitudes, zz_feature_map
-
-# from qiskit.primitives import StatevectorSampler as Sampler
 from test.utils.runtime_simulation import (
     DEFAULT_RUNTIME_SEED,
     make_runtime_pass_manager,
     make_sampler_v2,
 )
+
+import numpy as np
+from ddt import ddt, idata
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import real_amplitudes, zz_feature_map
 
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 import qiskit_machine_learning.optionals as _optionals
@@ -512,7 +511,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # bitstrings, like real hardware or SamplerV2
         qnn = SamplerQNN(
             circuit=transpiled,
-            sampler=SamplerV2(mode=self.backend),
+            sampler=self.sampler_v2,
         )
 
         # Confirm the QNN sees 2 logical qubits, not 8

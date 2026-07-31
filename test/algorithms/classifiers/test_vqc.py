@@ -21,17 +21,18 @@ import unittest
 from dataclasses import dataclass
 from test import QiskitMachineLearningTestCase
 
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_runtime_pass_manager,
+    make_sampler_v2,
+)
+
 import numpy as np
 import scipy
 from ddt import ddt, idata, unpack
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
-from test.utils.runtime_simulation import (
-    DEFAULT_RUNTIME_SEED,
-    make_runtime_pass_manager,
-    make_sampler_v2,
-)
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError

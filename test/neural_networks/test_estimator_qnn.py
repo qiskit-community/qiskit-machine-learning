@@ -16,15 +16,16 @@
 import unittest
 from test import QiskitMachineLearningTestCase
 
-import numpy as np
-from qiskit.circuit import Parameter, QuantumCircuit
-from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
-from qiskit.quantum_info import SparsePauliOp
 from test.utils.runtime_simulation import (
     DEFAULT_RUNTIME_SEED,
     make_estimator_v2,
     make_runtime_pass_manager,
 )
+
+import numpy as np
+from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_map
+from qiskit.quantum_info import SparsePauliOp
 from qiskit_machine_learning.circuit.library import qnn_circuit
 from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN

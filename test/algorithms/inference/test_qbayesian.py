@@ -16,15 +16,15 @@
 import unittest
 from test import QiskitMachineLearningTestCase
 
-import numpy as np
-from qiskit import QuantumCircuit
-from qiskit.circuit import QuantumRegister
-
 from test.utils.runtime_simulation import (
     DEFAULT_RUNTIME_SEED,
     make_runtime_pass_manager,
     make_sampler_v2,
 )
+
+import numpy as np
+from qiskit import QuantumCircuit
+from qiskit.circuit import QuantumRegister
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithms import QBayesian
 from qiskit_machine_learning.utils import algorithm_globals

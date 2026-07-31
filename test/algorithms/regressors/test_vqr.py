@@ -15,14 +15,15 @@
 import unittest
 from test import QiskitMachineLearningTestCase
 
-import numpy as np
-from ddt import data, ddt
-from qiskit.circuit import Parameter, QuantumCircuit
 from test.utils.runtime_simulation import (
     DEFAULT_RUNTIME_SEED,
     make_estimator_v2,
     make_runtime_pass_manager,
 )
+
+import numpy as np
+from ddt import data, ddt
+from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.algorithms import VQR
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B

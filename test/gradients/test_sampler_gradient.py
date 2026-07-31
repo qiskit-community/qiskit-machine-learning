@@ -16,6 +16,11 @@
 
 import unittest
 from test import QiskitAlgorithmsTestCase
+from test.utils.runtime_simulation import (
+    DEFAULT_RUNTIME_SEED,
+    make_runtime_pass_manager,
+    make_sampler_v2,
+)
 
 import numpy as np
 from ddt import data, ddt
@@ -25,14 +30,7 @@ from qiskit.circuit import Parameter
 from qiskit.circuit.library import efficient_su2, real_amplitudes
 from qiskit.circuit.library.standard_gates import RXXGate
 
-from test.utils.runtime_simulation import (
-    DEFAULT_RUNTIME_SEED,
-    make_runtime_pass_manager,
-    make_sampler_v2,
-)
 from qiskit.result import QuasiDistribution
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.gradients import (
     LinCombSamplerGradient,
