@@ -26,7 +26,7 @@ Why introduce these wrappers?
 Qiskit's V2 primitives ecosystem standardizes execution around Primitive Unified Blocs (PUBs) and
 structured result objects. This infrastructure does not provide a direct way to compute the full
 statevector result without shot noise, which some unit tests and prototyping tasks benefit from.
-QML primitives address this needs by allowing the exact simulation mode directly, or acting as a
+QML primitives address this need by allowing the exact simulation mode directly, or acting as a
 light wrapper around Qiskit Statevector (V2) primitives when sampling with shot noise.
 
 Execution modes
