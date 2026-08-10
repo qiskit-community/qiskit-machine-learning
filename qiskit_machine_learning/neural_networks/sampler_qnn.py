@@ -222,11 +222,6 @@ class SamplerQNN(NeuralNetwork):
 
         # Set gradient
         if gradient is None:
-            if pass_manager is None:
-                logger.warning(
-                    "No gradient function provided, creating a gradient function."
-                    " If your Sampler requires transpilation, please provide a pass manager."
-                )
             gradient = ParamShiftSamplerGradient(sampler=self.sampler, pass_manager=pass_manager)
         self.gradient = gradient
 
