@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import logging
 from copy import copy
 from typing import Sequence
 
@@ -34,8 +33,6 @@ from ..gradients import (
     ParamShiftEstimatorGradient,
 )
 from .neural_network import NeuralNetwork
-
-logger = logging.getLogger(__name__)
 
 
 class EstimatorQNN(NeuralNetwork):
@@ -177,11 +174,6 @@ class EstimatorQNN(NeuralNetwork):
 
         # set gradient
         if gradient is None:
-            if pass_manager is None:
-                logger.warning(
-                    "No gradient function provided, creating a gradient function."
-                    " If your Estimator requires transpilation, please provide a pass manager."
-                )
             gradient = ParamShiftEstimatorGradient(
                 estimator=self.estimator, pass_manager=pass_manager
             )

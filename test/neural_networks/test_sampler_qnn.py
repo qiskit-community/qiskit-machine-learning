@@ -303,7 +303,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                 grad.shape
             )
             diff = input_grad_ - grad
-            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+            self.assertAlmostEqual(float(np.max(np.abs(diff))), 0.0, places=3)
 
         # test weight gradients
         eps = 1e-2
@@ -319,7 +319,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
                 :, :, k
             ].reshape(grad.shape)
             diff = weights_grad_ - grad
-            self.assertAlmostEqual(np.max(np.abs(diff)), 0.0, places=3)
+            self.assertAlmostEqual(float(np.max(np.abs(diff))), 0.0, places=3)
 
     def test_setters_getters(self):
         """Test Sampler QNN properties."""

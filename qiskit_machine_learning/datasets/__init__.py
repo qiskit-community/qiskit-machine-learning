@@ -29,9 +29,11 @@ Synthetic dataset generators
 
    ad_hoc_data
    entanglement_concentration_data
+   phase_of_matter_data
 """
 
 from .ad_hoc import ad_hoc_data
 from .entanglement_concentration import entanglement_concentration_data
+from .phase_of_matter import phase_of_matter_data
 
-__all__ = ["ad_hoc_data", "entanglement_concentration_data"]
+__all__ = ["ad_hoc_data", "entanglement_concentration_data", "phase_of_matter_data"]

@@ -17,6 +17,10 @@ You should first install the python development libraries by running
 Machine Learning repository clone and then
 follow the  guidelines below.
 
+### Use of AI
+
+We accept contributions generated with AI. However, the commiter is still responsible for the quality of the outputs. We ask you to first read [AI_POLICY.md](AI_POLICY.md).
+
 ### Project Code Style.
 
 Code in Qiskit Machine Learning should conform to PEP8 and style/lint checks are run to validate
