@@ -104,7 +104,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # define sampler primitives
         self.sampler = Sampler()
         self.sampler_shots = Sampler(default_shots=100, seed=42)
-        self.backend = GenericBackendV2(num_qubits=8)
+        self.backend = GenericBackendV2(num_qubits=8, seed=123, noise_info=False)
         self.session = Session(backend=self.backend)
         self.sampler_v2 = SamplerV2(mode=self.session)
         self.pass_manager = None
