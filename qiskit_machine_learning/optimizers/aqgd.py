@@ -236,7 +236,7 @@ class AQGD(Optimizer):
         # Calculate previous windowed average
         # and current windowed average of objective values
         prev_avg = np.mean(self._prev_loss[:window_size])
-        curr_avg = np.mean(self._prev_loss[1 : window_size + 1])
+        curr_avg = float(np.mean(self._prev_loss[1 : window_size + 1]))
         self._avg_objval = curr_avg
 
         # Update window of objective values
