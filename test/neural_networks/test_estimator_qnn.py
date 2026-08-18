@@ -180,7 +180,7 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
     """EstimatorQNN Tests for estimator_v2. The correct references is obtained from EstimatorQNN"""
 
     tolerance: dict[str, float] = dict(atol=3 * 1.0e-1, rtol=3 * 1.0e-1)
-    backend = GenericBackendV2(num_qubits=2, seed=123)
+    backend = GenericBackendV2(num_qubits=2, seed=123, noise_info=False)
     session = Session(backend=backend)
 
     def __init__(
