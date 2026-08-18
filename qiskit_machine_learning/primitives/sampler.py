@@ -364,7 +364,7 @@ class ExactProbNDArray:
         ExactProbArray."""
         for raw in self._arr.flat:
             if isinstance(raw, ExactProbArray):
-                rep = cast(ExactProbArray, raw)
+                rep = raw
                 return rep.num_bits
         return 0
 

@@ -237,7 +237,7 @@ class AQGD(Optimizer):
         # and current windowed average of objective values
         prev_avg = np.mean(self._prev_loss[:window_size])
         curr_avg = np.mean(self._prev_loss[1 : window_size + 1])
-        self._avg_objval = curr_avg  # type: ignore[assignment]
+        self._avg_objval = curr_avg
 
         # Update window of objective values
         # (Remove earliest value)
