@@ -1,0 +1,32 @@
+---
+features:
+  - |
+    Added the ``BatchedSubKernelSVCLoss`` class for training quantum kernels
+    using batches of smaller sub-kernels. This enables quantum kernel training
+    without evaluating the full kernel matrix at every optimization step.
+    For example::
+
+      from qiskit_machine_learning.utils.loss_functions import BatchedSubKernelSVCLoss
+
+      loss = BatchedSubKernelSVCLoss(
+          data,
+          labels,
+          sub_kernel_size=8,
+          batch_size=4,
+      )
+
+  - |
+    Added the ``CovariantFeatureMap`` circuit for constructing covariant
+    quantum feature maps. For example::
+
+      from qiskit_machine_learning.circuit.library import CovariantFeatureMap
+
+      feature_map = CovariantFeatureMap(
+          feature_dimension=num_features,
+          entanglement=entangler_map,
+          include_training_parameters=False,
+      )
+
+  - |
+    Added the ``14_subsampling_quantum_kernel`` tutorial demonstrating the
+    sub-sampling quantum kernel method.
