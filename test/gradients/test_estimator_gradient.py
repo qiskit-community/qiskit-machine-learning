@@ -403,7 +403,7 @@ class TestEstimatorGradientRuntime(QiskitAlgorithmsTestCase):
     """Test Estimator Gradient for IBM Runtime"""
 
     def __init__(self, TestCase):
-        backend = GenericBackendV2(num_qubits=3, seed=123)
+        backend = GenericBackendV2(num_qubits=3, seed=123, noise_info=False)
         session = Session(backend=backend)
         simopts = SimulatorOptions(seed_simulator=123)
         estopts = EstimatorOptions(simulator=simopts)

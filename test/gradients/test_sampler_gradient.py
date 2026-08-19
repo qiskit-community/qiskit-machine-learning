@@ -551,7 +551,7 @@ class TestSamplerGradientRuntime(QiskitAlgorithmsTestCase):
     """Test Sampler Gradient for IBM Runtime"""
 
     def __init__(self, TestCase):
-        backend = GenericBackendV2(num_qubits=3, seed=123)
+        backend = GenericBackendV2(num_qubits=3, seed=123, noise_info=False)
         session = Session(backend=backend)
         self.sampler = SamplerV2(mode=session)
         self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
